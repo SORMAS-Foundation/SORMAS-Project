@@ -78,7 +78,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	private static final String HTML_LAYOUT = 
 			fluidRow(
 					loc(TaskDto.TASK_CONTEXT), 
-					locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
+					locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT, TaskDto.TRAVEL_ENTRY, TaskDto.ENVIRONMENT)) +
 			fluidRowLocs(TaskDto.TASK_TYPE) +
 			fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE) +
 			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
@@ -125,6 +125,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		addField(TaskDto.CAZE, ComboBox.class);
 		addField(TaskDto.EVENT, ComboBox.class);
 		addField(TaskDto.CONTACT, ComboBox.class);
+		addField(TaskDto.TRAVEL_ENTRY, ComboBox.class);
+		addField(TaskDto.ENVIRONMENT, ComboBox.class);
 		DateTimeField startDate = addDateField(TaskDto.SUGGESTED_START, DateTimeField.class, -1);
 		DateTimeField dueDate = addDateField(TaskDto.DUE_DATE, DateTimeField.class, -1);
 		dueDate.setImmediate(true);
@@ -179,7 +181,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		assignedBy.setReadOnly(true);
 
 		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE, TaskDto.TASK_STATUS);
-		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
+		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT, TaskDto.TRAVEL_ENTRY, TaskDto.ENVIRONMENT);
 
 		addValueChangeListener(e -> {
 			TaskDto taskDto = getValue();
@@ -209,6 +211,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingEventInJurisdiction(taskDto.getEvent()));
 			} else if (taskDto.getTravelEntry() != null) {
 				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingTravelEntryInJurisdiction(taskDto.getTravelEntry()));
+			} else if (taskDto.getEnvironment() != null) {
+				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingEnvironmentInJurisdiction(taskDto.getEnvironment()));
 			} else {
 				availableUsers.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 			}
@@ -363,19 +367,29 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		ComboBox caseField = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);
 		ComboBox eventField = (ComboBox) getFieldGroup().getField(TaskDto.EVENT);
 		ComboBox contactField = (ComboBox) getFieldGroup().getField(TaskDto.CONTACT);
+		ComboBox travelEntryField = (ComboBox) getFieldGroup().getField(TaskDto.TRAVEL_ENTRY);
+		ComboBox environmentField = (ComboBox) getFieldGroup().getField(TaskDto.ENVIRONMENT);
 		if (taskContext != null) {
 			switch (taskContext) {
 			case CASE:
-				FieldHelper.setFirstVisibleClearOthers(caseField, eventField, contactField);
-				FieldHelper.setFirstRequired(caseField, eventField, contactField);
+				FieldHelper.setFirstVisibleClearOthers(caseField, eventField, contactField, travelEntryField, environmentField);
+				FieldHelper.setFirstRequired(caseField, eventField, contactField, travelEntryField, environmentField);
 				break;
 			case EVENT:
-				FieldHelper.setFirstVisibleClearOthers(eventField, caseField, contactField);
-				FieldHelper.setFirstRequired(eventField, caseField, contactField);
+				FieldHelper.setFirstVisibleClearOthers(eventField, caseField, contactField, travelEntryField, environmentField);
+				FieldHelper.setFirstRequired(eventField, caseField, contactField, travelEntryField, environmentField);
 				break;
 			case CONTACT:
-				FieldHelper.setFirstVisibleClearOthers(contactField, caseField, eventField);
-				FieldHelper.setFirstRequired(contactField, caseField, eventField);
+				FieldHelper.setFirstVisibleClearOthers(contactField, caseField, eventField, travelEntryField, environmentField);
+				FieldHelper.setFirstRequired(contactField, caseField, eventField, travelEntryField, environmentField);
+				break;
+			case TRAVEL_ENTRY:
+				FieldHelper.setFirstVisibleClearOthers(travelEntryField, contactField, caseField, eventField, environmentField);
+				FieldHelper.setFirstRequired(travelEntryField, contactField, caseField, eventField, environmentField);
+				break;
+			case ENVIRONMENT:
+				FieldHelper.setFirstVisibleClearOthers(environmentField, travelEntryField, contactField, caseField, eventField);
+				FieldHelper.setFirstRequired(environmentField, travelEntryField, contactField, caseField, eventField);
 				break;
 			case GENERAL:
 				FieldHelper.setFirstVisibleClearOthers(null, caseField, contactField, eventField);
@@ -383,8 +397,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				break;
 			}
 		} else {
-			FieldHelper.setFirstVisibleClearOthers(null, caseField, eventField, contactField);
-			FieldHelper.setFirstRequired(null, caseField, eventField, contactField);
+			FieldHelper.setFirstVisibleClearOthers(null, caseField, eventField, contactField, travelEntryField, environmentField);
+			FieldHelper.setFirstRequired(null, caseField, eventField, contactField, travelEntryField, environmentField);
 		}
 	}
 

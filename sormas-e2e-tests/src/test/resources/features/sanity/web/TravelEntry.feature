@@ -276,8 +276,8 @@ Feature: Create travel entries
     When I create a new case with Point Of Entry for DE version
     And I click on save button in the case popup
     And I check that Point Of Entry information is displayed as read-only on Edit case page
-    And I refer case from Point Of Entry
-    And I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page
+    And I refer case from Point Of Entry with Place of Stay ZUHAUSE
+    And I check that Point Of Entry and Place Of Stay ZUHAUSE information is correctly display on Edit case page
     Then I click on the Entries button from navbar
     And I click on the New Travel Entry button from Travel Entries directory
     And I check if Different Point Of Entry Jurisdiction checkbox appears in New Travel Entry popup

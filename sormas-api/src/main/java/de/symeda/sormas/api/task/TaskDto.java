@@ -70,6 +70,7 @@ public class TaskDto extends EntityDto {
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
 	public static final String TRAVEL_ENTRY = "travelEntry";
+	public static final String ENVIRONMENT = "environment";
 	public static final String OBSERVER_USERS = "observerUsers";
 
 	@NotNull(message = Validations.requiredField)

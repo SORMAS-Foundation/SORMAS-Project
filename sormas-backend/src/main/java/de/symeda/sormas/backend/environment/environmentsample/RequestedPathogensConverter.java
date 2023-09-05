@@ -21,8 +21,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.AttributeConverter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.backend.disease.PathogenConverter;
@@ -30,34 +29,18 @@ import de.symeda.sormas.backend.disease.PathogenConverter;
 public class RequestedPathogensConverter implements AttributeConverter<Set<Pathogen>, String> {
 
 	private final PathogenConverter pathogenConverter = new PathogenConverter();
-	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
 	public String convertToDatabaseColumn(Set<Pathogen> pathogens) {
-		if (pathogens == null) {
-			return null;
-		}
-
-		Set<String> pathogenValues = pathogens.stream().map(pathogenConverter::convertToDatabaseColumn).collect(Collectors.toSet());
-		try {
-			return objectMapper.writeValueAsString(pathogenValues);
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException("Can't create JSON from the set of pathogens [" + String.join(", ", pathogenValues) + "]", e);
-		}
+		return pathogens != null
+			? String.join(",", pathogens.stream().map(pathogenConverter::convertToDatabaseColumn).collect(Collectors.toSet()))
+			: null;
 	}
 
 	@Override
-	public Set<Pathogen> convertToEntityAttribute(String pathogensJson) {
-		if (pathogensJson == null) {
-			return null;
-		}
-
-		try {
-			return Stream.of(objectMapper.readValue(pathogensJson, String[].class))
-				.map(pathogenConverter::convertToEntityAttribute)
-				.collect(Collectors.toSet());
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException("Can't parse set of pathogens '" + pathogensJson + "'", e);
-		}
+	public Set<Pathogen> convertToEntityAttribute(String pathogensText) {
+		return pathogensText != null
+			? Stream.of(StringUtils.split(pathogensText, ",")).map(pathogenConverter::convertToEntityAttribute).collect(Collectors.toSet())
+			: null;
 	}
 }

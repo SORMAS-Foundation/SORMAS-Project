@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.88.0-SNAPSHOT
+  version: 1.89.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -23816,9 +23816,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
           - ENVIRONMENT
+          - GENERAL
         uuid:
           type: string
     TaskCriteria:
@@ -23888,9 +23888,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
           - ENVIRONMENT
+          - GENERAL
         taskStatus:
           type: string
           enum:
@@ -24007,9 +24007,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
           - ENVIRONMENT
+          - GENERAL
         taskStatus:
           type: string
           enum:
@@ -24182,9 +24182,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
           - ENVIRONMENT
+          - GENERAL
         taskJurisdictionFlagsDto:
           $ref: '#/components/schemas/TaskJurisdictionFlagsDto'
         taskStatus:

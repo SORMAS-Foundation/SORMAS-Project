@@ -272,10 +272,10 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 		User user = ConfigProvider.getUser();
 
-		boolean caseSuveillance = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE);
-		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
+		boolean caseSurveillanceActive = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE);
+		boolean campaignsActive = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
 
-		if (caseSuveillance) {
+		if (caseSurveillanceActive) {
 			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
 				&& (ConfigProvider.hasUserRight(UserRight.CASE_RESPONSIBLE)
 					|| user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.COMMUNITY, JurisdictionLevel.POINT_OF_ENTRY))) {
@@ -284,10 +284,14 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 				NavigationHelper.goToContacts(LoginActivity.this);
 			} else if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)) {
 				NavigationHelper.goToCases(LoginActivity.this);
+			} else if (ConfigProvider.hasUserRight(UserRight.ENVIRONMENT_VIEW)) {
+				NavigationHelper.goToEnvironments(LoginActivity.this);
+			} else if (ConfigProvider.hasUserRight(UserRight.EVENT_VIEW)) {
+				NavigationHelper.goToEvents(LoginActivity.this);
 			} else {
 				NavigationHelper.goToSettings(LoginActivity.this);
 			}
-		} else if (campaigns && ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_VIEW)) {
+		} else if (campaignsActive && ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_VIEW)) {
 			NavigationHelper.goToCampaigns(LoginActivity.this);
 		} else {
 			NavigationHelper.goToSettings(LoginActivity.this);
