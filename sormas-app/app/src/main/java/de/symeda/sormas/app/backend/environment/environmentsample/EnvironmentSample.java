@@ -260,7 +260,7 @@ public class EnvironmentSample extends PseudonymizableAdo {
 			Type type = new TypeToken<List<String>>() {
 			}.getType();
 
-		requestedPathogenTestsJson =
+			requestedPathogenTestsJson =
 				gson.toJson(requestedPathogenTests.stream().map(CustomizableEnum::getValue).collect(Collectors.toSet()), type);
 		}
 	}
