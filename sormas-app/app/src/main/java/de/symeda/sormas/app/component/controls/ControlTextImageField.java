@@ -29,6 +29,7 @@ import androidx.databinding.BindingAdapter;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
@@ -237,6 +238,26 @@ public class ControlTextImageField extends ControlTextReadField {
 	}
 
 	@BindingAdapter(value = {
+		"shipmentStatus",
+		"defaultValue" }, requireAll = false)
+	public static void setShipmentStatus(ControlTextImageField textImageField, EnvironmentSample sample, String defaultValue) {
+		if (sample == null) {
+			textImageField.setValue(textImageField.getDefaultValue(defaultValue), false);
+			textImageField.applyDefaultValueStyle();
+		} else {
+			// TODO reset default style?
+
+			if (sample.isDispatched()) {
+				textImageField.setValue(DateFormatHelper.formatLocalDate(sample.getDispatchDate()), true);
+				textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
+			} else {
+				textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
+				textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
+			}
+		}
+	}
+
+	@BindingAdapter(value = {
 		"receivedStatus",
 		"defaultValue" }, requireAll = false)
 	public static void setReceivedStatus(ControlTextImageField textImageField, Sample sample, String defaultValue) {
@@ -248,6 +269,26 @@ public class ControlTextImageField extends ControlTextReadField {
 
 			if (sample.isReceived()) {
 				textImageField.setValue(DateFormatHelper.formatLocalDate(sample.getReceivedDate()), true);
+				textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
+			} else {
+				textImageField.setValue(textImageField.getResources().getString(R.string.no), false);
+				textImageField.setImageBackground(R.drawable.ic_cancel_24dp, R.color.red);
+			}
+		}
+	}
+
+	@BindingAdapter(value = {
+		"receivedStatus",
+		"defaultValue" }, requireAll = false)
+	public static void setReceivedStatus(ControlTextImageField textImageField, EnvironmentSample sample, String defaultValue) {
+		if (sample == null) {
+			textImageField.setValue(textImageField.getDefaultValue(defaultValue), false);
+			textImageField.applyDefaultValueStyle();
+		} else {
+			// TODO reset default style?
+
+			if (sample.isReceived()) {
+				textImageField.setValue(DateFormatHelper.formatLocalDate(sample.getReceivalDate()), true);
 				textImageField.setImageBackground(R.drawable.ic_check_circle_24dp, R.color.green);
 			} else {
 				textImageField.setValue(textImageField.getResources().getString(R.string.no), false);

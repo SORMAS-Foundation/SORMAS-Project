@@ -61,6 +61,7 @@
     <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">Edit Event</string>
     <string name="action_edit_sample">Edit Sample</string>
+    <string name="action_edit_environment_sample">Edit Environment Sample</string>
     <string name="action_forgot_PIN">Forgot PIN?</string>
     <string name="action_help">Help</string>
     <string name="action_install_app">Install</string>
@@ -174,6 +175,7 @@
     <string name="caption_report">Report</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
+    <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -395,6 +397,7 @@
     <string name="heading_sample_edit">Edit Sample</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sample_read">Read Sample</string>
+    <string name="heading_environment_sample_read">Read Environment Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
     <string name="heading_samples_list">Sample Listing</string>
     <string name="heading_environment_sample_list">Environment Sample Listing</string>
@@ -451,6 +454,10 @@
     <string name="heading_vaccination_edit">Edit Vaccination</string>
     <string name="heading_vaccination_new">New Vaccination</string>
     <string name="heading_search_for_case">Search specific case</string>
+    <string name="heading_laboratory_sample">Laboratory sample</string>
+    <string name="heading_sample_measurements">Sample measurements</string>
+    <string name="heading_location_sampling_site">Location of sampling site</string>
+    <string name="heading_sample_management">Sample management</string>
 
     <string name="hint_add_to_empty_list">Add a new entry by pressing the "+" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
