@@ -12700,10 +12700,10 @@ ALTER TABLE environmentsamples_history ADD COLUMN requestedpathogentests text;
 INSERT INTO schema_version (version_number, comment) VALUES (524, 'Change requested pathogen tests column type #11721');
 
 -- 2023-09-05 Add report date to environment samples #12501
-ALTER TABLE environmentsamples ADD COLUMN reportdate timestamp not null;
+ALTER TABLE environmentsamples ADD COLUMN reportdate timestamp not null DEFAULT now();
 ALTER TABLE environmentsamples_history ADD COLUMN reportdate timestamp;
 -- Fill report date to avoid not null issues
-UPDATE environmentsamples SET reportdate = now();
+ALTER TABLE environmentsamples ALTER COLUMN reportdate DROP DEFAULT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (525, 'Add report date to environment samples #12501');
 
