@@ -57,6 +57,8 @@ public class EnvironmentSample extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "environment_id")
 	private Environment environment;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date reportDate;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "reportingUser_id")
 	private User reportingUser;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -116,6 +118,14 @@ public class EnvironmentSample extends PseudonymizableAdo {
 
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 	public User getReportingUser() {
@@ -250,7 +260,7 @@ public class EnvironmentSample extends PseudonymizableAdo {
 			Type type = new TypeToken<List<String>>() {
 			}.getType();
 
-			requestedPathogenTestsJson =
+		requestedPathogenTestsJson =
 				gson.toJson(requestedPathogenTests.stream().map(CustomizableEnum::getValue).collect(Collectors.toSet()), type);
 		}
 	}

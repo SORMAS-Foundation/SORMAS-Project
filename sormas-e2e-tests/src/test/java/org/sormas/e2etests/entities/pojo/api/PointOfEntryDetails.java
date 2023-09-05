@@ -18,7 +18,6 @@
 package org.sormas.e2etests.entities.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Date;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
@@ -28,8 +27,9 @@ import lombok.extern.jackson.Jacksonized;
 @Builder(toBuilder = true, builderClassName = "builder")
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Therapy {
+public class PointOfEntryDetails {
   String uuid;
-  Date creationDate;
-  Date changeDate;
+  String caption;
+  String externalId;
+  String pointOfEntryType;
 }
