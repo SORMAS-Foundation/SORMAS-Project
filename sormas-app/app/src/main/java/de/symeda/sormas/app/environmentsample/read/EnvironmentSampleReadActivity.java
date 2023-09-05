@@ -55,7 +55,9 @@ public class EnvironmentSampleReadActivity extends BaseReadActivity<EnvironmentS
 	@Override
 	public ShipmentStatus getPageStatus() {
 		EnvironmentSample sample = getStoredRootEntity();
-		return sample.isReceived() ? ShipmentStatus.RECEIVED : sample.isDispatched() ? ShipmentStatus.SHIPPED : ShipmentStatus.NOT_SHIPPED;
+		return sample != null
+			? sample.isReceived() ? ShipmentStatus.RECEIVED : sample.isDispatched() ? ShipmentStatus.SHIPPED : ShipmentStatus.NOT_SHIPPED
+			: null;
 	}
 
 	@Override
