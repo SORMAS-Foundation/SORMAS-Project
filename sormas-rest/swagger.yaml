@@ -14171,6 +14171,9 @@ components:
           format: date-time
         received:
           type: boolean
+        reportDate:
+          type: string
+          format: date-time
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         requestedPathogenTests:
@@ -14217,6 +14220,7 @@ components:
       required:
       - environment
       - laboratory
+      - reportDate
       - reportingUser
       - sampleDateTime
       - sampleMaterial
