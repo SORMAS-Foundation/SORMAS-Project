@@ -178,7 +178,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				// Pull changed data and push existing data that has been changed on the mobile device
 				syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.SYNCHRONIZE));
 				synchronizeChangedData();
-				pushNewPullMissingAndDeleteInvalidData();
 
 				syncModeTrace.stop();
 				break;
