@@ -1166,7 +1166,7 @@
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-structures-r4</artifactId>
-				<version>6.6.2</version>
+				<version>6.8.2</version>
 				<scope>compile</scope>
 				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
 				<exclusions>
