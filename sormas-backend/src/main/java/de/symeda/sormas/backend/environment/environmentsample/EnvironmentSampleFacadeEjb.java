@@ -253,6 +253,7 @@ public class EnvironmentSampleFacadeEjb
 		}
 
 		target.setEnvironment(environmentService.getByReferenceDto(source.getEnvironment()));
+		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
@@ -291,6 +292,7 @@ public class EnvironmentSampleFacadeEjb
 		DtoHelper.fillDto(target, source);
 
 		target.setEnvironment(EnvironmentFacadeEjb.toReferenceDto(source.getEnvironment()));
+		target.setReportDate(source.getReportDate());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
