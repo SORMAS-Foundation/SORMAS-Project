@@ -26,6 +26,16 @@ public class EditSharesPage {
   public static final By SHARE_UUID_CASE_TITLE =
       By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
   public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");
+  public static final By SHARE_REQUEST_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By CLOSE_SHARE_REQUEST_DETAILS = By.cssSelector(".v-window-closebox");
+  public static final By STATUS_COMBOBOX = By.cssSelector("#status div");
+  public static final By STATUS_HEADER = By.xpath("//tbody/tr[1]/td[8]");
+  public static final By SHARE_DIRECTORY_PAGE_APPLY_FILTER_BUTTON =
+      By.cssSelector("div#actionApplyFilters");
+  public static final By OUTGOING_OPTION =
+      By.xpath("//span[@class= 'v-radiobutton v-select-option']//label[text()='Ausgehend']");
+  public static final By INCOMING_OPTION =
+      By.xpath("//span[@class= 'v-radiobutton v-select-option']//label[text()='Eingehend']");
 
   public static By getActionRejectButtonByContactDescription(String description) {
     return By.xpath(
