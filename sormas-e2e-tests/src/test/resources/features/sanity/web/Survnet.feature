@@ -436,6 +436,25 @@ Feature: Survnet tests
     And I open SORMAS generated XML file for single case message
     Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file
 
+  @tmsLink=SORQA-1053
+  Scenario: Check Epidemiology data "Betreuung ... in Einrichtung" of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Care...In facility JA option
+    And I click on New Entry in Care...In Facility in Cases directory
+    Then I select "Unbekannt" option in Art der Aktivitat from Combobox in Care In facility form
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I click on save button from Epidemiological Data
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file
+
   @tmsLink=SORQA-1054
   Scenario: Check Current condition of person of case when sending from SORMAS to Meldesoftware [1]
     Given I log in as a Survnet

@@ -16124,6 +16124,10 @@
           "received" : {
             "type" : "boolean"
           },
+          "reportDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "reportingUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
@@ -16173,7 +16177,7 @@
             }
           }
         },
-        "required" : [ "environment", "laboratory", "reportingUser", "sampleDateTime", "sampleMaterial" ]
+        "required" : [ "environment", "laboratory", "reportDate", "reportingUser", "sampleDateTime", "sampleMaterial" ]
       },
       "EpiDataDto" : {
         "type" : "object",
