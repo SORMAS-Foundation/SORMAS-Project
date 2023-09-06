@@ -1223,7 +1223,6 @@ Feature: Sharing cases between environments tests
     And I select first created case for person from Cases list
     Then I check that Point Of Entry and Place Of Stay EINRICHTUNG information is correctly display on Edit case page
 
-
   @tmsLink=SORQA-1061 @env_s2s_1
   Scenario: S2S - Actions on Shares directory
     Given API: I create a new person with "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district
@@ -1240,5 +1239,41 @@ Feature: Sharing cases between environments tests
     Then I navigate to "s2s_2" environment in new driver tab
     Given I log in as a S2S
     And I click on the Shares button from navbar
+    Then I pick INCOMING tab on Share Directory page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    Then I check that message popup about Request in not yet accepted is appear
+    And I close share request details window
+    Then I accept first entity from table in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    Then I click on the Shares button from navbar
+    And I click the header UUID of column
+    Then I check that error not appear
+    Then I select German Status Dropdown to Accepted
+    And I check that Accepted status value is corresponding with entities
+    Then I select German Status Dropdown to Pending
+    And I check that Pending status value is corresponding with entities
+    And I pick OUTGOING tab on Share Directory page
+    Then I select German Status Dropdown to Accepted
+    And I check that Accepted status value is corresponding with entities
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    And I click on the Shares button from navbar
+    And I pick OUTGOING tab on Share Directory page
+    Then I select German Status Dropdown to Pending
+    And I check that Pending status value is corresponding with entities
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    And I click on the Shares button from navbar
+    And I pick OUTGOING tab on Share Directory page
+    Then I select German Status Dropdown to Rejected
+    And I check that Rejected status value is corresponding with entities
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    And I click on the Shares button from navbar
+    And I pick OUTGOING tab on Share Directory page
+    Then I select German Status Dropdown to Revoked
+    And I check that Revoked status value is corresponding with entities
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
