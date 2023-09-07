@@ -17751,6 +17751,9 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "personFacility" : {
+            "$ref" : "#/components/schemas/FacilityReferenceDto"
+          },
           "personFirstName" : {
             "type" : "string",
             "maxLength" : 255,
