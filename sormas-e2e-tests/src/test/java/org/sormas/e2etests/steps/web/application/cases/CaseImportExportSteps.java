@@ -186,7 +186,7 @@ public class CaseImportExportSteps implements En {
               "Cases Classification are not equal");
           softly.assertEquals(
               reader.getPointOfEntry(),
-              apiState.getCreatedCase().getPointOfEntryDetails(),
+              apiState.getCreatedCase().getPointOfEntry(),
               "Point of entries of case are not equal");
           softly.assertEquals(
               String.format(reader.getFirstName(), Locale.GERMAN),

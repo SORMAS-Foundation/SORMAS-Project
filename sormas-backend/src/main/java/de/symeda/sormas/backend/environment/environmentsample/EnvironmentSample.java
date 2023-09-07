@@ -57,6 +57,7 @@ public class EnvironmentSample extends DeletableAdo {
 	private static final long serialVersionUID = 7237701234186874155L;
 
 	private Environment environment;
+	private Date reportDate;
 	private User reportingUser;
 	private Date sampleDateTime;
 	private EnvironmentSampleMaterial sampleMaterial;
@@ -90,6 +91,16 @@ public class EnvironmentSample extends DeletableAdo {
 
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

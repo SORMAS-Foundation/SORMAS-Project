@@ -8,8 +8,10 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.backend.event.Event;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -238,11 +240,15 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		return cb.isFalse(root.get(Environment.DELETED));
 	}
 
+	public Predicate createActiveEnvironmentFilter(CriteriaBuilder cb, Path<Environment> root) {
+		return cb.and(cb.isFalse(root.get(Environment.ARCHIVED)), cb.isFalse(root.get(Environment.DELETED)));
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Environment> from) {
 
-		Predicate filter = createDefaultFilter(cb, from);
+		Predicate filter = createActiveEnvironmentFilter(cb, from);
 		if (getCurrentUser() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
 		}

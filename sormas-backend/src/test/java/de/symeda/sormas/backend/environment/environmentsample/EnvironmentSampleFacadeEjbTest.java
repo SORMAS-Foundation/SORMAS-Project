@@ -102,6 +102,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		// returned dto should match the one we sent
 		assertThat(createdDto.getUuid(), is(dto.getUuid()));
 		assertThat(createdDto.getEnvironment(), is(dto.getEnvironment()));
+		assertThat(createdDto.getReportDate(), is(dto.getReportDate()));
 		assertThat(createdDto.getReportingUser(), is(dto.getReportingUser()));
 		assertThat(createdDto.getSampleDateTime(), is(dto.getSampleDateTime()));
 		assertThat(createdDto.getSampleMaterial(), is(dto.getSampleMaterial()));
@@ -123,6 +124,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		// saved entity should match the dto we sent
 		assertThat(entity.getUuid(), is(dto.getUuid()));
 		assertThat(entity.getEnvironment().getUuid(), is(dto.getEnvironment().getUuid()));
+		assertThat(entity.getReportDate().getTime(), is(dto.getReportDate().getTime()));
 		assertThat(entity.getReportingUser().getUuid(), is(dto.getReportingUser().getUuid()));
 		assertThat(entity.getSampleDateTime().getTime(), is(dto.getSampleDateTime().getTime()));
 		assertThat(entity.getSampleMaterial(), is(dto.getSampleMaterial()));
@@ -171,6 +173,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(returnedDto.getUuid(), is(returnedDto.getUuid()));
 		assertThat(returnedDto.getEnvironment(), is(returnedDto.getEnvironment()));
+		assertThat(returnedDto.getReportDate(), is(returnedDto.getReportDate()));
 		assertThat(returnedDto.getReportingUser(), is(returnedDto.getReportingUser()));
 		assertThat(returnedDto.getSampleDateTime(), is(returnedDto.getSampleDateTime()));
 		assertThat(returnedDto.getSampleMaterial(), is(returnedDto.getSampleMaterial()));

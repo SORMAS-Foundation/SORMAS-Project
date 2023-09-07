@@ -84,6 +84,8 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -135,6 +137,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private UserService userService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private FacilityService facilityService;
 
 	@EJB
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
@@ -161,6 +165,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonLastName(source.getPersonLastName());
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonCountry(countryService.getByReferenceDto(source.getPersonCountry()));
+		target.setPersonFacility(facilityService.getByReferenceDto(source.getPersonFacility()));
 		target.setPersonSex(source.getPersonSex());
 		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());
@@ -310,6 +315,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonLastName(source.getPersonLastName());
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonCountry(CountryFacadeEjb.toReferenceDto(source.getPersonCountry()));
+		target.setPersonFacility(FacilityFacadeEjb.toReferenceDto(source.getPersonFacility()));
 		target.setPersonSex(source.getPersonSex());
 		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());

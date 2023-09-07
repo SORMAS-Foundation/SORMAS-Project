@@ -64,6 +64,8 @@ public interface FacilityFacade extends InfrastructureFacade<FacilityDto, Facili
 		FacilityType type,
 		boolean includeArchivedEntities);
 
+	FacilityReferenceDto getByAddress(String street, String postalCode, String city);
+
 	List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities);
 
 	boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids);
