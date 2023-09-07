@@ -307,7 +307,7 @@ EOF
   elif [[ ${MAC} = true ]]; then
       psql -p ${DB_PORT} -U postgres < setup.sql
   else
-    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
+    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/12/"
     echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
     read -r PSQL_DIR
     if [[ -z "${PSQL_DIR}" ]]; then
