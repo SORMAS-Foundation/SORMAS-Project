@@ -23,7 +23,7 @@ public interface ArchivableFacade {
 
 	void archive(String uuid);
 
-	List<ProcessedEntity> dearchive(String uuid);
+	ProcessedEntity dearchive(String uuid);
 
 	List<ProcessedEntity> archive(List<String> entityUuid);
 

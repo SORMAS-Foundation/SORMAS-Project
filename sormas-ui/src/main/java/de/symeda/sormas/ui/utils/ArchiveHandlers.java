@@ -131,7 +131,7 @@ public final class ArchiveHandlers {
 
 		@Override
 		public List<ProcessedEntity> dearchive(String entityUuid) {
-			return entityFacade.dearchive(entityUuid);
+			return Collections.singletonList(entityFacade.dearchive(entityUuid));
 		}
 
 		public List<ProcessedEntity> dearchive(List<String> entityUuids) {

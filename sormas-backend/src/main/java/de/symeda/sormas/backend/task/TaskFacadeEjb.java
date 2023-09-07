@@ -1066,12 +1066,8 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public List<ProcessedEntity> dearchive(String uuid) {
-		List<ProcessedEntity> processedTasks = new ArrayList<>();
-		dearchive(Collections.singletonList(uuid));
-		processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS));
-
-		return processedTasks;
+	public ProcessedEntity dearchive(String uuid) {
+		return dearchive(Collections.singletonList(uuid)).get(0);
 	}
 
 	@Override
