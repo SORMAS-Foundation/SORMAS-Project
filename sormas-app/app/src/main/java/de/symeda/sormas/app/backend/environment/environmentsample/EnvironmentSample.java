@@ -47,9 +47,13 @@ public class EnvironmentSample extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "environmentSamples";
 
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
 	public static final String WEATHER_CONDITIONS = "weatherConditions";
 	public static final String LOCATION = "location";
+	public static final String ENVIRONMENT = "environment";
+	public static final String DISPATCHED = "dispatched";
+	public static final String RECEIVED = "received";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "environment_id")
 	private Environment environment;
@@ -247,12 +251,18 @@ public class EnvironmentSample extends PseudonymizableAdo {
 	}
 
 	public void setRequestedPathogenTests(Set<Pathogen> requestedPathogenTests) {
-		this.requestedPathogenTests = requestedPathogenTests;
-		Gson gson = new Gson();
-		Type type = new TypeToken<List<String>>() {
-		}.getType();
+		if (requestedPathogenTests == null) {
+			this.requestedPathogenTests = null;
+			this.requestedPathogenTestsJson = null;
+		} else {
+			this.requestedPathogenTests = requestedPathogenTests;
+			Gson gson = new Gson();
+			Type type = new TypeToken<List<String>>() {
+			}.getType();
 
-		requestedPathogenTestsJson = gson.toJson(requestedPathogenTests.stream().map(CustomizableEnum::getValue).collect(Collectors.toSet()), type);
+			requestedPathogenTestsJson =
+					gson.toJson(requestedPathogenTests.stream().map(CustomizableEnum::getValue).collect(Collectors.toSet()), type);
+		}
 	}
 
 	public String getOtherRequestedPathogenTests() {

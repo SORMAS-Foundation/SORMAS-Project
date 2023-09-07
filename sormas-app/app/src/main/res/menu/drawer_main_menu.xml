@@ -87,25 +87,33 @@
             />
 
         <item
+            android:id="@+id/menu_item_environment_samples"
+            android:title="@string/main_menu_environment_samples"
+            android:textSize="16sp"
+            android:icon="@drawable/ic_drawer_environment_sample_blue_36dp"
+            android:orderInCategory="9"
+            />
+
+        <item
             android:id="@+id/menu_item_immunizations"
             android:title="@string/main_menu_immunizations"
             android:textSize="16sp"
             android:icon="@drawable/ic_baseline_sanitizer_36dp"
-            android:orderInCategory="9"
+            android:orderInCategory="10"
             />
 
         <item
             android:id="@+id/menu_item_campaigns"
             android:title="Campaigns"
             android:icon="@drawable/ic_drawer_campaigns_blue_36dp"
-            android:orderInCategory="10"
+            android:orderInCategory="11"
             />
 
         <item
             android:id="@+id/menu_item_reports"
             android:title="@string/main_menu_reports"
             android:icon="@drawable/ic_drawer_assessment_blue_36dp"
-            android:orderInCategory="11"
+            android:orderInCategory="12"
             />
 
     </group>
