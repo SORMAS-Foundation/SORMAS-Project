@@ -50,7 +50,6 @@ public class CaseApiService {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Case.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
-        .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(generateShortUUID())
         .reportDate(new Date())
@@ -134,7 +133,7 @@ public class CaseApiService {
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")
         .facilityType("HOSPITAL")
-        .pointOfEntryDetails("")
+        .pointOfEntry(null)
         .sharedToCountry(false)
         .nosocomialOutbreak(false)
         .quarantineOrderedVerbally(false)
@@ -258,7 +257,7 @@ public class CaseApiService {
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")
         .facilityType("HOSPITAL")
-        .pointOfEntryDetails("")
+        .pointOfEntry(null)
         .sharedToCountry(false)
         .nosocomialOutbreak(false)
         .quarantineOrderedVerbally(false)
@@ -351,6 +350,7 @@ public class CaseApiService {
         .caseOrigin("IN_COUNTRY")
         .facilityType("HOSPITAL")
         .pointOfEntryDetails("")
+        .pointOfEntry(null)
         .sharedToCountry(false)
         .nosocomialOutbreak(false)
         .quarantineOrderedVerbally(false)
@@ -379,6 +379,71 @@ public class CaseApiService {
                 put("GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN", true);
               }
             })
+        .build();
+  }
+
+  @SneakyThrows
+  public Case buildGeneratedCaseTypePointOfEntry(Person person, String region, String district) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+    return Case.builder()
+        .uuid(generateShortUUID())
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .diseaseDetails("Test Disease")
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
+        .reportDate(new Date())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
+        .caseClassification("NOT_CLASSIFIED")
+        .investigationStatus("PENDING")
+        .outcome("NO_OUTCOME")
+        .responsibleRegion(Region.builder().uuid(environmentManager.getRegionUUID(region)).build())
+        .responsibleDistrict(
+            District.builder().uuid(environmentManager.getDistrictUUID(district)).build())
+        .district(District.builder().uuid(environmentManager.getDistrictUUID(district)).build())
+        .region(Region.builder().uuid(environmentManager.getRegionUUID(region)).build())
+        .healthFacilityDetails("")
+        .healthConditions(
+            HealthConditions.builder()
+                .uuid(generateShortUUID())
+                .creationDate(new Date())
+                .changeDate(new Date())
+                .build())
+        .hospitalization(Hospitalization.builder().uuid(generateShortUUID()).build())
+        .epiData(
+            EpiData.builder()
+                .uuid(generateShortUUID())
+                .changeDate(new Date())
+                .creationDate(new Date())
+                .build())
+        .therapy(
+            Therapy.builder()
+                .uuid(generateShortUUID())
+                .changeDate(new Date())
+                .creationDate(new Date())
+                .build())
+        .portHealthInfo(
+            PortHealthInfo.builder()
+                .uuid(generateShortUUID())
+                .changeDate(new Date())
+                .creationDate(new Date())
+                .build())
+        .caseOrigin("POINT_OF_ENTRY")
+        .pointOfEntry(
+            PointOfEntryDetails.builder()
+                .uuid("SORMAS-CONSTID-OTHERS-AIRPORTX")
+                .pointOfEntryType("AIRPORT")
+                .build())
+        .pointOfEntryDetails("other")
         .build();
   }
 

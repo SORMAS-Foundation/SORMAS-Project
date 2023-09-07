@@ -51,6 +51,8 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	@NotNull
 	private EnvironmentReferenceDto environment;
 	@NotNull
+	private Date reportDate;
+	@NotNull
 	private UserReferenceDto reportingUser;
 	@NotNull
 	private Date sampleDateTime;
@@ -108,6 +110,7 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 
 		sample.setUuid(DataHelper.createUuid());
 		sample.setEnvironment(environment);
+		sample.setReportDate(new Date());
 		sample.setReportingUser(reportingUser);
 		sample.setSampleDateTime(new Date());
 		sample.setLocation(LocationDto.build());
@@ -121,6 +124,14 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 
 	public void setEnvironment(EnvironmentReferenceDto environment) {
 		this.environment = environment;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 	public UserReferenceDto getReportingUser() {

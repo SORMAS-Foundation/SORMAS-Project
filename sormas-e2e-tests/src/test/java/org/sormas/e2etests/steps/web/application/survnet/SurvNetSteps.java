@@ -14,6 +14,7 @@ import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSte
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.PreviousCovidInfectionIsKnownValue;
 import static org.sormas.e2etests.steps.web.application.cases.CaseReinfectionSteps.TheLastPositivePCRDetectionWasMoreThan3MonthsAgo;
 import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.survnetCase;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.dateOfDeath;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.externalUUID;
 import static org.sormas.e2etests.steps.web.application.cases.HospitalizationTabSteps.*;
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.previousHospitalization;
@@ -23,6 +24,8 @@ import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVac
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 import cucumber.api.java8.En;
+
+import java.io.File;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
@@ -88,6 +92,13 @@ public class SurvNetSteps implements En {
               LocalDate expectedVaccinationDate = vaccination.getVaccinationDate();
               softly.assertEquals(
                   vaccinationDate, expectedVaccinationDate, "Vaccination date is incorrect!");
+              softly.assertAll();
+              break;
+            case "date of death":
+              softly.assertEquals(
+                  getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "DeceasedDate"),
+                  dateOfDeath,
+                  "Date of Death is incorrect!");
               softly.assertAll();
               break;
           }
@@ -771,11 +782,21 @@ public class SurvNetSteps implements En {
     And(
         "^I open SORMAS generated XML file for single case message$",
         () -> {
+          String uuid = externalUUID.get(0).substring(1, 37);
+          System.out.println("Searching for UUID -> " + uuid);
           singleXmlFile =
               XMLParser.getDocument(
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + externalUUID.get(0).substring(1, 37)
                       + ".xml");
+          System.out.println("Copy XML file to project !");
+          FileUtils.copyFile(new File("/srv/dockerdata/jenkins_new/sormas-files/case_"
+                  + externalUUID.get(0).substring(1, 37)
+                  + ".xml"),
+                  new File("sormas-e2e-tests/target"));
+          System.out.println("Printing files from dockerdata");
+          log.info("Print Opened XML");
+       XMLParser.printDocumentContent(singleXmlFile);
         });
 
     And(
@@ -859,6 +880,16 @@ public class SurvNetSteps implements En {
               getGuidRecord(singleXmlFile, 0),
               EditEventSteps.externalEventUUID.get(0).substring(1, 37),
               "External event UUID is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check if Cause of Death status is correctly setting in SORMAS generated XML file is correct$",
+        () -> {
+          softly.assertEquals(
+              getValueFromSpecificFieldByName(singleXmlFile, "DeceasedReason"),
+              "1",
+              "Deceased reason is not set correct!");
           softly.assertAll();
         });
 
@@ -1046,6 +1077,27 @@ public class SurvNetSteps implements En {
                   getValueFromSpecificFieldByName(singleXmlFile, "P112Setting"),
                   "2000",
                   "Mapped value for Stationär is incorrect ");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    Then(
+        "^I check if the present condition status \"([^\"]*)\" is correctly mapped in SORMAS generated single XML file$",
+        (String presentConditionOption) -> {
+          switch (presentConditionOption) {
+            case "Lebendig":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "StatusDeceased"),
+                  "10",
+                  "Mapped value for Present condition is incorrect");
+              softly.assertAll();
+              break;
+            case "Verstorben":
+              softly.assertEquals(
+                  getValueFromSpecificFieldByName(singleXmlFile, "StatusDeceased"),
+                  "20",
+                  "Mapped value for Present condition is incorrect");
               softly.assertAll();
               break;
           }

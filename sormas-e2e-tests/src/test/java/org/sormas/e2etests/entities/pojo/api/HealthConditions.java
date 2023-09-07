@@ -18,6 +18,7 @@
 package org.sormas.e2etests.entities.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Date;
 import lombok.*;
 import lombok.Builder;
 import lombok.Value;
@@ -29,7 +30,7 @@ import lombok.Value;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class HealthConditions {
   Boolean pseudonymized;
-  Long changeDate;
-  Long creationDate;
+  Date changeDate;
+  Date creationDate;
   String uuid;
 }

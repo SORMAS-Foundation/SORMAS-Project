@@ -18,6 +18,7 @@
 package org.sormas.e2etests.entities.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Date;
 import java.util.List;
 import lombok.*;
 import lombok.Builder;
@@ -31,8 +32,8 @@ import lombok.Value;
 public class EpiData {
   List<Object> exposures;
   Boolean pseudonymized;
-  Long changeDate;
+  Date changeDate;
   List<Object> activitiesAsCase;
-  Long creationDate;
+  Date creationDate;
   String uuid;
 }

@@ -62,6 +62,7 @@ public class Case {
   MaternalHistory maternalHistory;
   String facilityType;
   String pointOfEntryDetails;
+  PointOfEntryDetails pointOfEntry;
   Boolean sharedToCountry;
   Boolean nosocomialOutbreak;
   Boolean quarantineOrderedVerbally;
