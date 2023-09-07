@@ -75,7 +75,7 @@
     <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">Nová udalost</string>
     <string name="action_new_sample">Nový vzorek</string>
-    <string name="action_new_environment_sample">New Environment Sample</string>
+    <string name="action_new_environment_sample">Nový vzorek prostředí</string>
     <string name="action_new_task">Nový úkol</string>
     <string name="action_not_executable">Nevykonatelný</string>
     <string name="action_ok">OK</string>
@@ -387,7 +387,7 @@
     <string name="heading_sample_read">Číst vzorek</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
-    <string name="heading_environment_sample_list">Environment Sample Listing</string>
+    <string name="heading_environment_sample_list">Seznam vzorků prostředí</string>
     <string name="heading_environment_list">Environment Listing</string>
     <string name="heading_environment_edit">Edit Environment</string>
     <string name="heading_environment_new">New Environment</string>
@@ -514,7 +514,7 @@
     <string name="main_menu_reports">Zprávy</string>
     <string name="main_menu_samples">Vzorky</string>
     <string name="main_menu_environments">Environments</string>
-    <string name="main_menu_environment_samples">Environment Samples</string>
+    <string name="main_menu_environment_samples">Vzorky prostředí</string>
     <string name="main_menu_immunizations">Imunizace</string>
     <string name="main_menu_settings">Nastavení</string>
     <string name="main_menu_tasks">Úkoly</string>
@@ -681,5 +681,5 @@
     <string name="value_vaccine_date_unknown">Datum očkování N/A</string>
     <string name="value_vaccine_name_unknown">Očkovací látka N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Výrobce N/A</string>
-    <string name="value_environment_name_unknown">Environment Name N/A</string>
+    <string name="value_environment_name_unknown">Název prostředí není k dispozici</string>
 </resources>
