@@ -75,6 +75,7 @@
     <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">Nouvel événement</string>
     <string name="action_new_sample">Nouvel échantillon</string>
+    <string name="action_new_environment_sample">New Environment Sample</string>
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
@@ -386,6 +387,7 @@
     <string name="heading_sample_read">Lire l\'échantillon</string>
     <string name="heading_sample_summary">Résumé de l\'échantillon</string>
     <string name="heading_samples_list">Liste d\'échantillons</string>
+    <string name="heading_environment_sample_list">Environment Sample Listing</string>
     <string name="heading_environment_list">Environment Listing</string>
     <string name="heading_environment_edit">Edit Environment</string>
     <string name="heading_environment_new">New Environment</string>
@@ -512,6 +514,7 @@
     <string name="main_menu_reports">Rapports</string>
     <string name="main_menu_samples">Échantillons</string>
     <string name="main_menu_environments">Environments</string>
+    <string name="main_menu_environment_samples">Environment Samples</string>
     <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Paramètres</string>
     <string name="main_menu_tasks">Tâches</string>
@@ -678,4 +681,5 @@
     <string name="value_vaccine_date_unknown">Date de vaccination N/A</string>
     <string name="value_vaccine_name_unknown">Vaccin N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Fabricant N/A</string>
+    <string name="value_environment_name_unknown">Environment Name N/A</string>
 </resources>
