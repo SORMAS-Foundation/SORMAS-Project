@@ -216,7 +216,7 @@ public class ImmunizationController {
 			null,
 			UserRight.IMMUNIZATION_DELETE,
 			UserRight.IMMUNIZATION_ARCHIVE,
-			null,
+			FacadeProvider.getImmunizationFacade().getEditPermissionType(immunizationDto.getUuid()),
 			immunizationDto.isInJurisdiction());
 
 		return editComponent;
