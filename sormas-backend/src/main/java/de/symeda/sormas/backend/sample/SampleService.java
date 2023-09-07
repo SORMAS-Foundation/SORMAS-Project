@@ -1168,7 +1168,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			caseFacade.onCaseSampleChanged(associatedCase);
 		}
 
-		sampleUuids.forEach(uuid -> processedSamples.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+		processedSamples.addAll(buildProcessedEntities(sampleUuids, ProcessedEntityStatus.SUCCESS));
+
 		return processedSamples;
 	}
 

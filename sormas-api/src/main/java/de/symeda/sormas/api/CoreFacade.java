@@ -34,7 +34,7 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	DeletionInfoDto getManuallyDeletionInfo(String uuid);
 
-	void archive(String entityUuid, Date endOfProcessingDate);
+	ProcessedEntity archive(String entityUuid, Date endOfProcessingDate);
 
 	List<ProcessedEntity> archive(List<String> entityUuid);
 

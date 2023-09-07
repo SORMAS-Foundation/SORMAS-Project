@@ -354,22 +354,33 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
+		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
+
 		linkEventsToGroups(
-			eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-			Collections.singletonList(eventGroupReference.getUuid()));
+			eventUuids,
+			Collections.singletonList(eventGroupReference.getUuid()),
+			getAlreadyLinkedEventUuidsToGroup(eventUuids, Collections.singletonList(eventGroupReference.getUuid())));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences) {
+
 		linkEventsToGroups(
 			Collections.singletonList(eventReference.getUuid()),
-			eventGroupReferences.stream().map(EventGroupReferenceDto::getUuid).collect(Collectors.toList()));
+			eventGroupReferences.stream().map(EventGroupReferenceDto::getUuid).collect(Collectors.toList()),
+			getAlreadyLinkedEventUuidsToGroup(
+				Collections.singletonList(eventReference.getUuid()),
+				eventGroupReferences.stream().map(EventGroupReferenceDto::getUuid).collect(Collectors.toList())));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
-	public List<ProcessedEntity> linkEventsToGroups(List<String> eventUuids, List<String> eventGroupUuids) {
+	public List<ProcessedEntity> linkEventsToGroups(
+		List<String> eventUuids,
+		List<String> eventGroupUuids,
+		List<String> alreadyLinkedEventUuidsToGroup) {
+
 		if (CollectionUtils.isEmpty(eventGroupUuids) || CollectionUtils.isEmpty(eventUuids)) {
 			return new ArrayList<>();
 		}
@@ -382,8 +393,13 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		List<ProcessedEntity> processedEvents = new ArrayList<>();
 		for (Event event : events) {
 			try {
-				linkEventToGroup(event, currentUser, eventGroups);
-				processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.SUCCESS));
+				if (!alreadyLinkedEventUuidsToGroup.contains(event.getUuid())) {
+					linkEventToGroup(event, currentUser, eventGroups);
+					processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} else {
+					processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+				}
+
 			} catch (AccessDeniedException e) {
 				processedEvents.add(new ProcessedEntity(event.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 				logger.error("The event with uuid {} could not be linked due to an AccessDeniedException", event.getUuid(), e);
@@ -392,6 +408,14 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 				logger.error("The event with uuid {} could not be linked due to an AccessDeniedException", event.getUuid(), e);
 			}
 		}
+
+		Set<String> linkedEventUuids = processedEvents.stream()
+			.filter(event -> event.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toSet());
+
+		notifyEventAddedToEventGroup(eventGroupUuids.get(0), linkedEventUuids);
+
 		return processedEvents;
 	}
 
@@ -418,30 +442,19 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		}
 	}
 
-	public List<EventReferenceDto> getEligibleEventUuidsToBeLinkedToGroup(List<String> eventUuids, List<String> ineligibleEventUuids) {
-		List<String> eligibleEventUuids = ineligibleEventUuids.size() > 0
-			? eventUuids.stream().filter(uuid -> !ineligibleEventUuids.contains(uuid)).collect(Collectors.toCollection(ArrayList::new))
-			: eventUuids;
-
-		List<EventReferenceDto> eligibleEventReferences = new ArrayList<>();
-		eligibleEventUuids.forEach(uuid -> eligibleEventReferences.add(new EventReferenceDto(uuid)));
-
-		return eligibleEventReferences;
-	}
-
-	public List<EventReferenceDto> getIneligibleEventUuidsToBeLinkedToGroup(List<String> eventUuids, List<String> eventGroupUuids) {
+	public List<String> getAlreadyLinkedEventUuidsToGroup(List<String> eventUuids, List<String> eventGroupUuids) {
 		List<Event> events = eventService.getByUuids(eventUuids);
 		List<EventGroup> eventGroups = eventGroupService.getByUuids(eventGroupUuids);
 
 		List<EventGroup> filteredEventGroups;
-		List<EventReferenceDto> inEligibleEventReferences = new ArrayList<>();
+		List<String> alreadyLinkedEventUuids = new ArrayList<>();
 		for (Event event : events) {
 			filteredEventGroups = getFilteredEventGroups(event, eventGroups);
 			if (filteredEventGroups.isEmpty()) {
-				inEligibleEventReferences.add(new EventReferenceDto(event.getUuid()));
+				alreadyLinkedEventUuids.add(event.getUuid());
 			}
 		}
-		return inEligibleEventReferences;
+		return alreadyLinkedEventUuids;
 	}
 
 	public List<EventGroup> getFilteredEventGroups(Event event, List<EventGroup> eventGroups) {

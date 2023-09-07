@@ -645,8 +645,8 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override

@@ -54,6 +54,8 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
+	ProcessedEntity dearchive(String entityUuid, String dearchiveReason);
+
 	boolean doesExternalTokenExist(String externalToken, String eventUuid);
 
 	String getUuidByCaseUuidOrPersonUuid(String value);

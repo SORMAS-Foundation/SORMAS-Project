@@ -49,7 +49,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
-import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
@@ -295,15 +294,8 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	@Override
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(Collections.singletonList(entityUuid), true);
-		List<String> remainingUuidsToBeProcessed = getEntitiesToBeProcessed(Collections.singletonList(entityUuid), processedEvents).stream()
-			.map(event -> event.getUuid())
-			.collect(Collectors.toList());
-
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			super.archive(entityUuid, endOfProcessingDate);
-		}
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return archive(Collections.singletonList(entityUuid)).get(0);
 	}
 
 	@Override
@@ -314,8 +306,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
 
 		if (remainingUuidsToBeProcessed.size() > 0) {
-			super.archive(remainingUuidsToBeProcessed);
-			processedEvents.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+			processedEvents.addAll(super.archive(remainingUuidsToBeProcessed));
 		}
 
 		return processedEvents;
@@ -329,14 +320,13 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
 
 		if (remainingUuidsToBeProcessed.size() > 0) {
-			super.dearchive(remainingUuidsToBeProcessed, dearchiveReason);
-			processedEvents.addAll(buildProcessedEntities(remainingUuidsToBeProcessed, ProcessedEntityStatus.SUCCESS));
+			processedEvents.addAll(super.dearchive(remainingUuidsToBeProcessed, dearchiveReason));
 		}
 
 		return processedEvents;
 	}
 
-	public List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
+	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 
 		List<String> sharedEventUuids = getSharedEventUuids(entityUuids);

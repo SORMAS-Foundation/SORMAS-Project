@@ -115,7 +115,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
 
 		if (endOfProcessingDate == null) {
 			endOfProcessingDate = calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
@@ -132,6 +132,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 		cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
 
 		em.createQuery(cu).executeUpdate();
+
+		return new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -154,7 +156,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 				em.createQuery(cu).executeUpdate();
 			}));
 
-		entityUuids.forEach(uuid -> processedEntities.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
 
 		return processedEntities;
 	}
@@ -176,7 +178,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 			em.createQuery(cu).executeUpdate();
 		});
-		entityUuids.forEach(uuid -> processedEntities.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+
+		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
 
 		return processedEntities;
 	}
@@ -215,13 +218,6 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 		List<ADO> entities = getByUuids(entityUuids);
 		return entities.stream().filter(entity -> !failedUuids.contains(entity.getUuid())).collect(Collectors.toList());
-	}
-
-	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, ProcessedEntityStatus processedEntityStatus) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-		entityUuids.forEach(entityUuid -> processedEntities.add(new ProcessedEntity(entityUuid, processedEntityStatus)));
-
-		return processedEntities;
 	}
 
 	/**

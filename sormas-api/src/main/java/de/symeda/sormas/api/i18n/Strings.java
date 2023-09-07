@@ -384,6 +384,7 @@ public interface Strings {
 	String ExternalSurveillanceToolGateway_notificationEntryNotDeleted = "ExternalSurveillanceToolGateway.notificationEntryNotDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntryNotSent = "ExternalSurveillanceToolGateway.notificationEntryNotSent";
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
+	String ExternalSurveillanceToolGateway_notificationErrorArchiving = "ExternalSurveillanceToolGateway.notificationErrorArchiving";
 	String ExternalSurveillanceToolGateway_notificationErrorDeleting = "ExternalSurveillanceToolGateway.notificationErrorDeleting";
 	String ExternalSurveillanceToolGateway_notificationErrorSending = "ExternalSurveillanceToolGateway.notificationErrorSending";
 	String ExternalSurveillanceToolGateway_sharedAt = "ExternalSurveillanceToolGateway.sharedAt";

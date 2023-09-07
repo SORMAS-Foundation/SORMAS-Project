@@ -45,6 +45,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -69,16 +70,16 @@ public final class ArchiveHandlers {
 		return new CaseArchiveHandler();
 	}
 
+	public static EventArchiveHandler forEvent() {
+		return new EventArchiveHandler();
+	}
+
 	public static CoreEntityArchiveHandler<ContactDto, ContactFacade> forContact() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getContactFacade(), ArchiveMessages.CONTACT);
 	}
 
 	public static CoreEntityArchiveHandler<EnvironmentDto, EnvironmentFacade> forEnvironment() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getEnvironmentFacade(), ArchiveMessages.ENVIRONMENT);
-	}
-
-	public static CoreEntityArchiveHandler<EventDto, EventFacade> forEvent() {
-		return new CoreEntityArchiveHandler<>(FacadeProvider.getEventFacade(), ArchiveMessages.EVENT);
 	}
 
 	public static CoreEntityArchiveHandler<EventParticipantDto, EventParticipantFacade> forEventParticipant() {
@@ -179,7 +180,11 @@ public final class ArchiveHandlers {
 
 		@Override
 		public void archive(String entityUuid) {
-			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+			try {
+				entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+			} catch (ExternalSurveillanceToolRuntimeException e) {
+				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			}
 		}
 
 		@Override
@@ -236,6 +241,27 @@ public final class ArchiveHandlers {
 		}
 	}
 
+	private static final class EventArchiveHandler extends CoreEntityArchiveHandler<EventDto, EventFacade> {
+
+		private EventArchiveHandler() {
+			super(FacadeProvider.getEventFacade(), ArchiveMessages.EVENT);
+		}
+
+		@Override
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities = new ArrayList<>();
+			try {
+				processedEntities = Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue()));
+			} catch (ExternalSurveillanceToolRuntimeException e) {
+				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			}
+
+			return processedEntities;
+
+		}
+
+	}
+
 	private static final class CaseArchiveHandler extends CoreEntityArchiveHandler<CaseDataDto, CaseFacade> {
 
 		private CheckBox archiveWithContacts;
@@ -246,12 +272,24 @@ public final class ArchiveHandlers {
 
 		@Override
 		public void archive(String entityUuid) {
-			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
+			try {
+				entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
+			} catch (ExternalSurveillanceToolRuntimeException e) {
+				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			}
 		}
 
 		@Override
 		public List<ProcessedEntity> dearchive(String entityUuid) {
-			return entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue(), archiveWithContacts.getValue());
+			List<ProcessedEntity> processedEntities = new ArrayList<>();
+			try {
+				processedEntities =
+					Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue(), archiveWithContacts.getValue()));
+			} catch (ExternalSurveillanceToolRuntimeException e) {
+				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			}
+
+			return processedEntities;
 		}
 
 		@Override

@@ -85,13 +85,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		List<ProcessedEntity> processedCases = new ArrayList<>();
 		try {
 			doSendCases(caseUuids, false);
-			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.SUCCESS));
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.SUCCESS));
 		} catch (AccessDeniedException e) {
-			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 		} catch (ExternalSurveillanceToolException e) {
-			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 		} catch (Exception e) {
-			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
 		}
 		return processedCases;
 	}
@@ -103,14 +103,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		if (isFeatureEnabled()) {
 			try {
 				doSendCases(caseUuids, archived);
-				processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.SUCCESS));
+				processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.SUCCESS));
 			} catch (ExternalSurveillanceToolException e) {
-				processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+				processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 			} catch (AccessDeniedException e) {
-				processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}
 		} else {
-			processedCases.addAll(buildProcessedEntitiesListByStatus(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 		}
 
 		return processedCases;
@@ -134,13 +134,13 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		List<ProcessedEntity> processedEvents = new ArrayList<>();
 		try {
 			doSendEvents(eventUuids, false);
-			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.SUCCESS));
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.SUCCESS));
 		} catch (AccessDeniedException e) {
-			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 		} catch (ExternalSurveillanceToolException e) {
-			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 		} catch (Exception e) {
-			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
 		}
 		return processedEvents;
 	}
@@ -152,26 +152,17 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		if (isFeatureEnabled()) {
 			try {
 				doSendEvents(eventUuids, archived);
-				processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.SUCCESS));
+				processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.SUCCESS));
 			} catch (ExternalSurveillanceToolException e) {
-				processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+				processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 			} catch (AccessDeniedException e) {
-				processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}
 		} else {
-			processedEvents.addAll(buildProcessedEntitiesListByStatus(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
 		}
 
 		return processedEvents;
-	}
-
-	private List<ProcessedEntity> buildProcessedEntitiesListByStatus(List<String> uuids, ProcessedEntityStatus processedEntityStatus) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
-
-		//if for one entity occurs a type of exception (AccessDenied or ExternalSurveillanceTool) that exception will occur for the whole batch
-		uuids.forEach(uuid -> processedEntities.add(new ProcessedEntity(uuid, processedEntityStatus)));
-
-		return processedEntities;
 	}
 
 	private void doSendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {

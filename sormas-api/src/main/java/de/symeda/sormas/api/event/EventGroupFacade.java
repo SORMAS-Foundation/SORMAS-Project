@@ -60,7 +60,7 @@ public interface EventGroupFacade {
 
 	void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
 
-	List<ProcessedEntity> linkEventsToGroups(List<String> eventUuids, List<String> eventGroupReferences);
+	List<ProcessedEntity> linkEventsToGroups(List<String> eventUuids, List<String> eventGroupReferences, List<String> alreadyLinkedEventUuidsToGroup);
 
 	void unlinkEventGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference);
 
@@ -78,7 +78,5 @@ public interface EventGroupFacade {
 
 	void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
 
-	List<EventReferenceDto> getEligibleEventUuidsToBeLinkedToGroup(List<String> eventUuids, List<String> ineligibleEventUuids);
-
-	List<EventReferenceDto> getIneligibleEventUuidsToBeLinkedToGroup(List<String> eventUuids, List<String> eventGroupUuids);
+	List<String> getAlreadyLinkedEventUuidsToGroup(List<String> eventUuids, List<String> eventGroupUuids);
 }

@@ -777,7 +777,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 		em.createQuery(cu).executeUpdate();
 
-		taskUuids.forEach(uuid -> processedTasks.add(new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS)));
+		processedTasks.addAll(buildProcessedEntities(taskUuids, ProcessedEntityStatus.SUCCESS));
 
 		return processedTasks;
 	}

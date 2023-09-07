@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.events;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -39,7 +38,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
@@ -77,15 +75,8 @@ public class EventGroupController {
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 		List<String> eventGroupUuids = Collections.singletonList(eventGroupReference.getUuid());
 
-		List<EventReferenceDto> alreadyLinkedEventsToGroup =
-			FacadeProvider.getEventGroupFacade().getIneligibleEventUuidsToBeLinkedToGroup(eventUuids, eventGroupUuids);
-
-		List<EventReferenceDto> eligibleEventReferences = FacadeProvider.getEventGroupFacade()
-			.getEligibleEventUuidsToBeLinkedToGroup(
-				eventUuids,
-				alreadyLinkedEventsToGroup.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()));
-
-		List<String> eligibleEventUuids = eligibleEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
+		List<String> alreadyLinkedEventUuidsToGroup =
+			FacadeProvider.getEventGroupFacade().getAlreadyLinkedEventUuidsToGroup(eventUuids, eventGroupUuids);
 
 		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
 		new BulkOperationHandler<EventReferenceDto>(
@@ -99,21 +90,15 @@ public class EventGroupController {
 			Strings.messageCountEventsNotLinkedAccessDeniedReason,
 			Strings.messageAllEventsAlreadyLinkedToGroup,
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
-			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
-
-				List<String> eligibleEventUuidsFromBatch = batch.stream()
-					.filter(eventReference -> eligibleEventUuids.contains(eventReference.getUuid()))
-					.map(EventReferenceDto::getUuid)
-					.collect(Collectors.toList());
-
-				List<ProcessedEntity> processedEvents =
-					FacadeProvider.getEventGroupFacade().linkEventsToGroups(eligibleEventUuidsFromBatch, eventGroupUuids);
-
-				FacadeProvider.getEventGroupFacade()
-					.notifyEventAddedToEventGroup(eventGroupReference.getUuid(), new HashSet<>(eligibleEventUuidsFromBatch));
-
-				return processedEvents;
-			}, new ArrayList<>(eventReferences), callback);
+			Strings.infoBulkProcessFinishedWithoutSuccess)
+				.doBulkOperation(
+					batch -> FacadeProvider.getEventGroupFacade()
+						.linkEventsToGroups(
+							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+							eventGroupUuids,
+							alreadyLinkedEventUuidsToGroup),
+					new ArrayList<>(eventReferences),
+					callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {

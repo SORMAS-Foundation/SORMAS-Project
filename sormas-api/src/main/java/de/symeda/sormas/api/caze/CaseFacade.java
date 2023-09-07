@@ -220,6 +220,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<ProcessedEntity> archive(List<String> entityUuids, boolean includeContacts);
 
+	ProcessedEntity dearchive(String entityUuid, String dearchiveReason, boolean includeContacts);
+
 	List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 
 	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
