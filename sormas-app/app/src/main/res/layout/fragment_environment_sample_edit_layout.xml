@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="contentDescription"
+    android:descendantFocusability="beforeDescendants"
+    android:id="@+id/base_layout">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial" />
+        <import type="de.symeda.sormas.api.environment.environmentsample.WeatherCondition" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample"/>
+        <variable name="weatherConditionClass" type="Class&lt;WeatherCondition&gt;" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/main_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/laboratory_sample_layout">
+
+                <requestFocus/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_laboratory_sample"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/environmentSample_uuid"
+                    app:value="@{data.uuid}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/environment_environmentName"
+                    app:value="@{data.environment.environmentName}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/environmentSample_reportDate"
+                        app:value="@{data.reportDate}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/environmentSample_reportingUser"
+                        app:value="@{data.reportingUser}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlDateTimeField
+                        android:id="@+id/environmentSample_sampleDateTime"
+                        app:dateHint="@string/caption_date_of_sampling"
+                        app:timeHint="@string/caption_time_of_sampling"
+                        app:required="true"
+                        app:value="@={data.sampleDateTime}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/environmentSample_fieldSampleId"
+                        app:value="@={data.fieldSampleId}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/environmentSample_sampleMaterial"
+                        app:required="true"
+                        app:value="@={data.sampleMaterial}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/environmentSample_otherSampleMaterial"
+                        app:required="true"
+                        app:value="@={data.otherSampleMaterial}"
+                        app:dependencyParentField="@{environmentSampleSampleMaterial}"
+                        app:dependencyParentValue="@{EnvironmentSampleMaterial.OTHER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/fragment_padding"
+                android:paddingRight="@dimen/fragment_padding"
+                android:paddingBottom="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/sample_measurements_layout">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_sample_measurements"
+                    style="@style/SubHeadingStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/environmentSample_sampleVolume"
+                        app:value="@={data.sampleVolume}"
+                        app:inputType="numberDecimal"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/environmentSample_turbidity"
+                        app:value="@={data.turbidity}"
+                        app:inputType="number"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/environmentSample_sampleTemperature"
+                        app:value="@={data.sampleTemperature}"
+                        app:inputType="number"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/environmentSample_chlorineResiduals"
+                        app:value="@={data.chlorineResiduals}"
+                        app:inputType="numberDecimal"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/environmentSample_phValue"
+                    app:value="@={data.phValue}"
+                    app:inputType="number"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupFieldForMap
+                    android:id="@+id/environmentSample_weatherConditions"
+                    app:enumClass="@{weatherConditionClass}"
+                    app:value="@={data.weatherConditions}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/environmentSample_heavyRain"
+                    app:value="@={data.heavyRain}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/fragment_padding"
+                android:paddingRight="@dimen/fragment_padding"
+                android:paddingBottom="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/location_sampling_site_layout">
+
+                <de.symeda.sormas.app.component.controls.ControlTextPopupField
+                    android:id="@+id/environmentSample_location"
+                    app:iconStart="@drawable/ic_edit_location_black_24dp"
+                    app:hint="@string/hint_enter_location"
+                    app:locationValue="@={data.location}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/fragment_padding"
+                android:paddingRight="@dimen/fragment_padding"
+                android:paddingBottom="@dimen/fragment_padding"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/sample_management_layout">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_sample_management"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
+                    android:id="@+id/environmentSample_laboratory"
+                    app:required="true"
+                    app:value="@={data.laboratory}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/environmentSample_laboratoryDetails"
+                    app:required="true"
+                    app:value="@={data.laboratoryDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxGroupField
+                    android:id="@+id/environmentSample_requestedPathogenTests"
+                    app:value="@={data.requestedPathogenTests}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTagViewField
+                    android:id="@+id/environmentSample_requestedPathogenTestsTags"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/environmentSample_otherRequestedPathogenTests"
+                    app:value="@={data.otherRequestedPathogenTests}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    style="@style/FullHorizontalDividerStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                        android:id="@+id/environmentSample_dispatched"
+                        app:value="@={data.dispatched}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/environmentSample_dispatchDate"
+                        app:value="@={data.dispatchDate}"
+                        app:dependencyParentField="@{environmentSampleDispatched}"
+                        app:dependencyParentValue="@{true}"
+                        app:allowedDaysInFuture="7"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/environmentSample_dispatchDetails"
+                    app:value="@={data.dispatchDetails}"
+                    app:dependencyParentField="@{environmentSampleDispatched}"
+                    app:dependencyParentValue="@{true}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextImageField
+                        android:id="@+id/environmentSample_received"
+                        app:receivedStatus="@{data}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/environmentSample_labSampleId"
+                        app:value="@{data.labSampleId}"
+                        app:dependencyParentField="@{environmentSampleDispatched}"
+                        app:dependencyParentValue="@{true}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/environmentSample_specimenCondition"
+                    app:value="@{data.specimenCondition}"
+                    app:dependencyParentField="@{environmentSampleReceived}"
+                    app:dependencyParentValue="@{true}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView
+                    style="@style/FullHorizontalDividerStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/environmentSample_generalComment"
+                    app:value="@={data.generalComment}"
+                    style="@style/ControlSingleColumnStyle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

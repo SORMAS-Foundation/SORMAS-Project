@@ -107,6 +107,7 @@
     <string name="action_save_event_participant">Save Event Participant</string>
     <string name="action_save_prescription">Save Prescription</string>
     <string name="action_save_sample">Save Sample</string>
+    <string name="action_save_environment_sample">Save Environment Sample</string>
     <string name="action_save_task">Save Task</string>
     <string name="action_save_treatment">Save Treatment</string>
     <string name="action_save_visit">Save Follow-up Visit</string>
@@ -174,6 +175,7 @@
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_report">Report</string>
     <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Description</string>
@@ -398,6 +400,8 @@
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sample_read">Read Sample</string>
     <string name="heading_environment_sample_read">Read Environment Sample</string>
+    <string name="heading_environment_sample_edit">Edit Environment Sample</string>
+    <string name="heading_environment_sample_new">New Environment Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
     <string name="heading_samples_list">Sample Listing</string>
     <string name="heading_environment_sample_list">Environment Sample Listing</string>

@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSam
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSampleEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.environmentsample.EnvironmentSampleSection;
+import de.symeda.sormas.app.environmentsample.edit.EnvironmentSampleEditActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -112,6 +113,6 @@ public class EnvironmentSampleReadActivity extends BaseReadActivity<EnvironmentS
 	@Override
 	public void goToEditView() {
 		EnvironmentSampleSection section = EnvironmentSampleSection.fromOrdinal(getActivePage().getPosition());
-		//EnvironmentSampleEditActivity.startActivity(getContext(), getRootUuid(), section);
+		EnvironmentSampleEditActivity.startActivity(getContext(), getRootUuid(), section);
 	}
 }

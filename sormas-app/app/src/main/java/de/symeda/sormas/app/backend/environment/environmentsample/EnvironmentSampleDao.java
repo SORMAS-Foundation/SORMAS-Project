@@ -12,6 +12,8 @@ import android.util.Log;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.location.Location;
 
 public class EnvironmentSampleDao extends AbstractAdoDao<EnvironmentSample> {
@@ -23,6 +25,21 @@ public class EnvironmentSampleDao extends AbstractAdoDao<EnvironmentSample> {
 	@Override
 	protected Class<EnvironmentSample> getAdoClass() {
 		return EnvironmentSample.class;
+	}
+
+	@Override
+	public EnvironmentSample build() {
+		throw new UnsupportedOperationException();
+	}
+
+	public EnvironmentSample build(Environment associatedEnvironment) {
+
+		EnvironmentSample sample = super.build();
+		sample.setEnvironment(associatedEnvironment);
+		sample.setReportDate(new Date());
+		sample.setReportingUser(ConfigProvider.getUser());
+		sample.setSampleDateTime(new Date());
+		return sample;
 	}
 
 	@Override
