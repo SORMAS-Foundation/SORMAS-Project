@@ -553,6 +553,9 @@ public interface Strings {
 	String headingEditVisit = "headingEditVisit";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEnvironmentJurisdictionUpdated = "headingEnvironmentJurisdictionUpdated";
+	String headingEnvironmentSamplesDeleted = "headingEnvironmentSamplesDeleted";
+	String headingEnvironmentSamplesRestored = "headingEnvironmentSamplesRestored";
+	String headingEnvironmentSomeSamplesNotRestored = "headingEnvironmentSomeSamplesNotRestored";
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
@@ -648,6 +651,7 @@ public interface Strings {
 	String headingNoCasesSelected = "headingNoCasesSelected";
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
+	String headingNoEnvironmentSamplesSelected = "headingNoEnvironmentSamplesSelected";
 	String headingNoEnvironmentSelected = "headingNoEnvironmentSelected";
 	String headingNoEventFound = "headingNoEventFound";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
@@ -733,6 +737,7 @@ public interface Strings {
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotDeleted = "headingSomeContactsNotDeleted";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
+	String headingSomeEnvironmentSamplesNotDeleted = "headingSomeEnvironmentSamplesNotDeleted";
 	String headingSomeEventParticipantsNotDeleted = "headingSomeEventParticipantsNotDeleted";
 	String headingSomeEventParticipantsNotRestored = "headingSomeEventParticipantsNotRestored";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
@@ -1111,6 +1116,7 @@ public interface Strings {
 	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
 	String messageCountContactsNotDeleted = "messageCountContactsNotDeleted";
 	String messageCountContactsNotRestored = "messageCountContactsNotRestored";
+	String messageCountEnvironmentSamplesNotDeleted = "messageCountEnvironmentSamplesNotDeleted";
 	String messageCountEventParticipantsNotDeleted = "messageCountEventParticipantsNotDeleted";
 	String messageCountEventParticipantsNotRestored = "messageCountEventParticipantsNotRestored";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
@@ -1148,10 +1154,15 @@ public interface Strings {
 	String messageEntriesEditedExceptArchived = "messageEntriesEditedExceptArchived";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEnvironmentArchived = "messageEnvironmentArchived";
+	String messageEnvironmentCountSamplesNotRestored = "messageEnvironmentCountSamplesNotRestored";
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
 	String messageEnvironmentJurisdictionUpdated = "messageEnvironmentJurisdictionUpdated";
 	String messageEnvironmentSampleOutsideJurisdictionDeletionDenied = "messageEnvironmentSampleOutsideJurisdictionDeletionDenied";
+	String messageEnvironmentSamplesDeleted = "messageEnvironmentSamplesDeleted";
+	String messageEnvironmentSamplesNotDeleted = "messageEnvironmentSamplesNotDeleted";
+	String messageEnvironmentSamplesNotRestored = "messageEnvironmentSamplesNotRestored";
+	String messageEnvironmentSamplesRestored = "messageEnvironmentSamplesRestored";
 	String messageEnvironmentSaved = "messageEnvironmentSaved";
 	String messageEpiDataHint = "messageEpiDataHint";
 	String messageEpidNumberWarning = "messageEpidNumberWarning";
@@ -1262,6 +1273,7 @@ public interface Strings {
 	String messageNoDocumentUploadFile = "messageNoDocumentUploadFile";
 	String messageNoEligibleEventForDeletionSelected = "messageNoEligibleEventForDeletionSelected";
 	String messageNoEndDate = "messageNoEndDate";
+	String messageNoEnvironmentSamplesSelected = "messageNoEnvironmentSamplesSelected";
 	String messageNoEnvironmentsSelected = "messageNoEnvironmentsSelected";
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
@@ -1501,6 +1513,19 @@ public interface Strings {
 	String promptEnvironmentLatTo = "promptEnvironmentLatTo";
 	String promptEnvironmentLonFrom = "promptEnvironmentLonFrom";
 	String promptEnvironmentLonTo = "promptEnvironmentLonTo";
+	String promptEnvironmentSampleDateFrom = "promptEnvironmentSampleDateFrom";
+	String promptEnvironmentSampleDateTo = "promptEnvironmentSampleDateTo";
+	String promptEnvironmentSampleDistrict = "promptEnvironmentSampleDistrict";
+	String promptEnvironmentSampleEpiWeekFrom = "promptEnvironmentSampleEpiWeekFrom";
+	String promptEnvironmentSampleEpiWeekTo = "promptEnvironmentSampleEpiWeekTo";
+	String promptEnvironmentSampleFreetext = "promptEnvironmentSampleFreetext";
+	String promptEnvironmentSampleLab = "promptEnvironmentSampleLab";
+	String promptEnvironmentSampleLatFrom = "promptEnvironmentSampleLatFrom";
+	String promptEnvironmentSampleLatTo = "promptEnvironmentSampleLatTo";
+	String promptEnvironmentSampleLonFrom = "promptEnvironmentSampleLonFrom";
+	String promptEnvironmentSampleLonTo = "promptEnvironmentSampleLonTo";
+	String promptEnvironmentSampleRegion = "promptEnvironmentSampleRegion";
+	String promptEnvironmentSampleTestedPathogen = "promptEnvironmentSampleTestedPathogen";
 	String promptEventDateFrom = "promptEventDateFrom";
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventDateType = "promptEventDateType";

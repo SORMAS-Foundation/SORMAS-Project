@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -47,7 +46,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 @SuppressWarnings("serial")
-public class SampleGridComponent extends VerticalLayout {
+public class HumanSampleGridComponent extends SampleGidComponent {
 
 	private static final String NOT_SHIPPED = "notShipped";
 	private static final String SHIPPED = "shipped";
@@ -56,7 +55,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 	private SampleCriteria criteria;
 
-	private SampleGrid grid;
+	private HumanSampleGrid grid;
 	private SamplesView samplesView;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -70,7 +69,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private Label viewTitleLabel;
 	private String originalViewTitle;
 
-	public SampleGridComponent(Label viewTitleLabel, SamplesView samplesView) {
+	public HumanSampleGridComponent(Label viewTitleLabel, SamplesView samplesView) {
 		setSizeFull();
 		setMargin(false);
 
@@ -85,7 +84,7 @@ public class SampleGridComponent extends VerticalLayout {
 		if (criteria.getSampleAssociationType() == null) {
 			criteria.sampleAssociationType(SampleAssociationType.ALL);
 		}
-		grid = new SampleGrid(criteria);
+		grid = new HumanSampleGrid(criteria);
 		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createShipmentFilterBar());
@@ -238,16 +237,6 @@ public class SampleGridComponent extends VerticalLayout {
 		return shipmentFilterLayout;
 	}
 
-	public void reload(ViewChangeEvent event) {
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-			criteria.fromUrlParams(params);
-		}
-		updateFilterComponents();
-		grid.reload();
-	}
-
 	private void styleGridLayout(VerticalLayout gridLayout) {
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
@@ -255,10 +244,12 @@ public class SampleGridComponent extends VerticalLayout {
 		gridLayout.setStyleName("crud-main-layout");
 	}
 
-	public SampleGrid getGrid() {
+	@Override
+	public HumanSampleGrid getGrid() {
 		return grid;
 	}
 
+	@Override
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		samplesView.setApplyingCriteria(true);
@@ -338,10 +329,12 @@ public class SampleGridComponent extends VerticalLayout {
 		}
 	}
 
+	@Override
 	public MenuBar getBulkOperationsDropdown() {
 		return bulkOperationsDropdown;
 	}
 
+	@Override
 	public SampleCriteria getCriteria() {
 		return criteria;
 	}
