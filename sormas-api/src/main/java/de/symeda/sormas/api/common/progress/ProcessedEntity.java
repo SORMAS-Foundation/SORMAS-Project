@@ -2,6 +2,9 @@ package de.symeda.sormas.api.common.progress;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.audit.AuditedClass;
+
+@AuditedClass
 public class ProcessedEntity implements Serializable {
 
 	String entityUuid;
