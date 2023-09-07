@@ -788,7 +788,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>5.6.15.Final</version>
+				<version>6.3.0.Final</version>
 				<scope>provided</scope>
 				<exclusions>
 					<!-- Exclude Payara modules here -->
