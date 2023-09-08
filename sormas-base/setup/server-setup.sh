@@ -301,19 +301,32 @@ CREATE EXTENSION IF NOT EXISTS unaccent;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
 EOF
 
+PostgreSQL_VERSION = psql --version 2>&1 | sed 's/psql (PostgreSQL) / /;s/\..*$//'
   if [[ ${LINUX} = true ]]; then
     # no host is specified as by default the postgres user has only local access
+    if [ PostgreSQL_VERSION < 12]; then
+        echo "ERROR: Found Database server ${PostgreSQL_VERSION}  This version is too old."
+	      exit 1
+    fi
     su postgres -c "psql -p ${DB_PORT} < setup.sql"
   elif [[ ${MAC} = true ]]; then
+      if [ PostgreSQL_VERSION < 12]; then
+          echo "ERROR: Found Database server ${PostgreSQL_VERSION}  This version is too old."
+          exit 1
+      fi
       psql -p ${DB_PORT} -U postgres < setup.sql
   else
-    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/12/"
+    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/14/"
     echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
     read -r PSQL_DIR
     if [[ -z "${PSQL_DIR}" ]]; then
       PSQL_DIR="${PSQL_DEFAULT}"
     fi
     PSQL="${PSQL_DIR}/bin/psql.exe"
+      if [ PostgreSQL_VERSION < 12]; then
+          echo "ERROR: Found Database server ${PostgreSQL_VERSION}  This version is too old."
+          exit 1
+      fi
     while [[ -z "${DB_PG_PW}" ]]; do
       read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
     done
