@@ -245,9 +245,8 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	public void validate(EnvironmentDto dto) throws ValidationRuntimeException {
-		if (dto.getEnvironmentMedia() != EnvironmentMedia.WATER && dto.getWaterType() != null
-			|| dto.getInfrastructureDetails() != null
-			|| MapUtils.isNotEmpty(dto.getWaterUse())) {
+		if (dto.getEnvironmentMedia() != EnvironmentMedia.WATER
+			&& (dto.getWaterType() != null || dto.getInfrastructureDetails() != null || MapUtils.isNotEmpty(dto.getWaterUse()))) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(
 					Validations.environmentWaterFieldsSetWithNotWaterMedia,
