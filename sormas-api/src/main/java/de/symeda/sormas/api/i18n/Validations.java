@@ -47,6 +47,7 @@ public interface Validations {
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
+	String environmentWaterFieldsSetWithNotWaterMedia = "environmentWaterFieldsSetWithNotWaterMedia";
 	String errorsInForm = "errorsInForm";
 	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
 	String eventSuperordinateEventToDateFilterValidation = "eventSuperordinateEventToDateFilterValidation";
