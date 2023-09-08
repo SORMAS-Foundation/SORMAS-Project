@@ -58,7 +58,7 @@ Payara is updated from 5.2021.10 to 5.2022.5.
 If you are **not** using [SORMAS-Docker](https://github.com/SORMAS-Foundation/SORMAS-Docker), please follow the [Payara migration guide](SERVER_UPDATE.md#how-to-migrate-to-new-payara-server).
 
 ### 1.89.0
-Deploying this release will increase the postgres version to 14. At least Ubuntu LTS 20 (or 18 with postgres 12 from APT) is needed.
+When upgrading to postgres version 14 make sure you have at least Ubuntu LTS 20 (or 18 with postgres 12 from APT) is needed.
 
 ## Automatic Server Update
 * Navigate to the  folder containing the unzipped deploy files:
