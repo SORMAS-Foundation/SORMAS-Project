@@ -75,7 +75,7 @@
     <string name="action_new_environment">Nuevo ambiente</string>
     <string name="action_new_event">Nuevo evento</string>
     <string name="action_new_sample">Nueva muestra</string>
-    <string name="action_new_environment_sample">New Environment Sample</string>
+    <string name="action_new_environment_sample">Nueva muestra ambiental</string>
     <string name="action_new_task">Nueva tarea</string>
     <string name="action_not_executable">No ejecutable</string>
     <string name="action_ok">OK</string>
@@ -387,7 +387,7 @@
     <string name="heading_sample_read">Leer muestra</string>
     <string name="heading_sample_summary">Resumen de la muestra</string>
     <string name="heading_samples_list">Listado de muestras</string>
-    <string name="heading_environment_sample_list">Environment Sample Listing</string>
+    <string name="heading_environment_sample_list">Listado de muestras ambientales</string>
     <string name="heading_environment_list">Listado de ambientes</string>
     <string name="heading_environment_edit">Editar ambiente</string>
     <string name="heading_environment_new">Nuevo ambiente</string>
@@ -514,7 +514,7 @@
     <string name="main_menu_reports">Informes</string>
     <string name="main_menu_samples">Muestras</string>
     <string name="main_menu_environments">Ambientes</string>
-    <string name="main_menu_environment_samples">Environment Samples</string>
+    <string name="main_menu_environment_samples">Muestras ambientales</string>
     <string name="main_menu_immunizations">Inmunizaciones</string>
     <string name="main_menu_settings">Ajustes</string>
     <string name="main_menu_tasks">Tareas</string>
@@ -681,5 +681,5 @@
     <string name="value_vaccine_date_unknown">Fecha de vacunación N/A</string>
     <string name="value_vaccine_name_unknown">Vacuna N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Fabricante N/A</string>
-    <string name="value_environment_name_unknown">Environment Name N/A</string>
+    <string name="value_environment_name_unknown">Nombre de ambiente N/A</string>
 </resources>
