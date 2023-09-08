@@ -63,7 +63,7 @@ public class SamplesView extends AbstractView {
 
 	public static final String VIEW_NAME = "samples";
 
-	private final SampleGidComponent sampleListComponent;
+	private final SampleGridComponent sampleListComponent;
 	private SamplesViewConfiguration viewConfiguration;
 	private Button btnEnterBulkEditMode;
 

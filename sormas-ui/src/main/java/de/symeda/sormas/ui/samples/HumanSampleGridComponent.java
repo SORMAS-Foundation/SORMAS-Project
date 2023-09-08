@@ -46,7 +46,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
 @SuppressWarnings("serial")
-public class HumanSampleGridComponent extends SampleGidComponent {
+public class HumanSampleGridComponent extends SampleGridComponent {
 
 	private static final String NOT_SHIPPED = "notShipped";
 	private static final String SHIPPED = "shipped";

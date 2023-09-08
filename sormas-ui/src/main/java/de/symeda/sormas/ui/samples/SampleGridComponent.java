@@ -22,7 +22,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.utils.ReloadableGrid;
 
-public abstract class SampleGidComponent<T, C extends BaseCriteria> extends VerticalLayout {
+public abstract class SampleGridComponent<T, C extends BaseCriteria> extends VerticalLayout {
 
 	abstract ReloadableGrid<T, C> getGrid();
 

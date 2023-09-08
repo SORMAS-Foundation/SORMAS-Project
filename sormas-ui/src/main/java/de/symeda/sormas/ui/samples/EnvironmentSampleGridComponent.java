@@ -41,7 +41,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
-public class EnvironmentSampleGridComponent extends SampleGidComponent<EnvironmentSampleIndexDto, EnvironmentSampleCriteria> {
+public class EnvironmentSampleGridComponent extends SampleGridComponent<EnvironmentSampleIndexDto, EnvironmentSampleCriteria> {
 
 	private static final long serialVersionUID = 4302760792255154403L;
 
