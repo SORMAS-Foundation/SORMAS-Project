@@ -31,20 +31,4 @@ public class ProcessedEntity implements Serializable {
 	public void setProcessedEntityStatus(ProcessedEntityStatus processedEntityStatus) {
 		this.processedEntityStatus = processedEntityStatus;
 	}
-
-	public static ProcessedEntity withSucess(String entityUuid) {
-		return new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS);
-	}
-
-	public static ProcessedEntity withExternalSurveillanceFailure(String entityUuid) {
-		return new ProcessedEntity(entityUuid, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
-	}
-
-	public static ProcessedEntity withAccessDeniedFailure(String entityUuid) {
-		return new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
-	}
-
-	public static ProcessedEntity withInternalFailure(String entityUuid) {
-		return new ProcessedEntity(entityUuid, ProcessedEntityStatus.INTERNAL_FAILURE);
-	}
 }

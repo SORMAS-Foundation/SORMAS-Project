@@ -329,7 +329,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	private boolean isEventWithoutParticipants(Event event) {
-		return eventParticipantService.getAllActiveByEvent(event).stream().count() == 0;
+		return eventParticipantService.getAllActiveByEvent(event).size() == 0;
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails)
@@ -1054,11 +1054,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
 		eventParticipantService.archive(eventParticipantList);
 
-		if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
-			throw new ExternalSurveillanceToolRuntimeException(
-				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving));
-		}
-
 		return processedEntity;
 	}
 
@@ -1076,11 +1071,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
 	public ProcessedEntity dearchive(String entityUuid, String dearchiveReason) {
 		ProcessedEntity processedEntity = dearchive(Collections.singletonList(entityUuid), dearchiveReason).get(0);
-
-		if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
-			throw new ExternalSurveillanceToolRuntimeException(
-				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving));
-		}
 
 		return processedEntity;
 	}

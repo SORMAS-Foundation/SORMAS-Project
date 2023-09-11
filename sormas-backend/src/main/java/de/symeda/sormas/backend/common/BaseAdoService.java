@@ -577,22 +577,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, ProcessedEntityStatus processedEntityStatus) {
-		return entityUuids.stream().map(uuid -> buildEntityByStatus(uuid, processedEntityStatus)).collect(Collectors.toList());
-	}
-
-	public ProcessedEntity buildEntityByStatus(String uuid, ProcessedEntityStatus status) {
-		switch (status) {
-		case SUCCESS:
-			return ProcessedEntity.withSucess(uuid);
-		case EXTERNAL_SURVEILLANCE_FAILURE:
-			return ProcessedEntity.withExternalSurveillanceFailure(uuid);
-		case ACCESS_DENIED_FAILURE:
-			return ProcessedEntity.withAccessDeniedFailure(uuid);
-		case INTERNAL_FAILURE:
-			return ProcessedEntity.withInternalFailure(uuid);
-		default:
-			return null;
-		}
+		return entityUuids.stream().map(uuid -> new ProcessedEntity(uuid, processedEntityStatus)).collect(Collectors.toList());
 	}
 
 	protected <T> TypedQuery<T> createQuery(CriteriaQuery<T> cq, Integer first, Integer max) {

@@ -45,7 +45,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -180,10 +179,12 @@ public final class ArchiveHandlers {
 
 		@Override
 		public void archive(String entityUuid) {
-			try {
-				entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
-			} catch (ExternalSurveillanceToolRuntimeException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			ProcessedEntity processedEntity = entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+
+			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
 			}
 		}
 
@@ -249,17 +250,16 @@ public final class ArchiveHandlers {
 
 		@Override
 		public List<ProcessedEntity> dearchive(String entityUuid) {
-			List<ProcessedEntity> processedEntities = new ArrayList<>();
-			try {
-				processedEntities = Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue()));
-			} catch (ExternalSurveillanceToolRuntimeException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			List<ProcessedEntity> processedEntities = Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue()));
+
+			if (processedEntities.get(0).getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
 			}
 
 			return processedEntities;
-
 		}
-
 	}
 
 	private static final class CaseArchiveHandler extends CoreEntityArchiveHandler<CaseDataDto, CaseFacade> {
@@ -272,21 +272,25 @@ public final class ArchiveHandlers {
 
 		@Override
 		public void archive(String entityUuid) {
-			try {
+			ProcessedEntity processedEntity =
 				entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
-			} catch (ExternalSurveillanceToolRuntimeException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+
+			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
 			}
 		}
 
 		@Override
 		public List<ProcessedEntity> dearchive(String entityUuid) {
-			List<ProcessedEntity> processedEntities = new ArrayList<>();
-			try {
-				processedEntities =
-					Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue(), archiveWithContacts.getValue()));
-			} catch (ExternalSurveillanceToolRuntimeException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			List<ProcessedEntity> processedEntities =
+				Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue(), archiveWithContacts.getValue()));
+
+			if (processedEntities.get(0).getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
 			}
 
 			return processedEntities;

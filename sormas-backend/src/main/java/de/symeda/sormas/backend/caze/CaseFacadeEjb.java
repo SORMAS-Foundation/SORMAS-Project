@@ -2819,17 +2819,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		ProcessedEntity processedEntity = super.archive(entityUuid, endOfProcessingDate);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
 			contactService.archive(caseContacts);
 		}
 
-		if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
-			throw new ExternalSurveillanceToolRuntimeException(
-				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving));
-		}
+		return processedEntity;
 	}
 
 	@Override
@@ -2848,11 +2845,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public ProcessedEntity dearchive(String entityUuid, String dearchiveReason, boolean includeContacts) {
 		ProcessedEntity processedEntity = dearchive(Collections.singletonList(entityUuid), dearchiveReason, includeContacts).get(0);
-
-		if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
-			throw new ExternalSurveillanceToolRuntimeException(
-				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving));
-		}
 
 		return processedEntity;
 	}

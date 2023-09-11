@@ -216,7 +216,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
 
-	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
+	ProcessedEntity archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
 
 	List<ProcessedEntity> archive(List<String> entityUuids, boolean includeContacts);
 
