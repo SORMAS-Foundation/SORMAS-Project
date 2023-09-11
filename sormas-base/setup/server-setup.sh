@@ -305,13 +305,13 @@ PostgreSQL_VERSION = psql --version 2>&1 | sed 's/psql (PostgreSQL) / /;s/\..*$/
   if [[ ${LINUX} = true ]]; then
     # no host is specified as by default the postgres user has only local access
     if [ PostgreSQL_VERSION < 12]; then
-        echo "ERROR: Found Database server ${PostgreSQL_VERSION}  This version is too old."
+        echo "ERROR: Found database server ${PostgreSQL_VERSION}  At least PostgreSQL 12 is required."
 	      exit 1
     fi
     su postgres -c "psql -p ${DB_PORT} < setup.sql"
   elif [[ ${MAC} = true ]]; then
       if [ PostgreSQL_VERSION < 12]; then
-          echo "ERROR: Found Database server ${PostgreSQL_VERSION}  This version is too old."
+          echo "ERROR: Found database server ${PostgreSQL_VERSION}  At least PostgreSQL 12 is required."
           exit 1
       fi
       psql -p ${DB_PORT} -U postgres < setup.sql
@@ -324,7 +324,7 @@ PostgreSQL_VERSION = psql --version 2>&1 | sed 's/psql (PostgreSQL) / /;s/\..*$/
     fi
     PSQL="${PSQL_DIR}/bin/psql.exe"
       if [ PostgreSQL_VERSION < 12]; then
-          echo "ERROR: Found Database server ${PostgreSQL_VERSION}  This version is too old."
+          echo "ERROR: Found database server ${PostgreSQL_VERSION}  At least PostgreSQL 12 is required."
           exit 1
       fi
     while [[ -z "${DB_PG_PW}" ]]; do
