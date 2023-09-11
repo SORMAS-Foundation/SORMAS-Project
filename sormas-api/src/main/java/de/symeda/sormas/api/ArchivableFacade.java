@@ -21,7 +21,7 @@ import de.symeda.sormas.api.common.progress.ProcessedEntity;
 
 public interface ArchivableFacade {
 
-	void archive(String uuid);
+	ProcessedEntity archive(String uuid);
 
 	ProcessedEntity dearchive(String uuid);
 

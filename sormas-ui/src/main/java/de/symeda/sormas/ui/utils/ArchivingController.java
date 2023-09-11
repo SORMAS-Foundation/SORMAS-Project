@@ -282,7 +282,7 @@ public class ArchivingController {
 
 	public interface IArchiveHandler<T extends HasUuid> {
 
-		void archive(String entityUuid);
+		ProcessedEntity archive(String entityUuid);
 
 		List<ProcessedEntity> archive(List<String> entityUuids);
 

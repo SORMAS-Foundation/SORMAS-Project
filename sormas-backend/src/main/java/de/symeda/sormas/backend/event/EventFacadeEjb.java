@@ -78,6 +78,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventGroupsIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -329,7 +330,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	private boolean isEventWithoutParticipants(Event event) {
-		return eventParticipantService.getAllActiveByEvent(event).size() == 0;
+		return eventParticipantFacade.count(new EventParticipantCriteria().withEvent(new EventReferenceDto(event.getUuid()))) == 0;
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails)

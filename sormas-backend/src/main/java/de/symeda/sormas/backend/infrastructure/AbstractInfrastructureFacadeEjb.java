@@ -185,11 +185,15 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 
 	@Override
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
-	public void archive(String uuid) {
+	public ProcessedEntity archive(String uuid) {
+		ProcessedEntity processedEntity;
+
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
 		if (isUsedInOtherInfrastructureData(Collections.singletonList(uuid))) {
-			throw new AccessDeniedException(I18nProperties.getString(archivingNotPossibleMessageProperty));
+			processedEntity = new ProcessedEntity(uuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		} else {
+			processedEntity = new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS);
 		}
 
 		ADO ado = service.getByUuid(uuid);
@@ -197,6 +201,8 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 			ado.setArchived(true);
 			service.ensurePersisted(ado);
 		}
+
+		return processedEntity;
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)

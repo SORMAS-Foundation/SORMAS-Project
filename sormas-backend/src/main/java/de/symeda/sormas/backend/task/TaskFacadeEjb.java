@@ -1060,8 +1060,8 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public void archive(String uuid) {
-		archive(Collections.singletonList(uuid));
+	public ProcessedEntity archive(String uuid) {
+		return archive(Collections.singletonList(uuid)).get(0);
 	}
 
 	@Override

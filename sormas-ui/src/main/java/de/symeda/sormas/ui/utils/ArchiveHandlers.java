@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.ui.utils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,7 +55,6 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.ui.utils.ArchivingController.IArchiveHandler;
 
@@ -119,8 +117,8 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
-			entityFacade.archive(entityUuid);
+		public ProcessedEntity archive(String entityUuid) {
+			return entityFacade.archive(entityUuid);
 		}
 
 		@Override
@@ -178,7 +176,7 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
+		public ProcessedEntity archive(String entityUuid) {
 			ProcessedEntity processedEntity = entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
 
 			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
@@ -186,6 +184,8 @@ public final class ArchiveHandlers {
 					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
 					Notification.Type.WARNING_MESSAGE);
 			}
+
+			return processedEntity;
 		}
 
 		@Override
@@ -271,7 +271,7 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
+		public ProcessedEntity archive(String entityUuid) {
 			ProcessedEntity processedEntity =
 				entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
 
@@ -280,6 +280,8 @@ public final class ArchiveHandlers {
 					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
 					Notification.Type.WARNING_MESSAGE);
 			}
+
+			return processedEntity;
 		}
 
 		@Override
@@ -347,24 +349,26 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
-			try {
-				super.archive(entityUuid);
-			} catch (AccessDeniedException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+		public ProcessedEntity archive(String entityUuid) {
+			ProcessedEntity processedEntity = super.archive(entityUuid);
+
+			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)) {
+				Notification
+					.show(I18nProperties.getString(getArchiveMessages().getMessageEntityArchivingNotPossible()), Notification.Type.WARNING_MESSAGE);
 			}
+
+			return processedEntity;
 		}
 
 		@Override
 		public List<ProcessedEntity> dearchive(String entityUuid) {
-			List<ProcessedEntity> processedEntities = new ArrayList<>();
+			List<ProcessedEntity> processedEntities = super.dearchive(entityUuid);
 
-			try {
-				processedEntities = super.dearchive(entityUuid);
-			} catch (AccessDeniedException e) {
-				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			if (processedEntities.get(0).getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)) {
+				Notification
+					.show(I18nProperties.getString(getArchiveMessages().getMessageEntityArchivingNotPossible()), Notification.Type.WARNING_MESSAGE);
 			}
+
 			return processedEntities;
 		}
 
