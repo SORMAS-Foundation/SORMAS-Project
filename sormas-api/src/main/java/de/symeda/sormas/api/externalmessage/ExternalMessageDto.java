@@ -31,6 +31,7 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -73,6 +74,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String PERSON_STREET = "personStreet";
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String PERSON_COUNTRY = "personCountry";
+	public static final String PERSON_FACILITY = "personFacility";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
@@ -124,6 +126,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personHouseNumber;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto personCountry;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	private FacilityReferenceDto personFacility;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personPhone;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
@@ -341,6 +345,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonCountry(CountryReferenceDto personCountry) {
 		this.personCountry = personCountry;
+	}
+
+	public FacilityReferenceDto getPersonFacility() {
+		return personFacility;
+	}
+
+	public void setPersonFacility(FacilityReferenceDto personFacility) {
+		this.personFacility = personFacility;
 	}
 
 	public String getPersonPhone() {

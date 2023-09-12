@@ -1905,6 +1905,26 @@ public class TestDataCreator {
 		return facility;
 	}
 
+	public FacilityDto createFacility(
+		String facilityName,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Consumer<FacilityDto> extraConfig) {
+
+		FacilityDto facility = FacilityDto.build();
+		facility.setName(facilityName);
+		facility.setRegion(region);
+		facility.setDistrict(district);
+		facility.setType(FacilityType.HOSPITAL);
+
+		if (extraConfig != null) {
+			extraConfig.accept(facility);
+		}
+
+		beanTest.getFacilityFacade().save(facility);
+		return facility;
+	}
+
 	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district) {
 		return createPointOfEntry(pointOfEntryName, region, district, null);
 	}

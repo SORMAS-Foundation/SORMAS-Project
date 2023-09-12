@@ -14171,6 +14171,9 @@ components:
           format: date-time
         received:
           type: boolean
+        reportDate:
+          type: string
+          format: date-time
         reportingUser:
           $ref: '#/components/schemas/UserReferenceDto'
         requestedPathogenTests:
@@ -14217,6 +14220,7 @@ components:
       required:
       - environment
       - laboratory
+      - reportDate
       - reportingUser
       - sampleDateTime
       - sampleMaterial
@@ -16303,6 +16307,8 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        personFacility:
+          $ref: '#/components/schemas/FacilityReferenceDto'
         personFirstName:
           type: string
           maxLength: 255

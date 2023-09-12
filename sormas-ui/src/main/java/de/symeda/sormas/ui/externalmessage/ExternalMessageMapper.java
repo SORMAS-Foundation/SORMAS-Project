@@ -36,10 +36,12 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -108,6 +110,15 @@ public class ExternalMessageMapper {
 	}
 
 	public List<String[]> mapToLocation(LocationDto location) {
+
+		RegionReferenceDto region = null;
+		DistrictReferenceDto district = null;
+		if (externalMessage.getPersonFacility() != null) {
+			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(externalMessage.getPersonFacility().getUuid());
+			region = facility.getRegion();
+			district = facility.getDistrict();
+		}
+
 		return map(
 			Stream.of(
 				Mapping.of(location::setStreet, location.getStreet(), externalMessage.getPersonStreet(), PersonDto.ADDRESS, LocationDto.STREET),
@@ -124,7 +135,15 @@ public class ExternalMessageMapper {
 					PersonDto.ADDRESS,
 					LocationDto.POSTAL_CODE),
 				Mapping.of(location::setCity, location.getCity(), externalMessage.getPersonCity(), PersonDto.ADDRESS, LocationDto.CITY),
-				Mapping.of(location::setCountry, location.getCountry(), externalMessage.getPersonCountry(), PersonDto.ADDRESS, LocationDto.COUNTRY)));
+				Mapping.of(location::setCountry, location.getCountry(), externalMessage.getPersonCountry(), PersonDto.ADDRESS, LocationDto.COUNTRY),
+				Mapping.of(location::setRegion, location.getRegion(), region, PersonDto.ADDRESS, LocationDto.REGION),
+				Mapping.of(location::setDistrict, location.getDistrict(), district, PersonDto.ADDRESS, LocationDto.DISTRICT),
+				Mapping.of(
+					location::setFacility,
+					location.getFacility(),
+					externalMessage.getPersonFacility(),
+					PersonDto.ADDRESS,
+					LocationDto.FACILITY)));
 	}
 
 	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {

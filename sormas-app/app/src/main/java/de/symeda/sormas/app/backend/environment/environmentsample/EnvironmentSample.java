@@ -261,7 +261,7 @@ public class EnvironmentSample extends PseudonymizableAdo {
 			}.getType();
 
 			requestedPathogenTestsJson =
-				gson.toJson(requestedPathogenTests.stream().map(CustomizableEnum::getValue).collect(Collectors.toSet()), type);
+					gson.toJson(requestedPathogenTests.stream().map(CustomizableEnum::getValue).collect(Collectors.toSet()), type);
 		}
 	}
 
