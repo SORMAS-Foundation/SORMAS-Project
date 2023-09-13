@@ -453,4 +453,4 @@ Feature: Survnet tests
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
     And I open SORMAS generated XML file for single case message
-    Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file
+    And I check that Patientrole is change in SORMAS generated single XML file is "-1"
