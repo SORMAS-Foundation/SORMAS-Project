@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.88.0-SNAPSHOT
+  version: 1.89.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -2859,6 +2859,131 @@ paths:
           description: default response
       tags:
       - Environment Controller
+  /environmentsamples/all/{since}/{size}/{lastSynchronizedUuid}:
+    get:
+      operationId: getAllAfter
+      parameters:
+      - in: path
+        name: since
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - in: path
+        name: size
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - in: path
+        name: lastSynchronizedUuid
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnvironmentSampleDto'
+          description: default response
+      tags:
+      - Environment Sample Controller
+  /environmentsamples/obsolete/{since}:
+    get:
+      operationId: getObsoleteUuidsSince_3
+      parameters:
+      - in: path
+        name: since
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+          description: default response
+      tags:
+      - Environment Sample Controller
+  /environmentsamples/push:
+    post:
+      description: A uuid will be generated for any entity that doesn't have one yet.
+        Posting entities without uuid multiple times will also create them multiple
+        times.
+      operationId: postEntityDtos_12
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EnvironmentSampleDto'
+      responses:
+        "207":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: "Array of responses, matching the posted array of entities.\
+            \ Provides an HTML status code for every entity and an optional body (e.g.\
+            \ a string with an error message)."
+        default:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostResponse'
+          description: When the request body has one or no entry. The status code
+            of the response entry matches the response code and may have an optional
+            body (e.g. a string with an error message).
+      summary: Create or update one or multiple entities.
+      tags:
+      - Entity Dto Controller
+  /environmentsamples/query:
+    post:
+      operationId: getByUuids_17
+      requestBody:
+        content:
+          application/json; charset=UTF-8:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnvironmentSampleDto'
+          description: default response
+      tags:
+      - Environment Sample Controller
+  /environmentsamples/uuids:
+    get:
+      operationId: getAllUuids_14
+      responses:
+        default:
+          content:
+            application/json; charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  type: string
+          description: default response
+      tags:
+      - Environment Sample Controller
   /eventGroups/indexList:
     post:
       operationId: getIndexList_9
@@ -2887,7 +3012,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_12
+      operationId: postEntityDtos_13
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3108,7 +3233,7 @@ paths:
       - Event Participant Controller
   /eventparticipants/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_3
+      operationId: getObsoleteUuidsSince_4
       parameters:
       - in: path
         name: since
@@ -3132,7 +3257,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_13
+      operationId: postEntityDtos_14
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3166,7 +3291,7 @@ paths:
       - Event Participant Controller
   /eventparticipants/query:
     post:
-      operationId: getByUuids_17
+      operationId: getByUuids_18
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3438,7 +3563,7 @@ paths:
       - Event Controller
   /events/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_4
+      operationId: getObsoleteUuidsSince_5
       parameters:
       - in: path
         name: since
@@ -3462,7 +3587,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_14
+      operationId: postEntityDtos_15
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3496,7 +3621,7 @@ paths:
       - Event Controller
   /events/query:
     post:
-      operationId: getByUuids_18
+      operationId: getByUuids_19
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3676,7 +3801,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_16
+      operationId: postEntityDtos_17
       requestBody:
         content:
           '*/*':
@@ -3710,7 +3835,7 @@ paths:
       - Facility Controller
   /facilities/query:
     post:
-      operationId: getByUuids_19
+      operationId: getByUuids_20
       requestBody:
         content:
           '*/*':
@@ -3757,7 +3882,7 @@ paths:
       - Facility Controller
   /facilities/uuids:
     get:
-      operationId: getAllUuids_14
+      operationId: getAllUuids_15
       responses:
         default:
           content:
@@ -3813,7 +3938,7 @@ paths:
       - Feature Configuration Controller
   /featureconfigurations/query:
     post:
-      operationId: getByUuids_20
+      operationId: getByUuids_21
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -3834,7 +3959,7 @@ paths:
       - Feature Configuration Controller
   /featureconfigurations/uuids:
     get:
-      operationId: getAllUuids_15
+      operationId: getAllUuids_16
       responses:
         default:
           content:
@@ -3848,7 +3973,7 @@ paths:
       - Feature Configuration Controller
   /immunizations/all/{since}:
     get:
-      operationId: getAllAfter
+      operationId: getAllAfter_1
       parameters:
       - in: path
         name: since
@@ -3869,7 +3994,7 @@ paths:
       - Immunization Controller
   /immunizations/all/{since}/{size}/{lastSynchronizedUuid}:
     get:
-      operationId: getAllAfter_1
+      operationId: getAllAfter_2
       parameters:
       - in: path
         name: since
@@ -4083,7 +4208,7 @@ paths:
       - Immunization Controller
   /immunizations/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_5
+      operationId: getObsoleteUuidsSince_6
       parameters:
       - in: path
         name: since
@@ -4107,7 +4232,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_17
+      operationId: postEntityDtos_18
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4141,7 +4266,7 @@ paths:
       - Immunization Controller
   /immunizations/query:
     post:
-      operationId: getByUuids_21
+      operationId: getByUuids_22
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4183,7 +4308,7 @@ paths:
       - Immunization Controller
   /immunizations/uuids:
     get:
-      operationId: getAllUuids_16
+      operationId: getAllUuids_17
       responses:
         default:
           content:
@@ -4629,7 +4754,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_18
+      operationId: postEntityDtos_19
       requestBody:
         content:
           '*/*':
@@ -4777,7 +4902,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_19
+      operationId: postEntityDtos_20
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4811,7 +4936,7 @@ paths:
       - Pathogen Test Controller
   /pathogentests/query:
     post:
-      operationId: getByUuids_22
+      operationId: getByUuids_23
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4963,7 +5088,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_20
+      operationId: postEntityDtos_21
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -4997,7 +5122,7 @@ paths:
       - Person Controller
   /persons/query:
     post:
-      operationId: getByUuids_23
+      operationId: getByUuids_24
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5053,7 +5178,7 @@ paths:
       - Person Controller
   /persons/uuids:
     get:
-      operationId: getAllUuids_17
+      operationId: getAllUuids_18
       responses:
         default:
           content:
@@ -5160,7 +5285,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_21
+      operationId: postEntityDtos_22
       requestBody:
         content:
           '*/*':
@@ -5194,7 +5319,7 @@ paths:
       - Point Of Entry Controller
   /pointsofentry/query:
     post:
-      operationId: getByUuids_24
+      operationId: getByUuids_25
       requestBody:
         content:
           '*/*':
@@ -5215,7 +5340,7 @@ paths:
       - Point Of Entry Controller
   /pointsofentry/uuids:
     get:
-      operationId: getAllUuids_18
+      operationId: getAllUuids_19
       responses:
         default:
           content:
@@ -5299,7 +5424,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_22
+      operationId: postEntityDtos_23
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5333,7 +5458,7 @@ paths:
       - Prescription Controller
   /prescriptions/query:
     post:
-      operationId: getByUuids_25
+      operationId: getByUuids_26
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5443,7 +5568,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_23
+      operationId: postEntityDtos_24
       requestBody:
         content:
           '*/*':
@@ -5477,7 +5602,7 @@ paths:
       - Region Controller
   /regions/query:
     post:
-      operationId: getByUuids_26
+      operationId: getByUuids_27
       requestBody:
         content:
           '*/*':
@@ -5498,7 +5623,7 @@ paths:
       - Region Controller
   /regions/uuids:
     get:
-      operationId: getAllUuids_19
+      operationId: getAllUuids_20
       responses:
         default:
           content:
@@ -5630,7 +5755,7 @@ paths:
       - Sample Controller
   /samples/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_6
+      operationId: getObsoleteUuidsSince_7
       parameters:
       - in: path
         name: since
@@ -5654,7 +5779,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_24
+      operationId: postEntityDtos_25
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -5688,7 +5813,7 @@ paths:
       - Sample Controller
   /samples/query:
     post:
-      operationId: getByUuids_27
+      operationId: getByUuids_28
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6173,7 +6298,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_25
+      operationId: postEntityDtos_26
       requestBody:
         content:
           '*/*':
@@ -6207,7 +6332,7 @@ paths:
       - Subcontinent Controller
   /subcontinents/query:
     post:
-      operationId: getByUuids_28
+      operationId: getByUuids_29
       requestBody:
         content:
           '*/*':
@@ -6228,7 +6353,7 @@ paths:
       - Subcontinent Controller
   /subcontinents/uuids:
     get:
-      operationId: getAllUuids_20
+      operationId: getAllUuids_21
       responses:
         default:
           content:
@@ -6245,7 +6370,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_26
+      operationId: postEntityDtos_27
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6418,7 +6543,7 @@ paths:
       - Task Controller
   /tasks/obsolete/{since}:
     get:
-      operationId: getObsoleteUuidsSince_7
+      operationId: getObsoleteUuidsSince_8
       parameters:
       - in: path
         name: since
@@ -6442,7 +6567,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_27
+      operationId: postEntityDtos_28
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6476,7 +6601,7 @@ paths:
       - Task Controller
   /tasks/query:
     post:
-      operationId: getByUuids_29
+      operationId: getByUuids_30
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6555,7 +6680,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_28
+      operationId: postEntityDtos_29
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6692,7 +6817,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_29
+      operationId: postEntityDtos_30
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6726,7 +6851,7 @@ paths:
       - Treatment Controller
   /treatments/query:
     post:
-      operationId: getByUuids_30
+      operationId: getByUuids_31
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -6803,7 +6928,7 @@ paths:
       - User Role Controller
   /userroles/uuids:
     get:
-      operationId: getAllUuids_22
+      operationId: getAllUuids_23
       responses:
         default:
           content:
@@ -6861,7 +6986,7 @@ paths:
       - User Controller
   /users/query:
     post:
-      operationId: getByUuids_31
+      operationId: getByUuids_32
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -7046,6 +7171,14 @@ paths:
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
+                  - ENVIRONMENT_SAMPLE_VIEW
+                  - ENVIRONMENT_SAMPLE_CREATE
+                  - ENVIRONMENT_SAMPLE_EDIT
+                  - ENVIRONMENT_SAMPLE_EDIT_DISPATCH
+                  - ENVIRONMENT_SAMPLE_EDIT_RECEIVAL
+                  - ENVIRONMENT_SAMPLE_DELETE
+                  - ENVIRONMENT_SAMPLE_IMPORT
+                  - ENVIRONMENT_SAMPLE_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7251,6 +7384,14 @@ paths:
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
+                  - ENVIRONMENT_SAMPLE_VIEW
+                  - ENVIRONMENT_SAMPLE_CREATE
+                  - ENVIRONMENT_SAMPLE_EDIT
+                  - ENVIRONMENT_SAMPLE_EDIT_DISPATCH
+                  - ENVIRONMENT_SAMPLE_EDIT_RECEIVAL
+                  - ENVIRONMENT_SAMPLE_DELETE
+                  - ENVIRONMENT_SAMPLE_IMPORT
+                  - ENVIRONMENT_SAMPLE_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7300,7 +7441,7 @@ paths:
       - User Controller
   /users/uuids:
     get:
-      operationId: getAllUuids_21
+      operationId: getAllUuids_22
       responses:
         default:
           content:
@@ -7333,7 +7474,7 @@ paths:
   /visits-external:
     post:
       description: Upload visits with all symptom and disease related data to SORMAS.
-      operationId: postEntityDtos_15
+      operationId: postEntityDtos_16
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -7576,7 +7717,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_30
+      operationId: postEntityDtos_31
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -7610,7 +7751,7 @@ paths:
       - Visit Controller
   /visits/query:
     post:
-      operationId: getByUuids_32
+      operationId: getByUuids_33
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -7701,7 +7842,7 @@ paths:
       description: A uuid will be generated for any entity that doesn't have one yet.
         Posting entities without uuid multiple times will also create them multiple
         times.
-      operationId: postEntityDtos_31
+      operationId: postEntityDtos_32
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -7735,7 +7876,7 @@ paths:
       - Weekly Report Controller
   /weeklyreports/query:
     post:
-      operationId: getByUuids_33
+      operationId: getByUuids_34
       requestBody:
         content:
           application/json; charset=UTF-8:
@@ -7756,7 +7897,7 @@ paths:
       - Weekly Report Controller
   /weeklyreports/uuids:
     get:
-      operationId: getAllUuids_23
+      operationId: getAllUuids_24
       responses:
         default:
           content:
@@ -13946,6 +14087,143 @@ components:
       - investigationStatus
       - reportDate
       - reportingUser
+    EnvironmentReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        environmentName:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
+    EnvironmentSampleDto:
+      type: object
+      properties:
+        changeDate:
+          type: string
+          format: date-time
+        chlorineResiduals:
+          type: number
+          format: float
+          minimum: 0
+        creationDate:
+          type: string
+          format: date-time
+        dispatchDate:
+          type: string
+          format: date-time
+        dispatchDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        dispatched:
+          type: boolean
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
+        fieldSampleId:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        generalComment:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        heavyRain:
+          type: string
+          enum:
+          - "YES"
+          - "NO"
+          - UNKNOWN
+        inJurisdiction:
+          type: boolean
+        labSampleId:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        laboratory:
+          $ref: '#/components/schemas/FacilityReferenceDto'
+        laboratoryDetails:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        location:
+          $ref: '#/components/schemas/LocationDto'
+        otherRequestedPathogenTests:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        otherSampleMaterial:
+          type: string
+          maxLength: 1000000
+          minLength: 0
+        phValue:
+          type: integer
+          format: int32
+          maximum: 14
+          minimum: 0
+        pseudonymized:
+          type: boolean
+        receivalDate:
+          type: string
+          format: date-time
+        received:
+          type: boolean
+        reportDate:
+          type: string
+          format: date-time
+        reportingUser:
+          $ref: '#/components/schemas/UserReferenceDto'
+        requestedPathogenTests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pathogen'
+          uniqueItems: true
+        sampleDateTime:
+          type: string
+          format: date-time
+        sampleMaterial:
+          type: string
+          enum:
+          - WATER
+          - SOIL
+          - AIR
+          - VECTORS
+          - OTHER
+        sampleTemperature:
+          type: integer
+          format: int32
+        sampleVolume:
+          type: number
+          format: float
+          minimum: 0
+        specimenCondition:
+          type: string
+          enum:
+          - ADEQUATE
+          - NOT_ADEQUATE
+        turbidity:
+          type: integer
+          format: int32
+          minimum: 0
+        uuid:
+          type: string
+          maxLength: 36
+          minLength: 20
+          pattern: "^[0-9a-zA-Z-]*$"
+        weatherConditions:
+          type: object
+          additionalProperties:
+            type: boolean
+      required:
+      - environment
+      - laboratory
+      - reportDate
+      - reportingUser
+      - sampleDateTime
+      - sampleMaterial
     EpiDataDto:
       type: object
       properties:
@@ -16029,6 +16307,8 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        personFacility:
+          $ref: '#/components/schemas/FacilityReferenceDto'
         personFirstName:
           type: string
           maxLength: 255
@@ -19334,6 +19614,20 @@ components:
         totalElementCount:
           type: integer
           format: int64
+    Pathogen:
+      type: object
+      properties:
+        caption:
+          type: string
+        hasDetails:
+          type: boolean
+        properties:
+          type: object
+          additionalProperties:
+            type: object
+          writeOnly: true
+        value:
+          type: string
     PathogenTestCriteria:
       type: object
       properties:
@@ -23528,8 +23822,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
+          - GENERAL
         uuid:
           type: string
     TaskCriteria:
@@ -23562,6 +23857,8 @@ components:
         dueDateTo:
           type: string
           format: date-time
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         event:
           $ref: '#/components/schemas/EventReferenceDto'
         excludeAssigneeUser:
@@ -23597,8 +23894,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
+          - GENERAL
         taskStatus:
           type: string
           enum:
@@ -23637,6 +23935,7 @@ components:
           - DAILY_REPORT_GENERATION
           - SURVEILLANCE_REPORT_GENERATION
           - WEEKLY_REPORT_GENERATION
+          - ENVIRONMENT_INVESTIGATION
         travelEntry:
           $ref: '#/components/schemas/TravelEntryReferenceDto'
     TaskDto:
@@ -23684,6 +23983,8 @@ components:
         dueDate:
           type: string
           format: date-time
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         event:
           $ref: '#/components/schemas/EventReferenceDto'
         observerUsers:
@@ -23712,8 +24013,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
+          - GENERAL
         taskStatus:
           type: string
           enum:
@@ -23752,6 +24054,7 @@ components:
           - DAILY_REPORT_GENERATION
           - SURVEILLANCE_REPORT_GENERATION
           - WEEKLY_REPORT_GENERATION
+          - ENVIRONMENT_INVESTIGATION
         travelEntry:
           $ref: '#/components/schemas/TravelEntryReferenceDto'
         uuid:
@@ -23856,6 +24159,8 @@ components:
         dueDate:
           type: string
           format: date-time
+        environment:
+          $ref: '#/components/schemas/EnvironmentReferenceDto'
         event:
           $ref: '#/components/schemas/EventReferenceDto'
         facility:
@@ -23883,8 +24188,9 @@ components:
           - CASE
           - CONTACT
           - EVENT
-          - GENERAL
           - TRAVEL_ENTRY
+          - ENVIRONMENT
+          - GENERAL
         taskJurisdictionFlagsDto:
           $ref: '#/components/schemas/TaskJurisdictionFlagsDto'
         taskStatus:
@@ -23925,6 +24231,7 @@ components:
           - DAILY_REPORT_GENERATION
           - SURVEILLANCE_REPORT_GENERATION
           - WEEKLY_REPORT_GENERATION
+          - ENVIRONMENT_INVESTIGATION
         travelEntry:
           $ref: '#/components/schemas/TravelEntryReferenceDto'
         uuid:
@@ -23940,6 +24247,8 @@ components:
         contactCaseInJurisdiction:
           type: boolean
         contactInJurisdiction:
+          type: boolean
+        environmentInJurisdiction:
           type: boolean
         eventInJurisdiction:
           type: boolean
@@ -25059,6 +25368,14 @@ components:
             - ENVIRONMENT_DELETE
             - ENVIRONMENT_IMPORT
             - ENVIRONMENT_EXPORT
+            - ENVIRONMENT_SAMPLE_VIEW
+            - ENVIRONMENT_SAMPLE_CREATE
+            - ENVIRONMENT_SAMPLE_EDIT
+            - ENVIRONMENT_SAMPLE_EDIT_DISPATCH
+            - ENVIRONMENT_SAMPLE_EDIT_RECEIVAL
+            - ENVIRONMENT_SAMPLE_DELETE
+            - ENVIRONMENT_SAMPLE_IMPORT
+            - ENVIRONMENT_SAMPLE_EXPORT
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

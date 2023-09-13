@@ -170,6 +170,101 @@ public class SharesDirectorySteps implements En {
         });
 
     And(
+        "^I check that message popup about Request in not yet accepted is appear$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SHARE_REQUEST_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(SHARE_REQUEST_POPUP);
+        });
+
+    And(
+        "^I close share request details window$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_SHARE_REQUEST_DETAILS);
+        });
+
+    When(
+        "I select German Status Dropdown to ([^\"]*)",
+        (String status) -> {
+          switch (status) {
+            case "Accepted":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(STATUS_COMBOBOX);
+              webDriverHelpers.selectFromCombobox(STATUS_COMBOBOX, "Ausstehend");
+              webDriverHelpers.clickOnWebElementBySelector(
+                  SHARE_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
+              break;
+            case "Pending":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(STATUS_COMBOBOX);
+              webDriverHelpers.selectFromCombobox(STATUS_COMBOBOX, "\u00DCbernommen");
+              webDriverHelpers.clickOnWebElementBySelector(
+                  SHARE_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
+              break;
+            case "Rejected":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(STATUS_COMBOBOX);
+              webDriverHelpers.selectFromCombobox(STATUS_COMBOBOX, "Abgelehnt");
+              webDriverHelpers.clickOnWebElementBySelector(
+                  SHARE_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
+              break;
+            case "Revoked":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(STATUS_COMBOBOX);
+              webDriverHelpers.selectFromCombobox(STATUS_COMBOBOX, "Widerrufen");
+              webDriverHelpers.clickOnWebElementBySelector(
+                  SHARE_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
+              break;
+          }
+        });
+
+    When(
+        "I check that ([^\"]*) status value is corresponding with entities",
+        (String status) -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
+          switch (status) {
+            case "Accepted":
+              softly.assertEquals(
+                  webDriverHelpers.getTextFromWebElement(STATUS_HEADER),
+                  "Ausstehend",
+                  "The corresponding entity has incorrect status");
+              softly.assertAll();
+              break;
+            case "Pending":
+              softly.assertEquals(
+                  webDriverHelpers.getTextFromWebElement(STATUS_HEADER),
+                  "\u00DCbernommen",
+                  "The corresponding entity has incorrect status");
+              softly.assertAll();
+              break;
+            case "Rejected":
+              softly.assertEquals(
+                  webDriverHelpers.getTextFromWebElement(STATUS_HEADER),
+                  "Abgelehnt",
+                  "The corresponding entity has incorrect status");
+              softly.assertAll();
+              break;
+            case "Revoked":
+              softly.assertEquals(
+                  webDriverHelpers.getTextFromWebElement(STATUS_HEADER),
+                  "Widerrufen",
+                  "The corresponding entity has incorrect status");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    When(
+        "I pick ([^\"]*) tab on Share Directory page",
+        (String status) -> {
+          switch (status) {
+            case "OUTGOING":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(OUTGOING_OPTION);
+              webDriverHelpers.clickOnWebElementBySelector(OUTGOING_OPTION);
+              break;
+            case "INCOMING":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(INCOMING_OPTION);
+              webDriverHelpers.clickOnWebElementBySelector(INCOMING_OPTION);
+              break;
+          }
+        });
+
+    And(
         "^I check that share associated contacts checkbox is not visible in Share form for DE$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_OPTION_CHECKBOX);

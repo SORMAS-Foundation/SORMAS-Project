@@ -32,9 +32,9 @@ public enum ReasonForHospitalization {
   private final String reasonForHospitalizationDE;
 
   ReasonForHospitalization(
-      String genericReasonForHospitalization, String genericReasonForHospitalizationDEE) {
+      String genericReasonForHospitalization, String genericReasonForHospitalizationDE) {
     reasonForHospitalization = genericReasonForHospitalization;
-    reasonForHospitalizationDE = genericReasonForHospitalizationDEE;
+    reasonForHospitalizationDE = genericReasonForHospitalizationDE;
   }
 
   public static String getRandomReasonForHospitalization() {

@@ -18,6 +18,7 @@
 package org.sormas.e2etests.entities.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Date;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
@@ -29,4 +30,6 @@ import lombok.extern.jackson.Jacksonized;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Therapy {
   String uuid;
+  Date creationDate;
+  Date changeDate;
 }

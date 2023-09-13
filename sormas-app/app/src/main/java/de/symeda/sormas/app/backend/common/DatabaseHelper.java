@@ -95,6 +95,8 @@ import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDao;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.environment.EnvironmentDao;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSampleDao;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDao;
 import de.symeda.sormas.app.backend.event.Event;
@@ -188,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 349;
+	public static final int DATABASE_VERSION = 352;
 
 	private static DatabaseHelper instance = null;
 
@@ -266,6 +268,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, CampaignFormData.class);
 			TableUtils.clearTable(connectionSource, LbdsSync.class);
 			TableUtils.clearTable(connectionSource, Environment.class);
+			TableUtils.clearTable(connectionSource, EnvironmentSample.class);
 
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, UserUserRole.class);
@@ -372,6 +375,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
 			TableUtils.createTable(connectionSource, LbdsSync.class);
 			TableUtils.createTable(connectionSource, Environment.class);
+			TableUtils.createTable(connectionSource, EnvironmentSample.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -3108,6 +3112,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 348;
 				getDao(Environment.class).executeRaw("ALTER TABLE environments ADD COLUMN pseudonymized boolean;");
 
+			case 349:
+				currentVersion = 349;
+				getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN environment_id BIGINT REFERENCES environment(id);");
+
+			case 350:
+				currentVersion = 350;
+				getDao(EnvironmentSample.class).executeRaw(
+					"CREATE TABLE environmentSamples(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, changeDate TIMESTAMP NOT NULL, "
+						+ "creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, snapshot INTEGER, "
+						+ "environment_id BIGINT NOT NULL, reportingUser_id BIGINT NOT NULL, sampleDateTime TIMESTAMP NOT NULL, sampleMaterial varchar(255) NOT NULL, otherSampleMaterial text, "
+						+ "sampleVolume float, fieldSampleId varchar(255), turbidity int, phValue int, sampleTemperature int, chlorineResiduals float, "
+						+ "laboratory_id BIGINT, laboratoryDetails text, requestedPathogenTests text, otherRequestedPathogenTests text, "
+						+ "weatherConditions text, heavyRain varchar(255), dispatched boolean, dispatchDate TIMESTAMP, dispatchDetails text, "
+						+ "received boolean, receivalDate TIMESTAMP, labSampleId text, specimenCondition varchar(255), location_id BIGINT NOT NULL, generalComment text, "
+						+ "pseudonymized boolean, UNIQUE(snapshot, uuid));");
+
+			case 351:
+				currentVersion = 351;
+				getDao(EnvironmentSample.class).executeRaw("ALTER TABLE environmentSamples ADD COLUMN reportDate TIMESTAMP;");
+
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -3915,6 +3939,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
 			TableUtils.dropTable(connectionSource, LbdsSync.class, true);
 			TableUtils.dropTable(connectionSource, Environment.class, true);
+			TableUtils.dropTable(connectionSource, EnvironmentSample.class, true);
 
 			if (oldVersion < 30) {
 				TableUtils.dropTable(connectionSource, Config.class, true);
@@ -4042,6 +4067,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new CampaignFormDataDao((Dao<CampaignFormData, Long>) innerDao);
 				} else if (type.equals(Environment.class)) {
 					dao = (AbstractAdoDao<ADO>) new EnvironmentDao((Dao<Environment, Long>) innerDao);
+				} else if (type.equals(EnvironmentSample.class)) {
+					dao = (AbstractAdoDao<ADO>) new EnvironmentSampleDao((Dao<EnvironmentSample, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}
@@ -4317,6 +4344,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	public static EnvironmentDao getEnvironmentDao() {
 		return (EnvironmentDao) getAdoDao(Environment.class);
+	}
+
+	public static EnvironmentSampleDao getEnvironmentSampleDao() {
+		return (EnvironmentSampleDao) getAdoDao(EnvironmentSample.class);
 	}
 
 	/**

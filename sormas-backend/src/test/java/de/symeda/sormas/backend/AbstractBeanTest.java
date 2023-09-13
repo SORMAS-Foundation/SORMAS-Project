@@ -67,6 +67,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
@@ -152,6 +153,8 @@ import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal;
 import de.symeda.sormas.backend.environment.EnvironmentService;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleFacadeEjb.EnvironmentSampleFacadeEjbLocal;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -998,5 +1001,13 @@ public abstract class AbstractBeanTest {
 
 	public EnvironmentService getEnvironmentService() {
 		return getBean(EnvironmentService.class);
+	}
+
+	public EnvironmentSampleFacade getEnvironmentSampleFacade() {
+		return getBean(EnvironmentSampleFacadeEjbLocal.class);
+	}
+
+	public EnvironmentSampleService getEnvironmentSampleService() {
+		return getBean(EnvironmentSampleService.class);
 	}
 }

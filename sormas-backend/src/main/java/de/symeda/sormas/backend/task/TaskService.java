@@ -72,6 +72,9 @@ import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.EnvironmentQueryContext;
+import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
@@ -102,6 +105,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	private UserService userService;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private EnvironmentService environmentService;
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
@@ -182,6 +187,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			return taskCriteria == null
 				|| !taskCriteria.hasContextCriteria()
 				|| (taskCriteria.getTaskContext() == TaskContext.TRAVEL_ENTRY || taskCriteria.getTravelEntry() != null);
+		case ENVIRONMENT:
+			return taskCriteria == null || (taskCriteria.getTaskContext() == TaskContext.ENVIRONMENT || taskCriteria.getEnvironment() != null);
 		case GENERAL:
 			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.GENERAL;
 		default:
@@ -209,7 +216,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			caseService.createDefaultFilter(cb, joins.getCaze()),
 			contactService.createDefaultFilter(cb, joins.getContact()),
 			eventService.createDefaultFilter(cb, joins.getEvent()),
-			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
+			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()),
+			environmentService.createDefaultFilter(cb, joins.getEnvironment()));
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION && currentUser.getUserRoles().stream().noneMatch(UserRole::isPortHealthUser)) {
@@ -249,6 +257,12 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			: null;
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
+		}
+		Predicate environmantFilter = hasContextOrNoContext(taskCriteria, TaskContext.ENVIRONMENT)
+			? environmentService.createUserFilter(new EnvironmentQueryContext(cb, cq, joins.getEnvironmentJoins()))
+			: null;
+		if (environmantFilter != null) {
+			filter = cb.or(filter, environmantFilter);
 		}
 
 		filter = cb.or(filter, assigneeFilter);
@@ -416,6 +430,10 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getTravelEntry().get(TravelEntry.UUID), taskCriteria.getTravelEntry().getUuid()));
 		}
+		if (taskCriteria.getEnvironment() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEnvironment().get(Environment.UUID), taskCriteria.getEnvironment().getUuid()));
+		}
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Task.DUE_DATE), taskCriteria.getDueDateTo()));
@@ -443,7 +461,10 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true)),
 						cb.and(
 							cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
-							cb.equal(joins.getTravelEntry().get(TravelEntry.ARCHIVED), true))));
+							cb.equal(joins.getTravelEntry().get(TravelEntry.ARCHIVED), true)),
+						cb.and(
+							cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.ENVIRONMENT),
+							cb.equal(joins.getEnvironment().get(Environment.ARCHIVED), true))));
 			}
 		}
 		if (taskCriteria.getTaskContext() != null) {
@@ -461,7 +482,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactJoins().getCaseRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactJoins().getCaseResponsibleRegion().get(Region.UUID), regionUuid),
-					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid)));
+					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getEnvironmentRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			String districtUuid = taskCriteria.getDistrict().getUuid();
@@ -475,7 +497,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactJoins().getCaseDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactJoins().getCaseResponsibleDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid)));
+					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getEnvironmentDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
@@ -498,6 +521,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 					CriteriaBuilderHelper.ilike(cb, joins.getEvent().get(Event.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.EVENT_TITLE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getEnvironment().get(Environment.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEnvironment().get(Environment.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEnvironment().get(Environment.ENVIRONMENT_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getTravelEntry().get(TravelEntry.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getTravelEntryPerson().get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getTravelEntryPerson().get(Person.FIRST_NAME), textFilter),
@@ -579,6 +605,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		if (hasRight(UserRight.TRAVEL_ENTRY_VIEW)) {
 			allowTaskContext.add(TaskContext.TRAVEL_ENTRY);
 		}
+		if (hasRight(UserRight.ENVIRONMENT_VIEW)) {
+			allowTaskContext.add(TaskContext.ENVIRONMENT);
+		}
 		return cb.in(from.get(Task.TASK_CONTEXT)).value(allowTaskContext);
 	}
 
@@ -591,6 +620,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		Join<Task, Contact> contact = joins.getContact();
 		Join<Task, Event> event = joins.getEvent();
 		Join<Task, TravelEntry> travelEntry = joins.getTravelEntry();
+		Join<Task, Environment> environment = joins.getEnvironment();
 
 		return cb.and(
 			cb.isFalse(from.get(Task.ARCHIVED)),
@@ -611,12 +641,16 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 					cb.and(
 						cb.or(cb.isNull(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.ARCHIVED))),
 						cb.or(cb.isNull(event.get(Event.DELETED)), cb.isFalse(event.get(Event.DELETED))))),
-
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
 					cb.and(
 						cb.or(cb.isNull(travelEntry.get(TravelEntry.ARCHIVED)), cb.isFalse(travelEntry.get(TravelEntry.ARCHIVED))),
-						cb.or(cb.isNull(travelEntry.get(TravelEntry.DELETED)), cb.isFalse(travelEntry.get(TravelEntry.DELETED)))))));
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.DELETED)), cb.isFalse(travelEntry.get(TravelEntry.DELETED))))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.ENVIRONMENT),
+					cb.and(
+						cb.or(cb.isNull(environment.get(Environment.ARCHIVED)), cb.isFalse(environment.get(Environment.ARCHIVED))),
+						cb.or(cb.isNull(environment.get(Environment.DELETED)), cb.isFalse(environment.get(Environment.DELETED)))))));
 	}
 
 	public Task buildTask(User creatorUser) {
@@ -801,7 +835,12 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getTravelEntry()),
-					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntryJoins())))));
+					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntryJoins())))),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getEnvironment()),
+					environmentService.inJurisdictionOrOwned(new EnvironmentQueryContext(cb, qc.getQuery(), joins.getEnvironmentJoins())))));
 	}
 
 	@Override
@@ -829,6 +868,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			return eventPermissionType == EditPermissionType.WITHOUT_OWNERSHIP ? EditPermissionType.ALLOWED : eventPermissionType;
 		case TRAVEL_ENTRY:
 			return travelEntryService.getEditPermissionType(task.getTravelEntry());
+		case ENVIRONMENT:
+			return environmentService.getEditPermissionType(task.getEnvironment());
 		}
 
 		return EditPermissionType.ALLOWED;

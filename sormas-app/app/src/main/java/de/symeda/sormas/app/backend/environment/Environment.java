@@ -30,7 +30,7 @@ import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.util.WaterUseSerializer;
+import de.symeda.sormas.app.util.EnumMapKeySerializer;
 
 @Entity(name = Environment.TABLE_NAME)
 @DatabaseTable(tableName = Environment.TABLE_NAME)
@@ -221,7 +221,7 @@ public class Environment extends PseudonymizableAdo {
 
 	@NonNull
 	private static Gson getGson() {
-		return new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(WaterUse.class, new WaterUseSerializer()).create();
+		return new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(WaterUse.class, new EnumMapKeySerializer<>(WaterUse.class)).create();
 	}
 
 	public String getOtherWaterUse() {

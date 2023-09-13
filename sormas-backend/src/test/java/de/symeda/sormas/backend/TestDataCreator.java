@@ -28,6 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,6 +67,9 @@ import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -268,7 +273,14 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRoleReferenceDto... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.community.getUuid(),
+			rdcf.facility.getUuid(),
+			firstName,
+			lastName,
+			roles);
 	}
 
 	public UserDto createUser(
@@ -1893,6 +1905,26 @@ public class TestDataCreator {
 		return facility;
 	}
 
+	public FacilityDto createFacility(
+		String facilityName,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Consumer<FacilityDto> extraConfig) {
+
+		FacilityDto facility = FacilityDto.build();
+		facility.setName(facilityName);
+		facility.setRegion(region);
+		facility.setDistrict(district);
+		facility.setType(FacilityType.HOSPITAL);
+
+		if (extraConfig != null) {
+			extraConfig.accept(facility);
+		}
+
+		beanTest.getFacilityFacade().save(facility);
+		return facility;
+	}
+
 	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district) {
 		return createPointOfEntry(pointOfEntryName, region, district, null);
 	}
@@ -2244,15 +2276,33 @@ public class TestDataCreator {
 		environment.setEnvironmentMedia(environmentMedia);
 		environment.setReportDate(new Date());
 		environment.setReportingUser(reportingUser);
-		LocationDto location = LocationDto.build();
-		location.setRegion(rdcf.region);
-		location.setDistrict(rdcf.district);
-		location.setCommunity(rdcf.community);
-		environment.setLocation(location);
+
+		if (rdcf != null) {
+			LocationDto location = environment.getLocation();
+			location.setRegion(rdcf.region);
+			location.setDistrict(rdcf.district);
+			location.setCommunity(rdcf.community);
+		}
 
 		environment = beanTest.getEnvironmentFacade().save(environment);
 
 		return environment;
+	}
+
+	public EnvironmentSampleDto createEnvironmentSample(
+		EnvironmentReferenceDto environment,
+		UserReferenceDto reportingUser,
+		FacilityReferenceDto lab,
+		@Nullable Consumer<EnvironmentSampleDto> extraConfig) {
+		EnvironmentSampleDto sample = EnvironmentSampleDto.build(environment, reportingUser);
+		sample.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+		sample.setLaboratory(lab);
+
+		if (extraConfig != null) {
+			extraConfig.accept(sample);
+		}
+
+		return beanTest.getEnvironmentSampleFacade().save(sample);
 	}
 
 	/**

@@ -15,8 +15,10 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.LocationService;
 
@@ -114,6 +116,12 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 		// Cancel if not in local database
 		if (environment == null) {
 			return;
+		}
+
+		// Delete event tasks
+		List<Task> tasks = DatabaseHelper.getTaskDao().queryByEnvironment(environment);
+		for (Task task : tasks) {
+			DatabaseHelper.getTaskDao().deleteCascade(task);
 		}
 
 		// Delete case

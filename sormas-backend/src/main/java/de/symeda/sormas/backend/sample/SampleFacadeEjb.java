@@ -1108,15 +1108,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public boolean isDeleted(String sampleUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Sample> from = cq.from(Sample.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(CoreAdo.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
+		return caseService.isDeleted(sampleUuid);
 	}
 
 	@Override

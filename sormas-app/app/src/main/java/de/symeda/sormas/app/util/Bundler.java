@@ -29,6 +29,8 @@ public class Bundler {
 	private static final String IMMUNIZATION_UUID = "immunizationUuid";
 	private static final String CONTACT_UUID = "contactUuid";
 	private static final String EVENT_UUID = "eventUuid";
+
+	private static final String ENVIRONMENT_UUID = "environmentUuid";
 	private static final String CAMPAIGN_UUID = "campaignUuid";
 	private static final String CAMPAIGN_FROM_META_UUID = "campaignFormMetaUuid";
 	private static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
@@ -185,6 +187,18 @@ public class Bundler {
 	public String getEventUuid() {
 		if (bundle.containsKey(EVENT_UUID)) {
 			return bundle.getString(EVENT_UUID);
+		}
+		return null;
+	}
+
+	public Bundler setEnvironmentUuid(String environmentUuid) {
+		bundle.putString(ENVIRONMENT_UUID, environmentUuid);
+		return this;
+	}
+
+	public String getEnvironmentUuid() {
+		if (bundle.containsKey(ENVIRONMENT_UUID)) {
+			return bundle.getString(ENVIRONMENT_UUID);
 		}
 		return null;
 	}

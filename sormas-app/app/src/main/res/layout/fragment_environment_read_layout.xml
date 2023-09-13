@@ -29,6 +29,7 @@
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.environment.EnvironmentMedia" />
         <import type="de.symeda.sormas.api.environment.WaterUse" />
+        <import type="de.symeda.sormas.api.environment.WaterType" />
         <import type="de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails" />
 
         <variable name="waterUseClass" type="Class&lt;WaterUse>" />
@@ -97,6 +98,13 @@
                 app:dependencyParentField="@{environmentEnvironmentMedia}"
                 app:dependencyParentValue="@{EnvironmentMedia.WATER}"
                 app:value="@{data.waterType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/environment_otherWaterType"
+                style="@style/ControlSingleColumnStyle"
+                app:dependencyParentField="@{environmentWaterType}"
+                app:dependencyParentValue="@{WaterType.OTHER }"
+                app:value="@{data.otherWaterType}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/environment_infrastructureDetails"

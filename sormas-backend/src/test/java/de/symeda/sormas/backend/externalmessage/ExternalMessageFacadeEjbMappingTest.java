@@ -24,6 +24,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -32,6 +33,8 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -47,6 +50,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 	private SurveillanceReportService surveillanceReportService;
 	@Mock
 	private CountryService countryService;
+	@Mock
+	private FacilityService facilityService;
 	@InjectMocks
 	private ExternalMessageFacadeEjb sut;
 
@@ -63,6 +68,9 @@ public class ExternalMessageFacadeEjbMappingTest {
 		Country country = new Country();
 		country.setUuid("23456");
 		country.setIsoCode("ISO");
+
+		Facility facility = new Facility();
+		facility.setUuid("34567");
 
 		when(sampleReportFacade.fromDto(eq(sampleReportDto), any(ExternalMessage.class), eq(false))).thenReturn(sampleReport);
 		when(userservice.getByReferenceDto(assignee.toReference())).thenReturn(assignee);
@@ -98,8 +106,10 @@ public class ExternalMessageFacadeEjbMappingTest {
 		source.setPersonNationalHealthId("22222");
 		source.setCaseReportDate(new Date());
 		source.setPersonCountry(new CountryReferenceDto(country.getUuid(), country.getIsoCode()));
+		source.setPersonFacility(new FacilityReferenceDto(facility.getUuid()));
 
 		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(country);
+		when(facilityService.getByReferenceDto(source.getPersonFacility())).thenReturn(facility);
 
 		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
@@ -132,6 +142,7 @@ public class ExternalMessageFacadeEjbMappingTest {
 		assertEquals(source.getPersonNationalHealthId(), result.getPersonNationalHealthId());
 		assertEquals(source.getCaseReportDate(), result.getCaseReportDate());
 		assertEquals(source.getPersonCountry().getUuid(), result.getPersonCountry().getUuid());
+		assertEquals(source.getPersonFacility().getUuid(), result.getPersonFacility().getUuid());
 	}
 
 	@Test
