@@ -21,17 +21,19 @@ import org.junit.jupiter.api.Test;
 public class StartupShutdownServiceTest {
 
 	private final String[] SUPPORTED_DATABASE_VERSIONS = new String[] {
-		"9.5",
-		"9.5.25",
-		"9.6.5",
-		"9.6",
-		"10.1",
-		"10.14 (Ubuntu 10.14-1.pgdg20.04+1)" };
+		"14.0",
+		"15.0" };
 
 	private final String[] UNSUPPORTED_DATABASE_VERSIONS = new String[] {
 		"8.4",
 		"8.4.22",
 		"9.1",
+		"9.5",
+		"9.5.25",
+		"9.6.5",
+		"9.6",
+		"10.1",
+		"10.14 (Ubuntu 10.14-1.pgdg20.04+1)",
 		"11.0" };
 
 	@Test
