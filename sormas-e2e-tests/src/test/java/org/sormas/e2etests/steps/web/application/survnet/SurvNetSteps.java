@@ -20,11 +20,13 @@ import static org.sormas.e2etests.steps.web.application.cases.HospitalizationTab
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.previousHospitalization;
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.diagnosedAt;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.notifiedAt;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.specimenCollectedAt;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 import cucumber.api.java8.En;
-
 import java.io.File;
 import java.time.LocalDate;
 import java.time.Period;
@@ -64,7 +66,6 @@ public class SurvNetSteps implements En {
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
           LocalDate expectedDate = LocalDate.now();
-
           switch (typeOfDate) {
             case "date of report":
               LocalDate dateOfReport = getReportingDate(singleXmlFile, 0);
@@ -99,6 +100,30 @@ public class SurvNetSteps implements En {
                   getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "DeceasedDate"),
                   dateOfDeath,
                   "Date of Death is incorrect!");
+              softly.assertAll();
+              break;
+            case "diagnose at date":
+              softly.assertEquals(
+                  getValueFromNotificationDateChildrenSpecificFieldByName(
+                      singleXmlFile, "DiagnosedAt"),
+                  diagnosedAt,
+                  "Diagnose at date is incorrect!");
+              softly.assertAll();
+              break;
+            case "specimen collected At date":
+              softly.assertEquals(
+                  getValueFromNotificationDateChildrenSpecificFieldByName(
+                      singleXmlFile, "SpecimenCollectedAt"),
+                  specimenCollectedAt,
+                  "Specimen collected at date is incorrect!");
+              softly.assertAll();
+              break;
+            case "notified at date":
+              softly.assertEquals(
+                  getValueFromNotificationDateChildrenSpecificFieldByName(
+                      singleXmlFile, "NotifiedAt"),
+                  notifiedAt,
+                  "Notified at date is incorrect!");
               softly.assertAll();
               break;
           }
@@ -669,6 +694,16 @@ public class SurvNetSteps implements En {
         });
 
     And(
+        "I check if NotificationViaDEMIS has {string} value in SORMAS generated bulk XML file is correct",
+        (String notificationValue) -> {
+          softly.assertEquals(
+              getValueFromSpecificNotificationFieldByName(singleXmlFile, "NotificationViaDEMIS"),
+              notificationValue,
+              "Sex is incorrect!");
+          softly.assertAll();
+        });
+
+    And(
         "^I compare the SORMAS generated XML file with the example one$",
         () -> {
           List<String> diffs =
@@ -790,13 +825,15 @@ public class SurvNetSteps implements En {
                       + externalUUID.get(0).substring(1, 37)
                       + ".xml");
           System.out.println("Copy XML file to project !");
-          FileUtils.copyFile(new File("/srv/dockerdata/jenkins_new/sormas-files/case_"
-                  + externalUUID.get(0).substring(1, 37)
-                  + ".xml"),
-                  new File("sormas-e2e-tests/target"));
+          FileUtils.copyFile(
+              new File(
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
+                      + externalUUID.get(0).substring(1, 37)
+                      + ".xml"),
+              new File("sormas-e2e-tests/target"));
           System.out.println("Printing files from dockerdata");
           log.info("Print Opened XML");
-       XMLParser.printDocumentContent(singleXmlFile);
+          XMLParser.printDocumentContent(singleXmlFile);
         });
 
     And(
@@ -1338,5 +1375,60 @@ public class SurvNetSteps implements En {
       }
     }
     return LocalDate.parse(value, DATE_FORMATTER);
+  }
+
+  private LocalDate getValueFromNotificationDateChildrenSpecificFieldByName(
+      Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile
+            .getRootElement()
+            .getChildren()
+            .get(0)
+            .getChildren("Group", ns)
+            .get(1)
+            .getChildren("Field", ns)
+            .stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue().substring(0, 10);
+      }
+    }
+    return LocalDate.parse(value, DATE_FORMATTER);
+  }
+
+  private String getValueFromSpecificNotificationFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile
+            .getRootElement()
+            .getChildren()
+            .get(0)
+            .getChildren("Group", ns)
+            .get(1)
+            .getChildren("Field", ns)
+            .stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue();
+      }
+    }
+    return value;
   }
 }
