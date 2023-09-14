@@ -490,7 +490,7 @@ Feature: Survnet tests
     And I check if "date of death" in SORMAS generated XML file is correct
     And I check if Cause of Death status is correctly setting in SORMAS generated XML file is correct
 
-  @tmsLink=HSP-6177
+  @tmsLink=SORQA-6177
   Scenario: Implement "Check Laboratory messages of case when sending from SORMAS to Meldesoftware"
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
