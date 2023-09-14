@@ -453,7 +453,7 @@ Feature: Survnet tests
     And I collect case external UUID from Edit Case page
     Then I wait 50 seconds for system reaction
     And I open SORMAS generated XML file for single case message
-    Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file
+    And I check that Patientrole is change in SORMAS generated single XML file is "-1"
 
   @tmsLink=SORQA-1054
   Scenario: Check Current condition of person of case when sending from SORMAS to Meldesoftware [1]
@@ -517,3 +517,4 @@ Feature: Survnet tests
     And I check if "specimen collected At date" in SORMAS generated XML file is correct
     And I check if "notified at date" in SORMAS generated XML file is correct
     Then I check if NotificationViaDEMIS has "true" value in SORMAS generated bulk XML file is correct
+    And I check that Patientrole is change in SORMAS generated single XML file is "-1"
