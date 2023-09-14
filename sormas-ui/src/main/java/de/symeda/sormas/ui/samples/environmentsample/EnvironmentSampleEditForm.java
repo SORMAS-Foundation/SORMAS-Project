@@ -32,7 +32,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
@@ -67,7 +66,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	private static final String REPORT_INFO_LOC = "reportInfoLoc";
 	private static final String SAMPLE_MEASUREMENTS_HEADING_LOC = "sampleMeasurementsHeadingLoc";
 	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
-	private static final String LOCATION_DIFFERS_FROM_ENVIRONMENT_LOC = "locationDiffersFromEnvironmentLoc";
 	private static final String SAMPLE_MANAGEMENT_HEADING_LOC = "sampleManagementHeadingLoc";
 	private static final String REQUESTED_PATHOGENS_SUBHEADING_LOC = "requestedPathogensSubheadingLoc";
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC)
@@ -81,7 +79,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		+ fluidRowLocs(EnvironmentSampleDto.PH_VALUE, "")
 		+ fluidRowLocs(EnvironmentSampleDto.WEATHER_CONDITIONS, EnvironmentSampleDto.HEAVY_RAIN)
 		+ loc(LOCATION_HEADING_LOC)
-		+ loc(LOCATION_DIFFERS_FROM_ENVIRONMENT_LOC)
 		+ loc(EnvironmentSampleDto.LOCATION)
 		+ loc(SAMPLE_MANAGEMENT_HEADING_LOC)
 		+ fluidRowLocs(EnvironmentSampleDto.LABORATORY, EnvironmentSampleDto.LABORATORY_DETAILS)
@@ -173,7 +170,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		addField(EnvironmentSampleDto.HEAVY_RAIN, NullableOptionGroup.class);
 
 		getContent().addComponent(buildHeadingLabel(Strings.headingEnvironmentSampleLocation), LOCATION_HEADING_LOC);
-		addCustomField(new CheckBox(), LOCATION_DIFFERS_FROM_ENVIRONMENT_LOC, I18nProperties.getString(Strings.locationDiffersFromEnvironment));
 		LocationEditForm locationForm = addField(EnvironmentSampleDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
 		locationForm.setDistrictRequired();

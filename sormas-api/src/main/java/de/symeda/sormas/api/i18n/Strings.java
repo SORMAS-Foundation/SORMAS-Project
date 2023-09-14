@@ -1012,7 +1012,6 @@ public interface Strings {
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
 	String listOf = "listOf";
-	String locationDiffersFromEnvironment = "locationDiffersFromEnvironment";
 	String mapOf = "mapOf";
 	String max = "max";
 	String messageAcceptRequestToNavigate = "messageAcceptRequestToNavigate";
