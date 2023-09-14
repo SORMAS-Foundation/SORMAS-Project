@@ -62,7 +62,8 @@ public final class LocationHelper {
 			locationFields.add(district);
 		}
 
-		String address = DataHelper.toStringNullable(location.buildAddressCaption());
+		String address = DataHelper.toStringNullable(
+			LocationDto.buildAddressCaption(location.getStreet(), location.getHouseNumber(), location.getPostalCode(), location.getCity()));
 		if (!StringUtils.isBlank(address)) {
 			locationFields.add(address);
 		}

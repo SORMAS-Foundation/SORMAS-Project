@@ -192,7 +192,26 @@ public enum DeleteRestoreMessages {
 		Strings.messageImmunizationsRestored,
 		Strings.headingImmunizationsNotRestored,
 		Strings.headingSomeImmunizationsNotRestored,
-		Strings.messageCountImmunizationsNotRestored);
+		Strings.messageCountImmunizationsNotRestored),
+
+	ENVIRONMENT_SAMPLE(Strings.entityEnvironmentSamples,
+		Strings.headingNoEnvironmentSamplesSelected,
+		Strings.messageNoEnvironmentSamplesSelected,
+		null,
+		null,
+		Strings.headingEnvironmentSamplesDeleted,
+		Strings.messageEnvironmentSamplesDeleted,
+		Strings.headingEnvironmentSamplesNotDeleted,
+		null,
+		null,
+		Strings.messageCountEnvironmentSamplesNotDeletedAccessDeniedReason,
+		null,
+		Strings.messageCountEnvironmentSamplesNotDeleted,
+		Strings.headingEnvironmentSamplesRestored,
+		Strings.messageEnvironmentSamplesRestored,
+		Strings.headingEnvironmentSamplesNotRestored,
+		Strings.headingSomeEnvironmentSamplesNotRestored,
+		Strings.messageCountEnvironmentSamplesNotRestored);
 
 	private final String entities;
 	private final String headingNoSelection;

@@ -22,9 +22,12 @@ import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -40,10 +44,13 @@ import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -393,10 +400,268 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	public void testCount() {
 		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
 		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+		FacilityDto lab2 = creator.createFacility("Lab2", rdcf2.region, rdcf2.district, rdcf2.community, FacilityType.LABORATORY);
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
+			s.getLocation().setRegion(rdcf2.region);
+			s.getLocation().setDistrict(rdcf2.district);
+		});
 
-		assertThat(getEnvironmentSampleFacade().count(null), is(3L));
-		assertThat(getEnvironmentSampleFacade().count(new EnvironmentSampleCriteria()), is(3L));
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
+			s.setDispatched(true);
+			s.getLocation().setRegion(rdcf2.region);
+			s.getLocation().setDistrict(rdcf2.district);
+		});
+
+		assertThat(getEnvironmentSampleFacade().count(null), is(4L));
+		assertThat(getEnvironmentSampleFacade().count(new EnvironmentSampleCriteria()), is(4L));
+		EnvironmentSampleCriteria criteria = new EnvironmentSampleCriteria();
+		criteria.setLaboratory(lab.toReference());
+		assertThat(getEnvironmentSampleFacade().count(criteria), is(2L));
+
+		loginWith(userInDifferentJurisdiction);
+		EnvironmentSampleCriteria criteria2 = new EnvironmentSampleCriteria();
+		criteria2.setDispatched(true);
+		assertThat(getEnvironmentSampleFacade().count(criteria2), is(1L));
+	}
+
+	@Test
+	public void testGetIndexList() {
+		EnvironmentSampleDto sample1InLab1 =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+				s.setFieldSampleId("field_sample-1");
+				s.getLocation().setRegion(rdcf.region);
+				s.getLocation().setDistrict(rdcf.district);
+				s.getLocation().setStreet("street");
+				s.getLocation().setHouseNumber("1");
+				s.getLocation().setPostalCode("12345");
+				s.getLocation().setCity("city");
+				s.setDispatched(true);
+				s.setDispatchDate(new Date());
+				s.setReceived(false);
+				s.setSampleMaterial(EnvironmentSampleMaterial.OTHER);
+				s.setOtherSampleMaterial("Other sample material");
+			});
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+		FacilityDto lab2 = creator.createFacility("Lab2", rdcf2.region, rdcf2.district, rdcf2.community, FacilityType.LABORATORY);
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
+			s.getLocation().setRegion(rdcf2.region);
+			s.getLocation().setDistrict(rdcf2.district);
+		});
+
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
+			s.setDispatched(true);
+			s.getLocation().setRegion(rdcf2.region);
+			s.getLocation().setDistrict(rdcf2.district);
+		});
+
+		assertThat(getEnvironmentSampleFacade().getIndexList(null, null, null, null), hasSize(4));
+		assertThat(getEnvironmentSampleFacade().getIndexList(new EnvironmentSampleCriteria(), 0, 100, null), hasSize(4));
+		assertThat(getEnvironmentSampleFacade().getIndexList(new EnvironmentSampleCriteria(), 0, 2, null), hasSize(2));
+
+		EnvironmentSampleCriteria criteria = new EnvironmentSampleCriteria();
+		criteria.setLaboratory(lab.toReference());
+		List<EnvironmentSampleIndexDto> samplesInLab1 = getEnvironmentSampleFacade().getIndexList(criteria, null, null, null);
+
+		assertThat(samplesInLab1, hasSize(2));
+
+		EnvironmentSampleIndexDto sample1Index = samplesInLab1.stream().filter(s -> s.getUuid().equals(sample1InLab1.getUuid())).findFirst().get();
+		assertThat(sample1Index.getFieldSampleId(), is(sample1InLab1.getFieldSampleId()));
+		assertThat(sample1Index.getSampleDateTime().getTime(), is(sample1InLab1.getSampleDateTime().getTime()));
+		assertThat(sample1Index.getEnvironment(), is(environment.getEnvironmentName()));
+		LocationDto location = sample1InLab1.getLocation();
+		assertThat(
+			sample1Index.getLocation(),
+			is(LocationDto.buildAddressCaption(location.getStreet(), location.getHouseNumber(), location.getPostalCode(), location.getCity())));
+		assertThat(sample1Index.getDistrict(), is(sample1InLab1.getLocation().getDistrict().getCaption()));
+		assertThat(sample1Index.isDispatched(), is(sample1InLab1.isDispatched()));
+		assertThat(sample1Index.getDispatchDate().getTime(), is(sample1InLab1.getDispatchDate().getTime()));
+		assertThat(sample1Index.isReceived(), is(sample1InLab1.isReceived()));
+		assertThat(sample1Index.getLaboratory(), is(lab.getName()));
+		assertThat(sample1Index.getSampleMaterial(), is(sample1InLab1.getSampleMaterial()));
+		assertThat(sample1Index.getOtherSampleMaterial(), is(sample1InLab1.getOtherSampleMaterial()));
+		assertThat(sample1Index.getPositivePathogenTests(), is(0L));
+		assertThat(sample1Index.getLatestPathogenTest(), is(nullValue()));
+		assertThat(sample1Index.getNumberOfTests(), is(0L));
+		assertThat(sample1Index.getDeletionReason(), is(nullValue()));
+		assertThat(sample1Index.getOtherDeletionReason(), is(nullValue()));
+
+		EnvironmentSampleCriteria freetextCriteria = new EnvironmentSampleCriteria();
+		freetextCriteria.setFreeText(DataHelper.getShortUuid(sample1InLab1));
+		assertThat(getEnvironmentSampleFacade().getIndexList(freetextCriteria, null, null, null), hasSize(1));
+
+		// region and district refers to the location of environment
+		EnvironmentSampleCriteria regionDistrictCriteria = new EnvironmentSampleCriteria();
+		regionDistrictCriteria.setRegion(rdcf.region);
+		regionDistrictCriteria.setDistrict(rdcf.district);
+
+		// all samples are linked to the same environment
+		assertThat(getEnvironmentSampleFacade().getIndexList(regionDistrictCriteria, null, null, null), hasSize(4));
+
+		loginWith(userInDifferentJurisdiction);
+		EnvironmentSampleCriteria criteria2 = new EnvironmentSampleCriteria();
+		criteria2.setDispatched(true);
+		assertThat(getEnvironmentSampleFacade().getIndexList(criteria2, null, null, null), hasSize(1));
+		EnvironmentSampleCriteria criteria3 = new EnvironmentSampleCriteria();
+		criteria2.setReceived(false);
+		assertThat(getEnvironmentSampleFacade().getIndexList(criteria3, null, null, null), hasSize(2));
+	}
+
+	@Test
+	public void testRelevanceStatusFilter() {
+		EnvironmentDto environment1 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
+		EnvironmentSampleDto sample1 =
+			creator.createEnvironmentSample(environment1.toReference(), reportingUser.toReference(), lab.toReference(), null);
+
+		EnvironmentDto environment2 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
+		EnvironmentSampleDto sample2 =
+			creator.createEnvironmentSample(environment2.toReference(), reportingUser.toReference(), lab.toReference(), null);
+		getEnvironmentFacade().archive(environment1.getUuid(), new Date());
+
+		EnvironmentDto environment3 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
+		EnvironmentSampleDto sample3 =
+			creator.createEnvironmentSample(environment3.toReference(), reportingUser.toReference(), lab.toReference(), null);
+		getEnvironmentSampleFacade().delete(sample3.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
+
+		EnvironmentSampleCriteria noRelevanceCriteria = new EnvironmentSampleCriteria();
+		assertThat(getEnvironmentSampleFacade().count(noRelevanceCriteria), is(2L));
+		assertThat(getEnvironmentSampleFacade().getIndexList(noRelevanceCriteria, null, null, null), hasSize(2));
+
+		EnvironmentSampleCriteria activeCriteria = new EnvironmentSampleCriteria();
+		activeCriteria.setRelevanceStatus(EntityRelevanceStatus.ACTIVE);
+		assertThat(getEnvironmentSampleFacade().count(activeCriteria), is(1L));
+		assertThat(getEnvironmentSampleFacade().getIndexList(activeCriteria, null, null, null), hasSize(1));
+
+		EnvironmentSampleCriteria archivedCriteria = new EnvironmentSampleCriteria();
+		archivedCriteria.setRelevanceStatus(EntityRelevanceStatus.ARCHIVED);
+		assertThat(getEnvironmentSampleFacade().count(archivedCriteria), is(1L));
+		assertThat(getEnvironmentSampleFacade().getIndexList(archivedCriteria, null, null, null), hasSize(1));
+
+		EnvironmentSampleCriteria deletedCriteria = new EnvironmentSampleCriteria();
+		deletedCriteria.setRelevanceStatus(EntityRelevanceStatus.DELETED);
+		assertThat(getEnvironmentSampleFacade().count(deletedCriteria), is(1L));
+		assertThat(getEnvironmentSampleFacade().getIndexList(deletedCriteria, null, null, null), hasSize(1));
+	}
+
+	@Test
+	public void testSampleDateFilter() {
+		EnvironmentSampleDto sample1 =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+				s.setReportDate(Date.from(LocalDate.of(2023, 9, 4).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			});
+
+		EnvironmentSampleDto sample2 =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+				s.setReportDate(Date.from(LocalDate.of(2023, 9, 6).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			});
+
+		EnvironmentSampleDto sample3 =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+				s.setReportDate(Date.from(LocalDate.of(2023, 9, 7).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			});
+
+		EnvironmentSampleCriteria sampleDateFromCriteria = new EnvironmentSampleCriteria();
+		sampleDateFromCriteria.setReportDateFrom(Date.from(LocalDate.of(2023, 9, 5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		List<EnvironmentSampleIndexDto> samplesFrom = getEnvironmentSampleFacade().getIndexList(sampleDateFromCriteria, null, null, null);
+		assertThat(samplesFrom, hasSize(2));
+		assertThat(samplesFrom.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria sampleDateToCriteria = new EnvironmentSampleCriteria();
+		sampleDateToCriteria.setReportDateTo(Date.from(LocalDate.of(2023, 9, 5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		List<EnvironmentSampleIndexDto> samplesTo = getEnvironmentSampleFacade().getIndexList(sampleDateToCriteria, null, null, null);
+		assertThat(samplesTo, hasSize(1));
+		assertThat(samplesTo.stream().filter(s -> s.getUuid().equals(sample1.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria sampleDateRangeCriteria = new EnvironmentSampleCriteria();
+		sampleDateRangeCriteria.setReportDateFrom(Date.from(LocalDate.of(2023, 9, 5).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		sampleDateRangeCriteria.setReportDateTo(Date.from(LocalDate.of(2023, 9, 7).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		List<EnvironmentSampleIndexDto> samplesInRange = getEnvironmentSampleFacade().getIndexList(sampleDateRangeCriteria, null, null, null);
+		assertThat(samplesInRange, hasSize(2));
+		assertThat(samplesInRange.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+		assertThat(samplesInRange.stream().filter(s -> s.getUuid().equals(sample3.getUuid())).findFirst().orElse(null), is(notNullValue()));
+	}
+
+	@Test
+	public void testGpsCoordinatesFilter() {
+		EnvironmentDto environment1 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf, e -> {
+			e.getLocation().setLatitude(20.0);
+			e.getLocation().setLongitude(36.0);
+		});
+		EnvironmentSampleDto sample1 =
+			creator.createEnvironmentSample(environment1.toReference(), reportingUser.toReference(), lab.toReference(), null);
+
+		EnvironmentDto environment2 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf, e -> {
+			e.getLocation().setLatitude(23.0);
+			e.getLocation().setLongitude(38.0);
+		});
+		EnvironmentSampleDto sample2 =
+			creator.createEnvironmentSample(environment2.toReference(), reportingUser.toReference(), lab.toReference(), null);
+
+		EnvironmentDto environment3 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf, e -> {
+			e.getLocation().setLatitude(24.0);
+			e.getLocation().setLongitude(39.0);
+		});
+		EnvironmentSampleDto sample3 =
+			creator.createEnvironmentSample(environment3.toReference(), reportingUser.toReference(), lab.toReference(), null);
+
+		EnvironmentSampleCriteria gpsLatFromCriteria = new EnvironmentSampleCriteria();
+		gpsLatFromCriteria.setGpsLatFrom(22.0);
+		List<EnvironmentSampleIndexDto> samplesLatFrom = getEnvironmentSampleFacade().getIndexList(gpsLatFromCriteria, null, null, null);
+		assertThat(samplesLatFrom, hasSize(2));
+		assertThat(samplesLatFrom.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria gpsLatToCriteria = new EnvironmentSampleCriteria();
+		gpsLatToCriteria.setGpsLatTo(22.0);
+		List<EnvironmentSampleIndexDto> samplesLatTo = getEnvironmentSampleFacade().getIndexList(gpsLatToCriteria, null, null, null);
+		assertThat(samplesLatTo, hasSize(1));
+		assertThat(samplesLatTo.stream().filter(s -> s.getUuid().equals(sample1.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria gpsLatRangeCriteria = new EnvironmentSampleCriteria();
+		gpsLatRangeCriteria.setGpsLatFrom(22.0);
+		gpsLatRangeCriteria.setGpsLatTo(24.0);
+		List<EnvironmentSampleIndexDto> samplesLatInRange = getEnvironmentSampleFacade().getIndexList(gpsLatRangeCriteria, null, null, null);
+		assertThat(samplesLatInRange, hasSize(2));
+		assertThat(samplesLatInRange.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+		assertThat(samplesLatInRange.stream().filter(s -> s.getUuid().equals(sample3.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria gpsLonFromCriteria = new EnvironmentSampleCriteria();
+		gpsLonFromCriteria.setGpsLonFrom(37.0);
+		List<EnvironmentSampleIndexDto> samplesLonFrom = getEnvironmentSampleFacade().getIndexList(gpsLonFromCriteria, null, null, null);
+		assertThat(samplesLonFrom, hasSize(2));
+		assertThat(samplesLonFrom.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria gpsLonToCriteria = new EnvironmentSampleCriteria();
+		gpsLonToCriteria.setGpsLonTo(37.0);
+		List<EnvironmentSampleIndexDto> samplesLonTo = getEnvironmentSampleFacade().getIndexList(gpsLonToCriteria, null, null, null);
+		assertThat(samplesLonTo, hasSize(1));
+		assertThat(samplesLonTo.stream().filter(s -> s.getUuid().equals(sample1.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria gpsLonRangeCriteria = new EnvironmentSampleCriteria();
+		gpsLonRangeCriteria.setGpsLonFrom(37.0);
+		gpsLonRangeCriteria.setGpsLonTo(39.0);
+		List<EnvironmentSampleIndexDto> samplesLonInRange = getEnvironmentSampleFacade().getIndexList(gpsLonRangeCriteria, null, null, null);
+		assertThat(samplesLonInRange, hasSize(2));
+		assertThat(samplesLonInRange.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+		assertThat(samplesLonInRange.stream().filter(s -> s.getUuid().equals(sample3.getUuid())).findFirst().orElse(null), is(notNullValue()));
+
+		EnvironmentSampleCriteria gpsLatLonRangeCriteria = new EnvironmentSampleCriteria();
+		gpsLatRangeCriteria.setGpsLatFrom(22.0);
+		gpsLatRangeCriteria.setGpsLatTo(24.0);
+		gpsLatLonRangeCriteria.setGpsLonFrom(37.0);
+		gpsLatLonRangeCriteria.setGpsLonTo(39.0);
+		List<EnvironmentSampleIndexDto> samplesLatLonInRange = getEnvironmentSampleFacade().getIndexList(gpsLatLonRangeCriteria, null, null, null);
+		assertThat(samplesLatLonInRange, hasSize(2));
+		assertThat(samplesLatLonInRange.stream().filter(s -> s.getUuid().equals(sample2.getUuid())).findFirst().orElse(null), is(notNullValue()));
+		assertThat(samplesLatLonInRange.stream().filter(s -> s.getUuid().equals(sample3.getUuid())).findFirst().orElse(null), is(notNullValue()));
+	}
+
+	@Test
+	public void testTestedPathogenFilter() {
+		Pathogen pathogen = creator.createPathogen("TEST_PATHOGEN", "test pathogen");
+
+		EnvironmentSampleCriteria criteria = new EnvironmentSampleCriteria();
+		criteria.setTestedPathogen(pathogen);
+
+		assertThrows(UnsupportedOperationException.class, () -> getEnvironmentSampleFacade().getIndexList(criteria, null, null, null));
 	}
 
 	@Test
@@ -431,7 +696,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(deletedUuids, not(containsInAnyOrder(deletedSample.getUuid())));
 		assertThat(deletedUuids, containsInAnyOrder(sample1.getUuid(), sample2.getUuid()));
 
-		assertThat(getEnvironmentSampleFacade().count(null), is(0L));
+		assertThat(getEnvironmentSampleFacade().count(new EnvironmentSampleCriteria()), is(0L));
 	}
 
 	@Test

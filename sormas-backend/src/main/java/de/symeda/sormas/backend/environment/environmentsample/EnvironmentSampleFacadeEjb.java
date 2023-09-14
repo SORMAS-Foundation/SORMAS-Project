@@ -20,15 +20,22 @@ import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -44,6 +51,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -56,16 +64,23 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
 import de.symeda.sormas.backend.environment.EnvironmentService;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "EnvironmentSampleFacade")
@@ -120,9 +135,11 @@ public class EnvironmentSampleFacadeEjb
 		Root<EnvironmentSample> from = cq.from(EnvironmentSample.class);
 		EnvironmentSampleQueryContext queryContext = new EnvironmentSampleQueryContext(cb, cq, from, new EnvironmentSampleJoins(from));
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, service.createUserFilter(cb, cq, from), service.createDefaultFilter(cb, from));
+		Predicate filter = service.createUserFilter(cb, cq, from);
 		if (criteria != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, service.buildCriteriaFilter(criteria, queryContext));
+		} else {
+			filter = CriteriaBuilderHelper.and(cb, filter, service.createDefaultFilter(cb, from));
 		}
 
 		if (filter != null) {
@@ -139,7 +156,135 @@ public class EnvironmentSampleFacadeEjb
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
-		throw new UnsupportedOperationException("Not implemented yet");
+		List<Long> indexListIds = getIndexListIds(criteria, first, max, sortProperties);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		List<EnvironmentSampleIndexDto> indexList = new ArrayList<>();
+		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+			CriteriaQuery<EnvironmentSampleIndexDto> cq = cb.createQuery(EnvironmentSampleIndexDto.class);
+			Root<EnvironmentSample> from = cq.from(EnvironmentSample.class);
+			EnvironmentSampleJoins joins = new EnvironmentSampleJoins(from);
+			EnvironmentSampleQueryContext queryContext = new EnvironmentSampleQueryContext(cb, cq, from, joins);
+			Join<EnvironmentSample, Location> location = joins.getLocation();
+
+			cq.multiselect(
+				from.get(EnvironmentSampleIndexDto.UUID),
+				from.get(EnvironmentSampleIndexDto.FIELD_SAMPLE_ID),
+				from.get(EnvironmentSampleIndexDto.SAMPLE_DATE_TIME),
+				joins.getEnvironment().get(Environment.ENVIRONMENT_NAME),
+				location.get(Location.STREET),
+				location.get(Location.HOUSE_NUMBER),
+				location.get(Location.POSTAL_CODE),
+				location.get(Location.CITY),
+				joins.getLocationJoins().getDistrict().get(District.NAME),
+				from.get(EnvironmentSample.DISPATCHED),
+				from.get(EnvironmentSample.DISPATCH_DATE),
+				from.get(EnvironmentSample.RECEIVED),
+				joins.getLaboratory().get(Facility.NAME),
+				from.get(EnvironmentSample.SAMPLE_MATERIAL),
+				from.get(EnvironmentSample.OTHER_SAMPLE_MATERIAL),
+				from.get(EnvironmentSample.DELETION_REASON),
+				from.get(EnvironmentSample.OTHER_DELETION_REASON),
+				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
+
+			cq.where(from.get(EnvironmentSample.ID).in(batchedIds));
+
+			sortBy(sortProperties, queryContext);
+
+			indexList.addAll(QueryHelper.getResultList(em, cq, null, null));
+		});
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(EnvironmentSampleIndexDto.class, indexList, EnvironmentSampleIndexDto::isInJurisdiction, null);
+
+		return indexList;
+	}
+
+	private List<Long> getIndexListIds(EnvironmentSampleCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		Root<EnvironmentSample> from = cq.from(EnvironmentSample.class);
+
+		EnvironmentSampleQueryContext queryContext = new EnvironmentSampleQueryContext(cb, cq, from, new EnvironmentSampleJoins(from));
+
+		List<Selection<?>> selections = new ArrayList<>();
+		selections.add(from.get(EnvironmentSample.ID));
+		selections.addAll(sortBy(sortProperties, queryContext));
+
+		cq.multiselect(selections);
+
+		Predicate filter = service.createUserFilter(cb, cq, from);
+		if (criteria != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, service.buildCriteriaFilter(criteria, queryContext));
+		} else {
+			filter = CriteriaBuilderHelper.and(cb, filter, service.createDefaultFilter(cb, from));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Tuple> samples = QueryHelper.getResultList(em, cq, first, max);
+		return samples.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, EnvironmentSampleQueryContext queryContext) {
+
+		List<Selection<?>> selections = new ArrayList<>();
+		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		CriteriaQuery<?> cq = queryContext.getQuery();
+
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+
+				/*
+				 * joins.getLocationJoins().getDistrict().get(District.NAME),
+				 * joins.getLaboratory().get(Facility.NAME),
+				 */
+
+				switch (sortProperty.propertyName) {
+				case EnvironmentSampleIndexDto.UUID:
+				case EnvironmentSampleIndexDto.FIELD_SAMPLE_ID:
+				case EnvironmentSampleIndexDto.SAMPLE_DATE_TIME:
+				case EnvironmentSampleIndexDto.DISPATCHED:
+				case EnvironmentSampleIndexDto.DISPATCH_DATE:
+				case EnvironmentSampleIndexDto.RECEIVED:
+				case EnvironmentSampleIndexDto.SAMPLE_MATERIAL:
+					expression = queryContext.getRoot().get(sortProperty.propertyName);
+					break;
+				case EnvironmentSampleIndexDto.ENVIRONMENT:
+					expression = queryContext.getJoins().getEnvironment().get(Environment.ENVIRONMENT_NAME);
+					break;
+				case EnvironmentSampleIndexDto.LOCATION:
+					Join<EnvironmentSample, Location> location = queryContext.getJoins().getLocation();
+					expression = cb.concat(
+						cb.concat(cb.concat(location.get(Location.STREET), location.get(Location.HOUSE_NUMBER)), location.get(Location.POSTAL_CODE)),
+						location.get(Location.CITY));
+					break;
+				case EnvironmentSampleIndexDto.DISTRICT:
+					expression = queryContext.getJoins().getLocationJoins().getDistrict().get(District.NAME);
+					break;
+				case EnvironmentSampleIndexDto.LABORATORY:
+					expression = queryContext.getJoins().getLaboratory().get(Facility.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				selections.add(expression);
+			}
+			cq.orderBy(order);
+		} else {
+			Path<Object> changeDate = queryContext.getRoot().get(EnvironmentSample.CHANGE_DATE);
+			cq.orderBy(cb.desc(changeDate));
+			selections.add(changeDate);
+		}
+
+		return selections;
 	}
 
 	@Override
