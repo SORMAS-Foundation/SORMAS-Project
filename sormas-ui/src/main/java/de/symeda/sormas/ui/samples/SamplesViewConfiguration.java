@@ -15,31 +15,17 @@
 
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.ui.utils.ReloadableGrid;
+public class SamplesViewConfiguration extends ViewConfiguration {
 
-public abstract class SampleGridComponent<T, C extends BaseCriteria> extends VerticalLayout {
+	private SampleViewType viewType;
 
-	abstract ReloadableGrid<T, C> getGrid();
-
-	abstract MenuBar getBulkOperationsDropdown();
-
-	abstract C getCriteria();
-
-	public void reload(ViewChangeListener.ViewChangeEvent event) {
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-			getCriteria().fromUrlParams(params);
-		}
-		updateFilterComponents();
-		getGrid().reload();
+	public SampleViewType getViewType() {
+		return viewType;
 	}
 
-	abstract void updateFilterComponents();
-
+	public void setViewType(SampleViewType viewType) {
+		this.viewType = viewType;
+	}
 }

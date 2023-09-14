@@ -28,8 +28,9 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import de.symeda.sormas.api.uuid.HasUuid;
 
-public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class ContactIndexDto extends PseudonymizableIndexDto implements HasUuid, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
 

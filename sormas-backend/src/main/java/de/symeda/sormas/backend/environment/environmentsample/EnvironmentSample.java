@@ -50,9 +50,17 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class EnvironmentSample extends DeletableAdo {
 
 	public static final String ENVIRONMENT = "environment";
+	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String LABORATORY = "laboratory";
 	public static final String LOCATION = "location";
+	public static final String DISPATCHED = "dispatched";
+	public static final String DISPATCH_DATE = "dispatchDate";
+	public static final String RECEIVED = "received";
+	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleId";
 
 	private static final long serialVersionUID = 7237701234186874155L;
 
