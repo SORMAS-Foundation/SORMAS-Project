@@ -13,33 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.samples;
-
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.VerticalLayout;
+package de.symeda.sormas.ui.utils;
 
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.ui.utils.ReloadableGrid;
 
-public abstract class SampleGridComponent<T, C extends BaseCriteria> extends VerticalLayout {
+public abstract class ReloadableGrid<T, C extends BaseCriteria> extends FilteredGrid<T, C> {
 
-	abstract ReloadableGrid<T, C> getGrid();
-
-	abstract MenuBar getBulkOperationsDropdown();
-
-	abstract C getCriteria();
-
-	public void reload(ViewChangeListener.ViewChangeEvent event) {
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-			getCriteria().fromUrlParams(params);
-		}
-		updateFilterComponents();
-		getGrid().reload();
+	public ReloadableGrid(Class<T> beanType) {
+		super(beanType);
 	}
 
-	abstract void updateFilterComponents();
-
+	public abstract void reload();
 }

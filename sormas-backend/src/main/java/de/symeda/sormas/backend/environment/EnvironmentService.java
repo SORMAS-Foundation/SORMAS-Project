@@ -11,7 +11,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.event.Event;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -133,6 +132,31 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		return builder;
 	}
 
+	public static Predicate buildGpsCoordinatesFilter(
+		Double gpsLatFrom,
+		Double gpsLatTo,
+		Double gpsLonFrom,
+		Double gpsLonTo,
+		CriteriaBuilder cb,
+		EnvironmentJoins joins) {
+		Predicate filter = null;
+		if (gpsLatFrom != null && gpsLatTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(joins.getLocation().get(Location.LATITUDE), gpsLatFrom, gpsLatTo));
+		} else if (gpsLatFrom != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), gpsLatFrom));
+		} else if (gpsLatTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), gpsLatTo));
+		}
+		if (gpsLonFrom != null && gpsLonTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(joins.getLocation().get(Location.LONGITUDE), gpsLonFrom, gpsLonTo));
+		} else if (gpsLonFrom != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), gpsLonFrom));
+		} else if (gpsLonTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), gpsLonTo));
+		}
+		return filter;
+	}
+
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
 
 		CriteriaBuilder cb = environmentQueryContext.getCriteriaBuilder();
@@ -204,30 +228,16 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getResponsibleUser().get(User.UUID), environmentCriteria.getResponsibleUser().getUuid()));
 		}
-		if (environmentCriteria.getGpsLatFrom() != null && environmentCriteria.getGpsLatTo() != null) {
-			filter = CriteriaBuilderHelper.and(
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			buildGpsCoordinatesFilter(
+				environmentCriteria.getGpsLatFrom(),
+				environmentCriteria.getGpsLatTo(),
+				environmentCriteria.getGpsLonFrom(),
+				environmentCriteria.getGpsLonTo(),
 				cb,
-				filter,
-				cb.between(joins.getLocation().get(Location.LATITUDE), environmentCriteria.getGpsLatFrom(), environmentCriteria.getGpsLatTo()));
-		} else if (environmentCriteria.getGpsLatFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), environmentCriteria.getGpsLatFrom()));
-		} else if (environmentCriteria.getGpsLatTo() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), environmentCriteria.getGpsLatTo()));
-		}
-		if (environmentCriteria.getGpsLonFrom() != null && environmentCriteria.getGpsLonTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.between(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom(), environmentCriteria.getGpsLonTo()));
-		} else if (environmentCriteria.getGpsLonFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom()));
-		} else if (environmentCriteria.getGpsLonTo() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonTo()));
-		}
+				joins));
 
 		return filter;
 	}

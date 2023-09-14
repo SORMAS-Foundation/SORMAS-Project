@@ -779,7 +779,10 @@ public class ContactController {
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private Consumer<List<ContactIndexDto>> bulkOperationCallback(String caseUuid, AbstractContactGrid<?> contactGrid, Window popupWindow) {
+	private <T extends ContactIndexDto> Consumer<List<T>> bulkOperationCallback(
+		String caseUuid,
+		AbstractContactGrid<?> contactGrid,
+		Window popupWindow) {
 		return remainingContacts -> {
 			if (popupWindow != null) {
 				popupWindow.close();

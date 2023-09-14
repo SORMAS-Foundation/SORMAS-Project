@@ -24,10 +24,12 @@ import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentJoins;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationJoins;
 
 public class EnvironmentSampleJoins extends QueryJoins<EnvironmentSample> {
 
 	private Join<EnvironmentSample, Location> location;
+	private LocationJoins locationJoins;
 	private Join<EnvironmentSample, Environment> environment;
 	private EnvironmentJoins environmentJoins;
 	private Join<EnvironmentSample, Facility> laboratory;
@@ -42,6 +44,14 @@ public class EnvironmentSampleJoins extends QueryJoins<EnvironmentSample> {
 
 	private void setLocation(Join<EnvironmentSample, Location> location) {
 		this.location = location;
+	}
+
+	public LocationJoins getLocationJoins() {
+		return getOrCreate(locationJoins, () -> new LocationJoins(getRoot().join(EnvironmentSample.LOCATION)), this::setLocationJoins);
+	}
+
+	private void setLocationJoins(LocationJoins locationJoins) {
+		this.locationJoins = locationJoins;
 	}
 
 	public Join<EnvironmentSample, Environment> getEnvironment() {

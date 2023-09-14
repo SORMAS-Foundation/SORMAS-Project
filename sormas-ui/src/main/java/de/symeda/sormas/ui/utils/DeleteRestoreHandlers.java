@@ -11,7 +11,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -65,6 +64,10 @@ public final class DeleteRestoreHandlers {
 
 	public static PermanentDeleteHandler forExternalMessage() {
 		return new PermanentDeleteHandler(FacadeProvider.getExternalMessageFacade(), DeleteRestoreMessages.EXTERNAL_MESSAGE);
+	}
+
+	public static CoreEntityDeleteRestoreHandler forEnvironmentSample() {
+		return new CoreEntityDeleteRestoreHandler(FacadeProvider.getEnvironmentSampleFacade(), DeleteRestoreMessages.ENVIRONMENT_SAMPLE);
 	}
 
 	public static class DeleteRestoreHandler<T extends EntityDto, F extends DeletableFacade>
@@ -171,7 +174,7 @@ public final class DeleteRestoreHandlers {
 		}
 	}
 
-	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>> extends DeleteRestoreHandler<T, F>
+	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends DeletableFacade> extends DeleteRestoreHandler<T, F>
 		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
 		protected CoreEntityDeleteRestoreHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {

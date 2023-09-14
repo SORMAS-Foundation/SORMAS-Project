@@ -16,8 +16,158 @@
 package de.symeda.sormas.api.environment.environmentsample;
 
 import java.io.Serializable;
+import java.util.Date;
 
-public class EnvironmentSampleIndexDto implements Serializable {
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import de.symeda.sormas.api.uuid.HasUuid;
+
+public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -1255140508213117874L;
+
+	public static final String I18N_PREFIX = "EnvironmentSample";
+
+	public static final String UUID = "uuid";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleId";
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
+	public static final String ENVIRONMENT = "environment";
+	public static final String LOCATION = "location";
+	public static final String DISTRICT = "district";
+	public static final String DISPATCHED = "dispatched";
+	public static final String DISPATCH_DATE = "dispatchDate";
+	public static final String RECEIVED = "received";
+	public static final String LABORATORY = "laboratory";
+	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
+	public static final String POSITIVE_PATHOGEN_TESTS = "positivePathogenTests";
+	public static final String LATEST_PATHOGEN_TEST = "latestPathogenTest";
+	public static final String NUMBER_OF_TESTS = "numberOfTests";
+	public static final String DELETION_REASON = "deletionReason";
+
+	private String fieldSampleId;
+	private Date sampleDateTime;
+	@SensitiveData
+	private String environment;
+	@PersonalData
+	@SensitiveData
+	private String location;
+	private String district;
+	private boolean dispatched;
+	private Date dispatchDate;
+	private boolean received;
+	@SensitiveData
+	private String laboratory;
+	private EnvironmentSampleMaterial sampleMaterial;
+	@PersonalData
+	private String otherSampleMaterial;
+	private long positivePathogenTests;
+	private String latestPathogenTest;
+	private long numberOfTests;
+	private DeletionReason deletionReason;
+	@SensitiveData
+	private String otherDeletionReason;
+
+	public EnvironmentSampleIndexDto(
+		String uuid,
+		String fieldSampleId,
+		Date sampleDateTime,
+		String environment,
+		String street,
+		String houseNumber,
+		String postalCode,
+		String city,
+		String district,
+		boolean dispatched,
+		Date dispatchDate,
+		boolean received,
+		String laboratory,
+		EnvironmentSampleMaterial sampleMaterial,
+		String otherSampleMaterial,
+		DeletionReason deletionReason,
+		String otherDeletionReason,
+		boolean isInJurisdiction) {
+		super(uuid);
+		this.fieldSampleId = fieldSampleId;
+		this.sampleDateTime = sampleDateTime;
+		this.environment = environment;
+		this.location = LocationDto.buildAddressCaption(street, houseNumber, postalCode, city);
+		this.district = district;
+		this.dispatched = dispatched;
+		this.dispatchDate = dispatchDate;
+		this.received = received;
+		this.laboratory = laboratory;
+		this.sampleMaterial = sampleMaterial;
+		this.otherSampleMaterial = otherSampleMaterial;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
+		setInJurisdiction(isInJurisdiction);
+	}
+
+	public String getFieldSampleId() {
+		return fieldSampleId;
+	}
+
+	public Date getSampleDateTime() {
+		return sampleDateTime;
+	}
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public boolean isDispatched() {
+		return dispatched;
+	}
+
+	public Date getDispatchDate() {
+		return dispatchDate;
+	}
+
+	public boolean isReceived() {
+		return received;
+	}
+
+	public String getLaboratory() {
+		return laboratory;
+	}
+
+	public EnvironmentSampleMaterial getSampleMaterial() {
+		return sampleMaterial;
+	}
+
+	public String getOtherSampleMaterial() {
+		return otherSampleMaterial;
+	}
+
+	public long getPositivePathogenTests() {
+		return positivePathogenTests;
+	}
+
+	public String getLatestPathogenTest() {
+		return latestPathogenTest;
+	}
+
+	public long getNumberOfTests() {
+		return numberOfTests;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
 }

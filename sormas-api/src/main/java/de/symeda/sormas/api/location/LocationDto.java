@@ -405,7 +405,7 @@ public class LocationDto extends PseudonymizableDto {
 		return location;
 	}
 
-	public String buildAddressCaption() {
+	public static String buildAddressCaption(String street, String houseNumber, String postalCode, String city) {
 		String streetAndNumber = DataHelper.toStringNullable(street) + " " + DataHelper.toStringNullable(houseNumber);
 		String postalAndCity = DataHelper.toStringNullable(postalCode) + " " + DataHelper.toStringNullable(city);
 		if (StringUtils.isNotBlank(streetAndNumber)) {

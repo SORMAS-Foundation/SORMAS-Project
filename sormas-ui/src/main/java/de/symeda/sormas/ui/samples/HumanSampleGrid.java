@@ -42,24 +42,24 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ReloadableGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
-public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
+public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriteria> {
 
 	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	private static final String LAST_PATHOGEN_TEST = Captions.columnLastPathogenTest;
 
 	@SuppressWarnings("unchecked")
-	public SampleGrid(SampleCriteria criteria) {
+	public HumanSampleGrid(SampleCriteria criteria) {
 		super(SampleIndexDto.class);
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(SamplesViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
@@ -219,12 +219,13 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 	}
 
+	@Override
 	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 
-		if (ViewModelProviders.of(SamplesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+		if (ViewModelProviders.of(SamplesView.class).get(SamplesViewConfiguration.class).isInEagerMode()) {
 			setEagerDataProvider();
 		}
 
