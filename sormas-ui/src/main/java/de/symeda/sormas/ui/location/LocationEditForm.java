@@ -711,6 +711,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		addressType.setRequired(true);
 	}
 
+	public void setDistrictRequired() {
+		setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
+	}
 	public void setDistrictRequiredOnDefaultCountry(boolean required) {
 		this.districtRequiredOnDefaultCountry = required;
 		if (required) {
@@ -725,6 +728,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		infoLabel.setDescription(hint, ContentMode.HTML);
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_TOP_3);
 		getContent().addComponent(infoLabel, COUNTRY_HINT_LOC);
+	}
+
+	public void setGpsCoordinatesRequired() {
+		setFieldsRequirement(true, LocationDto.LATITUDE, LocationDto.LONGITUDE);
 	}
 
 	@Override

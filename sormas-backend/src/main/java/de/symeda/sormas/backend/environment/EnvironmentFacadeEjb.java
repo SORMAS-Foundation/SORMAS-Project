@@ -25,7 +25,7 @@ import javax.persistence.criteria.Selection;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -371,7 +371,7 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	protected CoreEntityType getCoreEntityType() {
+	protected DeletableEntityType getCoreEntityType() {
 		return null;
 	}
 

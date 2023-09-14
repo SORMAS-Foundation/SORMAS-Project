@@ -26,7 +26,9 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
@@ -46,7 +48,7 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 	private UserService userService;
 
 	public EnvironmentSampleService() {
-		super(EnvironmentSample.class);
+		super(EnvironmentSample.class, DeletableEntityType.ENVIRONMENT_SAMPLE);
 	}
 
 	@Override
@@ -64,7 +66,11 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 	}
 
 	public boolean isEditAllowed(EnvironmentSample sample) {
-		return inJurisdictionOrOwned(sample);
+		return getEditPermissionType(sample) == EditPermissionType.ALLOWED;
+	}
+
+	public EditPermissionType getEditPermissionType(EnvironmentSample sample) {
+		return inJurisdictionOrOwned(sample) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
 	}
 
 	@Override

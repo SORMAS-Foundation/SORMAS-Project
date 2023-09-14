@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.common;
 
-public enum CoreEntityType {
+public enum DeletableEntityType {
 
 	//ENTITY LIST
 	CASE,
@@ -25,5 +25,8 @@ public enum CoreEntityType {
 	IMMUNIZATION,
 	TRAVEL_ENTRY,
 	CAMPAIGN,
-	ENVIRONMENT;
+	SAMPLE,
+	PATHOGEN_TEST,
+	ENVIRONMENT,
+	ENVIRONMENT_SAMPLE;
 }

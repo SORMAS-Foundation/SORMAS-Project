@@ -53,7 +53,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -502,10 +502,14 @@ public class EventsView extends AbstractView {
 					});
 					actionButtonsLayout.addComponent(groupRelevanceStatusFilter);
 				} else {
-					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT)) {
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT)) {
 
 						int daysAfterEventGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-							.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+							.getProperty(
+								FeatureType.AUTOMATIC_ARCHIVING,
+								DeletableEntityType.EVENT,
+								FeatureTypeProperty.THRESHOLD_IN_DAYS,
+								Integer.class);
 						if (daysAfterEventGetsArchived > 0) {
 							relevanceStatusInfoLabel = new Label(
 								VaadinIcons.INFO_CIRCLE.getHtml() + " "

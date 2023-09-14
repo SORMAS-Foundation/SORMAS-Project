@@ -69,10 +69,10 @@ import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProce
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
-import de.symeda.sormas.ui.samples.SampleController;
-import de.symeda.sormas.ui.samples.SampleCreateForm;
-import de.symeda.sormas.ui.samples.SampleEditForm;
-import de.symeda.sormas.ui.samples.SampleEditPathogenTestListHandler;
+import de.symeda.sormas.ui.samples.humansample.SampleController;
+import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
+import de.symeda.sormas.ui.samples.humansample.SampleEditForm;
+import de.symeda.sormas.ui.samples.humansample.SampleEditPathogenTestListHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;

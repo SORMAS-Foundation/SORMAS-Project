@@ -58,6 +58,7 @@ import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -140,7 +141,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public SampleService() {
-		super(Sample.class);
+		super(Sample.class, DeletableEntityType.SAMPLE);
 	}
 
 	public List<Sample> findBy(SampleCriteria criteria, User user, String sortProperty, boolean ascending) {

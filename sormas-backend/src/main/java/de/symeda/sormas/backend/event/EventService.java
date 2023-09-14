@@ -47,7 +47,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
@@ -136,7 +138,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public EventService() {
-		super(Event.class);
+		super(Event.class, DeletableEntityType.EVENT);
 	}
 
 	@Override
@@ -1151,4 +1153,12 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		return true;
 	}
 
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Event.REPORT_DATE_TIME;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
+	}
 }
