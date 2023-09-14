@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.environmentsample;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,9 +40,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleDataView;
-import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleEditForm;
-import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleGrid;
+import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
