@@ -24,7 +24,6 @@ import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVac
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
 import cucumber.api.java8.En;
-
 import java.io.File;
 import java.time.LocalDate;
 import java.time.Period;
@@ -307,6 +306,23 @@ public class SurvNetSteps implements En {
               getValueFromSpecificFieldByName(singleXmlFile, "LabInfoAvailable"),
               "20",
               "LabInfoAvailable has incorrect value");
+          softly.assertAll();
+        });
+
+    And(
+        "I check that Patientrole is change in SORMAS generated single XML file is {string}",
+        (String expectedValue) -> {
+          String xmlValue = singleXmlFile
+              .getRootElement()
+              .getChildren()
+              .get(0)
+              .getChildren()
+              .get(1)
+              .getChildren()
+              .get(0)
+              .getAttribute("Value")
+              .getValue();
+          softly.assertEquals(xmlValue, expectedValue, "Patientrole value is wrong");
           softly.assertAll();
         });
 
@@ -789,14 +805,12 @@ public class SurvNetSteps implements En {
                   "/srv/dockerdata/jenkins_new/sormas-files/case_"
                       + externalUUID.get(0).substring(1, 37)
                       + ".xml");
-          System.out.println("Copy XML file to project !");
-          FileUtils.copyFile(new File("/srv/dockerdata/jenkins_new/sormas-files/case_"
-                  + externalUUID.get(0).substring(1, 37)
-                  + ".xml"),
-                  new File("sormas-e2e-tests/target"));
-          System.out.println("Printing files from dockerdata");
-          log.info("Print Opened XML");
-       XMLParser.printDocumentContent(singleXmlFile);
+          FileUtils.copyFile(
+              new File(
+                  "/srv/dockerdata/jenkins_new/sormas-files/case_"
+                      + externalUUID.get(0).substring(1, 37)
+                      + ".xml"),
+              new File("sormas-e2e-tests/target"));
         });
 
     And(

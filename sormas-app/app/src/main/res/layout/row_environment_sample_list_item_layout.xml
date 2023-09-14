@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="data" type="de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample"/>
+        <variable name="testResultMessage" type="String" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="fill"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:background="@drawable/selector_list_activity_row_background">
+
+        <LinearLayout
+            android:id="@+id/row_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/rowListItemVerticalPadding"
+            android:paddingBottom="@dimen/rowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:scrollHorizontally="true"
+                android:maxLines="1"
+                android:ellipsize="end">
+
+                <TextView
+                    android:id="@+id/txtEnvSampleMaterial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    app:value="@{data.sampleMaterial}"
+                    app:defaultValue='@{@string/value_sample_material_unknown}'
+                    />
+
+                <TextView
+                    android:id="@+id/txtEnvSampleNameDateSeparator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="-"/>
+
+                <TextView
+                    android:id="@+id/txtEnvSamplingDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/row_entry_date_text_size"
+                    android:textColor="@color/listActivityRowDateText"
+                    android:fontFamily="sans-serif"
+                    app:timeAgoValue="@{data.sampleDateTime}"
+                    app:defaultValue='@{@string/value_sample_date_unknown}'
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/separatorThickness"
+                    android:layout_height="match_parent"
+                    android:background="@color/listActivityRowTopCaptionSeparator"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp" />
+
+                <TextView
+                    android:id="@+id/txtEnvSampleUuid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:fontFamily="sans-serif-medium"
+                    app:value="@{data.uuid}"
+                    app:shortUuid="@{true}"
+                    app:defaultValue='@{@string/value_uuid_unknown}' />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="fill"
+                android:layout_gravity="fill">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtEnvSampleEnvironment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif-medium"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:environmentValue="@{data.environment}"
+                        app:defaultValue='@{@string/value_environment_name_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtEnvSampleLab"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
+                        app:facilityValue="@{data.laboratory}"
+                        app:defaultValue='@{@string/value_lab_unknown}'
+                        />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:paddingStart="24dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/imgSyncIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        app:tint="@color/syncIconListActivityRowItem"
+                        android:scaleType="fitEnd"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        />
+
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:id="@+id/img_open_entry"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_go_to_read_view_24dp"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

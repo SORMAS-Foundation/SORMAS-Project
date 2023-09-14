@@ -79,6 +79,7 @@
     <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">New Event</string>
     <string name="action_new_sample">New Sample</string>
+    <string name="action_new_environment_sample">New Environment Sample</string>
     <string name="action_new_task">New Task</string>
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">OK</string>
@@ -396,6 +397,7 @@
     <string name="heading_sample_read">Read Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
     <string name="heading_samples_list">Sample Listing</string>
+    <string name="heading_environment_sample_list">Environment Sample Listing</string>
     <string name="heading_environment_list">Environment Listing</string>
     <string name="heading_environment_edit">Edit Environment</string>
     <string name="heading_environment_new">New Environment</string>
@@ -526,6 +528,7 @@
     <string name="main_menu_reports">Reports</string>
     <string name="main_menu_samples">Samples</string>
     <string name="main_menu_environments">Environments</string>
+    <string name="main_menu_environment_samples">Environment Samples</string>
     <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Settings</string>
     <string name="main_menu_tasks">Tasks</string>
@@ -699,5 +702,6 @@
     <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
     <string name="value_vaccine_name_unknown">Vaccine N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
+    <string name="value_environment_name_unknown">Environment Name N/A</string>
 
 </resources>
