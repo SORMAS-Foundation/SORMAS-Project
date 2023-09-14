@@ -34,8 +34,6 @@ public class MessagesDirectorySteps implements En {
   public static List<String> uuids = new ArrayList<>();
   public static List<String> shortenedUUIDS = new ArrayList<>();
   public static LocalDate diagnosedAt;
-  public static LocalDate specimenCollectedAt;
-  public static LocalDate notifiedAt;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   @Inject
@@ -538,37 +536,14 @@ public class MessagesDirectorySteps implements En {
     Then(
         "I collect {string} Date from Message",
         (String dateOption) -> {
-          switch (dateOption) {
-            case "DiagnosedAt":
               String localDiagnosedAt =
                   String.format(
                       webDriverHelpers
                           .getTextFromWebElement(DIAGNOSED_AT_DATE)
                           .substring(0, 10)
                           .replace(".", "-"));
-
               diagnosedAt =
                   convertStringToChosenFormatDate("dd-MM-yyyy", "yyyy-MM-dd", localDiagnosedAt);
-              break;
-            case "SpecimenCollectedAt":
-              String localSpecimenCollectedAt =
-                  webDriverHelpers
-                      .getTextFromWebElement(SPECIMEN_COLLECTED_AT_DATE)
-                      .substring(0, 10)
-                      .replace(".", "-");
-
-              specimenCollectedAt =
-                  convertStringToChosenFormatDate(
-                      "dd-MM-yyyy", "yyyy-MM-dd", localSpecimenCollectedAt);
-              break;
-            case "NotifiedAt":
-              String localNotifiedAt =
-                  webDriverHelpers.getValueFromWebElement(NOTIFICATION_AT_DATE).replace(".", "-");
-
-              notifiedAt =
-                  convertStringToChosenFormatDate("dd-MM-yyyy", "yyyy-MM-dd", localNotifiedAt);
-              break;
-          }
         });
 
     Then(
@@ -594,7 +569,7 @@ public class MessagesDirectorySteps implements En {
         });
   }
 
-  private LocalDate convertStringToChosenFormatDate(
+  public static LocalDate convertStringToChosenFormatDate(
       String inputFormatDate, String outputFormatDate, String localDate) {
     String output = null;
     try {

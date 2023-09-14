@@ -21,8 +21,8 @@ import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitaliz
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
 import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.diagnosedAt;
-import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.notifiedAt;
-import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.specimenCollectedAt;
+import static org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps.reportDate;
+import static org.sormas.e2etests.steps.web.application.samples.EditSampleSteps.dateOfSampleCollected;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
@@ -110,19 +110,19 @@ public class SurvNetSteps implements En {
                   "Diagnose at date is incorrect!");
               softly.assertAll();
               break;
-            case "specimen collected At date":
+            case "date of sample collected":
               softly.assertEquals(
                   getValueFromNotificationDateChildrenSpecificFieldByName(
                       singleXmlFile, "SpecimenCollectedAt"),
-                  specimenCollectedAt,
-                  "Specimen collected at date is incorrect!");
+                  dateOfSampleCollected,
+                  "Date of sample collected is incorrect!");
               softly.assertAll();
               break;
-            case "notified at date":
+            case "date of report for pathogen":
               softly.assertEquals(
                   getValueFromNotificationDateChildrenSpecificFieldByName(
                       singleXmlFile, "NotifiedAt"),
-                  notifiedAt,
+                  reportDate,
                   "Notified at date is incorrect!");
               softly.assertAll();
               break;
@@ -338,16 +338,17 @@ public class SurvNetSteps implements En {
     And(
         "I check that Patientrole is change in SORMAS generated single XML file is {string}",
         (String expectedValue) -> {
-          String xmlValue = singleXmlFile
-              .getRootElement()
-              .getChildren()
-              .get(0)
-              .getChildren()
-              .get(1)
-              .getChildren()
-              .get(0)
-              .getAttribute("Value")
-              .getValue();
+          String xmlValue =
+              singleXmlFile
+                  .getRootElement()
+                  .getChildren()
+                  .get(0)
+                  .getChildren()
+                  .get(1)
+                  .getChildren()
+                  .get(0)
+                  .getAttribute("Value")
+                  .getValue();
           softly.assertEquals(xmlValue, expectedValue, "Patientrole value is wrong");
           softly.assertAll();
         });
@@ -711,7 +712,7 @@ public class SurvNetSteps implements En {
         });
 
     And(
-        "I check if NotificationViaDEMIS has {string} value in SORMAS generated bulk XML file is correct",
+        "I check if Notification Via DEMIS checkbox value has correctly mapped in SORMAS generated singleXmlFile XML file",
         (String notificationValue) -> {
           softly.assertEquals(
               getValueFromSpecificNotificationFieldByName(singleXmlFile, "NotificationViaDEMIS"),
