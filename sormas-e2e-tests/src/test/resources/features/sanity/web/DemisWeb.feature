@@ -753,7 +753,7 @@ Scenario: Create and send laboratory request via Demis
     And I click on the APPLY FILTERS button
     And I check that all displayed messages have "Labormeldung" in grid Message Directory Type column
 
-  @tmsLink=HSP-6177
+  @tmsLink=HSP-6177 @env_d2s @LoginKeycloak
   Scenario: Implement "Check Laboratory messages of case when sending from SORMAS to Meldesoftware"
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
