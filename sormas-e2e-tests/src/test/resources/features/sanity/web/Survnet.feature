@@ -490,11 +490,12 @@ Feature: Survnet tests
     And I check if "date of death" in SORMAS generated XML file is correct
     And I check if Cause of Death status is correctly setting in SORMAS generated XML file is correct
 
-  @tmsLink=SORQA-6177
+  @tmsLink=HSP-6177 @env_d2s @LoginKeycloak
   Scenario: Implement "Check Laboratory messages of case when sending from SORMAS to Meldesoftware"
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
-    Given I log in as a Survnet
+    And I navigate to "survnet" environment
+    And I log in as a Survnet
     Then I click on the Messages button from navbar
     And I click on fetch messages button
     Then I filter by last created person via API in Messages Directory
