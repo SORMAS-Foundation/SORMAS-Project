@@ -161,7 +161,7 @@ public class CreateNewSampleSteps implements En {
   private final BaseSteps baseSteps;
   public static LocalDate sampleCollectionDateForFollowUpDate;
   public static LocalDate reportDate;
-  public static String CheckboxViaDemis;
+  public static String CheckboxViaDemisValue;
 
   @Inject
   public CreateNewSampleSteps(
@@ -847,7 +847,7 @@ public class CreateNewSampleSteps implements En {
         () -> {
           String localCheckboxViaDemis =
               webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(VIA_DEMIS_CHECKBOX);
-          if (localCheckboxViaDemis.equals("Via DEMIS")) CheckboxViaDemis = "true";
+          if (localCheckboxViaDemis.equals("Via DEMIS")) CheckboxViaDemisValue = "true";
         });
 
     When(

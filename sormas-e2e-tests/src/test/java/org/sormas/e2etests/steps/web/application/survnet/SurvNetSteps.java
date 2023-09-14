@@ -21,6 +21,7 @@ import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitaliz
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
 import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.diagnosedAt;
+import static org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps.CheckboxViaDemisValue;
 import static org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps.reportDate;
 import static org.sormas.e2etests.steps.web.application.samples.EditSampleSteps.dateOfSampleCollected;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
@@ -713,11 +714,11 @@ public class SurvNetSteps implements En {
 
     And(
         "I check if Notification Via DEMIS checkbox value has correctly mapped in SORMAS generated singleXmlFile XML file",
-        (String notificationValue) -> {
+        () -> {
           softly.assertEquals(
               getValueFromSpecificNotificationFieldByName(singleXmlFile, "NotificationViaDEMIS"),
-              notificationValue,
-              "Sex is incorrect!");
+                  CheckboxViaDemisValue,
+              "checkbox has incorrect value!");
           softly.assertAll();
         });
 
