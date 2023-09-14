@@ -611,6 +611,7 @@ public interface Strings {
 	String headingImportDistricts = "headingImportDistricts";
 	String headingImportedCaseInfo = "headingImportedCaseInfo";
 	String headingImportedPersonInfo = "headingImportedPersonInfo";
+	String headingImportEnvironments = "headingImportEnvironments";
 	String headingImportError = "headingImportError";
 	String headingImportEvent = "headingImportEvent";
 	String headingImportEventParticipant = "headingImportEventParticipant";
