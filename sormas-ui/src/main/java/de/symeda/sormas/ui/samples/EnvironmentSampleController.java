@@ -39,8 +39,6 @@ public class EnvironmentSampleController {
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				null,
-				null,
 				DeleteRestoreHandlers.forEnvironmentSample(),
 				bulkOperationCallback(sampleGrid, noEntriesRemainingCallback));
 

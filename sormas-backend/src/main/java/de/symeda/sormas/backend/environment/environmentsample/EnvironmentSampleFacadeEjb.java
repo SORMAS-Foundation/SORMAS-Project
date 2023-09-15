@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
@@ -336,21 +338,22 @@ public class EnvironmentSampleFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_SAMPLE_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedSamples = new ArrayList<>();
 		List<EnvironmentSample> samplesToDelete = service.getByUuids(uuids);
 
 		if (samplesToDelete != null) {
 			samplesToDelete.stream().filter(not(EnvironmentSample::isDeleted)).forEach(sample -> {
 				try {
 					delete(sample.getUuid(), deletionDetails);
-					deletedUuids.add(sample.getUuid());
+					processedSamples.add(new ProcessedEntity(sample.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
+					processedSamples.add(new ProcessedEntity(sample.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 					logger.error("The environment sample with uuid: {} could not be deleted", sample.getUuid(), e);
 				}
 			});
 		}
-		return deletedUuids;
+		return processedSamples;
 	}
 
 	@Override
@@ -366,21 +369,22 @@ public class EnvironmentSampleFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_SAMPLE_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedSamples = new ArrayList<>();
 		List<EnvironmentSample> samplesToRestore = service.getByUuids(uuids);
 
 		if (samplesToRestore != null) {
 			samplesToRestore.stream().filter(EnvironmentSample::isDeleted).forEach(sample -> {
 				try {
 					restore(sample);
-					restoredUuids.add(sample.getUuid());
+					processedSamples.add(new ProcessedEntity(sample.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
+					processedSamples.add(new ProcessedEntity(sample.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 					logger.error("The sample with uuid: {} could not be restored", sample.getUuid(), e);
 				}
 			});
 		}
-		return restoredUuids;
+		return processedSamples;
 	}
 
 	@Override

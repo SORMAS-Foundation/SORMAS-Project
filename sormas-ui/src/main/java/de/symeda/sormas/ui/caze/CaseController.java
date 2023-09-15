@@ -1034,6 +1034,7 @@ public class CaseController {
 
 			CaseFacade caseFacade = FacadeProvider.getCaseFacade();
 			List<T> selectedCasesCpy = new ArrayList<>(selectedCases);
+
 			if (facilityChange) {
 				VaadinUiUtil.showChooseOptionPopup(
 					I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
@@ -1054,8 +1055,6 @@ public class CaseController {
 								surveillanceOfficerChange,
 								e),
 							selectedCasesCpy,
-							null,
-							null,
 							bulkOperationCallback(caseGrid, popupWindow)));
 			} else {
 				BulkOperationHandler.<T> forBulkEdit()
@@ -1070,8 +1069,6 @@ public class CaseController {
 							outcomeChange,
 							surveillanceOfficerChange),
 						selectedCasesCpy,
-						null,
-						null,
 						bulkOperationCallback(caseGrid, popupWindow));
 			}
 		});
@@ -1554,8 +1551,7 @@ public class CaseController {
 	public void deleteAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
-
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forCase(), bulkOperationCallback(caseGrid, null));
 	}
 
 	public void restoreSelectedCases(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {

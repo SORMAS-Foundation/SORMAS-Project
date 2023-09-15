@@ -67,6 +67,8 @@ import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -511,24 +513,38 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedEventParticipantUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedEventParticipants = new ArrayList<>();
 		List<EventParticipant> eventParticipantsToBeDeleted = service.getByUuids(uuids);
 
 		if (eventParticipantsToBeDeleted != null) {
 			eventParticipantsToBeDeleted.forEach(eventParticipantToBeDeleted -> {
-				if (!eventParticipantToBeDeleted.isDeleted()) {
-					try {
+
+				try {
+					if (!eventParticipantToBeDeleted.isDeleted()) {
 						delete(eventParticipantToBeDeleted.getUuid(), deletionDetails);
-						deletedEventParticipantUuids.add(eventParticipantToBeDeleted.getUuid());
-					} catch (Exception e) {
-						logger.error("The event participant with uuid:" + eventParticipantToBeDeleted.getUuid() + "could not be deleted");
+						processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedEventParticipants
+							.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 					}
+				} catch (AccessDeniedException e) {
+					processedEventParticipants
+						.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error(
+						"The event participant with uuid {} could not be deleted due to a AccessDeniedException",
+						eventParticipantToBeDeleted.getUuid(),
+						e);
+				} catch (Exception e) {
+					processedEventParticipants
+						.add(new ProcessedEntity(eventParticipantToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error(
+						"The event participant with uuid:" + eventParticipantToBeDeleted.getUuid() + "could not be deleted due to an Exception");
 				}
 			});
 		}
 
-		return deletedEventParticipantUuids;
+		return processedEventParticipants;
 	}
 
 	@Override
@@ -539,22 +555,27 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredEventParticipantUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedEventParticipants = new ArrayList<>();
 		List<EventParticipant> eventParticipantsToBeRestored = service.getByUuids(uuids);
 
 		if (eventParticipantsToBeRestored != null) {
 			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
 				try {
 					restore(eventParticipantToBeRestored.getUuid());
-					restoredEventParticipantUuids.add(eventParticipantToBeRestored.getUuid());
+					processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The event participant with uuid:" + eventParticipantToBeRestored.getUuid() + "could not be restored");
+					processedEventParticipants
+						.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error(
+						"The event participant with uuid {} could not be restored due to an Exception",
+						eventParticipantToBeRestored.getUuid(),
+						e);
 				}
 			});
 		}
 
-		return restoredEventParticipantUuids;
+		return processedEventParticipants;
 	}
 
 	@Override
@@ -1275,14 +1296,14 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolRuntimeException {
+		return super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override

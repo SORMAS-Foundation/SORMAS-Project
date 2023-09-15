@@ -94,6 +94,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -224,6 +225,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = "import_contact_template.csv";
 	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
 	private static final String TRAVEL_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_travel_entry_template.csv";
+	private static final String ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME = "import_environment_template.csv";
 
 	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
 	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
@@ -512,6 +514,19 @@ public class ImportFacadeEjb implements ImportFacade {
 		appendListOfFields(importColumns, clazz, "", separator, featureConfigurations);
 
 		writeTemplate(filePath, importColumns, false);
+	}
+
+	@Override
+	public void generateEnvironmentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, EnvironmentDto.class, "", separator, featureConfigurations);
+
+		writeTemplate(Paths.get(getEnvironmentImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
@@ -855,6 +870,16 @@ public class ImportFacadeEjb implements ImportFacade {
 		Charset charset = StandardCharsets.UTF_8;
 		String content = new String(Files.readAllBytes(Paths.get(templateFilePath)), charset);
 		return resolvePlaceholders(content);
+	}
+
+	@Override
+	public String getEnvironmentImportTemplateFilePath() {
+		return getImportTemplateFilePath(ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getEnvironmentImportTemplateFileName() {
+		return getImportTemplateFileName(ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	/**

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
+import de.symeda.sormas.api.environment.EnvironmentImportFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -70,6 +71,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.sample.SampleDashboardFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
+import de.symeda.sormas.backend.environment.EnvironmentImportFacadeEjb;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -207,6 +209,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal.class);
 		} else if (EnvironmentSampleFacadeEjb.class == clazz) {
 			return (P) beanTest.getBean(EnvironmentSampleFacadeEjb.EnvironmentSampleFacadeEjbLocal.class);
+		} else if (EnvironmentImportFacade.class == clazz) {
+			return (P) beanTest.getBean(EnvironmentImportFacadeEjb.EnvironmentImportFacadeEjbLocal.class);
 		}
 
 		return null;

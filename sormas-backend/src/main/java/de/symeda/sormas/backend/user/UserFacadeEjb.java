@@ -54,6 +54,8 @@ import javax.validation.ValidationException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -61,6 +63,8 @@ import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -143,6 +147,8 @@ public class UserFacadeEjb implements UserFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private CurrentUserService currentUserService;
@@ -1009,32 +1015,35 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@RightsAllowed(UserRight._USER_EDIT)
-	public void enableUsers(List<String> userUuids) {
-		updateActiveState(userUuids, true);
+	public List<ProcessedEntity> enableUsers(List<String> userUuids) {
+		return updateActiveState(userUuids, true);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._USER_EDIT)
-	public void disableUsers(List<String> userUuids) {
-		updateActiveState(userUuids, false);
+	public List<ProcessedEntity> disableUsers(List<String> userUuids) {
+		return updateActiveState(userUuids, false);
 	}
 
-	private void updateActiveState(List<String> userUuids, boolean active) {
+	private List<ProcessedEntity> updateActiveState(List<String> userUuids, boolean active) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 
 		List<User> users = userService.getByUuids(userUuids);
 		for (User user : users) {
-			User oldUser;
 			try {
-				oldUser = (User) BeanUtils.cloneBean(user);
+				User oldUser = (User) BeanUtils.cloneBean(user);
+				user.setActive(active);
+				userService.ensurePersisted(user);
+
+				userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+				processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.SUCCESS));
 			} catch (Exception e) {
-				throw new IllegalArgumentException("Invalid bean access", e);
+				processedEntities.add(new ProcessedEntity(user.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The event with uuid {} could not be restored due to an Exception", user.getUuid(), e);
 			}
-
-			user.setActive(active);
-			userService.ensurePersisted(user);
-
-			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
 		}
+
+		return processedEntities;
 	}
 
 	@Override
