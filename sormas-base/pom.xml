@@ -1484,7 +1484,7 @@
 
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.6.0</version>
 					<configuration>
 						<!-- Deactivate javadoc validation (active by default since Java 1.8) -->
 						<doclint>${maven.javadoc.doclint}</doclint>
