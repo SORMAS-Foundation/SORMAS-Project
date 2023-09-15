@@ -18,8 +18,6 @@ import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -27,6 +25,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -56,7 +55,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// lead has no value, other has
 			sourceDto.setDiabetes(YesNoUnknown.YES);
 
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			// Check no values
 			assertNull(targetDto.getHiv());
@@ -97,7 +96,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			targetDto.setSymptoms(targetSymptomsDto);
 			sourceDto.setSymptoms(sourceSymptomsDto);
 
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			// Check no values
 			assertNull(targetDto.getSymptoms().getBackache());
@@ -139,14 +138,14 @@ public class DtoHelperTest extends AbstractBeanTest {
 			sourceList2.add(subDto2);
 
 			// Check no values
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 			assertTrue(targetDto.getEpiData().getExposures().isEmpty());
 
 			// Check 'lead has still same entries'
 			targetDto.getEpiData().setExposures(targetList1);
 			sourceDto.getEpiData().setExposures(sourceList1);
 			String existingUuid = targetList1.get(0).getUuid();
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			assertEquals(targetList1.size(), targetDto.getEpiData().getExposures().size());
 			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
@@ -156,7 +155,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Check 'lead has value, other has not'
 			targetDto.getEpiData().setExposures(targetList2);
 			sourceDto.getEpiData().setExposures(null);
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
 			assertEquals(targetList2.size(), targetDto.getEpiData().getExposures().size());
@@ -166,7 +165,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Check 'lead has no value, other has'
 			targetDto.getEpiData().setExposures(null);
 			sourceDto.getEpiData().setExposures(sourceList2);
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 
 			assertNotNull(targetDto.getEpiData().getExposures().get(0).getUuid());
 			assertEquals(sourceList2.size(), targetDto.getEpiData().getExposures().size());
@@ -186,7 +185,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 			sourceDto.getRequestedPathogenTests().add(PathogenTestType.NEUTRALIZING_ANTIBODIES);
 
 			SampleDto targetDto = SampleDto.build(user.toReference(), targetCaseDto.toReference());
-			DtoHelper.copyDtoValues(targetDto, sourceDto, false);
+			DtoCopyHelper.copyDtoValues(targetDto, sourceDto, false);
 			assertEquals(2, targetDto.getRequestedPathogenTests().size());
 		}
 
@@ -206,24 +205,24 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Map must not be persisted because H2 can't map it to JSON
 			sourceCase.setReinfectionDetails(map1);
 
-			DtoHelper.copyDtoValues(targetCase, sourceCase, false);
+			DtoCopyHelper.copyDtoValues(targetCase, sourceCase, false);
 			assertEquals(3, targetCase.getReinfectionDetails().size());
 
 			sourceCase.getReinfectionDetails().put(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, false);
 			sourceCase.getReinfectionDetails().put(ReinfectionDetail.TESTED_NEGATIVE_AFTER_PREVIOUS_INFECTION, true);
 
-			DtoHelper.copyDtoValues(targetCase, sourceCase, false);
+			DtoCopyHelper.copyDtoValues(targetCase, sourceCase, false);
 			assertEquals(4, targetCase.getReinfectionDetails().size());
 			assertTrue(targetCase.getReinfectionDetails().get(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION));
 
-			DtoHelper.copyDtoValues(targetCase, sourceCase, true);
+			DtoCopyHelper.copyDtoValues(targetCase, sourceCase, true);
 			assertEquals(4, targetCase.getReinfectionDetails().size());
 			assertFalse(targetCase.getReinfectionDetails().get(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION));
 
 			sourceCase.setReinfectionDetails(null);
-			DtoHelper.copyDtoValues(targetCase, sourceCase, false);
+			DtoCopyHelper.copyDtoValues(targetCase, sourceCase, false);
 			assertEquals(4, targetCase.getReinfectionDetails().size());
-			DtoHelper.copyDtoValues(targetCase, sourceCase, true);
+			DtoCopyHelper.copyDtoValues(targetCase, sourceCase, true);
 			assertEquals(4, targetCase.getReinfectionDetails().size());
 		}
 	}

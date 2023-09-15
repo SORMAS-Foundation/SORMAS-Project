@@ -19,6 +19,7 @@ public class EnvironmentDataView extends AbstractEnvironmentView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 
 	public static final String TASKS_LOC = "tasks";
+	public static final String SAMPLES_LOC = "samples";
 
 	private CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent;
 	private EnvironmentDto environment;
@@ -47,7 +48,7 @@ public class EnvironmentDataView extends AbstractEnvironmentView {
 		setSubComponent(container);
 		container.setEnabled(true);
 
-		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, TASKS_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, TASKS_LOC, SAMPLES_LOC);
 		container.addComponent(layout);
 
 		boolean isEditAllowed = isEditAllowed();
@@ -58,6 +59,13 @@ public class EnvironmentDataView extends AbstractEnvironmentView {
 				new TaskListComponent(TaskContext.ENVIRONMENT, getEnvironmentRef(), null, this::showUnsavedChangesPopup, isEditAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+			EnvironmentSampleListComponent sampleList = new EnvironmentSampleListComponent(environment, isEditAllowed, this::showUnsavedChangesPopup);
+			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(sampleList, SAMPLES_LOC);
 		}
 
 		final String uuid = environment.getUuid();

@@ -74,6 +74,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -1122,7 +1123,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
-		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
+		DtoCopyHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
 		newSample.setAssociatedCase(caze.toReference());
 		newSample.setAssociatedContact(null);
 		newSample.setAssociatedEventParticipant(null);
@@ -1130,13 +1131,13 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 			PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-			DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), true);
+			DtoCopyHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), true);
 			pathogenTestFacade.savePathogenTest(newPathogenTest);
 		}
 
 		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 			AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
-			DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), true);
+			DtoCopyHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), true);
 			additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 		}
 	}

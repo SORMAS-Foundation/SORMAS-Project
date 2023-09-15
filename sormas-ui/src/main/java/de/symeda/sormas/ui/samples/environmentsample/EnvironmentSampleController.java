@@ -28,6 +28,7 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -44,6 +46,7 @@ import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
@@ -161,5 +164,26 @@ public class EnvironmentSampleController {
 	public void navigateToSample(String uuid) {
 		String navigationState = EnvironmentSampleDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void create(EnvironmentDto environment, Runnable callback) {
+		EnvironmentSampleEditForm createForm = new EnvironmentSampleEditForm(false);
+		EnvironmentSampleDto newSample = EnvironmentSampleDto.build(environment.toReference(), UserProvider.getCurrent().getUserReference());
+		DtoCopyHelper.copyDtoValues(newSample.getLocation(), environment.getLocation(), false);
+		createForm.setValue(newSample);
+		final CommitDiscardWrapperComponent<EnvironmentSampleEditForm> editView = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT),
+			createForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				EnvironmentSampleDto dto = createForm.getValue();
+				FacadeProvider.getEnvironmentSampleFacade().save(dto);
+				callback.run();
+			}
+		});
+
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewTask));
 	}
 }

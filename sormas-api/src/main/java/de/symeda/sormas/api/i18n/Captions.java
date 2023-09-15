@@ -1099,6 +1099,7 @@ public interface Captions {
 	String environmentSampleAllActiveAndArchivedSamples = "environmentSampleAllActiveAndArchivedSamples";
 	String environmentSampleArchivedSamples = "environmentSampleArchivedSamples";
 	String environmentSampleDeletedSamples = "environmentSampleDeletedSamples";
+	String environmentSampleNewSample = "environmentSampleNewSample";
 	String environmentSampleNotShipped = "environmentSampleNotShipped";
 	String environmentSampleReceived = "environmentSampleReceived";
 	String environmentSampleShipped = "environmentSampleShipped";

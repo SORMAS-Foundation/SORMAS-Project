@@ -139,6 +139,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -2181,7 +2182,7 @@ public class ContactFacadeEjb
 
 	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
 
-		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		DtoCopyHelper.copyDtoValues(leadContactDto, otherContactDto, false);
 
 		final String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
 		final String leadFollowUpComment = leadContactDto.getFollowUpComment();
@@ -2336,6 +2337,7 @@ public class ContactFacadeEjb
 
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
 	}
+
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {

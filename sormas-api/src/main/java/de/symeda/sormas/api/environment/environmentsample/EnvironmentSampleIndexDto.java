@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -59,8 +60,10 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 	private boolean dispatched;
 	private Date dispatchDate;
 	private boolean received;
+	private Date receivalDate;
 	@SensitiveData
 	private String laboratory;
+	private SpecimenCondition specimenCondition;
 	private EnvironmentSampleMaterial sampleMaterial;
 	@PersonalData
 	private String otherSampleMaterial;
@@ -84,7 +87,9 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		boolean dispatched,
 		Date dispatchDate,
 		boolean received,
+		Date receivalDate,
 		String laboratory,
+		SpecimenCondition specimenCondition,
 		EnvironmentSampleMaterial sampleMaterial,
 		String otherSampleMaterial,
 		DeletionReason deletionReason,
@@ -99,7 +104,9 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		this.dispatched = dispatched;
 		this.dispatchDate = dispatchDate;
 		this.received = received;
+		this.receivalDate = receivalDate;
 		this.laboratory = laboratory;
+		this.specimenCondition = specimenCondition;
 		this.sampleMaterial = sampleMaterial;
 		this.otherSampleMaterial = otherSampleMaterial;
 		this.deletionReason = deletionReason;
@@ -139,8 +146,16 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		return received;
 	}
 
+	public Date getReceivalDate() {
+		return receivalDate;
+	}
+
 	public String getLaboratory() {
 		return laboratory;
+	}
+
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
 	}
 
 	public EnvironmentSampleMaterial getSampleMaterial() {

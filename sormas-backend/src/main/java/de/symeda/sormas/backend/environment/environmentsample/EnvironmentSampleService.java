@@ -157,6 +157,10 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.lessThanOrEqualTo(sampleRoot.get(EnvironmentSample.REPORT_DATE), criteria.getReportDateTo()));
 		}
+		if (criteria.getEnvironment() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEnvironment().get(Environment.UUID), criteria.getEnvironment().getUuid()));
+		}
 
 		filter = CriteriaBuilderHelper.and(
 			cb,
