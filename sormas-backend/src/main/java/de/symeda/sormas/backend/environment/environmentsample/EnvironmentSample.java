@@ -54,6 +54,7 @@ public class EnvironmentSample extends DeletableAdo {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String LABORATORY = "laboratory";
+	public static final String LABORATORY_DETAILS = "laboratoryDetails";
 	public static final String LOCATION = "location";
 	public static final String DISPATCHED = "dispatched";
 	public static final String DISPATCH_DATE = "dispatchDate";

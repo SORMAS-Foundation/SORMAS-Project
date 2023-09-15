@@ -182,7 +182,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		FieldHelper.updateItems(laboratory, FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 
 		Field labDetails = addField(EnvironmentSampleDto.LABORATORY_DETAILS);
-		labDetails.setVisible(true);
+		labDetails.setVisible(false);
 
 		laboratory.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
@@ -230,6 +230,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		addField(EventDto.DELETION_REASON);
 		addField(EventDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
 		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
+
+		initializeAccessAndAllowedAccesses();
 	}
 
 	@Override

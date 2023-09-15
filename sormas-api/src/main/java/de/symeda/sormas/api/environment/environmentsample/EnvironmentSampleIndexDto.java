@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -88,7 +89,9 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		Date dispatchDate,
 		boolean received,
 		Date receivalDate,
-		String laboratory,
+		String laboratoryUuid,
+		String laboratoryName,
+		String laboratoryDetails,
 		SpecimenCondition specimenCondition,
 		EnvironmentSampleMaterial sampleMaterial,
 		String otherSampleMaterial,
@@ -105,7 +108,7 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		this.dispatchDate = dispatchDate;
 		this.received = received;
 		this.receivalDate = receivalDate;
-		this.laboratory = laboratory;
+		this.laboratory = FacilityHelper.buildFacilityString(laboratoryUuid, laboratoryName, laboratoryDetails);
 		this.specimenCondition = specimenCondition;
 		this.sampleMaterial = sampleMaterial;
 		this.otherSampleMaterial = otherSampleMaterial;
