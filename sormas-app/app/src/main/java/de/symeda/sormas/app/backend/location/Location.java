@@ -473,7 +473,7 @@ public class Location extends PseudonymizableAdo {
 		}
 	}
 
-	public Location cloneLocation() {
+	public Location asNewLocation() {
 
 		Location location = this;
 		location.setId(null);

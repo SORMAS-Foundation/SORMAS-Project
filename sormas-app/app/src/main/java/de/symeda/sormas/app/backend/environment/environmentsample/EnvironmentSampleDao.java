@@ -39,7 +39,7 @@ public class EnvironmentSampleDao extends AbstractAdoDao<EnvironmentSample> {
 		sample.setReportDate(new Date());
 		sample.setReportingUser(ConfigProvider.getUser());
 		sample.setSampleDateTime(new Date());
-		sample.setLocation(associatedEnvironment.getLocation().cloneLocation());
+		sample.setLocation(associatedEnvironment.getLocation().asNewLocation());
 		return sample;
 	}
 
