@@ -77,7 +77,8 @@ public class CaseVisitsView extends AbstractCaseView {
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		if (isEditAllowed()) {
-			if (UserProvider.getCurrent().hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.VISIT_EDIT)) {
+			if (UserProvider.getCurrent()
+				.hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.VISIT_EDIT, UserRight.VISIT_DELETE)) {
 				topLayout.setWidth(100, Unit.PERCENTAGE);
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,

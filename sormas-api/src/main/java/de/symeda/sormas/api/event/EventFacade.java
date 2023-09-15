@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -53,6 +54,8 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
+	ProcessedEntity dearchive(String entityUuid, String dearchiveReason);
+
 	boolean doesExternalTokenExist(String externalToken, String eventUuid);
 
 	String getUuidByCaseUuidOrPersonUuid(String value);
@@ -75,7 +78,7 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
 
-	Integer saveBulkEvents(
+	List<ProcessedEntity> saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,
 		boolean eventStatusChange,

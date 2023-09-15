@@ -47,6 +47,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -761,7 +763,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void updateArchived(List<String> taskUuids, boolean archived) {
+	public List<ProcessedEntity> updateArchived(List<String> taskUuids, boolean archived) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Task> cu = cb.createCriteriaUpdate(Task.class);
@@ -773,6 +776,10 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		cu.where(root.get(Task.UUID).in(taskUuids));
 
 		em.createQuery(cu).executeUpdate();
+
+		processedTasks.addAll(buildProcessedEntities(taskUuids, ProcessedEntityStatus.SUCCESS));
+
+		return processedTasks;
 	}
 
 	public boolean isArchived(String taskUuid) {

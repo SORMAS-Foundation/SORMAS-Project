@@ -123,19 +123,19 @@ public class ExternalSurveillanceServiceGateway {
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
 				null,
 				null,
+				Strings.headingEntitiesNotSent,
 				null,
-				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
+				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
-				null).doBulkOperation(batch -> {
-					try {
-						FacadeProvider.getExternalSurveillanceToolFacade()
-							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()));
-					} catch (ExternalSurveillanceToolException e) {
-						throw new RuntimeException(e);
-					}
-
-					return batch.size();
-				}, selectedCasesCpy, null, null, callback);
+				Strings.messageCountEntitiesNotSentAccessDeniedReason,
+				null,
+				null,
+				Strings.infoBulkProcessFinishedWithoutSuccess)
+					.doBulkOperation(
+						batch -> FacadeProvider.getExternalSurveillanceToolFacade()
+							.sendCases(batch.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList())),
+						selectedCasesCpy,
+						callback);
 
 		}, null, shouldConfirm, null);
 	}
@@ -150,19 +150,19 @@ public class ExternalSurveillanceServiceGateway {
 				Strings.ExternalSurveillanceToolGateway_notificationEntriesSent,
 				null,
 				null,
+				Strings.headingEntitiesNotSent,
+				Strings.messageCountEntitiesNotSent,
+				Strings.messageCountEntitiesNotSentExternalReason,
 				null,
-				Strings.ExternalSurveillanceToolGateway_notificationSomeEntriesSent,
+				Strings.messageCountEntitiesNotSentAccessDeniedReason,
 				null,
-				null).doBulkOperation(batch -> {
-					try {
-						FacadeProvider.getExternalSurveillanceToolFacade()
-							.sendEvents(batch.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()));
-					} catch (ExternalSurveillanceToolException e) {
-						return 0;
-					}
-
-					return batch.size();
-				}, selectedEventsCpy, null, null, callback);
+				null,
+				Strings.infoBulkProcessFinishedWithoutSuccess)
+					.doBulkOperation(
+						batch -> FacadeProvider.getExternalSurveillanceToolFacade()
+							.sendEvents(batch.stream().map(EventIndexDto::getUuid).collect(Collectors.toList())),
+						selectedEventsCpy,
+						callback);
 		}, null, shouldConfirm, null);
 	}
 

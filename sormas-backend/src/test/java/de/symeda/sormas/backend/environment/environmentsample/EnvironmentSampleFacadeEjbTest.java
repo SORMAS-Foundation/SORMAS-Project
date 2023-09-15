@@ -31,12 +31,15 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
@@ -682,9 +685,14 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
 		getEnvironmentSampleFacade().delete(deletedSample.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
 
-		List<String> deletedUuids = getEnvironmentSampleFacade().delete(
+		List<ProcessedEntity> processedEntities = getEnvironmentSampleFacade().delete(
 			Arrays.asList(deletedSample.getUuid(), sample1.getUuid(), sample2.getUuid()),
 			new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
+		List<String> deletedUuids = processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
+
 		assertThat(deletedUuids, not(containsInAnyOrder(deletedSample.getUuid())));
 		assertThat(deletedUuids, containsInAnyOrder(sample1.getUuid(), sample2.getUuid()));
 
@@ -712,7 +720,13 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		getEnvironmentSampleFacade()
 			.delete(Arrays.asList(sample1.getUuid(), sample2.getUuid()), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
 
-		List<String> restoredUuids = getEnvironmentSampleFacade().restore(Arrays.asList(sample.getUuid(), sample1.getUuid(), sample2.getUuid()));
+		List<ProcessedEntity> processedEntities =
+			getEnvironmentSampleFacade().restore(Arrays.asList(sample.getUuid(), sample1.getUuid(), sample2.getUuid()));
+		List<String> restoredUuids = processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
+
 		assertThat(restoredUuids, not(containsInAnyOrder(sample.getUuid())));
 		assertThat(restoredUuids, containsInAnyOrder(sample1.getUuid(), sample2.getUuid()));
 
