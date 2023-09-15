@@ -50,8 +50,10 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
@@ -94,16 +96,25 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
 		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 
+	private static final List<String> RECEIVAL_FIELDS = Arrays.asList(
+		EnvironmentSampleDto.RECEIVED,
+		EnvironmentSampleDto.RECEIVAL_DATE,
+		EnvironmentSampleDto.LAB_SAMPLE_ID,
+		EnvironmentSampleDto.SPECIMEN_CONDITION);
+
 	private CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree;
 
-	public EnvironmentSampleEditForm(boolean isPseudonymized) {
+	private final boolean isCreate;
+
+	public EnvironmentSampleEditForm(boolean isPseudonymized, boolean isCreate) {
 		super(
 			EnvironmentSampleDto.class,
 			EnvironmentSampleDto.I18N_PREFIX,
-			true,
+			false,
 			FieldVisibilityCheckers.getNoop(),
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
-
+		this.isCreate = isCreate;
+		addFields();
 		addValueChangeListener(e -> defaultValueChangeListener((EnvironmentSampleDto) e.getProperty().getValue()));
 	}
 
@@ -232,6 +243,27 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
 
 		initializeAccessAndAllowedAccesses();
+		disableFieldsBasedOnRights();
+	}
+
+	private void disableFieldsBasedOnRights() {
+		boolean hasEditReceivalRight = UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
+		boolean hasEditDispatchRight = UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
+		getFieldGroup().getFields().forEach(f -> {
+			if (f.isEnabled()) {
+				String propertyId = f.getId();
+				boolean isReceivalField = RECEIVAL_FIELDS.contains(propertyId);
+				boolean canEdit = EnvironmentSampleDto.GENERAL_COMMENT.equals(propertyId)
+					|| (isReceivalField ? hasEditReceivalRight : isCreate || hasEditDispatchRight);
+
+				if (!canEdit) {
+					f.setEnabled(false);
+				}
+			}
+		});
+		if (!isCreate && !hasEditDispatchRight) {
+			weatherConditionCheckBoxTree.setEnabled(false);
+		}
 	}
 
 	@Override

@@ -101,7 +101,7 @@ public class EnvironmentSampleController {
 		DeletionInfoDto automaticDeletionInfoDto = environmentSampleFacade.getAutomaticDeletionInfo(sampleUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = environmentSampleFacade.getManuallyDeletionInfo(sampleUuid);
 
-		EnvironmentSampleEditForm editForm = new EnvironmentSampleEditForm(sample.isPseudonymized());
+		EnvironmentSampleEditForm editForm = new EnvironmentSampleEditForm(sample.isPseudonymized(), false);
 		editForm.setValue(sample);
 		editForm.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
@@ -167,7 +167,7 @@ public class EnvironmentSampleController {
 	}
 
 	public void create(EnvironmentDto environment, Runnable callback) {
-		EnvironmentSampleEditForm createForm = new EnvironmentSampleEditForm(false);
+		EnvironmentSampleEditForm createForm = new EnvironmentSampleEditForm(false, true);
 		EnvironmentSampleDto newSample = EnvironmentSampleDto.build(environment.toReference(), UserProvider.getCurrent().getUserReference());
 		DtoCopyHelper.copyDtoValues(newSample.getLocation(), environment.getLocation(), false);
 		createForm.setValue(newSample);
