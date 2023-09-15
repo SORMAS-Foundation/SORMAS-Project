@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.environmentsample.edit;
 
 import static android.view.View.GONE;
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseActivity;
@@ -44,6 +46,8 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentEnvironmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -101,7 +105,7 @@ public class EnvironmentSampleEditFragment
 
 		setUpControlListeners(contentBinding);
 		contentBinding.setData(record);
-		EnvironmentSampleValidator.initializeEnvironmentSampleValidation(contentBinding);
+		EnvironmentSampleValidator.initializeEnvironmentSampleValidation(contentBinding, () -> record.getLocation());
 		contentBinding.setWeatherConditionClass(WeatherCondition.class);
 		List<CustomizableEnum> pathogens = DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.PATHOGEN, null);
 		// Remove default "OTHER" pathogen because it's covered by a separate field
@@ -171,10 +175,20 @@ public class EnvironmentSampleEditFragment
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, getFieldAccessCheckers());
 		locationDialog.show();
+		locationDialog.getContentBinding().locationRegion.setRequired(true);
+		locationDialog.getContentBinding().locationDistrict.setRequired(true);
+		locationDialog.getContentBinding().locationLatitude.setRequired(true);
+		locationDialog.getContentBinding().locationLongitude.setRequired(true);
+		locationDialog.setFacilityFieldsVisible(false, true);
 
 		locationDialog.setPositiveCallback(() -> {
-			contentBinding.environmentSampleLocation.setValue(locationClone);
-			record.setLocation(locationClone);
+			try {
+				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
+				contentBinding.environmentSampleLocation.setValue(locationClone);
+				record.setLocation(locationClone);
+			} catch (ValidationException e) {
+				NotificationHelper.showDialogNotification(locationDialog, ERROR, e.getMessage());
+			}
 		});
 	}
 

@@ -79,6 +79,7 @@ public interface Validations {
 	String fileTooBig = "fileTooBig";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
+	String gpsCoordinatesRequired = "gpsCoordinatesRequired";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
 	String importAreaNotUnique = "importAreaNotUnique";
 	String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";

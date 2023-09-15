@@ -15,20 +15,26 @@
 
 package de.symeda.sormas.app.environmentsample.edit;
 
+import java.util.concurrent.Callable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.databinding.FragmentEnvironmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
 public class EnvironmentSampleValidator {
 
-	static void initializeEnvironmentSampleValidation(final FragmentEnvironmentSampleEditLayoutBinding contentBinding) {
+	static void initializeEnvironmentSampleValidation(
+		final FragmentEnvironmentSampleEditLayoutBinding contentBinding,
+		Callable<Location> locationCallback) {
 
 		initializeSampleAndDispatchDateValidation(contentBinding);
 		initializeMeasurementValidations(contentBinding);
+		initializeLocationValidations(contentBinding, locationCallback);
 	}
 
 	private static void initializeSampleAndDispatchDateValidation(final FragmentEnvironmentSampleEditLayoutBinding contentBinding) {
@@ -110,6 +116,32 @@ public class EnvironmentSampleValidator {
 		contentBinding.environmentSampleTurbidity.setValidationCallback(turbidityCallback);
 		contentBinding.environmentSampleChlorineResiduals.setValidationCallback(chlorineResidualsCallback);
 		contentBinding.environmentSamplePhValue.setValidationCallback(phValueCallback);
+	}
+
+	private static void initializeLocationValidations(
+		final FragmentEnvironmentSampleEditLayoutBinding contentBinding,
+		Callable<Location> locationCallback) {
+
+		contentBinding.environmentSampleLocation.setValidationCallback(() -> {
+			try {
+				Location location = locationCallback.call();
+				if (location.getRegion() == null) {
+					contentBinding.environmentSampleLocation.enableErrorState(I18nProperties.getValidationError(Validations.validRegion));
+					return true;
+				}
+				if (location.getDistrict() == null) {
+					contentBinding.environmentSampleLocation.enableErrorState(I18nProperties.getValidationError(Validations.validDistrict));
+					return true;
+				}
+				if (location.getLatitude() == null || location.getLongitude() == null) {
+					contentBinding.environmentSampleLocation.enableErrorState(I18nProperties.getValidationError(Validations.gpsCoordinatesRequired));
+					return true;
+				}
+				return false;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 }

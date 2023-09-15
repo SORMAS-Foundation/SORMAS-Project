@@ -15,6 +15,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.util.LocationService;
 
 public class EnvironmentSampleDao extends AbstractAdoDao<EnvironmentSample> {
 
@@ -40,6 +41,16 @@ public class EnvironmentSampleDao extends AbstractAdoDao<EnvironmentSample> {
 		sample.setReportingUser(ConfigProvider.getUser());
 		sample.setSampleDateTime(new Date());
 		sample.setLocation(associatedEnvironment.getLocation().asNewLocation());
+		if (sample.getLocation().getDistrict() == null) {
+			sample.getLocation().setRegion(ConfigProvider.getUser().getRegion());
+			sample.getLocation().setDistrict(ConfigProvider.getUser().getDistrict());
+		}
+		android.location.Location location = LocationService.instance().getLocation();
+		if (location != null) {
+			sample.getLocation().setLatitude(location.getLatitude());
+			sample.getLocation().setLongitude(location.getLongitude());
+			sample.getLocation().setLatLonAccuracy(location.getAccuracy());
+		}
 		return sample;
 	}
 
