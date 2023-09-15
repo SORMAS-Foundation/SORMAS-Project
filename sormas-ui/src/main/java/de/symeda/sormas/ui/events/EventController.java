@@ -273,42 +273,43 @@ public class EventController {
 
 	private void linkCasesToEvent(EventReferenceDto eventReferenceDto, List<CaseDataDto> cases) {
 
-		Map<String, CaseDataDto> caseByPersonUuid = new HashMap<>();
+		Map<String, CaseDataDto> casesByPersonUuids = new HashMap<>();
 
 		List<String> personUuids = cases.stream().map(caseDataDto -> {
 			String personUuid = caseDataDto.getPerson().getUuid();
-			if (!caseByPersonUuid.containsKey(personUuid)) {
-				caseByPersonUuid.put(personUuid, caseDataDto);
+			if (!casesByPersonUuids.containsKey(personUuid)) {
+				casesByPersonUuids.put(personUuid, caseDataDto);
 			}
 			return personUuid;
 		}).collect(Collectors.toList());
 
-		// Set the resulting case for persons already enlisted as EventParticipants
-		List<EventParticipantDto> eventParticipantDtos =
+		// Set the resulting case for persons already enlisted as event participants
+		List<EventParticipantDto> eventParticipants =
 			FacadeProvider.getEventParticipantFacade().getByEventAndPersons(eventReferenceDto.getUuid(), personUuids);
-		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
+		for (EventParticipantDto eventParticipantDto : eventParticipants) {
 			String personUuid = eventParticipantDto.getPerson().getUuid();
-			if (eventParticipantDto.getResultingCase() != null) {
-				CaseReferenceDto resultingCase = caseByPersonUuid.get(personUuid).toReference();
+			if (eventParticipantDto.getResultingCase() == null) {
+				CaseDataDto resultingCase = casesByPersonUuids.get(personUuid);
 				if (resultingCase != null) {
-					eventParticipantDto.setResultingCase(resultingCase);
+					eventParticipantDto.setResultingCase(resultingCase.toReference());
+					FacadeProvider.getEventParticipantFacade().save(eventParticipantDto);
+					casesByPersonUuids.remove(personUuid);
 				}
 			}
-			caseByPersonUuid.remove(personUuid);
 		}
 
-		Collection<CaseDataDto> remainingCases = caseByPersonUuid.values();
-		int casesAlreadyLinkedToEvent = cases.size() - remainingCases.size();
+		Collection<CaseDataDto> remainingCasesWithoutParticipants = casesByPersonUuids.values();
+		int casesLinkedToExistingParticipants = cases.size() - remainingCasesWithoutParticipants.size();
 
-		//Create EventParticipants for the remaining cases
-		if (!remainingCases.isEmpty()) {
+		// Create event participants for the remaining cases
+		if (!remainingCasesWithoutParticipants.isEmpty()) {
 			List<String> remainingPersonUuids =
-				remainingCases.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
+				remainingCasesWithoutParticipants.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
 			List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
 			HashMap<String, PersonDto> personByUuid = new HashMap<>();
-			remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
+			remainingPersons.forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
 
-			remainingCases.stream().forEach(caseDataDto -> {
+			remainingCasesWithoutParticipants.forEach(caseDataDto -> {
 				EventParticipantDto ep = EventParticipantDto.buildFromCase(
 					caseDataDto.toReference(),
 					personByUuid.get(caseDataDto.getPerson().getUuid()),
@@ -318,14 +319,8 @@ public class EventController {
 			});
 		}
 
-		String message = remainingCases.isEmpty()
-			? I18nProperties.getString(Strings.messageAllCasesAlreadyInEvent)
-			: casesAlreadyLinkedToEvent == 0
-				? I18nProperties.getString(Strings.messageAllCasesLinkedToEvent)
-				: String.format(I18nProperties.getString(Strings.messageCountCasesAlreadyInEvent), casesAlreadyLinkedToEvent);
-
 		SormasUI.refreshView();
-		NotificationHelper.showNotification(message, Type.HUMANIZED_MESSAGE, 10000);
+		NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllCasesLinkedToEvent), Type.HUMANIZED_MESSAGE, 10000);
 	}
 
 	private void linkContactsToEvent(EventReferenceDto eventReferenceDto, List<ContactDto> contacts, Consumer<List<ContactDto>> callback) {

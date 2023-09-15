@@ -1379,6 +1379,7 @@ public interface Strings {
 	String messageRegionsDearchived = "messageRegionsDearchived";
 	String messageRelatedSampleAndLabMessagesFound = "messageRelatedSampleAndLabMessagesFound";
 	String messageRelatedSampleFound = "messageRelatedSampleFound";
+	String messageRestoreNotPossibleAlreadyInEvent = "messageRestoreNotPossibleAlreadyInEvent";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
