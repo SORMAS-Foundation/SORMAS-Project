@@ -20,6 +20,7 @@ import java.util.List;
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -80,5 +81,14 @@ public class UserRoleDtoHelper extends AdoDtoHelper<UserRole, UserRoleDto> {
 	@Override
 	protected long getApproximateJsonSizeInBytes() {
 		return 0;
+	}
+
+	@Override
+	protected void executeHandlePulledListAddition(int listSize) {
+		if (listSize > 0) {
+			// Clear the user rights cache if user roles have changed because user rights
+			// of the current user might have been updated
+			ConfigProvider.clearUserRights();
+		}
 	}
 }
