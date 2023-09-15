@@ -128,7 +128,6 @@ public class FieldVisibilityCheckers implements Serializable {
 
 	private Field getDeclaredField(Class<?> parentType, String propertyId) {
 		try {
-			//	return parentType.getDeclaredField(propertyId.replace(" ", "_"));
 			return parentType.getDeclaredField(propertyId);
 		} catch (NoSuchFieldException e) {
 			return null;
