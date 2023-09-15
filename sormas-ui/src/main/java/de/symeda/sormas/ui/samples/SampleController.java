@@ -108,6 +108,7 @@ public class SampleController {
 	public void navigateTo(SampleCriteria sampleCriteria) {
 		ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
 		ViewModelProviders.of(SamplesView.class).get(SampleCriteria.class, sampleCriteria);
+		ViewModelProviders.of(SamplesView.class).get(SamplesViewConfiguration.class).setViewType(SampleViewType.HUMAN);
 		SormasUI.get().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 	}
 
@@ -615,19 +616,17 @@ public class SampleController {
 		});
 	}
 
-	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, SampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
+	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, HumanSampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				null,
-				null,
 				DeleteRestoreHandlers.forSample(),
 				bulkOperationCallback(sampleGrid, noEntriesRemainingCallback, null));
 
 	}
 
-	public void restoreSelectedSamples(Collection<SampleIndexDto> selectedRows, SampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
+	public void restoreSelectedSamples(Collection<SampleIndexDto> selectedRows, HumanSampleGrid sampleGrid, Runnable noEntriesRemainingCallback) {
 
 		ControllerProvider.getDeleteRestoreController()
 			.restoreSelectedItems(
@@ -683,7 +682,10 @@ public class SampleController {
 		return null;
 	}
 
-	private Consumer<List<SampleIndexDto>> bulkOperationCallback(SampleGrid sampleGrid, Runnable noEntriesRemainingCallback, Window popupWindow) {
+	private Consumer<List<SampleIndexDto>> bulkOperationCallback(
+		HumanSampleGrid sampleGrid,
+		Runnable noEntriesRemainingCallback,
+		Window popupWindow) {
 		return remainingSamples -> {
 			if (popupWindow != null) {
 				popupWindow.close();

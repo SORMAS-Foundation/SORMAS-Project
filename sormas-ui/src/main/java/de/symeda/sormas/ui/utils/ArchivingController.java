@@ -16,6 +16,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -205,8 +206,6 @@ public class ArchivingController {
 								selectedEntries -> archiveHandler
 									.archive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 								selectedCasesCpy,
-								null,
-								null,
 								batchCallback);
 					}
 				});
@@ -218,11 +217,19 @@ public class ArchivingController {
 		return new BulkOperationHandler<>(
 			forArchive ? archiveMessages.getMessageAllEntitiesArchived() : archiveMessages.getMessageAllEntitiesDearchived(),
 			null,
+			forArchive ? archiveMessages.getHeadingSomeEntitiesNotArchived() : archiveMessages.getHeadingSomeEntitiesNotDearchived(),
+			forArchive ? archiveMessages.getHeadingEntitiesNotArchived() : archiveMessages.getHeadingEntitiesNotDearchived(),
+			forArchive ? archiveMessages.getMessageCountEntitiesNotArchived() : archiveMessages.getMessageCountEntitiesNotDearchived(),
+			forArchive
+				? archiveMessages.getMessageCountEntitiesNotArchivedExternalReason()
+				: archiveMessages.getMessageCountEntitiesNotDearchivedExternalReason(),
 			null,
+			forArchive
+				? archiveMessages.getMessageCountEntitiesNotArchivedAccessDeniedReason()
+				: archiveMessages.getMessageCountEntitiesNotDearchivedAccessDeniedReason(),
 			null,
-			forArchive ? archiveMessages.getMessageSomeEntitiesArchived() : archiveMessages.getMessageSomeEntitiesDearchived(),
-			null,
-			Strings.infoBulkProcessFinishedWithSkips);
+			Strings.infoBulkProcessFinishedWithSkips,
+			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}
 
 	public <T extends HasUuid> void dearchiveSelectedItems(
@@ -266,8 +273,6 @@ public class ArchivingController {
 								selectedEntries -> archiveHandler
 									.dearchive(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 								selectedCasesCpy,
-								null,
-								null,
 								batchCallback);
 					}
 					return true;
@@ -277,13 +282,13 @@ public class ArchivingController {
 
 	public interface IArchiveHandler<T extends HasUuid> {
 
-		void archive(String entityUuid);
+		ProcessedEntity archive(String entityUuid);
 
-		int archive(List<String> entityUuids);
+		List<ProcessedEntity> archive(List<String> entityUuids);
 
-		void dearchive(String entityUuid);
+		List<ProcessedEntity> dearchive(String entityUuid);
 
-		int dearchive(List<String> entityUuids);
+		List<ProcessedEntity> dearchive(List<String> entityUuids);
 
 		boolean isArchived(T entity);
 

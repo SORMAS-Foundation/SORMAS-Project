@@ -182,8 +182,6 @@ public class EventParticipantsController {
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				null,
-				null,
 				DeleteRestoreHandlers.forEventParticipant(),
 				bulkOperationCallback(eventParticipantGrid, noEntriesRemainingCallback, null));
 

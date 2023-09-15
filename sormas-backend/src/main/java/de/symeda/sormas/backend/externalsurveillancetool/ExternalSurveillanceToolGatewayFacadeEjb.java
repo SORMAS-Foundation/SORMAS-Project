@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.externalsurveillancetool;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.audit.AuditIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
@@ -78,13 +81,39 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_SURVEILLANCE_SHARE)
-	public void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException {
-		doSendCases(caseUuids, false);
+	public List<ProcessedEntity> sendCases(List<String> caseUuids) {
+		List<ProcessedEntity> processedCases = new ArrayList<>();
+		try {
+			doSendCases(caseUuids, false);
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.SUCCESS));
+		} catch (AccessDeniedException e) {
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+		} catch (ExternalSurveillanceToolException e) {
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+		} catch (Exception e) {
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
+		}
+		return processedCases;
 	}
 
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
-	public void sendCasesInternal(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
-		doSendCases(caseUuids, archived);
+	public List<ProcessedEntity> sendCasesInternal(List<String> caseUuids, boolean archived) {
+		List<ProcessedEntity> processedCases = new ArrayList<>();
+
+		if (isFeatureEnabled()) {
+			try {
+				doSendCases(caseUuids, archived);
+				processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.SUCCESS));
+			} catch (ExternalSurveillanceToolException e) {
+				processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+			} catch (AccessDeniedException e) {
+				processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+			}
+		} else {
+			processedCases.addAll(shareInfoService.buildProcessedEntities(caseUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+		}
+
+		return processedCases;
 	}
 
 	private void doSendCases(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
@@ -101,13 +130,39 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_SURVEILLANCE_SHARE)
-	public void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException {
-		doSendEvents(eventUuids, false);
+	public List<ProcessedEntity> sendEvents(List<String> eventUuids) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+		try {
+			doSendEvents(eventUuids, false);
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.SUCCESS));
+		} catch (AccessDeniedException e) {
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+		} catch (ExternalSurveillanceToolException e) {
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+		} catch (Exception e) {
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.INTERNAL_FAILURE));
+		}
+		return processedEvents;
 	}
 
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
-	public void sendEventsInternal(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
-		doSendEvents(eventUuids, archived);
+	public List<ProcessedEntity> sendEventsInternal(List<String> eventUuids, boolean archived) {
+		List<ProcessedEntity> processedEvents = new ArrayList<>();
+
+		if (isFeatureEnabled()) {
+			try {
+				doSendEvents(eventUuids, archived);
+				processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.SUCCESS));
+			} catch (ExternalSurveillanceToolException e) {
+				processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+			} catch (AccessDeniedException e) {
+				processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+			}
+		} else {
+			processedEvents.addAll(shareInfoService.buildProcessedEntities(eventUuids, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+		}
+
+		return processedEvents;
 	}
 
 	private void doSendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
@@ -125,13 +180,16 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 
-		Response response = ClientBuilder.newBuilder()
-			.connectTimeout(30, TimeUnit.SECONDS)
-			.build()
-			.target(serviceUrl)
-			.path("export")
-			.request()
-			.post(Entity.json(params));
+		Invocation.Builder request =
+			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("export").request();
+
+		Response response;
+		try {
+			response = request.post(Entity.json(params));
+		} catch (Exception e) {
+			logger.error("Failed to send request to external surveillance tool", e);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorSending));
+		}
 		int status = response.getStatus();
 
 		switch (status) {

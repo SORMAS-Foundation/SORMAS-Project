@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -112,7 +115,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
 
 		if (endOfProcessingDate == null) {
 			endOfProcessingDate = calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
@@ -129,11 +132,13 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 		cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
 
 		em.createQuery(cu).executeUpdate();
+
+		return new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archive(List<String> entityUuids) {
-
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		IterableHelper.executeBatched(
 			entityUuids,
 			ARCHIVE_BATCH_SIZE,
@@ -150,11 +155,15 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 				em.createQuery(cu).executeUpdate();
 			}));
+
+		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
+
+		return processedEntities;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
@@ -169,6 +178,10 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 			em.createQuery(cu).executeUpdate();
 		});
+
+		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
+
+		return processedEntities;
 	}
 
 	public EditPermissionType getEditPermissionType(ADO entity) {
@@ -195,8 +208,21 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
+	public List<ADO> getEntitiesToBeProcessed(List<String> entityUuids, List<ProcessedEntity> processedEntities) {
+		List<String> failedUuids = processedEntities.stream()
+			.filter(
+				entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)
+					|| entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE))
+			.map(entity -> entity.getEntityUuid())
+			.collect(Collectors.toList());
+
+		List<ADO> entities = getByUuids(entityUuids);
+		return entities.stream().filter(entity -> !failedUuids.contains(entity.getUuid())).collect(Collectors.toList());
+	}
+
 	/**
-	 * Used to fetch {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
+	 * Used to fetch
+	 * {@link AdoServiceWithUserFilterAndJurisdiction#getInJurisdictionIds(List)}/{@link AdoServiceWithUserFilterAndJurisdiction#inJurisdictionOrOwned(AbstractDomainObject)}
 	 * (without {@link QueryContext} because there are no other conditions etc.).
 	 * 
 	 * @return A filter on entities within the users jurisdiction or owned by him.

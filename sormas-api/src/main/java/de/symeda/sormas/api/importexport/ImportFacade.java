@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.importexport;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.io.IOException;
 import java.net.URI;
-
 import java.util.List;
+
 import javax.ejb.Remote;
+
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 
 @Remote
 public interface ImportFacade {
@@ -67,6 +68,8 @@ public interface ImportFacade {
 	void generateFacilityImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	void generateContactImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
+
+	void generateEnvironmentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	String getCaseImportTemplateFileName();
 
@@ -141,4 +144,8 @@ public interface ImportFacade {
 	String getContactImportTemplateFilePath();
 
 	String getImportTemplateContent(String templateFilePath) throws IOException;
+
+	String getEnvironmentImportTemplateFilePath();
+
+	String getEnvironmentImportTemplateFileName();
 }

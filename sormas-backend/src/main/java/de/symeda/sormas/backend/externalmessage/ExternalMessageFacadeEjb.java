@@ -42,6 +42,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -354,22 +356,29 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
-	public void delete(List<String> uuids) {
-		List<String> deletedExternalMessageUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids) {
+		List<ProcessedEntity> processedExternalMessages = new ArrayList<>();
 		List<ExternalMessage> externalMessagesToBeDeleted = externalMessageService.getByUuids(uuids);
 
 		if (externalMessagesToBeDeleted != null) {
 			externalMessagesToBeDeleted.forEach(externalMessageToBeDeleted -> {
-				if (externalMessageToBeDeleted.getStatus() != ExternalMessageStatus.PROCESSED) {
-					try {
+
+				try {
+					if (externalMessageToBeDeleted.getStatus() != ExternalMessageStatus.PROCESSED) {
 						externalMessageService.deletePermanent(externalMessageToBeDeleted);
-						deletedExternalMessageUuids.add(externalMessageToBeDeleted.getUuid());
-					} catch (Exception e) {
-						logger.error("The external message with uuid:" + externalMessageToBeDeleted.getUuid() + "could not be deleted");
+						processedExternalMessages.add(new ProcessedEntity(externalMessageToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedExternalMessages.add(new ProcessedEntity(externalMessageToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 					}
+				} catch (Exception e) {
+					processedExternalMessages.add(new ProcessedEntity(externalMessageToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger
+						.error("The external message with uuid {} could not be deleted due to an Exception", externalMessageToBeDeleted.getUuid(), e);
 				}
 			});
 		}
+
+		return processedExternalMessages;
 	}
 
 	@Override

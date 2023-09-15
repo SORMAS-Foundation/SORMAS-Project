@@ -31,7 +31,7 @@ public class BulkProgressLayout extends AbstractProgressLayout<BulkProgressUpdat
 	private int skippedEntriesCount;
 
 	public BulkProgressLayout(UI currentUI, int totalCount, Runnable cancelCallback) {
-		super(currentUI, String.format(I18nProperties.getString(Strings.infoBulkProcess), totalCount), totalCount, cancelCallback);
+		super(currentUI, String.format(I18nProperties.getString(Strings.infoBulkProcess), totalCount), totalCount, null, cancelCallback);
 		initAdditionalProgressStatusComponents();
 	}
 

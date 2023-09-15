@@ -45,6 +45,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -71,6 +73,7 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -720,8 +723,8 @@ public class ContactController {
 		return hasPendingRequest ? "<br/>" + I18nProperties.getString(Strings.messageDeleteWithPendingShareRequest) + "<br/>" : "";
 	}
 
-	public void showBulkContactDataEditComponent(
-		Collection<? extends ContactIndexDto> selectedContacts,
+	public <T extends ContactIndexDto> void showBulkContactDataEditComponent(
+		Collection<T> selectedContacts,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
 		if (selectedContacts.size() == 0) {
@@ -763,6 +766,7 @@ public class ContactController {
 			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
 
 			List<ContactIndexDto> selectedContactsCpy = new ArrayList<>(selectedContacts);
+
 			BulkOperationHandler.<ContactIndexDto> forBulkEdit()
 				.doBulkOperation(
 					selectedEntries -> contactFacade.saveBulkContacts(
@@ -771,15 +775,16 @@ public class ContactController {
 						classificationChange,
 						contactOfficerChange),
 					selectedContactsCpy,
-					null,
-					null,
 					bulkOperationCallback(caseUuid, contactGrid, popupWindow));
 		});
 
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private Consumer<List<ContactIndexDto>> bulkOperationCallback(String caseUuid, AbstractContactGrid<?> contactGrid, Window popupWindow) {
+	private <T extends ContactIndexDto> Consumer<List<T>> bulkOperationCallback(
+		String caseUuid,
+		AbstractContactGrid<?> contactGrid,
+		Window popupWindow) {
 		return remainingContacts -> {
 			if (popupWindow != null) {
 				popupWindow.close();
@@ -804,7 +809,7 @@ public class ContactController {
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
 
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(selectedRows, null, null, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 
 	}
 
@@ -813,8 +818,8 @@ public class ContactController {
 			.restoreSelectedItems(selectedRows, DeleteRestoreHandlers.forContact(), bulkOperationCallback(null, contactGrid, null));
 	}
 
-	public void cancelFollowUpOfAllSelectedItems(
-		Collection<? extends ContactIndexDto> selectedRows,
+	public <T extends ContactIndexDto> void cancelFollowUpOfAllSelectedItems(
+		Collection<T> selectedRows,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
 
@@ -837,31 +842,35 @@ public class ContactController {
 
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpCanceled,
+							Strings.messageVisitsWithWrongStatusNotCancelled,
+							Strings.headingSomeVisitsNotCancelled,
+							Strings.headingVisitsNotCancelled,
+							Strings.messageCountVisitsNotCancelled,
 							null,
 							null,
-							null,
-							Strings.messageFollowUpCanceledForSome,
-							null,
-							null).doBulkOperation(batch -> {
+							Strings.messageCountVisitsNotCancelledAccessDeniedReason,
+							Strings.messageNoEligibleVisitForCancellation,
+							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+								List<ProcessedEntity> processedContacts = new ArrayList<>();
+
 								for (ContactIndexDto contact : batch) {
 									if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
 										&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
-										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-										contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-										contactDto.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), userName));
-										FacadeProvider.getContactFacade().save(contactDto);
+										processedContacts.add(setFollowUpStatus(contact, FollowUpStatus.CANCELED, Strings.infoCanceledBy, userName));
+									} else {
+										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
-
-								return batch.size();
-							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
+								return processedContacts;
+							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
 	}
 
-	public void setAllSelectedItemsToLostToFollowUp(
-		Collection<? extends ContactIndexDto> selectedRows,
+	public <T extends ContactIndexDto> void setAllSelectedItemsToLostToFollowUp(
+		Collection<T> selectedRows,
 		String caseUuid,
 		AbstractContactGrid<?> contactGrid) {
 		if (selectedRows.isEmpty()) {
@@ -883,27 +892,50 @@ public class ContactController {
 
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpStatusChanged,
+							Strings.messageVisitsWithWrongStatusNotSetToLost,
+							Strings.headingSomeVisitsNotSetToLost,
+							Strings.headingVisitsNotSetToLost,
+							Strings.messageCountVisitsNotSetToLost,
 							null,
 							null,
-							null,
-							Strings.messageFollowUpStatusChangedForSome,
-							null,
-							null).doBulkOperation(batch -> {
+							Strings.messageCountVisitsNotSetToLostAccessDeniedReason,
+							Strings.messageNoEligibleVisitForSettingToLost,
+							Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+							Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+								List<ProcessedEntity> processedContacts = new ArrayList<>();
+
 								for (ContactIndexDto contact : batch) {
 									if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-										ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
-										contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-										contactDto
-											.addToFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), userName));
-										FacadeProvider.getContactFacade().save(contactDto);
+										processedContacts
+											.add(setFollowUpStatus(contact, FollowUpStatus.LOST, Strings.infoLostToFollowUpBy, userName));
+									} else {
+										processedContacts.add(new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 									}
 								}
-
-								return batch.size();
-							}, new ArrayList<>(selectedRows), null, null, bulkOperationCallback(caseUuid, contactGrid, null));
+								return processedContacts;
+							}, new ArrayList<>(selectedRows), bulkOperationCallback(caseUuid, contactGrid, null));
 					}
 				});
 		}
+	}
+
+	public ProcessedEntity setFollowUpStatus(ContactIndexDto contact, FollowUpStatus followUpStatus, String followUpComment, String userName) {
+
+		ProcessedEntity processedContact;
+		ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
+		contactDto.setFollowUpStatus(followUpStatus);
+		contactDto.addToFollowUpComment(String.format(I18nProperties.getString(followUpComment), userName));
+		try {
+			FacadeProvider.getContactFacade().save(contactDto);
+			processedContact = new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.SUCCESS);
+		} catch (AccessDeniedException e) {
+			processedContact = new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+			logger.error("The follow up status of contact with uuid {} could not be set due to an AccessDeniedException", contact.getUuid(), e);
+		} catch (Exception e) {
+			processedContact = new ProcessedEntity(contact.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE);
+			logger.error("The follow up status of contact with uuid {} could not be set due to an Exception", contact.getUuid(), e);
+		}
+		return processedContact;
 	}
 
 	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseSelectionDto> selectedCaseCallback) {

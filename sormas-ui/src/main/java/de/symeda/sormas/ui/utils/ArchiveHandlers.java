@@ -34,6 +34,8 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -53,7 +55,6 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.ui.utils.ArchivingController.IArchiveHandler;
 
@@ -66,16 +67,16 @@ public final class ArchiveHandlers {
 		return new CaseArchiveHandler();
 	}
 
+	public static EventArchiveHandler forEvent() {
+		return new EventArchiveHandler();
+	}
+
 	public static CoreEntityArchiveHandler<ContactDto, ContactFacade> forContact() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getContactFacade(), ArchiveMessages.CONTACT);
 	}
 
 	public static CoreEntityArchiveHandler<EnvironmentDto, EnvironmentFacade> forEnvironment() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getEnvironmentFacade(), ArchiveMessages.ENVIRONMENT);
-	}
-
-	public static CoreEntityArchiveHandler<EventDto, EventFacade> forEvent() {
-		return new CoreEntityArchiveHandler<>(FacadeProvider.getEventFacade(), ArchiveMessages.EVENT);
 	}
 
 	public static CoreEntityArchiveHandler<EventParticipantDto, EventParticipantFacade> forEventParticipant() {
@@ -116,22 +117,22 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
-			entityFacade.archive(entityUuid);
+		public ProcessedEntity archive(String entityUuid) {
+			return entityFacade.archive(entityUuid);
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			return entityFacade.archive(entityUuids).size();
+		public List<ProcessedEntity> archive(List<String> entityUuids) {
+			return entityFacade.archive(entityUuids);
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			entityFacade.dearchive(entityUuid);
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			return Collections.singletonList(entityFacade.dearchive(entityUuid));
 		}
 
-		public int dearchive(List<String> entityUuids) {
-			return entityFacade.dearchive(entityUuids).size();
+		public List<ProcessedEntity> dearchive(List<String> entityUuids) {
+			return entityFacade.dearchive(entityUuids);
 		}
 
 		@Override
@@ -175,26 +176,31 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
-			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+		public ProcessedEntity archive(String entityUuid) {
+			ProcessedEntity processedEntity = entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()));
+
+			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
+			}
+
+			return processedEntity;
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			entityFacade.archive(entityUuids);
-
-			return entityUuids.size();
+		public List<ProcessedEntity> archive(List<String> entityUuids) {
+			return entityFacade.archive(entityUuids);
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue());
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			return entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue());
 		}
 
 		@Override
-		public int dearchive(List<String> entityUuids) {
-			entityFacade.dearchive(entityUuids, dearchiveReasonField.getValue());
-			return entityUuids.size();
+		public List<ProcessedEntity> dearchive(List<String> entityUuids) {
+			return entityFacade.dearchive(entityUuids, dearchiveReasonField.getValue());
 		}
 
 		@Override
@@ -236,6 +242,26 @@ public final class ArchiveHandlers {
 		}
 	}
 
+	private static final class EventArchiveHandler extends CoreEntityArchiveHandler<EventDto, EventFacade> {
+
+		private EventArchiveHandler() {
+			super(FacadeProvider.getEventFacade(), ArchiveMessages.EVENT);
+		}
+
+		@Override
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities = Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue()));
+
+			if (processedEntities.get(0).getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
+			}
+
+			return processedEntities;
+		}
+	}
+
 	private static final class CaseArchiveHandler extends CoreEntityArchiveHandler<CaseDataDto, CaseFacade> {
 
 		private CheckBox archiveWithContacts;
@@ -245,26 +271,41 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
-			entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
+		public ProcessedEntity archive(String entityUuid) {
+			ProcessedEntity processedEntity =
+				entityFacade.archive(entityUuid, UtilDate.from(endOfProcessingDateField.getValue()), archiveWithContacts.getValue());
+
+			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
+			}
+
+			return processedEntity;
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			entityFacade.dearchive(Collections.singletonList(entityUuid), dearchiveReasonField.getValue(), archiveWithContacts.getValue());
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities =
+				Collections.singletonList(entityFacade.dearchive(entityUuid, dearchiveReasonField.getValue(), archiveWithContacts.getValue()));
+
+			if (processedEntities.get(0).getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE)) {
+				Notification.show(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorArchiving),
+					Notification.Type.WARNING_MESSAGE);
+			}
+
+			return processedEntities;
 		}
 
 		@Override
-		public int archive(List<String> entityUuids) {
-			entityFacade.archive(entityUuids, archiveWithContacts.getValue());
-
-			return entityUuids.size();
+		public List<ProcessedEntity> archive(List<String> entityUuids) {
+			return entityFacade.archive(entityUuids, archiveWithContacts.getValue());
 		}
 
 		@Override
-		public int dearchive(List<String> uuidList) {
-			entityFacade.dearchive(uuidList, dearchiveReasonField.getValue(), archiveWithContacts.getValue());
-			return uuidList.size();
+		public List<ProcessedEntity> dearchive(List<String> uuidList) {
+			return entityFacade.dearchive(uuidList, dearchiveReasonField.getValue(), archiveWithContacts.getValue());
 		}
 
 		@Override
@@ -308,21 +349,27 @@ public final class ArchiveHandlers {
 		}
 
 		@Override
-		public void archive(String entityUuid) {
-			try {
-				super.archive(entityUuid);
-			} catch (AccessDeniedException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+		public ProcessedEntity archive(String entityUuid) {
+			ProcessedEntity processedEntity = super.archive(entityUuid);
+
+			if (processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)) {
+				Notification
+					.show(I18nProperties.getString(getArchiveMessages().getMessageEntityArchivingNotPossible()), Notification.Type.WARNING_MESSAGE);
 			}
+
+			return processedEntity;
 		}
 
 		@Override
-		public void dearchive(String entityUuid) {
-			try {
-				super.dearchive(entityUuid);
-			} catch (AccessDeniedException e) {
-				Notification.show(e.getMessage(), Notification.Type.WARNING_MESSAGE);
+		public List<ProcessedEntity> dearchive(String entityUuid) {
+			List<ProcessedEntity> processedEntities = super.dearchive(entityUuid);
+
+			if (processedEntities.get(0).getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)) {
+				Notification
+					.show(I18nProperties.getString(getArchiveMessages().getMessageEntityArchivingNotPossible()), Notification.Type.WARNING_MESSAGE);
 			}
+
+			return processedEntities;
 		}
 
 		@Override

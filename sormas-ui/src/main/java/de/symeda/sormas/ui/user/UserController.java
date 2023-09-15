@@ -367,13 +367,22 @@ public class UserController {
 						return;
 					}
 
-					new BulkOperationHandler<UserDto>(Strings.messageUsersEnabled, null, null, null, Strings.messageSomeUsersEnabled, null, null)
-						.doBulkOperation(batch -> {
-							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
-							FacadeProvider.getUserFacade().enableUsers(uuids);
+					new BulkOperationHandler<UserDto>(
+						Strings.messageUsersEnabled,
+						null,
+						Strings.headingSomeUsersNotEnabled,
+						Strings.headingUsersNotEnabled,
+						Strings.messageCountUsersNotEnabled,
+						null,
+						null,
+						null,
+						null,
+						Strings.infoBulkProcessFinishedWithSkips,
+						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 
-							return batch.size();
-						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							return FacadeProvider.getUserFacade().enableUsers(uuids);
+						}, new ArrayList<>(selectedRows), remaining -> {
 							userGrid.reload();
 							if (CollectionUtils.isNotEmpty(remaining)) {
 								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
@@ -405,13 +414,22 @@ public class UserController {
 						return;
 					}
 
-					new BulkOperationHandler<UserDto>(Strings.messageUsersDisabled, null, null, null, Strings.messageSomeUsersDisabled, null, null)
-						.doBulkOperation(batch -> {
-							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
-							FacadeProvider.getUserFacade().disableUsers(uuids);
+					new BulkOperationHandler<UserDto>(
+						Strings.messageUsersDisabled,
+						null,
+						Strings.headingSomeUsersNotDisabled,
+						Strings.headingUsersNotDisabled,
+						Strings.messageCountUsersNotDisabled,
+						null,
+						null,
+						null,
+						null,
+						Strings.infoBulkProcessFinishedWithSkips,
+						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
 
-							return batch.size();
-						}, new ArrayList<>(selectedRows), null, null, remaining -> {
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							return FacadeProvider.getUserFacade().disableUsers(uuids);
+						}, new ArrayList<>(selectedRows), remaining -> {
 							userGrid.reload();
 							if (CollectionUtils.isNotEmpty(remaining)) {
 								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
