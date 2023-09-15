@@ -24,6 +24,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
@@ -62,25 +65,40 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventGroupController {
 
-	private static void linkEventsToGroup(
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private void linkEventsToGroup(
 		List<EventReferenceDto> eventReferences,
 		EventGroupReferenceDto eventGroupReference,
 		Consumer<List<EventReferenceDto>> callback) {
 
-		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
-		new BulkOperationHandler<EventReferenceDto>(messageEventsLinkedToGroup, null, null, null, Strings.messageSomeEventsLinkedToGroup, null, null)
-			.doBulkOperation(batch -> {
-				FacadeProvider.getEventGroupFacade()
-					.linkEventsToGroups(
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-						Collections.singletonList(eventGroupReference.getUuid()));
-				FacadeProvider.getEventGroupFacade()
-					.notifyEventAddedToEventGroup(
-						eventGroupReference.getUuid(),
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet()));
+		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
+		List<String> eventGroupUuids = Collections.singletonList(eventGroupReference.getUuid());
 
-				return batch.size();
-			}, new ArrayList<>(eventReferences), null, null, callback);
+		List<String> alreadyLinkedEventUuidsToGroup =
+			FacadeProvider.getEventGroupFacade().getAlreadyLinkedEventUuidsToGroup(eventUuids, eventGroupUuids);
+
+		String messageEventsLinkedToGroup = eventReferences.size() > 1 ? Strings.messageEventsLinkedToGroup : Strings.messageEventLinkedToGroup;
+		new BulkOperationHandler<EventReferenceDto>(
+			messageEventsLinkedToGroup,
+			null,
+			Strings.headingSomeEventsNotLinked,
+			Strings.headingEventsNotLinked,
+			Strings.messageCountEventsNotLinked,
+			null,
+			null,
+			Strings.messageCountEventsNotLinkedAccessDeniedReason,
+			Strings.messageAllEventsAlreadyLinkedToGroup,
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+			Strings.infoBulkProcessFinishedWithoutSuccess)
+				.doBulkOperation(
+					batch -> FacadeProvider.getEventGroupFacade()
+						.linkEventsToGroups(
+							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+							eventGroupUuids,
+							alreadyLinkedEventUuidsToGroup),
+					new ArrayList<>(eventReferences),
+					callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {

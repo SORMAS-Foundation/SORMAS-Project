@@ -17,15 +17,17 @@ package de.symeda.sormas.api;
 
 import java.util.List;
 
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+
 public interface ArchivableFacade {
 
-	void archive(String uuid);
+	ProcessedEntity archive(String uuid);
 
-	void dearchive(String uuid);
+	ProcessedEntity dearchive(String uuid);
 
-	List<String> archive(List<String> entityUuid);
+	List<ProcessedEntity> archive(List<String> entityUuid);
 
-	List<String> dearchive(List<String> entityUuids);
+	List<ProcessedEntity> dearchive(List<String> entityUuids);
 
 	boolean isArchived(String uuid);
 }

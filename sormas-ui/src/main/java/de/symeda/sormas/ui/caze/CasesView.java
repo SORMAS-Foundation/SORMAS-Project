@@ -719,20 +719,20 @@ public class CasesView extends AbstractView {
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, mi -> {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items, (AbstractCaseGrid<?>) grid));
-					}, hasBulkOperationsRight));
+					}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)));
 					if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 							grid.bulkActionHandler(
 								items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
-						}, hasBulkOperationsRight));
+						}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 								grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
-							}, hasBulkOperationsRight));
+							}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
 					}
 					final boolean externalMessagesEnabled =
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
@@ -751,13 +751,19 @@ public class CasesView extends AbstractView {
 							grid.bulkActionHandler(
 								items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
-						}, hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
+						},
+							hasBulkOperationsRight
+								&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
+								&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 					menuBarItems
 						.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
 							grid.bulkActionHandler(
 								items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
-						}, hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+						},
+							hasBulkOperationsRight
+								&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
+								&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getSormasToSormasController().shareSelectedCases(items, () -> navigateTo(criteria)));
@@ -779,7 +785,8 @@ public class CasesView extends AbstractView {
 									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, (AbstractCaseGrid<?>) grid);
 								});
 							},
-							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+							UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
+								&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					if (isDocGenerationAllowed()) {
 						menuBarItems.add(

@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -128,8 +131,8 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedTravelEntryUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedTravelEntries = new ArrayList<>();
 		List<TravelEntry> travelEntriesToBeDeleted = travelEntryService.getByUuids(uuids);
 
 		if (travelEntriesToBeDeleted != null) {
@@ -137,15 +140,23 @@ public class TravelEntryFacadeEjb
 				if (!travelEntryToBeDeleted.isDeleted()) {
 					try {
 						delete(travelEntryToBeDeleted.getUuid(), deletionDetails);
-						deletedTravelEntryUuids.add(travelEntryToBeDeleted.getUuid());
+						processedTravelEntries.add(new ProcessedEntity(travelEntryToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} catch (AccessDeniedException e) {
+						processedTravelEntries
+							.add(new ProcessedEntity(travelEntryToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error(
+							"The travel entry with uuid {} could not be deleted due to an AccessDeniedException",
+							travelEntryToBeDeleted.getUuid(),
+							e);
 					} catch (Exception e) {
+						processedTravelEntries.add(new ProcessedEntity(travelEntryToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
 						logger.error("The travel entry with uuid:" + travelEntryToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}
 			});
 		}
 
-		return deletedTravelEntryUuids;
+		return processedTravelEntries;
 	}
 
 	@Override
@@ -156,22 +167,23 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredTravelEntryUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedTravelEntries = new ArrayList<>();
 		List<TravelEntry> travelEntriesToBeRestored = travelEntryService.getByUuids(uuids);
 
 		if (travelEntriesToBeRestored != null) {
 			travelEntriesToBeRestored.forEach(travelEntryToBeRestored -> {
 				try {
 					restore(travelEntryToBeRestored.getUuid());
-					restoredTravelEntryUuids.add(travelEntryToBeRestored.getUuid());
+					processedTravelEntries.add(new ProcessedEntity(travelEntryToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The travel entry with uuid:" + travelEntryToBeRestored.getUuid() + "could not be restored");
+					processedTravelEntries.add(new ProcessedEntity(travelEntryToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The travel entry with uuid {} could not be restored due to an Exception", travelEntryToBeRestored.getUuid(), e);
 				}
 			});
 		}
 
-		return restoredTravelEntryUuids;
+		return processedTravelEntries;
 	}
 
 	@Override
@@ -442,20 +454,20 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
-	public void archive(List<String> entityUuids) {
-		super.archive(entityUuids);
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		return super.archive(entityUuids);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override

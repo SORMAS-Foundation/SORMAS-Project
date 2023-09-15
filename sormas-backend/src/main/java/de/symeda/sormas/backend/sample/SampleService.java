@@ -60,6 +60,8 @@ import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -1089,7 +1091,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	 *            {@link Sample}s identified by {@code List<String> sampleUuids} to be deleted.
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void deleteAll(List<String> sampleUuids, DeletionDetails deletionDetails) {
+	public List<ProcessedEntity> deleteAll(List<String> sampleUuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedSamples = new ArrayList<>();
 
 		List<Sample> samplesList = getByUuids(sampleUuids);
 		List<String> pathogenTestUUIDsList = new ArrayList<>();
@@ -1165,6 +1168,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			Case associatedCase = entry.getValue();
 			caseFacade.onCaseSampleChanged(associatedCase);
 		}
+
+		processedSamples.addAll(buildProcessedEntities(sampleUuids, ProcessedEntityStatus.SUCCESS));
+
+		return processedSamples;
 	}
 
 	/**

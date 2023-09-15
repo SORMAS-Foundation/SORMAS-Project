@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -8,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Sizeable;
@@ -18,6 +20,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -43,104 +47,82 @@ public class BulkOperationHandler<T extends HasUuid> {
 	private boolean cancelButtonClicked;
 	private final Lock cancelLock = new ReentrantLock();
 	private int initialEntryCount;
-	private int initialEligibleEntryCount;
 	private int successfulEntryCount;
+	private int ineligibleEntryCount;
+	private int eligibleEntryCount;
+	private boolean areIneligibleEntriesSelected = false;
 	private Window window;
 
 	private final String allEntriesProcessedMessageProperty;
 	private final String ineligibleEntriesNotProcessedMessageProperty;
 	private final String headingSomeEntitiesNotProcessed;
+	private final String headingNoProcessedEntities;
 	private final String countEntriesNotProcessedMessageProperty;
-	private final String someEntriesProcessedMessageProperty;
+	private final String countEntriesNotProcessedExternalReasonProperty;
+	private final String countEntriesNotProcessedSormasToSormasReasonProperty;
+	private final String countEntriesNotProcessedAccessDeniedReasonProperty;
 	private final String noEligibleEntityMessageProperty;
 	private final String infoBulkProcessFinishedWithSkipsProperty;
+	private final String infoBulkProcessFinishedWithoutSuccess;
 
 	public BulkOperationHandler(
 		String allEntriesProcessedMessageProperty,
 		String ineligibleEntriesNotProcessedMessageProperty,
 		String headingSomeEntitiesNotProcessed,
+		String headingNoProcessedEntities,
 		String countEntriesNotProcessedMessageProperty,
-		String someEntriesProcessedMessageProperty,
+		String countEntriesNotProcessedExternalReasonProperty,
+		String countEntriesNotProcessedSormasToSormasReasonProperty,
+		String countEntriesNotProcessedAccessDeniedReasonProperty,
 		String noEligibleEntityMessageProperty,
-		String infoBulkProcessFinishedWithSkipsProperty) {
+		String infoBulkProcessFinishedWithSkipsProperty,
+		String infoBulkProcessFinishedWithoutSuccess) {
+
 		this.allEntriesProcessedMessageProperty = allEntriesProcessedMessageProperty;
 		this.ineligibleEntriesNotProcessedMessageProperty = ineligibleEntriesNotProcessedMessageProperty;
 		this.headingSomeEntitiesNotProcessed = headingSomeEntitiesNotProcessed;
+		this.headingNoProcessedEntities = headingNoProcessedEntities;
 		this.countEntriesNotProcessedMessageProperty = countEntriesNotProcessedMessageProperty;
-		this.someEntriesProcessedMessageProperty = someEntriesProcessedMessageProperty;
+		this.countEntriesNotProcessedExternalReasonProperty = countEntriesNotProcessedExternalReasonProperty;
+		this.countEntriesNotProcessedSormasToSormasReasonProperty = countEntriesNotProcessedSormasToSormasReasonProperty;
+		this.countEntriesNotProcessedAccessDeniedReasonProperty = countEntriesNotProcessedAccessDeniedReasonProperty;
 		this.noEligibleEntityMessageProperty = noEligibleEntityMessageProperty;
 		this.infoBulkProcessFinishedWithSkipsProperty = infoBulkProcessFinishedWithSkipsProperty;
+		this.infoBulkProcessFinishedWithoutSuccess = infoBulkProcessFinishedWithoutSuccess;
 	}
 
 	public static <E extends HasUuid> BulkOperationHandler<E> forBulkEdit() {
-		return new BulkOperationHandler<E>(
+		return new BulkOperationHandler<>(
 			Strings.messageEntriesEdited,
+			Strings.messageEntitiesNotEditable,
+			Strings.headingSomeEntitiesNotEdited,
+			Strings.headingEntitiesNotEdited,
+			Strings.messageCountEntitiesNotEdited,
 			null,
 			null,
-			null,
-			Strings.messageEntriesEditedExceptArchived,
-			null,
-			Strings.infoBulkProcessFinishedWithSkips);
+			Strings.messageCountEntitiesNotEditedAccessDeniedReason,
+			Strings.messageNoEligibleEntityForEditing,
+			Strings.infoBulkProcessFinishedWithSkips,
+			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}
 
 	public void doBulkOperation(
-		Function<List<T>, Integer> bulkOperationFunction,
+		Function<List<T>, List<ProcessedEntity>> bulkOperationFunction,
 		List<T> selectedEntries,
-		List<T> selectedEligibleEntries,
-		List<T> selectedIneligibleEntries,
 		Consumer<List<T>> bulkOperationDoneCallback) {
 
 		initialEntryCount = selectedEntries.size();
-		initialEligibleEntryCount = getInitialEligibleEntryCount(selectedEntries, selectedIneligibleEntries, selectedEligibleEntries);
-		selectedEligibleEntries = !areIneligibleEntriesSelected(selectedIneligibleEntries) ? selectedEntries : selectedEligibleEntries;
-
 		if (selectedEntries.size() < BULK_ACTION_PROGRESS_THRESHOLD) {
-			if (initialEligibleEntryCount > 0) {
-				successfulEntryCount = areIneligibleEntriesSelected(selectedIneligibleEntries)
-					? bulkOperationFunction.apply(selectedEligibleEntries)
-					: bulkOperationFunction.apply(selectedEntries);
-			}
-
-			if (initialEligibleEntryCount == 0 && successfulEntryCount == 0) {
-				//all the selected items were ineligible
-				NotificationHelper.showNotification(I18nProperties.getString(noEligibleEntityMessageProperty), Notification.Type.WARNING_MESSAGE, -1);
-				return;
-			}
-
-			if (initialEligibleEntryCount > successfulEntryCount) {
-				NotificationHelper.showNotification(
-					String.format(I18nProperties.getString(someEntriesProcessedMessageProperty), successfulEntryCount),
-					Notification.Type.HUMANIZED_MESSAGE,
-					-1);
-
-			} else {
-				if (areIneligibleEntriesSelected(selectedIneligibleEntries)) {
-					String description = getErrorDescription(
-						selectedIneligibleEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList()),
-						I18nProperties.getString(countEntriesNotProcessedMessageProperty),
-						ineligibleEntriesNotProcessedMessageProperty != null
-							? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty)
-							: "");
-
-					Window response =
-						VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(headingSomeEntitiesNotProcessed), description, ContentMode.HTML);
-
-					response.setWidth(600, Sizeable.Unit.PIXELS);
-				} else {
-					//all the selected eligible entities were processed
-					NotificationHelper
-						.showNotification(I18nProperties.getString(allEntriesProcessedMessageProperty), Notification.Type.HUMANIZED_MESSAGE, -1);
-				}
-			}
+			processEntriesWithoutProgressBar(bulkOperationFunction, selectedEntries);
 			bulkOperationDoneCallback.accept(Collections.emptyList());
 		} else {
+			List<ProcessedEntity> entitiesToBeProcessed = new ArrayList<>();
 			UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
 			UI currentUI = UI.getCurrent();
 
 			BulkProgressLayout bulkProgressLayout = new BulkProgressLayout(currentUI, selectedEntries.size(), this::handleCancelButtonClicked);
 			addWindow(bulkProgressLayout, currentUI);
 
-			List<T> finalSelectedEligibleEntries = selectedEligibleEntries;
 			Thread bulkThread = new Thread(() -> {
 				currentUI.setPollInterval(300);
 				I18nProperties.setUserLanguage(currentUser.getLanguage());
@@ -148,15 +130,17 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 				try {
 					List<T> remainingEntries =
-						performBulkOperation(bulkOperationFunction, finalSelectedEligibleEntries, bulkProgressLayout::updateProgress);
+						performBulkOperation(bulkOperationFunction, selectedEntries, entitiesToBeProcessed, bulkProgressLayout::updateProgress);
 
 					currentUI.access(() -> {
 						window.setClosable(true);
 
-						if (initialEligibleEntryCount == 0) {
+						//all the selected items were ineligible
+						if (eligibleEntryCount == 0 && successfulEntryCount == 0) {
 							bulkProgressLayout.finishProgress(
-								ProgressResult.SUCCESS_WITH_WARNING,
+								ProgressResult.FAILURE,
 								I18nProperties.getString(Strings.infoBulkProcessNoEligibleEntries),
+								null,
 								() -> {
 									window.close();
 									bulkOperationDoneCallback.accept(remainingEntries);
@@ -164,46 +148,48 @@ public class BulkOperationHandler<T extends HasUuid> {
 							return;
 						}
 
-						if (cancelAfterCurrentBatch) {
-							bulkProgressLayout.finishProgress(
-								ProgressResult.SUCCESS_WITH_WARNING,
-								I18nProperties.getString(Strings.infoBulkProcessCancelled),
-								() -> {
-									window.close();
-									bulkOperationDoneCallback.accept(remainingEntries);
-								});
-						} else if (initialEligibleEntryCount == successfulEntryCount) {
+						areIneligibleEntriesSelected = ineligibleEntryCount > 0;
+						List<ProcessedEntity> ineligibleEntries = getEntriesByStatus(entitiesToBeProcessed, ProcessedEntityStatus.NOT_ELIGIBLE);
+						String ineligibleEntriesDescription = buildIneligibleEntriesDescription(areIneligibleEntriesSelected, ineligibleEntries);
 
-							if (initialEntryCount == initialEligibleEntryCount) {
+						String description = buildDescription(ineligibleEntriesDescription, entitiesToBeProcessed);
+
+						if (cancelAfterCurrentBatch) {
+							handleProgressResultBasedOnSuccessfulEntryCount(
+								bulkProgressLayout,
+								true,
+								description,
+								remainingEntries,
+								bulkOperationDoneCallback);
+						} else if (eligibleEntryCount == successfulEntryCount) {
+							if (initialEntryCount == eligibleEntryCount) {
 								bulkProgressLayout
-									.finishProgress(ProgressResult.SUCCESS, I18nProperties.getString(Strings.infoBulkProcessFinished), () -> {
+									.finishProgress(ProgressResult.SUCCESS, I18nProperties.getString(Strings.infoBulkProcessFinished), null, () -> {
 										window.close();
 										bulkOperationDoneCallback.accept(remainingEntries);
 									});
 							} else {
-
 								bulkProgressLayout.finishProgress(
 									ProgressResult.SUCCESS_WITH_WARNING,
 									I18nProperties.getString(Strings.infoBulkProcessFinishedWithIneligibleItems),
+									ineligibleEntriesDescription,
 									() -> {
 										window.close();
 										bulkOperationDoneCallback.accept(remainingEntries);
 									});
 							}
 						} else {
-							bulkProgressLayout.finishProgress(
-								ProgressResult.SUCCESS_WITH_WARNING,
-								I18nProperties.getString(infoBulkProcessFinishedWithSkipsProperty),
-								() -> {
-									window.close();
-									bulkOperationDoneCallback.accept(remainingEntries);
-								});
+							handleProgressResultBasedOnSuccessfulEntryCount(
+								bulkProgressLayout,
+								false,
+								description,
+								remainingEntries,
+								bulkOperationDoneCallback);
 						}
-
 					});
 				} catch (Exception e) {
 					LoggerFactory.getLogger(BulkOperationHandler.class).error("Error during bulk operation", e);
-					bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), () -> {
+					bulkProgressLayout.finishProgress(ProgressResult.FAILURE, I18nProperties.getString(Strings.errorWasReported), null, () -> {
 						window.close();
 						bulkOperationDoneCallback.accept(selectedEntries);
 					});
@@ -216,9 +202,97 @@ public class BulkOperationHandler<T extends HasUuid> {
 		}
 	}
 
+	public void handleProgressResultBasedOnSuccessfulEntryCount(
+		BulkProgressLayout bulkProgressLayout,
+		boolean cancelAfterCurrentBatch,
+		String description,
+		List<T> remainingEntries,
+		Consumer<List<T>> bulkOperationDoneCallback) {
+
+		if (successfulEntryCount > 0) {
+			bulkProgressLayout.finishProgress(
+				ProgressResult.SUCCESS_WITH_WARNING,
+				cancelAfterCurrentBatch
+					? I18nProperties.getString(Strings.infoBulkProcessCancelled)
+					: I18nProperties.getString(infoBulkProcessFinishedWithSkipsProperty),
+				description,
+				() -> {
+					window.close();
+					bulkOperationDoneCallback.accept(remainingEntries);
+				});
+		} else {
+			bulkProgressLayout.finishProgress(
+				ProgressResult.FAILURE,
+				cancelAfterCurrentBatch
+					? I18nProperties.getString(Strings.infoBulkProcessCancelled)
+					: I18nProperties.getString(infoBulkProcessFinishedWithoutSuccess),
+				description,
+				() -> {
+					window.close();
+					bulkOperationDoneCallback.accept(remainingEntries);
+				});
+		}
+	}
+
+	public void processEntriesWithoutProgressBar(Function<List<T>, List<ProcessedEntity>> bulkOperationFunction, List<T> selectedEntries) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
+		if (initialEntryCount > 0) {
+			processedEntities = bulkOperationFunction.apply(selectedEntries);
+
+			successfulEntryCount = getEntriesByStatus(processedEntities, ProcessedEntityStatus.SUCCESS).size();
+			ineligibleEntryCount = getEntriesByStatus(processedEntities, ProcessedEntityStatus.NOT_ELIGIBLE).size();
+			eligibleEntryCount = getEligibleEntryCount(processedEntities);
+
+			areIneligibleEntriesSelected = ineligibleEntryCount > 0;
+		}
+
+		if (eligibleEntryCount == 0 && successfulEntryCount == 0) {
+			//all the selected items were ineligible
+			NotificationHelper.showNotification(I18nProperties.getString(noEligibleEntityMessageProperty), Notification.Type.WARNING_MESSAGE, -1);
+			return;
+		}
+
+		List<ProcessedEntity> ineligibleEntries = getEntriesByStatus(processedEntities, ProcessedEntityStatus.NOT_ELIGIBLE);
+		String ineligibleEntriesDescription = buildIneligibleEntriesDescription(areIneligibleEntriesSelected, ineligibleEntries);
+
+		String heading = successfulEntryCount > 0
+			? I18nProperties.getString(headingSomeEntitiesNotProcessed)
+			: I18nProperties.getString(headingNoProcessedEntities);
+
+		if (eligibleEntryCount > successfulEntryCount) {
+			String description = buildDescription(ineligibleEntriesDescription, processedEntities);
+
+			Window response = VaadinUiUtil.showSimplePopupWindow(heading, description, ContentMode.HTML);
+			response.setWidth(600, Sizeable.Unit.PIXELS);
+		} else {
+			if (areIneligibleEntriesSelected) {
+				Window response = VaadinUiUtil.showSimplePopupWindow(heading, ineligibleEntriesDescription, ContentMode.HTML);
+				response.setWidth(600, Sizeable.Unit.PIXELS);
+			} else {
+				//all the selected eligible entities were processed
+				NotificationHelper
+					.showNotification(I18nProperties.getString(allEntriesProcessedMessageProperty), Notification.Type.HUMANIZED_MESSAGE, -1);
+			}
+		}
+	}
+
+	public List<ProcessedEntity> getEntriesByStatus(List<ProcessedEntity> processedEntities, ProcessedEntityStatus status) {
+		return processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(status))
+			.collect(Collectors.toList());
+	}
+
+	public int getEligibleEntryCount(List<ProcessedEntity> processedEntities) {
+		return (int) processedEntities.stream()
+			.filter(processedEntity -> !processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.NOT_ELIGIBLE))
+			.count();
+	}
+
 	private List<T> performBulkOperation(
-		Function<List<T>, Integer> bulkOperationFunction,
-		List<T> selectedEntries,
+		Function<List<T>, List<ProcessedEntity>> bulkOperationFunction,
+		List<T> selectedEntities,
+		List<ProcessedEntity> entitiesToBeProcessed,
 		Consumer<BulkProgressUpdateInfo> progressUpdateCallback)
 		throws InterruptedException {
 
@@ -226,7 +300,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 		int lastProcessedEntry = 0;
 
 		try {
-			for (int i = 0; i < selectedEntries.size(); i += BULK_ACTION_BATCH_SIZE) {
+			for (int i = 0; i < selectedEntities.size(); i += BULK_ACTION_BATCH_SIZE) {
 				synchronized (cancelLock) {
 					while (cancelButtonClicked) {
 						cancelLock.wait();
@@ -235,11 +309,24 @@ public class BulkOperationHandler<T extends HasUuid> {
 						break;
 					}
 
-					int entriesInBatch = Math.min(BULK_ACTION_BATCH_SIZE, selectedEntries.size() - i);
-					int successfullyProcessedInBatch =
-						bulkOperationFunction.apply(selectedEntries.subList(i, Math.min(i + BULK_ACTION_BATCH_SIZE, selectedEntries.size())));
+					int entriesInBatch = Math.min(BULK_ACTION_BATCH_SIZE, selectedEntities.size() - i);
+
+					List<T> entitiesFromBatch = selectedEntities.subList(i, Math.min(i + BULK_ACTION_BATCH_SIZE, selectedEntities.size()));
+					List<ProcessedEntity> processedEntitiesFromBatch = bulkOperationFunction.apply(entitiesFromBatch);
+
+					if (processedEntitiesFromBatch.size() > 0) {
+						entitiesToBeProcessed.addAll(processedEntitiesFromBatch);
+					}
+
+					int successfullyProcessedInBatch = getEntriesByStatus(processedEntitiesFromBatch, ProcessedEntityStatus.SUCCESS).size();
+					int ineligibleEntriesInBatch = getEntriesByStatus(processedEntitiesFromBatch, ProcessedEntityStatus.NOT_ELIGIBLE).size();
+					int eligibleEntriesInBatch = getEligibleEntryCount(processedEntitiesFromBatch);
+
 					successfulEntryCount += successfullyProcessedInBatch;
-					lastProcessedEntry = Math.min(i + BULK_ACTION_BATCH_SIZE, selectedEntries.size() - 1);
+					ineligibleEntryCount += ineligibleEntriesInBatch;
+					eligibleEntryCount += eligibleEntriesInBatch;
+
+					lastProcessedEntry = Math.min(i + BULK_ACTION_BATCH_SIZE, selectedEntities.size() - 1);
 					progressUpdateCallback.accept(
 						new BulkProgressUpdateInfo(entriesInBatch, successfullyProcessedInBatch, entriesInBatch - successfullyProcessedInBatch));
 				}
@@ -248,9 +335,9 @@ public class BulkOperationHandler<T extends HasUuid> {
 			cancelLock.unlock();
 		}
 
-		return lastProcessedEntry == selectedEntries.size() - 1
+		return lastProcessedEntry == selectedEntities.size() - 1
 			? Collections.emptyList()
-			: selectedEntries.subList(lastProcessedEntry, selectedEntries.size());
+			: selectedEntities.subList(lastProcessedEntry, selectedEntities.size());
 	}
 
 	private void handleCancelButtonClicked() {
@@ -272,43 +359,103 @@ public class BulkOperationHandler<T extends HasUuid> {
 
 	}
 
-	private String getErrorDescription(
-		List<String> ineligibleEntityUuids,
-		String messageCountEntriesNotProcessed,
-		String messageIneligibleEntriesNotProcessed) {
-		StringBuilder description = new StringBuilder();
-		description.append(
+	public String buildDescription(String ineligibleEntriesDescription, List<ProcessedEntity> processedEntities) {
+		String failedProcessingDescription = buildFailedProcessingDescription(processedEntities);
+		return !ineligibleEntriesDescription.isEmpty()
+			? ineligibleEntriesDescription.concat(failedProcessingDescription)
+			: failedProcessingDescription;
+	}
+
+	public String buildIneligibleEntriesDescription(boolean areIneligibleEntriesSelected, List<ProcessedEntity> selectedIneligibleEntries) {
+		String ineligibleEntriesDescription = StringUtils.EMPTY;
+		if (areIneligibleEntriesSelected) {
+			ineligibleEntriesDescription = getErrorDescription(
+				selectedIneligibleEntries.stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList()),
+				I18nProperties.getString(countEntriesNotProcessedMessageProperty),
+				ineligibleEntriesNotProcessedMessageProperty != null ? I18nProperties.getString(ineligibleEntriesNotProcessedMessageProperty) : "");
+		}
+
+		return ineligibleEntriesDescription;
+	}
+
+	public String buildFailedProcessingDescription(List<ProcessedEntity> processedEntities) {
+		List<String> entityUuidsNotProcessedExternalSurveillanceFailure =
+			getFailedEntityUuidsByStatus(processedEntities, ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE);
+		List<String> entityUuidsNotProcessedSormasToSormasFailure =
+			getFailedEntityUuidsByStatus(processedEntities, ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE);
+		List<String> entityUuidsNotProcessedAccessDeniedFailure =
+			getFailedEntityUuidsByStatus(processedEntities, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		List<String> entityUuidsNotProcessedInternalFailure = getFailedEntityUuidsByStatus(processedEntities, ProcessedEntityStatus.INTERNAL_FAILURE);
+
+		String description = StringUtils.EMPTY;
+		if (entityUuidsNotProcessedExternalSurveillanceFailure.size() > 0) {
+			String description1 = getErrorDescription(
+				entityUuidsNotProcessedExternalSurveillanceFailure,
+				I18nProperties.getString(countEntriesNotProcessedExternalReasonProperty),
+				"");
+			description = description.concat(description1);
+		}
+
+		if (entityUuidsNotProcessedSormasToSormasFailure.size() > 0) {
+			String description2 = getErrorDescription(
+				entityUuidsNotProcessedSormasToSormasFailure,
+				I18nProperties.getString(countEntriesNotProcessedSormasToSormasReasonProperty),
+				"");
+			description = description.concat(description2);
+		}
+
+		if (entityUuidsNotProcessedAccessDeniedFailure.size() > 0) {
+			String description3 = getErrorDescription(
+				entityUuidsNotProcessedAccessDeniedFailure,
+				I18nProperties.getString(countEntriesNotProcessedAccessDeniedReasonProperty),
+				"");
+			description = description.concat(description3);
+		}
+
+		if (entityUuidsNotProcessedInternalFailure.size() > 0) {
+			String description4 =
+				getErrorDescription(entityUuidsNotProcessedInternalFailure, I18nProperties.getString(countEntriesNotProcessedMessageProperty), "");
+			description = description.concat(description4);
+		}
+
+		return description;
+	}
+
+	private String getErrorDescription(List<String> entityUuids, String messageCountEntries, String messageEntriesNotSuccessfullyProcessed) {
+
+		return String.format(
+			"%1s <br/> %2s",
 			String.format(
-				"%1s <br/> %2s",
-				String.format(
-					messageCountEntriesNotProcessed,
-					String.format("<b>%s</b>", ineligibleEntityUuids.size()),
-					String.format("<b>%s</b>", HtmlHelper.cleanHtml(getIneligibleItemsString(ineligibleEntityUuids)))),
-				messageIneligibleEntriesNotProcessed))
-			.append("<br/> <br/>");
-
-		return description.toString();
+				messageCountEntries,
+				String.format("<b>%s</b>", entityUuids.size()),
+				String.format("<b>%s</b>", HtmlHelper.cleanHtml(buildEntitiesString(entityUuids)))),
+			messageEntriesNotSuccessfullyProcessed) + "<br/> <br/>";
 	}
 
-	public String getIneligibleItemsString(List<String> ineligibleEntities) {
-		StringBuilder ineligibleItems = new StringBuilder();
-		for (String ineligibleEntity : ineligibleEntities) {
-			ineligibleItems.append(ineligibleEntity, 0, 6).append(", ");
+	public String buildEntitiesString(List<String> entityUuids) {
+		StringBuilder entitiesString = new StringBuilder();
+		for (String entityUuid : entityUuids) {
+			entitiesString.append(entityUuid, 0, 6).append(", ");
 		}
 
-		if (ineligibleItems.length() > 0) {
-			ineligibleItems = new StringBuilder(" " + ineligibleItems.substring(0, ineligibleItems.length() - 2) + ". ");
+		if (entitiesString.length() > 0) {
+			entitiesString = new StringBuilder(" " + entitiesString.substring(0, entitiesString.length() - 2) + ". ");
 		}
 
-		return ineligibleItems.toString();
+		return entitiesString.toString();
 	}
 
-	public int getInitialEligibleEntryCount(List<T> selectedEntries, List<T> selectedIneligibleEntries, List<T> selectedEligibleEntries) {
-		return selectedIneligibleEntries != null && selectedIneligibleEntries.size() > 0 ? selectedEligibleEntries.size() : selectedEntries.size();
+	public List<ProcessedEntity> getEntitiesByProcessingStatus(List<ProcessedEntity> processedEntities, ProcessedEntityStatus status) {
+		return processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(status))
+			.collect(Collectors.toList());
 	}
 
-	public boolean areIneligibleEntriesSelected(List<T> selectedIneligibleEntries) {
-		return selectedIneligibleEntries != null && selectedIneligibleEntries.size() > 0;
+	public List<String> getFailedEntityUuidsByStatus(List<ProcessedEntity> processedEntities, ProcessedEntityStatus status) {
+		return processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(status))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
 	}
 
 	public Window getWindow() {

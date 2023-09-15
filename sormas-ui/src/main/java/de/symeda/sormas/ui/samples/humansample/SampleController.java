@@ -626,8 +626,6 @@ public class SampleController {
 		ControllerProvider.getDeleteRestoreController()
 			.deleteAllSelectedItems(
 				selectedRows,
-				null,
-				null,
 				DeleteRestoreHandlers.forSample(),
 				bulkOperationCallback(sampleGrid, noEntriesRemainingCallback, null));
 

@@ -60,6 +60,8 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -333,7 +335,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDeleteContactsOutsideJurisdiction() {
-		RDCF rdcf = creator.createRDCF();
 		UserDto creatorUser = creator.createNationalUser();
 
 		Region region = creator.createRegion("Region");
@@ -348,23 +349,25 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf1 = new RDCF(new TestDataCreator.RDCFEntities(region, district1, community1, facility1));
 		TestDataCreator.RDCF rdcf2 = new RDCF(new TestDataCreator.RDCFEntities(region, district2, community2, facility2));
 
-		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
-		ContactDto contact1 = creator.createContact(rdcf1, creatorUser.toReference(), person1.toReference());
 		ContactDto contact2 = creator.createContact(rdcf2, creatorUser.toReference(), person2.toReference());
 
-		assertEquals(2, getContactFacade().getAllActiveUuids().size());
+		assertEquals(1, getContactFacade().getAllActiveUuids().size());
 
 		List<String> contactUuidList = new ArrayList<>();
-		contactUuidList.add(contact1.getUuid());
 		contactUuidList.add(contact2.getUuid());
 
 		UserDto user = creator.createSurveillanceOfficer(rdcf1);
 		loginWith(user);
-		List<String> deleteUuids =
+		List<ProcessedEntity> processedEntities =
 			getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
-		assertEquals(1, deleteUuids.size());
-		assertEquals(contact1.getUuid(), deleteUuids.get(0));
+		List<String> deletedUuids = processedEntities.stream()
+			.filter(processedEntity -> processedEntity.getProcessedEntityStatus().equals(ProcessedEntityStatus.SUCCESS))
+			.map(ProcessedEntity::getEntityUuid)
+			.collect(Collectors.toList());
+
+		assertEquals(processedEntities.get(0).getProcessedEntityStatus(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		assertEquals(0, deletedUuids.size());
 
 		loginWith(creatorUser);
 		getContactFacade().delete(contactUuidList, new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
