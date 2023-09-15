@@ -47,6 +47,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -70,13 +71,16 @@ public class SamplesView extends AbstractView {
 	public SamplesView() {
 		super(VIEW_NAME);
 
+		boolean isHumanSamplePermitted = UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW);
+		boolean isEnvironmentSamplePerimtted =
+			isHumanSamplePermitted && UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW);
+
 		viewConfiguration = ViewModelProviders.of(getClass()).get(SamplesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
-			viewConfiguration.setViewType(SampleViewType.HUMAN);
+			viewConfiguration.setViewType(isHumanSamplePermitted ? SampleViewType.HUMAN : SampleViewType.ENVIRONMENT);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ENVIRONMENT_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+		if (isEnvironmentSamplePerimtted && isHumanSamplePermitted) {
 			addViewSwitch();
 		}
 
