@@ -836,7 +836,10 @@ public class DevModeView extends AbstractConfigurationView {
 				} else if (parameterType.isEnum()) {
 					Object[] enumConstants;
 					// Only use active primary diseases
-					enumConstants = getEnumConstants(parameterType);
+
+					enumConstants = Arrays.stream(getEnumConstants(parameterType))
+						.filter(value -> fieldVisibilityCheckers.isVisible(parameterType, value.toString()))
+						.toArray();
 					// Generate more living persons
 					if (parameterType == PresentCondition.class && randomPercent(50)) {
 						setter.invoke(entity, PresentCondition.ALIVE);

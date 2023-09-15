@@ -15,16 +15,14 @@
 
 package de.symeda.sormas.api.utils.fieldvisibility;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
@@ -130,6 +128,7 @@ public class FieldVisibilityCheckers implements Serializable {
 
 	private Field getDeclaredField(Class<?> parentType, String propertyId) {
 		try {
+			//	return parentType.getDeclaredField(propertyId.replace(" ", "_"));
 			return parentType.getDeclaredField(propertyId);
 		} catch (NoSuchFieldException e) {
 			return null;

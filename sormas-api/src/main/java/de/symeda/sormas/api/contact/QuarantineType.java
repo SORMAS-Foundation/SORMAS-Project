@@ -27,8 +27,7 @@ public enum QuarantineType {
 		return QUARANTINE_IN_EFFECT.contains(quarantineType);
 	}
 
-	@Override
-	public String toString() {
+	public String toEnumCaption() {
 		return I18nProperties.getEnumCaption(this);
 	}
 }
