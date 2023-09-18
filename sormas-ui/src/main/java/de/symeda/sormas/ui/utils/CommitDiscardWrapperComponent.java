@@ -60,6 +60,7 @@ import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
@@ -852,18 +853,23 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
-	public void addDeleteWithReasonOrRestoreListener(String viewName, String details, String entityName, String entityUuid, CoreFacade coreFacade) {
+	public void addDeleteWithReasonOrRestoreListener(
+		String viewName,
+		String details,
+		String entityName,
+		String entityUuid,
+		DeletableFacade deletableFacade) {
 
-		final boolean deleted = coreFacade.isDeleted(entityUuid);
+		final boolean deleted = deletableFacade.isDeleted(entityUuid);
 
 		if (deleteWithDetailsListeners.isEmpty()) {
 			buttonsPanel.addComponent(getDeleteWithReasonOrRestoreButton(entityName, deleted, details), 0);
 		}
 
 		if (!deleted) {
-			deleteWithDetailsListeners.add((deleteDetails) -> coreFacade.delete(entityUuid, deleteDetails));
+			deleteWithDetailsListeners.add((deleteDetails) -> deletableFacade.delete(entityUuid, deleteDetails));
 		} else {
-			deleteWithDetailsListeners.add((deleteDetails) -> coreFacade.restore(entityUuid));
+			deleteWithDetailsListeners.add((deleteDetails) -> deletableFacade.restore(entityUuid));
 		}
 		deleteWithDetailsListeners.add((deleteDetails) -> UI.getCurrent().getNavigator().navigateTo(viewName));
 	}
@@ -1005,7 +1011,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			if (isInJurisdiction && isUserRightAllowed(deleteEntityRight)) {
 				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
 			}
-			if (isInJurisdiction && isUserRightAllowed(archiveEntityRight)) {
+			if (isInJurisdiction && archiveEntityRight != null && isUserRightAllowed(archiveEntityRight)) {
 				addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 			}
 

@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -296,8 +296,8 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected CoreEntityType getCoreEntityType() {
-		return CoreEntityType.TRAVEL_ENTRY;
+	protected DeletableEntityType getCoreEntityType() {
+		return DeletableEntityType.TRAVEL_ENTRY;
 	}
 
 	@Override
@@ -450,17 +450,6 @@ public class TravelEntryFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
-	}
-
-	@Override
-	protected String getDeleteReferenceField(DeletionReference deletionReference) {
-		if (deletionReference.equals(DeletionReference.ORIGIN)) {
-			return TravelEntry.DATE_OF_ARRIVAL;
-		} else if (deletionReference == DeletionReference.REPORT) {
-			return TravelEntry.REPORT_DATE;
-		}
-
-		return super.getDeleteReferenceField(deletionReference);
 	}
 
 	@Override

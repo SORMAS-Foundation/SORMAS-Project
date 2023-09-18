@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -1547,19 +1547,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 		return processedEvents;
 	}
-
 	@Override
-	protected String getDeleteReferenceField(DeletionReference deletionReference) {
-		if (deletionReference == DeletionReference.REPORT) {
-			return Event.REPORT_DATE_TIME;
-		}
-
-		return super.getDeleteReferenceField(deletionReference);
-	}
-
-	@Override
-	protected CoreEntityType getCoreEntityType() {
-		return CoreEntityType.EVENT;
+	protected DeletableEntityType getCoreEntityType() {
+		return DeletableEntityType.EVENT;
 	}
 
 	@Override

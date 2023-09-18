@@ -12,6 +12,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -22,7 +23,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 public class CampaignService extends AbstractCoreAdoService<Campaign, CampaignJoins> {
 
 	public CampaignService() {
-		super(Campaign.class);
+		super(Campaign.class, DeletableEntityType.CAMPAIGN);
 	}
 
 	@Override

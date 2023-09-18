@@ -41,6 +41,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -82,7 +83,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 
 	public EventParticipantService() {
-		super(EventParticipant.class);
+		super(EventParticipant.class, DeletableEntityType.EVENT_PARTICIPANT);
 	}
 
 	@Override

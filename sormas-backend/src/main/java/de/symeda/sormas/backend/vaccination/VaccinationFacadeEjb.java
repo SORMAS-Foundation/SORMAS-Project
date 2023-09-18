@@ -56,6 +56,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
@@ -607,7 +608,7 @@ public class VaccinationFacadeEjb
 				vaccinationEntities.add(vaccination);
 			} else {
 				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
-				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
+				VaccinationDto updatedVaccination = DtoCopyHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
 				save(updatedVaccination);
 			}
 		}
@@ -649,7 +650,7 @@ public class VaccinationFacadeEjb
 					sourceVaccine = duplicateVaccine;
 				}
 
-				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(targetVaccine, sourceVaccine, false);
+				VaccinationDto updatedVaccination = DtoCopyHelper.copyDtoValues(targetVaccine, sourceVaccine, false);
 				vaccinationsWithoutDuplicates.set(duplicateIndex, updatedVaccination);
 			}
 		}

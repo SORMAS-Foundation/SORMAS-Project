@@ -47,7 +47,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -369,11 +369,12 @@ public class EventParticipantsView extends AbstractEventView {
 		// Show active/archived/all dropdown
 		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT)) {
+			if (FacadeProvider.getFeatureConfigurationFacade()
+				.isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT_PARTICIPANT)) {
 				int daysAfterEventParticipantGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 					.getProperty(
 						FeatureType.AUTOMATIC_ARCHIVING,
-						CoreEntityType.EVENT_PARTICIPANT,
+						DeletableEntityType.EVENT_PARTICIPANT,
 						FeatureTypeProperty.THRESHOLD_IN_DAYS,
 						Integer.class);
 				if (daysAfterEventParticipantGetsArchived > 0) {

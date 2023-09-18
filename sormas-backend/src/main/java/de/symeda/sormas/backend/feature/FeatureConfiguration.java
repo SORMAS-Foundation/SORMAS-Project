@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -45,7 +45,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	private Disease disease;
 	private Date endDate;
 	private boolean enabled;
-	private CoreEntityType entityType;
+	private DeletableEntityType entityType;
 	private Map<FeatureTypeProperty, Object> properties;
 
 	public static FeatureConfiguration build(FeatureType featureType, boolean enabled) {
@@ -67,12 +67,12 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public CoreEntityType getEntityType() {
+	public DeletableEntityType getEntityType() {
 		return entityType;
 	}
 
-	public void setEntityType(CoreEntityType coreEntityType) {
-		this.entityType = coreEntityType;
+	public void setEntityType(DeletableEntityType deletableEntityType) {
+		this.entityType = deletableEntityType;
 	}
 
 	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)

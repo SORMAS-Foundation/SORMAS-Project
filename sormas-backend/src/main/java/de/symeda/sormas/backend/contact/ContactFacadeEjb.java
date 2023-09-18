@@ -77,7 +77,7 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
@@ -103,7 +103,6 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -143,6 +142,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -2206,7 +2206,7 @@ public class ContactFacadeEjb
 
 	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
 
-		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		DtoCopyHelper.copyDtoValues(leadContactDto, otherContactDto, false);
 
 		final String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
 		final String leadFollowUpComment = leadContactDto.getFollowUpComment();
@@ -2318,8 +2318,8 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected CoreEntityType getCoreEntityType() {
-		return CoreEntityType.CONTACT;
+	protected DeletableEntityType getCoreEntityType() {
+		return DeletableEntityType.CONTACT;
 	}
 
 	private float calculateCompleteness(Contact contact) {
@@ -2370,15 +2370,6 @@ public class ContactFacadeEjb
 	public User getRandomRegionContactResponsible(Region region) {
 
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
-	}
-
-	@Override
-	protected String getDeleteReferenceField(DeletionReference deletionReference) {
-		if (deletionReference == DeletionReference.REPORT) {
-			return Contact.REPORT_DATE_TIME;
-		}
-
-		return super.getDeleteReferenceField(deletionReference);
 	}
 
 	@LocalBean

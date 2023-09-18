@@ -14,12 +14,12 @@
  */
 package de.symeda.sormas.api.feature;
 
-import static de.symeda.sormas.api.common.CoreEntityType.CASE;
-import static de.symeda.sormas.api.common.CoreEntityType.CONTACT;
-import static de.symeda.sormas.api.common.CoreEntityType.EVENT;
-import static de.symeda.sormas.api.common.CoreEntityType.EVENT_PARTICIPANT;
-import static de.symeda.sormas.api.common.CoreEntityType.IMMUNIZATION;
-import static de.symeda.sormas.api.common.CoreEntityType.TRAVEL_ENTRY;
+import static de.symeda.sormas.api.common.DeletableEntityType.CASE;
+import static de.symeda.sormas.api.common.DeletableEntityType.CONTACT;
+import static de.symeda.sormas.api.common.DeletableEntityType.EVENT;
+import static de.symeda.sormas.api.common.DeletableEntityType.EVENT_PARTICIPANT;
+import static de.symeda.sormas.api.common.DeletableEntityType.IMMUNIZATION;
+import static de.symeda.sormas.api.common.DeletableEntityType.TRAVEL_ENTRY;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
@@ -345,14 +345,14 @@ public enum FeatureType {
 	private final boolean enabledDefault;
 
 	private final FeatureType[] dependentFeatures;
-	private final List<CoreEntityType> entityTypes;
+	private final List<DeletableEntityType> entityTypes;
 	private final Map<FeatureTypeProperty, Object> supportedPropertyDefaults;
 
 	FeatureType(
 		boolean serverFeature,
 		boolean enabledDefault,
 		FeatureType[] dependentFeatures,
-		List<CoreEntityType> entityTypes,
+		List<DeletableEntityType> entityTypes,
 		Map<FeatureTypeProperty, Object> supportedPropertyDefaults) {
 		this.serverFeature = serverFeature;
 		this.enabledDefault = enabledDefault;
@@ -401,7 +401,7 @@ public enum FeatureType {
 		return supportedPropertyDefaults.keySet();
 	}
 
-	public List<CoreEntityType> getEntityTypes() {
+	public List<DeletableEntityType> getEntityTypes() {
 		return entityTypes;
 	}
 }
