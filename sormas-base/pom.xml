@@ -33,7 +33,7 @@
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<swagger.version>2.2.15</swagger.version>
+		<swagger.version>2.2.16</swagger.version>
 		<bouncycastle.version>1.76</bouncycastle.version>
 		<grpc.version>1.56.1</grpc.version>
 		<keycloak.version>21.1.2</keycloak.version>
