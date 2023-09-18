@@ -312,16 +312,17 @@ public class SurvNetSteps implements En {
     And(
         "I check that Patientrole is change in SORMAS generated single XML file is {string}",
         (String expectedValue) -> {
-          String xmlValue = singleXmlFile
-              .getRootElement()
-              .getChildren()
-              .get(0)
-              .getChildren()
-              .get(1)
-              .getChildren()
-              .get(0)
-              .getAttribute("Value")
-              .getValue();
+          String xmlValue =
+              singleXmlFile
+                  .getRootElement()
+                  .getChildren()
+                  .get(0)
+                  .getChildren()
+                  .get(1)
+                  .getChildren()
+                  .get(0)
+                  .getAttribute("Value")
+                  .getValue();
           softly.assertEquals(xmlValue, expectedValue, "Patientrole value is wrong");
           softly.assertAll();
         });
