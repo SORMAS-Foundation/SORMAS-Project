@@ -39,7 +39,9 @@ public enum ExportEntityName {
 	DOCUMENTS("entityDocuments", "documents"),
 	DATA_DICTIONARY("entityDataDictionary", "data dictionary"),
 	DATA_PROTECTION_DICTIONARY("entityDataProtectionDictionary", "data protection dictionary"),
-	PERSONS("entityPersons", "persons");
+	PERSONS("entityPersons", "persons"),
+	ENVIRONMENTS("entityEnvironments", "environments"),
+	ENVIRONMeNT_SAMPLES("entityEnvironmentSamples", "environment samples"),;
 
 	private final String languageKey;
 	private final String defaultName;

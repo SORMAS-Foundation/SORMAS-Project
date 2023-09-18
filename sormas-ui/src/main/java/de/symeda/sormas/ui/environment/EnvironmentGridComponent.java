@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.environment;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -25,6 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
+import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -142,5 +144,13 @@ public class EnvironmentGridComponent extends VerticalLayout {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
+	}
+
+	public EnvironmentGrid getGrid() {
+		return grid;
+	}
+
+	public Set<EnvironmentIndexDto> getSelectedItems() {
+		return grid.asMultiSelect().getSelectedItems();
 	}
 }
