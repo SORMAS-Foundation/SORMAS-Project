@@ -78,6 +78,21 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Object> 
 		}
 	}
 
+	public <T> void setItems(List<T> itemObjects) {
+		suppressListeners = true;
+		removeAllItems();
+
+		List<Item> items = DataUtils.toItems(itemObjects, false);
+
+		int itemTotal = items.size();
+		for (int i = 0; i < items.size(); i++) {
+			addItem(i, itemTotal - 1, items.get(i));
+		}
+
+		enumClass = null;
+		suppressListeners = false;
+	}
+
 	private void addItem(int index, int lastIndex, Item item) {
 		final CheckBox checkBox = createCheckBox(index, lastIndex, item);
 		checkBoxesFrame.addView(checkBox);
@@ -111,6 +126,10 @@ public class ControlCheckBoxGroupField extends ControlPropertyEditField<Object> 
 	public void removeItem(Object itemId) {
 		checkBoxesFrame.removeView(checkBoxes.get(itemId));
 		checkBoxes.remove(itemId);
+	}
+
+	public CheckBox getCheckBox(Object key) {
+		return checkBoxes.get(key);
 	}
 
 	@Override

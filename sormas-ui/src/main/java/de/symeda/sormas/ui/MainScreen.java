@@ -270,7 +270,8 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
 
-		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
+		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)
+			|| permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}

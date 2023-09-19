@@ -95,7 +95,7 @@ public class EnvironmentSampleDtoHelper extends AdoDtoHelper<EnvironmentSample, 
 		target.setPhValue(source.getPhValue());
 		target.setSampleTemperature(source.getSampleTemperature());
 		target.setChlorineResiduals(source.getChlorineResiduals());
-		Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getId());
+		Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLaboratory().getId());
 		target.setLaboratory(lab != null ? FacilityDtoHelper.toReferenceDto(lab) : null);
 		target.setLaboratoryDetails(source.getLaboratoryDetails());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());

@@ -15,15 +15,6 @@
 
 package de.symeda.sormas.app.backend.config;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Build;
-import android.security.KeyPairGeneratorSpec;
-import android.util.Base64;
-import android.util.Log;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -55,6 +46,15 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.security.KeyPairGeneratorSpec;
+import android.util.Base64;
+import android.util.Log;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -175,7 +175,7 @@ public final class ConfigProvider {
 
 	public static User getUser() {
 		synchronized (ConfigProvider.class) {
-			if (instance.user == null) {
+			if (instance.user == null || instance.userRights == null) {
 				String username = getUsername();
 				String password = getPassword(); // needed to not automatically "login" again on logout with missing server connection
 				if (username != null && password != null) {
@@ -207,6 +207,10 @@ public final class ConfigProvider {
 	public static boolean hasUserRight(UserRight userRight) {
 		Set<UserRight> userRights = getUserRights();
 		return userRights != null && userRights.contains(userRight);
+	}
+
+	public static void clearUserRights() {
+		instance.userRights = null;
 	}
 
 	public static String getUsername() {

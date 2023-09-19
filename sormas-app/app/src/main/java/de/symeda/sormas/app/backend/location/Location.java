@@ -18,17 +18,18 @@ package de.symeda.sormas.app.backend.location;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import androidx.databinding.Bindable;
+import java.text.DecimalFormat;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.text.DecimalFormat;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -470,6 +471,17 @@ public class Location extends PseudonymizableAdo {
 			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES) + ", "
 				+ android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES);
 		}
+	}
+
+	public Location asNewLocation() {
+
+		Location location = this;
+		location.setId(null);
+		location.setUuid(DataHelper.createUuid());
+		location.setChangeDate(new Date(0));
+		location.setLocalChangeDate(new Date());
+		location.setCreationDate(new Date());
+		return location;
 	}
 
 	@Override

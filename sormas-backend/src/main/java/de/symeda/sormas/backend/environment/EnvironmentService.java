@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.environment;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -10,6 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -278,5 +280,32 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		}
 
 		return super.getEditPermissionType(environment);
+	}
+
+	public List<String> getAllActiveUuids(User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Environment> from = cq.from(getElementClass());
+		EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, from);
+
+		Predicate filter = createActiveEnvironmentFilter(cb, from);
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(environmentQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Environment.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 }
