@@ -818,25 +818,8 @@ public class CasesView extends AbstractView {
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),
 								VaadinIcons.PHONE,
-								mi -> grid.bulkActionHandler(items -> {
-									List<CaseIndexDto> selectedCases = getSelectedCases(caseGrid);
-									if (selectedCases.isEmpty()) {
-										showNoCasesSelectedWarning(caseGrid);
-										return;
-									}
-
-									if (!selectedCases.stream()
-										.allMatch(caze -> caze.getDisease().equals(selectedCases.stream().findAny().get().getDisease()))) {
-										new Notification(
-											I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected),
-											Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
-										return;
-									}
-
-									ControllerProvider.getEventController()
-										.selectOrCreateEventForCaseList(
-											selectedCases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()));
-								})));
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().linkSelectedCasesToEvent(items, (AbstractCaseGrid<?>) grid))));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);

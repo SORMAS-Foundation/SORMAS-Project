@@ -95,7 +95,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
-import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -120,8 +119,8 @@ public class EventController {
 		return eventDto;
 	}
 
-	public EventDto createFromCaseList(List<CaseReferenceDto> caseRefs) {
-		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForCaseList(caseRefs);
+	public EventDto createFromCaseList(List<CaseReferenceDto> caseRefs, Consumer<List<CaseReferenceDto>> callback) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForCaseList(caseRefs, callback);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -204,7 +203,7 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void selectOrCreateEventForCaseList(List<CaseReferenceDto> caseRefs) {
+	public void selectOrCreateEventForCaseList(List<CaseReferenceDto> caseRefs, Consumer<List<CaseReferenceDto>> callback) {
 
 		if (caseRefs == null || caseRefs.isEmpty()) {
 			return;
@@ -224,9 +223,12 @@ public class EventController {
 			EventIndexDto selectedEvent = eventSelect.getValue();
 			if (selectedEvent != null) {
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-				linkCasesToEvent(eventReferenceDto, caseDataDtos);
+				linkCasesToEvent(
+					eventReferenceDto,
+					caseDataDtos,
+					remaining -> callback.accept(remaining.stream().map(CaseDataDto::toReference).collect(Collectors.toList())));
 			} else {
-				createFromCaseList(caseRefs);
+				createFromCaseList(caseRefs, callback);
 				SormasUI.refreshView();
 			}
 		});
@@ -271,7 +273,7 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	private void linkCasesToEvent(EventReferenceDto eventReferenceDto, List<CaseDataDto> cases) {
+	private void linkCasesToEvent(EventReferenceDto eventReferenceDto, List<CaseDataDto> cases, Consumer<List<CaseDataDto>> callback) {
 
 		Map<String, CaseDataDto> casesByPersonUuids = new HashMap<>();
 
@@ -283,44 +285,71 @@ public class EventController {
 			return personUuid;
 		}).collect(Collectors.toList());
 
+		List<String> alreadyLinkedCaseUuids = new ArrayList<>();
+
 		// Set the resulting case for persons already enlisted as event participants
 		List<EventParticipantDto> eventParticipants =
 			FacadeProvider.getEventParticipantFacade().getByEventAndPersons(eventReferenceDto.getUuid(), personUuids);
-		for (EventParticipantDto eventParticipantDto : eventParticipants) {
-			String personUuid = eventParticipantDto.getPerson().getUuid();
-			if (eventParticipantDto.getResultingCase() == null) {
-				CaseDataDto resultingCase = casesByPersonUuids.get(personUuid);
-				if (resultingCase != null) {
-					eventParticipantDto.setResultingCase(resultingCase.toReference());
-					FacadeProvider.getEventParticipantFacade().save(eventParticipantDto);
-					casesByPersonUuids.remove(personUuid);
-				}
-			}
-		}
 
-		Collection<CaseDataDto> remainingCasesWithoutParticipants = casesByPersonUuids.values();
-		int casesLinkedToExistingParticipants = cases.size() - remainingCasesWithoutParticipants.size();
+		eventParticipants.forEach(ep -> {
+			String personUuid = ep.getPerson().getUuid();
+			if (ep.getResultingCase() == null) {
+				CaseDataDto resultingCase = casesByPersonUuids.get(personUuid);
+				ep.setResultingCase(resultingCase.toReference());
+				FacadeProvider.getEventParticipantFacade().save(ep);
+				alreadyLinkedCaseUuids.add(resultingCase.getUuid());
+			}
+			alreadyLinkedCaseUuids.add(ep.getResultingCase().getUuid());
+			casesByPersonUuids.remove(personUuid);
+		});
+
+		List<String> remainingPersonUuids =
+			casesByPersonUuids.values().stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
+		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
+		Map<String, PersonDto> personByUuid = remainingPersons.stream().collect(Collectors.toMap(EntityDto::getUuid, Functions.identity()));
 
 		// Create event participants for the remaining cases
-		if (!remainingCasesWithoutParticipants.isEmpty()) {
-			List<String> remainingPersonUuids =
-				remainingCasesWithoutParticipants.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
-			List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
-			HashMap<String, PersonDto> personByUuid = new HashMap<>();
-			remainingPersons.forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
+		new BulkOperationHandler<CaseDataDto>(
+			Strings.messageAllCasesLinkedToEvent,
+			null,
+			Strings.headingSomeCasesAlreadyInEvent,
+			Strings.headingCasesNotLinked,
+			Strings.messageCountCasesAlreadyInEvent,
+			null,
+			null,
+			Strings.messageCountCasesNotLinkableAccessDeniedReason,
+			Strings.messageAllCasesAlreadyInEvent,
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+				List<ProcessedEntity> processedCases = new ArrayList<>();
 
-			remainingCasesWithoutParticipants.forEach(caseDataDto -> {
-				EventParticipantDto ep = EventParticipantDto.buildFromCase(
-					caseDataDto.toReference(),
-					personByUuid.get(caseDataDto.getPerson().getUuid()),
-					eventReferenceDto,
-					UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().save(ep);
-			});
-		}
+				batch.forEach(caseDataDto -> {
+					try {
+						if (!alreadyLinkedCaseUuids.contains(caseDataDto.getUuid())) {
+							EventParticipantDto ep = EventParticipantDto.buildFromCase(
+								caseDataDto.toReference(),
+								personByUuid.get(caseDataDto.getPerson().getUuid()),
+								eventReferenceDto,
+								UserProvider.getCurrent().getUserReference());
+							FacadeProvider.getEventParticipantFacade().save(ep);
+							processedCases.add(new ProcessedEntity(caseDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
+						} else {
+							processedCases.add(new ProcessedEntity(caseDataDto.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+						}
+					} catch (AccessDeniedException e) {
+						processedCases.add(new ProcessedEntity(caseDataDto.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error(
+							"The event participant for case with uuid {} could not be linked due to an AccessDeniedException",
+							caseDataDto.getUuid(),
+							e);
+					} catch (Exception e) {
+						processedCases.add(new ProcessedEntity(caseDataDto.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error("The event participant for case with uuid {} could not be linked due to an Exception", caseDataDto.getUuid(), e);
+					}
+				});
 
-		SormasUI.refreshView();
-		NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllCasesLinkedToEvent), Type.HUMANIZED_MESSAGE, 10000);
+				return processedCases;
+			}, new ArrayList<>(cases), callback);
 	}
 
 	private void linkContactsToEvent(EventReferenceDto eventReferenceDto, List<ContactDto> contacts, Consumer<List<ContactDto>> callback) {
@@ -713,7 +742,9 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponentForCaseList(List<CaseReferenceDto> caseRefs) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponentForCaseList(
+		List<CaseReferenceDto> caseRefs,
+		Consumer<List<CaseReferenceDto>> callback) {
 
 		List<CaseDataDto> caseDataDtos =
 			FacadeProvider.getCaseFacade().getByUuids(caseRefs.stream().map(c -> c.getUuid()).collect(Collectors.toList()));
@@ -733,7 +764,10 @@ public class EventController {
 				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
-				linkCasesToEvent(new EventReferenceDto(dto.getUuid()), finalCaseDataDtos);
+				linkCasesToEvent(
+					new EventReferenceDto(dto.getUuid()),
+					finalCaseDataDtos,
+					remaining -> callback.accept(remaining.stream().map(CaseDataDto::toReference).collect(Collectors.toList())));
 			}
 		});
 

@@ -432,6 +432,7 @@ public interface Strings {
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesNotDeleted = "headingCasesNotDeleted";
+	String headingCasesNotLinked = "headingCasesNotLinked";
 	String headingCasesNotRestored = "headingCasesNotRestored";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesRestored = "headingCasesRestored";
@@ -754,6 +755,7 @@ public interface Strings {
 	String headingShowExternalMessage = "headingShowExternalMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSimilarImmunization = "headingSimilarImmunization";
+	String headingSomeCasesAlreadyInEvent = "headingSomeCasesAlreadyInEvent";
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";
 	String headingSomeContactsNotRestored = "headingSomeContactsNotRestored";
@@ -1144,6 +1146,7 @@ public interface Strings {
 	String messageCountCasesNotDeletedAccessDeniedReason = "messageCountCasesNotDeletedAccessDeniedReason";
 	String messageCountCasesNotDeletedExternalReason = "messageCountCasesNotDeletedExternalReason";
 	String messageCountCasesNotDeletedSormasToSormasReason = "messageCountCasesNotDeletedSormasToSormasReason";
+	String messageCountCasesNotLinkableAccessDeniedReason = "messageCountCasesNotLinkableAccessDeniedReason";
 	String messageCountCasesNotRestored = "messageCountCasesNotRestored";
 	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
 	String messageCountContactsNotDeleted = "messageCountContactsNotDeleted";
