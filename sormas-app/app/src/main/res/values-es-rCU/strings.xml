@@ -57,6 +57,7 @@
     <string name="action_edit_environment">Editar ambiente</string>
     <string name="action_edit_event">Editar evento</string>
     <string name="action_edit_sample">Editar muestra</string>
+    <string name="action_edit_environment_sample">Edit Environment Sample</string>
     <string name="action_forgot_PIN">¿Olvidó el PIN?</string>
     <string name="action_help">Ayuda</string>
     <string name="action_install_app">Instalar</string>
@@ -102,6 +103,7 @@
     <string name="action_save_event_participant">Guardar participante de evento</string>
     <string name="action_save_prescription">Guardar prescripción</string>
     <string name="action_save_sample">Guardar muestra</string>
+    <string name="action_save_environment_sample">Save Environment Sample</string>
     <string name="action_save_task">Guardar tarea</string>
     <string name="action_save_treatment">Guardar tratamiento</string>
     <string name="action_save_visit">Guardar visita de seguimiento</string>
@@ -168,7 +170,9 @@
     <string name="caption_epi_week">Semana epi</string>
     <string name="caption_report">Informe</string>
     <string name="caption_environment_information">Información del ambiente</string>
+    <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Tareas del ambiente</string>
+    <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Descripción</string>
     <string name="caption_event_location">Ubicación</string>
     <string name="caption_event_period">Fecha del evento</string>
@@ -385,6 +389,9 @@
     <string name="heading_sample_edit">Editar muestra</string>
     <string name="heading_sample_new">Nueva muestra</string>
     <string name="heading_sample_read">Leer muestra</string>
+    <string name="heading_environment_sample_read">Read Environment Sample</string>
+    <string name="heading_environment_sample_edit">Edit Environment Sample</string>
+    <string name="heading_environment_sample_new">New Environment Sample</string>
     <string name="heading_sample_summary">Resumen de la muestra</string>
     <string name="heading_samples_list">Listado de muestras</string>
     <string name="heading_environment_sample_list">Listado de muestras ambientales</string>
@@ -441,6 +448,10 @@
     <string name="heading_vaccination_edit">Editar vacunación</string>
     <string name="heading_vaccination_new">Nueva vacunación</string>
     <string name="heading_search_for_case">Buscar caso específico</string>
+    <string name="heading_laboratory_sample">Laboratory sample</string>
+    <string name="heading_sample_measurements">Sample measurements</string>
+    <string name="heading_location_sampling_site">Location of sampling site</string>
+    <string name="heading_sample_management">Sample management</string>
     <string name="hint_add_to_empty_list">Añada una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cada vez que abra la aplicación SORMAS.</string>
