@@ -57,6 +57,7 @@
     <string name="action_edit_environment">Upravit prostředí</string>
     <string name="action_edit_event">Upravit Udalost</string>
     <string name="action_edit_sample">Upravit vzorek</string>
+    <string name="action_edit_environment_sample">Edit Environment Sample</string>
     <string name="action_forgot_PIN">Zapomenutý PIN?</string>
     <string name="action_help">Nápověda</string>
     <string name="action_install_app">Instalovat</string>
@@ -102,6 +103,7 @@
     <string name="action_save_event_participant">Uložit účastníka události</string>
     <string name="action_save_prescription">Uložit předpis</string>
     <string name="action_save_sample">Uložit vzorek</string>
+    <string name="action_save_environment_sample">Save Environment Sample</string>
     <string name="action_save_task">Uložit úkol</string>
     <string name="action_save_treatment">Uložit léčbu</string>
     <string name="action_save_visit">Uložit následnou návštěvu</string>
@@ -168,7 +170,9 @@
     <string name="caption_epi_week">Epi týden</string>
     <string name="caption_report">Zpráva</string>
     <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
+    <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Popis</string>
     <string name="caption_event_location">Poloha</string>
     <string name="caption_event_period">Datum události</string>
@@ -385,6 +389,9 @@
     <string name="heading_sample_edit">Upravit vzorek</string>
     <string name="heading_sample_new">Nový vzorek</string>
     <string name="heading_sample_read">Číst vzorek</string>
+    <string name="heading_environment_sample_read">Read Environment Sample</string>
+    <string name="heading_environment_sample_edit">Edit Environment Sample</string>
+    <string name="heading_environment_sample_new">New Environment Sample</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
     <string name="heading_environment_sample_list">Seznam vzorků prostředí</string>
@@ -441,6 +448,10 @@
     <string name="heading_vaccination_edit">Upravit očkování</string>
     <string name="heading_vaccination_new">Nové očkování</string>
     <string name="heading_search_for_case">Hledat konkrétní případ</string>
+    <string name="heading_laboratory_sample">Laboratory sample</string>
+    <string name="heading_sample_measurements">Sample measurements</string>
+    <string name="heading_location_sampling_site">Location of sampling site</string>
+    <string name="heading_sample_management">Sample management</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
