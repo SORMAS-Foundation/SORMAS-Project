@@ -57,6 +57,7 @@
     <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">Edit Event</string>
     <string name="action_edit_sample">Edit Sample</string>
+    <string name="action_edit_environment_sample">Edit Environment Sample</string>
     <string name="action_forgot_PIN">Zapomniany PIN?</string>
     <string name="action_help">Pomoc</string>
     <string name="action_install_app">Zainstaluj</string>
@@ -102,6 +103,7 @@
     <string name="action_save_event_participant">Save Event Participant</string>
     <string name="action_save_prescription">Save Prescription</string>
     <string name="action_save_sample">Save Sample</string>
+    <string name="action_save_environment_sample">Save Environment Sample</string>
     <string name="action_save_task">Save Task</string>
     <string name="action_save_treatment">Save Treatment</string>
     <string name="action_save_visit">Save Follow-up Visit</string>
@@ -168,7 +170,9 @@
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_report">Report</string>
     <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
+    <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -385,6 +389,9 @@
     <string name="heading_sample_edit">Edit Sample</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sample_read">Read Sample</string>
+    <string name="heading_environment_sample_read">Read Environment Sample</string>
+    <string name="heading_environment_sample_edit">Edit Environment Sample</string>
+    <string name="heading_environment_sample_new">New Environment Sample</string>
     <string name="heading_sample_summary">Sample Summary</string>
     <string name="heading_samples_list">Sample Listing</string>
     <string name="heading_environment_sample_list">Environment Sample Listing</string>
@@ -441,6 +448,10 @@
     <string name="heading_vaccination_edit">Edytuj szczepienie</string>
     <string name="heading_vaccination_new">Nowe szczepienie</string>
     <string name="heading_search_for_case">Search specific case</string>
+    <string name="heading_laboratory_sample">Laboratory sample</string>
+    <string name="heading_sample_measurements">Sample measurements</string>
+    <string name="heading_location_sampling_site">Location of sampling site</string>
+    <string name="heading_sample_management">Sample management</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
     <string name="hint_create_pin">Określ czterocyfrowy kod PIN, którego będziesz używać do uwierzytelniania przy każdym uruchomieniu aplikacji SORMAS.</string>
