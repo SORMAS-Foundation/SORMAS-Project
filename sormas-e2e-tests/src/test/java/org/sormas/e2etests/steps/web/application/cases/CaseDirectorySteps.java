@@ -85,7 +85,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DETAILED_IMPORT_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DE_ARCHIVE_EDIT_MODE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_DATA_DICTIONARY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_IMPORT_GUIDE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
@@ -371,7 +370,7 @@ public class CaseDirectorySteps implements En {
     When(
         "I click on the More button on Case directory page",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
     When(
@@ -402,6 +401,7 @@ public class CaseDirectorySteps implements En {
     When(
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ENTER_BULK_EDIT_MODE);
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
           if (webDriverHelpers.isElementVisibleWithTimeout(BULK_EDIT_INFORMATION, 10)) {
             webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
@@ -1702,6 +1702,7 @@ public class CaseDirectorySteps implements En {
         "^I set the Relevance Status Filter to \"([^\"]*)\" on Case Directory page$",
         (String status) -> {
           webDriverHelpers.selectFromCombobox(RELEVANT_STATUS_COMBOBOX, status);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
   }
 
