@@ -1888,7 +1888,7 @@ Feature: Case end to end tests
     And I click on the Archive bulk cases on Case Directory page
     And I click on "Yes" option in Enter bulk edit mode window
     Then I check if popup message for archive is "All selected entries have been archived" in Case Directory page
-    And I click checkboxes to choose first 2 cases from Case Directory page
+    And I click checkboxes to choose first 41 cases from Case Directory page
     And I click on Bulk Actions combobox on Case Directory Page
     And I click on the Archive bulk cases on Case Directory page
     And I click on "Yes" option in Enter bulk edit mode window
