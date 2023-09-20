@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLB
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_ARCHIVE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_DE_ARCHIVE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_EDIT_INFORMATION;
@@ -84,6 +85,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DETAILED_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DE_ARCHIVE_EDIT_MODE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_DATA_DICTIONARY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_IMPORT_GUIDE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
@@ -369,6 +371,7 @@ public class CaseDirectorySteps implements En {
     When(
         "I click on the More button on Case directory page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
     When(
@@ -1343,6 +1346,13 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "I click on the De-Archive bulk cases on Case Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_DE_ARCHIVE);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
         "I confirm archive bulk cases and select Archive related contacts checkbox",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
@@ -1546,6 +1556,18 @@ public class CaseDirectorySteps implements En {
               break;
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+        });
+
+    When(
+        "I check if popup message for archive is {string} in Case Directory page",
+        (String expectedText) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POPUP_NOTIFICATION_CAPTION);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(POPUP_NOTIFICATION_CAPTION),
+              expectedText,
+              "Bulk archive action went wrong");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_NOTIFICATION_CAPTION);
         });
 
     And(

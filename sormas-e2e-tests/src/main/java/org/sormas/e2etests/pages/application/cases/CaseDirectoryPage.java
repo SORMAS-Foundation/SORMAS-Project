@@ -112,6 +112,7 @@ public class CaseDirectoryPage {
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
   public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
+  public static final By BULK_ACTIONS_DE_ARCHIVE = By.id("bulkActions-6");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-9");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
@@ -238,6 +239,9 @@ public class CaseDirectoryPage {
   public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
   public static final By CANCEL_POPUP = By.cssSelector(".popupContent #actionCancel");
   public static final By ENTER_BULK_EDIT_MODE_POPUP_HEADER =
+      By.cssSelector(
+          "[class='popupContent'] [class='v-window-outerheader'] div[class='v-window-header']");
+  public static final By DE_ARCHIVE_EDIT_MODE_POPUP_HEADER =
       By.cssSelector(
           "[class='popupContent'] [class='v-window-outerheader'] div[class='v-window-header']");
   public static By SHARE_OPTION_BULK_ACTION_COMBOBOX =
