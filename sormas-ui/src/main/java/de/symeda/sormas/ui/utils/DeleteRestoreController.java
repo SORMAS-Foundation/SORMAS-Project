@@ -14,15 +14,15 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-public class DeleteRestoreController<F extends DeletableFacade> {
+public class DeleteRestoreController {
 
 	public <T extends HasUuid> void restoreSelectedItems(
 		Collection<T> entities,
@@ -50,13 +50,10 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			confirmed -> {
 				if (Boolean.TRUE.equals(confirmed)) {
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
-					List<T> selectedEligibleEntitiesCpy = new ArrayList<>(entities);
 					this.<T> createBulkOperationHandler(deleteHandler, false)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.restore(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 							selectedEntitiesCpy,
-							selectedEligibleEntitiesCpy,
-							null,
 							batchCallback);
 				}
 			});
@@ -64,8 +61,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public <T extends HasUuid> void deleteAllSelectedItems(
 		Collection<T> entities,
-		Collection<T> eligibleEntities,
-		Collection<T> ineligibleEntities,
 		IDeleteRestoreHandler<?> deleteHandler,
 		Consumer<List<T>> batchCallback) {
 
@@ -104,8 +99,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 					deleteHandler.clearOtherReason();
 
 					List<T> selectedEntitiesCpy = new ArrayList<>(entities);
-					List<T> selectedEligibleEntitiesCpy = eligibleEntities != null ? new ArrayList<>(eligibleEntities) : new ArrayList<>(entities);
-					List<T> selectedIneligibleEntitiesCpy = ineligibleEntities != null ? new ArrayList<>(ineligibleEntities) : null;
 					this.<T> createBulkOperationHandler(deleteHandler, true)
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.delete(
@@ -114,8 +107,6 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 									deleteHandler.getDeleteReasonComboBox().getValue(),
 									deleteHandler.getOtherDeletionReason().getValue())),
 							selectedEntitiesCpy,
-							selectedEligibleEntitiesCpy,
-							selectedIneligibleEntitiesCpy,
 							batchCallback);
 				}
 
@@ -130,10 +121,14 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 			forDelete ? deleteRestoreMessages.getMessageEntitiesDeleted() : deleteRestoreMessages.getMessageEntitiesRestored(),
 			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeletedLinkedEntitiesReason() : null,
 			forDelete ? deleteRestoreMessages.getHeadingSomeEntitiesNotDeleted() : deleteRestoreMessages.getHeadingSomeEntitiesNotRestored(),
+			forDelete ? deleteRestoreMessages.getHeadingEntitiesNotDeleted() : deleteRestoreMessages.getHeadingEntitiesNotRestored(),
 			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeleted() : deleteRestoreMessages.getMessageCountEntitiesNotRestored(),
-			forDelete ? deleteRestoreMessages.getMessageEntitiesNotDeleted() : deleteRestoreMessages.getMessageEntitiesNotRestored(),
+			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeletedExternalReason() : null,
+			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeletedSormasToSormasReason() : null,
+			forDelete ? deleteRestoreMessages.getMessageCountEntitiesNotDeletedAccessDeniedReason() : null,
 			forDelete ? deleteRestoreMessages.getMessageNoEligibleEntitySelected() : null,
-			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdiction);
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}
 
 	private void displayNothingSelectedToBeDeleted(DeleteRestoreMessages messages) {
@@ -174,11 +169,9 @@ public class DeleteRestoreController<F extends DeletableFacade> {
 
 	public interface IDeleteRestoreHandler<T extends HasUuid> {
 
-		void delete(String uuid, DeletionDetails deletionDetails);
+		List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails);
 
-		int delete(List<String> uuids, DeletionDetails deletionDetails);
-
-		int restore(List<String> uuids);
+		List<ProcessedEntity> restore(List<String> uuids);
 
 		DeleteRestoreMessages getDeleteRestoreMessages();
 

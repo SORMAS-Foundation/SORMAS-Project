@@ -17,6 +17,14 @@ package de.symeda.sormas.app.util;
 
 import static android.view.View.VISIBLE;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -29,14 +37,6 @@ import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableList;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -59,6 +59,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
@@ -721,6 +722,22 @@ public class TextViewBindingAdapters {
 				textField.setText(String.format(valueFormat, val));
 			} else {
 				textField.setText(val);
+			}
+		}
+	}
+
+	@BindingAdapter(value = {
+		"environmentValue",
+		"defaultValue" }, requireAll = false)
+	public static void setEnvironmentValue(TextView textField, Environment environment, String defaultValue) {
+		if (environment == null) {
+			textField.setText(defaultValue);
+		} else {
+			if (environment.isPseudonymized()) {
+				ViewHelper.formatInaccessibleTextView(textField);
+			} else {
+				ViewHelper.removeInaccessibleTextViewFormat(textField);
+				textField.setText(environment.getEnvironmentName());
 			}
 		}
 	}

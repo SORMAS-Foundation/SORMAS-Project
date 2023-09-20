@@ -46,6 +46,7 @@ import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
+import de.symeda.sormas.api.environment.EnvironmentImportFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -507,6 +508,10 @@ public class FacadeProvider {
 
 	public static EnvironmentSampleFacade getEnvironmentSampleFacade() {
 		return get().lookupEjbRemote(EnvironmentSampleFacade.class);
+	}
+
+	public static EnvironmentImportFacade getEnvironmentImportFacade() {
+		return get().lookupEjbRemote(EnvironmentImportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

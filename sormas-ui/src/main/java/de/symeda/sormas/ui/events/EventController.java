@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Functions;
 import com.vaadin.navigator.Navigator;
@@ -52,6 +54,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
@@ -75,6 +79,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -96,6 +101,8 @@ import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
@@ -349,18 +356,45 @@ public class EventController {
 			Strings.messageAllContactsLinkedToEvent,
 			null,
 			Strings.headingSomeContactsAlreadyInEvent,
+			Strings.headingContactsNotLinked,
 			Strings.messageCountContactsAlreadyInEvent,
-			Strings.messageSomeContactsLinkedToEvent,
+			null,
+			null,
+			Strings.messageCountContactsNotLinkableAccessDeniedReason,
 			Strings.messageAllContactsAlreadyInEvent,
-			null).doBulkOperation(batch -> {
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+			Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+				List<ProcessedEntity> processedContacts = new ArrayList<>();
+
 				batch.forEach(contactDataDto -> {
-					EventParticipantDto ep =
-						EventParticipantDto.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
-					FacadeProvider.getEventParticipantFacade().save(ep);
+					try {
+						if (!alreadyLinkedContacts.contains(contactDataDto)) {
+
+							EventParticipantDto ep = EventParticipantDto
+								.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
+
+							FacadeProvider.getEventParticipantFacade().save(ep);
+							processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
+						} else {
+							processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+						}
+					} catch (AccessDeniedException e) {
+						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+						logger.error(
+							"The event participant for contact with uuid {} could not be linked due to an AccessDeniedException",
+							contactDataDto.getUuid(),
+							e);
+					} catch (Exception e) {
+						processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error(
+							"The event participant for contact with uuid {} could not be linked due to an Exception",
+							contactDataDto.getUuid(),
+							e);
+					}
 				});
 
-				return batch.size();
-			}, new ArrayList<>(contacts), new ArrayList<>(contactByPersonUuid.values()), alreadyLinkedContacts, callback);
+				return processedContacts;
+			}, new ArrayList<>(contacts), callback);
 	}
 
 	public void selectEvent(EventGroupReferenceDto eventGroupReference) {
@@ -971,6 +1005,7 @@ public class EventController {
 			boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
 			List<EventIndexDto> selectedEventsCpy = new ArrayList<>(selectedEvents);
+
 			BulkOperationHandler.<EventIndexDto> forBulkEdit()
 				.doBulkOperation(
 					selectedEntries -> eventFacade.saveBulkEvents(
@@ -980,8 +1015,6 @@ public class EventController {
 						eventInvestigationStatusChange,
 						eventManagementStatusChange),
 					selectedEventsCpy,
-					null,
-					null,
 					bulkOperationCallback(eventGrid, popupWindow));
 		});
 
@@ -1012,27 +1045,8 @@ public class EventController {
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {
-
-		Collection<EventIndexDto> ineligibleEvents = new ArrayList<>();
-		selectedRows.stream().forEach(row -> {
-			List<EventParticipantDto> eventParticipantList =
-				FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(row.getUuid());
-			if (eventParticipantList.size() > 0) {
-				ineligibleEvents.add(row);
-			}
-		});
-
-		Collection<EventIndexDto> eligibleEvents = ineligibleEvents.size() > 0
-			? selectedRows.stream().filter(row -> !ineligibleEvents.contains(row)).collect(Collectors.toCollection(ArrayList::new))
-			: selectedRows;
-
 		ControllerProvider.getDeleteRestoreController()
-			.deleteAllSelectedItems(
-				selectedRows,
-				eligibleEvents,
-				ineligibleEvents,
-				DeleteRestoreHandlers.forEvent(),
-				bulkOperationCallback(eventGrid, null));
+			.deleteAllSelectedItems(selectedRows, DeleteRestoreHandlers.forEvent(), bulkOperationCallback(eventGrid, null));
 	}
 
 	public void restoreSelectedEvents(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {

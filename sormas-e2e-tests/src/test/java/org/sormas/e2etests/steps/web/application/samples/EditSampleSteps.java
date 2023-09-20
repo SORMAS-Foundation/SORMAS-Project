@@ -56,6 +56,7 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.UUID_
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.convertStringToChosenFormatDate;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -76,6 +77,7 @@ public class EditSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE =
       DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static LocalDate dateOfSampleCollected;
 
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Sample editedSample;
@@ -290,6 +292,16 @@ public class EditSampleSteps implements En {
               DATE_FORMATTER_DE.format(LocalDate.now().minusDays(days)),
               "Date is inncorect");
           softly.assertAll();
+        });
+
+    When(
+        "I collect date of sample from on Edit Sample page for DE version",
+        () -> {
+          String localDateOfSampleCollected =
+              webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_COLLECTED);
+          dateOfSampleCollected =
+              convertStringToChosenFormatDate(
+                  "dd.MM.yyyy", "yyyy-MM-dd", localDateOfSampleCollected);
         });
 
     Then(

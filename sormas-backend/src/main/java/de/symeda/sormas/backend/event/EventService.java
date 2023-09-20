@@ -48,6 +48,7 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
@@ -293,34 +294,47 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	@Override
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
-		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return archive(Collections.singletonList(entityUuid)).get(0);
 	}
 
 	@Override
-	public void archive(List<String> entityUuids) {
-		super.archive(entityUuids);
-		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
-	}
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-	@Override
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
-		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
-	}
+		List<String> remainingUuidsToBeProcessed =
+			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
 
-	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
-			if (!sharedEventUuids.isEmpty()) {
-				try {
-					externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
-				} catch (ExternalSurveillanceToolException e) {
-					throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-				}
-			}
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			processedEvents.addAll(super.archive(remainingUuidsToBeProcessed));
 		}
+
+		return processedEvents;
+	}
+
+	@Override
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
+
+		List<String> remainingUuidsToBeProcessed =
+			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+
+		if (remainingUuidsToBeProcessed.size() > 0) {
+			processedEvents.addAll(super.dearchive(remainingUuidsToBeProcessed, dearchiveReason));
+		}
+
+		return processedEvents;
+	}
+
+	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
+		List<String> sharedEventUuids = getSharedEventUuids(entityUuids);
+		if (!sharedEventUuids.isEmpty()) {
+			processedEntities = externalSurveillanceToolGatewayFacade.sendEventsInternal(sharedEventUuids, archived);
+		}
+
+		return processedEntities;
 	}
 
 	public List<String> getSharedEventUuids(List<String> entityUuids) {
@@ -341,10 +355,6 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		List<Long> eventIds = new ArrayList<>();
 		entityUuids.forEach(uuid -> eventIds.add(this.getByUuid(uuid).getId()));
 		return eventIds;
-	}
-
-	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
-		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(eventUuid), archived);
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {

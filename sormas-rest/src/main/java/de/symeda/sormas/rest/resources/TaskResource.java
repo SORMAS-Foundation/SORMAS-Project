@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
@@ -108,7 +110,7 @@ public class TaskResource extends EntityDtoResource<TaskDto> {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getTaskFacade().deleteTasks(uuids);
+		return FacadeProvider.getTaskFacade().delete(uuids).stream().map(ProcessedEntity::getEntityUuid).collect(Collectors.toList());
 	}
 
 	@Override

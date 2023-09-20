@@ -16124,6 +16124,10 @@
           "received" : {
             "type" : "boolean"
           },
+          "reportDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "reportingUser" : {
             "$ref" : "#/components/schemas/UserReferenceDto"
           },
@@ -16173,7 +16177,7 @@
             }
           }
         },
-        "required" : [ "environment", "laboratory", "reportingUser", "sampleDateTime", "sampleMaterial" ]
+        "required" : [ "environment", "laboratory", "reportDate", "reportingUser", "sampleDateTime", "sampleMaterial" ]
       },
       "EpiDataDto" : {
         "type" : "object",
@@ -17746,6 +17750,9 @@
             "type" : "string",
             "maxLength" : 512,
             "minLength" : 0
+          },
+          "personFacility" : {
+            "$ref" : "#/components/schemas/FacilityReferenceDto"
           },
           "personFirstName" : {
             "type" : "string",

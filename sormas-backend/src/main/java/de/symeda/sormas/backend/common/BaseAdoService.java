@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
@@ -177,7 +179,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.distinct(true);
 
 		List<AdoAttributes> attributes = getBatchedAttributesQueryResults(cb, cq, from, batchSize);
-		List<Long> ids = attributes.stream().map(AdoAttributes::getId).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
+		List<Long> ids =
+			attributes.stream().map(AdoAttributes::getId).limit(batchSize == null ? Long.MAX_VALUE : batchSize).collect(Collectors.toList());
 		logger.trace(
 			"getList: Unique ids identified. batchSize:{}, attributes:{}, ids:{}, {} ms",
 			batchSize,
@@ -363,9 +366,9 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	 * Override this method to eagerly fetch entity references in {@link #getByIds(List)}.
 	 */
 	protected void fetchReferences(From<?, ADO> from) {
-		referencesToBeFetched().forEach( s -> from.fetch(s));
+		referencesToBeFetched().forEach(s -> from.fetch(s));
 	}
-	
+
 	protected List<String> referencesToBeFetched() {
 		return Collections.EMPTY_LIST;
 	}
@@ -571,6 +574,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.where(from.get(AbstractDomainObject.UUID).in(references.stream().map(ReferenceDto::getUuid).collect(Collectors.toList())));
 		cq.select(from.get(AbstractDomainObject.ID));
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ProcessedEntity> buildProcessedEntities(List<String> entityUuids, ProcessedEntityStatus processedEntityStatus) {
+		return entityUuids.stream().map(uuid -> new ProcessedEntity(uuid, processedEntityStatus)).collect(Collectors.toList());
 	}
 
 	protected <T> TypedQuery<T> createQuery(CriteriaQuery<T> cq, Integer first, Integer max) {

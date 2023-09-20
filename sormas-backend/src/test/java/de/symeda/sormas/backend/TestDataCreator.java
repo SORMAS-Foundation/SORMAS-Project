@@ -70,6 +70,7 @@ import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -1905,6 +1906,26 @@ public class TestDataCreator {
 		return facility;
 	}
 
+	public FacilityDto createFacility(
+		String facilityName,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Consumer<FacilityDto> extraConfig) {
+
+		FacilityDto facility = FacilityDto.build();
+		facility.setName(facilityName);
+		facility.setRegion(region);
+		facility.setDistrict(district);
+		facility.setType(FacilityType.HOSPITAL);
+
+		if (extraConfig != null) {
+			extraConfig.accept(facility);
+		}
+
+		beanTest.getFacilityFacade().save(facility);
+		return facility;
+	}
+
 	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district) {
 		return createPointOfEntry(pointOfEntryName, region, district, null);
 	}
@@ -2105,6 +2126,18 @@ public class TestDataCreator {
 		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, name);
 	}
 
+	public Pathogen createPathogen(String value, String caption) {
+
+		CustomizableEnumValue pathogen = new CustomizableEnumValue();
+		pathogen.setDataType(CustomizableEnumType.PATHOGEN);
+		pathogen.setValue(value);
+		pathogen.setCaption(caption);
+
+		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
+
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, value);
+	}
+
 	public ExternalShareInfo createExternalShareInfo(
 		CaseReferenceDto caze,
 		UserReferenceDto sender,
@@ -2249,8 +2282,12 @@ public class TestDataCreator {
 		return requestInfo;
 	}
 
-	public EnvironmentDto createEnvironment(String name, EnvironmentMedia environmentMedia, UserReferenceDto reportingUser, RDCF rdcf) {
-
+	public EnvironmentDto createEnvironment(
+		String name,
+		EnvironmentMedia environmentMedia,
+		UserReferenceDto reportingUser,
+		RDCF rdcf,
+		Consumer<EnvironmentDto> extraConfig) {
 		EnvironmentDto environment = EnvironmentDto.build();
 		environment.setEnvironmentName(name);
 		environment.setEnvironmentMedia(environmentMedia);
@@ -2264,9 +2301,18 @@ public class TestDataCreator {
 			location.setCommunity(rdcf.community);
 		}
 
+		if (extraConfig != null) {
+			extraConfig.accept(environment);
+		}
+
 		environment = beanTest.getEnvironmentFacade().save(environment);
 
 		return environment;
+
+	}
+
+	public EnvironmentDto createEnvironment(String name, EnvironmentMedia environmentMedia, UserReferenceDto reportingUser, RDCF rdcf) {
+		return createEnvironment(name, environmentMedia, reportingUser, rdcf, null);
 	}
 
 	public EnvironmentSampleDto createEnvironmentSample(

@@ -4,6 +4,7 @@ package de.symeda.sormas.backend.environment;
 import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,19 +24,23 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -48,6 +53,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -242,7 +248,17 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	public void validate(EnvironmentDto dto) throws ValidationRuntimeException {
-		// no validations yet
+		if (dto.getEnvironmentMedia() != EnvironmentMedia.WATER
+			&& (dto.getWaterType() != null || dto.getInfrastructureDetails() != null || MapUtils.isNotEmpty(dto.getWaterUse()))) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.environmentWaterFieldsSetWithNotWaterMedia,
+					String.join(
+						", ",
+						I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_TYPE),
+						I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.INFRASTUCTURE_DETAILS),
+						I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_USE))));
+		}
 	}
 
 	@Override
@@ -324,14 +340,14 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -382,14 +398,25 @@ public class EnvironmentFacadeEjb
 
 	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
 	@Override
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
-	public List<String> restore(List<String> uuids) {
+	public List<ProcessedEntity> restore(List<String> uuids) {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getAllActiveUuids(user);
 	}
 
 	@LocalBean
