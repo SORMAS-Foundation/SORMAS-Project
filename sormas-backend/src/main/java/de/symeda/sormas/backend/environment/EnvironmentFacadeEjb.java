@@ -385,7 +385,7 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	protected DeletableEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return null;
 	}
 

@@ -404,7 +404,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	protected DeletableEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return DeletableEntityType.CAMPAIGN;
 	}
 

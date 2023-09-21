@@ -54,7 +54,6 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -247,7 +246,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	protected DeletableEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return DeletableEntityType.IMMUNIZATION;
 	}
 

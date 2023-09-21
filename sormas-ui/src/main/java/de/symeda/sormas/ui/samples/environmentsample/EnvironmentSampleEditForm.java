@@ -22,6 +22,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,10 +37,12 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
 import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
@@ -47,6 +50,7 @@ import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -160,20 +164,34 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			EnvironmentSampleDto.SAMPLE_MATERIAL,
 			EnvironmentSampleMaterial.OTHER,
 			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			EnvironmentSampleDto.SAMPLE_MATERIAL,
+			Collections.singletonList(EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL),
+			Collections.singletonList(EnvironmentSampleMaterial.OTHER));
 		addField(EnvironmentSampleDto.FIELD_SAMPLE_ID);
 
 		getContent().addComponent(buildHeadingLabel(Strings.headingEnvironmentSampleMeasurements), SAMPLE_MEASUREMENTS_HEADING_LOC);
-		addField(EnvironmentSampleDto.SAMPLE_VOLUME);
-		addField(EnvironmentSampleDto.TURBIDITY);
-		ComboBox temperature = addField(EnvironmentSampleDto.SAMPLE_TEMPERATURE, ComboBox.class);
-		temperature.setImmediate(true);
+
+		TextField sampleVolumeField = addField(EnvironmentSampleDto.SAMPLE_VOLUME);
+		sampleVolumeField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, sampleVolumeField.getCaption()));
+
+		TextField turbidityField = addField(EnvironmentSampleDto.TURBIDITY);
+		turbidityField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, turbidityField.getCaption()));
+
+		ComboBox temperatureField = addField(EnvironmentSampleDto.SAMPLE_TEMPERATURE, ComboBox.class);
+		temperatureField.setImmediate(true);
 		for (Integer temperatureValue : getTemperatureValues()) {
-			temperature.addItem(temperatureValue);
-			temperature.setItemCaption(temperatureValue, String.format("%d °C", temperatureValue));
+			temperatureField.addItem(temperatureValue);
+			temperatureField.setItemCaption(temperatureValue, String.format("%d °C", temperatureValue));
 		}
 
-		addField(EnvironmentSampleDto.CHLORINE_RESIDUALS);
-		addField(EnvironmentSampleDto.PH_VALUE);
+		TextField chlorineResidualsField = addField(EnvironmentSampleDto.CHLORINE_RESIDUALS);
+		chlorineResidualsField
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, chlorineResidualsField.getCaption()));
+
+		TextField phValueField = addField(EnvironmentSampleDto.PH_VALUE);
+		phValueField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, phValueField.getCaption()));
 
 		final Component weatherConditionsLayout = buildWeatherConditionComponent();
 		getContent().addComponent(weatherConditionsLayout, EnvironmentSampleDto.WEATHER_CONDITIONS);
@@ -188,20 +206,19 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 
 		getContent().addComponent(buildHeadingLabel(Strings.headingEnvironmentSampleManagement), SAMPLE_MANAGEMENT_HEADING_LOC);
 
-		ComboBox laboratory = addField(EnvironmentSampleDto.LABORATORY);
-		laboratory.setRequired(true);
-		FieldHelper.updateItems(laboratory, FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
+		ComboBox laboratoryField = addField(EnvironmentSampleDto.LABORATORY);
+		laboratoryField.setRequired(true);
+		FieldHelper.updateItems(laboratoryField, FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 
-		Field labDetails = addField(EnvironmentSampleDto.LABORATORY_DETAILS);
-		labDetails.setVisible(false);
-
-		laboratory.addValueChangeListener(event -> {
+		Field labDetailsField = addField(EnvironmentSampleDto.LABORATORY_DETAILS);
+		labDetailsField.setVisible(false);
+		laboratoryField.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
 				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
-				labDetails.setVisible(true);
+				labDetailsField.setVisible(true);
 			} else {
-				labDetails.setVisible(false);
-				labDetails.clear();
+				labDetailsField.setVisible(false);
+				labDetailsField.clear();
 			}
 		});
 
@@ -209,12 +226,20 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		OptionGroup requestedPathogenTestsField = addField(EnvironmentSampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems(FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
+		List<CustomizableEnum> pathogens = FacadeProvider.getCustomizableEnumFacade()
+			.getEnumValues(CustomizableEnumType.PATHOGEN, null)
+			.stream()
+			// Remove default "OTHER" pathogen because it's covered by a separate field
+			.filter(pathogen -> !pathogen.getValue().equals("OTHER"))
+			.collect(Collectors.toList());
+		requestedPathogenTestsField.addItems(pathogens);
 		requestedPathogenTestsField.setCaption(null);
 
 		addField(EnvironmentSampleDto.OTHER_REQUESTED_PATHOGEN_TESTS);
 
-		addField(EnvironmentSampleDto.DISPATCHED);
+		Field dispatchedField = addField(EnvironmentSampleDto.DISPATCHED);
+		dispatchedField.addStyleName(CssStyles.VSPACE_3);
+
 		addField(EnvironmentSampleDto.DISPATCH_DATE);
 		addField(EnvironmentSampleDto.DISPATCH_DETAILS);
 		FieldHelper.setVisibleWhen(
@@ -224,7 +249,9 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			true,
 			true);
 
-		addField(EnvironmentSampleDto.RECEIVED);
+		Field receivedField = addField(EnvironmentSampleDto.RECEIVED);
+		receivedField.addStyleName(CssStyles.VSPACE_3);
+
 		addField(EnvironmentSampleDto.RECEIVAL_DATE);
 		addField(EnvironmentSampleDto.LAB_SAMPLE_ID);
 		FieldHelper.setVisibleWhen(

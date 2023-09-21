@@ -97,7 +97,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public void restore(String uuid) {
 		ADO ado = service.getByUuid(uuid);
 		if (ado == null) {
-			throw new IllegalArgumentException("Cannot restore non existing entity: [" + getCoreEntityType() + "] - " + uuid);
+			throw new IllegalArgumentException("Cannot restore non existing entity: [" + getDeletableEntityType() + "] - " + uuid);
 		}
 		service.restore(ado);
 	}
@@ -151,7 +151,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		}
 	}
 
-	protected abstract DeletableEntityType getCoreEntityType();
+	protected abstract DeletableEntityType getDeletableEntityType();
 
 	@DenyAll
 	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {

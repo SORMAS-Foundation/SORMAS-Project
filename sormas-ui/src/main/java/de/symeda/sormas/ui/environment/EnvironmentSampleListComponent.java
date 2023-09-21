@@ -47,7 +47,7 @@ public class EnvironmentSampleListComponent extends SideComponent {
 
 	private static final long serialVersionUID = -4946315430355463915L;
 
-	private final EnvironmentSampleList eventList;
+	private final EnvironmentSampleList environmentSampleList;
 
 	public EnvironmentSampleListComponent(EnvironmentDto environment, boolean isEditAllowed, Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getString(Strings.entityEnvironmentSamples), actionCallback);
@@ -59,13 +59,13 @@ public class EnvironmentSampleListComponent extends SideComponent {
 				UserRight.ENVIRONMENT_SAMPLE_CREATE);
 		}
 
-		eventList = new EnvironmentSampleList(environment.toReference(), isEditAllowed);
-		addComponent(eventList);
-		eventList.reload();
+		environmentSampleList = new EnvironmentSampleList(environment.toReference(), isEditAllowed);
+		addComponent(environmentSampleList);
+		environmentSampleList.reload();
 	}
 
 	private void reload() {
-		eventList.reload();
+		environmentSampleList.reload();
 	}
 
 	class EnvironmentSampleList extends PaginationList<EnvironmentSampleIndexDto> {
@@ -153,21 +153,21 @@ public class EnvironmentSampleListComponent extends SideComponent {
 				topLeftLayout.addComponent(resultLabel);
 			}
 
-			Label dispatchRecieveLabel = new Label();
-			CssStyles.style(dispatchRecieveLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			Label dispatchReceiveLabel = new Label();
+			CssStyles.style(dispatchReceiveLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 
 			if (sampleIndex.isReceived()) {
-				dispatchRecieveLabel.setValue(
+				dispatchReceiveLabel.setValue(
 					I18nProperties.getCaption(Captions.environmentSampleReceived) + " " + DateFormatHelper.formatDate(sampleIndex.getReceivalDate()));
 			} else if (sampleIndex.isDispatched()) {
-				dispatchRecieveLabel.setValue(
+				dispatchReceiveLabel.setValue(
 					I18nProperties.getCaption(Captions.environmentSampleShipped) + " "
 						+ DateFormatHelper.formatDate((sampleIndex.getDispatchDate())));
 			} else {
-				dispatchRecieveLabel.setValue(I18nProperties.getCaption(Captions.environmentSampleNotShipped));
+				dispatchReceiveLabel.setValue(I18nProperties.getCaption(Captions.environmentSampleNotShipped));
 			}
 
-			topLeftLayout.addComponent(dispatchRecieveLabel);
+			topLeftLayout.addComponent(dispatchReceiveLabel);
 
 			Label dateTimeLabel = new Label(
 				I18nProperties.getPrefixCaption(EnvironmentSampleIndexDto.I18N_PREFIX, EnvironmentSampleIndexDto.SAMPLE_DATE_TIME) + ": "

@@ -2318,7 +2318,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected DeletableEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return DeletableEntityType.CONTACT;
 	}
 

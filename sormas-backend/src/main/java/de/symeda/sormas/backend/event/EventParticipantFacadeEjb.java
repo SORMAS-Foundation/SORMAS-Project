@@ -1307,7 +1307,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	protected DeletableEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return DeletableEntityType.EVENT_PARTICIPANT;
 	}
 

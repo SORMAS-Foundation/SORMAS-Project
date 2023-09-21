@@ -69,7 +69,6 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -1548,7 +1547,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return processedEvents;
 	}
 	@Override
-	protected DeletableEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return DeletableEntityType.EVENT;
 	}
 

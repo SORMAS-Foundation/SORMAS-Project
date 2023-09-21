@@ -52,10 +52,6 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EnvironmentSampleController {
 
-	public EnvironmentSampleController() {
-		// do nothing
-	}
-
 	public void deleteAllSelectedItems(
 		Collection<EnvironmentSampleIndexDto> selectedRows,
 		EnvironmentSampleGrid sampleGrid,
