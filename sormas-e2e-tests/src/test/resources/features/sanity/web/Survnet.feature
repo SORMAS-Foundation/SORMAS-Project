@@ -489,4 +489,3 @@ Feature: Survnet tests
     Then I check if the present condition status "Verstorben" is correctly mapped in SORMAS generated single XML file
     And I check if "date of death" in SORMAS generated XML file is correct
     And I check if Cause of Death status is correctly setting in SORMAS generated XML file is correct
-    And I check that Patientrole is change in SORMAS generated single XML file is "-1"

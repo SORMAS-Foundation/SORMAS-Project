@@ -24,13 +24,11 @@ import de.symeda.sormas.ui.utils.ReloadableGrid;
 
 public abstract class SampleGridComponent<T, C extends BaseCriteria> extends VerticalLayout {
 
-	private static final long serialVersionUID = 2805771019861077651L;
+	abstract ReloadableGrid<T, C> getGrid();
 
-	public abstract ReloadableGrid<T, C> getGrid();
+	abstract MenuBar getBulkOperationsDropdown();
 
-	public abstract MenuBar getBulkOperationsDropdown();
-
-	public abstract C getCriteria();
+	abstract C getCriteria();
 
 	public void reload(ViewChangeListener.ViewChangeEvent event) {
 		String params = event.getParameters().trim();
@@ -42,6 +40,5 @@ public abstract class SampleGridComponent<T, C extends BaseCriteria> extends Ver
 		getGrid().reload();
 	}
 
-	public abstract void updateFilterComponents();
-
+	abstract void updateFilterComponents();
 }
