@@ -24,7 +24,8 @@ public enum EnvironmentSampleSection
 	implements
 	StatusElaborator {
 
-	ENVIRONMENT_SAMPLE_INFO(R.string.caption_environment_sample_information, R.drawable.ic_drawer_environment_sample_blue_24dp);
+	ENVIRONMENT_SAMPLE_INFO(R.string.caption_environment_sample_information, R.drawable.ic_drawer_environment_sample_blue_24dp),
+	PATHOGEN_TESTS(R.string.heading_pathogen_tests_list, R.drawable.ic_petri_dish_fill_blue_24);
 
 	private final int friendlyNameResourceId;
 	private final int iconResourceId;

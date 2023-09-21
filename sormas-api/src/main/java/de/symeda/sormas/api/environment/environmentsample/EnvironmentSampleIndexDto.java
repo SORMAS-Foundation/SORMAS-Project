@@ -97,6 +97,7 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		String otherSampleMaterial,
 		DeletionReason deletionReason,
 		String otherDeletionReason,
+		int numberOfTests,
 		boolean isInJurisdiction) {
 		super(uuid);
 		this.fieldSampleId = fieldSampleId;
@@ -114,6 +115,7 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		this.otherSampleMaterial = otherSampleMaterial;
 		this.deletionReason = deletionReason;
 		this.otherDeletionReason = otherDeletionReason;
+		this.numberOfTests = numberOfTests;
 		setInJurisdiction(isInJurisdiction);
 	}
 
@@ -179,6 +181,10 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 
 	public long getNumberOfTests() {
 		return numberOfTests;
+	}
+
+	public void setNumberOfTests(long numberOfTests) {
+		this.numberOfTests = numberOfTests;
 	}
 
 	public DeletionReason getDeletionReason() {

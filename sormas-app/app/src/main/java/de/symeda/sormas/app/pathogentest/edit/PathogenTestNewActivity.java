@@ -39,6 +39,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
@@ -56,14 +57,24 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 
 	private String sampleUuid = null;
 
+	private String environmentSampleUuid = null;
+
 	private AsyncTask saveTask;
 
 	public static void startActivity(Context context, String sampleUuid) {
-		BaseEditActivity.startActivity(context, PathogenTestNewActivity.class, buildBundle(sampleUuid));
+		BaseEditActivity.startActivity(context, PathogenTestNewActivity.class, buildBundleForSample(sampleUuid));
 	}
 
-	public static Bundler buildBundle(String caseUuid) {
+	public static void startActivityForEnvironmentSample(Context context, String environmentSampleUuid) {
+		BaseEditActivity.startActivity(context, PathogenTestNewActivity.class, buildBundleForEnvironmentSample(environmentSampleUuid));
+	}
+
+	public static Bundler buildBundleForSample(String caseUuid) {
 		return buildBundle(null, 0).setCaseUuid(caseUuid);
+	}
+
+	public static Bundler buildBundleForEnvironmentSample(String environmentSampleUuid) {
+		return buildBundle(null, 0).setEnvironmentSampleuuid(environmentSampleUuid);
 	}
 
 	@Override
@@ -75,12 +86,13 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 	protected void onCreateInner(Bundle savedInstanceState) {
 		super.onCreateInner(savedInstanceState);
 		sampleUuid = new Bundler(savedInstanceState).getCaseUuid();
+		environmentSampleUuid = new Bundler(savedInstanceState).getEnvironmentSampleUuid();
 	}
 
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
-		new Bundler(outState).setCaseUuid(sampleUuid);
+		new Bundler(outState).setCaseUuid(sampleUuid).setEnvironmentSampleuuid(environmentSampleUuid);
 	}
 
 	@Override
@@ -91,8 +103,16 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 	@Override
 	protected PathogenTest buildRootEntity() {
 		// basic instead of reference, because we want to have at least the related person
-		Sample associatedSample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
-		return DatabaseHelper.getSampleTestDao().build(associatedSample);
+
+		if (sampleUuid != null) {
+			Sample associatedSample = DatabaseHelper.getSampleDao().queryUuid(sampleUuid);
+			return DatabaseHelper.getSampleTestDao().build(associatedSample);
+		}
+		if (environmentSampleUuid != null) {
+			EnvironmentSample associatedEnvironmentSample = DatabaseHelper.getEnvironmentSampleDao().queryUuid(environmentSampleUuid);
+			return DatabaseHelper.getSampleTestDao().build(associatedEnvironmentSample);
+		}
+		throw new RuntimeException("not valid pathogen test can be created. Missing sample and environmentSample links.");
 	}
 
 	@Override
@@ -128,39 +148,44 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 		}
 
 		final PathogenTest pathogenTestToSave = getStoredRootEntity();
-		final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
 
-		if (associatedCase != null) {
-			DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
-			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
-			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
-				&& pathogenTestToSave.getTestResultVerified()
-				&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
+		if (pathogenTestToSave.getSample() != null) {
+			final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
 
-				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
-				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
-				int positiveButtonTextResId = R.string.yes;
-				int negativeButtonTextResId = R.string.no;
+			if (associatedCase != null) {
+				DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
+				DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
+				if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
+					&& pathogenTestToSave.getTestResultVerified()
+					&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
 
-				ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
-				dlg.setCancelable(false);
-				dlg.setNegativeCallback(() -> {
+					String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
+					String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
+					int positiveButtonTextResId = R.string.yes;
+					int negativeButtonTextResId = R.string.no;
+
+					ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
+					dlg.setCancelable(false);
+					dlg.setNegativeCallback(() -> {
+						save(pathogenTestToSave);
+					});
+					dlg.setPositiveCallback(() -> {
+						associatedCase.setDiseaseVariant(newDiseaseVariant);
+						try {
+							DatabaseHelper.getCaseDao().updateOrCreate(associatedCase);
+						} catch (SQLException | java.sql.SQLException e) {
+							Log.e(getClass().getSimpleName(), "Could not update case: " + associatedCase.getUuid());
+							throw new RuntimeException(e);
+						}
+						save(pathogenTestToSave);
+					});
+					dlg.show();
+				} else {
 					save(pathogenTestToSave);
-				});
-				dlg.setPositiveCallback(() -> {
-					associatedCase.setDiseaseVariant(newDiseaseVariant);
-					try {
-						DatabaseHelper.getCaseDao().updateOrCreate(associatedCase);
-					} catch (SQLException | java.sql.SQLException e) {
-						Log.e(getClass().getSimpleName(), "Could not update case: " + associatedCase.getUuid());
-						throw new RuntimeException(e);
-					}
-					save(pathogenTestToSave);
-				});
-				dlg.show();
-			} else {
-				save(pathogenTestToSave);
+				}
 			}
+		} else {
+			save(pathogenTestToSave);
 		}
 	}
 

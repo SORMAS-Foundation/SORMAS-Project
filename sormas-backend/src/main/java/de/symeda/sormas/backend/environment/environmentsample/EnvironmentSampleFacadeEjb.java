@@ -31,11 +31,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -77,6 +79,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -171,6 +174,12 @@ public class EnvironmentSampleFacadeEjb
 			EnvironmentSampleQueryContext queryContext = new EnvironmentSampleQueryContext(cb, cq, from, joins);
 			Join<EnvironmentSample, Location> location = joins.getLocation();
 
+			// Tests count subquery
+			Subquery<Long> numberOfTests = cq.subquery(Long.class);
+			Root<PathogenTest> numberOfTestsRoot = numberOfTests.from(PathogenTest.class);
+			numberOfTests.where(cb.equal(numberOfTestsRoot.get(PathogenTest.ENVIRONMENT_SAMPLE), from), cb.isFalse(numberOfTestsRoot.get(PathogenTest.DELETED)));
+			numberOfTests.select(cb.countDistinct(numberOfTestsRoot.get(PathogenTest.ID)));
+
 			cq.multiselect(
 				from.get(EnvironmentSampleIndexDto.UUID),
 				from.get(EnvironmentSampleIndexDto.FIELD_SAMPLE_ID),
@@ -193,6 +202,7 @@ public class EnvironmentSampleFacadeEjb
 				from.get(EnvironmentSample.OTHER_SAMPLE_MATERIAL),
 				from.get(EnvironmentSample.DELETION_REASON),
 				from.get(EnvironmentSample.OTHER_DELETION_REASON),
+				numberOfTests.getSelection(),
 				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
 			cq.where(from.get(EnvironmentSample.ID).in(batchedIds));
@@ -200,6 +210,13 @@ public class EnvironmentSampleFacadeEjb
 			sortBy(sortProperties, queryContext);
 
 			indexList.addAll(QueryHelper.getResultList(em, cq, null, null));
+
+//			indexList.forEach(environmentSampleIndexDto -> {
+//				if (environmentSampleIndexDto.getEnvironment() != null) {
+//					final Long noOfPathogenTests = getPathogenTests(environmentSampleIndexDto);
+//					environmentSampleIndexDto.setNumberOfTests(noOfPathogenTests);
+//				}
+//			});
 		});
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -207,6 +224,20 @@ public class EnvironmentSampleFacadeEjb
 
 		return indexList;
 	}
+
+//	private Long getPathogenTests(EnvironmentSampleIndexDto environmentSampleIndexDto) {
+//		CriteriaBuilder cb = em.getCriteriaBuilder();
+//		final CriteriaQuery<Long> numberOfPathogenTestsQuery = cb.createQuery(Long.class);
+//		final Root<PathogenTest> pathogenTestRoot = numberOfPathogenTestsQuery.from(PathogenTest.class);
+//		Join<PathogenTest, EnvironmentSample> pathogenTestEnvironmentSampleJoin =
+//			pathogenTestRoot.join(PathogenTest.ENVIRONMENT_SAMPLE, JoinType.LEFT);
+//
+//		numberOfPathogenTestsQuery.select(pathogenTestRoot.get(PathogenTest.ID));
+//		numberOfPathogenTestsQuery
+//			.where(cb.equal(pathogenTestEnvironmentSampleJoin.get(EnvironmentSample.UUID), environmentSampleIndexDto.getUuid()));
+//
+//		return Long.valueOf(em.createQuery(numberOfPathogenTestsQuery).getResultList().size());
+//	}
 
 	private List<Long> getIndexListIds(EnvironmentSampleCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
@@ -508,6 +539,18 @@ public class EnvironmentSampleFacadeEjb
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
+	}
+
+	public static EnvironmentSampleReferenceDto toReferenceDto(EnvironmentSample environmentSample) {
+
+		if (environmentSample == null) {
+			return null;
+		}
+
+		return new EnvironmentSampleReferenceDto(
+			environmentSample.getUuid(),
+			environmentSample.getSampleMaterial(),
+			environmentSample.getEnvironment().getUuid());
 	}
 
 	@Override

@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -92,39 +93,43 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 		}
 
 		final PathogenTest pathogenTestToSave = getStoredRootEntity();
-		final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
+		if (pathogenTestToSave.getSample() != null) {
+			final Case associatedCase = pathogenTestToSave.getSample().getAssociatedCase();
 
-		if (associatedCase != null) {
-			DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
-			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
-			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
-				&& pathogenTestToSave.getTestResultVerified()
-				&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
+			if (associatedCase != null) {
+				DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
+				DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
+				if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
+					&& pathogenTestToSave.getTestResultVerified()
+					&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
 
-				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
-				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
-				int positiveButtonTextResId = R.string.yes;
-				int negativeButtonTextResId = R.string.no;
+					String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
+					String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
+					int positiveButtonTextResId = R.string.yes;
+					int negativeButtonTextResId = R.string.no;
 
-				ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
-				dlg.setCancelable(false);
-				dlg.setNegativeCallback(() -> {
+					ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
+					dlg.setCancelable(false);
+					dlg.setNegativeCallback(() -> {
+						save(pathogenTestToSave, associatedCase);
+					});
+					dlg.setPositiveCallback(() -> {
+						associatedCase.setDiseaseVariant(newDiseaseVariant);
+						try {
+							DatabaseHelper.getCaseDao().updateOrCreate(associatedCase);
+						} catch (SQLException | java.sql.SQLException e) {
+							Log.e(getClass().getSimpleName(), "Could not update case: " + associatedCase.getUuid());
+							throw new RuntimeException(e);
+						}
+						save(pathogenTestToSave, associatedCase);
+					});
+					dlg.show();
+				} else {
 					save(pathogenTestToSave, associatedCase);
-				});
-				dlg.setPositiveCallback(() -> {
-					associatedCase.setDiseaseVariant(newDiseaseVariant);
-					try {
-						DatabaseHelper.getCaseDao().updateOrCreate(associatedCase);
-					} catch (SQLException | java.sql.SQLException e) {
-						Log.e(getClass().getSimpleName(), "Could not update case: " + associatedCase.getUuid());
-						throw new RuntimeException(e);
-					}
-					save(pathogenTestToSave, associatedCase);
-				});
-				dlg.show();
-			} else {
-				save(pathogenTestToSave, associatedCase);
+				}
 			}
+		} else if (pathogenTestToSave.getEnvironmentSample() != null) {
+			save(pathogenTestToSave, null);
 		}
 	}
 
@@ -148,9 +153,11 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 				super.onPostExecute(taskResult);
 
 				if (taskResult.getResultStatus().isSuccess()) {
-					if (Boolean.TRUE == pathogenTestToSave.getTestResultVerified()
+					Sample sampleOfPathogenTestToSave = pathogenTestToSave.getSample();
+					if (sampleOfPathogenTestToSave != null
+						&& Boolean.TRUE == pathogenTestToSave.getTestResultVerified()
 						&& pathogenTestToSave.getTestedDisease() == associatedCase.getDisease()
-						&& pathogenTestToSave.getTestResult() != pathogenTestToSave.getSample().getPathogenTestResult()) {
+						&& pathogenTestToSave.getTestResult() != sampleOfPathogenTestToSave.getPathogenTestResult()) {
 						final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
 							getActiveActivity(),
 							R.string.heading_change_laboratory_result,
@@ -159,9 +166,13 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 							R.string.no);
 
 						confirmationDialog.setPositiveCallback(() -> {
-							pathogenTestToSave.getSample().setPathogenTestResult(pathogenTestToSave.getTestResult());
+							if (sampleOfPathogenTestToSave != null) {
+								sampleOfPathogenTestToSave.setPathogenTestResult(pathogenTestToSave.getTestResult());
+							}
 							try {
-								DatabaseHelper.getSampleDao().saveAndSnapshot(pathogenTestToSave.getSample());
+								if (sampleOfPathogenTestToSave != null) {
+									DatabaseHelper.getSampleDao().saveAndSnapshot(sampleOfPathogenTestToSave);
+								}
 							} catch (DaoException e) {
 								NotificationHelper.showNotification(
 									getActiveActivity().getRootView(),
