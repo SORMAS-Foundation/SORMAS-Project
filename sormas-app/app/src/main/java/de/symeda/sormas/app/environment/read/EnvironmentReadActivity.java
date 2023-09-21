@@ -62,6 +62,9 @@ public class EnvironmentReadActivity extends BaseReadActivity<Environment> {
 		case ENVIRONMENT_INFO:
 			fragment = EnvironmentReadFragment.newInstance(activityRootData);
 			break;
+		case ENVIRONMENT_SAMPLES:
+			fragment = EnvironmentReadSampleListFragment.newInstance(activityRootData);
+			break;
 		case TASKS:
 			fragment = EnvironmentReadTaskListFragment.newInstance(activityRootData);
 			break;

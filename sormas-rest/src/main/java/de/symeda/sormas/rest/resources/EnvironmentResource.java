@@ -46,7 +46,7 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.getEnvironmentFacade().getAllUuids();
+		return FacadeProvider.getEnvironmentFacade().getAllActiveUuids();
 	}
 
 	@GET

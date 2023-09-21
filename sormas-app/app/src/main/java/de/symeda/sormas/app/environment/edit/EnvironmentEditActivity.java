@@ -31,6 +31,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.environment.EnvironmentSection;
+import de.symeda.sormas.app.environmentsample.edit.EnvironmentSampleNewActivity;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -90,6 +91,9 @@ public class EnvironmentEditActivity extends BaseEditActivity<Environment> {
 		case ENVIRONMENT_INFO:
 			fragment = EnvironmentEditFragment.newInstance(activityRootData);
 			break;
+		case ENVIRONMENT_SAMPLES:
+			fragment = EnvironmentEditSampleListFragment.newInstance(activityRootData);
+			break;
 		case TASKS:
 			fragment = EnvironmentEditTaskListFragment.newInstance(activityRootData);
 			break;
@@ -105,6 +109,9 @@ public class EnvironmentEditActivity extends BaseEditActivity<Environment> {
 		EnvironmentSection section = EnvironmentSection.fromOrdinal(getActivePage().getPosition());
 
 		switch (section) {
+		case ENVIRONMENT_SAMPLES:
+			EnvironmentSampleNewActivity.startActivity(getContext(), getRootUuid());
+			break;
 		case TASKS:
 			TaskNewActivity.startActivityFromEnvironment(getContext(), getRootUuid());
 			break;

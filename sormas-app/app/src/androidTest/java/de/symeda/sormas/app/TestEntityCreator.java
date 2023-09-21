@@ -42,6 +42,8 @@ import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.environment.Environment;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
@@ -331,6 +333,34 @@ public class TestEntityCreator {
 		}
 
 		return DatabaseHelper.getWeeklyReportDao().queryForIdWithEmbedded(weeklyReport.getId());
+	}
+
+	public static Environment createEnvironment() {
+		Environment environment;
+
+		try {
+			environment = DatabaseHelper.getEnvironmentDao().build();
+			DatabaseHelper.getEnvironmentDao().saveAndSnapshot(environment);
+			DatabaseHelper.getEnvironmentDao().accept(environment);
+		} catch (DaoException e) {
+			throw new RuntimeException();
+		}
+
+		return DatabaseHelper.getEnvironmentDao().queryForIdWithEmbedded(environment.getId());
+	}
+
+	public static EnvironmentSample createEnvironmentSample() {
+		EnvironmentSample environmentSample;
+
+		try {
+			environmentSample = DatabaseHelper.getEnvironmentSampleDao().build(createEnvironment());
+			DatabaseHelper.getEnvironmentSampleDao().saveAndSnapshot(environmentSample);
+			DatabaseHelper.getEnvironmentSampleDao().accept(environmentSample);
+		} catch (DaoException e) {
+			throw new RuntimeException();
+		}
+
+		return DatabaseHelper.getEnvironmentSampleDao().queryForIdWithEmbedded(environmentSample.getId());
 	}
 
 	public static User createUser(String username, Region region, District district, UserRole userRole) {

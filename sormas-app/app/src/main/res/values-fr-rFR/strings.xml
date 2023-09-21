@@ -57,6 +57,7 @@
     <string name="action_edit_environment">Edit Environment</string>
     <string name="action_edit_event">Modifier l\'événement</string>
     <string name="action_edit_sample">Modifier l\'échantillon</string>
+    <string name="action_edit_environment_sample">Modifier l\'échantillon</string>
     <string name="action_forgot_PIN">Code PIN oublié ?</string>
     <string name="action_help">Aide</string>
     <string name="action_install_app">Installer</string>
@@ -75,6 +76,7 @@
     <string name="action_new_environment">New Environment</string>
     <string name="action_new_event">Nouvel événement</string>
     <string name="action_new_sample">Nouvel échantillon</string>
+    <string name="action_new_environment_sample">New Environment Sample</string>
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
@@ -101,6 +103,7 @@
     <string name="action_save_event_participant">Enregistrer le participant de l\'événement</string>
     <string name="action_save_prescription">Enregistrer l\'ordonnance</string>
     <string name="action_save_sample">Enregistrer l\'échantillon</string>
+    <string name="action_save_environment_sample">Enregistrer l\'échantillon</string>
     <string name="action_save_task">Enregistrer la tâche</string>
     <string name="action_save_treatment">Enregistrer le traitement</string>
     <string name="action_save_visit">Enregistrer la visite de suivi</string>
@@ -167,7 +170,9 @@
     <string name="caption_epi_week">Semaine Epidemiologique</string>
     <string name="caption_report">Rapport</string>
     <string name="caption_environment_information">Environment Information</string>
+    <string name="caption_environment_samples">Echantillons environementaux</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
+    <string name="caption_environment_sample_information">Information sur l\'échantillon</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Lieu</string>
     <string name="caption_event_period">Date de l\'événement</string>
@@ -384,8 +389,12 @@
     <string name="heading_sample_edit">Modifier l\'échantillon</string>
     <string name="heading_sample_new">Nouvel échantillon</string>
     <string name="heading_sample_read">Lire l\'échantillon</string>
+    <string name="heading_environment_sample_read">Read Environment Sample</string>
+    <string name="heading_environment_sample_edit">Modifier l\'échantillon</string>
+    <string name="heading_environment_sample_new">Nouvel échantillon</string>
     <string name="heading_sample_summary">Résumé de l\'échantillon</string>
     <string name="heading_samples_list">Liste d\'échantillons</string>
+    <string name="heading_environment_sample_list">Environment Sample Listing</string>
     <string name="heading_environment_list">Environment Listing</string>
     <string name="heading_environment_edit">Edit Environment</string>
     <string name="heading_environment_new">New Environment</string>
@@ -439,6 +448,10 @@
     <string name="heading_vaccination_edit">Modifier la vaccination</string>
     <string name="heading_vaccination_new">Nouvelle Vaccination</string>
     <string name="heading_search_for_case">Rechercher un cas spécifique</string>
+    <string name="heading_laboratory_sample">Laboratory sample</string>
+    <string name="heading_sample_measurements">Sample measurements</string>
+    <string name="heading_location_sampling_site">Emplacement du site d\'échantillonnage</string>
+    <string name="heading_sample_management">Gestion des échantillons</string>
     <string name="hint_add_to_empty_list">Ajouter une nouvelle entrée en appuyant sur \"+\" en haut à droite.</string>
     <string name="hint_clear">Supprimer</string>
     <string name="hint_create_pin">Veuillez choisir un code PIN à quatre chiffres que vous utiliserez pour vous authentifier à chaque fois que vous ouvrirez l\'application SORMAS.</string>
@@ -512,6 +525,7 @@
     <string name="main_menu_reports">Rapports</string>
     <string name="main_menu_samples">Échantillons</string>
     <string name="main_menu_environments">Environments</string>
+    <string name="main_menu_environment_samples">Environment Samples</string>
     <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Paramètres</string>
     <string name="main_menu_tasks">Tâches</string>
@@ -678,4 +692,5 @@
     <string name="value_vaccine_date_unknown">Date de vaccination N/A</string>
     <string name="value_vaccine_name_unknown">Vaccin N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Fabricant N/A</string>
+    <string name="value_environment_name_unknown">Environment Name N/A</string>
 </resources>
