@@ -20,7 +20,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.H4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -136,14 +135,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		return labSampleHeadingLabel;
 	}
 
-	private static List<Integer> getTemperatureValues() {
-		List<Integer> values = new ArrayList<>();
-		for (int i = -20; i <= 100; i += 1) {
-			values.add(i);
-		}
-		return values;
-	}
-
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
@@ -179,12 +170,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		TextField turbidityField = addField(EnvironmentSampleDto.TURBIDITY);
 		turbidityField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, turbidityField.getCaption()));
 
-		ComboBox temperatureField = addField(EnvironmentSampleDto.SAMPLE_TEMPERATURE, ComboBox.class);
-		temperatureField.setImmediate(true);
-		for (Integer temperatureValue : getTemperatureValues()) {
-			temperatureField.addItem(temperatureValue);
-			temperatureField.setItemCaption(temperatureValue, String.format("%d °C", temperatureValue));
-		}
+		TextField temperatureField = addField(EnvironmentSampleDto.SAMPLE_TEMPERATURE);
+		temperatureField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, temperatureField.getCaption()));
 
 		TextField chlorineResidualsField = addField(EnvironmentSampleDto.CHLORINE_RESIDUALS);
 		chlorineResidualsField

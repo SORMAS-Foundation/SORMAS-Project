@@ -23,8 +23,10 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.environment.EnvironmentDataView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -92,9 +94,11 @@ public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSam
 		if (!findReferenceByParams(params)) {
 			return;
 		}
+		EnvironmentSampleDto sample = FacadeProvider.getEnvironmentSampleFacade().getByUuid(params);
 
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
+		menu.addView(EnvironmentDataView.VIEW_NAME, I18nProperties.getString(Strings.entityEnvironment), sample.getEnvironment().getUuid(), true);
 
 		menu.addView(VIEW_NAME, I18nProperties.getCaption(EnvironmentSampleDto.I18N_PREFIX), params);
 
