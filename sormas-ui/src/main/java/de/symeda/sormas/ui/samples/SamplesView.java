@@ -99,7 +99,7 @@ public class SamplesView extends AbstractView {
 			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				sampleListComponent.getGrid(),
 				this::getSelectedEnvironmentSamples,
-				ExportEntityName.ENVIRONMeNT_SAMPLES);
+				ExportEntityName.ENVIRONMENT_SAMPLES);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
