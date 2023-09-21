@@ -1066,6 +1066,7 @@ public interface Captions {
 	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
 	String environmentEnvironmentsList = "environmentEnvironmentsList";
 	String environmentNewEnvironment = "environmentNewEnvironment";
+	String EnvironmentSample = "EnvironmentSample";
 	String EnvironmentSample_chlorineResiduals = "EnvironmentSample.chlorineResiduals";
 	String EnvironmentSample_dispatchDate = "EnvironmentSample.dispatchDate";
 	String EnvironmentSample_dispatchDetails = "EnvironmentSample.dispatchDetails";
