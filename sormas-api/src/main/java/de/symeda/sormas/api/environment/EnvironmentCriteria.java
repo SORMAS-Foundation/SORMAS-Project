@@ -6,6 +6,7 @@ import java.util.Date;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -32,6 +33,8 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = -2947852193651003088L;
 
 	private String freeText;
+	private String externalId;
+	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -60,6 +63,33 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 
 	public void setFreeText(String freeText) {
 		this.freeText = freeText;
+	}
+
+	@IgnoreForUrl
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public EnvironmentCriteria externalId(String externalId) {
+		this.externalId = externalId;
+		return this;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public EnvironmentCriteria country(CountryReferenceDto country) {
+		this.country = country;
+		return this;
+	}
+
+	public void setCountry(CountryReferenceDto country) {
+		this.country = country;
 	}
 
 	public RegionReferenceDto getRegion() {

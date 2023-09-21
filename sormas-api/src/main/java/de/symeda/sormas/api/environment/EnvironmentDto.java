@@ -47,12 +47,12 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
-	@NotNull
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
-	@NotNull
+	@NotNull(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	@NotBlank
+	@NotBlank(message = Validations.environmentName)
 	private String environmentName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
@@ -61,7 +61,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private UserReferenceDto responsibleUser;
 	@NotNull
 	private InvestigationStatus investigationStatus;
-	@NotNull
+	@NotNull(message = Validations.environmentMedia)
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -85,6 +85,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
 		environment.setUuid(DataHelper.createUuid());
+		environment.setReportDate(new Date());
 		environment.setLocation(LocationDto.build());
 		environment.setInvestigationStatus(InvestigationStatus.PENDING);
 
