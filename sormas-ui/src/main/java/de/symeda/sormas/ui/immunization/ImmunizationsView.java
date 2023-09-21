@@ -13,7 +13,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
@@ -125,10 +125,14 @@ public class ImmunizationsView extends AbstractView {
 		// Show active/archived/all dropdown
 		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.IMMUNIZATION)) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION)) {
 
 				int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-					.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.IMMUNIZATION, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+					.getProperty(
+						FeatureType.AUTOMATIC_ARCHIVING,
+						DeletableEntityType.IMMUNIZATION,
+						FeatureTypeProperty.THRESHOLD_IN_DAYS,
+						Integer.class);
 				if (daysAfterTravelEntryGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
 						VaadinIcons.INFO_CIRCLE.getHtml() + " "

@@ -40,6 +40,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -62,7 +63,7 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 	private SampleService sampleService;
 
 	public PathogenTestService() {
-		super(PathogenTest.class);
+		super(PathogenTest.class, DeletableEntityType.PATHOGEN_TEST);
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -54,6 +55,7 @@ public class EnvironmentSampleCriteria extends BaseCriteria implements Serializa
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+	private EnvironmentReferenceDto environment;
 
 	public EnvironmentSampleCriteria() {
 		super();
@@ -183,5 +185,18 @@ public class EnvironmentSampleCriteria extends BaseCriteria implements Serializa
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
 		this.dateFilterOption = dateFilterOption;
+	}
+
+	public EnvironmentReferenceDto getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
+	}
+
+	public EnvironmentSampleCriteria withEnvironment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
+		return this;
 	}
 }

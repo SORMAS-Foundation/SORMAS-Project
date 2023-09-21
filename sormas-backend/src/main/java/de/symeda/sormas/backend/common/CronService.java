@@ -29,7 +29,7 @@ import javax.ejb.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -159,15 +159,15 @@ public class CronService {
 	public void archiveCases() {
 
 		final int daysAfterCaseGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		final int daysAfterContactsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		if (daysAfterCaseGetsArchived < daysAfterContactsGetsArchived) {
 			logger.warn(
 				"{} for {} [{}] should be <= the one for {} [{}]",
 				FeatureTypeProperty.THRESHOLD_IN_DAYS,
-				CoreEntityType.CONTACT,
-				CoreEntityType.CASE,
+				DeletableEntityType.CONTACT,
+				DeletableEntityType.CASE,
 				daysAfterContactsGetsArchived,
 				daysAfterCaseGetsArchived);
 		}
@@ -180,15 +180,19 @@ public class CronService {
 	public void archiveEvents() {
 
 		final int daysAfterEventsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(
+				FeatureType.AUTOMATIC_ARCHIVING,
+				DeletableEntityType.EVENT_PARTICIPANT,
+				FeatureTypeProperty.THRESHOLD_IN_DAYS,
+				Integer.class);
 		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
 			logger.warn(
 				"{} for {} [{}] should be <= the one for {} [{}]",
 				FeatureTypeProperty.THRESHOLD_IN_DAYS,
-				CoreEntityType.EVENT_PARTICIPANT,
-				CoreEntityType.EVENT,
+				DeletableEntityType.EVENT_PARTICIPANT,
+				DeletableEntityType.EVENT,
 				daysAfterEventParticipantsGetsArchived,
 				daysAfterEventsGetsArchived);
 		}
@@ -237,7 +241,7 @@ public class CronService {
 	@Schedule(hour = "2", minute = "15", persistent = false)
 	public void archiveContacts() {
 		final int daysAfterContactsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
 		if (daysAfterContactsGetsArchived >= 1) {
 			contactFacade.archiveAllArchivableContacts(daysAfterContactsGetsArchived);
@@ -247,7 +251,11 @@ public class CronService {
 	@Schedule(hour = "2", minute = "20", persistent = false)
 	public void archiveEventParticipants() {
 		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(
+				FeatureType.AUTOMATIC_ARCHIVING,
+				DeletableEntityType.EVENT_PARTICIPANT,
+				FeatureTypeProperty.THRESHOLD_IN_DAYS,
+				Integer.class);
 
 		if (daysAfterEventParticipantGetsArchived >= 1) {
 			eventParticipantFacade.archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived);
@@ -257,7 +265,7 @@ public class CronService {
 	@Schedule(hour = "2", minute = "25", persistent = false)
 	public void archiveImmunizations() {
 		final int daysAfterImmunizationsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.IMMUNIZATION, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
 		if (daysAfterImmunizationsGetsArchived >= 1) {
 			immunizationFacade.archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived);
@@ -267,7 +275,7 @@ public class CronService {
 	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void archiveTravelEntry() {
 		final int daysAfterTravelEntryGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.TRAVEL_ENTRY, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.TRAVEL_ENTRY, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
 		if (daysAfterTravelEntryGetsArchived >= 1) {
 			travelEntryFacade.archiveAllArchivableTravelEntries(daysAfterTravelEntryGetsArchived);

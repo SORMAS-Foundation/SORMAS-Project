@@ -39,6 +39,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -50,8 +51,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	@EJB
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
-	protected AbstractCoreAdoService(Class<ADO> elementClass) {
-		super(elementClass);
+	protected AbstractCoreAdoService(Class<ADO> elementClass, DeletableEntityType entityType) {
+		super(elementClass, entityType);
 	}
 
 	/**

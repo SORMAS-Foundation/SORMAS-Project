@@ -3,7 +3,7 @@ package de.symeda.sormas.ui.travelentry;
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -42,7 +42,7 @@ public class TravelEntryPersonView extends AbstractTravelEntryView implements Pe
 		setSubComponent(componentWrapper);
 		addSideComponents(
 			layout,
-			CoreEntityType.TRAVEL_ENTRY,
+			DeletableEntityType.TRAVEL_ENTRY,
 			travelEntry.getUuid(),
 			person.toReference(),
 			this::showUnsavedChangesPopup,
