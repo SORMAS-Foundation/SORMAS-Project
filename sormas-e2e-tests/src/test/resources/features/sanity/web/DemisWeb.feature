@@ -645,7 +645,7 @@ Scenario: Create and send laboratory request via Demis
   Scenario: Demis - Process a Physician Report[2]
     Given API : Login to DEMIS server
     When I create and send Laboratory Notification for physician report
-    And I log in as a Admin User
+    And I log in as a S2SUser
     And I click on the Messages button from navbar
     And I click on fetch messages button
     And I filter by last created person via API in Messages Directory
