@@ -767,7 +767,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Environment samples
-			if (DtoUserRightsHelper.isViewAllowed(EnvironmentSample.class)) {
+			if (DtoUserRightsHelper.isViewAllowed(EnvironmentSampleDto.class)) {
 				List<String> sampleUuids =
 					executeUuidCall(RetroProvider.getEnvironmentSampleFacade().pullObsoleteUuidsSince(since != null ? since.getTime() : 0));
 				for (String sampleUuid : sampleUuids) {
@@ -885,7 +885,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		DatabaseHelper.getEnvironmentDao().deleteInvalid(environmentUuids, syncCallbacks);
 		//environment samples
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(EnvironmentSampleDto.class);
-		List<String> environmentSampleUuids = viewAllowed ? executeUuidCall(RetroProvider.getEnvironmentSampleFacade().pullUuids()) : new ArrayList<>();
+		List<String> environmentSampleUuids =
+			viewAllowed ? executeUuidCall(RetroProvider.getEnvironmentSampleFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getEnvironmentSampleDao().deleteInvalid(environmentSampleUuids, syncCallbacks);
 		// event participants
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class);

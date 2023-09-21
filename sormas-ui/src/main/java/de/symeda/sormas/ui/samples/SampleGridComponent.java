@@ -43,5 +43,4 @@ public abstract class SampleGridComponent<T, C extends BaseCriteria> extends Ver
 	}
 
 	public abstract void updateFilterComponents();
-
 }
