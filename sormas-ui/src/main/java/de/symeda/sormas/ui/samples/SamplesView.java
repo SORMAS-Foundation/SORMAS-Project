@@ -127,7 +127,7 @@ public class SamplesView extends AbstractView {
 			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY,
 			CssStyles.VSPACE_TOP_3);
 		viewViewSwitch.addItem(SampleViewType.HUMAN);
-		viewViewSwitch.setItemCaption(SampleViewType.HUMAN, I18nProperties.getCaption(Captions.sampleViewType));
+		viewViewSwitch.setItemCaption(SampleViewType.HUMAN, I18nProperties.getCaption(Captions.humanSampleViewType));
 
 		viewViewSwitch.addItem(SampleViewType.ENVIRONMENT);
 		viewViewSwitch.setItemCaption(SampleViewType.ENVIRONMENT, I18nProperties.getCaption(Captions.environmentSampleViewType));
