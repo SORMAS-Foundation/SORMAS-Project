@@ -26,16 +26,21 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.samples.SamplesView;
+import de.symeda.sormas.ui.samples.pathogentestlink.PathogenTestListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSampleReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = SamplesView.VIEW_NAME;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/environment";
+
+	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
+
 	private CommitDiscardWrapperComponent<EnvironmentSampleEditForm> editComponent;
 
 	public EnvironmentSampleDataView() {
@@ -78,8 +83,12 @@ public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSam
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 
-		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, PATHOGEN_TESTS_LOC);
 		container.addComponent(layout);
+
+		PathogenTestListComponent pathogenTestListComponent =
+			new PathogenTestListComponent(getReferenceByUuid(sample.getUuid()), this::showUnsavedChangesPopup, isEditAllowed());
+		layout.addSidePanelComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		setSubComponent(container);
 

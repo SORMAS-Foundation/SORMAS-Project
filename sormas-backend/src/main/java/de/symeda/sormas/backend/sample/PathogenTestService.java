@@ -51,6 +51,10 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleJoins;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleQueryContext;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -61,6 +65,8 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private EnvironmentSampleService environmentSampleService;
 
 	public PathogenTestService() {
 		super(PathogenTest.class, DeletableEntityType.PATHOGEN_TEST);
@@ -95,7 +101,8 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		cq.where(filter);
 		cq.select(from.get(PathogenTest.UUID));
 
-		return em.createQuery(cq).getResultList();
+		final List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<PathogenTest> getIndexList(PathogenTestCriteria pathogenTestCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -304,10 +311,14 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 
 		// whoever created the sample the sample test is associated with is allowed to
 		// access it
-		Join<Sample, Sample> samplePath = sampleTestPath.join(PathogenTest.SAMPLE);
-		Predicate filter = sampleService.createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
+		Join<PathogenTest, Sample> samplePath = sampleTestPath.join(PathogenTest.SAMPLE, JoinType.LEFT);
+		Predicate sampleUserfilter = sampleService.createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
 
-		return filter;
+		Join<PathogenTest, EnvironmentSample> environmentSampleJoin = sampleTestPath.join(PathogenTest.ENVIRONMENT_SAMPLE, JoinType.LEFT);
+		Predicate environmentSampleUserFilter = environmentSampleService.createUserFilter(cb, cq, environmentSampleJoin);
+
+//		return sampleUserfilter;
+		return cb.or(sampleUserfilter, environmentSampleUserFilter);
 	}
 
 	@Override
@@ -324,7 +335,14 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 	private Predicate createActiveTestsFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		return sampleService.createActiveSamplesFilter(new SampleQueryContext(cb, cq, sample));
+		Join<PathogenTest, EnvironmentSample> environmentSample = root.join(PathogenTest.ENVIRONMENT_SAMPLE, JoinType.LEFT);
+
+		Predicate activeEnvironmentSamplesFilter = environmentSampleService.createActiveEnvironmentSamplesFilter(
+			new EnvironmentSampleQueryContext(cb, cq, environmentSample, new EnvironmentSampleJoins(environmentSample)));
+
+		final Predicate activeSamplesFilter = sampleService.createActiveSamplesFilter(new SampleQueryContext(cb, cq, sample));
+
+		return cb.or(activeEnvironmentSamplesFilter, activeSamplesFilter);
 	}
 
 	/**

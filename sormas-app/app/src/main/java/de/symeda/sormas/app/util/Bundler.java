@@ -25,12 +25,12 @@ public class Bundler {
 	private static final String ACTIVE_PAGE_POSITION = "activePagePosition";
 	private static final String ROOT_UUID = "rootUuid";
 	private static final String LIST_FILTER = "listFilter";
-	private static final String CASE_UUID = "caseUuid";
+	public static final String CASE_UUID = "caseUuid";
 	private static final String IMMUNIZATION_UUID = "immunizationUuid";
 	private static final String CONTACT_UUID = "contactUuid";
 	private static final String EVENT_UUID = "eventUuid";
-
 	private static final String ENVIRONMENT_UUID = "environmentUuid";
+	public static final String ENVIRONMENT_SAMPLE_UUID = "environmentSampleUuid";
 	private static final String CAMPAIGN_UUID = "campaignUuid";
 	private static final String CAMPAIGN_FROM_META_UUID = "campaignFormMetaUuid";
 	private static final String EVENT_PARTICIPANT_UUID = "eventParticipantUuid";
@@ -199,6 +199,18 @@ public class Bundler {
 	public String getEnvironmentUuid() {
 		if (bundle.containsKey(ENVIRONMENT_UUID)) {
 			return bundle.getString(ENVIRONMENT_UUID);
+		}
+		return null;
+	}
+
+	public Bundler setEnvironmentSampleuuid(String environmentSampleUuid) {
+		bundle.putString(ENVIRONMENT_SAMPLE_UUID, environmentSampleUuid);
+		return this;
+	}
+
+	public String getEnvironmentSampleUuid() {
+		if (bundle.containsKey(ENVIRONMENT_SAMPLE_UUID)) {
+			return bundle.getString(ENVIRONMENT_SAMPLE_UUID);
 		}
 		return null;
 	}

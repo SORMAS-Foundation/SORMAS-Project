@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
@@ -65,6 +66,8 @@ import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleFacadeEjb;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -103,6 +106,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private EnvironmentSampleService environmentSampleService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -211,6 +216,20 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
+	public List<PathogenTestDto> getAllByEnvironmentSample(EnvironmentSampleReferenceDto environmentSampleRef) {
+		if (environmentSampleRef == null) {
+			return Collections.emptyList();
+		}
+
+		List<PathogenTest> entities = environmentSampleService.getByUuid(environmentSampleRef.getUuid())
+			.getPathogenTests()
+			.stream()
+			.filter(p -> !p.isDeleted())
+			.collect(Collectors.toList());
+		return toPseudonymizedDtos(entities);
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 		User user = userService.getCurrentUser();
 
@@ -242,9 +261,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
 		pathogenTestService.ensurePersisted(pathogenTest);
 
-		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
-
-		handleAssociatedEntityChanges(pathogenTest, syncShares);
+		if (dto.getSample() != null) {
+			onPathogenTestChanged(existingSampleTestDto, pathogenTest);
+			handleAssociatedEntityChanges(pathogenTest, syncShares);
+		}
 
 		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
 	}
@@ -343,18 +363,22 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	public List<PathogenTestDto> getPositiveOrLatest(List<String> sampleUuids) {
 
 		Collection<PathogenTestDto> dtos = toPseudonymizedDtos(pathogenTestService.getBySampleUuids(sampleUuids, true)).stream()
-			.collect(Collectors.toMap(s -> s.getSample().getUuid(), s -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> s.getSample().getUuid(),
+					s -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
 			.values();
 		return new ArrayList<>(dtos);
 	}
@@ -368,6 +392,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setEnvironmentSample(EnvironmentSampleFacadeEjb.toReferenceDto(source.getEnvironmentSample()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
@@ -452,6 +477,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, PathogenTest::new, checkChangeDate);
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		target.setEnvironmentSample(environmentSampleService.getByReferenceDto(source.getEnvironmentSample()));
 		target.setTestedDisease(source.getTestedDisease());
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());

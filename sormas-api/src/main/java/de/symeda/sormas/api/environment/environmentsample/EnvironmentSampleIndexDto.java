@@ -181,6 +181,10 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		return numberOfTests;
 	}
 
+	public void setNumberOfTests(long numberOfTests) {
+		this.numberOfTests = numberOfTests;
+	}
+
 	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}

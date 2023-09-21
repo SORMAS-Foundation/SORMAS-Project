@@ -46,6 +46,8 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -76,9 +78,21 @@ public class PathogenTestController {
 		return facade.getAllBySample(sampleRef);
 	}
 
+	public List<PathogenTestDto> getPathogenTestsByEnvironmentSample(EnvironmentSampleReferenceDto sampleRef) {
+		return facade.getAllByEnvironmentSample(sampleRef);
+	}
+
 	public void create(SampleReferenceDto sampleRef, int caseSampleCount) {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = getPathogenTestCreateComponent(sampleDto, caseSampleCount, null, false);
+
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
+	}
+
+	public void create(EnvironmentSampleReferenceDto sampleRef) {
+		EnvironmentSampleDto sampleDto = FacadeProvider.getEnvironmentSampleFacade().getByUuid(sampleRef.getUuid());
+
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView = getPathogenTestCreateComponent(sampleDto, null);
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
 	}
@@ -99,6 +113,33 @@ public class PathogenTestController {
 			if (!createForm.getFieldGroup().isModified()) {
 				PathogenTestDto pathogenTest = createForm.getValue();
 				savePathogenTest(pathogenTest, suppressNavigateToCase);
+
+				if (onSavedPathogenTest != null) {
+					onSavedPathogenTest.accept(pathogenTest);
+				}
+
+				SormasUI.refreshView();
+			}
+		});
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
+		EnvironmentSampleDto sampleDto,
+		Consumer<PathogenTestDto> onSavedPathogenTest) {
+
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
+
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
+			createForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				PathogenTestDto pathogenTest = createForm.getValue();
+				savePathogenTestForEnvironmentSample(pathogenTest);
 
 				if (onSavedPathogenTest != null) {
 					onSavedPathogenTest.accept(pathogenTest);
@@ -140,8 +181,18 @@ public class PathogenTestController {
 
 		// get fresh data
 		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
-		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
-		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+		PathogenTestForm form = null;
+		if (pathogenTest.getSample() != null) {
+			SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+		}
+
+		if (pathogenTest.getEnvironmentSample() != null) {
+			EnvironmentSampleDto environmentSample =
+				FacadeProvider.getEnvironmentSampleFacade().getByUuid(pathogenTest.getEnvironmentSample().getUuid());
+			form = new PathogenTestForm(environmentSample, false, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+		}
+
 		form.setValue(pathogenTest);
 
 		boolean isEditOrDeleteAllowed = isEditAllowed || isDeleteAllowed;
@@ -149,9 +200,18 @@ public class PathogenTestController {
 			new CommitDiscardWrapperComponent<>(form, isEditOrDeleteAllowed, form.getFieldGroup());
 
 		if (isEditOrDeleteAllowed) {
+			PathogenTestForm finalForm = form;
 			editView.addCommitListener(() -> {
-				if (!form.getFieldGroup().isModified()) {
-					savePathogenTest(form.getValue(), false);
+				if (!finalForm.getFieldGroup().isModified()) {
+					PathogenTestDto editedPathogenTest = finalForm.getValue();
+					if (editedPathogenTest.getSample() != null) {
+						savePathogenTest(finalForm.getValue(), false);
+					}
+
+					if (editedPathogenTest.getEnvironmentSample() != null) {
+						savePathogenTestForEnvironmentSample(finalForm.getValue());
+					}
+
 					doneCallback.run();
 					SormasUI.refreshView();
 				}
@@ -209,6 +269,19 @@ public class PathogenTestController {
 
 	public void savePathogenTest(PathogenTestDto dto, boolean suppressNavigateToCase) {
 		savePathogenTests(Collections.singletonList(dto), dto.getSample(), suppressNavigateToCase);
+	}
+
+	public void savePathogenTestForEnvironmentSample(PathogenTestDto dto) {
+		savePathogenTestsForEnvironmentSample(Collections.singletonList(dto), dto.getEnvironmentSample());
+	}
+
+	public void savePathogenTestsForEnvironmentSample(List<PathogenTestDto> pathogenTests, EnvironmentSampleReferenceDto sampleRef) {
+//		final EnvironmentSampleDto environmentSample = FacadeProvider.getEnvironmentSampleFacade().getByUuid(sampleRef.getUuid());
+		pathogenTests.forEach(p -> {
+			p.setEnvironmentSample(sampleRef);
+			facade.savePathogenTest(p);
+		});
+		Notification.show(I18nProperties.getString(Strings.messagePathogenTestsSavedShort), TRAY_NOTIFICATION);
 	}
 
 	public void savePathogenTests(List<PathogenTestDto> pathogenTests, SampleReferenceDto sampleRef, boolean suppressNavigateToCase) {
