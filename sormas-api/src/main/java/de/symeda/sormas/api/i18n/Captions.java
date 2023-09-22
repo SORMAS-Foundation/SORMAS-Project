@@ -1066,6 +1066,7 @@ public interface Captions {
 	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
 	String environmentEnvironmentsList = "environmentEnvironmentsList";
 	String environmentNewEnvironment = "environmentNewEnvironment";
+	String EnvironmentSample = "EnvironmentSample";
 	String EnvironmentSample_chlorineResiduals = "EnvironmentSample.chlorineResiduals";
 	String EnvironmentSample_dispatchDate = "EnvironmentSample.dispatchDate";
 	String EnvironmentSample_dispatchDetails = "EnvironmentSample.dispatchDetails";
@@ -1099,6 +1100,7 @@ public interface Captions {
 	String environmentSampleAllActiveAndArchivedSamples = "environmentSampleAllActiveAndArchivedSamples";
 	String environmentSampleArchivedSamples = "environmentSampleArchivedSamples";
 	String environmentSampleDeletedSamples = "environmentSampleDeletedSamples";
+	String environmentSampleNewSample = "environmentSampleNewSample";
 	String environmentSampleNotShipped = "environmentSampleNotShipped";
 	String environmentSampleReceived = "environmentSampleReceived";
 	String environmentSampleShipped = "environmentSampleShipped";
@@ -1511,6 +1513,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
@@ -2115,7 +2118,6 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
-	String sampleViewType = "sampleViewType";
 	String selectOtherSample = "selectOtherSample";
 	String selectSimilarSample = "selectSimilarSample";
 	String sex = "sex";

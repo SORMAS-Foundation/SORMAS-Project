@@ -81,10 +81,12 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -247,7 +249,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private DistrictService districtService;
 
 	public CaseService() {
-		super(Case.class);
+		super(Case.class, DeletableEntityType.CASE);
 	}
 
 	/**
@@ -2297,5 +2299,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	@Override
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Case.REPORT_DATE;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 }

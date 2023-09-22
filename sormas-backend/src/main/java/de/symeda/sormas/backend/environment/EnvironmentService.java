@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -46,7 +47,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	private UserService userService;
 
 	public EnvironmentService() {
-		super(Environment.class);
+		super(Environment.class, DeletableEntityType.ENVIRONMENT);
 	}
 
 	public String getSimilarEnvironmentUuid(EnvironmentCriteria criteria) {

@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -69,12 +69,12 @@ public class CoreEntityDeletionService {
 		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb,
 		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb,
 		TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacadeEjb) {
-		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.CASE, caseFacadeEjb));
-		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.CONTACT, contactFacadeEjb));
-		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.EVENT, eventFacadeEjb));
-		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.EVENT_PARTICIPANT, eventParticipantFacadeEjb));
-		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.IMMUNIZATION, immunizationFacadeEjb));
-		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.TRAVEL_ENTRY, travelEntryFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CASE, caseFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CONTACT, contactFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.EVENT, eventFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.EVENT_PARTICIPANT, eventParticipantFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.IMMUNIZATION, immunizationFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.TRAVEL_ENTRY, travelEntryFacadeEjb));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,7 +85,7 @@ public class CoreEntityDeletionService {
 		// Delete CoreEntities by type
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
 			List<DeletionConfiguration> coreEntityTypeConfigs =
-				deletionConfigurationService.getCoreEntityTypeConfigs(entityTypeFacadePair.coreEntityType);
+				deletionConfigurationService.getEntityTypeConfigs(entityTypeFacadePair.deletableEntityType);
 
 			coreEntityTypeConfigs.stream().filter(c -> c.getDeletionReference() != null && c.getDeletionPeriod() != null).forEach(c -> {
 
@@ -95,7 +95,7 @@ public class CoreEntityDeletionService {
 					deleteUuids,
 					DELETE_BATCH_SIZE,
 					batchedUuids -> entityTypeFacadePair.entityFacade
-						.doAutomaticDeletion(batchedUuids, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType)));
+						.doAutomaticDeletion(batchedUuids, supportsPermanentDeletion(entityTypeFacadePair.deletableEntityType)));
 			});
 		});
 
@@ -140,28 +140,28 @@ public class CoreEntityDeletionService {
 			batchedUuids -> shareRequestInfoService.deletePermanentByUuids(batchedUuids));
 	}
 
-	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
-		return coreEntityType == CoreEntityType.IMMUNIZATION
-			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
-			|| coreEntityType == CoreEntityType.CASE
-			|| coreEntityType == CoreEntityType.CONTACT
-			|| coreEntityType == CoreEntityType.EVENT
-			|| coreEntityType == CoreEntityType.EVENT_PARTICIPANT;
+	private boolean supportsPermanentDeletion(DeletableEntityType deletableEntityType) {
+		return deletableEntityType == DeletableEntityType.IMMUNIZATION
+			|| deletableEntityType == DeletableEntityType.TRAVEL_ENTRY
+			|| deletableEntityType == DeletableEntityType.CASE
+			|| deletableEntityType == DeletableEntityType.CONTACT
+			|| deletableEntityType == DeletableEntityType.EVENT
+			|| deletableEntityType == DeletableEntityType.EVENT_PARTICIPANT;
 	}
 
 	@SuppressWarnings("rawtypes")
 	private static final class EntityTypeFacadePair {
 
-		private final CoreEntityType coreEntityType;
+		private final DeletableEntityType deletableEntityType;
 		private final AbstractCoreFacadeEjb entityFacade;
 
-		private EntityTypeFacadePair(CoreEntityType coreEntityType, AbstractCoreFacadeEjb entityFacade) {
-			this.coreEntityType = coreEntityType;
+		private EntityTypeFacadePair(DeletableEntityType deletableEntityType, AbstractCoreFacadeEjb entityFacade) {
+			this.deletableEntityType = deletableEntityType;
 			this.entityFacade = entityFacade;
 		}
 
-		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreFacadeEjb entityFacade) {
-			return new EntityTypeFacadePair(coreEntityType, entityFacade);
+		public static EntityTypeFacadePair of(DeletableEntityType deletableEntityType, AbstractCoreFacadeEjb entityFacade) {
+			return new EntityTypeFacadePair(deletableEntityType, entityFacade);
 		}
 	}
 }

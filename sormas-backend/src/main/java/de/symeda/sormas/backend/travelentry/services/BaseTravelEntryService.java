@@ -6,6 +6,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -23,7 +25,7 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	protected UserService userService;
 
 	protected BaseTravelEntryService() {
-		super(TravelEntry.class);
+		super(TravelEntry.class, DeletableEntityType.TRAVEL_ENTRY);
 	}
 
 	@Override
@@ -90,5 +92,16 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, TravelEntryJoins joins, boolean includeExtendedChangeDateFilters) {
 
 		return super.addChangeDates(builder, joins, includeExtendedChangeDateFilters);
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference.equals(DeletionReference.ORIGIN)) {
+			return TravelEntry.DATE_OF_ARRIVAL;
+		} else if (deletionReference == DeletionReference.REPORT) {
+			return TravelEntry.REPORT_DATE;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 }

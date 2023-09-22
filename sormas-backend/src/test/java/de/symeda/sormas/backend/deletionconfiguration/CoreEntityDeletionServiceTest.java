@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -83,7 +83,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testCaseAutomaticDeletion() throws IOException {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -199,7 +199,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testCaseVisitAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -261,7 +261,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testImmunizationAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.IMMUNIZATION);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -344,7 +344,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testEventAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -385,7 +385,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testEventParticipantWithEventSampleAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -424,7 +424,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testEventParticipantWithCaseSampleAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -467,7 +467,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testTravelEntryAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.TRAVEL_ENTRY);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.TRAVEL_ENTRY);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -498,9 +498,9 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testPersonAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration caseCoreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration caseCoreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 		DeletionConfiguration immunizationCoreEntityTypeConfig =
-			getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
+			getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.IMMUNIZATION);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -554,7 +554,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testAutomaticManuallyDeletedEntitiesDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration deletionConfig = getDeletionConfigurationService().getCoreEntityTypeManualDeletionConfig(CoreEntityType.IMMUNIZATION);
+		DeletionConfiguration deletionConfig = getDeletionConfigurationService().getEntityTypeManualDeletionConfig(DeletableEntityType.IMMUNIZATION);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -614,7 +614,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		// the test is checking the permanent deletion for contacts which are more than ALLOWED_DATE_OFFSET days apart from each other so there will be no shared Visit between them
 		// the second part tests the permanent deletion of contacts with the same person which are less than ALLOWED_DATE_OFFSET days apart
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CONTACT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -732,7 +732,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	@Test
 	public void testPermanentDeletionOfVisitLinkedToMultipleContacts() throws IOException {
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CONTACT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
@@ -819,19 +819,20 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 	@Test
 	public void testMinimumDeletionPeriod7Days() {
-		getDeletionConfigurationService().ensurePersisted(DeletionConfiguration.build(CoreEntityType.CONTACT, DeletionReference.CREATION, 7));
+		getDeletionConfigurationService().ensurePersisted(DeletionConfiguration.build(DeletableEntityType.CONTACT, DeletionReference.CREATION, 7));
 		assertThrows(
 			ConstraintViolationException.class,
-			() -> getDeletionConfigurationService().ensurePersisted(DeletionConfiguration.build(CoreEntityType.CASE, DeletionReference.CREATION, 6)));
+			() -> getDeletionConfigurationService()
+				.ensurePersisted(DeletionConfiguration.build(DeletableEntityType.CASE, DeletionReference.CREATION, 6)));
 	}
 
 	@Test
 	public void testSormasToSormasShareRequestPermanentDeletion() {
 		createDeletionConfigurations();
 
-		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
-		DeletionConfiguration contactDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
-		DeletionConfiguration eventDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
+		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
+		DeletionConfiguration contactDeletionConfiguration = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CONTACT);
+		DeletionConfiguration eventDeletionConfiguration = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -953,7 +954,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 	public void testSormasToSormasShareInfoPermanentDeletion() {
 		createDeletionConfigurations();
 
-		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto officer = creator.createSurveillanceOfficer(rdcf).toReference();
@@ -1007,8 +1008,8 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 	@Test
 	public void testReportDeletionReference() {
-		createDeletionConfigurations(CoreEntityType.CASE, DeletionReference.REPORT);
-		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		createDeletionConfigurations(DeletableEntityType.CASE, DeletionReference.REPORT);
+		DeletionConfiguration caseDeletionConfiguration = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 
 		TestDataCreator.RDCF redcf = creator.createRDCF();
 		UserDto user = creator.createUser(redcf, creator.getUserRoleReference(DefaultUserRole.ADMIN));

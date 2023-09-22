@@ -14112,6 +14112,17 @@ components:
         creationDate:
           type: string
           format: date-time
+        deleted:
+          type: boolean
+        deletionReason:
+          type: string
+          enum:
+          - GDPR
+          - DELETION_REQUEST
+          - CREATED_WITH_NO_LEGAL_REASON
+          - TRANSFERRED_RESPONSIBILITY
+          - DUPLICATE_ENTRIES
+          - OTHER_REASON
         dispatchDate:
           type: string
           format: date-time
@@ -14151,6 +14162,10 @@ components:
           minLength: 0
         location:
           $ref: '#/components/schemas/LocationDto'
+        otherDeletionReason:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         otherRequestedPathogenTests:
           type: string
           maxLength: 1000000

@@ -20,6 +20,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
+import de.symeda.sormas.ui.samples.humansample.SampleController;
 
 public class SampleControllerTest extends AbstractUiBeanTest {
 

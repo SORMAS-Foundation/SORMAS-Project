@@ -15,15 +15,22 @@
 
 package de.symeda.sormas.ui.environment;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
+import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -33,6 +40,8 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.environment.importer.EnvironmentImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -70,6 +79,17 @@ public class EnvironmentsView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_EXPORT)) {
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			addHeaderComponent(exportButton);
+
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(gridComponent.getGrid(), this::getSelectedRows, ExportEntityName.ENVIRONMENTS);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_CREATE)) {
 			final Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.environmentNewEnvironment,
@@ -94,5 +114,9 @@ public class EnvironmentsView extends AbstractView {
 		setApplyingCriteria(false);
 
 		gridComponent.reload();
+	}
+
+	private Set<EnvironmentIndexDto> getSelectedRows() {
+		return this.viewConfiguration.isInEagerMode() ? gridComponent.getSelectedItems() : Collections.emptySet();
 	}
 }

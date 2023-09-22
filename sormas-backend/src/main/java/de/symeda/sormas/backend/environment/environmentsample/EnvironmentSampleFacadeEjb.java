@@ -42,9 +42,11 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
@@ -55,6 +57,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -181,7 +184,11 @@ public class EnvironmentSampleFacadeEjb
 				from.get(EnvironmentSample.DISPATCHED),
 				from.get(EnvironmentSample.DISPATCH_DATE),
 				from.get(EnvironmentSample.RECEIVED),
+				from.get(EnvironmentSample.RECEIVAL_DATE),
+				joins.getLaboratory().get(Facility.UUID),
 				joins.getLaboratory().get(Facility.NAME),
+				from.get(EnvironmentSample.LABORATORY_DETAILS),
+				from.get(EnvironmentSample.SPECIMEN_CONDITION),
 				from.get(EnvironmentSample.SAMPLE_MATERIAL),
 				from.get(EnvironmentSample.OTHER_SAMPLE_MATERIAL),
 				from.get(EnvironmentSample.DELETION_REASON),
@@ -291,7 +298,8 @@ public class EnvironmentSampleFacadeEjb
 	public void validate(EnvironmentSampleDto dto) throws ValidationRuntimeException {
 		Facility laboratory = facilityService.getByReferenceDto(dto.getLaboratory());
 
-		if (laboratory == null || laboratory.getType() != FacilityType.LABORATORY) {
+		if (laboratory == null
+			|| (!FacilityDto.OTHER_FACILITY_UUID.equals(laboratory.getUuid()) && laboratory.getType() != FacilityType.LABORATORY)) {
 			throw new ValidationRuntimeException(I18nProperties.getString(Validations.validLaboratory));
 		}
 	}
@@ -393,6 +401,31 @@ public class EnvironmentSampleFacadeEjb
 	}
 
 	@Override
+	public boolean exists(String uuid) {
+		return service.exists(uuid);
+	}
+
+	@Override
+	public boolean isEditAllowed(String uuid) {
+		return service.isEditAllowed(service.getByUuid(uuid));
+	}
+
+	@Override
+	public EditPermissionType getEditPermissionType(String sampleUuid) {
+		return service.getEditPermissionType(service.getByUuid(sampleUuid));
+	}
+
+	@Override
+	public DeletionInfoDto getAutomaticDeletionInfo(String sampleUuid) {
+		return service.getAutomaticDeletionInfo(sampleUuid);
+	}
+
+	@Override
+	public DeletionInfoDto getManuallyDeletionInfo(String sampleUuid) {
+		return service.getManuallyDeletionInfo(sampleUuid);
+	}
+
+	@Override
 	protected EnvironmentSample fillOrBuildEntity(EnvironmentSampleDto source, EnvironmentSample target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
 		target = DtoHelper.fillOrBuildEntity(source, target, EnvironmentSample::new, checkChangeDate);
@@ -428,6 +461,9 @@ public class EnvironmentSampleFacadeEjb
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setLocation(locationFacade.fillOrBuildEntity(source.getLocation(), target.getLocation(), checkChangeDate));
 		target.setGeneralComment(source.getGeneralComment());
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -467,6 +503,9 @@ public class EnvironmentSampleFacadeEjb
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setLocation(LocationFacadeEjb.toDto(source.getLocation()));
 		target.setGeneralComment(source.getGeneralComment());
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
