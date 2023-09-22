@@ -112,7 +112,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 			EnvironmentSample associatedEnvironmentSample = DatabaseHelper.getEnvironmentSampleDao().queryUuid(environmentSampleUuid);
 			return DatabaseHelper.getSampleTestDao().build(associatedEnvironmentSample);
 		}
-		throw new RuntimeException("not valid pathogen test can be created. Missing sample and environmentSample links.");
+		throw new RuntimeException("Not valid pathogen test can be created. Missing sample and environmentSample links.");
 	}
 
 	@Override

@@ -529,7 +529,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	private void onPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest) {
 
-		if (existingPathogenTest.getSample() == null) {
+		if (newPathogenTest.getSample() == null) {
 			return;
 		}
 

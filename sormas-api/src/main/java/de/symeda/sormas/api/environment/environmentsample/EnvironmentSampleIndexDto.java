@@ -97,7 +97,7 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		String otherSampleMaterial,
 		DeletionReason deletionReason,
 		String otherDeletionReason,
-		int numberOfTests,
+		Long numberOfTests,
 		boolean isInJurisdiction) {
 		super(uuid);
 		this.fieldSampleId = fieldSampleId;

@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.environment.environmentsample;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -22,6 +24,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
+@DependingOnFeatureType(featureType = FeatureType.ENVIRONMENT_MANAGEMENT)
 public class EnvironmentSampleReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -2590392329041969693L;

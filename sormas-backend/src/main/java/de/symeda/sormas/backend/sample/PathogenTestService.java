@@ -288,7 +288,8 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		cq.where(filter);
 		cq.select(pathogenTest.get(PathogenTest.UUID));
 
-		return em.createQuery(cq).getResultList();
+		final List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<PathogenTestResultType> getPathogenTestResultsForCase(long caseId) {
@@ -317,7 +318,7 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 		Join<PathogenTest, EnvironmentSample> environmentSampleJoin = sampleTestPath.join(PathogenTest.ENVIRONMENT_SAMPLE, JoinType.LEFT);
 		Predicate environmentSampleUserFilter = environmentSampleService.createUserFilter(cb, cq, environmentSampleJoin);
 
-		return cb.or(sampleUserfilter, environmentSampleUserFilter);
+		return CriteriaBuilderHelper.or(cb, sampleUserfilter, environmentSampleUserFilter);
 	}
 
 	@Override
