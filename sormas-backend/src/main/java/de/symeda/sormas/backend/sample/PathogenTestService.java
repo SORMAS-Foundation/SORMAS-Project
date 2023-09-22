@@ -383,7 +383,11 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 	}
 
 	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, PathogenTest> from) {
+		final Predicate samplePredicate = sampleService.inJurisdictionOrOwned(new SampleQueryContext(cb, query, from.join(PathogenTest.SAMPLE, JoinType.LEFT)));
+		final Join<PathogenTest, EnvironmentSample> environmentSampleJoin = from.join(PathogenTest.ENVIRONMENT_SAMPLE, JoinType.LEFT);
+		final Predicate environmentSamplePredicate = environmentSampleService.inJurisdictionOrOwned(
+			new EnvironmentSampleQueryContext(cb, query, environmentSampleJoin, new EnvironmentSampleJoins(environmentSampleJoin)));
 
-		return sampleService.inJurisdictionOrOwned(new SampleQueryContext(cb, query, from.join(PathogenTest.SAMPLE)));
+		return CriteriaBuilderHelper.or(cb, samplePredicate, environmentSamplePredicate);
 	}
 }

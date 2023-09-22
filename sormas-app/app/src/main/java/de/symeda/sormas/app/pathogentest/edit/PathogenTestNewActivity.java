@@ -69,12 +69,12 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 		BaseEditActivity.startActivity(context, PathogenTestNewActivity.class, buildBundleForEnvironmentSample(environmentSampleUuid));
 	}
 
-	public static Bundler buildBundleForSample(String caseUuid) {
-		return buildBundle(null, 0).setCaseUuid(caseUuid);
+	public static Bundler buildBundleForSample(String sampleUuid) {
+		return buildBundle(null, 0).setCaseUuid(sampleUuid);
 	}
 
 	public static Bundler buildBundleForEnvironmentSample(String environmentSampleUuid) {
-		return buildBundle(null, 0).setEnvironmentSampleuuid(environmentSampleUuid);
+		return buildBundle(null, 0).setEnvironmentSampleUuid(environmentSampleUuid);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		super.onSaveInstanceState(outState);
-		new Bundler(outState).setCaseUuid(sampleUuid).setEnvironmentSampleuuid(environmentSampleUuid);
+		new Bundler(outState).setCaseUuid(sampleUuid).setEnvironmentSampleUuid(environmentSampleUuid);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 			EnvironmentSample associatedEnvironmentSample = DatabaseHelper.getEnvironmentSampleDao().queryUuid(environmentSampleUuid);
 			return DatabaseHelper.getSampleTestDao().build(associatedEnvironmentSample);
 		}
-		throw new RuntimeException("Not valid pathogen test can be created. Missing sample and environmentSample links.");
+		throw new RuntimeException("Pathogen test cannot be created. Missing sample or environmentSample links");
 	}
 
 	@Override

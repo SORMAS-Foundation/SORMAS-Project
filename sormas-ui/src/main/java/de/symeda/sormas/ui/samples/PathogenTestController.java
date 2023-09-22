@@ -112,7 +112,7 @@ public class PathogenTestController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				PathogenTestDto pathogenTest = createForm.getValue();
-				savePathogenTest(pathogenTest, suppressNavigateToCase);
+				savePathogenTestForSample(pathogenTest, suppressNavigateToCase);
 
 				if (onSavedPathogenTest != null) {
 					onSavedPathogenTest.accept(pathogenTest);
@@ -196,7 +196,7 @@ public class PathogenTestController {
 				if (!form.getFieldGroup().isModified()) {
 					PathogenTestDto editedPathogenTest = form.getValue();
 					if (editedPathogenTest.getSample() != null) {
-						savePathogenTest(form.getValue(), false);
+						savePathogenTestForSample(form.getValue(), false);
 					}
 
 					if (editedPathogenTest.getEnvironmentSample() != null) {
@@ -258,7 +258,7 @@ public class PathogenTestController {
 			}).bringToFront();
 	}
 
-	public void savePathogenTest(PathogenTestDto dto, boolean suppressNavigateToCase) {
+	public void savePathogenTestForSample(PathogenTestDto dto, boolean suppressNavigateToCase) {
 		savePathogenTests(Collections.singletonList(dto), dto.getSample(), suppressNavigateToCase);
 	}
 

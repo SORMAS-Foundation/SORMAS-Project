@@ -128,7 +128,7 @@ public class PathogenTestEditActivity extends BaseEditActivity<PathogenTest> {
 					save(pathogenTestToSave, associatedCase);
 				}
 			}
-		} else if (pathogenTestToSave.getEnvironmentSample() != null) {
+		} else {
 			save(pathogenTestToSave, null);
 		}
 	}

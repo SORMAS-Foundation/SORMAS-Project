@@ -203,7 +203,7 @@ public class Bundler {
 		return null;
 	}
 
-	public Bundler setEnvironmentSampleuuid(String environmentSampleUuid) {
+	public Bundler setEnvironmentSampleUuid(String environmentSampleUuid) {
 		bundle.putString(ENVIRONMENT_SAMPLE_UUID, environmentSampleUuid);
 		return this;
 	}
