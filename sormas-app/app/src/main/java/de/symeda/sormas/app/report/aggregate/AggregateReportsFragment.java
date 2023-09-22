@@ -97,8 +97,12 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	private void setupControls() {
 		EpiWeek previousEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 		EpiWeek currentEpiWeek = DateHelper.getEpiWeek(new Date());
+		List<Integer> yearList = DateHelper.getYearsToNow();
+		if (currentEpiWeek.getYear() > previousEpiWeek.getYear()) {
+			yearList.add(currentEpiWeek.getYear());
+		}
 
-		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(DateHelper.getYearsToNow()), previousEpiWeek.getYear(), field -> {
+		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(yearList), previousEpiWeek.getYear(), field -> {
 			Integer year = (Integer) field.getValue();
 			if (year != null) {
 				if (year.equals(currentEpiWeek.getYear())) {
