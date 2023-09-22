@@ -11,7 +11,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -29,7 +29,7 @@ public class SymptomsServiceTest extends AbstractBeanTest {
 	public void testCaseVisitAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator

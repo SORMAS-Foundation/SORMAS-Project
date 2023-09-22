@@ -34,7 +34,7 @@ public class EnvironmentSampleReferenceDto extends ReferenceDto {
 		super(uuid, buildCaption(sampleMaterial, environmentUuid));
 	}
 
-	private static String buildCaption(EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
+	public static String buildCaption(EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(DataHelper.toStringNullable(sampleMaterial));

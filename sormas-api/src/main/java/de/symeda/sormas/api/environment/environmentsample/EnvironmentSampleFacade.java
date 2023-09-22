@@ -19,8 +19,20 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.DeletableFacade;
+import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 
 @Remote
 public interface EnvironmentSampleFacade
 	extends BaseFacade<EnvironmentSampleDto, EnvironmentSampleIndexDto, EnvironmentSampleReferenceDto, EnvironmentSampleCriteria>, DeletableFacade {
+
+	boolean exists(String uuid);
+
+	boolean isEditAllowed(String uuid);
+
+	EditPermissionType getEditPermissionType(String sampleUuid);
+
+	DeletionInfoDto getAutomaticDeletionInfo(String sampleUuid);
+
+	DeletionInfoDto getManuallyDeletionInfo(String sampleUuid);
 }

@@ -7,7 +7,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -23,27 +23,27 @@ public class DeletionConfiguration extends AbstractDomainObject {
 	public static final String DELETION_REFERENCE = "deletionReference";
 	public static final String DELETION_PERIOD = "deletionPeriod";
 
-	private CoreEntityType entityType;
+	private DeletableEntityType entityType;
 	private DeletionReference deletionReference;
 
 	@Min(value = 7, message = Validations.numberTooSmall)
 	@Max(value = Integer.MAX_VALUE, message = Validations.numberTooBig)
 	public Integer deletionPeriod;
 
-	public static DeletionConfiguration build(CoreEntityType coreEntityType) {
+	public static DeletionConfiguration build(DeletableEntityType deletableEntityType) {
 
-		return build(coreEntityType, null, null);
+		return build(deletableEntityType, null, null);
 	}
 
-	public static DeletionConfiguration build(CoreEntityType coreEntityType, DeletionReference deletionReference) {
+	public static DeletionConfiguration build(DeletableEntityType deletableEntityType, DeletionReference deletionReference) {
 
-		return build(coreEntityType, deletionReference, null);
+		return build(deletableEntityType, deletionReference, null);
 	}
 
-	public static DeletionConfiguration build(CoreEntityType coreEntityType, DeletionReference deletionReference, Integer deletionPeriod) {
+	public static DeletionConfiguration build(DeletableEntityType deletableEntityType, DeletionReference deletionReference, Integer deletionPeriod) {
 
 		DeletionConfiguration deletionConfiguration = new DeletionConfiguration();
-		deletionConfiguration.setEntityType(coreEntityType);
+		deletionConfiguration.setEntityType(deletableEntityType);
 		deletionConfiguration.setDeletionReference(deletionReference);
 		deletionConfiguration.setDeletionPeriod(deletionPeriod);
 		return deletionConfiguration;
@@ -51,11 +51,11 @@ public class DeletionConfiguration extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	public CoreEntityType getEntityType() {
+	public DeletableEntityType getEntityType() {
 		return entityType;
 	}
 
-	public void setEntityType(CoreEntityType entityType) {
+	public void setEntityType(DeletableEntityType entityType) {
 		this.entityType = entityType;
 	}
 

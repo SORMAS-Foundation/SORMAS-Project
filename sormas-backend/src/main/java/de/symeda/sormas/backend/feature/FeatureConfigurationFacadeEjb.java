@@ -50,7 +50,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
@@ -392,7 +392,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType) {
+	public boolean isFeatureEnabled(FeatureType featureType, DeletableEntityType entityType) {
 
 		if (entityType == null) {
 			throw new IllegalArgumentException("Entity type must be specified!");
@@ -412,7 +412,11 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		return em.createQuery(cq).getSingleResult() > 0;
 	}
 
-	public <T extends Object> T getProperty(FeatureType featureType, CoreEntityType entityType, FeatureTypeProperty property, Class<T> returnType) {
+	public <T extends Object> T getProperty(
+		FeatureType featureType,
+		DeletableEntityType entityType,
+		FeatureTypeProperty property,
+		Class<T> returnType) {
 
 		if (!featureType.getSupportedProperties().contains(property)) {
 			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
