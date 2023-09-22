@@ -41,6 +41,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
@@ -53,6 +54,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TABLE_NAME = "pathogentest";
 
 	public static final String SAMPLE = "sample";
+	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
@@ -87,6 +89,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 
 	private Sample sample;
+	private EnvironmentSample environmentSample;
 	private Disease testedDisease;
 	@Convert(converter = DiseaseVariantConverter.class)
 	private DiseaseVariant testedDiseaseVariant;
@@ -127,13 +130,21 @@ public class PathogenTest extends DeletableAdo {
 	private Country prescriberCountry;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(nullable = false)
 	public Sample getSample() {
 		return sample;
 	}
 
 	public void setSample(Sample sample) {
 		this.sample = sample;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public EnvironmentSample getEnvironmentSample() {
+		return environmentSample;
+	}
+
+	public void setEnvironmentSample(EnvironmentSample environmentSample) {
+		this.environmentSample = environmentSample;
 	}
 
 	@Enumerated(EnumType.STRING)

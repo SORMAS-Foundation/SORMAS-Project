@@ -30,6 +30,7 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
@@ -58,6 +59,18 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 		if (associatedSample.getSamplePurpose() == SamplePurpose.INTERNAL) {
 			pathogenTest.setTestResultVerified(true);
 		}
+		Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+		if (defaultDisease != null) {
+			pathogenTest.setTestedDisease(defaultDisease);
+		}
+		return pathogenTest;
+	}
+
+	public PathogenTest build(EnvironmentSample environmentSample) {
+		PathogenTest pathogenTest = super.build();
+		pathogenTest.setEnvironmentSample(environmentSample);
+		pathogenTest.setTestDateTime(new Date());
+		pathogenTest.setLabUser(ConfigProvider.getUser());
 		Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
 		if (defaultDisease != null) {
 			pathogenTest.setTestedDisease(defaultDisease);
@@ -139,6 +152,10 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 
 		if (criteria.getSample() != null) {
 			where.and().eq(PathogenTest.SAMPLE + "_id", criteria.getSample().getId());
+		}
+
+		if (criteria.getEnvironmentSample() != null) {
+			where.and().eq(PathogenTest.ENVIRONMENT_SAMPLE + "_id", criteria.getEnvironmentSample().getId());
 		}
 
 		queryBuilder.setWhere(where);

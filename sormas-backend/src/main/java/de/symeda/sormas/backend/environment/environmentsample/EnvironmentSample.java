@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.environment.environmentsample;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -43,6 +45,7 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -94,6 +97,8 @@ public class EnvironmentSample extends DeletableAdo {
 	private SpecimenCondition specimenCondition;
 	private Location location;
 	private String generalComment;
+
+	private List<PathogenTest> pathogenTests;
 
 	@ManyToOne(optional = false)
 	public Environment getEnvironment() {
@@ -345,5 +350,14 @@ public class EnvironmentSample extends DeletableAdo {
 
 	public void setGeneralComment(String generalComment) {
 		this.generalComment = generalComment;
+	}
+
+	@OneToMany(mappedBy = PathogenTest.ENVIRONMENT_SAMPLE, fetch = FetchType.LAZY)
+	public List<PathogenTest> getPathogenTests() {
+		return pathogenTests;
+	}
+
+	public void setPathogenTests(List<PathogenTest> pathogenTests) {
+		this.pathogenTests = pathogenTests;
 	}
 }

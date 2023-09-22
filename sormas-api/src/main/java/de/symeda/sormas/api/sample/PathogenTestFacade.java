@@ -25,6 +25,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -34,6 +35,8 @@ public interface PathogenTestFacade {
 	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date);
 
 	List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef);
+
+	List<PathogenTestDto> getAllByEnvironmentSample(EnvironmentSampleReferenceDto environmentSampleRef);
 
 	PathogenTestDto getByUuid(String uuid);
 
