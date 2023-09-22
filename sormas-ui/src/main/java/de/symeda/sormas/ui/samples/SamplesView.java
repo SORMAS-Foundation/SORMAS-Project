@@ -36,8 +36,10 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -47,8 +49,12 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleGridComponent;
+import de.symeda.sormas.ui.samples.humansample.HumanSampleGrid;
+import de.symeda.sormas.ui.samples.humansample.HumanSampleGridComponent;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -70,13 +76,16 @@ public class SamplesView extends AbstractView {
 	public SamplesView() {
 		super(VIEW_NAME);
 
+		boolean isHumanSamplePermitted = UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW);
+		boolean isEnvironmentSamplePerimtted =
+			isHumanSamplePermitted && UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW);
+
 		viewConfiguration = ViewModelProviders.of(getClass()).get(SamplesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
-			viewConfiguration.setViewType(SampleViewType.HUMAN);
+			viewConfiguration.setViewType(isHumanSamplePermitted ? SampleViewType.HUMAN : SampleViewType.ENVIRONMENT);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ENVIRONMENT_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+		if (isEnvironmentSamplePerimtted && isHumanSamplePermitted) {
 			addViewSwitch();
 		}
 
@@ -87,6 +96,19 @@ public class SamplesView extends AbstractView {
 
 		if (isHumanSampleView() && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
 			addHumanSampleExportButton();
+		}
+
+		if (isEnvironmentSampleView() && UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EXPORT)) {
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
+			addHeaderComponent(exportButton);
+
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				sampleListComponent.getGrid(),
+				this::getSelectedEnvironmentSamples,
+				ExportEntityName.ENVIRONMENT_SAMPLES);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
 		}
 
 		if ((isHumanSampleView() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES))
@@ -105,7 +127,7 @@ public class SamplesView extends AbstractView {
 			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY,
 			CssStyles.VSPACE_TOP_3);
 		viewViewSwitch.addItem(SampleViewType.HUMAN);
-		viewViewSwitch.setItemCaption(SampleViewType.HUMAN, I18nProperties.getCaption(Captions.sampleViewType));
+		viewViewSwitch.setItemCaption(SampleViewType.HUMAN, I18nProperties.getCaption(Captions.humanSampleViewType));
 
 		viewViewSwitch.addItem(SampleViewType.ENVIRONMENT);
 		viewViewSwitch.setItemCaption(SampleViewType.ENVIRONMENT, I18nProperties.getCaption(Captions.environmentSampleViewType));
@@ -226,5 +248,11 @@ public class SamplesView extends AbstractView {
 
 	public ViewConfiguration getViewConfiguration() {
 		return viewConfiguration;
+	}
+
+	private Set<EnvironmentSampleIndexDto> getSelectedEnvironmentSamples() {
+		return this.viewConfiguration.isInEagerMode()
+			? ((EnvironmentSampleGridComponent) sampleListComponent).getGrid().asMultiSelect().getSelectedItems()
+			: Collections.emptySet();
 	}
 }

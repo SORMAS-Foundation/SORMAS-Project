@@ -26,11 +26,15 @@ public class EnvironmentSampleReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -2590392329041969693L;
 
+	public EnvironmentSampleReferenceDto(String uuid) {
+		super(uuid);
+	}
+
 	public EnvironmentSampleReferenceDto(String uuid, EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
 		super(uuid, buildCaption(sampleMaterial, environmentUuid));
 	}
 
-	private static String buildCaption(EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
+	public static String buildCaption(EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(DataHelper.toStringNullable(sampleMaterial));

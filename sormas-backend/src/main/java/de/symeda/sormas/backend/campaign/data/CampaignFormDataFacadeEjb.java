@@ -67,6 +67,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -756,7 +757,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData) {
-		DtoHelper.copyDtoValues(existingData, newData, true);
+		DtoCopyHelper.copyDtoValues(existingData, newData, true);
 		saveCampaignFormData(existingData);
 	}
 

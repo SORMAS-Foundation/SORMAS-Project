@@ -80,6 +80,7 @@ public class CreateNewSamplePage {
   public static final By PATHOGEN_TEST_RESULT_COMBOBOX =
       By.cssSelector("[id='testResult'] [class='v-filterselect-button']");
   public static final By PATHOGEN_TEST_RESULT_INPUT = By.cssSelector("[id='testResult'] input");
+  public static final By VIA_DEMIS_CHECKBOX = By.cssSelector("#viaLims > input");
   public static final By PATHOGEN_LABORATORY_COMBOBOX =
       By.cssSelector("[class='v-panel v-widget'] [location='lab'] [class='v-filterselect-button']");
   public static final By PATHOGEN_LABORATORY_INPUT =

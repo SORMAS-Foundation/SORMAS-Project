@@ -13,32 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.app.backend.environment.environmentsample;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.JurisdictionHelper;
 
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.ui.ControllerProvider;
+public class EnvironmentSampleEditAuthorization {
 
-public class SampleEditPathogenTestListHandler {
+	public static boolean isEnvironmentSampleEditAllowed(EnvironmentSample sample) {
 
-	private final List<PathogenTestDto> pathogenTests;
+		final User user = ConfigProvider.getUser();
+		final EnvironmentSampleJurisdictionBooleanValidator environmentSampleJurisdictionBooleanValidator =
+			EnvironmentSampleJurisdictionBooleanValidator
+				.of(JurisdictionHelper.createEnvironmentSampleJurisdictionDto(sample), JurisdictionHelper.createUserJurisdiction(user));
 
-	public SampleEditPathogenTestListHandler() {
-		pathogenTests = new ArrayList<>();
-	}
-
-	public void addPathogenTest(PathogenTestDto pathogenTest) {
-		pathogenTests.add(pathogenTest);
-	}
-
-	public List<PathogenTestDto> getPathogenTests() {
-		return pathogenTests;
-	}
-
-	public void saveAll(SampleReferenceDto sample) {
-		ControllerProvider.getPathogenTestController().savePathogenTests(pathogenTests, sample, true);
+		return environmentSampleJurisdictionBooleanValidator.inJurisdictionOrOwned();
 	}
 }

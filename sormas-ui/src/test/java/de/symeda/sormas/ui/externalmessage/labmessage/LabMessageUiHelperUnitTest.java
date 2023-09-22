@@ -31,7 +31,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.ui.samples.SampleCreateForm;
+import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
 public class LabMessageUiHelperUnitTest {

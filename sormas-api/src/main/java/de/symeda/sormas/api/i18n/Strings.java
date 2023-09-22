@@ -563,6 +563,10 @@ public interface Strings {
 	String headingEntitiesNotSent = "headingEntitiesNotSent";
 	String headingEnvironmentalExposure = "headingEnvironmentalExposure";
 	String headingEnvironmentJurisdictionUpdated = "headingEnvironmentJurisdictionUpdated";
+	String headingEnvironmentSampleLocation = "headingEnvironmentSampleLocation";
+	String headingEnvironmentSampleManagement = "headingEnvironmentSampleManagement";
+	String headingEnvironmentSampleMeasurements = "headingEnvironmentSampleMeasurements";
+	String headingEnvironmentSampleRequestedPathogenTests = "headingEnvironmentSampleRequestedPathogenTests";
 	String headingEnvironmentSamplesDeleted = "headingEnvironmentSamplesDeleted";
 	String headingEnvironmentSamplesNotDeleted = "headingEnvironmentSamplesNotDeleted";
 	String headingEnvironmentSamplesNotRestored = "headingEnvironmentSamplesNotRestored";
@@ -647,6 +651,7 @@ public interface Strings {
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
 	String headingLabMessageCorrectionThrough = "headingLabMessageCorrectionThrough";
+	String headingLaboratoryEnvironmentSample = "headingLaboratoryEnvironmentSample";
 	String headingLaboratorySample = "headingLaboratorySample";
 	String headingLastReportedDistrict = "headingLastReportedDistrict";
 	String headingLineListing = "headingLineListing";
@@ -952,6 +957,7 @@ public interface Strings {
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
+	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
@@ -1226,6 +1232,7 @@ public interface Strings {
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
 	String messageEnvironmentJurisdictionUpdated = "messageEnvironmentJurisdictionUpdated";
 	String messageEnvironmentSampleOutsideJurisdictionDeletionDenied = "messageEnvironmentSampleOutsideJurisdictionDeletionDenied";
+	String messageEnvironmentSampleSaved = "messageEnvironmentSampleSaved";
 	String messageEnvironmentSamplesDeleted = "messageEnvironmentSamplesDeleted";
 	String messageEnvironmentSamplesRestored = "messageEnvironmentSamplesRestored";
 	String messageEnvironmentSaved = "messageEnvironmentSaved";

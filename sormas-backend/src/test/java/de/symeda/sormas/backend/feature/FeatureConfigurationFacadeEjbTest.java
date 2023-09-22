@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -59,7 +59,7 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		featureConfigurationService.createMissingFeatureConfigurations();
 
 		Integer defaultDaysForCaseArchiving = getFeatureConfigurationFacade()
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		assertEquals(90, (int) defaultDaysForCaseArchiving);
 	}
 
@@ -68,7 +68,7 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			IllegalArgumentException.class,
 			() -> getFeatureConfigurationFacade()
-				.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
+				.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
 	}
 
 	@Test
@@ -76,6 +76,6 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			IllegalArgumentException.class,
 			() -> getFeatureConfigurationFacade()
-				.getProperty(FeatureType.CASE_SURVEILANCE, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
+				.getProperty(FeatureType.CASE_SURVEILANCE, DeletableEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class));
 	}
 }

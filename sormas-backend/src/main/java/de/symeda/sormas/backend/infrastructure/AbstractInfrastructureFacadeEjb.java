@@ -26,6 +26,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
@@ -34,7 +35,6 @@ import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -171,7 +171,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate, boolean allowUuidOverwrite) {
 		ADO existingEntity = duplicates.get(0);
 		DTO existingDto = toDto(existingEntity);
-		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
+		DtoCopyHelper.copyDtoValues(existingDto, dtoToSave, true);
 
 		return persistEntity(dtoToSave, existingEntity, checkChangeDate, allowUuidOverwrite);
 	}

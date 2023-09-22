@@ -54,7 +54,7 @@ import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelated
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
-import de.symeda.sormas.ui.samples.SampleEditForm;
+import de.symeda.sormas.ui.samples.humansample.SampleEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
