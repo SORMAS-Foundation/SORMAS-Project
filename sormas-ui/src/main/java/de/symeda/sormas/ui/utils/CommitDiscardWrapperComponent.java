@@ -860,7 +860,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		String entityName,
 		String entityUuid,
 		DeletableFacade deletableFacade) {
-		addDeleteWithReasonOrRestoreListener(viewName, details, entityName, entityUuid, coreFacade, null, null);
+		addDeleteWithReasonOrRestoreListener(viewName, details, entityName, entityUuid, deletableFacade, null, null);
 	}
 
 	public void addDeleteWithReasonOrRestoreListener(
