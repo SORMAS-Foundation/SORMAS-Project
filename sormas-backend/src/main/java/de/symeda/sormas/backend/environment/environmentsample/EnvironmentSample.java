@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.environment.environmentsample;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -43,6 +45,7 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -54,10 +57,13 @@ public class EnvironmentSample extends DeletableAdo {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String LABORATORY = "laboratory";
+	public static final String LABORATORY_DETAILS = "laboratoryDetails";
 	public static final String LOCATION = "location";
 	public static final String DISPATCHED = "dispatched";
 	public static final String DISPATCH_DATE = "dispatchDate";
 	public static final String RECEIVED = "received";
+	public static final String RECEIVAL_DATE = "receivalDate";
+	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleId";
@@ -91,6 +97,8 @@ public class EnvironmentSample extends DeletableAdo {
 	private SpecimenCondition specimenCondition;
 	private Location location;
 	private String generalComment;
+
+	private List<PathogenTest> pathogenTests;
 
 	@ManyToOne(optional = false)
 	public Environment getEnvironment() {
@@ -342,5 +350,14 @@ public class EnvironmentSample extends DeletableAdo {
 
 	public void setGeneralComment(String generalComment) {
 		this.generalComment = generalComment;
+	}
+
+	@OneToMany(mappedBy = PathogenTest.ENVIRONMENT_SAMPLE, fetch = FetchType.LAZY)
+	public List<PathogenTest> getPathogenTests() {
+		return pathogenTests;
+	}
+
+	public void setPathogenTests(List<PathogenTest> pathogenTests) {
+		this.pathogenTests = pathogenTests;
 	}
 }

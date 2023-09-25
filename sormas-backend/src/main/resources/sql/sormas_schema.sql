@@ -12714,4 +12714,13 @@ ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personfacility_id 
 
 INSERT INTO schema_version (version_number, comment) VALUES (526, 'Add person facility to external messages #12366');
 
+-- 2023-09-11 Add pathogen tests to environment samples #12467
+ALTER TABLE pathogentest ADD COLUMN environmentsample_id bigint;
+ALTER TABLE pathogentest_history ADD COLUMN environmentsample_id bigint;
+ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_environmentsample_id FOREIGN KEY (environmentsample_id) REFERENCES environmentsamples(id);
+ALTER TABLE pathogentest ALTER sample_id drop not null;
+ALTER TABLE pathogentest_history ALTER sample_id drop not null;
+
+INSERT INTO schema_version (version_number, comment) VALUES (527, 'Add pathogen tests to environment samples #12467');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

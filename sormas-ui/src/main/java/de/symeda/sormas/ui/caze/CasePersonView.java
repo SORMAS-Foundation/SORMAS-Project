@@ -21,7 +21,7 @@ import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -60,7 +60,7 @@ public class CasePersonView extends AbstractCaseView implements PersonSideCompon
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
+		addSideComponents(layout, DeletableEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
 		setEditPermission(
 			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),

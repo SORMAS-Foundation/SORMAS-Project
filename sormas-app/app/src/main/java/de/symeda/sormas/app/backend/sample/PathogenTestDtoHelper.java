@@ -21,6 +21,8 @@ import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSampleDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
@@ -42,7 +44,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 	}
 
 	@Override
-	protected Call<List<PathogenTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<PathogenTestDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getSampleTestFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
@@ -60,6 +62,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 	protected void fillInnerFromDto(PathogenTest target, PathogenTestDto source) {
 
 		target.setSample(DatabaseHelper.getSampleDao().getByReferenceDto(source.getSample()));
+		target.setEnvironmentSample(DatabaseHelper.getEnvironmentSampleDao().getByReferenceDto(source.getEnvironmentSample()));
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestResult(source.getTestResult());
 		target.setTestType(source.getTestType());
@@ -91,6 +94,12 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 			target.setSample(SampleDtoHelper.toReferenceDto(sample));
 		} else {
 			target.setSample(null);
+		}
+		if (source.getEnvironmentSample() != null) {
+			EnvironmentSample environmentSample = DatabaseHelper.getEnvironmentSampleDao().queryForId(source.getEnvironmentSample().getId());
+			target.setEnvironmentSample(EnvironmentSampleDtoHelper.toReferenceDto(environmentSample));
+		} else {
+			target.setEnvironmentSample(null);
 		}
 		target.setTestDateTime(source.getTestDateTime());
 		target.setTestResult(source.getTestResult());
@@ -129,8 +138,8 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return PathogenTestDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return PathogenTestDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
 }

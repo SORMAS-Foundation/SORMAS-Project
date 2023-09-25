@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.humansample;
 
 import java.util.ArrayList;
 import java.util.List;

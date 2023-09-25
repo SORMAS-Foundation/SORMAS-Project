@@ -23,10 +23,13 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
@@ -46,7 +49,7 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 	private UserService userService;
 
 	public EnvironmentSampleService() {
-		super(EnvironmentSample.class);
+		super(EnvironmentSample.class, DeletableEntityType.ENVIRONMENT_SAMPLE);
 	}
 
 	@Override
@@ -63,8 +66,24 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 		return cb.isFalse(from.get(EnvironmentSample.DELETED));
 	}
 
+	public Predicate createActiveEnvironmentSamplesFilter(EnvironmentSampleQueryContext environmentSampleQueryContext) {
+		final From<?, EnvironmentSample> root = environmentSampleQueryContext.getRoot();
+		final CriteriaBuilder cb = environmentSampleQueryContext.getCriteriaBuilder();
+		final EnvironmentSampleJoins joins = environmentSampleQueryContext.getJoins();
+
+		final Join<EnvironmentSample, Environment> environment = joins.getEnvironment();
+
+		Predicate predicate = cb.and(cb.isFalse(environment.get(Environment.ARCHIVED)), cb.isFalse(environment.get(Environment.DELETED)));
+
+		return cb.and(predicate, cb.isFalse(root.get(EnvironmentSample.DELETED)));
+	}
+
 	public boolean isEditAllowed(EnvironmentSample sample) {
-		return inJurisdictionOrOwned(sample);
+		return getEditPermissionType(sample) == EditPermissionType.ALLOWED;
+	}
+
+	public EditPermissionType getEditPermissionType(EnvironmentSample sample) {
+		return inJurisdictionOrOwned(sample) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
 	}
 
 	@Override
@@ -150,6 +169,10 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 		} else if (criteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.lessThanOrEqualTo(sampleRoot.get(EnvironmentSample.REPORT_DATE), criteria.getReportDateTo()));
+		}
+		if (criteria.getEnvironment() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEnvironment().get(Environment.UUID), criteria.getEnvironment().getUuid()));
 		}
 
 		filter = CriteriaBuilderHelper.and(

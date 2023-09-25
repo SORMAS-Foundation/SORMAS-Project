@@ -120,6 +120,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -1808,7 +1809,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			}
 		}
 
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, false, PersonDto.ADDRESS);
+		DtoCopyHelper.copyDtoValues(leadPerson, otherPerson, false, PersonDto.ADDRESS);
 		processPersonAddressMerge(leadPerson, otherPerson);
 
 		save(leadPerson);
@@ -1844,7 +1845,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				}
 			}
 
-			DtoHelper.copyDtoValues(leadPersonDto, otherPersonDto, false, PersonDto.ADDRESS);
+			DtoCopyHelper.copyDtoValues(leadPersonDto, otherPersonDto, false, PersonDto.ADDRESS);
 			processPersonAddressMerge(leadPersonDto, otherPersonDto);
 			save(leadPersonDto);
 		}
@@ -1983,12 +1984,12 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private void processPersonAddressMerge(PersonDto leadPersonDto, PersonDto otherPersonDto) {
 		if (locationFacade.areDifferentLocation(leadPersonDto.getAddress(), otherPersonDto.getAddress())) {
 			LocationDto newAddress = LocationDto.build();
-			DtoHelper.copyDtoValues(newAddress, otherPersonDto.getAddress(), true);
+			DtoCopyHelper.copyDtoValues(newAddress, otherPersonDto.getAddress(), true);
 			newAddress.setAddressType(PersonAddressType.OTHER_ADDRESS);
 			newAddress.setAddressTypeDetails(I18nProperties.getString(Strings.messagePersonMergedAddressDescription));
 			leadPersonDto.addAddress(newAddress);
 		} else {
-			DtoHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
+			DtoCopyHelper.copyDtoValues(leadPersonDto.getAddress(), otherPersonDto.getAddress(), false);
 		}
 	}
 
@@ -2003,7 +2004,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		LocationDto sourceAddress = getByUuid(source.getUuid()).getAddress();
 		PersonDto targetPerson = getByUuid(target.getUuid());
 		LocationDto targetAddress = targetPerson.getAddress();
-		targetAddress = DtoHelper.copyDtoValues(targetAddress, sourceAddress, true);
+		targetAddress = DtoCopyHelper.copyDtoValues(targetAddress, sourceAddress, true);
 		targetPerson.setAddress(targetAddress);
 		save(targetPerson);
 	}

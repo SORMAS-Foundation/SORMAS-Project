@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.environment.environmentsample;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -22,19 +24,29 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
+@DependingOnFeatureType(featureType = FeatureType.ENVIRONMENT_MANAGEMENT)
 public class EnvironmentSampleReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -2590392329041969693L;
 
+	public EnvironmentSampleReferenceDto() {
+
+	}
+
 	public EnvironmentSampleReferenceDto(String uuid) {
 		super(uuid);
+	}
+
+	public EnvironmentSampleReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
 	}
 
 	public EnvironmentSampleReferenceDto(String uuid, EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
 		super(uuid, buildCaption(sampleMaterial, environmentUuid));
 	}
 
-	private static String buildCaption(EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
+	public static String buildCaption(EnvironmentSampleMaterial sampleMaterial, String environmentUuid) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(DataHelper.toStringNullable(sampleMaterial));
