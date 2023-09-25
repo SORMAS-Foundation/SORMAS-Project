@@ -717,7 +717,7 @@ public class SurvNetSteps implements En {
         () -> {
           softly.assertEquals(
               getValueFromSpecificNotificationFieldByName(singleXmlFile, "NotificationViaDEMIS"),
-                  CheckboxViaDemisValue,
+              CheckboxViaDemisValue,
               "checkbox has incorrect value!");
           softly.assertAll();
         });
