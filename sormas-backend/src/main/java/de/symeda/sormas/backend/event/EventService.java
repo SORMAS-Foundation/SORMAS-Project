@@ -302,30 +302,34 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedEvents.addAll(super.archive(remainingUuidsToBeProcessed));
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			return super.archive(uuidsWithoutFailure);
+		} else {
+			return Collections.emptyList();
 		}
-
-		return processedEvents;
 	}
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedEvents.addAll(super.dearchive(remainingUuidsToBeProcessed, dearchiveReason));
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			return super.dearchive(uuidsWithoutFailure, dearchiveReason);
+		} else {
+			return Collections.emptyList();
 		}
-
-		return processedEvents;
 	}
 
 	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {

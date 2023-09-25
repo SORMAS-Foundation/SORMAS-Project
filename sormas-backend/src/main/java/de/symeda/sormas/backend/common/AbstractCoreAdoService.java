@@ -37,9 +37,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
-import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -139,6 +139,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
+
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		IterableHelper.executeBatched(
 			entityUuids,
@@ -157,9 +158,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 				em.createQuery(cu).executeUpdate();
 			}));
 
-		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
-
-		return processedEntities;
+		return buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -209,12 +208,13 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
-	public List<ADO> getEntitiesToBeProcessed(List<String> entityUuids, List<ProcessedEntity> processedEntities) {
-		List<String> failedUuids = processedEntities.stream()
+	public List<ADO> getEntitiesWithoutFailure(List<String> entityUuids, List<ProcessedEntity> updatedInExternalSurveillanceTool) {
+
+		List<String> failedUuids = updatedInExternalSurveillanceTool.stream()
 			.filter(
 				entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)
 					|| entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE))
-			.map(entity -> entity.getEntityUuid())
+			.map(ProcessedEntity::getEntityUuid)
 			.collect(Collectors.toList());
 
 		List<ADO> entities = getByUuids(entityUuids);
