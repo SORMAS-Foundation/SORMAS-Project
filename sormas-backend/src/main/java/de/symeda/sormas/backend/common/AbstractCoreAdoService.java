@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -140,7 +139,6 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
 
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		IterableHelper.executeBatched(
 			entityUuids,
 			ARCHIVE_BATCH_SIZE,
@@ -163,7 +161,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
@@ -179,9 +177,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 			em.createQuery(cu).executeUpdate();
 		});
 
-		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
-
-		return processedEntities;
+		return buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS);
 	}
 
 	public EditPermissionType getEditPermissionType(ADO entity) {

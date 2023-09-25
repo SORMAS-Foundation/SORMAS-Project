@@ -304,32 +304,36 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
 
 		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
-
 		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
 			.map(AbstractDomainObject::getUuid)
 			.collect(Collectors.toList());
 
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
 		if (uuidsWithoutFailure.size() > 0) {
-			return super.archive(uuidsWithoutFailure);
-		} else {
-			return Collections.emptyList();
+			resultList.addAll(super.archive(uuidsWithoutFailure));
 		}
+
+		return resultList;
 	}
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 
 		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
-
 		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
 			.map(AbstractDomainObject::getUuid)
 			.collect(Collectors.toList());
 
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
 		if (uuidsWithoutFailure.size() > 0) {
-			return super.dearchive(uuidsWithoutFailure, dearchiveReason);
-		} else {
-			return Collections.emptyList();
+			resultList.addAll(super.dearchive(uuidsWithoutFailure, dearchiveReason));
 		}
+
+		return resultList;
 	}
 
 	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
