@@ -2990,6 +2990,25 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NOSOCOMIAL_OUTBRAKE_LABEL);
         });
 
+    When(
+        "I check if Follow up until date is ([^\"]*) days after last created API case report date",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(
+                      apiState
+                          .getCreatedCase()
+                          .getReportDate()
+                          .toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate()
+                          .plusDays(days)),
+              date);
+          softly.assertAll();
+        });
+
     And(
         "^I select \"([^\"]*)\" from the infection settings on Edit Case page$",
         (String infectionOption) -> {
