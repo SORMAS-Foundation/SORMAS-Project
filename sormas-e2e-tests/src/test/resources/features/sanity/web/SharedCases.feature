@@ -1277,3 +1277,6 @@ Feature: Sharing cases between environments tests
     And I check that Revoked status value is corresponding with entities
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
+
+  @tmsLink=HSP-6265 @env_s2s_1
+  Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
