@@ -25,8 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
+import de.symeda.sormas.app.environmentsample.list.EnvironmentSampleListViewModel.SampleWithTestedPathogens;
 import de.symeda.sormas.app.environmentsample.read.EnvironmentSampleReadActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
@@ -55,8 +55,8 @@ public class EnvironmentSampleListFragment extends PagedBaseListFragment<Environ
 
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
-		EnvironmentSample environmentSample = (EnvironmentSample) item;
-		EnvironmentSampleReadActivity.startActivity(getContext(), environmentSample.getUuid());
+		SampleWithTestedPathogens environmentSample = (SampleWithTestedPathogens) item;
+		EnvironmentSampleReadActivity.startActivity(getContext(), environmentSample.getSample().getUuid());
 	}
 
 	@Override
