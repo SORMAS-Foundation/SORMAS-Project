@@ -1278,5 +1278,16 @@ Feature: Sharing cases between environments tests
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
 
-  @tmsLink=HSP-6265 @env_s2s_1
+  @tmsLink=HSP-6265 @env_d2s @LoginKeycloak
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
+    Given API : Login to DEMIS server
+    Then I create and send Laboratory Notification
+    And I log in as a S2S
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person and a new case from received message
+    Then I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
