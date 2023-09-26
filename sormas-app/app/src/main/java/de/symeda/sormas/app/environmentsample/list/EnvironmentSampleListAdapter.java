@@ -25,34 +25,35 @@ import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSam
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
 import de.symeda.sormas.app.databinding.RowEnvironmentSampleListItemLayoutBinding;
+import de.symeda.sormas.app.environmentsample.list.EnvironmentSampleListViewModel.SampleWithTestedPathogens;
 
-public class EnvironmentSampleListAdapter extends BindingPagedListAdapter<EnvironmentSample, RowEnvironmentSampleListItemLayoutBinding> {
+public class EnvironmentSampleListAdapter extends BindingPagedListAdapter<SampleWithTestedPathogens, RowEnvironmentSampleListItemLayoutBinding> {
 
-	public EnvironmentSampleListAdapter() {
-		super(R.layout.row_environment_sample_list_item_layout);
-	}
+    public EnvironmentSampleListAdapter() {
+        super(R.layout.row_environment_sample_list_item_layout);
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-		super.onBindViewHolder(holder, position);
+        super.onBindViewHolder(holder, position);
 
-		if (getItemViewType(position) == TYPE_ITEM) {
-			BindingViewHolder<EnvironmentSample, RowEnvironmentSampleListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
-			EnvironmentSample item = getItem(position);
+        if (getItemViewType(position) == TYPE_ITEM) {
+            BindingViewHolder<EnvironmentSample, RowEnvironmentSampleListItemLayoutBinding> pagedHolder = (BindingViewHolder) holder;
+            SampleWithTestedPathogens item = getItem(position);
 
-			pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
+            pagedHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 
-			if (item.isModifiedOrChildModified()) {
-				pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
-				pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
-			} else {
-				pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
-			}
-		}
+            if (item.getSample().isModifiedOrChildModified()) {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.VISIBLE);
+                pagedHolder.binding.imgSyncIcon.setImageResource(R.drawable.ic_sync_blue_24dp);
+            } else {
+                pagedHolder.binding.imgSyncIcon.setVisibility(View.GONE);
+            }
+        }
 
-		// TODO #704
+        // TODO #704
 //        updateUnreadIndicator(holder, record);
-	}
+    }
 
 }

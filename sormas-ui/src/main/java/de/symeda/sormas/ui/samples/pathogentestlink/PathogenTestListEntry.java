@@ -75,8 +75,10 @@ public class PathogenTestListEntry extends SideComponentField {
 		middleLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponentToField(middleLabelLayout);
 
-		Label labelMiddleLeft =
-			new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
+		String diseaseOrPathogen = pathogenTest.getTestedDisease() != null
+			? DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())
+			: pathogenTest.getTestedPathogen().getCaption();
+		Label labelMiddleLeft = new Label(diseaseOrPathogen);
 		middleLabelLayout.addComponent(labelMiddleLeft);
 
 		Label labelMiddleRight = new Label(DateFormatHelper.formatLocalDateTime(pathogenTest.getTestDateTime()));

@@ -61,6 +61,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	private List<Item> pcrTestSpecificationList;
 	private List<Item> diseaseList;
 	private List<Item> diseaseVariantList;
+	private List<Item> pathogenList;
 	private List<Item> testResultList;
 
 	// Instance methods
@@ -104,6 +105,13 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getTestedDiseaseVariant() != null && !diseaseVariants.contains(record.getTestedDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
+		}
+
+		List<DiseaseVariant> pathogens =
+				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.PATHOGEN, null);
+		pathogenList = DataUtils.toItems(pathogens);
+		if (record.getTestedPathogen() != null && !diseaseVariants.contains(record.getTestedPathogen())) {
+			pathogenList.add(DataUtils.toItem(record.getTestedPathogen()));
 		}
 
 		testResultList = DataUtils.toItems(
@@ -168,6 +176,20 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			}
 		});
 		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
+
+		contentBinding.pathogenTestTestedPathogen.initializeSpinner(pathogenList);
+
+		if(sample != null){
+			contentBinding.pathogenTestTestedDiseaseLayout.setVisibility(VISIBLE);
+			contentBinding.pathogenTestTestedDisease.setRequired(true);
+			contentBinding.pathogenTestTestedPathogen.setVisibility(GONE);
+			contentBinding.pathogenTestTestedPathogen.setRequired(false);
+		} else {
+			contentBinding.pathogenTestTestedDiseaseLayout.setVisibility(GONE);
+			contentBinding.pathogenTestTestedDisease.setRequired(false);
+			contentBinding.pathogenTestTestedPathogen.setVisibility(VISIBLE);
+			contentBinding.pathogenTestTestedPathogen.setRequired(true);
+		}
 
 		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
 

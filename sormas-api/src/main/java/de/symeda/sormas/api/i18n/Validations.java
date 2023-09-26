@@ -171,6 +171,8 @@ public interface Validations {
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";
+	String pathogenTestValidDiseaseOrPathogen = "pathogenTestValidDiseaseOrPathogen";
+	String pathogenTestValidSampleOrEnvironment = "pathogenTestValidSampleOrEnvironment";
 	String patternNotMatching = "patternNotMatching";
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
@@ -260,7 +262,6 @@ public interface Validations {
 	String validReportingUser = "validReportingUser";
 	String validResponsibleDistrict = "validResponsibleDistrict";
 	String validResponsibleRegion = "validResponsibleRegion";
-	String validSample = "validSample";
 	String visitAfterFollowUp = "visitAfterFollowUp";
 	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";

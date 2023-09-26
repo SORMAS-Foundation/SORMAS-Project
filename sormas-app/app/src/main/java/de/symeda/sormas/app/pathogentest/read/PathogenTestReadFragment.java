@@ -78,6 +78,14 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
 		if (isVisibleAllowed(CaseDataDto.class, contentBinding.pathogenTestTestedDiseaseVariant)) {
 			contentBinding.pathogenTestTestedDiseaseVariant.setVisibility(record.getTestedDiseaseVariant() != null ? VISIBLE : GONE);
 		}
+
+		if(record.getSample() != null){
+			contentBinding.pathogenTestTestedDiseaseLayout.setVisibility(VISIBLE);
+			contentBinding.pathogenTestTestedPathogen.setVisibility(GONE);
+		} else {
+			contentBinding.pathogenTestTestedDiseaseLayout.setVisibility(GONE);
+			contentBinding.pathogenTestTestedPathogen.setVisibility(VISIBLE);
+		}
 	}
 
 	@Override
