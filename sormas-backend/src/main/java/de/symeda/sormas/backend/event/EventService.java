@@ -302,30 +302,38 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedEvents.addAll(super.archive(remainingUuidsToBeProcessed));
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.archive(uuidsWithoutFailure));
 		}
 
-		return processedEvents;
+		return resultList;
 	}
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEvents = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedEvents).stream().map(event -> event.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedEvents.addAll(super.dearchive(remainingUuidsToBeProcessed, dearchiveReason));
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.dearchive(uuidsWithoutFailure, dearchiveReason));
 		}
 
-		return processedEvents;
+		return resultList;
 	}
 
 	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
