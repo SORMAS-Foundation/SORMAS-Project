@@ -32,6 +32,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
@@ -199,6 +201,10 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 	}
 
 	public Facility getByAddress(String street, String postalCode, String city) {
+
+		if (StringUtils.isAnyBlank(street, postalCode, city)) {
+			return null;
+		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
