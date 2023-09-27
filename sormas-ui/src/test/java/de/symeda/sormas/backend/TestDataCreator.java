@@ -1428,13 +1428,17 @@ public class TestDataCreator {
 		return createPathogenTest(sample, testType, testedDisease, testDateTime, lab, labUser, testResult, testResultText, verified, null);
 	}
 
-	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, UserReferenceDto labUser, Consumer<PathogenTestDto> extraConfig) {
+	public PathogenTestDto createPathogenTest(
+		SampleReferenceDto sample,
+		UserReferenceDto labUser,
+		FacilityReferenceDto lab,
+		Consumer<PathogenTestDto> extraConfig) {
 		return createPathogenTest(
 			sample,
 			PathogenTestType.ANTIGEN_DETECTION,
-			null,
+			Disease.CORONAVIRUS,
 			new Date(),
-			(FacilityReferenceDto) null,
+			lab,
 			labUser,
 			PathogenTestResultType.PENDING,
 			null,
