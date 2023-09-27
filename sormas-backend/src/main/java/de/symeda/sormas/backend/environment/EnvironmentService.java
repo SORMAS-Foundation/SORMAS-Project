@@ -19,6 +19,7 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -28,6 +29,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -41,6 +43,8 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private EnvironmentSampleService environmentSampleService;
 
 	public EnvironmentService() {
 		super(Environment.class, DeletableEntityType.ENVIRONMENT);
@@ -307,5 +311,11 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		cq.select(from.get(Environment.UUID));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	public void delete(Environment environment, DeletionDetails deletionDetails) {
+		environment.getEnvironmentSamples().forEach(s -> environmentSampleService.delete(s, deletionDetails));
+		super.delete(environment, deletionDetails);
 	}
 }
