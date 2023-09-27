@@ -1546,7 +1546,7 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
-		return createPathogenTest(associatedCase, null, testType, resultType);
+		return createPathogenTest(associatedCase, Disease.CORONAVIRUS, testType, resultType);
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
