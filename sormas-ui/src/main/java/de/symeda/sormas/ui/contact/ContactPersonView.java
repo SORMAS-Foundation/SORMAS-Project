@@ -20,7 +20,7 @@ package de.symeda.sormas.ui.contact;
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
@@ -61,7 +61,13 @@ public class ContactPersonView extends AbstractContactView implements PersonSide
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, CoreEntityType.CONTACT, contact.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
+		addSideComponents(
+			layout,
+			DeletableEntityType.CONTACT,
+			contact.getUuid(),
+			person.toReference(),
+			this::showUnsavedChangesPopup,
+			isEditAllowed());
 		setEditPermission(
 			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),

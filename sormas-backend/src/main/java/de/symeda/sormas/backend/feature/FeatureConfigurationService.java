@@ -17,7 +17,7 @@ import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -140,9 +140,9 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 		});
 	}
 
-	private void createFeatureConfiguration(FeatureType featureType, CoreEntityType coreEntityType) {
+	private void createFeatureConfiguration(FeatureType featureType, DeletableEntityType deletableEntityType) {
 		FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
-		configuration.setEntityType(coreEntityType);
+		configuration.setEntityType(deletableEntityType);
 		configuration.setProperties(featureType.getSupportedPropertyDefaults());
 		ensurePersisted(configuration);
 	}

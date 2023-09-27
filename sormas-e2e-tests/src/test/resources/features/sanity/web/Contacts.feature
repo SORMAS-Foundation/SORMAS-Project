@@ -1165,3 +1165,13 @@ Feature: Contacts end to end tests
         And I click on the Contacts button from navbar
         And I filter with last created contact using contact UUID
         And I check that number of displayed contact results is 1
+
+  @tmsLink=SOR-4713 @env_de
+  Scenario: Test Extend the follow-up until date calculation for Contacts
+    Given API: I create a new person
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I open the last created contact via API from "de"
+    And I check if Follow up until date is 14 days after last created API contact report date

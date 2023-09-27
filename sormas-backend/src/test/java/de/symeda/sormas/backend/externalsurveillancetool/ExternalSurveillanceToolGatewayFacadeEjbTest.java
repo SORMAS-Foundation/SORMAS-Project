@@ -45,7 +45,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -547,7 +547,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	public void testCaseAutomaticDeletion_WithoutCaseAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws IOException {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getEntityTypeConfig(DeletableEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator

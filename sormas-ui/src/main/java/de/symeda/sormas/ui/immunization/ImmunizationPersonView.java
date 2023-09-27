@@ -3,7 +3,7 @@ package de.symeda.sormas.ui.immunization;
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
@@ -36,7 +36,7 @@ public class ImmunizationPersonView extends AbstractImmunizationView implements 
 		setSubComponent(componentWrapper);
 		addSideComponents(
 			layout,
-			CoreEntityType.IMMUNIZATION,
+			DeletableEntityType.IMMUNIZATION,
 			immunzation.getUuid(),
 			person.toReference(),
 			this::showUnsavedChangesPopup,

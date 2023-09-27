@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +36,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -50,8 +50,8 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 	@EJB
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
-	protected AbstractCoreAdoService(Class<ADO> elementClass) {
-		super(elementClass);
+	protected AbstractCoreAdoService(Class<ADO> elementClass, DeletableEntityType entityType) {
+		super(elementClass, entityType);
 	}
 
 	/**
@@ -138,7 +138,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		IterableHelper.executeBatched(
 			entityUuids,
 			ARCHIVE_BATCH_SIZE,
@@ -156,14 +156,12 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 				em.createQuery(cu).executeUpdate();
 			}));
 
-		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
-
-		return processedEntities;
+		return buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS);
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
@@ -179,9 +177,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 			em.createQuery(cu).executeUpdate();
 		});
 
-		processedEntities.addAll(buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS));
-
-		return processedEntities;
+		return buildProcessedEntities(entityUuids, ProcessedEntityStatus.SUCCESS);
 	}
 
 	public EditPermissionType getEditPermissionType(ADO entity) {
@@ -208,12 +204,13 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo, J extends Quer
 		return fulfillsCondition(entity, this::inJurisdictionOrOwned);
 	}
 
-	public List<ADO> getEntitiesToBeProcessed(List<String> entityUuids, List<ProcessedEntity> processedEntities) {
-		List<String> failedUuids = processedEntities.stream()
+	public List<ADO> getEntitiesWithoutFailure(List<String> entityUuids, List<ProcessedEntity> updatedInExternalSurveillanceTool) {
+
+		List<String> failedUuids = updatedInExternalSurveillanceTool.stream()
 			.filter(
 				entity -> entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.ACCESS_DENIED_FAILURE)
 					|| entity.getProcessedEntityStatus().equals(ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE))
-			.map(entity -> entity.getEntityUuid())
+			.map(ProcessedEntity::getEntityUuid)
 			.collect(Collectors.toList());
 
 		List<ADO> entities = getByUuids(entityUuids);

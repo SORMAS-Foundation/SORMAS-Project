@@ -14112,6 +14112,17 @@ components:
         creationDate:
           type: string
           format: date-time
+        deleted:
+          type: boolean
+        deletionReason:
+          type: string
+          enum:
+          - GDPR
+          - DELETION_REQUEST
+          - CREATED_WITH_NO_LEGAL_REASON
+          - TRANSFERRED_RESPONSIBILITY
+          - DUPLICATE_ENTRIES
+          - OTHER_REASON
         dispatchDate:
           type: string
           format: date-time
@@ -14151,6 +14162,10 @@ components:
           minLength: 0
         location:
           $ref: '#/components/schemas/LocationDto'
+        otherDeletionReason:
+          type: string
+          maxLength: 1000000
+          minLength: 0
         otherRequestedPathogenTests:
           type: string
           maxLength: 1000000
@@ -14224,6 +14239,16 @@ components:
       - reportingUser
       - sampleDateTime
       - sampleMaterial
+    EnvironmentSampleReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EpiDataDto:
       type: object
       properties:
@@ -19674,6 +19699,8 @@ components:
           - TRANSFERRED_RESPONSIBILITY
           - DUPLICATE_ENTRIES
           - OTHER_REASON
+        environmentSample:
+          $ref: '#/components/schemas/EnvironmentSampleReferenceDto'
         externalId:
           type: string
           maxLength: 512
@@ -19878,7 +19905,6 @@ components:
           type: boolean
       required:
       - lab
-      - sample
       - testResult
       - testResultVerified
       - testType

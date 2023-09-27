@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.samples;
+package de.symeda.sormas.ui.samples.environmentsample;
 
 import java.util.Date;
 
@@ -29,12 +29,16 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.samples.SamplesView;
+import de.symeda.sormas.ui.samples.SamplesViewConfiguration;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.ReloadableGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndexDto, EnvironmentSampleCriteria> {
@@ -104,6 +108,11 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 			}
 		}
+
+		addItemClickListener(
+			new ShowDetailsListener<>(
+				EnvironmentSampleIndexDto.UUID,
+				e -> ControllerProvider.getEnvironmentSampleController().navigateToSample(e.getUuid())));
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
 			setCriteria(criteria);

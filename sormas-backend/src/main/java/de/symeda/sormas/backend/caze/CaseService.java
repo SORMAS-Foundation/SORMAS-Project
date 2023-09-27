@@ -81,10 +81,12 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -247,7 +249,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private DistrictService districtService;
 
 	public CaseService() {
-		super(Case.class);
+		super(Case.class, DeletableEntityType.CASE);
 	}
 
 	/**
@@ -1116,30 +1118,38 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedCases).stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedCases.addAll(super.archive(remainingUuidsToBeProcessed));
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.archive(uuidsWithoutFailure));
 		}
 
-		return processedCases;
+		return resultList;
 	}
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedCases).stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedCases.addAll(super.dearchive(remainingUuidsToBeProcessed, dearchiveReason));
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.dearchive(uuidsWithoutFailure, dearchiveReason));
 		}
 
-		return processedCases;
+		return resultList;
 	}
 
 	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
@@ -2297,5 +2307,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	@Override
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Case.REPORT_DATE;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 }

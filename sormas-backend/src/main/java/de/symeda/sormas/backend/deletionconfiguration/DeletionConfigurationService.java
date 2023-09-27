@@ -15,7 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.backend.common.BaseAdoService;
 
@@ -29,39 +29,39 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 	}
 
 	/**
-	 * Retrieves the deletion configuration for the specified core entity type with deletion reference != DELETION.
+	 * Retrieves the deletion configuration for the specified deletable entity type with deletion reference != DELETION.
 	 */
-	public DeletionConfiguration getCoreEntityTypeConfig(CoreEntityType coreEntityType) {
+	public DeletionConfiguration getEntityTypeConfig(DeletableEntityType deletableEntityType) {
 
-		return getCoreEntityTypeConfig(coreEntityType, false);
+		return getEntityTypeConfig(deletableEntityType, false);
 	}
 
 	/**
-	 * Retrieves the deletion configuration for the specified core entity type with deletion reference == DELETION.
+	 * Retrieves the deletion configuration for the specified deletable entity type with deletion reference == DELETION.
 	 */
-	public DeletionConfiguration getCoreEntityTypeManualDeletionConfig(CoreEntityType coreEntityType) {
+	public DeletionConfiguration getEntityTypeManualDeletionConfig(DeletableEntityType deletableEntityType) {
 
-		return getCoreEntityTypeConfig(coreEntityType, true);
+		return getEntityTypeConfig(deletableEntityType, true);
 	}
 
-	public List<DeletionConfiguration> getCoreEntityTypeConfigs(CoreEntityType coreEntityType) {
+	public List<DeletionConfiguration> getEntityTypeConfigs(DeletableEntityType deletableEntityType) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DeletionConfiguration> cq = cb.createQuery(getElementClass());
 		Root<DeletionConfiguration> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(DeletionConfiguration.ENTITY_TYPE), coreEntityType));
+		cq.where(cb.equal(from.get(DeletionConfiguration.ENTITY_TYPE), deletableEntityType));
 
 		return em.createQuery(cq).getResultList();
 	}
 
-	private DeletionConfiguration getCoreEntityTypeConfig(CoreEntityType coreEntityType, boolean isManualDeletionConfig) {
+	private DeletionConfiguration getEntityTypeConfig(DeletableEntityType deletableEntityType, boolean isManualDeletionConfig) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DeletionConfiguration> cq = cb.createQuery(getElementClass());
 		Root<DeletionConfiguration> from = cq.from(getElementClass());
 		cq.where(
 			cb.and(
-				cb.equal(from.get(DeletionConfiguration.ENTITY_TYPE), coreEntityType),
+				cb.equal(from.get(DeletionConfiguration.ENTITY_TYPE), deletableEntityType),
 				isManualDeletionConfig
 					? cb.equal(from.get(DeletionConfiguration.DELETION_REFERENCE), DeletionReference.MANUAL_DELETION)
 					: cb.notEqual(from.get(DeletionConfiguration.DELETION_REFERENCE), DeletionReference.MANUAL_DELETION)));
@@ -75,25 +75,25 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 
 	public void createMissingDeletionConfigurations() {
 
-		Map<CoreEntityType, Map<String, DeletionConfiguration>> configs = getServerDeletionConfigurations();
-		Arrays.stream(CoreEntityType.values()).forEach(coreEntityType -> {
-			Map<String, DeletionConfiguration> savedConfigurations = configs.get(coreEntityType);
+		Map<DeletableEntityType, Map<String, DeletionConfiguration>> configs = getServerDeletionConfigurations();
+		Arrays.stream(DeletableEntityType.values()).forEach(deletableEntityType -> {
+			Map<String, DeletionConfiguration> savedConfigurations = configs.get(deletableEntityType);
 
 			if (savedConfigurations == null || !savedConfigurations.containsKey(DeletionReference.MANUAL_DELETION.name())) {
-				DeletionConfiguration deletionConfiguration = DeletionConfiguration.build(coreEntityType, DeletionReference.MANUAL_DELETION);
+				DeletionConfiguration deletionConfiguration = DeletionConfiguration.build(deletableEntityType, DeletionReference.MANUAL_DELETION);
 				ensurePersisted(deletionConfiguration);
 			}
 
 			if (savedConfigurations == null
 				|| savedConfigurations.isEmpty()
 				|| savedConfigurations.containsKey(DeletionReference.MANUAL_DELETION.name()) && savedConfigurations.size() == 1) {
-				DeletionConfiguration deletionConfiguration = DeletionConfiguration.build(coreEntityType);
+				DeletionConfiguration deletionConfiguration = DeletionConfiguration.build(deletableEntityType);
 				ensurePersisted(deletionConfiguration);
 			}
 		});
 	}
 
-	private Map<CoreEntityType, Map<String, DeletionConfiguration>> getServerDeletionConfigurations() {
+	private Map<DeletableEntityType, Map<String, DeletionConfiguration>> getServerDeletionConfigurations() {
 
 		List<DeletionConfiguration> deletionConfigurations = getAll();
 		return deletionConfigurations.stream()
