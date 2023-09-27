@@ -456,18 +456,16 @@ public class SampleDashboardService {
 				dateFilter = cb.or(cb.between(joins.getEnvironment().get(Environment.REPORT_DATE), dateFrom, dateTo));
 				break;
 			case MOST_RELEVANT:
-				// TODO - uncomment after link to env sample is added on pathogen test
-//				Subquery<Date> pathogenTestSq = cq.subquery(Date.class);
-//				Root<PathogenTest> pathogenTestRoot = pathogenTestSq.from(PathogenTest.class);
-//				Path<Number> pathogenTestDate = pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME);
-//				pathogenTestSq.select((Expression<Date>) (Expression<?>) cb.max(pathogenTestDate));
-//				pathogenTestSq.where(cb.equal(pathogenTestRoot.get(PathogenTest.ENVIRONMENT_SAMPLE), sampleRoot));
-//
-//				dateFilter = cb.between(
-//					CriteriaBuilderHelper.coalesce(cb, Date.class, pathogenTestSq, sampleRoot.get(EnvironmentSample.SAMPLE_DATE_TIME)),
-//					dateFrom,
-//					dateTo);
-				dateFilter = cb.conjunction();
+				Subquery<Date> pathogenTestSq = cq.subquery(Date.class);
+				Root<PathogenTest> pathogenTestRoot = pathogenTestSq.from(PathogenTest.class);
+				Path<Number> pathogenTestDate = pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME);
+				pathogenTestSq.select((Expression<Date>) (Expression<?>) cb.max(pathogenTestDate));
+				pathogenTestSq.where(cb.equal(pathogenTestRoot.get(PathogenTest.ENVIRONMENT_SAMPLE), sampleRoot));
+
+				dateFilter = cb.between(
+					CriteriaBuilderHelper.coalesce(cb, Date.class, pathogenTestSq, sampleRoot.get(EnvironmentSample.SAMPLE_DATE_TIME)),
+					dateFrom,
+					dateTo);
 				break;
 			default:
 				throw new RuntimeException("Unhandled date type [" + sampleDateType + "]");

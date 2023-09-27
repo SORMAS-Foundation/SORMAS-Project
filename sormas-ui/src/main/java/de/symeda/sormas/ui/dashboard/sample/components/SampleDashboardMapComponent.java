@@ -32,12 +32,13 @@ import com.vaadin.v7.ui.CheckBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.map.BaseDashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardDataProvider;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -57,7 +58,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 	protected void addComponents() {
 		displayedHumanSamples =
 			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT, SampleAssociationType.EVENT_PARTICIPANT));
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+		if (UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
 			showEnvironmentalSamples = true;
 		}
 
