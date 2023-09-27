@@ -190,7 +190,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				|| !taskCriteria.hasContextCriteria()
 				|| (taskCriteria.getTaskContext() == TaskContext.TRAVEL_ENTRY || taskCriteria.getTravelEntry() != null);
 		case ENVIRONMENT:
-			return taskCriteria == null || (taskCriteria.getTaskContext() == TaskContext.ENVIRONMENT || taskCriteria.getEnvironment() != null);
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.ENVIRONMENT || taskCriteria.getEnvironment() != null);
 		case GENERAL:
 			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.GENERAL;
 		default:
@@ -213,13 +215,14 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 		Predicate assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
 
-		Predicate relatedEntityNotDeletedFilter = cb.or(
+		Predicate relatedEntityNotDeletedFilter = CriteriaBuilderHelper.or(
+			cb,
 			cb.equal(taskPath.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
-			caseService.createDefaultFilter(cb, joins.getCaze()),
-			contactService.createDefaultFilter(cb, joins.getContact()),
-			eventService.createDefaultFilter(cb, joins.getEvent()),
-			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()),
-			environmentService.createDefaultFilter(cb, joins.getEnvironment()));
+			hasRight(UserRight.CASE_VIEW) ? caseService.createDefaultFilter(cb, joins.getCaze()) : null,
+			hasRight(UserRight.CONTACT_VIEW) ? contactService.createDefaultFilter(cb, joins.getContact()) : null,
+			hasRight(UserRight.EVENT_VIEW) ? eventService.createDefaultFilter(cb, joins.getEvent()) : null,
+			hasRight(UserRight.TRAVEL_ENTRY_VIEW) ? travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()) : null,
+			hasRight(UserRight.ENVIRONMENT_VIEW) ? environmentService.createDefaultFilter(cb, joins.getEnvironment()) : null);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION && currentUser.getUserRoles().stream().noneMatch(UserRole::isPortHealthUser)) {
@@ -229,7 +232,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = hasContextOrNoContext(taskCriteria, TaskContext.CASE)
+		Predicate caseFilter = hasRight(UserRight.CASE_VIEW) && hasContextOrNoContext(taskCriteria, TaskContext.CASE)
 			? caseService.createUserFilter(
 				new CaseQueryContext(cb, cq, joins.getCaseJoins()),
 				taskCriteria != null
@@ -239,7 +242,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
-		Predicate contactFilter = hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
+		Predicate contactFilter = hasRight(UserRight.CONTACT_VIEW) && hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
 			? contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()))
 			: null;
 		if (contactFilter != null) {
@@ -248,23 +251,23 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				CriteriaBuilderHelper
 					.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
 		}
-		Predicate eventFilter = hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
+		Predicate eventFilter = hasRight(UserRight.EVENT_VIEW) && hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
 			? eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()))
 			: null;
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter = hasContextOrNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
+		Predicate travelEntryFilter = hasRight(UserRight.TRAVEL_ENTRY_VIEW) && hasContextOrNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
 			? travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()))
 			: null;
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
-		Predicate environmantFilter = hasContextOrNoContext(taskCriteria, TaskContext.ENVIRONMENT)
+		Predicate environmentFilter = hasRight(UserRight.ENVIRONMENT_VIEW) && hasContextOrNoContext(taskCriteria, TaskContext.ENVIRONMENT)
 			? environmentService.createUserFilter(new EnvironmentQueryContext(cb, cq, joins.getEnvironmentJoins()))
 			: null;
-		if (environmantFilter != null) {
-			filter = cb.or(filter, environmantFilter);
+		if (environmentFilter != null) {
+			filter = cb.or(filter, environmentFilter);
 		}
 
 		filter = cb.or(filter, assigneeFilter);
@@ -279,7 +282,8 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
 				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
-			&& RequestContextHolder.isMobileSync()) {
+			&& RequestContextHolder.isMobileSync()
+			&& hasRight(UserRight.CASE_VIEW)) {
 
 			Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
 				cb,
