@@ -13,9 +13,6 @@ A minimal maven project structure for an external message adapter module is show
     |   |   |   |   |-- MyExternalMessageFacadeEjb.java
     |   |   |-- resources
     |   |   |   |-- version.txt
-    |   |   |-- webapp
-    |   |   |   |-- META-INF
-    |   |   |   |   |-- context.xml
     |   |-- test
     |   |   |-- java
     |   |   |   |-- my.project
@@ -90,14 +87,6 @@ Example:
 ${project.name} ${project.version}
 ```
 
-### context.xml
-This xml is used to configure the context path of your external message adapter module.
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xml>
-<Context antiJARLocking="true" path="${myProject.apiRoot}"/>
-```
-
 ### pom.xml
 This is the maven project configuration file.
 
@@ -114,7 +103,7 @@ Example with default dependencies for java-ee, sormas-api, logging and testing:
 
         <properties>
             <sormas.version>1.85.0</sormas.version>
-            <myProject.apiRoot>/my-message-adapter</myProject.apiRoot>
+            <warName>my-message-adapter</warName>
 
             <javaee.version>8.0</javaee.version>
             <slf4j.version>1.7.30</slf4j.version>
@@ -171,7 +160,7 @@ Example with default dependencies for java-ee, sormas-api, logging and testing:
 
     <properties>
         <sormas.version>1.85.0</sormas.version>
-        <myProject.apiRoot>/my-message-adapter</myProject.apiRoot>
+        <warName>my-message-adapter</warName>
 
         <junit.version>4.13.1</junit.version>
         <mockito.version>3.6.0</mockito.version>
@@ -297,22 +286,15 @@ Example with default dependencies for java-ee, sormas-api, logging and testing:
         </resources>
 
         <plugins>
-            <!-- Provide WebApp context path via value of `myProject.apiRoot` property -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.3</version>
                 <configuration>
+                    <warName>${warName}</warName>
+                    
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
-                        <resource>
-                            <directory>src/main/webapp/META-INF</directory>
-                            <includes>
-                                <include>context.xml</include>
-                            </includes>
-                            <targetPath>/META-INF</targetPath>
-                            <filtering>true</filtering>
-                        </resource>
                         <resource>
                             <directory>src/main/webapp</directory>
                             <targetPath>/</targetPath>
