@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.aCommonComponents;
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
+import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.POPUP_WINDOW_SAVE_BUTTON;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -101,6 +102,18 @@ public class SideCardsSteps implements En {
     When(
         "I click to hand over the ownership in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
+
+      When(
+              "I click to exclude personal data in Share popup",
+              () -> webDriverHelpers.clickOnWebElementBySelector(EXCLUDE_PERSONAL_DATA_CHECKBOX));
+
+      When(
+              "I click to share report data in Share popup",
+              () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORT_CHECKBOX));
+
+      When(
+              "I click on Save popup button",
+              () -> webDriverHelpers.clickOnWebElementBySelector(POPUP_WINDOW_SAVE_BUTTON));
     When(
         "I check if sample card has {string} information",
         (String information) -> {
@@ -160,6 +173,14 @@ public class SideCardsSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I click on edit surveillance report",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EDIT_SURVEILLANCE_REPORT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SURVEILLANCE_REPORT_BUTTON);
         });
 
     When(

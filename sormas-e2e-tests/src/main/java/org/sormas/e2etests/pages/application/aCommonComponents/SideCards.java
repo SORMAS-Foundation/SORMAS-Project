@@ -27,14 +27,21 @@ public class SideCards {
       By.cssSelector(".popupContent #organization div");
   public static final By HAND_THE_OWNERSHIP_CHECKBOX =
       By.cssSelector(".popupContent #handOverOwnership label");
+  public static final By EXCLUDE_PERSONAL_DATA_CHECKBOX =
+          By.cssSelector(".popupContent #pseudonymizeData label");
+  public static final By SHARE_REPORT_CHECKBOX =
+          By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
       By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
   public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
+  public static final By EDIT_SURVEILLANCE_REPORT_BUTTON =
+      By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
   public static final By SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON =
       By.xpath("//div[contains(@id, 'see-associated-lab-messages')]");
   public static final By REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON =
       By.xpath("//div[contains(@id, 'see-associated-message')]");
   public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
+  public static final By SURVEILLANCE_REPORT_NOTIFICATION_DETAILS = By.id("notificationDetails");
 
   public static By checkTextInHandoverSideComponent(String text) {
     return By.xpath(

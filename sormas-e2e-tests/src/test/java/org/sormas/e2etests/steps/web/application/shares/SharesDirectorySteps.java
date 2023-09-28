@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.shares;
 
+import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.SURVEILLANCE_REPORT_NOTIFICATION_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.shares.EditSharesPage.*;
@@ -107,6 +108,13 @@ public class SharesDirectorySteps implements En {
         (String comment) -> {
           webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
         });
+
+      And(
+              "I fill comment in surveillance report notification details with random string",
+              () -> {
+                  generatedRandomStringCase = faker.animal().name();
+                  webDriverHelpers.fillInWebElement(SURVEILLANCE_REPORT_NOTIFICATION_DETAILS, generatedRandomStringCase);
+              });
 
     When(
         "I check if accept button does not appear in Shares Page",
