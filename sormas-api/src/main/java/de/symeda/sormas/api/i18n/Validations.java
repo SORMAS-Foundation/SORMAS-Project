@@ -133,6 +133,8 @@ public interface Validations {
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
+	String latitudeBetween = "latitudeBetween";
+	String longitudeBetween = "longitudeBetween";
 	String missingRequiredUserRightsBaseText = "missingRequiredUserRightsBaseText";
 	String missingRequiredUserRightsLargeDependency = "missingRequiredUserRightsLargeDependency";
 	String missingRequiredUserRightsNoDependency = "missingRequiredUserRightsNoDependency";

@@ -11,6 +11,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.util.ResultCallback;
 
@@ -103,4 +104,30 @@ public class ValidationHelper {
 		textEditField.disableErrorState();
 		textEditField.setValidationCallback(null);
 	}
+
+	public static boolean validateLatitude(Double latitude, ControlPropertyEditField<?> fieldToValidate){
+		if (latitude != null) {
+			boolean hasError = latitude < -90 || latitude > 90;
+			if (hasError) {
+				fieldToValidate.enableErrorState(I18nProperties.getValidationError(Validations.latitudeBetween));
+			}
+
+			return hasError;
+		}
+
+		return false;
+	}
+
+    public static boolean validateLongitude(Double longitude, ControlPropertyEditField<?> fieldToValidate){
+        if (longitude != null) {
+            boolean hasError = longitude < -180 || longitude > 180;
+            if (hasError) {
+                fieldToValidate.enableErrorState(I18nProperties.getValidationError(Validations.longitudeBetween));
+            }
+
+            return hasError;
+        }
+
+        return false;
+    }
 }

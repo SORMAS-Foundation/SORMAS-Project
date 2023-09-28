@@ -67,6 +67,8 @@ public class EnvironmentNewFragment extends BaseEditFragment<FragmentEnvironment
 		setUpControlListeners(contentBinding);
 		contentBinding.setData(record);
 
+		EnvironmentValidator.initializeLocationValidations(contentBinding.environmentEnvironmentLocation, () -> record.getLocation());
+
 		contentBinding.environmentEnvironmentMedia.initializeSpinner(environmentMediaList);
 
 		contentBinding.environmentReportDate.initializeDateField(getFragmentManager());
@@ -89,7 +91,10 @@ public class EnvironmentNewFragment extends BaseEditFragment<FragmentEnvironment
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
-		locationDialog.setRequiredFieldsBasedOnCountry();
+		locationDialog.getContentBinding().locationRegion.setRequired(true);
+		locationDialog.getContentBinding().locationDistrict.setRequired(true);
+		locationDialog.getContentBinding().locationLatitude.setRequired(true);
+		locationDialog.getContentBinding().locationLongitude.setRequired(true);
 		locationDialog.setFacilityFieldsVisible(true, true);
 
 		locationDialog.setPositiveCallback(() -> {
