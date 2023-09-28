@@ -1066,6 +1066,7 @@ public interface Captions {
 	String environmentDeletedEnvironments = "environmentDeletedEnvironments";
 	String environmentEnvironmentsList = "environmentEnvironmentsList";
 	String environmentNewEnvironment = "environmentNewEnvironment";
+	String EnvironmentSample = "EnvironmentSample";
 	String EnvironmentSample_chlorineResiduals = "EnvironmentSample.chlorineResiduals";
 	String EnvironmentSample_dispatchDate = "EnvironmentSample.dispatchDate";
 	String EnvironmentSample_dispatchDetails = "EnvironmentSample.dispatchDetails";
@@ -1077,10 +1078,13 @@ public interface Captions {
 	String EnvironmentSample_laboratory = "EnvironmentSample.laboratory";
 	String EnvironmentSample_laboratoryDetails = "EnvironmentSample.laboratoryDetails";
 	String EnvironmentSample_labSampleId = "EnvironmentSample.labSampleId";
+	String EnvironmentSample_latestPathogenTest = "EnvironmentSample.latestPathogenTest";
 	String EnvironmentSample_location = "EnvironmentSample.location";
+	String EnvironmentSample_numberOfTests = "EnvironmentSample.numberOfTests";
 	String EnvironmentSample_otherRequestedPathogenTests = "EnvironmentSample.otherRequestedPathogenTests";
 	String EnvironmentSample_otherSampleMaterial = "EnvironmentSample.otherSampleMaterial";
 	String EnvironmentSample_phValue = "EnvironmentSample.phValue";
+	String EnvironmentSample_positivePathogenTests = "EnvironmentSample.positivePathogenTests";
 	String EnvironmentSample_receivalDate = "EnvironmentSample.receivalDate";
 	String EnvironmentSample_received = "EnvironmentSample.received";
 	String EnvironmentSample_requestedPathogenTests = "EnvironmentSample.requestedPathogenTests";
@@ -1090,7 +1094,17 @@ public interface Captions {
 	String EnvironmentSample_sampleVolume = "EnvironmentSample.sampleVolume";
 	String EnvironmentSample_specimenCondition = "EnvironmentSample.specimenCondition";
 	String EnvironmentSample_turbidity = "EnvironmentSample.turbidity";
+	String EnvironmentSample_uuid = "EnvironmentSample.uuid";
 	String EnvironmentSample_weatherConditions = "EnvironmentSample.weatherConditions";
+	String environmentSampleActiveSamples = "environmentSampleActiveSamples";
+	String environmentSampleAllActiveAndArchivedSamples = "environmentSampleAllActiveAndArchivedSamples";
+	String environmentSampleArchivedSamples = "environmentSampleArchivedSamples";
+	String environmentSampleDeletedSamples = "environmentSampleDeletedSamples";
+	String environmentSampleNewSample = "environmentSampleNewSample";
+	String environmentSampleNotShipped = "environmentSampleNotShipped";
+	String environmentSampleReceived = "environmentSampleReceived";
+	String environmentSampleShipped = "environmentSampleShipped";
+	String environmentSampleViewType = "environmentSampleViewType";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
@@ -1499,6 +1513,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";

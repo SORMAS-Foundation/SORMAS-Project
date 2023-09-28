@@ -4,20 +4,19 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.v7.data.validator.AbstractValidator;
 
-public class NotBlankTextValidator extends AbstractValidator<String> {
+public class NotBlankTextValidator extends AbstractValidator<Object> {
 
 	public NotBlankTextValidator(String errorMessage) {
 		super(errorMessage);
 	}
 
 	@Override
-	protected boolean isValidValue(String s) {
-
-		return StringUtils.isNotBlank(s);
+	protected boolean isValidValue(Object s) {
+		return s != null && s.getClass().isAssignableFrom(String.class) ? StringUtils.isNotBlank((String) s) : s != null;
 	}
 
 	@Override
-	public Class<String> getType() {
-		return String.class;
+	public Class<Object> getType() {
+		return Object.class;
 	}
 }

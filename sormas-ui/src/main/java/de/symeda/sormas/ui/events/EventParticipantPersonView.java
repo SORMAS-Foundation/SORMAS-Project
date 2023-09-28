@@ -3,7 +3,7 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.ui.CustomLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonContext;
@@ -47,7 +47,7 @@ public class EventParticipantPersonView extends AbstractEventParticipantView imp
 		setSubComponent(componentWrapper);
 		addSideComponents(
 			layout,
-			CoreEntityType.EVENT_PARTICIPANT,
+			DeletableEntityType.EVENT_PARTICIPANT,
 			eventParticipant.getUuid(),
 			person.toReference(),
 			this::showUnsavedChangesPopup,

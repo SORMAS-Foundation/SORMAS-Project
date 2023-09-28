@@ -12699,4 +12699,28 @@ ALTER TABLE environmentsamples_history ADD COLUMN requestedpathogentests text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (524, 'Change requested pathogen tests column type #11721');
 
+-- 2023-09-05 Add report date to environment samples #12501
+ALTER TABLE environmentsamples ADD COLUMN reportdate timestamp not null DEFAULT now();
+ALTER TABLE environmentsamples_history ADD COLUMN reportdate timestamp;
+-- Fill report date to avoid not null issues
+ALTER TABLE environmentsamples ALTER COLUMN reportdate DROP DEFAULT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (525, 'Add report date to environment samples #12501');
+
+-- 2023-09-01 Add person facility to external messages #12366
+ALTER TABLE externalmessage ADD COLUMN personfacility_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN personfacility_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_personfacility_id FOREIGN KEY (personfacility_id) REFERENCES facility(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (526, 'Add person facility to external messages #12366');
+
+-- 2023-09-11 Add pathogen tests to environment samples #12467
+ALTER TABLE pathogentest ADD COLUMN environmentsample_id bigint;
+ALTER TABLE pathogentest_history ADD COLUMN environmentsample_id bigint;
+ALTER TABLE pathogentest ADD CONSTRAINT fk_pathogentest_environmentsample_id FOREIGN KEY (environmentsample_id) REFERENCES environmentsamples(id);
+ALTER TABLE pathogentest ALTER sample_id drop not null;
+ALTER TABLE pathogentest_history ALTER sample_id drop not null;
+
+INSERT INTO schema_version (version_number, comment) VALUES (527, 'Add pathogen tests to environment samples #12467');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

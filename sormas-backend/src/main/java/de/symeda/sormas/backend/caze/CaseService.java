@@ -64,7 +64,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
@@ -81,9 +80,12 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -183,7 +185,6 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
@@ -197,8 +198,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private ContactService contactService;
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private VisitService visitService;
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
@@ -249,7 +248,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private DistrictService districtService;
 
 	public CaseService() {
-		super(Case.class);
+		super(Case.class, DeletableEntityType.CASE);
 	}
 
 	/**
@@ -1112,42 +1111,68 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	@Override
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
-		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return archive(Collections.singletonList(entityUuid)).get(0);
 	}
 
 	@Override
-	public void archive(List<String> entityUuids) {
-		super.archive(entityUuids);
-		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
-	}
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
 
-	@Override
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
-		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
-	}
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
-			if (!uuidsAllowedToBeShared.isEmpty()) {
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
 
-				List<String> sharedCaseUuids = getSharedCaseUuids(uuidsAllowedToBeShared);
-				if (!sharedCaseUuids.isEmpty()) {
-					try {
-						externalSurveillanceToolGatewayFacade.sendCasesInternal(entityUuids, archived);
-					} catch (ExternalSurveillanceToolException e) {
-						throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-					}
-				}
-			}
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.archive(uuidsWithoutFailure));
 		}
+
+		return resultList;
 	}
 
-	public List<String> getSharedCaseUuids(List<String> entityUuids) {
-		List<Long> caseIds = getCaseIds(entityUuids);
+	@Override
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
+
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.dearchive(uuidsWithoutFailure, dearchiveReason));
+		}
+
+		return resultList;
+	}
+
+	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
+		List<String> sharedCaseUuids = getUuidsForSharingWithExternalSurvTool(entityUuids);
+		if (!sharedCaseUuids.isEmpty()) {
+			processedEntities = externalSurveillanceToolGatewayFacade.sendCasesInternal(sharedCaseUuids, archived);
+		}
+
+		return processedEntities;
+	}
+
+	private List<String> getUuidsForSharingWithExternalSurvTool(List<String> entityUuids) {
+		List<String> sharedCaseUuids = new ArrayList<>();
+		List<Long> idsAllowedToBeShared = getEntityIdsAllowedToBeShared(entityUuids);
+		if (!idsAllowedToBeShared.isEmpty()) {
+			sharedCaseUuids = getSharedCaseUuids(idsAllowedToBeShared);
+		}
+
+		return sharedCaseUuids;
+	}
+
+	private List<String> getSharedCaseUuids(List<Long> caseIds) {
 		List<String> sharedCaseUuids = new ArrayList<>();
 		List<ExternalShareInfoCountAndLatestDate> caseShareInfos =
 			externalShareInfoService.getShareCountAndLatestDate(caseIds, ExternalShareInfo.CAZE);
@@ -1166,19 +1191,22 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return caseIds;
 	}
 
-	public List<String> getEntityUuidsAllowedToBeShared(List<String> entityUuids) {
-		List<CaseDataDto> casesAllowedToBeShare =
-			caseFacade.getByUuids(entityUuids).stream().filter(c -> !c.isDontShareWithReportingTool()).collect(Collectors.toList());
+	private List<Long> getEntityIdsAllowedToBeShared(List<String> entityUuids) {
+		if (entityUuids == null || entityUuids.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		return casesAllowedToBeShare.stream().map(CaseDataDto::getUuid).collect(Collectors.toList());
-	}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> from = cq.from(Case.class);
+		cq.where(from.get(Case.UUID).in(entityUuids), cb.isFalse(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
+		cq.select(from.get(Case.ID));
 
-	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
-		setArchiveInExternalSurveillanceToolForEntities(Collections.singletonList(entityUuid), archived);
+		return em.createQuery(cq).getResultList();
 	}
 
 	@Override
-	public void delete(Case caze, DeletionDetails deletionDetails) {
+	public void delete(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 
 		// Soft-delete all samples that are only associated with this case
 		caze.getSamples()
@@ -2284,5 +2312,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	@Override
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Case.REPORT_DATE;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 }

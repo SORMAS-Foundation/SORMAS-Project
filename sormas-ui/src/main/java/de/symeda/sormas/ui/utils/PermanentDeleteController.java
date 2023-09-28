@@ -13,6 +13,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -62,8 +63,6 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 						.doBulkOperation(
 							selectedEntries -> deleteHandler.delete(selectedEntries.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
 							selectedEntitiesCpy,
-							null,
-							null,
 							batchCallback);
 				}
 
@@ -91,15 +90,19 @@ public class PermanentDeleteController<F extends PermanentlyDeletableFacade> {
 			deleteRestoreMessages.getMessageEntitiesDeleted(),
 			null,
 			deleteRestoreMessages.getHeadingSomeEntitiesNotDeleted(),
+			deleteRestoreMessages.getHeadingEntitiesNotDeleted(),
 			deleteRestoreMessages.getMessageCountEntitiesNotDeleted(),
-			deleteRestoreMessages.getMessageEntitiesNotDeleted(),
 			null,
-			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdiction);
+			null,
+			deleteRestoreMessages.getMessageCountEntitiesNotDeletedAccessDeniedReason(),
+			null,
+			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
+			Strings.infoBulkProcessFinishedWithoutSuccess);
 	}
 
 	public interface IPermanentDeleteHandler<T extends HasUuid> {
 
-		int delete(List<String> uuids);
+		List<ProcessedEntity> delete(List<String> uuids);
 
 		DeleteRestoreMessages getDeleteRestoreMessages();
 	}

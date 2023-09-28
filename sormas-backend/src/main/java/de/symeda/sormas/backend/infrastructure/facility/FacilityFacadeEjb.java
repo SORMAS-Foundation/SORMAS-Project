@@ -333,6 +333,12 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
+	public FacilityReferenceDto getByAddress(String street, String postalCode, String city) {
+
+		return toReferenceDto(service.getByAddress(street, postalCode, city));
+	}
+
+	@Override
 	@PermitAll
 	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
 		return service.getFacilitiesByNameAndType(name, null, null, FacilityType.LABORATORY, includeArchivedEntities)

@@ -11,13 +11,13 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.DeletableFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PermanentlyDeletableFacade;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -67,6 +67,10 @@ public final class DeleteRestoreHandlers {
 		return new PermanentDeleteHandler(FacadeProvider.getExternalMessageFacade(), DeleteRestoreMessages.EXTERNAL_MESSAGE);
 	}
 
+	public static CoreEntityDeleteRestoreHandler forEnvironmentSample() {
+		return new CoreEntityDeleteRestoreHandler(FacadeProvider.getEnvironmentSampleFacade(), DeleteRestoreMessages.ENVIRONMENT_SAMPLE);
+	}
+
 	public static class DeleteRestoreHandler<T extends EntityDto, F extends DeletableFacade>
 		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
@@ -82,19 +86,13 @@ public final class DeleteRestoreHandlers {
 		}
 
 		@Override
-		public void delete(String uuid, DeletionDetails deletionDetails) {
+		public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+			return entityFacade.delete(uuids, deletionDetails);
 		}
 
 		@Override
-		public int delete(List<String> uuids, DeletionDetails deletionDetails) {
-			entityFacade.delete(uuids, deletionDetails);
-			return uuids.size();
-		}
-
-		@Override
-		public int restore(List<String> uuids) {
-			entityFacade.restore(uuids);
-			return uuids.size();
+		public List<ProcessedEntity> restore(List<String> uuids) {
+			return entityFacade.restore(uuids);
 		}
 
 		@Override
@@ -171,7 +169,7 @@ public final class DeleteRestoreHandlers {
 		}
 	}
 
-	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends CoreFacade<T, ?, ?, ?>> extends DeleteRestoreHandler<T, F>
+	public static class CoreEntityDeleteRestoreHandler<T extends EntityDto, F extends DeletableFacade> extends DeleteRestoreHandler<T, F>
 		implements DeleteRestoreController.IDeleteRestoreHandler<T> {
 
 		protected CoreEntityDeleteRestoreHandler(F entityFacade, DeleteRestoreMessages deleteRestoreMessages) {
@@ -198,9 +196,9 @@ public final class DeleteRestoreHandlers {
 		}
 
 		@Override
-		public int delete(List<String> uuids) {
-			entityFacade.delete(uuids);
-			return uuids.size();
+		public List<ProcessedEntity> delete(List<String> uuids) {
+			List<ProcessedEntity> processedEntities = entityFacade.delete(uuids);
+			return processedEntities;
 		}
 
 		@Override

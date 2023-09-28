@@ -10,7 +10,7 @@ import com.vaadin.ui.CustomLayout;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -86,7 +86,7 @@ public interface PersonSideComponentsElement {
 
 	default void addSideComponents(
 		CustomLayout layout,
-		CoreEntityType entityType,
+		DeletableEntityType entityType,
 		String entityUuid,
 		PersonReferenceDto person,
 		Consumer<Runnable> showUnsavedChangesPopup,
@@ -101,7 +101,7 @@ public interface PersonSideComponentsElement {
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CASE_VIEW)) {
 			caseListComponent =
-				new CaseListComponent(person, entityType == CoreEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup, isEditAllowed);
+				new CaseListComponent(person, entityType == DeletableEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup, isEditAllowed);
 			layout.addComponent(new SideComponentLayout(caseListComponent), CASES_LOC);
 		}
 
@@ -109,7 +109,11 @@ public interface PersonSideComponentsElement {
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
 			contactListComponent =
-				new ContactListComponent(person, entityType == CoreEntityType.CONTACT ? entityUuid : null, showUnsavedChangesPopup, isEditAllowed);
+				new ContactListComponent(
+					person,
+					entityType == DeletableEntityType.CONTACT ? entityUuid : null,
+					showUnsavedChangesPopup,
+					isEditAllowed);
 			layout.addComponent(new SideComponentLayout(contactListComponent), CONTACTS_LOC);
 		}
 
@@ -119,7 +123,7 @@ public interface PersonSideComponentsElement {
 			&& currentUser.hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
 			eventParticipantListComponent = new EventParticipantListComponent(
 				person,
-				entityType == CoreEntityType.EVENT_PARTICIPANT ? entityUuid : null,
+				entityType == DeletableEntityType.EVENT_PARTICIPANT ? entityUuid : null,
 				showUnsavedChangesPopup,
 				isEditAllowed);
 			layout.addComponent(new SideComponentLayout(eventParticipantListComponent), EVENT_PARTICIPANTS_LOC);
@@ -163,7 +167,7 @@ public interface PersonSideComponentsElement {
 				new SideComponentLayout(
 					new TravelEntryListComponent(
 						travelEntryListCriteria,
-						entityType == CoreEntityType.TRAVEL_ENTRY ? entityUuid : null,
+						entityType == DeletableEntityType.TRAVEL_ENTRY ? entityUuid : null,
 						showUnsavedChangesPopup,
 						isEditAllowed)),
 				TRAVEL_ENTRIES_LOC);
@@ -178,7 +182,7 @@ public interface PersonSideComponentsElement {
 					new SideComponentLayout(
 						new ImmunizationListComponent(
 							() -> new ImmunizationListCriteria.Builder(person).build(),
-							entityType == CoreEntityType.IMMUNIZATION ? entityUuid : null,
+							entityType == DeletableEntityType.IMMUNIZATION ? entityUuid : null,
 							showUnsavedChangesPopup,
 							isEditAllowed)),
 					IMMUNIZATION_LOC);
@@ -187,7 +191,7 @@ public interface PersonSideComponentsElement {
 					new SideComponentLayout(
 						new VaccinationListComponent(
 							() -> new VaccinationCriteria.Builder(person).build(),
-							entityType == CoreEntityType.IMMUNIZATION ? entityUuid : null,
+							entityType == DeletableEntityType.IMMUNIZATION ? entityUuid : null,
 							showUnsavedChangesPopup,
 							false,
 							isEditAllowed)),

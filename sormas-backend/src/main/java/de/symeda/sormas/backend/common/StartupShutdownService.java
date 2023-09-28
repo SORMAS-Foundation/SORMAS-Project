@@ -678,7 +678,7 @@ public class StartupShutdownService {
 	static boolean isSupportedDatabaseVersion(String versionString) {
 
 		String versionBegin = versionString.split(" ")[0];
-		String versionRegexp = Stream.of("9\\.5", "9\\.5\\.\\d+", "9\\.6", "9\\.6\\.\\d+", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
+		String versionRegexp = Stream.of("14\\.\\d+", "15\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
 		return versionBegin.matches(versionRegexp);
 	}
 
@@ -1000,6 +1000,12 @@ public class StartupShutdownService {
 			importFacade.generateEventParticipantImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create event participant import template .csv file.");
+		}
+
+		try {
+			importFacade.generateEnvironmentImportTemplateFile(featureConfigurations);
+		} catch (IOException e) {
+			logger.error("Could not create environment import template .csv file.");
 		}
 	}
 

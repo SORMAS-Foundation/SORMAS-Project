@@ -258,6 +258,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 					lastSyncedEntityDate = dto.getChangeDate();
 				}
 			}
+			executeHandlePulledListAddition(result.size());
 			return null;
 		});
 
@@ -496,5 +497,9 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		} catch (UnsupportedOperationException e) {
 			return true;
 		}
+	}
+
+	protected void executeHandlePulledListAddition(int resultSize) {
+		// Not implemented by default
 	}
 }

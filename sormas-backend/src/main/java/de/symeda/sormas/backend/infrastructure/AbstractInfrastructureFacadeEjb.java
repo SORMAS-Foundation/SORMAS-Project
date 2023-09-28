@@ -17,6 +17,8 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -24,6 +26,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
@@ -32,7 +35,6 @@ import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -169,7 +171,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate, boolean allowUuidOverwrite) {
 		ADO existingEntity = duplicates.get(0);
 		DTO existingDto = toDto(existingEntity);
-		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
+		DtoCopyHelper.copyDtoValues(existingDto, dtoToSave, true);
 
 		return persistEntity(dtoToSave, existingEntity, checkChangeDate, allowUuidOverwrite);
 	}
@@ -183,11 +185,15 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 
 	@Override
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
-	public void archive(String uuid) {
+	public ProcessedEntity archive(String uuid) {
+		ProcessedEntity processedEntity;
+
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
 		if (isUsedInOtherInfrastructureData(Collections.singletonList(uuid))) {
-			throw new AccessDeniedException(I18nProperties.getString(archivingNotPossibleMessageProperty));
+			processedEntity = new ProcessedEntity(uuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		} else {
+			processedEntity = new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS);
 		}
 
 		ADO ado = service.getByUuid(uuid);
@@ -195,44 +201,50 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 			ado.setArchived(true);
 			service.ensurePersisted(ado);
 		}
+
+		return processedEntity;
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
-	public void dearchive(String uuid) {
+	public ProcessedEntity dearchive(String uuid) {
 		checkInfraDataLocked();
 		if (hasArchivedParentInfrastructure(Collections.singletonList(uuid))) {
 			throw new AccessDeniedException(I18nProperties.getString(dearchivingNotPossibleMessageProperty));
 		}
-
 		ADO ado = service.getByUuid(uuid);
 		if (ado != null) {
 			ado.setArchived(false);
 			service.ensurePersisted(ado);
 		}
+		return new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS);
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
-	public List<String> archive(List<String> entityUuids) {
-		List<String> archivedEntityUuids = new ArrayList<>();
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
 			if (!isUsedInOtherInfrastructureData(Collections.singletonList(entityUuid))) {
 				archive(entityUuid);
-				archivedEntityUuids.add(entityUuid);
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.SUCCESS));
+			} else {
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}
 		});
-		return archivedEntityUuids;
+		return processedEntities;
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
-	public List<String> dearchive(List<String> entityUuids) {
-		List<String> dearchivedEntityUuids = new ArrayList<>();
+	public List<ProcessedEntity> dearchive(List<String> entityUuids) {
+		List<ProcessedEntity> processedEntities = new ArrayList<>();
+
 		entityUuids.forEach(entityUuid -> {
 			if (!hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
-				dearchive(entityUuid);
-				dearchivedEntityUuids.add(entityUuid);
+				processedEntities.add(dearchive(entityUuid));
+			} else {
+				processedEntities.add(new ProcessedEntity(entityUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
 			}
 		});
-		return dearchivedEntityUuids;
+		return processedEntities;
 	}
 
 	@Override

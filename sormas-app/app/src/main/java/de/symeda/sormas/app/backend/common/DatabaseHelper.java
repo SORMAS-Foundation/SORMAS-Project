@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 351;
+	public static final int DATABASE_VERSION = 353;
 
 	private static DatabaseHelper instance = null;
 
@@ -3115,20 +3115,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 349:
 				currentVersion = 349;
 				getDao(Task.class).executeRaw("ALTER TABLE tasks ADD COLUMN environment_id BIGINT REFERENCES environment(id);");
-            case 350:
-                currentVersion = 350;
-                getDao(EnvironmentSample.class).executeRaw(
-                        "CREATE TABLE environmentSamples(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, changeDate TIMESTAMP NOT NULL, "
-                                + "creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, snapshot INTEGER, "
-                                + "environment_id BIGINT NOT NULL, reportingUser_id BIGINT NOT NULL, sampleDateTime TIMESTAMP NOT NULL, sampleMaterial varchar(255) NOT NULL, otherSampleMaterial text, "
-                                + "sampleVolume float, fieldSampleId varchar(255), turbidity int, phValue int, sampleTemperature int, chlorineResiduals float, "
-                                + "laboratory_id BIGINT, laboratoryDetails text, requestedPathogenTests text, otherRequestedPathogenTests text, "
-                                + "weatherConditions text, heavyRain varchar(255), dispatched boolean, dispatchDate TIMESTAMP, dispatchDetails text, "
-                                + "received boolean, receivalDate TIMESTAMP, labSampleId text, specimenCondition varchar(255), location_id BIGINT NOT NULL, generalComment text, "
-								+ "pseudonymized boolean, "
-                                + "UNIQUE(snapshot, uuid));");
 
-                    // ATTENTION: break should only be done after last version
+			case 350:
+				currentVersion = 350;
+				getDao(EnvironmentSample.class).executeRaw(
+					"CREATE TABLE environmentSamples(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, changeDate TIMESTAMP NOT NULL, "
+						+ "creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, snapshot INTEGER, "
+						+ "environment_id BIGINT NOT NULL, reportingUser_id BIGINT NOT NULL, sampleDateTime TIMESTAMP NOT NULL, sampleMaterial varchar(255) NOT NULL, otherSampleMaterial text, "
+						+ "sampleVolume float, fieldSampleId varchar(255), turbidity int, phValue int, sampleTemperature int, chlorineResiduals float, "
+						+ "laboratory_id BIGINT, laboratoryDetails text, requestedPathogenTests text, otherRequestedPathogenTests text, "
+						+ "weatherConditions text, heavyRain varchar(255), dispatched boolean, dispatchDate TIMESTAMP, dispatchDetails text, "
+						+ "received boolean, receivalDate TIMESTAMP, labSampleId text, specimenCondition varchar(255), location_id BIGINT NOT NULL, generalComment text, "
+						+ "pseudonymized boolean, UNIQUE(snapshot, uuid));");
+
+			case 351:
+				currentVersion = 351;
+				getDao(EnvironmentSample.class).executeRaw("ALTER TABLE environmentSamples ADD COLUMN reportDate TIMESTAMP;");
+
+			case 352:
+				currentVersion = 352;
+				getDao(PathogenTest.class)
+					.executeRaw("ALTER TABLE pathogentest ADD COLUMN environmentSample_id BIGINT REFERENCES environmentSamples(id);");
+
+				// ATTENTION: break should only be done after last version
 				break;
 
 			default:
@@ -4341,7 +4350,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static EnvironmentDao getEnvironmentDao() {
 		return (EnvironmentDao) getAdoDao(Environment.class);
 	}
-
 
 	public static EnvironmentSampleDao getEnvironmentSampleDao() {
 		return (EnvironmentSampleDao) getAdoDao(EnvironmentSample.class);

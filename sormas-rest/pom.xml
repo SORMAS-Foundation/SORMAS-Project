@@ -3,12 +3,12 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.88.1</version>
+		<version>1.89.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
 	<properties>
-		<sormasRest.apiRoot>/sormas-rest</sormasRest.apiRoot>
+		<warName>sormas-rest</warName>
 	</properties>
 
 	<artifactId>sormas-rest</artifactId>
@@ -119,20 +119,12 @@
 		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
-			<!-- Provide WebApp context path via value of `sormasRest.apiRoot` property -->
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<warName>${warName}</warName>
 					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
 					<webResources>
-						<resource>
-							<directory>src/main/webapp/META-INF</directory>
-							<includes>
-								<include>context.xml</include>
-							</includes>
-							<targetPath>/META-INF</targetPath>
-							<filtering>true</filtering>
-						</resource>
 						<resource>
 							<directory>src/main/webapp</directory>
 							<targetPath>/</targetPath>

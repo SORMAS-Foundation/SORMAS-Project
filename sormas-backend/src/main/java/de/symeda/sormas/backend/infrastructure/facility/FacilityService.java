@@ -1,20 +1,17 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 
 package de.symeda.sormas.backend.infrastructure.facility;
 
@@ -24,6 +21,8 @@ import java.util.function.BiFunction;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -32,6 +31,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -199,6 +200,35 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 		return em.createQuery(cq).getResultList();
 	}
 
+	public Facility getByAddress(String street, String postalCode, String city) {
+
+		if (StringUtils.isAnyBlank(street, postalCode, city)) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
+		Root<Facility> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and(
+			createBasicFilter(cb, from),
+			cb.equal(cb.lower(cb.trim(from.get(Facility.STREET))), street.trim().toLowerCase()),
+			cb.equal(cb.lower(cb.trim(from.get(Facility.POSTAL_CODE))), postalCode.trim().toLowerCase()),
+			cb.equal(cb.lower(cb.trim(from.get(Facility.CITY))), city.trim().toLowerCase()));
+
+		cq.where(filter);
+
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NonUniqueResultException e) {
+			logger.warn("getByAddress returned more than one result for the specified street, postal code, and city");
+			return null;
+		} catch (NoResultException e) {
+			logger.warn("getByAddress returned no result for the specified street, postal code, and city");
+			return null;
+		}
+	}
+
 	public List<Facility> getFacilitiesByExternalIdAndType(@NotNull String externalId, FacilityType type, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -232,8 +262,8 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 
 		// these two facilities are constant and created on startup by createConstantFacilities()
 		Predicate excludeConstantFacilities = cb.and(
-				cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-				cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
+			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 
 		if (facilityCriteria == null) {
 			return excludeConstantFacilities;

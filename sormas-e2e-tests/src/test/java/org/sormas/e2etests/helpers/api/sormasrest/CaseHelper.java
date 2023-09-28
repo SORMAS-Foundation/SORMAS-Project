@@ -77,6 +77,12 @@ public class CaseHelper {
   }
 
   @SneakyThrows
+  public void getCase(String caseId) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(CASES_PATH + caseId).build());
+  }
+
+  @SneakyThrows
   public void createMultipleCases(List<Case> casesList) {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
     List<Case> personBody = casesList;

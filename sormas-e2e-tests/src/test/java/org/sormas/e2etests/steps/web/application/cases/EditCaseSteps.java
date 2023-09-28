@@ -46,6 +46,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ADD_A_PARTICIPANT_HEADER_DE;
@@ -243,6 +244,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.getEditTa
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxToSelectValue_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxWithValue_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionCombobox_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
@@ -284,6 +286,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getReasonForDeletionDetailsFieldLabel;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PRESENT_CONDITION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP_FOR_DE;
@@ -353,6 +356,7 @@ public class EditCaseSteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static String caseUuid;
   public static List<String> externalUUID = new ArrayList<>();
+  public static LocalDate dateOfDeath;
 
   @SneakyThrows
   @Inject
@@ -473,6 +477,26 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to case person tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
+    And(
+        "I set the present condition of person value to \"([^\"]*)\" on Case Person page",
+        (String presentCondition) -> {
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, presentCondition);
+        });
+
+    And(
+        "I click on Save button on Case Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I set the Date of death to (\\d+) days ago$",
+        (Integer dateOfDeathAgo) -> {
+          dateOfDeath = LocalDate.now().minusDays(dateOfDeathAgo);
+          System.out.print(dateOfDeath);
+          fillDateOfDeath(dateOfDeath, Locale.GERMAN);
+        });
 
     And(
         "^I set previous infection date (\\d+) days from report date to case in person tab$",
@@ -1992,7 +2016,7 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "^I refer case from Point Of Entry$",
+        "I refer case from Point Of Entry with Place of Stay ZUHAUSE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
@@ -2006,7 +2030,27 @@ public class EditCaseSteps implements En {
         });
 
     And(
-        "^I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page$",
+        "I refer case from Point Of Entry with Place of Stay EINRICHTUNG",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE);
+          webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_REGION, "Brandenburg");
+          webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT, "LK Barnim");
+          webDriverHelpers.clickWebElementByText(PLACE_OF_STAY_OPTIONS, "EINRICHTUNG");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_FACILITY_CATEGORY, "Medizinische Einrichtung");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_FACILITY_TYPE, "Krankenhaus");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_HEALTH_FACILITY, "share");
+
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that Point Of Entry and Place Of Stay ZUHAUSE information is correctly display on Edit case page$",
         () -> {
           String referenceReadOnlyAttribute =
               webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
@@ -2038,6 +2082,44 @@ public class EditCaseSteps implements En {
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
               "Narita",
+              "Point of entry details are not correct");
+
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that Point Of Entry and Place Of Stay EINRICHTUNG information is correctly display on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  PLACE_OF_STAY_SELECTED_VALUE),
+              "EINRICHTUNG",
+              "Place of stay is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX),
+              "Brandenburg",
+              "Place of stay region is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX),
+              "LK Barnim",
+              "Place of stay district is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT),
+              "Anderer Flughafen",
+              "Point of entry is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
+              "other",
               "Point of entry details are not correct");
 
           softly.assertAll();
@@ -2908,6 +2990,25 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NOSOCOMIAL_OUTBRAKE_LABEL);
         });
 
+    When(
+        "I check if Follow up until date is ([^\"]*) days after last created API case report date",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(
+                      apiState
+                          .getCreatedCase()
+                          .getReportDate()
+                          .toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate()
+                          .plusDays(days)),
+              date);
+          softly.assertAll();
+        });
+
     And(
         "^I select \"([^\"]*)\" from the infection settings on Edit Case page$",
         (String infectionOption) -> {
@@ -3206,6 +3307,13 @@ public class EditCaseSteps implements En {
   private LocalDate getDateOfReportDE() {
     String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+  }
+
+  private void fillDateOfDeath(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
   }
 
   private LocalDate getDateReceivedAtDistrictLevel() {

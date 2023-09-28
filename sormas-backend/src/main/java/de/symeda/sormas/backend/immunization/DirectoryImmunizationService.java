@@ -25,6 +25,7 @@ import javax.persistence.criteria.Selection;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -71,7 +72,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public DirectoryImmunizationService() {
-		super(DirectoryImmunization.class);
+		super(DirectoryImmunization.class, DeletableEntityType.IMMUNIZATION);
 	}
 
 	@Override

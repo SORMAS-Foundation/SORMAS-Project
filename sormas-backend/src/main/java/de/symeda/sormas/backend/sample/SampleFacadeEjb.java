@@ -46,6 +46,8 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -74,6 +76,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -765,21 +768,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredSampleUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedSamples = new ArrayList<>();
 		List<Sample> samplesToBeRestored = sampleService.getByUuids(uuids);
 
 		if (samplesToBeRestored != null) {
 			samplesToBeRestored.forEach(sampleToBeRestored -> {
 				try {
 					restore(sampleToBeRestored.getUuid());
-					restoredSampleUuids.add(sampleToBeRestored.getUuid());
+					processedSamples.add(new ProcessedEntity(sampleToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The sample with uuid:" + sampleToBeRestored.getUuid() + "could not be restored");
+					processedSamples.add(new ProcessedEntity(sampleToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The sample with uuid {} could not be restored due to an Exception", sampleToBeRestored.getUuid(), e);
 				}
 			});
 		}
-		return restoredSampleUuids;
+		return processedSamples;
 	}
 
 	@Override
@@ -791,13 +795,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
-	public List<String> delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
+	public List<ProcessedEntity> delete(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
+		List<ProcessedEntity> processedSamples = new ArrayList<>();
 		IterableHelper
-			.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids, deletionDetails));
+			.executeBatched(
+				sampleUuids,
+				DELETED_BATCH_SIZE,
+				batchedSampleUuids -> processedSamples.addAll(sampleService.deleteAll(batchedSampleUuids, deletionDetails)));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
-		return sampleUuids;
+
+		return processedSamples;
 	}
 
 	@RightsAllowed(UserRight._SAMPLE_DELETE)
@@ -1122,7 +1131,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
-		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
+		DtoCopyHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
 		newSample.setAssociatedCase(caze.toReference());
 		newSample.setAssociatedContact(null);
 		newSample.setAssociatedEventParticipant(null);
@@ -1130,13 +1139,13 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 			PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-			DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), true);
+			DtoCopyHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), true);
 			pathogenTestFacade.savePathogenTest(newPathogenTest);
 		}
 
 		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
 			AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
-			DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), true);
+			DtoCopyHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), true);
 			additionalTestFacade.saveAdditionalTest(newAdditionalTest);
 		}
 	}

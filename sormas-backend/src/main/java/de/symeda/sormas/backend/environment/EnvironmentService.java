@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.environment;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -8,13 +9,17 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -24,6 +29,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -37,9 +43,11 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private EnvironmentSampleService environmentSampleService;
 
 	public EnvironmentService() {
-		super(Environment.class);
+		super(Environment.class, DeletableEntityType.ENVIRONMENT);
 	}
 
 	@Override
@@ -131,7 +139,36 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		return builder;
 	}
 
+	public static Predicate buildGpsCoordinatesFilter(
+		Double gpsLatFrom,
+		Double gpsLatTo,
+		Double gpsLonFrom,
+		Double gpsLonTo,
+		CriteriaBuilder cb,
+		EnvironmentJoins joins) {
+		Predicate filter = null;
+		if (gpsLatFrom != null && gpsLatTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(joins.getLocation().get(Location.LATITUDE), gpsLatFrom, gpsLatTo));
+		} else if (gpsLatFrom != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), gpsLatFrom));
+		} else if (gpsLatTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), gpsLatTo));
+		}
+		if (gpsLonFrom != null && gpsLonTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(joins.getLocation().get(Location.LONGITUDE), gpsLonFrom, gpsLonTo));
+		} else if (gpsLonFrom != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), gpsLonFrom));
+		} else if (gpsLonTo != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), gpsLonTo));
+		}
+		return filter;
+	}
+
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
+
+		if (environmentCriteria == null) {
+			return null;
+		}
 
 		CriteriaBuilder cb = environmentQueryContext.getCriteriaBuilder();
 		From<?, Environment> from = environmentQueryContext.getRoot();
@@ -202,30 +239,16 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(joins.getResponsibleUser().get(User.UUID), environmentCriteria.getResponsibleUser().getUuid()));
 		}
-		if (environmentCriteria.getGpsLatFrom() != null && environmentCriteria.getGpsLatTo() != null) {
-			filter = CriteriaBuilderHelper.and(
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			buildGpsCoordinatesFilter(
+				environmentCriteria.getGpsLatFrom(),
+				environmentCriteria.getGpsLatTo(),
+				environmentCriteria.getGpsLonFrom(),
+				environmentCriteria.getGpsLonTo(),
 				cb,
-				filter,
-				cb.between(joins.getLocation().get(Location.LATITUDE), environmentCriteria.getGpsLatFrom(), environmentCriteria.getGpsLatTo()));
-		} else if (environmentCriteria.getGpsLatFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), environmentCriteria.getGpsLatFrom()));
-		} else if (environmentCriteria.getGpsLatTo() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), environmentCriteria.getGpsLatTo()));
-		}
-		if (environmentCriteria.getGpsLonFrom() != null && environmentCriteria.getGpsLonTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.between(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom(), environmentCriteria.getGpsLonTo()));
-		} else if (environmentCriteria.getGpsLonFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonFrom()));
-		} else if (environmentCriteria.getGpsLonTo() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), environmentCriteria.getGpsLonTo()));
-		}
+				joins));
 
 		return filter;
 	}
@@ -238,11 +261,15 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		return cb.isFalse(root.get(Environment.DELETED));
 	}
 
+	public Predicate createActiveEnvironmentFilter(CriteriaBuilder cb, Path<Environment> root) {
+		return cb.and(cb.isFalse(root.get(Environment.ARCHIVED)), cb.isFalse(root.get(Environment.DELETED)));
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected Predicate createRelevantDataFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Environment> from) {
 
-		Predicate filter = createDefaultFilter(cb, from);
+		Predicate filter = createActiveEnvironmentFilter(cb, from);
 		if (getCurrentUser() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilterInternal(cb, cq, from));
 		}
@@ -257,5 +284,38 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		}
 
 		return super.getEditPermissionType(environment);
+	}
+
+	public List<String> getAllActiveUuids(User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Environment> from = cq.from(getElementClass());
+		EnvironmentQueryContext environmentQueryContext = new EnvironmentQueryContext(cb, cq, from);
+
+		Predicate filter = createActiveEnvironmentFilter(cb, from);
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(environmentQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		if (RequestContextHolder.isMobileSync()) {
+			Predicate predicate = createLimitedChangeDateFilter(cb, from);
+			if (predicate != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, predicate);
+			}
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Environment.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	public void delete(Environment environment, DeletionDetails deletionDetails) {
+		environment.getEnvironmentSamples().forEach(s -> environmentSampleService.delete(s, deletionDetails));
+		super.delete(environment, deletionDetails);
 	}
 }

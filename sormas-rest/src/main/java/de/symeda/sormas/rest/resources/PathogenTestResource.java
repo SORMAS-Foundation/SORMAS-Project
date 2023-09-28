@@ -60,7 +60,8 @@ public class PathogenTestResource extends EntityDtoResource<PathogenTestDto> {
 	@POST
 	@Path("/query")
 	public List<PathogenTestDto> getByUuids(List<String> uuids) {
-		return FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
+		final List<PathogenTestDto> byUuids = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
+		return byUuids;
 	}
 
 	@POST
@@ -72,7 +73,8 @@ public class PathogenTestResource extends EntityDtoResource<PathogenTestDto> {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
-		return FacadeProvider.getPathogenTestFacade().getAllActiveUuids();
+		final List<String> allActiveUuids = FacadeProvider.getPathogenTestFacade().getAllActiveUuids();
+		return allActiveUuids;
 	}
 
 	@GET

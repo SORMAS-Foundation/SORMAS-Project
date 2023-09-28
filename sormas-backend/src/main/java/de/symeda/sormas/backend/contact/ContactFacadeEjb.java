@@ -77,10 +77,12 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -101,7 +103,6 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -109,6 +110,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
@@ -140,6 +142,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -557,22 +560,42 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		List<String> deletedContactUuids = new ArrayList<>();
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
+		List<ProcessedEntity> processedContacts = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(uuids);
+
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
-				if (!contactToBeDeleted.isDeleted()) {
-					try {
+				try {
+					if (!contactToBeDeleted.isDeleted()) {
 						deleteContact(contactToBeDeleted, deletionDetails);
-						deletedContactUuids.add(contactToBeDeleted.getUuid());
-					} catch (AccessDeniedException e) {
-						logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 					}
+				} catch (ExternalSurveillanceToolRuntimeException e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					logger.error(
+						"The contact with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
+						contactToBeDeleted.getUuid(),
+						e);
+				} catch (SormasToSormasRuntimeException e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+					logger.error(
+						"The contact with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
+						contactToBeDeleted.getUuid(),
+						e);
+				} catch (AccessDeniedException e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error("The contact with uuid {} could not be deleted due to a AccessDeniedException", contactToBeDeleted.getUuid(), e);
+				} catch (Exception e) {
+					processedContacts.add(new ProcessedEntity(contactToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The contact with uuid {} could not be deleted", contactToBeDeleted.getUuid(), e);
 				}
 			});
 		}
-		return deletedContactUuids;
+
+		return processedContacts;
 	}
 
 	@Override
@@ -583,22 +606,23 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_DELETE)
-	public List<String> restore(List<String> uuids) {
-		List<String> restoredContactUuids = new ArrayList<>();
+	public List<ProcessedEntity> restore(List<String> uuids) {
+		List<ProcessedEntity> processedContacts = new ArrayList<>();
 		List<Contact> contactsToBeRestored = contactService.getByUuids(uuids);
 
 		if (contactsToBeRestored != null) {
 			contactsToBeRestored.forEach(contactToBeRestored -> {
 				try {
 					restore(contactToBeRestored.getUuid());
-					restoredContactUuids.add(contactToBeRestored.getUuid());
+					processedContacts.add(new ProcessedEntity(contactToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
 				} catch (Exception e) {
-					logger.error("The contact with uuid:" + contactToBeRestored.getUuid() + "could not be restored");
+					processedContacts.add(new ProcessedEntity(contactToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The contact with uuid {} could not be restored due to an Exception", contactToBeRestored.getUuid(), e);
 				}
 			});
 		}
 
-		return restoredContactUuids;
+		return processedContacts;
 	}
 
 	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
@@ -621,20 +645,20 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
-	public void archive(List<String> entityUuids) {
-		super.archive(entityUuids);
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		return super.archive(entityUuids);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -2182,7 +2206,7 @@ public class ContactFacadeEjb
 
 	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
 
-		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		DtoCopyHelper.copyDtoValues(leadContactDto, otherContactDto, false);
 
 		final String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
 		final String leadFollowUpComment = leadContactDto.getFollowUpComment();
@@ -2250,32 +2274,42 @@ public class ContactFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CONTACT_EDIT)
-	public Integer saveBulkContacts(
+	public List<ProcessedEntity> saveBulkContacts(
 		List<String> contactUuidList,
 		ContactBulkEditData updatedContactBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange)
 		throws ValidationRuntimeException {
 
-		int changedContacts = 0;
+		List<ProcessedEntity> processedEntities = new ArrayList();
 		for (String contactUuid : contactUuidList) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isEditAllowed(contact)) {
-				ContactDto existingContactDto = toDto(contact);
-				if (classificationChange) {
-					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
-				}
-				// Setting the contact officer is only allowed if all selected contacts are in the same district
-				if (contactOfficerChange) {
-					existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
-				}
+			try {
+				if (service.isEditAllowed(contact)) {
+					ContactDto existingContactDto = toDto(contact);
+					if (classificationChange) {
+						existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
+					}
+					// Setting the contact officer is only allowed if all selected contacts are in the same district
+					if (contactOfficerChange) {
+						existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
+					}
 
-				save(existingContactDto);
-				changedContacts++;
+					save(existingContactDto);
+					processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.SUCCESS));
+				} else {
+					processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.NOT_ELIGIBLE));
+				}
+			} catch (AccessDeniedException e) {
+				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+				logger.error("The contact with uuid {} could not be saved due to an AccessDeniedException", contactUuid, e);
+			} catch (Exception e) {
+				processedEntities.add(new ProcessedEntity(contactUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The contact with uuid {} could not be saved due to an Exception", contactUuid, e);
 			}
 		}
-		return changedContacts;
+		return processedEntities;
 	}
 
 	@Override
@@ -2284,8 +2318,8 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	protected CoreEntityType getCoreEntityType() {
-		return CoreEntityType.CONTACT;
+	protected DeletableEntityType getDeletableEntityType() {
+		return DeletableEntityType.CONTACT;
 	}
 
 	private float calculateCompleteness(Contact contact) {
@@ -2336,15 +2370,6 @@ public class ContactFacadeEjb
 	public User getRandomRegionContactResponsible(Region region) {
 
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
-	}
-
-	@Override
-	protected String getDeleteReferenceField(DeletionReference deletionReference) {
-		if (deletionReference == DeletionReference.REPORT) {
-			return Contact.REPORT_DATE_TIME;
-		}
-
-		return super.getDeleteReferenceField(deletionReference);
 	}
 
 	@LocalBean

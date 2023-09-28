@@ -35,8 +35,9 @@ import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -360,7 +361,7 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
-	public List<String> delete(List<String> uuids, DeletionDetails deletionDetails) {
+	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 		throw new NotImplementedException();
 	}
 
@@ -372,7 +373,7 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
-	public List<String> restore(List<String> uuids) {
+	public List<ProcessedEntity> restore(List<String> uuids) {
 		throw new NotImplementedException();
 	}
 
@@ -403,8 +404,8 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	protected CoreEntityType getCoreEntityType() {
-		return CoreEntityType.CAMPAIGN;
+	protected DeletableEntityType getDeletableEntityType() {
+		return DeletableEntityType.CAMPAIGN;
 	}
 
 	@Override
@@ -414,20 +415,20 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
-		super.archive(entityUuid, endOfProcessingDate);
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
-	public void archive(List<String> entityUuids) {
-		super.archive(entityUuids);
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		return super.archive(entityUuids);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
-		super.dearchive(entityUuids, dearchiveReason);
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override

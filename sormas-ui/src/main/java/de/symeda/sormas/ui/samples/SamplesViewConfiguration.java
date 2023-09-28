@@ -15,30 +15,17 @@
 
 package de.symeda.sormas.ui.samples;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.ui.ControllerProvider;
+public class SamplesViewConfiguration extends ViewConfiguration {
 
-public class SampleEditPathogenTestListHandler {
+	private SampleViewType viewType;
 
-	private final List<PathogenTestDto> pathogenTests;
-
-	public SampleEditPathogenTestListHandler() {
-		pathogenTests = new ArrayList<>();
+	public SampleViewType getViewType() {
+		return viewType;
 	}
 
-	public void addPathogenTest(PathogenTestDto pathogenTest) {
-		pathogenTests.add(pathogenTest);
-	}
-
-	public List<PathogenTestDto> getPathogenTests() {
-		return pathogenTests;
-	}
-
-	public void saveAll(SampleReferenceDto sample) {
-		ControllerProvider.getPathogenTestController().savePathogenTests(pathogenTests, sample, true);
+	public void setViewType(SampleViewType viewType) {
+		this.viewType = viewType;
 	}
 }

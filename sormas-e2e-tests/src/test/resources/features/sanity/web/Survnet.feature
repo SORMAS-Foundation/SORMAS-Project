@@ -54,7 +54,7 @@ Feature: Survnet tests
 
   @tmsLink=SORQA-1011
   Scenario: Automate "Bulk sending cases from SORMAS to "Meldesoftware"
-    Given I log in as a Admin User
+    Given I log in as a Survnet
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only and specific sex for Survnet DE
@@ -435,3 +435,57 @@ Feature: Survnet tests
     Then I wait 50 seconds for system reaction
     And I open SORMAS generated XML file for single case message
     Then I check if the exposure settings are correctly mapped in SORMAS generated single XML file
+
+  @tmsLink=SORQA-1053
+  Scenario: Check Epidemiology data "Betreuung ... in Einrichtung" of case when sending from SORMAS to Meldesoftware
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Care...In facility JA option
+    And I click on New Entry in Care...In Facility in Cases directory
+    Then I select "Unbekannt" option in Art der Aktivitat from Combobox in Care In facility form
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I click on save button from Epidemiological Data
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    And I check that Patientrole is change in SORMAS generated single XML file is "-1"
+
+  @tmsLink=SORQA-1054
+  Scenario: Check Current condition of person of case when sending from SORMAS to Meldesoftware [1]
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    Then I navigate to case person tab
+    And I set the present condition of person value to "Lebendig" on Case Person page
+    And I click on Save button on Case Person page
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    Then I check if the present condition status "Lebendig" is correctly mapped in SORMAS generated single XML file
+
+  @tmsLink=SORQA-1054
+  Scenario: Check Current condition of person of case when sending from SORMAS to Meldesoftware [2]
+    Given I log in as a Survnet
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data only for Survnet DE
+    Then I navigate to case person tab
+    And I set the present condition of person value to "Verstorben" on Case Person page
+    Then I set the Date of death to 2 days ago
+    And I click on Save button on Case Person page
+    And I navigate to case tab
+    And I click on Send to reporting tool button on Edit Case page
+    And I collect case external UUID from Edit Case page
+    Then I wait 50 seconds for system reaction
+    And I open SORMAS generated XML file for single case message
+    Then I check if the present condition status "Verstorben" is correctly mapped in SORMAS generated single XML file
+    And I check if "date of death" in SORMAS generated XML file is correct
+    And I check if Cause of Death status is correctly setting in SORMAS generated XML file is correct

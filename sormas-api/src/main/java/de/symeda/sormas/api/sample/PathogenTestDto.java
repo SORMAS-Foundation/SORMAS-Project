@@ -26,6 +26,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -92,8 +94,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 
-	@NotNull(message = Validations.validSample)
 	private SampleReferenceDto sample;
+	private EnvironmentSampleReferenceDto environmentSample;
 	@NotNull(message = Validations.validDisease)
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
@@ -214,6 +216,28 @@ public class PathogenTestDto extends PseudonymizableDto {
 		return pathogenTest;
 	}
 
+	public static PathogenTestDto build(EnvironmentSampleDto environmentSample, UserDto currentUser) {
+		PathogenTestDto pathogenTest = new PathogenTestDto();
+		pathogenTest.setUuid(DataHelper.createUuid());
+		pathogenTest.setEnvironmentSample(environmentSample.toReference());
+
+		pathogenTest.setLab(currentUser.getLaboratory());
+		if (pathogenTest.getLab() == null) {
+			pathogenTest.setLab(environmentSample.getLaboratory());
+			pathogenTest.setLabDetails(environmentSample.getLaboratoryDetails());
+		}
+		pathogenTest.setLabUser(currentUser.toReference());
+		return pathogenTest;
+	}
+
+	public static PathogenTestDto build(EnvironmentSampleReferenceDto environmentSample, UserReferenceDto currentUser) {
+		PathogenTestDto pathogenTest = new PathogenTestDto();
+		pathogenTest.setUuid(DataHelper.createUuid());
+		pathogenTest.setEnvironmentSample(environmentSample);
+		pathogenTest.setLabUser(currentUser);
+		return pathogenTest;
+	}
+
 	@ImportIgnore
 	public SampleReferenceDto getSample() {
 		return sample;
@@ -221,6 +245,15 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
+	}
+
+	@ImportIgnore
+	public EnvironmentSampleReferenceDto getEnvironmentSample() {
+		return environmentSample;
+	}
+
+	public void setEnvironmentSample(EnvironmentSampleReferenceDto environmentSample) {
+		this.environmentSample = environmentSample;
 	}
 
 	public Disease getTestedDisease() {

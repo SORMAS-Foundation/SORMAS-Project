@@ -38,6 +38,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.MergeFacade;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -176,7 +177,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
-	Integer saveBulkCase(
+	List<ProcessedEntity> saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -186,7 +187,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		boolean outcomeChange,
 		boolean surveillanceOfficerChange);
 
-	Integer saveBulkEditWithFacilities(
+	List<ProcessedEntity> saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -215,11 +216,13 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
 
-	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
+	ProcessedEntity archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
 
-	void archive(List<String> entityUuids, boolean includeContacts);
+	List<ProcessedEntity> archive(List<String> entityUuids, boolean includeContacts);
 
-	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
+	ProcessedEntity dearchive(String entityUuid, String dearchiveReason, boolean includeContacts);
+
+	List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 
 	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
 

@@ -54,6 +54,8 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -73,6 +75,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -380,35 +383,41 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_EDIT)
-	public Integer saveBulkTasks(
+	public List<ProcessedEntity> saveBulkTasks(
 		List<String> taskUuidList,
 		TaskDto updatedTempTask,
 		boolean priorityChange,
 		boolean assigneeChange,
 		boolean taskStatusChange) {
 
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
 		UserReferenceDto currentUser = userService.getCurrentUser().toReference();
 
-		int changedTasks = 0;
 		for (String taskUuid : taskUuidList) {
-			Task task = taskService.getByUuid(taskUuid);
-			TaskDto taskDto = toDto(task, createPseudonymizer());
 
-			if (priorityChange) {
-				taskDto.setPriority(updatedTempTask.getPriority());
-			}
-			if (assigneeChange) {
-				taskDto.setAssigneeUser(updatedTempTask.getAssigneeUser());
-				taskDto.setAssignedByUser(currentUser);
-			}
-			if (taskStatusChange) {
-				taskDto.setTaskStatus(updatedTempTask.getTaskStatus());
-			}
+			try {
+				Task task = taskService.getByUuid(taskUuid);
+				TaskDto taskDto = toDto(task, createPseudonymizer());
 
-			saveTask(taskDto);
-			changedTasks++;
+				if (priorityChange) {
+					taskDto.setPriority(updatedTempTask.getPriority());
+				}
+				if (assigneeChange) {
+					taskDto.setAssigneeUser(updatedTempTask.getAssigneeUser());
+					taskDto.setAssignedByUser(currentUser);
+				}
+				if (taskStatusChange) {
+					taskDto.setTaskStatus(updatedTempTask.getTaskStatus());
+				}
+
+				saveTask(taskDto);
+				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.SUCCESS));
+			} catch (Exception e) {
+				processedTasks.add(new ProcessedEntity(taskUuid, ProcessedEntityStatus.INTERNAL_FAILURE));
+				logger.error("The task with uuid {} could not be saved due to an Exception", taskUuid, e);
+			}
 		}
-		return changedTasks;
+		return processedTasks;
 	}
 
 	private void notifyAboutNewAssignee(Task task, User newAssignee, User oldAssignee) {
@@ -945,7 +954,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	@RightsAllowed(UserRight._TASK_DELETE)
 	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException(String.format("User %s is not allowed to delete tasks.", userService.getCurrentUser().getUuid()));
+			throw new AccessDeniedException(String.format("User %s is not allowed to delete tasks.", userService.getCurrentUser().getUuid()));
 		}
 
 		Task task = taskService.getByUuid(uuid);
@@ -954,26 +963,25 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_DELETE)
-	public void delete(List<String> uuids) {
-		deleteTasks(uuids);
-	}
-
-	@RightsAllowed(UserRight._TASK_DELETE)
-	public List<String> deleteTasks(List<String> tasksUuids) {
-		List<String> deletedTaskUuids = new ArrayList<>();
-		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+	public List<ProcessedEntity> delete(List<String> uuids) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(uuids);
 
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
 				try {
-					taskService.deletePermanent(taskToBeDeleted);
-					deletedTaskUuids.add(taskToBeDeleted.getUuid());
+					delete(taskToBeDeleted.getUuid());
+					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
+				} catch (AccessDeniedException e) {
+					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error("The task with uuid {} could not be deleted due to an AccessDeniedException", taskToBeDeleted.getUuid(), e);
 				} catch (Exception e) {
-					logger.error("The task with uuid:" + taskToBeDeleted.getUuid() + "could not be deleted");
+					processedTasks.add(new ProcessedEntity(taskToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The task with uuid {} could not be deleted due to an Exception", taskToBeDeleted.getUuid(), e);
 				}
 			});
 		}
-		return deletedTaskUuids;
+		return processedTasks;
 	}
 
 	@Override
@@ -1052,28 +1060,32 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public void archive(String uuid) {
-		archive(Collections.singletonList(uuid));
+	public ProcessedEntity archive(String uuid) {
+		return archive(Collections.singletonList(uuid)).get(0);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public void dearchive(String uuid) {
-		dearchive(Collections.singletonList(uuid));
+	public ProcessedEntity dearchive(String uuid) {
+		return dearchive(Collections.singletonList(uuid)).get(0);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public List<String> archive(List<String> taskUuids) {
-		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, true));
-		return taskUuids;
+	public List<ProcessedEntity> archive(List<String> taskUuids) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
+		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> processedTasks.addAll(taskService.updateArchived(e, true)));
+
+		return processedTasks;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._TASK_ARCHIVE)
-	public List<String> dearchive(List<String> taskUuids) {
-		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, false));
-		return taskUuids;
+	public List<ProcessedEntity> dearchive(List<String> taskUuids) {
+		List<ProcessedEntity> processedTasks = new ArrayList<>();
+		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> processedTasks.addAll(taskService.updateArchived(e, false)));
+
+		return processedTasks;
 	}
 
 	@Override
