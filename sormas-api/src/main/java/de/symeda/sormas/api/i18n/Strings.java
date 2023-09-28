@@ -491,6 +491,7 @@ public interface Strings {
 	String headingCreateNewContact = "headingCreateNewContact";
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEnvironment = "headingCreateNewEnvironment";
+	String headingCreateNewEnvironmentSample = "headingCreateNewEnvironmentSample";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
