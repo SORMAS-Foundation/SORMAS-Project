@@ -1281,7 +1281,7 @@ Feature: Sharing cases between environments tests
   @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
     Given API : Login to DEMIS server
-    Then I create and send Laboratory Notification
+   Then I create and send Laboratory Notification
     And I log in as a S2S
     Then I click on the Messages button from navbar
     And I click on fetch messages button
@@ -1290,7 +1290,6 @@ Feature: Sharing cases between environments tests
     Then I create a new person and a new case from received message
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
-
     #tO REMOVE
    # And I click on the Cases button from navbar
 
