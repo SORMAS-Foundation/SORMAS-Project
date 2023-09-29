@@ -50,6 +50,14 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 	private Double gpsLatTo;
 	private Double gpsLonFrom;
 	private Double gpsLonTo;
+	/**
+	 * Used for similarity detection at import
+	 */
+	private Double gpsLat;
+	/**
+	 * Used for similarity detection at import
+	 */
+	private Double gpsLon;
 
 	@IgnoreForUrl
 	public String getFreeText() {
@@ -272,6 +280,32 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 
 	public void setGpsLonTo(Double gpsLonTo) {
 		this.gpsLonTo = gpsLonTo;
+	}
+
+	public Double getGpsLat() {
+		return gpsLat;
+	}
+
+	public EnvironmentCriteria gpsLat(Double gpsLat) {
+		this.gpsLat = gpsLat;
+		return this;
+	}
+
+	public void setGpsLat(Double gpsLat) {
+		this.gpsLat = gpsLat;
+	}
+
+	public Double getGpsLon() {
+		return gpsLon;
+	}
+
+	public EnvironmentCriteria gpsLon(Double gpsLon) {
+		this.gpsLon = gpsLon;
+		return this;
+	}
+
+	public void setGpsLon(Double gpsLon) {
+		this.gpsLon = gpsLon;
 	}
 
 	public void reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {

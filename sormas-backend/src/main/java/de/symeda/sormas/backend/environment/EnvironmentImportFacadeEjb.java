@@ -107,15 +107,18 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 
 		if (importResult.isError()) {
 			return importResult;
+		}
+
+		ImportLineResultDto<EnvironmentDto> validationResult = validateEnvironment(environment);
+		if (validationResult.isError()) {
+			return validationResult;
 		} else {
 			LocationDto environmentLocation = environment.getLocation();
 			EnvironmentCriteria criteria = new EnvironmentCriteria().country(environmentLocation.getCountry())
 				.region(environmentLocation.getRegion())
 				.district(environmentLocation.getDistrict())
-				.gpsLatFrom(environmentLocation.getLatitude())
-				.gpsLatTo(environmentLocation.getLatitude())
-				.gpsLonFrom(environmentLocation.getLongitude())
-				.gpsLonTo(environmentLocation.getLongitude())
+				.gpsLat(environmentLocation.getLatitude())
+				.gpsLon(environmentLocation.getLongitude())
 				.environmentMedia(environment.getEnvironmentMedia())
 				.externalId(environment.getExternalId());
 			String similarEnvironmentUuid = environmentService.getSimilarEnvironmentUuid(criteria);
@@ -124,11 +127,6 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 					environment,
 					String.format(I18nProperties.getString(Strings.messageDuplicateEnvironmentFound), similarEnvironmentUuid));
 			}
-		}
-
-		ImportLineResultDto<EnvironmentDto> validationResult = validateEnvironment(environment);
-		if (validationResult.isError()) {
-			return validationResult;
 		}
 
 		return saveEnvironment(environment);

@@ -43,6 +43,8 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class EnvironmentService extends AbstractCoreAdoService<Environment, EnvironmentJoins> {
 
+	private static final double ALLOWED_GPS_SIMILARITY_VARIANCE = 0.2d;
+
 	@EJB
 	private UserService userService;
 
@@ -274,11 +276,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		EnvironmentQueryContext queryContext) {
 
 		// Environment media and GPS coordinates must always be present for environments to be considered as duplicates
-		if (criteria.getEnvironmentMedia() == null
-			|| criteria.getGpsLatFrom() == null
-			|| criteria.getGpsLatTo() == null
-			|| criteria.getGpsLonFrom() == null
-			|| criteria.getGpsLonTo() == null) {
+		if (criteria.getEnvironmentMedia() == null || criteria.getGpsLat() == null || criteria.getGpsLon() == null) {
 			return cb.disjunction();
 		}
 
@@ -300,15 +298,15 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			filter,
 			cb.and(
 				cb.isNotNull(joins.getLocation().get(Location.LATITUDE)),
-				cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), criteria.getGpsLatFrom() - 0.02),
-				cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), criteria.getGpsLatTo() + 0.02)));
+				cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), criteria.getGpsLat() - ALLOWED_GPS_SIMILARITY_VARIANCE),
+				cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), criteria.getGpsLat() + ALLOWED_GPS_SIMILARITY_VARIANCE)));
 		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
 			cb.and(
 				cb.isNotNull(joins.getLocation().get(Location.LONGITUDE)),
-				cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), criteria.getGpsLonFrom() - 0.02),
-				cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), criteria.getGpsLonTo() + 0.02)));
+				cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), criteria.getGpsLon() - ALLOWED_GPS_SIMILARITY_VARIANCE),
+				cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), criteria.getGpsLon() + ALLOWED_GPS_SIMILARITY_VARIANCE)));
 
 		CountryReferenceDto criteriaCountry = criteria.getCountry();
 		RegionReferenceDto criteriaRegion = criteria.getRegion();
