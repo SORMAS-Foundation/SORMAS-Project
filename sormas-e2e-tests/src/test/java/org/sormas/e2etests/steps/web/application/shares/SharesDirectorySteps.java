@@ -109,12 +109,13 @@ public class SharesDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(EXTRA_COMMENT_INPUT_SHARE_POPUP, comment);
         });
 
-      And(
-              "I fill comment in surveillance report notification details with random string",
-              () -> {
-                  generatedRandomStringCase = faker.animal().name();
-                  webDriverHelpers.fillInWebElement(SURVEILLANCE_REPORT_NOTIFICATION_DETAILS, generatedRandomStringCase);
-              });
+    And(
+        "I fill comment in surveillance report notification details with random string",
+        () -> {
+          generatedRandomStringCase = faker.animal().name();
+          webDriverHelpers.fillInWebElement(
+              SURVEILLANCE_REPORT_NOTIFICATION_DETAILS, generatedRandomStringCase);
+        });
 
     When(
         "I check if accept button does not appear in Shares Page",

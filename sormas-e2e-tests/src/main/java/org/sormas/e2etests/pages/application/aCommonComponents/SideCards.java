@@ -28,9 +28,9 @@ public class SideCards {
   public static final By HAND_THE_OWNERSHIP_CHECKBOX =
       By.cssSelector(".popupContent #handOverOwnership label");
   public static final By EXCLUDE_PERSONAL_DATA_CHECKBOX =
-          By.cssSelector(".popupContent #pseudonymizeData label");
+      By.cssSelector(".popupContent #pseudonymizeData label");
   public static final By SHARE_REPORT_CHECKBOX =
-          By.cssSelector(".popupContent #withSurveillanceReports label");
+      By.cssSelector(".popupContent #withSurveillanceReports label");
   public static final By ADDED_SAMPLES_IN_SAMPLE_CARD =
       By.xpath("//*[@location='samples']//*[@class='v-slot v-slot-s-list']/div/div/div/div");
   public static final By EDIT_SAMPLE_BUTTON = By.xpath("//div[contains(@id, 'edit-sample')]");
@@ -42,6 +42,7 @@ public class SideCards {
       By.xpath("//div[contains(@id, 'see-associated-message')]");
   public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
   public static final By SURVEILLANCE_REPORT_NOTIFICATION_DETAILS = By.id("notificationDetails");
+  public static final By POPUP_EDIT_REPORT_WINDOW_SAVE_BUTTON = By.cssSelector(".v-window #commit");
 
   public static By checkTextInHandoverSideComponent(String text) {
     return By.xpath(

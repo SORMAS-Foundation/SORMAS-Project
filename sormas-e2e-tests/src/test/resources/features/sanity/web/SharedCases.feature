@@ -1290,6 +1290,10 @@ Feature: Sharing cases between environments tests
     Then I create a new person and a new case from received message
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
+
+    #tO REMOVE
+   # And I click on the Cases button from navbar
+
     Then I click on the first Case ID from Case Directory
     And I click on edit surveillance report
     And I fill comment in surveillance report notification details with random string
