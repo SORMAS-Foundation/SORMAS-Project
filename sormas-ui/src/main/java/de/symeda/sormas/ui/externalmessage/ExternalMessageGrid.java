@@ -94,7 +94,6 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			.setSortable(false);
 
 		addComponentColumn(this::buildProcessComponent).setId(COLUMN_PROCESS).setSortable(false);
-
 		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD).setSortable(false);
 
 		setColumns(
