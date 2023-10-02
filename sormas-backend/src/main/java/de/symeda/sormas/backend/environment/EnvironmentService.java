@@ -22,6 +22,9 @@ import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -31,6 +34,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
@@ -41,6 +45,8 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class EnvironmentService extends AbstractCoreAdoService<Environment, EnvironmentJoins> {
 
+	private static final double ALLOWED_GPS_SIMILARITY_VARIANCE = 0.2d;
+
 	@EJB
 	private UserService userService;
 	@EJB
@@ -48,6 +54,20 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	public EnvironmentService() {
 		super(Environment.class, DeletableEntityType.ENVIRONMENT);
+	}
+
+	public String getSimilarEnvironmentUuid(EnvironmentCriteria criteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Environment> root = cq.from(Environment.class);
+		EnvironmentQueryContext queryContext = new EnvironmentQueryContext(cb, cq, root);
+
+		cq.select(root.get(Environment.UUID));
+		cq.where(buildSimilarityFilters(criteria, cb, root, queryContext));
+
+		List<String> results = em.createQuery(cq).getResultList();
+		return results.isEmpty() ? null : results.get(0);
 	}
 
 	@Override
@@ -249,6 +269,79 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 				environmentCriteria.getGpsLonTo(),
 				cb,
 				joins));
+
+		return filter;
+	}
+
+	private Predicate buildSimilarityFilters(
+		EnvironmentCriteria criteria,
+		CriteriaBuilder cb,
+		Root<Environment> root,
+		EnvironmentQueryContext queryContext) {
+
+		// Environment media and GPS coordinates must always be present for environments to be considered as duplicates
+		if (criteria.getEnvironmentMedia() == null || criteria.getGpsLat() == null || criteria.getGpsLon() == null) {
+			return cb.disjunction();
+		}
+
+		EnvironmentJoins joins = queryContext.getJoins();
+
+		Predicate filter = createDefaultFilter(cb, root);
+
+		// Environment media
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.and(
+				cb.isNotNull(root.get(Environment.ENVIRONMENT_MEDIA)),
+				cb.equal(root.get(Environment.ENVIRONMENT_MEDIA), criteria.getEnvironmentMedia())));
+
+		// GPS coordinates
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.and(
+				cb.isNotNull(joins.getLocation().get(Location.LATITUDE)),
+				cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), criteria.getGpsLat() - ALLOWED_GPS_SIMILARITY_VARIANCE),
+				cb.lessThanOrEqualTo(joins.getLocation().get(Location.LATITUDE), criteria.getGpsLat() + ALLOWED_GPS_SIMILARITY_VARIANCE)));
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.and(
+				cb.isNotNull(joins.getLocation().get(Location.LONGITUDE)),
+				cb.greaterThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), criteria.getGpsLon() - ALLOWED_GPS_SIMILARITY_VARIANCE),
+				cb.lessThanOrEqualTo(joins.getLocation().get(Location.LONGITUDE), criteria.getGpsLon() + ALLOWED_GPS_SIMILARITY_VARIANCE)));
+
+		CountryReferenceDto criteriaCountry = criteria.getCountry();
+		RegionReferenceDto criteriaRegion = criteria.getRegion();
+		DistrictReferenceDto criteriaDistrict = criteria.getDistrict();
+		// Country
+		if (criteriaCountry != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.isNull(joins.getCountry()), cb.equal(joins.getCountry().get(Country.UUID), criteria.getCountry().getUuid())));
+		}
+		// Region
+		if (criteriaRegion != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.or(cb.isNull(joins.getRegion()), cb.equal(joins.getRegion().get(Region.UUID), criteria.getRegion().getUuid())));
+		}
+		// District
+		if (criteriaDistrict != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.isNull(joins.getDistrict()), cb.equal(joins.getDistrict().get(District.UUID), criteria.getDistrict().getUuid())));
+		}
+
+		// External ID
+		if (StringUtils.isNotBlank(criteria.getExternalId())) {
+			filter = CriteriaBuilderHelper.or(
+				cb,
+				cb.and(cb.isNull(root.get(Environment.EXTERNAL_ID)), filter),
+				cb.equal(root.get(Environment.EXTERNAL_ID), criteria.getExternalId()));
+		}
 
 		return filter;
 	}

@@ -46,12 +46,16 @@ public class EnvironmentImporter extends DataImporter {
 		String[][] entityPropertyPaths,
 		boolean firstLine)
 		throws IOException, InvalidColumnException, InterruptedException {
+
 		ImportLineResultDto<EnvironmentDto> importResult =
 			environmentImportFacade.importEnvironmentData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
 
 		if (importResult.isError()) {
 			writeImportError(values, importResult.getMessage());
 			return ImportLineResult.ERROR;
+		} else if (importResult.isDuplicate()) {
+			writeImportError(values, importResult.getMessage());
+			return ImportLineResult.DUPLICATE;
 		}
 
 		return ImportLineResult.SUCCESS;
