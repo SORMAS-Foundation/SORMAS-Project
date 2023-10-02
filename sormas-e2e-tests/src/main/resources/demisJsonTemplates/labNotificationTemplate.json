@@ -351,10 +351,10 @@
             }
         },
         {
-            "fullUrl": "https://demis.rki.de/fhir/Observation/d3539a4c-9093-467a-a3e8-050594afbd59",
+            "fullUrl": "https://demis.rki.de/fhir/Observation/<observation_UUID_to_change>",
             "resource": {
                 "resourceType": "Observation",
-                "id": "d3539a4c-9093-467a-a3e8-050594afbd59",
+                "id": "<observation_UUID_to_change>",
                 "meta": {
                     "profile": [
                         "https://demis.rki.de/fhir/StructureDefinition/PathogenDetectionCVDP"
