@@ -1220,6 +1220,7 @@ public interface Strings {
 	String messageDistrictsArchived = "messageDistrictsArchived";
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
+	String messageDuplicateEnvironmentFound = "messageDuplicateEnvironmentFound";
 	String messageEnterSms = "messageEnterSms";
 	String messageEntitiesNotEditable = "messageEntitiesNotEditable";
 	String messageEntityNotFound = "messageEntityNotFound";
