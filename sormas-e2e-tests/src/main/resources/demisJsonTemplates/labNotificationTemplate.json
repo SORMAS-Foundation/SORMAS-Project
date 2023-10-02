@@ -25,7 +25,7 @@
                 },
                 "identifier": {
                     "system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
-                    "value": "bc6a490d-7221-5dbf-8d00-0617359b78fb"
+                    "value": "<report_UUID_to_change>"
                 },
                 "status": "final",
                 "type": {
@@ -65,7 +65,7 @@
                             "type": "Composition",
                             "identifier": {
                                 "system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
-                                "value": "bc6a490d-7221-5dbf-8d00-0617359b78fb"
+                                "value": "<report_UUID_to_change>"
                             }
                         }
                     }
@@ -83,7 +83,7 @@
                         },
                         "entry": [
                             {
-                                "reference": "DiagnosticReport/61ebe359-bfdc-4613-8bf2-c5e300945f0n19"
+                                "reference": "DiagnosticReport/<observation_UUID_to_change>"
                             }
                         ]
                     }
@@ -165,7 +165,7 @@
                             "Teststraße 123a Dritter Hinterhof"
                         ],
                         "city": "Teststadt",
-                        "postalCode": "20095",
+                        "postalCode": "<postal_code_to_change>",
                         "country": "20422"
                     }
                 ],
@@ -173,9 +173,9 @@
                     {
                         "name": {
                             "use": "official",
-                            "family": "NachnameAnsprechpartnerIn",
+                            "family": "<last_name_to_change>",
                             "given": [
-                                "VornameAnsprechpartnerIn"
+                                "<first_name_to_change>"
                             ]
                         }
                     }
@@ -344,17 +344,17 @@
                             "Kurzer Weg 15"
                         ],
                         "city": "Berlin",
-                        "postalCode": "20095",
+                        "postalCode": "<postal_code_to_change>",
                         "country": "20422"
                     }
                 ]
             }
         },
         {
-            "fullUrl": "https://demis.rki.de/fhir/Observation/d3539a4c-9093-467a-a3e8-050594afbd59",
+            "fullUrl": "https://demis.rki.de/fhir/Observation/<observation_UUID_to_change>",
             "resource": {
                 "resourceType": "Observation",
-                "id": "d3539a4c-9093-467a-a3e8-050594afbd59",
+                "id": "<observation_UUID_to_change>",
                 "meta": {
                     "profile": [
                         "https://demis.rki.de/fhir/StructureDefinition/PathogenDetectionCVDP"
@@ -413,15 +413,15 @@
                     ]
                 },
                 "specimen": {
-                    "reference": "Specimen/47d61bca-9c53-4422-bb33-3621da084bf4"
+                    "reference": "Specimen/<specimen_UUID_to_change>"
                 }
             }
         },
         {
-            "fullUrl": "https://demis.rki.de/fhir/Specimen/47d61bca-9c53-4422-bb33-3621da084bf4",
+            "fullUrl": "https://demis.rki.de/fhir/Specimen/<specimen_UUID_to_change>",
             "resource": {
                 "resourceType": "Specimen",
-                "id": "47d61bca-9c53-4422-bb33-3621da084bf4",
+                "id": "<specimen_UUID_to_change>",
                 "meta": {
                     "profile": [
                         "https://demis.rki.de/fhir/StructureDefinition/SpecimenCVDP"
@@ -518,7 +518,7 @@
                         ],
                         "city": "Berlin",
                         "state": "DE-BE",
-                        "postalCode": "20095",
+                        "postalCode": "<postal_code_to_change>",
                         "country": "20422"
                     }
                 ]
