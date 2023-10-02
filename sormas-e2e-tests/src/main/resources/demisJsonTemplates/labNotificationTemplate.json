@@ -413,15 +413,15 @@
                     ]
                 },
                 "specimen": {
-                    "reference": "Specimen/47d61bca-9c53-4422-bb33-3621da084bf4"
+                    "reference": "Specimen/<specimen_UUID_to_change>"
                 }
             }
         },
         {
-            "fullUrl": "https://demis.rki.de/fhir/Specimen/47d61bca-9c53-4422-bb33-3621da084bf4",
+            "fullUrl": "https://demis.rki.de/fhir/Specimen/<specimen_UUID_to_change>",
             "resource": {
                 "resourceType": "Specimen",
-                "id": "47d61bca-9c53-4422-bb33-3621da084bf4",
+                "id": "<specimen_UUID_to_change>",
                 "meta": {
                     "profile": [
                         "https://demis.rki.de/fhir/StructureDefinition/SpecimenCVDP"
