@@ -1339,5 +1339,5 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 9
     Then I check that the case has no samples on side card for DE
     And I check that that surveillance report has no connected with lab message
-    And I click on edit surveillance report
+    And I click on view surveillance report
     And Total number of read only fields should be 9

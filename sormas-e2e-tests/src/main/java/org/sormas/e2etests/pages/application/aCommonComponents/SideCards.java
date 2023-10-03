@@ -38,6 +38,8 @@ public class SideCards {
       By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
   public static final By DISPLAY_ASSOCIATED_EXTERNAL_MESSAGE_BUTTON =
           By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'see-associated-message')]");
+  public static final By VIEW_SURVEILLANCE_REPORT_BUTTON =
+          By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'view')]");
   public static final By SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON =
       By.xpath("//div[contains(@id, 'see-associated-lab-messages')]");
   public static final By REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON =
