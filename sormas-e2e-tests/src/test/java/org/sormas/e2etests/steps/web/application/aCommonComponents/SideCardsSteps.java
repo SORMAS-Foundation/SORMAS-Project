@@ -206,6 +206,13 @@ public class SideCardsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_SURVEILLANCE_REPORT_BUTTON);
         });
 
+      When(
+              "I check that that surveillance report has no connected with lab message",
+              () -> {
+                  softly.assertFalse(webDriverHelpers.isElementPresent(DISPLAY_ASSOCIATED_EXTERNAL_MESSAGE_BUTTON));
+                  softly.assertAll();
+              });
+
     When(
         "I check if edit sample button is unavailable",
         () -> {
