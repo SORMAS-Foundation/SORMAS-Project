@@ -181,6 +181,16 @@ public class SideCardsSteps implements En {
           softly.assertAll();
         });
 
+      Then(
+              "^I check that the case has no samples on side card$",
+              () -> {
+                  softly.assertEquals(
+                          webDriverHelpers.getTextFromWebElement(ADDED_SAMPLES_IN_SAMPLE_CARD),
+                          "There are no samples for this case",
+                          "The case has sample!");
+                  softly.assertAll();
+              });
+
     When(
         "I click on edit Sample",
         () -> {
