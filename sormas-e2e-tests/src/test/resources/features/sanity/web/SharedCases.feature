@@ -1336,5 +1336,5 @@ Feature: Sharing cases between environments tests
     Then I accept first entity from table in Shares Page
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
-    Then I check that the number of added samples on the Edit case page is 0
     And Total number of read only fields should be 10
+    Then I check that the number of added samples on the Edit case page is 0
