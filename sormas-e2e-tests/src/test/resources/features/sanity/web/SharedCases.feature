@@ -1321,7 +1321,6 @@ Feature: Sharing cases between environments tests
    # And I click on the Cases button from navbar
 
     Then I click on the first Case ID from Case Directory
-    And I collect uuid of the case
     And I click on edit surveillance report
     And I fill comment in surveillance report notification details with random string
     And I click on Save popup button
@@ -1335,5 +1334,7 @@ Feature: Sharing cases between environments tests
     Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
-    And I click on the Cases button from navbar
-    And I select first created case for person from Cases list
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    Then I check that the number of added samples on the Edit case page is 0
+    And Total number of read only fields should be 10
