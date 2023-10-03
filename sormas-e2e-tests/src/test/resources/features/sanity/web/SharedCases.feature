@@ -1307,7 +1307,7 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
-    Given API : Login to DEMIS server
+   # Given API : Login to DEMIS server
    Then I create and send Laboratory Notification
     And I log in as a S2S
     Then I click on the Messages button from navbar
@@ -1337,4 +1337,4 @@ Feature: Sharing cases between environments tests
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
     And Total number of read only fields should be 9
-    Then I check that the case has no samples on side card
+    Then I check that the case has no samples on side card for DE
