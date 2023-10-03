@@ -25,7 +25,7 @@
                 },
                 "identifier": {
                     "system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
-                    "value": "bc6a490d-7221-5dbf-8d00-0617359b78fb"
+                    "value": "<report_UUID_to_change>"
                 },
                 "status": "final",
                 "type": {
@@ -65,7 +65,7 @@
                             "type": "Composition",
                             "identifier": {
                                 "system": "https://demis.rki.de/fhir/NamingSystem/NotificationId",
-                                "value": "bc6a490d-7221-5dbf-8d00-0617359b78fb"
+                                "value": "<report_UUID_to_change>"
                             }
                         }
                     }
@@ -351,10 +351,10 @@
             }
         },
         {
-            "fullUrl": "https://demis.rki.de/fhir/Observation/<observation_UUID_to_change>",
+            "fullUrl": "https://demis.rki.de/fhir/Observation/d3539a4c-9093-467a-a3e8-050594afbd59",
             "resource": {
                 "resourceType": "Observation",
-                "id": "<observation_UUID_to_change>",
+                "id": "d3539a4c-9093-467a-a3e8-050594afbd59",
                 "meta": {
                     "profile": [
                         "https://demis.rki.de/fhir/StructureDefinition/PathogenDetectionCVDP"
