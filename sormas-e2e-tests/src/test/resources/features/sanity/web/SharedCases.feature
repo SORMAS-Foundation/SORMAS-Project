@@ -1321,6 +1321,7 @@ Feature: Sharing cases between environments tests
    # And I click on the Cases button from navbar
 
     Then I click on the first Case ID from Case Directory
+    And I collect uuid of the case
     And I click on edit surveillance report
     And I fill comment in surveillance report notification details with random string
     And I click on Save popup button
