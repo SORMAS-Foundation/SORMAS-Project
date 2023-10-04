@@ -16219,6 +16219,8 @@ components:
       properties:
         assignee:
           $ref: '#/components/schemas/UserReferenceDto'
+        automaticProcessingPossible:
+          type: boolean
         caseReportDate:
           type: string
           format: date-time
