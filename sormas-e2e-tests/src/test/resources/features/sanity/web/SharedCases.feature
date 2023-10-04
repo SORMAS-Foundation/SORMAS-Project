@@ -1307,7 +1307,7 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
-   Given API : Login to DEMIS server
+  Given API : Login to DEMIS server
    Then I create and send Laboratory Notification
     And I log in as a S2S
     Then I click on the Messages button from navbar
@@ -1317,11 +1317,9 @@ Feature: Sharing cases between environments tests
     Then I create a new person and a new case from received message
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
-    #tO REMOVE
-   # And I click on the Cases button from navbar
-
     Then I click on the first Case ID from Case Directory
     And I click on edit surveillance report
+    Then I collect data from surveillance report
     And I fill comment in surveillance report notification details with random string
     And I click on Save popup button
     Then I click on share button
@@ -1340,4 +1338,5 @@ Feature: Sharing cases between environments tests
     Then I check that the case has no samples on side card for DE
     And I check that that surveillance report has no connected with lab message
     And I click on view surveillance report
-    And Total number of read only fields should be 9
+    And Total number of read only fields should be 13
+    Then I check that data present in target are match to data from source in surveillance report

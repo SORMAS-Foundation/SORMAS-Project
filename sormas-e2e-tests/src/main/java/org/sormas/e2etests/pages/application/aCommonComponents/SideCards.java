@@ -37,9 +37,10 @@ public class SideCards {
   public static final By EDIT_SURVEILLANCE_REPORT_BUTTON =
       By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'edit')]");
   public static final By DISPLAY_ASSOCIATED_EXTERNAL_MESSAGE_BUTTON =
-          By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'see-associated-message')]");
+      By.xpath(
+          "//div[@location='surveillanceReports']//div[contains(@id, 'see-associated-message')]");
   public static final By VIEW_SURVEILLANCE_REPORT_BUTTON =
-          By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'view')]");
+      By.xpath("//div[@location='surveillanceReports']//div[contains(@id, 'view')]");
   public static final By SAMPLES_DISPLAY_ASSOCIATED_LAB_MESSAGES_BUTTON =
       By.xpath("//div[contains(@id, 'see-associated-lab-messages')]");
   public static final By REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON =
@@ -47,6 +48,18 @@ public class SideCards {
   public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
   public static final By SURVEILLANCE_REPORT_NOTIFICATION_DETAILS = By.id("notificationDetails");
   public static final By POPUP_EDIT_REPORT_WINDOW_SAVE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By SURVEILLANCE_REPORT_UUID_TEXT = By.cssSelector(".popupContent #uuid");
+  public static final By SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT =
+      By.cssSelector(".popupContent #externalId");
+  public static final By REPORTER_FACILITY_DETAILS =
+      By.cssSelector(".popupContent #facilityDetails");
+  public static final By SURVEILLANCE_REPORT_REPORTING_USER_TEXT =
+      By.cssSelector("#reportingUser > input");
+  public static final By TYPE_OF_REPORTING_COMBOBOX = By.cssSelector("#reportingType > div");
+  public static final By REPORTER_FACILITY_COMBOBOX = By.cssSelector("#facility > div");
+
+  public static final By SURVEILLANCE_DATE_OF_REPORT =
+      By.cssSelector(".v-window #reportDate input");
 
   public static By checkTextInHandoverSideComponent(String text) {
     return By.xpath(
