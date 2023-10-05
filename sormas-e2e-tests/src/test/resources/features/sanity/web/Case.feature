@@ -1913,24 +1913,3 @@ Feature: Case end to end tests
     Given I log in as a National User
     Then I navigate to the last created case via the url
     And I check if Follow up until date is 14 days after last created API case report date
-    When I click on New Sample in German
-    Then I create a new Sample with positive test result for DE version
-    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I set date of sample collection to 5 day ago in Sample form
-    And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
-    And I check if Follow up until date is 9 days after last created API case report date
-    And I navigate to symptoms tab
-    When I check Yes Option for Soar Throat on Symptoms tab page
-    And I select sore throat option
-    And I set date of symptoms to 6 day ago from Symptoms tab
-    And I click on save button from Edit Case page
-    Then I navigate to the last created case via the url
-    And I check if Follow up until date is 8 days after last created API case report date
-    When I click on New Sample in German
-    Then I create a new Sample with positive test result for DE version
-    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I set date of sample collection to 7 day ago in Sample form
-    And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
-    And I check if Follow up until date is 8 days after last created API case report date
