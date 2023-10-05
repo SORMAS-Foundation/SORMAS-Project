@@ -260,10 +260,6 @@ public class SideCardsSteps implements En {
               webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
               "Reporter facility details is not equal");
           softly.assertEquals(
-              reporterFacilityDetails,
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
-              "Reporter facility details is not equal");
-          softly.assertEquals(
               dateOfReport,
               webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
               "Date of report is not equal");
