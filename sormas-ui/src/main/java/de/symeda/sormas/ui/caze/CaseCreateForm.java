@@ -50,6 +50,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -97,14 +99,17 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
+	private ComboBox responsibleRegionCombo;
 	private ComboBox responsibleDistrictCombo;
 	private ComboBox responsibleCommunityCombo;
 	private CheckBox differentPlaceOfStayJurisdiction;
 	private CheckBox differentPointOfEntryJurisdiction;
+	private ComboBox regionCombo;
 	private ComboBox districtCombo;
 	private ComboBox communityCombo;
 	private ComboBox facilityCombo;
 	private ComboBox pointOfEntryDistrictCombo;
+	private NullableOptionGroup ogCaseOrigin;
 
 	private PersonCreateForm personCreateForm;
 
@@ -168,7 +173,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	protected void addFields() {
 
-		NullableOptionGroup ogCaseOrigin = addField(CaseDataDto.CASE_ORIGIN, NullableOptionGroup.class);
+		ogCaseOrigin = addField(CaseDataDto.CASE_ORIGIN, NullableOptionGroup.class);
 		ogCaseOrigin.setRequired(true);
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
@@ -201,6 +206,21 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
 
+		// Jurisdiction fields
+		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
+		jurisdictionHeadingLabel.addStyleName(H3);
+		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
+
+		responsibleRegionCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
+		responsibleRegionCombo.setRequired(true);
+		responsibleDistrictCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrictCombo.setRequired(true);
+		responsibleCommunityCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunityCombo.setNullSelectionAllowed(true);
+		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
+
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegionCombo, responsibleDistrictCombo, responsibleCommunityCombo);
+
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
 
@@ -208,25 +228,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		placeOfStayHeadingLabel.addStyleName(H3);
 		getContent().addComponent(placeOfStayHeadingLabel, PLACE_OF_STAY_HEADING_LOC);
 
-		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
+		regionCombo = addInfrastructureField(CaseDataDto.REGION);
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
-
-		// jurisdictionfields
-		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
-		jurisdictionHeadingLabel.addStyleName(H3);
-		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
-
-		ComboBox responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
-		responsibleRegion.setRequired(true);
-		responsibleDistrictCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
-		responsibleDistrictCombo.setRequired(true);
-		responsibleCommunityCombo = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
-		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
-
-		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
 		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
@@ -239,7 +244,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
-			Arrays.asList(region, districtCombo, communityCombo),
+			Arrays.asList(regionCombo, districtCombo, communityCombo),
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
@@ -251,7 +256,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		FieldHelper.setRequiredWhen(
 			differentPlaceOfStayJurisdiction,
-			Arrays.asList(region, districtCombo),
+			Arrays.asList(regionCombo, districtCombo),
 			Collections.singletonList(Boolean.TRUE),
 			false,
 			null);
@@ -314,7 +319,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			ogCaseOrigin.setReadOnly(true);
 		}
 
-		region.addValueChangeListener(e -> {
+		regionCombo.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
@@ -382,12 +387,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
 		facilityType.addValueChangeListener(e -> updateFacility());
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			region.setReadOnly(true);
-			responsibleRegion.setReadOnly(true);
+			regionCombo.setReadOnly(true);
+			responsibleRegionCombo.setReadOnly(true);
 			districtCombo.setReadOnly(true);
 			responsibleDistrictCombo.setReadOnly(true);
 			communityCombo.setReadOnly(true);
@@ -518,6 +523,20 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			updateDiseaseVariant(disease);
 			personCreateForm.updatePresentConditionEnum(disease);
 		}
+	}
+
+	private void hideAndFillJurisdictionFields() {
+
+		ogCaseOrigin.setVisible(false);
+		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
+		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
+		differentPlaceOfStayJurisdiction.setVisible(false);
+		responsibleRegionCombo.setVisible(false);
+		responsibleRegionCombo.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		responsibleDistrictCombo.setVisible(false);
+		responsibleDistrictCombo.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		responsibleCommunityCombo.setVisible(false);
+		responsibleCommunityCombo.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
 	private void updateDiseaseVariant(Disease disease) {
@@ -686,6 +705,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		String personUuid = casePersonReference == null ? null : casePersonReference.getUuid();
 		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getByUuid(personUuid);
 		personCreateForm.setPerson(personByUuid);
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 
 	public void setSearchedPerson(PersonDto searchedPerson) {

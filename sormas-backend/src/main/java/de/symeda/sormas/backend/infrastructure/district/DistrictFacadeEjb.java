@@ -283,9 +283,8 @@ public class DistrictFacadeEjb
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -323,9 +322,8 @@ public class DistrictFacadeEjb
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
 
 		return target;
 	}

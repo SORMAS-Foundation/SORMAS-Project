@@ -298,6 +298,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private CheckBox differentPlaceOfStayJurisdiction;
+	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
 	private ComboBox districtCombo;
@@ -1015,7 +1016,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
+		responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
 		responsibleDistrict = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrict.setRequired(true);
@@ -1412,6 +1413,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
+	}
+
+	private void hideJurisdictionFields() {
+
+		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
+		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
+		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
+		differentPlaceOfStayJurisdiction.setVisible(false);
+		responsibleRegion.setVisible(false);
+		responsibleDistrict.setVisible(false);
+		responsibleCommunity.setVisible(false);
 	}
 
 	private void updateFacilityOrHome() {

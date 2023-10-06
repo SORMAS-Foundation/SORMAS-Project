@@ -224,13 +224,12 @@ public class CountryFacadeEjb
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setDefaultName(entity.getDefaultName());
-		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setIsoCode(entity.getIsoCode());
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -278,11 +277,11 @@ public class CountryFacadeEjb
 		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setDefaultName(source.getDefaultName());
-		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
+
 		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));

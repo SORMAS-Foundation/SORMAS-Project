@@ -6,9 +6,11 @@ import de.symeda.sormas.api.EntityDto;
 
 public abstract class InfrastructureDto extends EntityDto {
 
-	private boolean centrallyManaged;
+	public static final String DEFAULT_INFRASTRUCTURE = "defaultInfrastructure";
 
+	private boolean centrallyManaged;
 	private boolean archived;
+	private boolean defaultInfrastructure;
 
 	protected InfrastructureDto() {
 	}
@@ -34,4 +36,11 @@ public abstract class InfrastructureDto extends EntityDto {
 		this.archived = archived;
 	}
 
+	public boolean isDefaultInfrastructure() {
+		return defaultInfrastructure;
+	}
+
+	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
+		this.defaultInfrastructure = defaultInfrastructure;
+	}
 }

@@ -44,6 +44,7 @@ public interface Validations {
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
+	String defaultInfrastructureAlreadyExisting = "defaultInfrastructureAlreadyExisting";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";

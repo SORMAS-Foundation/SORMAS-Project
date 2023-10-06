@@ -95,6 +95,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 	// todo remove columnName later and handle this completely here. This is not possible due to #6549 now.
 	protected List<ADO> getByExternalId(String externalId, String columnName, boolean includeArchived) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
@@ -107,7 +108,17 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
+	}
 
+	public ADO getDefaultInfrastructure() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.where(cb.and(createBasicFilter(cb, from), cb.isTrue(from.get(InfrastructureAdo.DEFAULT_INFRASTRUCTURE))));
+
+		List<ADO> result = em.createQuery(cq).getResultList();
+		return result.size() > 0 ? result.get(0) : null;
 	}
 
 	public abstract List<ADO> getByExternalId(String externalId, boolean includeArchived);

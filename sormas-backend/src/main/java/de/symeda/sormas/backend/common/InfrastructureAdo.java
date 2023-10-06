@@ -16,8 +16,11 @@ public abstract class InfrastructureAdo extends AbstractDomainObject {
 	// todo this should be included, however, we face problems as externalID used used sometimes in the code. See #6549.
 	//public static final String EXTERNAL_ID = "externalId";
 	public static final String ARCHIVED = "archived";
+	public static final String DEFAULT_INFRASTRUCTURE = "defaultInfrastructure";
 
 	private boolean centrallyManaged;
+	private boolean archived;
+	private boolean defaultInfrastructure;
 
 	@Column(name = "centrally_managed")
 	public boolean isCentrallyManaged() {
@@ -28,8 +31,6 @@ public abstract class InfrastructureAdo extends AbstractDomainObject {
 		this.centrallyManaged = centrallyManaged;
 	}
 
-	private boolean archived;
-
 	@Column
 	public boolean isArchived() {
 		return archived;
@@ -37,5 +38,14 @@ public abstract class InfrastructureAdo extends AbstractDomainObject {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@Column
+	public boolean isDefaultInfrastructure() {
+		return defaultInfrastructure;
+	}
+
+	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
+		this.defaultInfrastructure = defaultInfrastructure;
 	}
 }

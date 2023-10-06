@@ -7,8 +7,11 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -25,7 +28,8 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		+ fluidRowLocs(PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT)
 		+ fluidRowLocs(PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
-		+ fluidRowLocs(PointOfEntryDto.ACTIVE, "");
+		+ fluidRowLocs(PointOfEntryDto.ACTIVE)
+		+ fluidRowLocs(InfrastructureDto.DEFAULT_INFRASTRUCTURE);
 
 	private boolean create;
 
@@ -54,12 +58,17 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		ComboBox cbDistrict = addInfrastructureField(PointOfEntryDto.DISTRICT);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			addField(InfrastructureDto.DEFAULT_INFRASTRUCTURE, CheckBox.class);
+		}
+
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
 		tfLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLatitude.getCaption()));
-        tfLongitude.setConverter(new StringToAngularLocationConverter());
+		tfLongitude.setConverter(new StringToAngularLocationConverter());
 		tfLongitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLongitude.getCaption()));
 
-        cbRegion.addValueChangeListener(e -> {
+		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
 				.updateItems(cbDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);

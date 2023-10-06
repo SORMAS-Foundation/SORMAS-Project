@@ -193,10 +193,9 @@ public class ContinentFacadeEjb
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setDefaultName(entity.getDefaultName());
-		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setUuid(entity.getUuid());
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -237,9 +236,8 @@ public class ContinentFacadeEjb
 		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setDefaultName(source.getDefaultName());
-		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
 		return target;
 	}
 

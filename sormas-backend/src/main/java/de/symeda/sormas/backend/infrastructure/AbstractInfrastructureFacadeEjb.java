@@ -47,6 +47,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	private String duplicateErrorMessageProperty;
 	private String archivingNotPossibleMessageProperty;
 	private String dearchivingNotPossibleMessageProperty;
+	private CachedDefaultInfrastructure defaultInfrastructureCache;
 
 	protected AbstractInfrastructureFacadeEjb() {
 		super();
@@ -128,10 +129,33 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	protected DTO doSave(DTO dtoToSave, boolean allowMerge, boolean includeArchived, boolean checkChangeDate, boolean allowUuidOverwrite) {
+
 		if (dtoToSave == null) {
 			return null;
 		}
+
 		ADO existingEntity = service.getByUuid(dtoToSave.getUuid());
+
+		if (dtoToSave.isDefaultInfrastructure()) {
+			ADO defaultInfrastructure = getDefaultInfrastructure();
+			if (defaultInfrastructure != null) {
+				if (!dtoToSave.getUuid().equals(defaultInfrastructure.getUuid())) {
+					throw new ValidationRuntimeException(
+						I18nProperties.getValidationError(
+							Validations.defaultInfrastructureAlreadyExisting,
+							I18nProperties.getCaption(adoClass.getSimpleName()),
+							I18nProperties.getCaption(adoClass.getSimpleName())));
+				}
+			} else {
+				// Default infrastructure set for the first time, needs to be re-queried
+				defaultInfrastructureCache.setQueried(false);
+			}
+		} else if (existingEntity.isDefaultInfrastructure()) {
+			// Default infrastructure removed
+			if (defaultInfrastructureCache != null) {
+				defaultInfrastructureCache.setDefaultInfrastructure(null);
+			}
+		}
 
 		final User currentUser = userService.getCurrentUser();
 
@@ -305,5 +329,59 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	@Override
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer) {
 		// we do not pseudonymize infra data
+	}
+
+	protected void applyToDtoInheritance(DTO dto, ADO entity) {
+		dto.setArchived(entity.isArchived());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
+	}
+
+	protected void applyFillOrBuildEntityInheritance(ADO entity, DTO dto) {
+		entity.setArchived(dto.isArchived());
+		entity.setCentrallyManaged(dto.isCentrallyManaged());
+		entity.setDefaultInfrastructure(dto.isDefaultInfrastructure());
+	}
+
+	protected ADO getDefaultInfrastructure() {
+
+		if (defaultInfrastructureCache == null) {
+			defaultInfrastructureCache = new CachedDefaultInfrastructure();
+		}
+
+		if (!defaultInfrastructureCache.isQueried()) {
+			defaultInfrastructureCache.setDefaultInfrastructure(service.getDefaultInfrastructure());
+			defaultInfrastructureCache.setQueried(true);
+		}
+
+		return defaultInfrastructureCache.getDefaultInfrastructure();
+	}
+
+	@Override
+	public REF_DTO getDefaultInfrastructureReference() {
+		ADO defaultInfrastructure = getDefaultInfrastructure();
+		return defaultInfrastructure != null ? toRefDto(defaultInfrastructure) : null;
+	}
+
+	protected class CachedDefaultInfrastructure {
+
+		private ADO defaultInfrastructure = null;
+		private boolean queried;
+
+		public ADO getDefaultInfrastructure() {
+			return defaultInfrastructure;
+		}
+
+		public void setDefaultInfrastructure(ADO defaultInfrastructure) {
+			this.defaultInfrastructure = defaultInfrastructure;
+		}
+
+		public boolean isQueried() {
+			return queried;
+		}
+
+		public void setQueried(boolean queried) {
+			this.queried = queried;
+		}
 	}
 }

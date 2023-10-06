@@ -233,6 +233,7 @@ public class RegionFacadeEjb
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
 
 		return dto;
 	}
@@ -307,6 +308,7 @@ public class RegionFacadeEjb
 		target.setArea(areaService.getByReferenceDto(source.getArea()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setCentrallyManaged(source.isCentrallyManaged());
+		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 
 		return target;
 	}

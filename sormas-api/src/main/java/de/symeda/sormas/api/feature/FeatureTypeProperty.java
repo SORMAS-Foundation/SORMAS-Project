@@ -28,7 +28,8 @@ public enum FeatureTypeProperty {
 	SHARE_ASSOCIATED_CONTACTS(Boolean.class),
 	SHARE_SAMPLES(Boolean.class),
 	SHARE_IMMUNIZATIONS(Boolean.class),
-	SHARE_REPORTS(Boolean.class);
+	SHARE_REPORTS(Boolean.class),
+	HIDE_JURISDICTION_FIELDS(Boolean.class);
 
 	private final Class<?> returnType;
 

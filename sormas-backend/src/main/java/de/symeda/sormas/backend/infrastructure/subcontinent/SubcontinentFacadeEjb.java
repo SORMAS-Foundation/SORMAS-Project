@@ -225,11 +225,10 @@ public class SubcontinentFacadeEjb
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setDefaultName(entity.getDefaultName());
-		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setUuid(entity.getUuid());
 		dto.setContinent(ContinentFacadeEjb.toReferenceDto(entity.getContinent()));
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -274,13 +273,14 @@ public class SubcontinentFacadeEjb
 		Subcontinent target,
 		boolean checkChangeDate,
 		boolean allowUuidOverwrite) {
+
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setDefaultName(source.getDefaultName());
-		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
 		target.setContinent(continentService.getByReferenceDto(source.getContinent()));
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
+
 		return target;
 	}
 

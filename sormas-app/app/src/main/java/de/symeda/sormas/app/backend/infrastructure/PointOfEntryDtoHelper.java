@@ -43,7 +43,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 	}
 
 	@Override
-	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getPointOfEntryFacade().pullAllSince(since);
 	}
 
@@ -65,6 +65,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		target.setLongitude(source.getLongitude());
 		target.setActive(source.isActive());
 		target.setArchived(source.isArchived());
+		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -78,6 +79,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		target.setLongitude(source.getLongitude());
 		target.setActive(source.isActive());
 		target.setArchived(source.isArchived());
+		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 
 		if (source.getRegion() != null) {
 			Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
@@ -94,12 +96,12 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		}
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 
-    public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry ado) {
+	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry ado) {
 		if (ado == null) {
 			return null;
 		}

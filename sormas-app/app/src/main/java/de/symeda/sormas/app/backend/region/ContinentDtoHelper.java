@@ -56,6 +56,7 @@ public class ContinentDtoHelper extends AdoDtoHelper<Continent, ContinentDto> {
 	protected void fillInnerFromDto(Continent continent, ContinentDto dto) {
 		continent.setDefaultName(dto.getDefaultName());
 		continent.setArchived(dto.isArchived());
+		continent.setDefaultInfrastructure(dto.isDefaultInfrastructure());
 	}
 
 	@Override

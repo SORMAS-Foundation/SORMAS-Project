@@ -145,9 +145,8 @@ public class CommunityFacadeEjb
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
-		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -172,9 +171,9 @@ public class CommunityFacadeEjb
 		target.setName(source.getName());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
+
 		return target;
 	}
 

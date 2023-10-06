@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 353;
+	public static final int DATABASE_VERSION = 354;
 
 	private static DatabaseHelper instance = null;
 
@@ -3136,6 +3136,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 352;
 				getDao(PathogenTest.class)
 					.executeRaw("ALTER TABLE pathogentest ADD COLUMN environmentSample_id BIGINT REFERENCES environmentSamples(id);");
+
+			case 353:
+				currentVersion = 353;
+				getDao(Continent.class).executeRaw("ALTER TABLE continent ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Subcontinent.class).executeRaw("ALTER TABLE subcontinent ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Area.class).executeRaw("ALTER TABLE area ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Community.class).executeRaw("ALTER TABLE community ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(PointOfEntry.class).executeRaw("ALTER TABLE pointOfEntry ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN defaultInfrastructure boolean default false;");
 
 				// ATTENTION: break should only be done after last version
 				break;

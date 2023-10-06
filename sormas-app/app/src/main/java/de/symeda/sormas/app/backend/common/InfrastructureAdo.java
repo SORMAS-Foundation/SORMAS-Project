@@ -11,6 +11,8 @@ public class InfrastructureAdo extends AbstractDomainObject {
 
 	@DatabaseField
 	private boolean archived = false;
+	@DatabaseField
+	private boolean defaultInfrastructure = false;
 
 	public boolean isArchived() {
 		return archived;
@@ -18,5 +20,13 @@ public class InfrastructureAdo extends AbstractDomainObject {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	public boolean isDefaultInfrastructure() {
+		return defaultInfrastructure;
+	}
+
+	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
+		this.defaultInfrastructure = defaultInfrastructure;
 	}
 }

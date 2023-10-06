@@ -12723,4 +12723,27 @@ ALTER TABLE pathogentest_history ALTER sample_id drop not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (527, 'Add pathogen tests to environment samples #12467');
 
+-- 2023-10-05 Add defaultInfrastructure field to infrastructure entities #12550
+ALTER TABLE continent ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE subcontinent ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE country ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE areas ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE region ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE district ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE community ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE pointofentry ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE facility ADD COLUMN defaultinfrastructure boolean default false;
+
+ALTER TABLE continent_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE subcontinent_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE country_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE areas_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE region_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE district_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE community_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE pointofentry_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE facility_history ADD COLUMN defaultinfrastructure boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add defaultInfrastructure field to infrastructure entities #12550');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
