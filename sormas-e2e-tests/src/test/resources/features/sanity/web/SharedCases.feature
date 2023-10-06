@@ -1277,3 +1277,30 @@ Feature: Sharing cases between environments tests
     And I check that Revoked status value is corresponding with entities
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
+
+  @tmsLink=HSP-6268 @env_s2s_2
+  Scenario: S2S - Share a case which was sent to Survnet
+    Given I log in as a S2S
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data using created facility for Survnet DE
+    And I collect uuid of the case
+    And I click on Send to reporting tool button on Edit Case page
+    Then I click on share button
+    And I select organization to share with "s2s_1"
+    And I click to hand over the ownership in Share popup
+    And I fill comment in share popup with "shared to be deleted after"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_1" environment in new driver tab
+    Given I log in as a S2S
+    And I click on the Shares button from navbar
+    Then I accept first entity from table in Shares Page
+    And I click on the Cases button from navbar
+    And I open the last created case with collected UUID by url on "s2s_1" instance
+    Then I check if editable fields are enabled for the case in view
+    And I check if handover card not contains "Status: Ausstehend" shared information
+    And I check if handover card not contains "Kommentar: shared to be deleted after" shared information
+    When I back to tab number 1
+    And I refresh current page
+    And Total number of read only fields should be 10
+    Then Total number of read only fields in Survnet details section should be 3

@@ -28,6 +28,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -97,7 +98,9 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
 		assignee.setNullSelectionAllowed(true);
 
-		addField(ExternalMessageDto.TYPE, ComboBox.class);
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			addField(ExternalMessageDto.TYPE, ComboBox.class);
+		}
 
 		addField(FieldConfiguration.pixelSized(ExternalMessageCriteria.DISEASE, 140));
 		addField(FieldConfiguration.pixelSized(CaseDataDto.DISEASE_VARIANT, 140), ComboBox.class);
