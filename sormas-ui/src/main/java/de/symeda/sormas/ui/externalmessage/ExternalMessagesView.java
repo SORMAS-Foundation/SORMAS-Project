@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -237,7 +238,14 @@ public class ExternalMessagesView extends AbstractView {
 			activeStatus = (ExternalMessageStatus) activeStatusButton.getData();
 		}
 
-		grid.updateProcessColumnVisibility(activeStatus == null || activeStatus.isProcessable());
+		boolean processingPossible = (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT))
+			|| (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
+				&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT))
+			|| (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				&& Objects.requireNonNull(UserProvider.getCurrent())
+					.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT));
+		grid.updateProcessColumnVisibility((activeStatus == null || activeStatus.isProcessable()) && processingPossible);
 	}
 
 	private Button createAndAddStatusButton(@Nullable ExternalMessageStatus status, HorizontalLayout buttonLayout) {

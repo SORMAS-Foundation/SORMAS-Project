@@ -135,6 +135,7 @@ public class ExternalMessageProcessingUIHelper {
 		EntrySelectionField.Options options,
 		ExternalMessageDto labMessage,
 		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback) {
+
 		EntrySelectionField selectField = new EntrySelectionField(labMessage, options);
 
 		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
