@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.provider.DataProviderListener;
@@ -36,6 +37,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -97,10 +99,14 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 
 		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD).setSortable(false);
 
-		setColumns(
+		String[] columns = new String[] {
 			SHOW_MESSAGE,
-			ExternalMessageIndexDto.UUID,
-			ExternalMessageIndexDto.TYPE,
+			ExternalMessageIndexDto.UUID };
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			columns = ArrayUtils.add(columns, ExternalMessageIndexDto.TYPE);
+		}
+		columns = ArrayUtils.addAll(
+			columns,
 			ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 			ExternalMessageIndexDto.REPORTER_NAME,
 			ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
@@ -114,6 +120,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			EDIT_ASSIGNEE,
 			COLUMN_PROCESS,
 			COLUMN_DOWNLOAD);
+		setColumns(columns);
 
 		((Column<ExternalMessageIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ExternalMessageIndexDto, Date>) getColumn(ExternalMessageIndexDto.MESSAGE_DATE_TIME))
