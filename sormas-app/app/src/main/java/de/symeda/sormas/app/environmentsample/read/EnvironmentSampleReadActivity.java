@@ -74,6 +74,9 @@ public class EnvironmentSampleReadActivity extends BaseReadActivity<EnvironmentS
 		case ENVIRONMENT_SAMPLE_INFO:
 			fragment = EnvironmentSampleReadFragment.newInstance(activityRootData);
 			break;
+		case PATHOGEN_TESTS:
+			fragment = EnvironmentSampleReadPathogenTestListFragment.newInstance(activityRootData);
+			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}

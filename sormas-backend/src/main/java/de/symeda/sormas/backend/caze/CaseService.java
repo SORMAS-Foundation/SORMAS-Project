@@ -64,7 +64,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
@@ -1118,36 +1117,44 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	@Override
 	public List<ProcessedEntity> archive(List<String> entityUuids) {
-		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedCases).stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, true);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedCases.addAll(super.archive(remainingUuidsToBeProcessed));
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.archive(uuidsWithoutFailure));
 		}
 
-		return processedCases;
+		return resultList;
 	}
 
 	@Override
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedCases = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
 
-		List<String> remainingUuidsToBeProcessed =
-			getEntitiesToBeProcessed(entityUuids, processedCases).stream().map(caze -> caze.getUuid()).collect(Collectors.toList());
+		List<ProcessedEntity> updatedInExternalSurveillanceTool = updateArchiveFlagInExternalSurveillanceTool(entityUuids, false);
+		List<String> uuidsWithoutFailure = getEntitiesWithoutFailure(entityUuids, updatedInExternalSurveillanceTool).stream()
+			.map(AbstractDomainObject::getUuid)
+			.collect(Collectors.toList());
 
-		if (remainingUuidsToBeProcessed.size() > 0) {
-			processedCases.addAll(super.dearchive(remainingUuidsToBeProcessed, dearchiveReason));
+		List<ProcessedEntity> resultList =
+			updatedInExternalSurveillanceTool.stream().filter(e -> !uuidsWithoutFailure.contains(e.getEntityUuid())).collect(Collectors.toList());
+
+		if (uuidsWithoutFailure.size() > 0) {
+			resultList.addAll(super.dearchive(uuidsWithoutFailure, dearchiveReason));
 		}
 
-		return processedCases;
+		return resultList;
 	}
 
 	private List<ProcessedEntity> updateArchiveFlagInExternalSurveillanceTool(List<String> entityUuids, boolean archived) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 
-		List<String> sharedCaseUuids = getEligibleUuidsForSharingWithExternalSurveillanceTool(entityUuids);
+		List<String> sharedCaseUuids = getUuidsForSharingWithExternalSurvTool(entityUuids);
 		if (!sharedCaseUuids.isEmpty()) {
 			processedEntities = externalSurveillanceToolGatewayFacade.sendCasesInternal(sharedCaseUuids, archived);
 		}
@@ -1155,18 +1162,17 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return processedEntities;
 	}
 
-	private List<String> getEligibleUuidsForSharingWithExternalSurveillanceTool(List<String> entityUuids) {
+	private List<String> getUuidsForSharingWithExternalSurvTool(List<String> entityUuids) {
 		List<String> sharedCaseUuids = new ArrayList<>();
-		List<String> uuidsAllowedToBeShared = getEntityUuidsAllowedToBeShared(entityUuids);
-		if (!uuidsAllowedToBeShared.isEmpty()) {
-			sharedCaseUuids = getSharedCaseUuids(uuidsAllowedToBeShared);
+		List<Long> idsAllowedToBeShared = getEntityIdsAllowedToBeShared(entityUuids);
+		if (!idsAllowedToBeShared.isEmpty()) {
+			sharedCaseUuids = getSharedCaseUuids(idsAllowedToBeShared);
 		}
 
 		return sharedCaseUuids;
 	}
 
-	public List<String> getSharedCaseUuids(List<String> entityUuids) {
-		List<Long> caseIds = getCaseIds(entityUuids);
+	private List<String> getSharedCaseUuids(List<Long> caseIds) {
 		List<String> sharedCaseUuids = new ArrayList<>();
 		List<ExternalShareInfoCountAndLatestDate> caseShareInfos =
 			externalShareInfoService.getShareCountAndLatestDate(caseIds, ExternalShareInfo.CAZE);
@@ -1185,11 +1191,18 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return caseIds;
 	}
 
-	public List<String> getEntityUuidsAllowedToBeShared(List<String> entityUuids) {
-		List<CaseDataDto> casesAllowedToBeShare =
-			caseFacade.getByUuids(entityUuids).stream().filter(c -> !c.isDontShareWithReportingTool()).collect(Collectors.toList());
+	private List<Long> getEntityIdsAllowedToBeShared(List<String> entityUuids) {
+		if (entityUuids == null || entityUuids.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-		return casesAllowedToBeShare.stream().map(CaseDataDto::getUuid).collect(Collectors.toList());
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> from = cq.from(Case.class);
+		cq.where(from.get(Case.UUID).in(entityUuids), cb.isFalse(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
+		cq.select(from.get(Case.ID));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@Override

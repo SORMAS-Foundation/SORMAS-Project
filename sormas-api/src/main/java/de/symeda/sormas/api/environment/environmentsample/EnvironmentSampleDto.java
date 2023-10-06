@@ -392,4 +392,8 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
 	}
+
+	public EnvironmentSampleReferenceDto toReference() {
+		return new EnvironmentSampleReferenceDto(getUuid());
+	}
 }

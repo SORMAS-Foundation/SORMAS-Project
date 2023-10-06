@@ -23,4 +23,6 @@ import org.openqa.selenium.By;
 public class GeneralActions {
 
   public static final By READ_ONLY_FIELDS = By.xpath("//*[@aria-disabled='true']");
+  public static final By READ_ONLY_FIELDS_SURVNET_DETAILS =
+      By.cssSelector("[class='v-label v-disabled v-widget v-label-undef-w']");
 }

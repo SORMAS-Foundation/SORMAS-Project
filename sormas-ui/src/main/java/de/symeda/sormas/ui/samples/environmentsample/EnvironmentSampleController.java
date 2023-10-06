@@ -178,6 +178,6 @@ public class EnvironmentSampleController {
 			}
 		});
 
-		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewTask));
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewEnvironmentSample));
 	}
 }

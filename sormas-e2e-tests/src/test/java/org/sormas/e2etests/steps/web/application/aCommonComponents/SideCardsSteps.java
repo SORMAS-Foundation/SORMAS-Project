@@ -67,6 +67,20 @@ public class SideCardsSteps implements En {
                   + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
           softly.assertAll();
         });
+
+    When(
+        "I check if handover card not contains {string} shared information",
+        (String information) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
+          TimeUnit.SECONDS.sleep(3);
+          softly.assertFalse(
+              webDriverHelpers.isElementPresent(checkTextInHandoverSideComponent(information)),
+              information
+                  + " text is not present in handover component. Found only "
+                  + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
+          softly.assertAll();
+        });
+
     When(
         "I check if handover card contains shared with {string} information",
         (String environmentIdentifier) -> {

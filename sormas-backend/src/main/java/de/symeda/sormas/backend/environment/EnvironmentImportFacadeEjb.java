@@ -39,11 +39,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentImportFacade;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportCellData;
 import de.symeda.sormas.api.importexport.ImportErrorException;
@@ -52,6 +54,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -75,6 +78,8 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 	@EJB
 	private EnvironmentFacadeEjbLocal environmentFacade;
 	@EJB
+	private EnvironmentService environmentService;
+	@EJB
 	private ImportFacadeEjbLocal importFacade;
 	@EJB
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacade;
@@ -90,6 +95,7 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries) {
+
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
@@ -98,6 +104,7 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 		final EnvironmentDto environment = EnvironmentDto.build(userFacade.getCurrentUser());
 		ImportLineResultDto<EnvironmentDto> importResult =
 			buildEnvironment(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, environment);
+
 		if (importResult.isError()) {
 			return importResult;
 		}
@@ -105,6 +112,21 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 		ImportLineResultDto<EnvironmentDto> validationResult = validateEnvironment(environment);
 		if (validationResult.isError()) {
 			return validationResult;
+		} else {
+			LocationDto environmentLocation = environment.getLocation();
+			EnvironmentCriteria criteria = new EnvironmentCriteria().country(environmentLocation.getCountry())
+				.region(environmentLocation.getRegion())
+				.district(environmentLocation.getDistrict())
+				.gpsLat(environmentLocation.getLatitude())
+				.gpsLon(environmentLocation.getLongitude())
+				.environmentMedia(environment.getEnvironmentMedia())
+				.externalId(environment.getExternalId());
+			String similarEnvironmentUuid = environmentService.getSimilarEnvironmentUuid(criteria);
+			if (similarEnvironmentUuid != null) {
+				return ImportLineResultDto.duplicateResult(
+					environment,
+					String.format(I18nProperties.getString(Strings.messageDuplicateEnvironmentFound), similarEnvironmentUuid));
+			}
 		}
 
 		return saveEnvironment(environment);
@@ -117,7 +139,7 @@ public class EnvironmentImportFacadeEjb implements EnvironmentImportFacade {
 		boolean ignoreEmptyEntries,
 		EnvironmentDto environment) {
 
-		return (ImportLineResultDto<EnvironmentDto>) insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, (cellData) -> {
+		return insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, (cellData) -> {
 			try {
 				if (!StringUtils.isEmpty(cellData.getValue())) {
 					insertColumnEntryIntoData(environment, cellData.getValue(), cellData.getEntityPropertyPath());

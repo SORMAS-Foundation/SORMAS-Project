@@ -1049,6 +1049,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public ProcessedEntity archive(String eventUuid, Date endOfProcessingDate) {
 		ProcessedEntity processedEntity = super.archive(eventUuid, endOfProcessingDate);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
@@ -1069,6 +1070,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public ProcessedEntity dearchive(String entityUuid, String dearchiveReason) {
 		ProcessedEntity processedEntity = dearchive(Collections.singletonList(entityUuid), dearchiveReason).get(0);
 

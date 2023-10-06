@@ -38,6 +38,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.environmentsample.EnvironmentSampleSection;
+import de.symeda.sormas.app.pathogentest.edit.PathogenTestNewActivity;
 import de.symeda.sormas.app.sample.ShipmentStatus;
 
 public class EnvironmentSampleEditActivity extends BaseEditActivity<EnvironmentSample> {
@@ -77,6 +78,9 @@ public class EnvironmentSampleEditActivity extends BaseEditActivity<EnvironmentS
 		switch (section) {
 		case ENVIRONMENT_SAMPLE_INFO:
 			fragment = EnvironmentSampleEditFragment.newInstance(activityRootData);
+			break;
+		case PATHOGEN_TESTS:
+			fragment = EnvironmentSampleEditPathogenTestListFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -153,9 +157,9 @@ public class EnvironmentSampleEditActivity extends BaseEditActivity<EnvironmentS
 	public void goToNewView() {
 		EnvironmentSampleSection activeSection = EnvironmentSampleSection.fromOrdinal(getActivePage().getPosition());
 
-//		if (activeSection == SampleSection.PATHOGEN_TESTS) {
-//			PathogenTestNewActivity.startActivity(getContext(), getRootUuid());
-//		}
+		if (activeSection == EnvironmentSampleSection.PATHOGEN_TESTS) {
+			PathogenTestNewActivity.startActivityForEnvironmentSample(getContext(), getRootUuid());
+		}
 	}
 
 	@Override

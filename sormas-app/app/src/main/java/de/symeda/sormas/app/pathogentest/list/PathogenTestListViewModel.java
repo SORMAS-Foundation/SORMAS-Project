@@ -27,6 +27,7 @@ import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.PathogenTestCriteria;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -40,6 +41,14 @@ public class PathogenTestListViewModel extends ViewModel {
 		pathogenTestDataFactory = new PathogenTestDataFactory();
 		PathogenTestCriteria pathogenTestCriteria = new PathogenTestCriteria();
 		pathogenTestCriteria.sample(sample);
+		pathogenTestDataFactory.setPathogenTestCriteria(pathogenTestCriteria);
+		initializeList();
+	}
+
+	public void initializeViewModel(EnvironmentSample environmentSample) {
+		pathogenTestDataFactory = new PathogenTestDataFactory();
+		PathogenTestCriteria pathogenTestCriteria = new PathogenTestCriteria();
+		pathogenTestCriteria.environmentSample(environmentSample);
 		pathogenTestDataFactory.setPathogenTestCriteria(pathogenTestCriteria);
 		initializeList();
 	}
