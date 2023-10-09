@@ -2299,8 +2299,10 @@ public class TestDataCreator {
 		environment.setReportDate(new Date());
 		environment.setReportingUser(reportingUser);
 
+		LocationDto location = environment.getLocation();
+		location.setLongitude(1.0);
+		location.setLatitude(1.0);
 		if (rdcf != null) {
-			LocationDto location = environment.getLocation();
 			location.setRegion(rdcf.region);
 			location.setDistrict(rdcf.district);
 			location.setCommunity(rdcf.community);
@@ -2323,10 +2325,15 @@ public class TestDataCreator {
 	public EnvironmentSampleDto createEnvironmentSample(
 		EnvironmentReferenceDto environment,
 		UserReferenceDto reportingUser,
+		RDCF rdcf,
 		FacilityReferenceDto lab,
 		@Nullable Consumer<EnvironmentSampleDto> extraConfig) {
 		EnvironmentSampleDto sample = EnvironmentSampleDto.build(environment, reportingUser);
 		sample.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+		sample.getLocation().setRegion(rdcf.region);
+		sample.getLocation().setDistrict(rdcf.district);
+		sample.getLocation().setLatitude(1.0);
+		sample.getLocation().setLongitude(1.0);
 		sample.setLaboratory(lab);
 
 		if (extraConfig != null) {
