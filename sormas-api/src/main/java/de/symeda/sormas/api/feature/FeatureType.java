@@ -130,7 +130,7 @@ public enum FeatureType {
 		new FeatureType[] {
 			SAMPLES_LAB },
 		null,
-		null),
+		ImmutableMap.of(FeatureTypeProperty.FETCH_MODE, Boolean.FALSE)),
 	MANUAL_EXTERNAL_MESSAGES(true,
 		true,
 		new FeatureType[] {

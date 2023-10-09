@@ -34,14 +34,18 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionGrid;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
@@ -405,19 +409,47 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 			}
 
 			public Builder addSelectCase(List<CaseSelectionDto> selectableCases) {
-				return add(OptionType.SELECT_CASE, selectableCases);
+				if (!selectableCases.isEmpty()
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+					&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
+					return add(OptionType.SELECT_CASE, selectableCases);
+				} else {
+					return this;
+				}
 			}
 
 			public Builder addSelectContact(List<SimilarContactDto> selectableContacts) {
-				return add(OptionType.SELECT_CONTACT, selectableContacts);
+				if (!selectableContacts.isEmpty()
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
+					&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
+					return add(OptionType.SELECT_CONTACT, selectableContacts);
+				} else {
+					return this;
+				}
 			}
 
 			public Builder addSelectEventParticipant(List<SimilarEventParticipantDto> selectableEventParticipants) {
-				return add(OptionType.SELECT_EVENT_PARTICIPANT, selectableEventParticipants);
+				if (!selectableEventParticipants.isEmpty()
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+					&& Objects.requireNonNull(UserProvider.getCurrent())
+						.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
+					return add(OptionType.SELECT_EVENT_PARTICIPANT, selectableEventParticipants);
+				} else {
+					return this;
+				}
 			}
 
 			public Builder addCreateEntry(OptionType optionType) {
 				return add(optionType, null);
+			}
+
+			public Builder addCreateEntry(OptionType optionType, FeatureType requiredFeatureType, UserRight... requiredUserRights) {
+				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(requiredFeatureType)
+					&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(requiredUserRights)) {
+					return addCreateEntry(optionType);
+				} else {
+					return this;
+				}
 			}
 
 			private Builder add(OptionType optionType, List<? extends Serializable> selectableOptions) {
@@ -428,6 +460,32 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 			public Options build() {
 				return new Options(options);
+			}
+
+			public int size() {
+				return options.size();
+			}
+
+			public PickOrCreateEntryResult getSingleAvailableCreateResult() {
+				if (size() != 1) {
+					return null;
+				} else {
+					PickOrCreateEntryResult result = new PickOrCreateEntryResult();
+					switch (options.get(0).type) {
+					case CREATE_CASE:
+						result.setNewCase(true);
+						break;
+					case CREATE_CONTACT:
+						result.setNewContact(true);
+						break;
+					case CREATE_EVENT_PARTICIPANT:
+						result.setNewEventParticipant(true);
+						break;
+					default:
+						throw new IllegalArgumentException(options.get(0).type.toString());
+					}
+					return result;
+				}
 			}
 		}
 	}

@@ -461,6 +461,7 @@ public class CreateNewSampleSteps implements En {
     When(
         "^I save the created sample",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
