@@ -39,24 +39,18 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf1 = creator.createRDCF();
 		FacilityDto lab1 = creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community, FacilityType.LABORATORY);
 		UserDto ownerUser = creator.createUser(rdcf1, "Env", "Surv", creator.getUserRoleReference(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER));
-		EnvironmentDto environmentWithEmptyLocation = creator.createEnvironment("Test env", EnvironmentMedia.WATER, ownerUser.toReference(), rdcf1);
-		EnvironmentDto environmentWithFilledLocation = creator.createEnvironment("Test env", EnvironmentMedia.WATER, ownerUser.toReference(), rdcf1);
+		EnvironmentDto environment = creator.createEnvironment("Test env", EnvironmentMedia.WATER, ownerUser.toReference(), rdcf1);
 
 		UserDto environmentUser2 =
 			creator.createUser(rdcf1, "Env", "Surv2", creator.getUserRoleReference(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER));
 
 		TestDataCreator.RDCF rdcf2 = creator.createRDCF();
-		UserDto envUserOtherRdcf =
-			creator.createUser(rdcf2, "Env", "Surv3", creator.getUserRoleReference(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER));
 
 		UserDto natUser = creator.createUser(rdcf1, "Nat", "User", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		UserDto adminUser = creator.createUser(rdcf1, "Admin", "User", creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		UserDto survSupUser = creator.createUser(rdcf1, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto survSupUserOtherRdcf =
-			creator.createUser(rdcf2, "Surv", "Sup2", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto commOffUser = creator.createUser(rdcf1, "Comm", "Off", creator.getUserRoleReference(DefaultUserRole.COMMUNITY_OFFICER));
-		UserDto commOffUserOtherRdcf = creator.createUser(rdcf2, "Comm", "Off2", creator.getUserRoleReference(DefaultUserRole.COMMUNITY_OFFICER));
 		UserDto hospInfUser = creator.createUser(rdcf2, "Hosp", "Inf", creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		UserDto poeInfUser = creator.createUser(rdcf2, "Poe", "Inf", creator.getUserRoleReference(DefaultUserRole.POE_INFORMANT));
 
@@ -79,116 +73,71 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 		// owners should be able to see all samples
 		loginWith(ownerUser);
 
-		EnvironmentSampleDto sampleDtoEmptyLocationAll =
-			creator.createEnvironmentSample(environmentWithEmptyLocation.toReference(), ownerUser.toReference(), lab1.toReference(), null);
-		EnvironmentSample sampleEmptyLocationALL = getEnvironmentSampleService().getByUuid(sampleDtoEmptyLocationAll.getUuid());
-		EnvironmentSampleDto sampleDtoRdcf1EnvEmptyLocation =
-			creator.createEnvironmentSample(environmentWithEmptyLocation.toReference(), ownerUser.toReference(), lab1.toReference(), s -> {
-				s.getLocation().setRegion(rdcf1.region);
-				s.getLocation().setDistrict(rdcf1.district);
+		EnvironmentSampleDto sampleDtoRdcf1 =
+			creator.createEnvironmentSample(environment.toReference(), ownerUser.toReference(), rdcf1, lab1.toReference(), s -> {
 				s.getLocation().setCommunity(rdcf1.community);
 			});
-		EnvironmentSample samploRdcf1EnvEmptyLocation = getEnvironmentSampleService().getByUuid(sampleDtoRdcf1EnvEmptyLocation.getUuid());
+		EnvironmentSample samploRdcf1 = getEnvironmentSampleService().getByUuid(sampleDtoRdcf1.getUuid());
 
-		EnvironmentSampleDto sampleDtoEmptyLocationEnvFilledLocation =
-			creator.createEnvironmentSample(environmentWithFilledLocation.toReference(), ownerUser.toReference(), lab1.toReference(), null);
-		EnvironmentSample sampleEmptyLocationEnvFilledLocation =
-			getEnvironmentSampleService().getByUuid(sampleDtoEmptyLocationEnvFilledLocation.getUuid());
-
-		EnvironmentSampleDto sampleDtoFilledLocationEnvFilledLocation =
-			creator.createEnvironmentSample(environmentWithFilledLocation.toReference(), ownerUser.toReference(), lab1.toReference(), null);
-		EnvironmentSample sampleFilledLocationEnvFilledLocation =
-			getEnvironmentSampleService().getByUuid(sampleDtoFilledLocationEnvFilledLocation.getUuid());
+		EnvironmentSampleDto sampleDtoRdcf2 =
+			creator.createEnvironmentSample(environment.toReference(), ownerUser.toReference(), rdcf2, lab1.toReference(), s -> {
+				s.getLocation().setCommunity(rdcf2.community);
+			});
+		EnvironmentSample samploRdcf2 = getEnvironmentSampleService().getByUuid(sampleDtoRdcf2.getUuid());
 
 		// owner should have access to all samples
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(true));
 
-		// user from same RDCF should have access to all samples
+		// user from RDCF1 should have access to sample in RDCF1 but not in RDCF2
 		loginWith(environmentUser2);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(false));
 
-		// user from different RDCF should have no access to the samples
-		loginWith(envUserOtherRdcf);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(false));
 
 		// national user should have access to all samples
 		loginWith(natUser);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(true));
 
 		// admin user should have no access to all samples
 		loginWith(adminUser);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(false));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(false));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(false));
 
-		// surveillance supervisor from same district should have access to all samples
+		// surveillance supervisor from RDCF1 should have access to sample in RDCF1 but not in RDCF2
 		loginWith(survSupUser);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(false));
 
-		// surveillance supervisor from different district should have no access to all samples
-		loginWith(survSupUserOtherRdcf);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(false));
-
-		// community officer from same district should have access to all samples
+		// community officer from RDCF1 should have access to sample in RDCF1 but not in RDCF2
 		loginWith(commOffUser);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
-
-		// community officer from different district should have no access to all samples
-		loginWith(commOffUserOtherRdcf);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(false));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(false));
 
 		// hospital informant is not yet supported
 		loginWith(hospInfUser);
 		Assertions.assertThrowsExactly(
 			NotImplementedException.class,
-			() -> getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL),
+			() -> getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1),
 			"Facility is not supported for environment samples");
 
 		// point of entry informant is not yet supported
 		loginWith(poeInfUser);
 		Assertions.assertThrowsExactly(
 			NotImplementedException.class,
-			() -> getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL),
+			() -> getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1),
 			"Point of entry is not supported for environment samples");
 
 		// lab user from same lab should have access to all samples
 		loginWith(labUser);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(true));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(true));
 
 		// lab user from different lab should have no access to the samples
 		loginWith(labUserOtherLab);
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationALL), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1EnvEmptyLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleEmptyLocationEnvFilledLocation), is(false));
-		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(sampleFilledLocationEnvFilledLocation), is(false));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(false));
+		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(false));
 
 	}
 }
