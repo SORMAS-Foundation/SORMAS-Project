@@ -372,6 +372,34 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 				.count());
 	}
 
+	@Test
+	public void testGetEnvironmentSamplesByPathogenTestDate() {
+		EnvironmentDto environment = creator.createEnvironment("Test river", EnvironmentMedia.WATER, user.toReference(), rdcf, null);
+
+		FacilityDto lab = creator.createFacility("Test lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
+		EnvironmentSampleDto sample = creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+			s.setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
+			s.getLocation().setLatitude(3.0);
+			s.getLocation().setLongitude(4.0);
+		});
+
+		creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.CULTURE,
+			Disease.CORONAVIRUS,
+			DateHelper.subtractDays(new Date(), 2),
+			lab.toReference(),
+			user.toReference(),
+			PathogenTestResultType.POSITIVE,
+			null);
+
+		SampleDashboardCriteria criteria = new SampleDashboardCriteria();
+		criteria.dateBetween(DateHelper.subtractDays(new Date(), 5), new Date());
+		criteria.sampleDateType(SampleDashboardFilterDateType.MOST_RELEVANT);
+		assertEquals(1, getSampleDashboardFacade().countEnvironmentalSamplesForMap(criteria));
+		assertEquals(1, getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria).size());
+	}
+
 	public SampleDto createSampleByResultType(
 		CaseDataDto caze,
 		Date sampleDateTime,
