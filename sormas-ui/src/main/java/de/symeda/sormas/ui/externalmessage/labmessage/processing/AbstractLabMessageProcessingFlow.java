@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage.processing;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -46,6 +49,8 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
 import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
@@ -355,6 +360,10 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
 
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
+			|| !Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
+			return Collections.emptyList();
+		}
 		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
 		contactSimilarityCriteria.setPerson(selectedPerson);
 		contactSimilarityCriteria.setDisease(externalMessage.getDisease());
@@ -363,6 +372,12 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	}
 
 	private List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)
+			|| !Objects.requireNonNull(UserProvider.getCurrent())
+				.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
+			return Collections.emptyList();
+		}
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setPerson(selectedPerson);

@@ -274,6 +274,11 @@ public class TestDataCreator {
 			roles);
 	}
 
+	public UserDto createUser(RDCF rdcf, DefaultUserRole defaultUserRole) {
+		UserRoleReferenceDto userRole = getUserRoleReference(defaultUserRole);
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), userRole.getCaption(), "User", userRole);
+	}
+
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRoleReferenceDto... roles) {
 		return createUser(
 			rdcf.region.getUuid(),

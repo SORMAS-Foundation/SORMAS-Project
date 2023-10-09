@@ -4,7 +4,9 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,6 +29,7 @@ import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -67,6 +71,7 @@ public class Environment extends CoreAdo {
 	private Map<WaterUse, Boolean> waterUse;
 	private String otherWaterUse;
 	private Location location;
+	private Set<EnvironmentSample> environmentSamples = new HashSet<>();
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)
@@ -209,5 +214,14 @@ public class Environment extends CoreAdo {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	@OneToMany(mappedBy = EnvironmentSample.ENVIRONMENT, fetch = FetchType.LAZY)
+	public Set<EnvironmentSample> getEnvironmentSamples() {
+		return environmentSamples;
+	}
+
+	public void setEnvironmentSamples(Set<EnvironmentSample> environmentSamples) {
+		this.environmentSamples = environmentSamples;
 	}
 }
