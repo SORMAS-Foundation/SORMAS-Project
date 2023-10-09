@@ -173,7 +173,7 @@ public class LocationDialog extends FormDialog {
 			this.contentBinding.locationRegion.setEnabled(false);
 			this.contentBinding.locationDistrict.setEnabled(false);
 		}
-		if(!isFieldAccessible(LocationDto.class, LocationDto.FACILITY)){
+		if (!isFieldAccessible(LocationDto.class, LocationDto.FACILITY)) {
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		}
 
@@ -201,15 +201,15 @@ public class LocationDialog extends FormDialog {
 			confirmationDialog.show();
 		});
 
-        contentBinding.locationLatitude.setValidationCallback(() -> {
-            Double latitude = ControlTextEditField.getDoubleValue(contentBinding.locationLatitude);
-            return ValidationHelper.validateLatitude(latitude, contentBinding.locationLatitude);
-        });
+		contentBinding.locationLatitude.setValidationCallback(() -> {
+			Double latitude = ControlTextEditField.getDoubleValue(contentBinding.locationLatitude);
+			return ValidationHelper.validateLatitude(latitude, contentBinding.locationLatitude);
+		});
 
-        contentBinding.locationLongitude.setValidationCallback(() -> {
-            Double longitude = ControlTextEditField.getDoubleValue(contentBinding.locationLongitude);
-            return ValidationHelper.validateLongitude(longitude, contentBinding.locationLongitude);
-        });
+		contentBinding.locationLongitude.setValidationCallback(() -> {
+			Double longitude = ControlTextEditField.getDoubleValue(contentBinding.locationLongitude);
+			return ValidationHelper.validateLongitude(longitude, contentBinding.locationLongitude);
+		});
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);

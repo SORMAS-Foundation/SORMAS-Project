@@ -105,7 +105,7 @@ public class ValidationHelper {
 		textEditField.setValidationCallback(null);
 	}
 
-	public static boolean validateLatitude(Double latitude, ControlPropertyEditField<?> fieldToValidate){
+	public static boolean validateLatitude(Double latitude, ControlPropertyEditField<?> fieldToValidate) {
 		if (latitude != null) {
 			boolean hasError = latitude < -90 || latitude > 90;
 			if (hasError) {
@@ -118,16 +118,16 @@ public class ValidationHelper {
 		return false;
 	}
 
-    public static boolean validateLongitude(Double longitude, ControlPropertyEditField<?> fieldToValidate){
-        if (longitude != null) {
-            boolean hasError = longitude < -180 || longitude > 180;
-            if (hasError) {
-                fieldToValidate.enableErrorState(I18nProperties.getValidationError(Validations.longitudeBetween));
-            }
+	public static boolean validateLongitude(Double longitude, ControlPropertyEditField<?> fieldToValidate) {
+		if (longitude != null) {
+			boolean hasError = longitude < -180 || longitude > 180;
+			if (hasError) {
+				fieldToValidate.enableErrorState(I18nProperties.getValidationError(Validations.longitudeBetween));
+			}
 
-            return hasError;
-        }
+			return hasError;
+		}
 
-        return false;
-    }
+		return false;
+	}
 }
