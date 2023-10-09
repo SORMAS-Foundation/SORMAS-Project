@@ -838,7 +838,7 @@ public class DevModeView extends AbstractConfigurationView {
 					// Only use active primary diseases
 
 					enumConstants = Arrays.stream(getEnumConstants(parameterType))
-						.filter(value -> fieldVisibilityCheckers.isVisible(parameterType, value.toString()))
+						.filter(value -> fieldVisibilityCheckers.isVisible(parameterType, getValueName((Enum) value)))
 						.toArray();
 					// Generate more living persons
 					if (parameterType == PresentCondition.class && randomPercent(50)) {
@@ -883,6 +883,10 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	Object[] diseaseEnumConstants;
+
+	private String getValueName(Enum value) {
+		return value.name();
+	}
 
 	private Object[] getEnumConstants(Class<?> parameterType) {
 		if (parameterType == Disease.class) {
