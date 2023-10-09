@@ -18,12 +18,6 @@ package de.symeda.sormas.app.backend.sample;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -31,6 +25,12 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -40,6 +40,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DateFormatHelper;
@@ -55,9 +56,13 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String SAMPLE = "sample";
+	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Sample sample;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EnvironmentSample environmentSample;
 
 	@Enumerated(EnumType.STRING)
 	private PathogenTestType testType;
@@ -127,6 +132,14 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setSample(Sample sample) {
 		this.sample = sample;
+	}
+
+	public EnvironmentSample getEnvironmentSample() {
+		return environmentSample;
+	}
+
+	public void setEnvironmentSample(EnvironmentSample environmentSample) {
+		this.environmentSample = environmentSample;
 	}
 
 	public PathogenTestType getTestType() {

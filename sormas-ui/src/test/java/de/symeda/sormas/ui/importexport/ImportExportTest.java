@@ -169,8 +169,8 @@ public class ImportExportTest extends AbstractUiBeanTest {
 
 		InputStream errorStream = new ByteArrayInputStream(caseImporter.stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();
-		if (errorRows.size() > 1) {
-			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
+		if (errorRows.size() > 2) {
+			assertThat("Error during import: " + StringUtils.join(errorRows.get(2), ", "), errorRows, hasSize(0));
 		}
 
 		PersonCriteria importPersonCriteria = new PersonCriteria();
@@ -324,8 +324,8 @@ public class ImportExportTest extends AbstractUiBeanTest {
 
 		InputStream errorStream = new ByteArrayInputStream(contactImporter.stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();
-		if (errorRows.size() > 1) {
-			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
+		if (errorRows.size() > 2) {
+			assertThat("Error during import: " + StringUtils.join(errorRows.get(2), ", "), errorRows, hasSize(0));
 		}
 
 		PersonCriteria importPersonCriteria = new PersonCriteria();

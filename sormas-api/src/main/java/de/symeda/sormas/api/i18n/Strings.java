@@ -492,6 +492,7 @@ public interface Strings {
 	String headingCreateNewContact = "headingCreateNewContact";
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
 	String headingCreateNewEnvironment = "headingCreateNewEnvironment";
+	String headingCreateNewEnvironmentSample = "headingCreateNewEnvironmentSample";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
@@ -1222,6 +1223,7 @@ public interface Strings {
 	String messageDistrictsArchived = "messageDistrictsArchived";
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
+	String messageDuplicateEnvironmentFound = "messageDuplicateEnvironmentFound";
 	String messageEnterSms = "messageEnterSms";
 	String messageEntitiesNotEditable = "messageEntitiesNotEditable";
 	String messageEntityNotFound = "messageEntityNotFound";

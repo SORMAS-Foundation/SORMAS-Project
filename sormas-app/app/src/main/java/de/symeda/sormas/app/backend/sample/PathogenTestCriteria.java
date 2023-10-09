@@ -17,9 +17,12 @@ package de.symeda.sormas.app.backend.sample;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
+
 public class PathogenTestCriteria implements Serializable {
 
 	private Sample sample;
+	private EnvironmentSample environmentSample;
 
 	public PathogenTestCriteria sample(Sample sample) {
 		this.sample = sample;
@@ -28,5 +31,14 @@ public class PathogenTestCriteria implements Serializable {
 
 	public Sample getSample() {
 		return sample;
+	}
+
+	public PathogenTestCriteria environmentSample(EnvironmentSample environmentSample) {
+		this.environmentSample = environmentSample;
+		return this;
+	}
+
+	public EnvironmentSample getEnvironmentSample() {
+		return environmentSample;
 	}
 }

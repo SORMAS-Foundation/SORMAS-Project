@@ -387,4 +387,4 @@ Feature: Immunization end to end tests
     Then I click on Execute Automatic Deletion button
     And I wait 30 seconds for system reaction
     Then I check if created immunization is available in API
-    And API: I check that GET call status code is 200
+    And API: I check that GET call status code is 204

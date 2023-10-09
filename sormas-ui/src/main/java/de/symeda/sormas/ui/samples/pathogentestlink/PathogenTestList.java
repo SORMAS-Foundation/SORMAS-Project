@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -37,7 +38,8 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final SampleReferenceDto sampleRef;
+	private SampleReferenceDto sampleRef;
+	private EnvironmentSampleReferenceDto environmentSampleRef;
 	private final Consumer<Runnable> actionCallback;
 	private final boolean isEditable;
 
@@ -49,9 +51,22 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		this.isEditable = isEditAllowed;
 	}
 
+	public PathogenTestList(EnvironmentSampleReferenceDto environmentSampleRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+		super(MAX_DISPLAYED_ENTRIES);
+
+		this.environmentSampleRef = environmentSampleRef;
+		this.actionCallback = actionCallback;
+		this.isEditable = isEditAllowed;
+	}
+
 	@Override
 	public void reload() {
-		List<PathogenTestDto> pathogenTests = ControllerProvider.getPathogenTestController().getPathogenTestsBySample(sampleRef);
+		List<PathogenTestDto> pathogenTests = null;
+		if (sampleRef != null) {
+			pathogenTests = ControllerProvider.getPathogenTestController().getPathogenTestsBySample(sampleRef);
+		} else if (environmentSampleRef != null) {
+			pathogenTests = ControllerProvider.getPathogenTestController().getPathogenTestsByEnvironmentSample(environmentSampleRef);
+		}
 
 		setEntries(pathogenTests);
 		if (!pathogenTests.isEmpty()) {

@@ -98,7 +98,7 @@ public class EventService {
     String timestamp = String.valueOf(System.currentTimeMillis());
     return Event.builder()
         .eventStatus("EVENT")
-        .investigationStatus("INVESTIGATION PENDING") // change back to ongoing after bug fix 5547
+        .investigationStatus("INVESTIGATION PENDING")
         .eventManagementStatus("ONGOING")
         .disease("COVID-19")
         .diseaseVariant("B.1.617.3")

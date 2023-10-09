@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.89.0-SNAPSHOT
+  version: 1.90.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -14239,6 +14239,16 @@ components:
       - reportingUser
       - sampleDateTime
       - sampleMaterial
+    EnvironmentSampleReferenceDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        uuid:
+          type: string
+          pattern: "^[0-9a-zA-Z-]*$"
+      required:
+      - uuid
     EpiDataDto:
       type: object
       properties:
@@ -16209,6 +16219,8 @@ components:
       properties:
         assignee:
           $ref: '#/components/schemas/UserReferenceDto'
+        automaticProcessingPossible:
+          type: boolean
         caseReportDate:
           type: string
           format: date-time
@@ -19689,6 +19701,8 @@ components:
           - TRANSFERRED_RESPONSIBILITY
           - DUPLICATE_ENTRIES
           - OTHER_REASON
+        environmentSample:
+          $ref: '#/components/schemas/EnvironmentSampleReferenceDto'
         externalId:
           type: string
           maxLength: 512
@@ -19893,7 +19907,6 @@ components:
           type: boolean
       required:
       - lab
-      - sample
       - testResult
       - testResultVerified
       - testType

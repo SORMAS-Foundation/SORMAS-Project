@@ -1387,6 +1387,37 @@ public class EditContactSteps implements En {
           webDriverHelpers.clearWebElement(LAST_CONTACT_DATE);
         });
 
+    When(
+        "I check if Follow up until date is ([^\"]*) days after last contact date of recently created contact",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(EditContactSteps.collectedContact.getDateOfLastContact().plusDays(days)),
+              date);
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Follow up until date is ([^\"]*) days after last created API contact report date",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(
+                      apiState
+                          .getCreatedContact()
+                          .getReportDateTime()
+                          .toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate()
+                          .plusDays(days)),
+              date);
+          softly.assertAll();
+        });
+
     And(
         "I check if vaccination name for vaccine number {int} in the vaccination card is {string}",
         (Integer vaccineNumber, String elementStatus) -> {

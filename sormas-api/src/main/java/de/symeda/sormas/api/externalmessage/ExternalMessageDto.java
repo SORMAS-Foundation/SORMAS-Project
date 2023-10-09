@@ -155,6 +155,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	 */
 	private UserReferenceDto reportingUser;
 
+	private boolean automaticProcessingPossible;
+
 	public ExternalMessageType getType() {
 		return type;
 	}
@@ -497,4 +499,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.reportingUser = reportingUser;
 	}
 
+	public boolean isAutomaticProcessingPossible() {
+		return automaticProcessingPossible;
+	}
+
+	public void setAutomaticProcessingPossible(boolean automaticProcessingPossible) {
+		this.automaticProcessingPossible = automaticProcessingPossible;
+	}
 }

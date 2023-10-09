@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -44,6 +45,22 @@ public class PathogenTestListComponent extends SideComponent {
 		PathogenTestList pathogenTestList = new PathogenTestList(sampleRef, actionCallback, isEditAllowed);
 		addComponent(pathogenTestList);
 		pathogenTestList.reload();
+	}
+
+	public PathogenTestListComponent(EnvironmentSampleReferenceDto sampleRef, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+		super(I18nProperties.getString(Strings.headingTests), actionCallback);
+
+		if (isEditAllowed) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.pathogenTestNewTest),
+				() -> ControllerProvider.getPathogenTestController().create(sampleRef),
+				UserRight.PATHOGEN_TEST_CREATE);
+		}
+
+		PathogenTestList pathogenTestList = new PathogenTestList(sampleRef, actionCallback, isEditAllowed);
+		addComponent(pathogenTestList);
+		pathogenTestList.reload();
+
 	}
 
 }

@@ -23,6 +23,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
@@ -63,6 +64,18 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, EnvironmentSample> from) {
 		return cb.isFalse(from.get(EnvironmentSample.DELETED));
+	}
+
+	public Predicate createActiveEnvironmentSamplesFilter(EnvironmentSampleQueryContext environmentSampleQueryContext) {
+		final From<?, EnvironmentSample> root = environmentSampleQueryContext.getRoot();
+		final CriteriaBuilder cb = environmentSampleQueryContext.getCriteriaBuilder();
+		final EnvironmentSampleJoins joins = environmentSampleQueryContext.getJoins();
+
+		final Join<EnvironmentSample, Environment> environment = joins.getEnvironment();
+
+		Predicate predicate = cb.and(cb.isFalse(environment.get(Environment.ARCHIVED)), cb.isFalse(environment.get(Environment.DELETED)));
+
+		return cb.and(predicate, cb.isFalse(root.get(EnvironmentSample.DELETED)));
 	}
 
 	public boolean isEditAllowed(EnvironmentSample sample) {

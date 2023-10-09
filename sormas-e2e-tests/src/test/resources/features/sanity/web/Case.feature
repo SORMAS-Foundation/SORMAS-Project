@@ -1903,3 +1903,13 @@ Feature: Case end to end tests
     And I fill De-Archive case popup with test automation
     And I wait until the bulk progress operation is done and check numbers of 51 successful and 0 skipped cases
     And I click on close progress operation window
+
+  @tmsLink=SOR-4713 @env_de
+  Scenario: Test Extend the follow-up until date calculation for Cases
+    Given API: I create a new person
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check if Follow up until date is 14 days after last created API case report date

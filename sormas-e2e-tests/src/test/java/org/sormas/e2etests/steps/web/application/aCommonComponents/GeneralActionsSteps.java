@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
 import static org.sormas.e2etests.pages.application.aCommonComponents.GeneralActions.READ_ONLY_FIELDS;
+import static org.sormas.e2etests.pages.application.aCommonComponents.GeneralActions.READ_ONLY_FIELDS_SURVNET_DETAILS;
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
 
 import com.github.javafaker.Faker;
@@ -52,6 +53,17 @@ public class GeneralActionsSteps implements En {
           TimeUnit.SECONDS.sleep(3); // waiting for page loaded
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(READ_ONLY_FIELDS),
+              number.intValue(),
+              " text is not present in handover component");
+          softly.assertAll();
+        });
+
+    When(
+        "Total number of read only fields in Survnet details section should be {int}",
+        (Integer number) -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(READ_ONLY_FIELDS_SURVNET_DETAILS),
               number.intValue(),
               " text is not present in handover component");
           softly.assertAll();
