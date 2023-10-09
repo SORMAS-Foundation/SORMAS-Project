@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.feature;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -15,11 +17,13 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -141,23 +145,49 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 	}
 
 	private void createFeatureConfiguration(FeatureType featureType, DeletableEntityType deletableEntityType) {
+
 		FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
 		configuration.setEntityType(deletableEntityType);
 		configuration.setProperties(featureType.getSupportedPropertyDefaults());
 		ensurePersisted(configuration);
 	}
 
+	/**
+	 * Disables features for which a dependent feature is disabled, and automatically adds new feature type properties.
+	 */
 	public void updateFeatureConfigurations() {
 
 		Map<FeatureType, FeatureConfiguration> configs = getServerFeatureConfigurations();
-		FeatureType.getAllServerFeatures().forEach(featureType -> {
-			if (featureType.isDependent()) {
+		Arrays.stream(FeatureType.values()).forEach(featureType -> {
+			FeatureConfiguration configuration = configs.get(featureType);
+			boolean persistingNeeded = false;
+
+			if (featureType.isServerFeature() && featureType.isDependent()) {
 				boolean hasEnabledDependentFeature = hasEnabledDependentFeature(featureType, configs);
 				if (!hasEnabledDependentFeature) {
-					FeatureConfiguration configuration = configs.get(featureType);
 					configuration.setEnabled(false);
-					ensurePersisted(configuration);
+					persistingNeeded = true;
 				}
+			}
+
+			Map<FeatureTypeProperty, Object> supportedPropertyDefaults = featureType.getSupportedPropertyDefaults();
+			if (MapUtils.isNotEmpty(supportedPropertyDefaults)) {
+				if (configuration.getProperties() == null || !supportedPropertyDefaults.keySet().equals(configuration.getProperties().keySet())) {
+					if (configuration.getProperties() == null) {
+						configuration.setProperties(new HashMap<>());
+					}
+					Map<FeatureTypeProperty, Object> configProperties = configuration.getProperties();
+					supportedPropertyDefaults.keySet().forEach(property -> {
+						if (!configProperties.containsKey(property)) {
+							configProperties.put(property, supportedPropertyDefaults.get(property));
+						}
+					});
+					persistingNeeded = true;
+				}
+			}
+
+			if (persistingNeeded) {
+				ensurePersisted(configuration);
 			}
 		});
 	}
@@ -165,12 +195,10 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 	private Map<FeatureType, FeatureConfiguration> getServerFeatureConfigurations() {
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
-		Map<FeatureType, FeatureConfiguration> configurationsMap = featureConfigurations.stream()
+		return featureConfigurations.stream()
 			.filter(e -> e.getFeatureType().isServerFeature())
 			// In case a serverFeature happens not to be unique in the database, take the last one
 			.collect(Collectors.toMap(FeatureConfiguration::getFeatureType, Function.identity(), (e1, e2) -> e2));
-
-		return configurationsMap;
 	}
 
 	private boolean hasEnabledDependentFeature(FeatureType featureType, Map<FeatureType, FeatureConfiguration> featureConfigurationMap) {

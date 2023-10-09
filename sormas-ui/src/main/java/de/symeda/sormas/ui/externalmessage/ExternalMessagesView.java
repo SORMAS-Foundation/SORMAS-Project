@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -23,11 +24,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFetchResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -77,9 +81,11 @@ public class ExternalMessagesView extends AbstractView {
 			ViewModelProviders.of(ExternalMessagesView.class).get(ExternalMessageCriteria.class, criteria);
 		}
 
-		addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
-			checkForConcurrentEventsAndFetch();
-		}, ValoTheme.BUTTON_PRIMARY));
+		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FETCH_MODE)) {
+			addHeaderComponent(ButtonHelper.createIconButton(Captions.externalMessageFetch, VaadinIcons.REFRESH, e -> {
+				checkForConcurrentEventsAndFetch();
+			}, ValoTheme.BUTTON_PRIMARY));
+		}
 
 		if (isBulkEditAllowed()) {
 			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, e -> {
@@ -162,8 +168,10 @@ public class ExternalMessagesView extends AbstractView {
 
 		createAndAddStatusButton(ExternalMessageStatus.UNPROCESSED, statusFilterLayout);
 		createAndAddStatusButton(ExternalMessageStatus.PROCESSED, statusFilterLayout);
-		createAndAddStatusButton(ExternalMessageStatus.UNCLEAR, statusFilterLayout);
-		createAndAddStatusButton(ExternalMessageStatus.FORWARDED, statusFilterLayout);
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			createAndAddStatusButton(ExternalMessageStatus.UNCLEAR, statusFilterLayout);
+			createAndAddStatusButton(ExternalMessageStatus.FORWARDED, statusFilterLayout);
+		}
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 		actionButtonsLayout.setSpacing(true);
@@ -230,7 +238,14 @@ public class ExternalMessagesView extends AbstractView {
 			activeStatus = (ExternalMessageStatus) activeStatusButton.getData();
 		}
 
-		grid.updateProcessColumnVisibility(activeStatus == null || activeStatus.isProcessable());
+		boolean processingPossible = (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT))
+			|| (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
+				&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT))
+			|| (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				&& Objects.requireNonNull(UserProvider.getCurrent())
+					.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT));
+		grid.updateProcessColumnVisibility((activeStatus == null || activeStatus.isProcessable()) && processingPossible);
 	}
 
 	private Button createAndAddStatusButton(@Nullable ExternalMessageStatus status, HorizontalLayout buttonLayout) {
