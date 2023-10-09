@@ -10,7 +10,7 @@ public enum EnvironmentSection
 	StatusElaborator {
 
 	ENVIRONMENT_INFO(R.string.caption_environment_information, R.drawable.ic_drawer_environment_blue_24dp),
-
+	ENVIRONMENT_SAMPLES(R.string.caption_environment_samples, R.drawable.ic_drawer_environment_sample_blue_24dp),
 	TASKS(R.string.caption_environment_tasks, R.drawable.ic_drawer_user_task_blue_24dp);
 
 	private int friendlyNameResourceId;

@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -59,8 +61,10 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 	private boolean dispatched;
 	private Date dispatchDate;
 	private boolean received;
+	private Date receivalDate;
 	@SensitiveData
 	private String laboratory;
+	private SpecimenCondition specimenCondition;
 	private EnvironmentSampleMaterial sampleMaterial;
 	@PersonalData
 	private String otherSampleMaterial;
@@ -84,11 +88,16 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		boolean dispatched,
 		Date dispatchDate,
 		boolean received,
-		String laboratory,
+		Date receivalDate,
+		String laboratoryUuid,
+		String laboratoryName,
+		String laboratoryDetails,
+		SpecimenCondition specimenCondition,
 		EnvironmentSampleMaterial sampleMaterial,
 		String otherSampleMaterial,
 		DeletionReason deletionReason,
 		String otherDeletionReason,
+		Long numberOfTests,
 		boolean isInJurisdiction) {
 		super(uuid);
 		this.fieldSampleId = fieldSampleId;
@@ -99,11 +108,14 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		this.dispatched = dispatched;
 		this.dispatchDate = dispatchDate;
 		this.received = received;
-		this.laboratory = laboratory;
+		this.receivalDate = receivalDate;
+		this.laboratory = FacilityHelper.buildFacilityString(laboratoryUuid, laboratoryName, laboratoryDetails);
+		this.specimenCondition = specimenCondition;
 		this.sampleMaterial = sampleMaterial;
 		this.otherSampleMaterial = otherSampleMaterial;
 		this.deletionReason = deletionReason;
 		this.otherDeletionReason = otherDeletionReason;
+		this.numberOfTests = numberOfTests;
 		setInJurisdiction(isInJurisdiction);
 	}
 
@@ -139,8 +151,16 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		return received;
 	}
 
+	public Date getReceivalDate() {
+		return receivalDate;
+	}
+
 	public String getLaboratory() {
 		return laboratory;
+	}
+
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
 	}
 
 	public EnvironmentSampleMaterial getSampleMaterial() {

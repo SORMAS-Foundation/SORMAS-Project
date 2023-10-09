@@ -4,6 +4,7 @@ package de.symeda.sormas.backend.environment;
 import static java.util.Objects.isNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ import javax.persistence.criteria.Selection;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
@@ -52,6 +53,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -385,7 +387,7 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	protected CoreEntityType getCoreEntityType() {
+	protected DeletableEntityType getDeletableEntityType() {
 		return null;
 	}
 
@@ -404,6 +406,17 @@ public class EnvironmentFacadeEjb
 	@RightsAllowed(UserRight._ENVIRONMENT_DELETE)
 	public List<ProcessedEntity> restore(List<String> uuids) {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getAllActiveUuids(user);
 	}
 
 	@LocalBean

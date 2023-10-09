@@ -61,6 +61,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -75,6 +76,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -183,7 +185,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	private ContactListCriteriaBuilder listCriteriaBuilder;
 
 	public ContactService() {
-		super(Contact.class);
+		super(Contact.class, DeletableEntityType.CONTACT);
 	}
 
 	@Override
@@ -1979,5 +1981,14 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	@Override
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Contact.REPORT_DATE_TIME;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 }

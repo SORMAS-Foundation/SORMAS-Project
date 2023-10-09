@@ -97,8 +97,12 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	private void setupControls() {
 		EpiWeek previousEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 		EpiWeek currentEpiWeek = DateHelper.getEpiWeek(new Date());
+		List<Integer> yearList = DateHelper.getYearsToNow();
+		if (currentEpiWeek.getYear() > previousEpiWeek.getYear()) {
+			yearList.add(currentEpiWeek.getYear());
+		}
 
-		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(DateHelper.getYearsToNow()), previousEpiWeek.getYear(), field -> {
+		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(yearList), previousEpiWeek.getYear(), field -> {
 			Integer year = (Integer) field.getValue();
 			if (year != null) {
 				if (year.equals(currentEpiWeek.getYear())) {
@@ -181,9 +185,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			contentBinding.reportSelector.setValue(filterOption);
 		}
 
-		if (epiWeek != null) {
-			fillReportsDropdown();
-		}
+		fillReportsDropdown();
 	}
 
 	public void refreshAggregateReports() {
@@ -194,6 +196,8 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	private void fillReportsDropdown() {
 
 		if (contentBinding.aggregateReportsWeek.getValue() == null) {
+			contentBinding.reportContent.removeAllViews();
+			contentBinding.submitReport.setEnabled(false);
 			contentBinding.aggregateReportsReport.setSpinnerData(new ArrayList<>());
 			return;
 		}
@@ -215,6 +219,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	private void showReportData() {
 
 		contentBinding.reportContent.removeAllViews();
+
+		if (contentBinding.aggregateReportsWeek.getValue() == null || contentBinding.aggregateReportsReport.getValue() == null) {
+			contentBinding.submitReport.setEnabled(false);
+			return;
+		}
 
 		Date latestLocalChangeDate = null;
 		User user = ConfigProvider.getUser();

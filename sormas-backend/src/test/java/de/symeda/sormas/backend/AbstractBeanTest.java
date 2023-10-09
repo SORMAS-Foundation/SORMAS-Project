@@ -57,7 +57,7 @@ import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
@@ -408,18 +408,18 @@ public abstract class AbstractBeanTest {
 	}
 
 	protected void createDeletionConfigurations() {
-		createDeletionConfigurations(CoreEntityType.CASE, DeletionReference.CREATION);
-		createDeletionConfigurations(CoreEntityType.CONTACT, DeletionReference.CREATION);
-		createDeletionConfigurations(CoreEntityType.EVENT, DeletionReference.CREATION);
-		createDeletionConfigurations(CoreEntityType.EVENT_PARTICIPANT, DeletionReference.CREATION);
-		createDeletionConfigurations(CoreEntityType.IMMUNIZATION, DeletionReference.CREATION);
-		createDeletionConfigurations(CoreEntityType.TRAVEL_ENTRY, DeletionReference.CREATION);
+		createDeletionConfigurations(DeletableEntityType.CASE, DeletionReference.CREATION);
+		createDeletionConfigurations(DeletableEntityType.CONTACT, DeletionReference.CREATION);
+		createDeletionConfigurations(DeletableEntityType.EVENT, DeletionReference.CREATION);
+		createDeletionConfigurations(DeletableEntityType.EVENT_PARTICIPANT, DeletionReference.CREATION);
+		createDeletionConfigurations(DeletableEntityType.IMMUNIZATION, DeletionReference.CREATION);
+		createDeletionConfigurations(DeletableEntityType.TRAVEL_ENTRY, DeletionReference.CREATION);
 	}
 
-	protected void createDeletionConfigurations(CoreEntityType coreEntityType, DeletionReference automaticDeletionReference) {
+	protected void createDeletionConfigurations(DeletableEntityType deletableEntityType, DeletionReference automaticDeletionReference) {
 		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
-		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, automaticDeletionReference, 3650));
-		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(coreEntityType, DeletionReference.MANUAL_DELETION, 90));
+		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(deletableEntityType, automaticDeletionReference, 3650));
+		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(deletableEntityType, DeletionReference.MANUAL_DELETION, 90));
 	}
 
 	public ConfigFacade getConfigFacade() {

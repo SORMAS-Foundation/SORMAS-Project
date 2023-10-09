@@ -1870,3 +1870,46 @@ Feature: Case end to end tests
     And I wait until the bulk progress operation is done and check numbers of 41 successful and 0 skipped cases
     And I check that total number of cases for bulk operation is 41
     And I click on close progress operation window
+
+  @tmsLink=HSP-6240 @env_main
+  Scenario: Sormas - Progress window for bulk archive
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I set the Relevance Status Filter to "Active cases" on Case Directory page
+    And I check that Relevance Status Filter is set to "Active cases" on Case Directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click on "Yes" option in Enter bulk edit mode window
+    Then I click on Bulk Actions combobox on Case Directory Page
+    And I click on the Archive bulk cases on Case Directory page
+    And I check that warning message appears that no cases are selected
+    And I click checkboxes to choose first 2 cases from Case Directory page
+    Then I click on Bulk Actions combobox on Case Directory Page
+    And I click on the Archive bulk cases on Case Directory page
+    And I click on "Yes" option in Enter bulk edit mode window
+    Then I check if popup message for archive is "All selected entries have been archived" in Case Directory page
+    And I click checkboxes to choose first 41 cases from Case Directory page
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on the Archive bulk cases on Case Directory page
+    And I click on "Yes" option in Enter bulk edit mode window
+    And I check that a bulk progress operation window appears on Case Directory page
+    And I wait until the bulk progress operation is done and check numbers of 41 successful and 0 skipped cases
+    And I click on close progress operation window
+    And I set the Relevance Status Filter to "Archived cases" on Case Directory page
+    And I check that Relevance Status Filter is set to "Archived cases" on Case Directory page
+    And I click checkboxes to choose first 51 cases from Case Directory page
+    And I click on Bulk Actions combobox on Case Directory Page
+    Then I click on the De-Archive bulk cases on Case Directory page
+    And I fill De-Archive case popup with test automation
+    And I wait until the bulk progress operation is done and check numbers of 51 successful and 0 skipped cases
+    And I click on close progress operation window
+
+  @tmsLink=SOR-4713 @env_de
+  Scenario: Test Extend the follow-up until date calculation for Cases
+    Given API: I create a new person
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check if Follow up until date is 14 days after last created API case report date

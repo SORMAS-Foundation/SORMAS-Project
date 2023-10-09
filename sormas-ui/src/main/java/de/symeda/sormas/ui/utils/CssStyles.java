@@ -80,6 +80,7 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_3 = "indent-left-3";
 
 	public static final String VAADIN_LABEL = "v-label";
+	public static final String VAADIN_CAPTION = "v-caption";
 	public static final String FIELD_WRAPPER = "fieldwrapper";
 	public static final String FIELD_EXTRA_INFO = "fieldextrainfo";
 

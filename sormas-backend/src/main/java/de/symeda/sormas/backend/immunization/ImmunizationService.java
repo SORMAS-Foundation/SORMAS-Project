@@ -39,6 +39,8 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
@@ -92,7 +94,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public ImmunizationService() {
-		super(Immunization.class);
+		super(Immunization.class, DeletableEntityType.IMMUNIZATION);
 	}
 
 	@Override
@@ -671,5 +673,14 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	@Override
 	protected boolean hasLimitedChangeDateFilterImplementation() {
 		return true;
+	}
+
+	@Override
+	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+		if (deletionReference == DeletionReference.REPORT) {
+			return Immunization.REPORT_DATE;
+		}
+
+		return super.getDeleteReferenceField(deletionReference);
 	}
 }

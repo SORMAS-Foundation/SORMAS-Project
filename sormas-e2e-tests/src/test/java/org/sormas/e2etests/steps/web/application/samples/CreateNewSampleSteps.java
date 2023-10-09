@@ -105,6 +105,7 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UPDATE_CASE_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UREA_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.VIA_DEMIS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.WBC_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EDIT_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX_DIV;
@@ -118,6 +119,7 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED_CHECKBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SHIPPED_CHECKBOX;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.convertStringToChosenFormatDate;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -158,6 +160,8 @@ public class CreateNewSampleSteps implements En {
   private final Faker faker;
   private final BaseSteps baseSteps;
   public static LocalDate sampleCollectionDateForFollowUpDate;
+  public static LocalDate reportDate;
+  public static String CheckboxViaDemisValue;
 
   @Inject
   public CreateNewSampleSteps(
@@ -369,6 +373,13 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I click on edit pathogen test",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
         "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
         () -> {
           selectTypeOfTest("Antigen-Nachweistest");
@@ -450,6 +461,7 @@ public class CreateNewSampleSteps implements En {
     When(
         "^I save the created sample",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
@@ -821,6 +833,28 @@ public class CreateNewSampleSteps implements En {
         "I check if error popup contains {string}",
         (String str) -> {
           webDriverHelpers.checkWebElementContainsText(GENERIC_ERROR_POPUP, str);
+        });
+
+    When(
+        "I collect date of Report from Pathogen test result sample",
+        () -> {
+          String LocalDateOfReport = webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT);
+          reportDate =
+              convertStringToChosenFormatDate("dd.MM.yyyy", "yyyy-MM-dd", LocalDateOfReport);
+        });
+
+    When(
+        "I collect via Demis checkbox value Pathogen test result sample",
+        () -> {
+          String localCheckboxViaDemis =
+              webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(VIA_DEMIS_CHECKBOX);
+          if (localCheckboxViaDemis.equals("Via DEMIS")) CheckboxViaDemisValue = "true";
+        });
+
+    When(
+        "I click on save button in Edit pathogen test result",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
     When(

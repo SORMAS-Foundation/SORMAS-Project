@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.environment.EnvironmentDtoHelper;
@@ -95,7 +96,7 @@ public class EnvironmentSampleDtoHelper extends AdoDtoHelper<EnvironmentSample, 
 		target.setPhValue(source.getPhValue());
 		target.setSampleTemperature(source.getSampleTemperature());
 		target.setChlorineResiduals(source.getChlorineResiduals());
-		Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getId());
+		Facility lab = DatabaseHelper.getFacilityDao().queryForId(source.getLaboratory().getId());
 		target.setLaboratory(lab != null ? FacilityDtoHelper.toReferenceDto(lab) : null);
 		target.setLaboratoryDetails(source.getLaboratoryDetails());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
@@ -116,5 +117,13 @@ public class EnvironmentSampleDtoHelper extends AdoDtoHelper<EnvironmentSample, 
 	@Override
 	protected long getApproximateJsonSizeInBytes() {
 		return EnvironmentSampleDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
+
+	public static EnvironmentSampleReferenceDto toReferenceDto(EnvironmentSample ado) {
+		if (ado == null) {
+			return null;
+		}
+
+		return new EnvironmentSampleReferenceDto(ado.getUuid());
 	}
 }

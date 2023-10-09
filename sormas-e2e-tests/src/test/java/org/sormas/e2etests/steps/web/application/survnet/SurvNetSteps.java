@@ -20,6 +20,10 @@ import static org.sormas.e2etests.steps.web.application.cases.HospitalizationTab
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.previousHospitalization;
 import static org.sormas.e2etests.steps.web.application.cases.PreviousHospitalizationSteps.reasonForPreviousHospitalization;
 import static org.sormas.e2etests.steps.web.application.cases.SymptomsTabSteps.symptoms;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.diagnosedAt;
+import static org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps.CheckboxViaDemisValue;
+import static org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps.reportDate;
+import static org.sormas.e2etests.steps.web.application.samples.EditSampleSteps.dateOfSampleCollected;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.randomVaccinationName;
 import static org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps.vaccination;
 
@@ -63,7 +67,6 @@ public class SurvNetSteps implements En {
         "I check if {string} in SORMAS generated XML file is correct",
         (String typeOfDate) -> {
           LocalDate expectedDate = LocalDate.now();
-
           switch (typeOfDate) {
             case "date of report":
               LocalDate dateOfReport = getReportingDate(singleXmlFile, 0);
@@ -98,6 +101,30 @@ public class SurvNetSteps implements En {
                   getDateValueFromSpecificChildNodeFieldByName(singleXmlFile, "DeceasedDate"),
                   dateOfDeath,
                   "Date of Death is incorrect!");
+              softly.assertAll();
+              break;
+            case "diagnose at date":
+              softly.assertEquals(
+                  getValueFromNotificationDateChildrenSpecificFieldByName(
+                      singleXmlFile, "DiagnosedAt"),
+                  diagnosedAt,
+                  "Diagnose at date is incorrect!");
+              softly.assertAll();
+              break;
+            case "date of sample collected":
+              softly.assertEquals(
+                  getValueFromNotificationDateChildrenSpecificFieldByName(
+                      singleXmlFile, "SpecimenCollectedAt"),
+                  dateOfSampleCollected,
+                  "Date of sample collected is incorrect!");
+              softly.assertAll();
+              break;
+            case "date of report for pathogen":
+              softly.assertEquals(
+                  getValueFromNotificationDateChildrenSpecificFieldByName(
+                      singleXmlFile, "NotifiedAt"),
+                  reportDate,
+                  "Notified at date is incorrect!");
               softly.assertAll();
               break;
           }
@@ -312,16 +339,17 @@ public class SurvNetSteps implements En {
     And(
         "I check that Patientrole is change in SORMAS generated single XML file is {string}",
         (String expectedValue) -> {
-          String xmlValue = singleXmlFile
-              .getRootElement()
-              .getChildren()
-              .get(0)
-              .getChildren()
-              .get(1)
-              .getChildren()
-              .get(0)
-              .getAttribute("Value")
-              .getValue();
+          String xmlValue =
+              singleXmlFile
+                  .getRootElement()
+                  .getChildren()
+                  .get(0)
+                  .getChildren()
+                  .get(1)
+                  .getChildren()
+                  .get(0)
+                  .getAttribute("Value")
+                  .getValue();
           softly.assertEquals(xmlValue, expectedValue, "Patientrole value is wrong");
           softly.assertAll();
         });
@@ -682,6 +710,16 @@ public class SurvNetSteps implements En {
             softly.assertEquals(sex, expectedSex, "Sex is incorrect!");
             softly.assertAll();
           }
+        });
+
+    And(
+        "I check if Notification Via DEMIS checkbox value has correctly mapped in SORMAS generated singleXmlFile XML file",
+        () -> {
+          softly.assertEquals(
+              getValueFromSpecificNotificationFieldByName(singleXmlFile, "NotificationViaDEMIS"),
+              CheckboxViaDemisValue,
+              "checkbox has incorrect value!");
+          softly.assertAll();
         });
 
     And(
@@ -1352,5 +1390,60 @@ public class SurvNetSteps implements En {
       }
     }
     return LocalDate.parse(value, DATE_FORMATTER);
+  }
+
+  private LocalDate getValueFromNotificationDateChildrenSpecificFieldByName(
+      Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile
+            .getRootElement()
+            .getChildren()
+            .get(0)
+            .getChildren("Group", ns)
+            .get(1)
+            .getChildren("Field", ns)
+            .stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue().substring(0, 10);
+      }
+    }
+    return LocalDate.parse(value, DATE_FORMATTER);
+  }
+
+  private String getValueFromSpecificNotificationFieldByName(Document xmlFile, String name) {
+    Element rootElement = xmlFile.getRootElement();
+    Namespace ns = rootElement.getNamespace();
+    String value = null;
+
+    Element field =
+        xmlFile
+            .getRootElement()
+            .getChildren()
+            .get(0)
+            .getChildren("Group", ns)
+            .get(1)
+            .getChildren("Field", ns)
+            .stream()
+            .filter(e -> e.getAttributeValue("Name").equals(name))
+            .findFirst()
+            .orElse(null);
+
+    if (field != null) {
+      Attribute valueAttribute = field.getAttribute("Value");
+      if (valueAttribute != null) {
+        value = valueAttribute.getValue();
+      }
+    }
+    return value;
   }
 }

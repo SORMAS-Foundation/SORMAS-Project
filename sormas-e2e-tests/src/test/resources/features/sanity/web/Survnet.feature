@@ -54,7 +54,7 @@ Feature: Survnet tests
 
   @tmsLink=SORQA-1011
   Scenario: Automate "Bulk sending cases from SORMAS to "Meldesoftware"
-    Given I log in as a Admin User
+    Given I log in as a Survnet
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with mandatory data only and specific sex for Survnet DE
@@ -489,4 +489,3 @@ Feature: Survnet tests
     Then I check if the present condition status "Verstorben" is correctly mapped in SORMAS generated single XML file
     And I check if "date of death" in SORMAS generated XML file is correct
     And I check if Cause of Death status is correctly setting in SORMAS generated XML file is correct
-    And I check that Patientrole is change in SORMAS generated single XML file is "-1"

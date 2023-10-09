@@ -47,6 +47,8 @@ public interface Validations {
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
+	String environmentMedia = "environmentMedia";
+	String environmentName = "environmentName";
 	String environmentWaterFieldsSetWithNotWaterMedia = "environmentWaterFieldsSetWithNotWaterMedia";
 	String errorsInForm = "errorsInForm";
 	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
@@ -80,6 +82,7 @@ public interface Validations {
 	String fileTooBig = "fileTooBig";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
+	String gpsCoordinatesRequired = "gpsCoordinatesRequired";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
 	String importAreaNotUnique = "importAreaNotUnique";
 	String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";

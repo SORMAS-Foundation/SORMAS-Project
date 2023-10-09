@@ -35,6 +35,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
+import de.symeda.sormas.ui.samples.humansample.SampleDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 
 @SuppressWarnings("serial")

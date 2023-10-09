@@ -25,6 +25,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -47,6 +48,36 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	private static final long serialVersionUID = 4199710123573825998L;
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 2000;
+
+	public static final String I18N_PREFIX = "EnvironmentSample";
+
+	public static final String ENVIRONMENT = "environment";
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
+	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
+	public static final String SAMPLE_VOLUME = "sampleVolume";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleId";
+	public static final String TURBIDITY = "turbidity";
+	public static final String PH_VALUE = "phValue";
+	public static final String SAMPLE_TEMPERATURE = "sampleTemperature";
+	public static final String CHLORINE_RESIDUALS = "chlorineResiduals";
+	public static final String LABORATORY = "laboratory";
+	public static final String LABORATORY_DETAILS = "laboratoryDetails";
+	public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
+	public static final String OTHER_REQUESTED_PATHOGEN_TESTS = "otherRequestedPathogenTests";
+	public static final String WEATHER_CONDITIONS = "weatherConditions";
+	public static final String HEAVY_RAIN = "heavyRain";
+	public static final String DISPATCHED = "dispatched";
+	public static final String DISPATCH_DATE = "dispatchDate";
+	public static final String DISPATCH_DETAILS = "dispatchDetails";
+	public static final String RECEIVED = "received";
+	public static final String RECEIVAL_DATE = "receivalDate";
+	public static final String LAB_SAMPLE_ID = "labSampleId";
+	public static final String SPECIMEN_CONDITION = "specimenCondition";
+	public static final String LOCATION = "location";
+	public static final String GENERAL_COMMENT = "generalComment";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@NotNull
 	private EnvironmentReferenceDto environment;
@@ -104,6 +135,10 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String generalComment;
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String otherDeletionReason;
 
 	public static EnvironmentSampleDto build(EnvironmentReferenceDto environment, UserReferenceDto reportingUser) {
 		EnvironmentSampleDto sample = new EnvironmentSampleDto();
@@ -332,5 +367,33 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 
 	public void setGeneralComment(String generalComment) {
 		this.generalComment = generalComment;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public EnvironmentSampleReferenceDto toReference() {
+		return new EnvironmentSampleReferenceDto(getUuid());
 	}
 }

@@ -39,6 +39,11 @@ public class MessagesDirectoryPage {
   public static final By NO_NEW_REPORTS_POPUP =
       By.xpath("//*[contains(text(),'Keine neuen Meldungen verf\u00FCgbar')]");
   public static final By CLOSE_POPUP = By.xpath("//div[@class='v-window-closebox']");
+  public static final By DIAGNOSED_AT_DATE =
+      By.xpath("//section[@class=\"summary test-positive\"]//li[6]//span[@class=\"propValue\"]\n");
+  public static final By SPECIMEN_COLLECTED_AT_DATE =
+      By.xpath("//section[@class=\"summary test-positive\"]//li[7]//span[@class=\"propValue\"]\n");
+  public static final By NOTIFICATION_AT_DATE = By.cssSelector("[id='messageDateTime'] input");
 
   public static final By GET_NEW_MESSAGES_POPUP =
       By.xpath("//*[contains(text(),'Neue Meldungen abrufen')]");

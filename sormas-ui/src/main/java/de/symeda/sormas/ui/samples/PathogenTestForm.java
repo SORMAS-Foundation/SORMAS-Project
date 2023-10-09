@@ -46,6 +46,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -109,6 +110,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	//@formatter:on
 
 	private SampleDto sample;
+	private EnvironmentSampleDto environmentSample;
 	private AbstractSampleForm sampleForm;
 	private final int caseSampleCount;
 	private final boolean create;
@@ -132,6 +134,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		this(create, caseSampleCount, isPseudonymized, inJurisdiction);
 		this.sample = sample;
+		addFields();
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
+	}
+
+	public PathogenTestForm(EnvironmentSampleDto sample, boolean create, boolean isPseudonymized, boolean inJurisdiction) {
+
+		this(create, 0, isPseudonymized, inJurisdiction);
+		this.environmentSample = sample;
 		addFields();
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -165,11 +177,26 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	}
 
 	private Date getSampleDate() {
-		return sample != null ? sample.getSampleDateTime() : (Date) sampleForm.getField(SampleDto.SAMPLE_DATE_TIME).getValue();
+		if (sample != null) {
+			return sample.getSampleDateTime();
+		}
+		if (sampleForm != null) {
+			return (Date) sampleForm.getField(SampleDto.SAMPLE_DATE_TIME).getValue();
+		}
+		if (environmentSample != null) {
+			return environmentSample.getSampleDateTime();
+		}
+		return null;
 	}
 
 	private SamplePurpose getSamplePurpose() {
-		return sample != null ? sample.getSamplePurpose() : (SamplePurpose) sampleForm.getField(SampleDto.SAMPLE_PURPOSE).getValue();
+		if (sample != null) {
+			return sample.getSamplePurpose();
+		}
+		if (sampleForm != null) {
+			return (SamplePurpose) sampleForm.getField(SampleDto.SAMPLE_PURPOSE).getValue();
+		}
+		return null;
 	}
 
 	@Override
@@ -218,8 +245,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					Validations.afterDateWithDate,
 					sampleTestDateField.getCaption(),
 					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
-					DateFormatHelper.formatDate(
-						sample != null ? sample.getSampleDateTime() : (Date) sampleForm.getField(SampleDto.SAMPLE_DATE_TIME).getValue()))));
+					DateFormatHelper.formatDate(getSampleDate()))));
 		ComboBox lab = addInfrastructureField(PathogenTestDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);

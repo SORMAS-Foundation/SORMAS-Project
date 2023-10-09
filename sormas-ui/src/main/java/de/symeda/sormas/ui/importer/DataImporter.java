@@ -259,6 +259,7 @@ public abstract class DataImporter {
 			String[] entityClasses;
 			if (hasEntityClassRow) {
 				entityClasses = readNextValidLine(csvReader);
+				errorReportCsvWriter.writeNext(entityClasses);
 			} else {
 				entityClasses = null;
 			}

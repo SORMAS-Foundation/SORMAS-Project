@@ -113,10 +113,12 @@ public class ExternalMessageMapper {
 
 		RegionReferenceDto region = null;
 		DistrictReferenceDto district = null;
+		FacilityType facilityType = null;
 		if (externalMessage.getPersonFacility() != null) {
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(externalMessage.getPersonFacility().getUuid());
 			region = facility.getRegion();
 			district = facility.getDistrict();
+			facilityType = facility.getType();
 		}
 
 		return map(
@@ -138,6 +140,7 @@ public class ExternalMessageMapper {
 				Mapping.of(location::setCountry, location.getCountry(), externalMessage.getPersonCountry(), PersonDto.ADDRESS, LocationDto.COUNTRY),
 				Mapping.of(location::setRegion, location.getRegion(), region, PersonDto.ADDRESS, LocationDto.REGION),
 				Mapping.of(location::setDistrict, location.getDistrict(), district, PersonDto.ADDRESS, LocationDto.DISTRICT),
+				Mapping.of(location::setFacilityType, location.getFacilityType(), facilityType, PersonDto.ADDRESS, LocationDto.FACILITY_TYPE),
 				Mapping.of(
 					location::setFacility,
 					location.getFacility(),
