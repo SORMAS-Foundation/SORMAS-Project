@@ -319,7 +319,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
 		return CriteriaBuilderHelper
-			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilter(cb, assigneeUserJoin));
+			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilterForTasks(cb, assigneeUserJoin));
 	}
 
 	private Predicate createAssigneeOrObserverFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin, Join<?, User> observersJoin, User user) {

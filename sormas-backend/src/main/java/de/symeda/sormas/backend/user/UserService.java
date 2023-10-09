@@ -715,7 +715,10 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
 			return cb.conjunction();
 		}
+		return createCurrentUserJurisdictionFilterForTasks(cb, from);
+	}
 
+	public Predicate createCurrentUserJurisdictionFilterForTasks(CriteriaBuilder cb, From<?, User> from) {
 		User currentUser = getCurrentUser();
 
 		if (currentUser.getHealthFacility() != null) {
