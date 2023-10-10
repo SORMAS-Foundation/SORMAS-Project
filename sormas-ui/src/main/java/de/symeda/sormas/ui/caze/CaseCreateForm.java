@@ -490,7 +490,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		facilityCombo.addValueChangeListener(e -> {
 			updateFacilityFields(facilityCombo, facilityDetails);
-			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
 
 		cbPointOfEntry.addValueChangeListener(e -> {
@@ -678,6 +677,18 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	public void setValue(CaseDataDto caseDataDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
 		super.setValue(caseDataDto);
+
+		FacilityReferenceDto healthFacility = caseDataDto.getHealthFacility();
+		if (healthFacility != null) {
+			boolean isHome = FacilityDto.NONE_FACILITY_UUID.equals(healthFacility.getUuid());
+			facilityOrHome.setValue(isHome ? TypeOfPlace.HOME : TypeOfPlace.FACILITY);
+			if (!isHome) {
+				facilityTypeGroup.setValue(caseDataDto.getFacilityType().getFacilityTypeGroup());
+				facilityType.setValue(caseDataDto.getFacilityType());
+				facilityCombo.setValue(healthFacility);
+			}
+		}
+
 		if (convertedTravelEntry != null) {
 			diseaseVariantDetailsField.setValue(convertedTravelEntry.getDiseaseVariantDetails());
 		}
