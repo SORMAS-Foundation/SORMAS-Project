@@ -12727,6 +12727,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (527, 'Add pathogen 
 ALTER TABLE pathogentest ADD COLUMN testedpathogen varchar(255);
 ALTER TABLE pathogentest_history ADD COLUMN testedpathogen varchar(255);
 
+UPDATE pathogentest SET testedpathogen = 'OTHER', testeddisease = NULL WHERE environmentsample_id IS NOT NULL;
+
 INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add tested pathogen attribute to pathogen test #11582');
 
 
