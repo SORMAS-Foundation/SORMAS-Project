@@ -680,9 +680,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		FacilityReferenceDto healthFacility = caseDataDto.getHealthFacility();
 		if (healthFacility != null) {
-			boolean isHome = FacilityDto.NONE_FACILITY_UUID.equals(healthFacility.getUuid());
-			facilityOrHome.setValue(isHome ? TypeOfPlace.HOME : TypeOfPlace.FACILITY);
-			if (!isHome) {
+			if (FacilityDto.NONE_FACILITY_UUID.equals(healthFacility.getUuid())) {
+				facilityOrHome.setValue(TypeOfPlace.HOME);
+			} else {
+				facilityOrHome.setValue(TypeOfPlace.FACILITY);
 				facilityTypeGroup.setValue(caseDataDto.getFacilityType().getFacilityTypeGroup());
 				facilityType.setValue(caseDataDto.getFacilityType());
 				facilityCombo.setValue(healthFacility);

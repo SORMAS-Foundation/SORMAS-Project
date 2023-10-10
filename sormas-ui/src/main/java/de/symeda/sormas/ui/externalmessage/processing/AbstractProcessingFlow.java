@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -133,7 +132,7 @@ public abstract class AbstractProcessingFlow {
 			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
 
 		FacilityReferenceDto personFacility = externalMessageDto.getPersonFacility();
-		if (personFacility != null && FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+		if (personFacility != null) {
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(personFacility.getUuid());
 			FacilityType facilityType = facility.getType();
 
@@ -144,8 +143,7 @@ public abstract class AbstractProcessingFlow {
 				caseDto.setFacilityType(facilityType);
 				caseDto.setHealthFacility(personFacility);
 			} else {
-				FacilityDto noneFacility = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID);
-				caseDto.setHealthFacility(noneFacility.toReference());
+				caseDto.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
 			}
 		}
 
