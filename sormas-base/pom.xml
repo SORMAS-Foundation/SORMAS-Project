@@ -1188,7 +1188,7 @@
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>org.hl7.fhir.r4</artifactId>
-				<version>6.0.21</version>
+				<version>6.1.14</version>
 				<scope>compile</scope>
 				<!-- Kept as compile dependency to avoid version conflicts and classpath problems with sormas-demis-adapter -->
 			</dependency>
