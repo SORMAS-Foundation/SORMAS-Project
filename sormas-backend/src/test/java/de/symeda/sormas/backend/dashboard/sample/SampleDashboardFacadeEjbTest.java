@@ -19,16 +19,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
 import de.symeda.sormas.api.dashboard.sample.SampleShipmentStatus;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -298,6 +305,99 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.PENDING));
 		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.NEGATIVE));
 		assertEquals(1, pathogenTestCountsForRelevantDate.get(PathogenTestResultType.POSITIVE));
+	}
+
+	@Test
+	public void testGetSamplesForMap() {
+		EnvironmentDto environment = creator.createEnvironment("Test river", EnvironmentMedia.WATER, user.toReference(), rdcf, e -> {
+			e.getLocation().setLatitude(1.0);
+			e.getLocation().setLongitude(1.0);
+		});
+
+		FacilityDto lab = creator.createFacility("Test lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
+		EnvironmentSampleDto sampleWithCoordinates =
+			creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+				s.getLocation().setLatitude(3.0);
+				s.getLocation().setLongitude(4.0);
+			});
+		EnvironmentSampleDto sampleWithoutCoordinates =
+			creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+				s.getLocation().setLatitude(null);
+				s.getLocation().setLongitude(null);
+			});
+
+		EnvironmentSampleDto sampleWithRegionDistrict =
+			creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+				s.getLocation().setRegion(rdcf.region);
+				s.getLocation().setDistrict(rdcf.district);
+				s.getLocation().setLatitude(5.0);
+				s.getLocation().setLongitude(6.0);
+			});
+
+		assertEquals(3, getSampleDashboardFacade().countEnvironmentalSamplesForMap(new SampleDashboardCriteria()));
+		List<MapSampleDto> samples = getSampleDashboardFacade().getEnvironmentalSamplesForMap(new SampleDashboardCriteria());
+		assertEquals(3, samples.size());
+		assertEquals(
+			1,
+			samples.stream()
+				.filter(
+					s -> Objects.equals(s.getLatitude(), sampleWithCoordinates.getLocation().getLatitude())
+						&& Objects.equals(s.getLongitude(), sampleWithCoordinates.getLocation().getLongitude()))
+				.count());
+		assertEquals(
+			1,
+			samples.stream()
+				.filter(
+					s -> Objects.equals(s.getLatitude(), environment.getLocation().getLatitude())
+						&& Objects.equals(s.getLongitude(), environment.getLocation().getLongitude()))
+				.count());
+		assertEquals(
+			1,
+			samples.stream()
+				.filter(
+					s -> Objects.equals(s.getLatitude(), sampleWithRegionDistrict.getLocation().getLatitude())
+						&& Objects.equals(s.getLongitude(), sampleWithRegionDistrict.getLocation().getLongitude()))
+				.count());
+
+		SampleDashboardCriteria criteria = new SampleDashboardCriteria();
+		criteria.region(rdcf.region);
+		criteria.district(rdcf.district);
+		List<MapSampleDto> samplesInDistrict = getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria);
+		assertEquals(
+			1,
+			samplesInDistrict.stream()
+				.filter(
+					s -> Objects.equals(s.getLatitude(), sampleWithRegionDistrict.getLocation().getLatitude())
+						&& Objects.equals(s.getLongitude(), sampleWithRegionDistrict.getLocation().getLongitude()))
+				.count());
+	}
+
+	@Test
+	public void testGetEnvironmentSamplesByPathogenTestDate() {
+		EnvironmentDto environment = creator.createEnvironment("Test river", EnvironmentMedia.WATER, user.toReference(), rdcf, null);
+
+		FacilityDto lab = creator.createFacility("Test lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
+		EnvironmentSampleDto sample = creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+			s.setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
+			s.getLocation().setLatitude(3.0);
+			s.getLocation().setLongitude(4.0);
+		});
+
+		creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.CULTURE,
+			Disease.CORONAVIRUS,
+			DateHelper.subtractDays(new Date(), 2),
+			lab.toReference(),
+			user.toReference(),
+			PathogenTestResultType.POSITIVE,
+			null);
+
+		SampleDashboardCriteria criteria = new SampleDashboardCriteria();
+		criteria.dateBetween(DateHelper.subtractDays(new Date(), 5), new Date());
+		criteria.sampleDateType(SampleDashboardFilterDateType.MOST_RELEVANT);
+		assertEquals(1, getSampleDashboardFacade().countEnvironmentalSamplesForMap(criteria));
+		assertEquals(1, getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria).size());
 	}
 
 	public SampleDto createSampleByResultType(

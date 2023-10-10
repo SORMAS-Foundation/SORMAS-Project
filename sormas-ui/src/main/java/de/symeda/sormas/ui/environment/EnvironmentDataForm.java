@@ -143,6 +143,8 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		LocationEditForm locationForm = addField(EnvironmentDto.LOCATION, LocationEditForm.class);
 		locationForm.setCaption(null);
+		locationForm.setDistrictRequired();
+		locationForm.setGpsCoordinatesRequired();
 
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);

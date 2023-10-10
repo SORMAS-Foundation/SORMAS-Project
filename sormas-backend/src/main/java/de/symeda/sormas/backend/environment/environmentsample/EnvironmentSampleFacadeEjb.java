@@ -62,6 +62,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -180,7 +181,9 @@ public class EnvironmentSampleFacadeEjb
 			// Tests count subquery
 			Subquery<Long> numberOfTests = cq.subquery(Long.class);
 			Root<PathogenTest> numberOfTestsRoot = numberOfTests.from(PathogenTest.class);
-			numberOfTests.where(cb.equal(numberOfTestsRoot.get(PathogenTest.ENVIRONMENT_SAMPLE), from), cb.isFalse(numberOfTestsRoot.get(PathogenTest.DELETED)));
+			numberOfTests.where(
+				cb.equal(numberOfTestsRoot.get(PathogenTest.ENVIRONMENT_SAMPLE), from),
+				cb.isFalse(numberOfTestsRoot.get(PathogenTest.DELETED)));
 			numberOfTests.select(cb.countDistinct(numberOfTestsRoot.get(PathogenTest.ID)));
 
 			cq.multiselect(
@@ -362,6 +365,30 @@ public class EnvironmentSampleFacadeEjb
 	@Override
 	public void validate(EnvironmentSampleDto dto) throws ValidationRuntimeException {
 		Facility laboratory = facilityService.getByReferenceDto(dto.getLaboratory());
+
+		if (dto.getLocation().getRegion() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION)));
+		}
+
+		if (dto.getLocation().getDistrict() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT)));
+		}
+
+		if (dto.getLocation().getLatitude() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.LATITUDE)));
+		}
+
+		if (dto.getLocation().getLongitude() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.LONGITUDE)));
+		}
 
 		if (laboratory == null
 			|| (!FacilityDto.OTHER_FACILITY_UUID.equals(laboratory.getUuid()) && laboratory.getType() != FacilityType.LABORATORY)) {
