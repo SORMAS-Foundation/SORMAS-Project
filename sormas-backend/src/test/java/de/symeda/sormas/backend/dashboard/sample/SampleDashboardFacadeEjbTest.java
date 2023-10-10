@@ -316,40 +316,28 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 
 		FacilityDto lab = creator.createFacility("Test lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
 		EnvironmentSampleDto sampleWithCoordinates =
-			creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), user.toReference(), rdcf, lab.toReference(), s -> {
 				s.getLocation().setLatitude(3.0);
 				s.getLocation().setLongitude(4.0);
 			});
-		EnvironmentSampleDto sampleWithoutCoordinates =
-			creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
-				s.getLocation().setLatitude(null);
-				s.getLocation().setLongitude(null);
-			});
 
 		EnvironmentSampleDto sampleWithRegionDistrict =
-			creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), user.toReference(), rdcf, lab.toReference(), s -> {
 				s.getLocation().setRegion(rdcf.region);
 				s.getLocation().setDistrict(rdcf.district);
 				s.getLocation().setLatitude(5.0);
 				s.getLocation().setLongitude(6.0);
 			});
 
-		assertEquals(3, getSampleDashboardFacade().countEnvironmentalSamplesForMap(new SampleDashboardCriteria()));
+		assertEquals(2, getSampleDashboardFacade().countEnvironmentalSamplesForMap(new SampleDashboardCriteria()));
 		List<MapSampleDto> samples = getSampleDashboardFacade().getEnvironmentalSamplesForMap(new SampleDashboardCriteria());
-		assertEquals(3, samples.size());
+		assertEquals(2, samples.size());
 		assertEquals(
 			1,
 			samples.stream()
 				.filter(
 					s -> Objects.equals(s.getLatitude(), sampleWithCoordinates.getLocation().getLatitude())
 						&& Objects.equals(s.getLongitude(), sampleWithCoordinates.getLocation().getLongitude()))
-				.count());
-		assertEquals(
-			1,
-			samples.stream()
-				.filter(
-					s -> Objects.equals(s.getLatitude(), environment.getLocation().getLatitude())
-						&& Objects.equals(s.getLongitude(), environment.getLocation().getLongitude()))
 				.count());
 		assertEquals(
 			1,
@@ -377,7 +365,7 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		EnvironmentDto environment = creator.createEnvironment("Test river", EnvironmentMedia.WATER, user.toReference(), rdcf, null);
 
 		FacilityDto lab = creator.createFacility("Test lab", rdcf.region, rdcf.district, null, FacilityType.LABORATORY);
-		EnvironmentSampleDto sample = creator.createEnvironmentSample(environment.toReference(), user.toReference(), lab.toReference(), s -> {
+		EnvironmentSampleDto sample = creator.createEnvironmentSample(environment.toReference(), user.toReference(), rdcf, lab.toReference(), s -> {
 			s.setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
 			s.getLocation().setLatitude(3.0);
 			s.getLocation().setLongitude(4.0);
