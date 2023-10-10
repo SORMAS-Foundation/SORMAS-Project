@@ -1715,6 +1715,31 @@ public class CaseController {
 		}
 	}
 
+	public void linkSelectedCasesToEvent(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoCasesSelected),
+				I18nProperties.getString(Strings.messageNoCasesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		if (!selectedRows.stream().allMatch(caze -> caze.getDisease().equals(selectedRows.stream().findAny().get().getDisease()))) {
+			new Notification(I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected), Notification.Type.WARNING_MESSAGE)
+				.show(Page.getCurrent());
+			return;
+		}
+
+		ControllerProvider.getEventController()
+			.selectOrCreateEventForCaseList(
+				selectedRows.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()),
+				remaining -> bulkOperationCallback(caseGrid, null).accept(
+					selectedRows.stream()
+						.filter(s -> remaining.stream().anyMatch(r -> r.getUuid().equals(s.getUuid())))
+						.collect(Collectors.toList())));
+	}
+
 	public boolean existShareableCases(int selectedCasesSize, int notShareableCasesSize) {
 		return selectedCasesSize == notShareableCasesSize;
 	}
