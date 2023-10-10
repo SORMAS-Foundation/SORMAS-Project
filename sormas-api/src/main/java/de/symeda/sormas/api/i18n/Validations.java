@@ -175,7 +175,8 @@ public interface Validations {
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";
-	String pathogenTestValidDiseaseOrPathogen = "pathogenTestValidDiseaseOrPathogen";
+	String pathogenTestValidDisease = "pathogenTestValidDisease";
+	String pathogenTestValidPathogen = "pathogenTestValidPathogen";
 	String pathogenTestValidSampleOrEnvironment = "pathogenTestValidSampleOrEnvironment";
 	String patternNotMatching = "patternNotMatching";
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";

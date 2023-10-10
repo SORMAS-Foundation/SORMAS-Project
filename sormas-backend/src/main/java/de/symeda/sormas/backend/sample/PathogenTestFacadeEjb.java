@@ -421,8 +421,12 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					Validations.required,
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE)));
 		}
-		if (pathogenTest.getTestedDisease() == null && pathogenTest.getTestedPathogen() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDiseaseOrPathogen));
+		if (pathogenTest.getSample() != null && pathogenTest.getTestedDisease() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDisease));
+		}
+
+		if (pathogenTest.getEnvironmentSample() != null && pathogenTest.getTestedPathogen() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidPathogen));
 		}
 		if (pathogenTest.getLab() == null) {
 			throw new ValidationRuntimeException(

@@ -1550,32 +1550,6 @@ public class TestDataCreator {
 		return sampleTest;
 	}
 
-	public PathogenTestDto createPathogenTest(
-		EnvironmentSampleReferenceDto sample,
-		PathogenTestType testType,
-		Disease testedDisease,
-		Date testDateTime,
-		FacilityReferenceDto lab,
-		UserReferenceDto labUser,
-		PathogenTestResultType testResult,
-		Consumer<PathogenTestDto> extraConfig) {
-
-		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
-		sampleTest.setTestedDisease(testedDisease);
-		sampleTest.setTestType(testType);
-		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(lab);
-		sampleTest.setTestResult(testResult);
-		sampleTest.setTestResultVerified(true);
-
-		if (extraConfig != null) {
-			extraConfig.accept(sampleTest);
-		}
-
-		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
-		return sampleTest;
-	}
-
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
 		return createPathogenTest(associatedCase, Disease.CORONAVIRUS, testType, resultType);
 	}

@@ -678,7 +678,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		Pathogen pathogen = creator.createPathogen("TEST_PATHOGEN", "test pathogen");
 
 		EnvironmentSampleDto environmentSample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		creator.createPathogenTest(
 			environmentSample.toReference(),
 			PathogenTestType.ISOLATION,
