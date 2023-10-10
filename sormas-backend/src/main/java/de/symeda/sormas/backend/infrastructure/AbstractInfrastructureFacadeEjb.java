@@ -286,6 +286,13 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return count > 0;
 	}
 
+	@PermitAll
+	@Override
+	public REF_DTO getDefaultInfrastructureReference() {
+		ADO defaultInfrastructure = getDefaultInfrastructure();
+		return defaultInfrastructure != null ? toRefDto(defaultInfrastructure) : null;
+	}
+
 	protected void checkInfraDataLocked() {
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
@@ -355,12 +362,6 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 
 		return defaultInfrastructureCache.getDefaultInfrastructure();
-	}
-
-	@Override
-	public REF_DTO getDefaultInfrastructureReference() {
-		ADO defaultInfrastructure = getDefaultInfrastructure();
-		return defaultInfrastructure != null ? toRefDto(defaultInfrastructure) : null;
 	}
 
 	protected class CachedDefaultInfrastructure {
