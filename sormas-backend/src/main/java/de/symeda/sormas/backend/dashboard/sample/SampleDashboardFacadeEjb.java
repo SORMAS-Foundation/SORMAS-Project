@@ -72,8 +72,18 @@ public class SampleDashboardFacadeEjb implements SampleDashboardFacade {
 	}
 
 	@Override
+	public Long countEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
+		return sampleDashboardService.countEnvironmentSamplesForMap(criteria);
+	}
+
+	@Override
 	public List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes) {
 		return sampleDashboardService.getSamplesForMap(criteria, associationTypes);
+	}
+
+	@Override
+	public List<MapSampleDto> getEnvironmentalSamplesForMap(SampleDashboardCriteria criteria) {
+		return sampleDashboardService.getEnvironmentalSamplesForMap(criteria);
 	}
 
 	@LocalBean
