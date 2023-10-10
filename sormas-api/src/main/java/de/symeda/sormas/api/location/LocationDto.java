@@ -111,14 +111,14 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
-	@Min(value = -90, message = Validations.numberTooSmall)
-	@Max(value = 90, message = Validations.numberTooBig)
+	@Min(value = -90, message = Validations.latitudeBetween)
+	@Max(value = 90, message = Validations.latitudeBetween)
 	private Double latitude;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
-	@Min(value = -180, message = Validations.numberTooSmall)
-	@Max(value = 180, message = Validations.numberTooBig)
+	@Min(value = -180, message = Validations.longitudeBetween)
+	@Max(value = 180, message = Validations.longitudeBetween)
 	private Double longitude;
 	private Float latLonAccuracy;
 	@PersonalData()

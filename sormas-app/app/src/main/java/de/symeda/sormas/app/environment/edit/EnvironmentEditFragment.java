@@ -2,11 +2,11 @@ package de.symeda.sormas.app.environment.edit;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
+import android.view.View;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import android.view.View;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
@@ -88,6 +88,8 @@ public class EnvironmentEditFragment extends BaseEditFragment<FragmentEnvironmen
 		setUpControlListeners(contentBinding);
 		contentBinding.setData(record);
 
+		EnvironmentValidator.initializeLocationValidations(contentBinding.environmentLocation, () -> record.getLocation());
+
 		contentBinding.environmentEnvironmentMedia.initializeSpinner(environmentMediaList);
 		contentBinding.environmentReportDate.initializeDateField(getFragmentManager());
 		contentBinding.environmentInvestigationStatus.initializeSpinner(investigationStatusList);
@@ -113,7 +115,10 @@ public class EnvironmentEditFragment extends BaseEditFragment<FragmentEnvironmen
 		final Location locationClone = (Location) location.clone();
 		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
-		locationDialog.setRequiredFieldsBasedOnCountry();
+		locationDialog.getContentBinding().locationRegion.setRequired(true);
+		locationDialog.getContentBinding().locationDistrict.setRequired(true);
+		locationDialog.getContentBinding().locationLatitude.setRequired(true);
+		locationDialog.getContentBinding().locationLongitude.setRequired(true);
 		locationDialog.setFacilityFieldsVisible(true, true);
 
 		locationDialog.setPositiveCallback(() -> {
