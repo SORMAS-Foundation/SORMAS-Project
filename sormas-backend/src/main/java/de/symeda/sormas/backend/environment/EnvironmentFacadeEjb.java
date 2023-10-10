@@ -41,6 +41,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -258,6 +259,30 @@ public class EnvironmentFacadeEjb
 						I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_TYPE),
 						I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.INFRASTUCTURE_DETAILS),
 						I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_USE))));
+		}
+
+		if (dto.getLocation().getRegion() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION)));
+		}
+
+		if (dto.getLocation().getDistrict() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT)));
+		}
+
+		if (dto.getLocation().getLatitude() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.LATITUDE)));
+		}
+
+		if (dto.getLocation().getLongitude() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.LONGITUDE)));
 		}
 	}
 

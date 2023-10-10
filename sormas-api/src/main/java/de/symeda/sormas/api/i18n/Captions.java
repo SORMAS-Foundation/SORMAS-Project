@@ -2018,12 +2018,14 @@ public interface Captions {
 	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
 	String sampleDashboardCaseSamples = "sampleDashboardCaseSamples";
 	String sampleDashboardContactSamples = "sampleDashboardContactSamples";
+	String sampleDashboardEnvironmentsSamples = "sampleDashboardEnvironmentsSamples";
 	String sampleDashboardEventParticipantSamples = "sampleDashboardEventParticipantSamples";
 	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDashboardSamplePurpose = "sampleDashboardSamplePurpose";
 	String sampleDashboardShipmentStatus = "sampleDashboardShipmentStatus";
 	String sampleDashboardShowCaseSamples = "sampleDashboardShowCaseSamples";
 	String sampleDashboardShowContactSamples = "sampleDashboardShowContactSamples";
+	String sampleDashboardShowEnvironmentSamples = "sampleDashboardShowEnvironmentSamples";
 	String sampleDashboardShowEventParticipantSamples = "sampleDashboardShowEventParticipantSamples";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
 	String sampleDashboardTestResults = "sampleDashboardTestResults";

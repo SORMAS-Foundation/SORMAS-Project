@@ -70,6 +70,7 @@ import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -1524,6 +1525,32 @@ public class TestDataCreator {
 		return sampleTest;
 	}
 
+	public PathogenTestDto createPathogenTest(
+		EnvironmentSampleReferenceDto sample,
+		PathogenTestType testType,
+		Disease testedDisease,
+		Date testDateTime,
+		FacilityReferenceDto lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestedDisease(testedDisease);
+		sampleTest.setTestType(testType);
+		sampleTest.setTestDateTime(testDateTime);
+		sampleTest.setLab(lab);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultVerified(true);
+
+		if (extraConfig != null) {
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
 		return createPathogenTest(associatedCase, null, testType, resultType);
 	}
@@ -2299,8 +2326,10 @@ public class TestDataCreator {
 		environment.setReportDate(new Date());
 		environment.setReportingUser(reportingUser);
 
+		LocationDto location = environment.getLocation();
+		location.setLongitude(1.0);
+		location.setLatitude(1.0);
 		if (rdcf != null) {
-			LocationDto location = environment.getLocation();
 			location.setRegion(rdcf.region);
 			location.setDistrict(rdcf.district);
 			location.setCommunity(rdcf.community);
@@ -2323,10 +2352,15 @@ public class TestDataCreator {
 	public EnvironmentSampleDto createEnvironmentSample(
 		EnvironmentReferenceDto environment,
 		UserReferenceDto reportingUser,
+		RDCF rdcf,
 		FacilityReferenceDto lab,
 		@Nullable Consumer<EnvironmentSampleDto> extraConfig) {
 		EnvironmentSampleDto sample = EnvironmentSampleDto.build(environment, reportingUser);
 		sample.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+		sample.getLocation().setRegion(rdcf.region);
+		sample.getLocation().setDistrict(rdcf.district);
+		sample.getLocation().setLatitude(1.0);
+		sample.getLocation().setLongitude(1.0);
 		sample.setLaboratory(lab);
 
 		if (extraConfig != null) {

@@ -107,6 +107,14 @@ public class EnvironmentDao extends AbstractAdoDao<Environment> {
 		environment.getLocation().setRegion(user.getRegion());
 		environment.getLocation().setDistrict(user.getDistrict());
 		environment.getLocation().setCommunity(user.getCommunity());
+
+		android.location.Location location = LocationService.instance().getLocation();
+		if (location != null) {
+			environment.getLocation().setLatitude(location.getLatitude());
+			environment.getLocation().setLongitude(location.getLongitude());
+			environment.getLocation().setLatLonAccuracy(location.getAccuracy());
+		}
+
 		return environment;
 	}
 

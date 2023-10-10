@@ -42,5 +42,9 @@ public interface SampleDashboardFacade {
 
 	Long countSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);
 
+	Long countEnvironmentalSamplesForMap(SampleDashboardCriteria criteria);
+
 	List<MapSampleDto> getSamplesForMap(SampleDashboardCriteria criteria, Set<SampleAssociationType> associationTypes);
+
+	List<MapSampleDto> getEnvironmentalSamplesForMap(SampleDashboardCriteria criteria);
 }

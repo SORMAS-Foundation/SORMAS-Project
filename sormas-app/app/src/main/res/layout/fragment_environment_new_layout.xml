@@ -72,7 +72,7 @@
                 app:value="@={data.environmentName}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextPopupField
-                android:id="@+id/environment_environmentLocation"
+                android:id="@+id/environment_location"
                 style="@style/ControlSingleColumnStyle"
                 app:hint="@string/hint_enter_location"
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
