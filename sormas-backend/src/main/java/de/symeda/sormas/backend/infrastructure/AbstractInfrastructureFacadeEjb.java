@@ -150,7 +150,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 				// Default infrastructure set for the first time, needs to be re-queried
 				defaultInfrastructureCache.setQueried(false);
 			}
-		} else if (existingEntity.isDefaultInfrastructure()) {
+		} else if (existingEntity != null && existingEntity.isDefaultInfrastructure()) {
 			// Default infrastructure removed
 			if (defaultInfrastructureCache != null) {
 				defaultInfrastructureCache.setDefaultInfrastructure(null);
