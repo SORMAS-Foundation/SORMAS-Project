@@ -16,14 +16,18 @@
 package de.symeda.sormas.ui.samples.environmentsample;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -40,10 +44,13 @@ import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.ReloadableGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import elemental.json.JsonValue;
 
 public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndexDto, EnvironmentSampleCriteria> {
 
 	private static final long serialVersionUID = -8118341883217832133L;
+
+	private static final String LATEST_PATHOGEN_TEST_COLUMN = "latestPathogenTest";
 
 	public EnvironmentSampleGrid(EnvironmentSampleCriteria criteria) {
 		super(EnvironmentSampleIndexDto.class);
@@ -75,6 +82,17 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 		deleteColumn.setSortable(false);
 		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
 
+		Column<EnvironmentSampleIndexDto, String> latestPathogenTestColumn = addColumn(entry -> {
+			if (entry.getLatestTestedPathogen() != null) {
+				return entry.getLatestTestedPathogen() + ": " + entry.getLatestPathogenTestResult();
+			} else {
+				return "";
+			}
+		});
+		latestPathogenTestColumn.setId(LATEST_PATHOGEN_TEST_COLUMN);
+		latestPathogenTestColumn.setSortable(false);
+		latestPathogenTestColumn.setCaption(I18nProperties.getCaption(Captions.EnvironmentSample_latestPathogenTest));
+
 		setColumns(
 			EnvironmentSampleIndexDto.UUID,
 			EnvironmentSampleIndexDto.FIELD_SAMPLE_ID,
@@ -88,7 +106,7 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 			EnvironmentSampleIndexDto.LABORATORY,
 			EnvironmentSampleIndexDto.SAMPLE_MATERIAL,
 			EnvironmentSampleIndexDto.POSITIVE_PATHOGEN_TESTS,
-			EnvironmentSampleIndexDto.LATEST_PATHOGEN_TEST,
+			LATEST_PATHOGEN_TEST_COLUMN,
 			EnvironmentSampleIndexDto.NUMBER_OF_TESTS,
 			DELETE_REASON_COLUMN);
 
@@ -101,6 +119,19 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<EnvironmentSampleIndexDto, Boolean>) getColumn(EnvironmentSampleIndexDto.RECEIVED)).setRenderer(new BooleanRenderer());
 		((Column<EnvironmentSampleIndexDto, String>) getColumn(EnvironmentSampleIndexDto.LABORATORY)).setMaximumWidth(200);
+		((Column<EnvironmentSampleIndexDto, List<Pathogen>>) getColumn(EnvironmentSampleIndexDto.POSITIVE_PATHOGEN_TESTS))
+			.setRenderer(new TextRenderer() {
+
+				@Override
+				public JsonValue encode(Object value) {
+					if (value != null) {
+
+						return super.encode(
+							String.join(", ", ((List<Pathogen>) value).stream().map(t -> t.getCaption()).collect(Collectors.toList())));
+					}
+					return super.encode(value);
+				}
+			});
 
 		for (Column<EnvironmentSampleIndexDto, ?> column : getColumns()) {
 			if (!DELETE_REASON_COLUMN.equals(column.getId())) {

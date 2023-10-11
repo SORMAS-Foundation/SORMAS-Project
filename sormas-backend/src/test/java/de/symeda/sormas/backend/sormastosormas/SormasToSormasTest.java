@@ -50,6 +50,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -196,6 +197,9 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		pathogenTest.setTestDateTime(new Date());
 		pathogenTest.setTestResultVerified(true);
 		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+		pathogenTest.setLab(rdcf.facility);
+		pathogenTest.setTestedDisease(Disease.CORONAVIRUS);
+		pathogenTest.setTestResult(PathogenTestResultType.PENDING);
 
 		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
 		additionalTest.setTestDateTime(new Date());

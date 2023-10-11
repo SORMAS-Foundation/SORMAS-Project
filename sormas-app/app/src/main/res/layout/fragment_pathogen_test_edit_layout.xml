@@ -80,31 +80,43 @@
                     app:softRequired="true"
                     app:value="@={data.testTypeText}"/>
 
+                <LinearLayout
+                    android:id="@+id/pathogenTest_testedDiseaseLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/pathogenTest_testedDisease"
+                        app:required="true"
+                        app:value="@={data.testedDisease}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/pathogenTest_testedDiseaseDetails"
+                        style="@style/ControlSingleColumnStyle"
+                        app:dependencyParentField="@{pathogenTestTestedDisease}"
+                        app:dependencyParentValue="@{Disease.OTHER}"
+                        app:required="true"
+                        app:value="@={data.testedDiseaseDetails}"/>
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/pathogenTest_testedDiseaseVariant"
+                        app:value="@={data.testedDiseaseVariant}"
+                        style="@style/ControlSingleColumnStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextEditField
+                        android:id="@+id/pathogenTest_testedDiseaseVariantDetails"
+                        app:value="@={data.testedDiseaseVariantDetails}"
+                        app:customizableEnumField="@{pathogenTestTestedDiseaseVariant}"
+                        app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
+                        app:customizableEnumValue="@{Boolean.TRUE}"
+                        style="@style/ControlSingleColumnStyle" />
+                </LinearLayout>
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/pathogenTest_testedDisease"
-                    app:required="true"
-                    app:value="@={data.testedDisease}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/pathogenTest_testedDiseaseDetails"
-                    style="@style/ControlSingleColumnStyle"
-                    app:dependencyParentField="@{pathogenTestTestedDisease}"
-                    app:dependencyParentValue="@{Disease.OTHER}"
-                    app:required="true"
-                    app:value="@={data.testedDiseaseDetails}"/>
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/pathogenTest_testedDiseaseVariant"
-                    app:value="@={data.testedDiseaseVariant}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/pathogenTest_testedDiseaseVariantDetails"
-                    app:value="@={data.testedDiseaseVariantDetails}"
-                    app:customizableEnumField="@{pathogenTestTestedDiseaseVariant}"
-                    app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
-                    app:customizableEnumValue="@{Boolean.TRUE}"
+                    android:id="@+id/pathogenTest_testedPathogen"
+                    app:value="@={data.testedPathogen}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -158,7 +159,8 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLaboratory().get(Facility.UUID), criteria.getLaboratory().getUuid()));
 		}
 		if (criteria.getTestedPathogen() != null) {
-			throw new UnsupportedOperationException("Tested pathogen is not supported yet");
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getPathogenTests().get(PathogenTestDto.TESTED_PATHOGEN), criteria.getTestedPathogen()));
 		}
 		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper

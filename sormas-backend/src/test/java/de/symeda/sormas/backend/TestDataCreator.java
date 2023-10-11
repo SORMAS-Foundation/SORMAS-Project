@@ -1497,6 +1497,31 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
+		EnvironmentSampleReferenceDto sample,
+		PathogenTestType testType,
+		Pathogen testedPathogen,
+		FacilityReferenceDto lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestType(testType);
+		sampleTest.setLab(lab);
+		sampleTest.setTestedPathogen(testedPathogen);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultVerified(true);
+		sampleTest.setTestDateTime(new Date());
+
+		if (extraConfig != null) {
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
+	public PathogenTestDto createPathogenTest(
 		SampleReferenceDto sample,
 		PathogenTestType testType,
 		Disease testedDisease,
@@ -1525,34 +1550,8 @@ public class TestDataCreator {
 		return sampleTest;
 	}
 
-	public PathogenTestDto createPathogenTest(
-		EnvironmentSampleReferenceDto sample,
-		PathogenTestType testType,
-		Disease testedDisease,
-		Date testDateTime,
-		FacilityReferenceDto lab,
-		UserReferenceDto labUser,
-		PathogenTestResultType testResult,
-		Consumer<PathogenTestDto> extraConfig) {
-
-		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
-		sampleTest.setTestedDisease(testedDisease);
-		sampleTest.setTestType(testType);
-		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(lab);
-		sampleTest.setTestResult(testResult);
-		sampleTest.setTestResultVerified(true);
-
-		if (extraConfig != null) {
-			extraConfig.accept(sampleTest);
-		}
-
-		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
-		return sampleTest;
-	}
-
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
-		return createPathogenTest(associatedCase, null, testType, resultType);
+		return createPathogenTest(associatedCase, Disease.CORONAVIRUS, testType, resultType);
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
@@ -2166,6 +2165,8 @@ public class TestDataCreator {
 		pathogen.setCaption(caption);
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
+
+		beanTest.getCustomizableEnumFacade().loadData();
 
 		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, value);
 	}

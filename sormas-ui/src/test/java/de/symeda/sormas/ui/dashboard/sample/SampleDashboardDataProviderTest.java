@@ -81,7 +81,7 @@ public class SampleDashboardDataProviderTest extends AbstractUiBeanTest {
 			s.setSamplePurpose(SamplePurpose.EXTERNAL);
 			s.setReceived(true);
 		});
-		creator.createPathogenTest(sample.toReference(), user.toReference(), t -> {
+		creator.createPathogenTest(sample.toReference(), user.toReference(), rdcf.facility, t -> {
 			t.setExternalId(sampleExternalId);
 		});
 

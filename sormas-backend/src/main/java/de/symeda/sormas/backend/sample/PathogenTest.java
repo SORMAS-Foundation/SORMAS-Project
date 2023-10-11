@@ -35,12 +35,14 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
+import de.symeda.sormas.backend.disease.PathogenConverter;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -58,6 +60,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
+	public static final String TESTED_PATHOGEN = "testedPathogen";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
@@ -95,6 +98,8 @@ public class PathogenTest extends DeletableAdo {
 	private DiseaseVariant testedDiseaseVariant;
 	private String testedDiseaseDetails;
 	private String testedDiseaseVariantDetails;
+	@Convert(converter = PathogenConverter.class)
+	private Pathogen testedPathogen;
 	private String typingId;
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
@@ -182,6 +187,16 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setTestedDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.testedDiseaseVariant = diseaseVariant;
+	}
+
+	@Column
+	@Convert(converter = PathogenConverter.class)
+	public Pathogen getTestedPathogen() {
+		return testedPathogen;
+	}
+
+	public void setTestedPathogen(Pathogen testedPathogen) {
+		this.testedPathogen = testedPathogen;
 	}
 
 	@Column

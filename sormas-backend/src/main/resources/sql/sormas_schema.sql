@@ -12723,4 +12723,13 @@ ALTER TABLE pathogentest_history ALTER sample_id drop not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (527, 'Add pathogen tests to environment samples #12467');
 
+-- 2023-10-09 Add tested pathogen attribute to pathogen test #11582
+ALTER TABLE pathogentest ADD COLUMN testedpathogen varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN testedpathogen varchar(255);
+
+UPDATE pathogentest SET testedpathogen = 'OTHER', testeddisease = NULL WHERE environmentsample_id IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add tested pathogen attribute to pathogen test #11582');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -414,6 +414,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		pathogenTest.setLab(remoteLab.toReference());
 		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
 		pathogenTest.setTestResult(PathogenTestResultType.PENDING);
+		pathogenTest.setTestedDisease(Disease.CORONAVIRUS);
 
 		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
 		additionalTest.setTestDateTime(new Date());
