@@ -163,7 +163,6 @@ Feature: Edit Persons
   @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry, Event Participant, Case and Contact combined
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Entries button from navbar

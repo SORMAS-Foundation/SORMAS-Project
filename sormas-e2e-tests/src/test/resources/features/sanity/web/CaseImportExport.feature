@@ -24,10 +24,8 @@ Feature: Case import and export tests
     @tmsLink=SORDEV-10040 @env_main
     Scenario: Case basic export test
       When API: I create a new person
-
       And API: I check that POST call status code is 200
       Then API: I create a new case
-
       And API: I check that POST call status code is 200
       Given I log in as a Admin User
       And I click on the Cases button from navbar
