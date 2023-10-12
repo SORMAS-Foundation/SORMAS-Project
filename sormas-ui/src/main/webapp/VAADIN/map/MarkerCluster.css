@@ -102,6 +102,12 @@
 .marker.sample.event-participant:after {
 	color: rgba(0, 90, 156, 0.8);
 }
+.marker.sample.environment div {
+	background-color: rgba(175, 227, 168, 0.8);
+}
+.marker.sample.environment:after {
+	color: rgba(76, 165, 67, 0.8);
+}
 
 .marker.facility {
 	background-color: none;

@@ -148,3 +148,10 @@ Feature: User roles checks
     And I check if there is any user with the "NationalTestUser" role and change his role
     And I click on User roles tab from User Management Page
     And I verify that the "NationalTestUser" user role exist and delete it
+
+  @tmsLink=SOR-4735 @env_main
+  Scenario: User with existing rights can see User Roles tab
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from User Management Page
+    And Validate user can see User roles tab from User Management Page

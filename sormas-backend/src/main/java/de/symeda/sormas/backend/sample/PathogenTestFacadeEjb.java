@@ -250,21 +250,61 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return savePathogenTest(dto, true, true);
 	}
 
-	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
-		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
-		FacadeHelper.checkCreateAndEditRights(existingSampleTest, userService, UserRight.PATHOGEN_TEST_CREATE, UserRight.PATHOGEN_TEST_EDIT);
+	public static PathogenTestDto toDto(PathogenTest source) {
+		if (source == null) {
+			return null;
+		}
 
-		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
+		PathogenTestDto target = new PathogenTestDto();
+		DtoHelper.fillDto(target, source);
 
-		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
+		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setEnvironmentSample(EnvironmentSampleFacadeEjb.toReferenceDto(source.getEnvironmentSample()));
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
+		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
+		target.setTestedPathogen(source.getTestedPathogen());
+		target.setTypingId(source.getTypingId());
+		target.setTestType(source.getTestType());
+		target.setPcrTestSpecification(source.getPcrTestSpecification());
+		target.setTestTypeText(source.getTestTypeText());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
+		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
+		target.setTestResult(source.getTestResult());
+		target.setTestResultText(source.getTestResultText());
+		target.setTestResultVerified(source.getTestResultVerified());
+		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+		target.setSerotype(source.getSerotype());
+		target.setCqValue(source.getCqValue());
+		target.setCtValueE(source.getCtValueE());
+		target.setCtValueN(source.getCtValueN());
+		target.setCtValueRdrp(source.getCtValueRdrp());
+		target.setCtValueS(source.getCtValueS());
+		target.setCtValueOrf1(source.getCtValueOrf1());
+		target.setCtValueRdrpS(source.getCtValueRdrpS());
+		target.setReportDate(source.getReportDate());
+		target.setViaLims(source.isViaLims());
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
 
-		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
-		pathogenTestService.ensurePersisted(pathogenTest);
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
-		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
-		handleAssociatedEntityChanges(pathogenTest, syncShares);
+		target.setPrescriberPhysicianCode(source.getPrescriberPhysicianCode());
+		target.setPrescriberFirstName(source.getPrescriberFirstName());
+		target.setPrescriberLastName(source.getPrescriberLastName());
+		target.setPrescriberPhoneNumber(source.getPrescriberPhoneNumber());
+		target.setPrescriberAddress(source.getPrescriberAddress());
+		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
+		target.setPrescriberCity(source.getPrescriberCity());
+		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
 
-		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
+		return target;
 	}
 
 	private void handleAssociatedEntityChanges(PathogenTest pathogenTest, boolean syncShares) {
@@ -312,40 +352,23 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return pathogenTestService.hasPathogenTest(sampleEntity);
 	}
 
-	@Override
-	public void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException {
-		if (pathogenTest.getSample() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validSample));
-		}
-		if (pathogenTest.getTestType() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.required,
-					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE)));
-		}
-		if (pathogenTest.getTestedDisease() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.required,
-					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE)));
-		}
-		if (pathogenTest.getLab() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties
-					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.LAB)));
-		}
-		if (pathogenTest.getTestResult() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.required,
-					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
-		}
-		if (pathogenTest.getTestResultVerified() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.required,
-					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
-		}
+	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
+		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingSampleTest, userService, UserRight.PATHOGEN_TEST_CREATE, UserRight.PATHOGEN_TEST_EDIT);
+
+		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
+
+		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
+
+		validate(dto);
+
+		PathogenTest pathogenTest = fillOrBuildEntity(dto, existingSampleTest, checkChangeDate);
+		pathogenTestService.ensurePersisted(pathogenTest);
+
+		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
+		handleAssociatedEntityChanges(pathogenTest, syncShares);
+
+		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -386,60 +409,42 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return new ArrayList<>(dtos);
 	}
 
-	public static PathogenTestDto toDto(PathogenTest source) {
-		if (source == null) {
-			return null;
+	@Override
+	public void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException {
+		if (pathogenTest.getSample() == null && pathogenTest.getEnvironmentSample() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidSampleOrEnvironment));
 		}
 
-		PathogenTestDto target = new PathogenTestDto();
-		DtoHelper.fillDto(target, source);
+		if (pathogenTest.getTestType() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE)));
+		}
+		if (pathogenTest.getSample() != null && pathogenTest.getTestedDisease() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidDisease));
+		}
 
-		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
-		target.setEnvironmentSample(EnvironmentSampleFacadeEjb.toReferenceDto(source.getEnvironmentSample()));
-		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
-		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
-		target.setTypingId(source.getTypingId());
-		target.setTestType(source.getTestType());
-		target.setPcrTestSpecification(source.getPcrTestSpecification());
-		target.setTestTypeText(source.getTestTypeText());
-		target.setTestDateTime(source.getTestDateTime());
-		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-		target.setLabDetails(source.getLabDetails());
-		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
-		target.setTestResult(source.getTestResult());
-		target.setTestResultText(source.getTestResultText());
-		target.setTestResultVerified(source.getTestResultVerified());
-		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		target.setSerotype(source.getSerotype());
-		target.setCqValue(source.getCqValue());
-		target.setCtValueE(source.getCtValueE());
-		target.setCtValueN(source.getCtValueN());
-		target.setCtValueRdrp(source.getCtValueRdrp());
-		target.setCtValueS(source.getCtValueS());
-		target.setCtValueOrf1(source.getCtValueOrf1());
-		target.setCtValueRdrpS(source.getCtValueRdrpS());
-		target.setReportDate(source.getReportDate());
-		target.setViaLims(source.isViaLims());
-		target.setExternalId(source.getExternalId());
-		target.setExternalOrderId(source.getExternalOrderId());
-		target.setPreliminary(source.getPreliminary());
-
-		target.setDeleted(source.isDeleted());
-		target.setDeletionReason(source.getDeletionReason());
-		target.setOtherDeletionReason(source.getOtherDeletionReason());
-
-		target.setPrescriberPhysicianCode(source.getPrescriberPhysicianCode());
-		target.setPrescriberFirstName(source.getPrescriberFirstName());
-		target.setPrescriberLastName(source.getPrescriberLastName());
-		target.setPrescriberPhoneNumber(source.getPrescriberPhoneNumber());
-		target.setPrescriberAddress(source.getPrescriberAddress());
-		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
-		target.setPrescriberCity(source.getPrescriberCity());
-		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
-
-		return target;
+		if (pathogenTest.getEnvironmentSample() != null && pathogenTest.getTestedPathogen() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.pathogenTestValidPathogen));
+		}
+		if (pathogenTest.getLab() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.LAB)));
+		}
+		if (pathogenTest.getTestResult() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
+		}
+		if (pathogenTest.getTestResultVerified() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT_VERIFIED)));
+		}
 	}
 
 	public PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer pseudonymizer) {
@@ -485,6 +490,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
+		target.setTestedPathogen(source.getTestedPathogen());
+		target.setTestedPathogen(source.getTestedPathogen());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setPcrTestSpecification(source.getPcrTestSpecification());

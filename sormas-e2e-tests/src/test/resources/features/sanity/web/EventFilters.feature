@@ -166,6 +166,16 @@ Feature: Event Directory filters check
     And I apply "Archived events" to combobox on Event Directory Page
     And I check the number of displayed Event results from All button is 0
 
+  @tmsLink=SORDEV-9426 @env_main
+  Scenario: Filter for the report date of events
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    Then I click on Show more filters in Events
+    And I select Report Date among Event Reference Date options
+    And I fill in a date range in Date of Event From Epi Week and ...To fields
+    And I apply on the APPLY FILTERS button from Event
+    And I check that the dates of displayed Event results are correct
+
   @tmsLink=SORQA-5969 @env_de
   Scenario Outline: Test vaccination status filter <status> and columns to event
     Given I log in as a National User

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,10 +32,13 @@ import com.vaadin.v7.ui.CheckBox;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.map.BaseDashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardDataProvider;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -43,7 +47,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SampleDashboardMapComponent extends BaseDashboardMapComponent<SampleDashboardCriteria, SampleDashboardDataProvider> {
 
-	private Set<SampleAssociationType> displayedSamples;
+	private Set<SampleAssociationType> displayedHumanSamples;
+	private boolean showEnvironmentalSamples;
 
 	public SampleDashboardMapComponent(SampleDashboardDataProvider dashboardDataProvider) {
 		super(Strings.headingSampleDashboardMap, dashboardDataProvider, Strings.infoHeadingSampleDashboardMap);
@@ -51,8 +56,11 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
 	@Override
 	protected void addComponents() {
-		displayedSamples =
+		displayedHumanSamples =
 			new HashSet<>(Arrays.asList(SampleAssociationType.CASE, SampleAssociationType.CONTACT, SampleAssociationType.EVENT_PARTICIPANT));
+		if (UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+			showEnvironmentalSamples = true;
+		}
 
 		super.addComponents();
 	}
@@ -60,7 +68,10 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 	@Override
 	protected Long getMarkerCount(Date fromDate, Date toDate, int maxCount) {
 		return FacadeProvider.getSampleDashboardFacade()
-			.countSamplesForMap(dashboardDataProvider.buildDashboardCriteriaWithDates(), displayedSamples);
+			.countSamplesForMap(dashboardDataProvider.buildDashboardCriteriaWithDates(), displayedHumanSamples)
+			+ (showEnvironmentalSamples
+				? FacadeProvider.getSampleDashboardFacade().countEnvironmentalSamplesForMap(dashboardDataProvider.buildDashboardCriteriaWithDates())
+				: 0);
 	}
 
 	@Override
@@ -68,13 +79,15 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 		String markerGroup = "samples";
 		map.removeGroup(markerGroup);
 
-		List<MapSampleDto> samples =
-			FacadeProvider.getSampleDashboardFacade().getSamplesForMap(dashboardDataProvider.buildDashboardCriteriaWithDates(), displayedSamples);
+		SampleDashboardCriteria criteria = dashboardDataProvider.buildDashboardCriteriaWithDates();
+		List<MapSampleDto> humanSamples = FacadeProvider.getSampleDashboardFacade().getSamplesForMap(criteria, displayedHumanSamples);
+		List<MapSampleDto> environmentSamples =
+			showEnvironmentalSamples ? FacadeProvider.getSampleDashboardFacade().getEnvironmentalSamplesForMap(criteria) : Collections.emptyList();
 
-		List<LeafletMarker> markers = new ArrayList<>();
-		for (MapSampleDto sample : samples) {
+		List<LeafletMarker> markers = new ArrayList<>(environmentSamples.size() + environmentSamples.size());
+
+		markers.addAll(humanSamples.stream().map(sample -> {
 			LeafletMarker marker = new LeafletMarker();
-
 			switch (sample.getAssociationType()) {
 			case CASE:
 				marker.setIcon(MarkerIcon.SAMPLE_CASE);
@@ -87,8 +100,16 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			}
 			marker.setLatLon(sample.getLatitude(), sample.getLongitude());
 
-			markers.add(marker);
-		}
+			return marker;
+		}).collect(Collectors.toList()));
+
+		markers.addAll(environmentSamples.stream().map(sample -> {
+			LeafletMarker marker = new LeafletMarker();
+			marker.setIcon(MarkerIcon.SAMPLE_ENVIRONMENT);
+			marker.setLatLon(sample.getLatitude(), sample.getLongitude());
+
+			return marker;
+		}).collect(Collectors.toList()));
 
 		map.addMarkerGroup(markerGroup, markers);
 	}
@@ -101,9 +122,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 		showCaseSamplesCheckBox.setValue(shouldShowCaseSamples());
 		showCaseSamplesCheckBox.addValueChangeListener(e -> {
 			if ((boolean) e.getProperty().getValue()) {
-				displayedSamples.add(SampleAssociationType.CASE);
+				displayedHumanSamples.add(SampleAssociationType.CASE);
 			} else {
-				displayedSamples.remove(SampleAssociationType.CASE);
+				displayedHumanSamples.remove(SampleAssociationType.CASE);
 			}
 
 			refreshMap(true);
@@ -117,9 +138,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 		showContactSamplesCheckBox.setValue(shouldShowContactSamples());
 		showContactSamplesCheckBox.addValueChangeListener(e -> {
 			if ((boolean) e.getProperty().getValue()) {
-				displayedSamples.add(SampleAssociationType.CONTACT);
+				displayedHumanSamples.add(SampleAssociationType.CONTACT);
 			} else {
-				displayedSamples.remove(SampleAssociationType.CONTACT);
+				displayedHumanSamples.remove(SampleAssociationType.CONTACT);
 			}
 
 			refreshMap(true);
@@ -133,9 +154,9 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 		showEventParticipantSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
 		showEventParticipantSamplesCheckBox.addValueChangeListener(e -> {
 			if ((boolean) e.getProperty().getValue()) {
-				displayedSamples.add(SampleAssociationType.EVENT_PARTICIPANT);
+				displayedHumanSamples.add(SampleAssociationType.EVENT_PARTICIPANT);
 			} else {
-				displayedSamples.remove(SampleAssociationType.EVENT_PARTICIPANT);
+				displayedHumanSamples.remove(SampleAssociationType.EVENT_PARTICIPANT);
 			}
 
 			refreshMap(true);
@@ -143,11 +164,27 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
 		layersLayout.addComponent(showEventParticipantSamplesCheckBox);
 
+		CheckBox showEnvironmentSamplesCheckBox = new CheckBox();
+		showEnvironmentSamplesCheckBox.setId(Captions.sampleDashboardShowEnvironmentSamples);
+		showEnvironmentSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEnvironmentSamples));
+		showEnvironmentSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
+		showEnvironmentSamplesCheckBox.addValueChangeListener(e -> {
+			if ((boolean) e.getProperty().getValue()) {
+				showEnvironmentalSamples = true;
+			} else {
+				showEnvironmentalSamples = false;
+			}
+
+			refreshMap(true);
+		});
+
+		layersLayout.addComponent(showEnvironmentSamplesCheckBox);
+
 	}
 
 	@Override
 	protected List<Component> getLegendComponents() {
-		if (displayedSamples.size() == 0) {
+		if (displayedHumanSamples.size() == 0) {
 			return Collections.emptyList();
 		}
 
@@ -173,6 +210,13 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			HorizontalLayout legendEntry = buildMarkerLegendEntry(
 				MarkerIcon.SAMPLE_EVENT_PARTICIPANT,
 				I18nProperties.getCaption(Captions.sampleDashboardEventParticipantSamples));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			samplesLegendLayout.addComponent(legendEntry);
+		}
+
+		if (showEnvironmentalSamples) {
+			HorizontalLayout legendEntry =
+				buildMarkerLegendEntry(MarkerIcon.SAMPLE_ENVIRONMENT, I18nProperties.getCaption(Captions.sampleDashboardEnvironmentsSamples));
 			samplesLegendLayout.addComponent(legendEntry);
 		}
 
@@ -180,15 +224,15 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 	}
 
 	private boolean shouldShowCaseSamples() {
-		return displayedSamples.contains(SampleAssociationType.CASE);
+		return displayedHumanSamples.contains(SampleAssociationType.CASE);
 	}
 
 	private boolean shouldShowContactSamples() {
-		return displayedSamples.contains(SampleAssociationType.CONTACT);
+		return displayedHumanSamples.contains(SampleAssociationType.CONTACT);
 	}
 
 	private boolean shouldShowEventParticipantSamples() {
-		return displayedSamples.contains(SampleAssociationType.EVENT_PARTICIPANT);
+		return displayedHumanSamples.contains(SampleAssociationType.EVENT_PARTICIPANT);
 	}
 
 	@Override

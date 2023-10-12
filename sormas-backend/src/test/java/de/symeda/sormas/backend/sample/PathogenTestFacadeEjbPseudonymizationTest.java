@@ -200,14 +200,14 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 
 		PathogenTestDto pathogenTest = createPathogenTest(lab, sample, user1);
 
-		pathogenTest.setLab(null);
+		pathogenTest.setCqValue(1.9f);
 		pathogenTest.setLabUser(null);
 
 		getPathogenTestFacade().savePathogenTest(pathogenTest);
 
 		PathogenTest updatedTest = getPathogenTestService().getByUuid(pathogenTest.getUuid());
 
-		assertThat(updatedTest.getLab(), is(nullValue()));
+		assertThat(updatedTest.getCqValue(), is(1.9f));
 		assertThat(updatedTest.getLabUser().getUuid(), is(user1.getUuid()));
 	}
 
@@ -222,14 +222,14 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 		PathogenTestDto pathogenTest = createPathogenTest(lab, sample, user2);
 
 		pathogenTest.setPseudonymized(true);
-		pathogenTest.setLab(null);
+		pathogenTest.setCqValue(1.9f);
 		pathogenTest.setLabUser(null);
 
 		getPathogenTestFacade().savePathogenTest(pathogenTest);
 
 		PathogenTest updatedTest = getPathogenTestService().getByUuid(pathogenTest.getUuid());
 
-		assertThat(updatedTest.getLab(), is(nullValue()));
+		assertThat(updatedTest.getCqValue(), is(1.9f));
 		assertThat(updatedTest.getLabUser().getUuid(), is(user2.getUuid()));
 	}
 

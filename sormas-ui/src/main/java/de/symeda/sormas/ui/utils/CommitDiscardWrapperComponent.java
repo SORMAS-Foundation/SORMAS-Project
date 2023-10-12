@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -859,6 +860,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		String entityName,
 		String entityUuid,
 		DeletableFacade deletableFacade) {
+		addDeleteWithReasonOrRestoreListener(viewName, details, entityName, entityUuid, deletableFacade, null, null);
+	}
+
+	public void addDeleteWithReasonOrRestoreListener(
+		String viewName,
+		String details,
+		String entityName,
+		String entityUuid,
+		DeletableFacade deletableFacade,
+		String restoreInvalidMessage,
+		Function<String, Boolean> checkRestoreValidity) {
 
 		final boolean deleted = deletableFacade.isDeleted(entityUuid);
 
@@ -869,9 +881,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!deleted) {
 			deleteWithDetailsListeners.add((deleteDetails) -> deletableFacade.delete(entityUuid, deleteDetails));
 		} else {
-			deleteWithDetailsListeners.add((deleteDetails) -> deletableFacade.restore(entityUuid));
+			deleteWithDetailsListeners.add((deleteDetails) -> {
+				if (checkRestoreValidity == null || checkRestoreValidity.apply(entityUuid)) {
+					deletableFacade.restore(entityUuid);
+				} else {
+					NotificationHelper.showNotification(restoreInvalidMessage, Type.ERROR_MESSAGE, -1);
+				}
+			});
 		}
 		deleteWithDetailsListeners.add((deleteDetails) -> UI.getCurrent().getNavigator().navigateTo(viewName));
+
 	}
 
 	private void onDelete() {

@@ -1752,6 +1752,7 @@ public interface Captions {
 	String PathogenTest_testedDiseaseDetails = "PathogenTest.testedDiseaseDetails";
 	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
 	String PathogenTest_testedDiseaseVariantDetails = "PathogenTest.testedDiseaseVariantDetails";
+	String PathogenTest_testedPathogen = "PathogenTest.testedPathogen";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";
@@ -2018,12 +2019,14 @@ public interface Captions {
 	String sampleDashboardAllSamples = "sampleDashboardAllSamples";
 	String sampleDashboardCaseSamples = "sampleDashboardCaseSamples";
 	String sampleDashboardContactSamples = "sampleDashboardContactSamples";
+	String sampleDashboardEnvironmentsSamples = "sampleDashboardEnvironmentsSamples";
 	String sampleDashboardEventParticipantSamples = "sampleDashboardEventParticipantSamples";
 	String sampleDashboardFinalLabResults = "sampleDashboardFinalLabResults";
 	String sampleDashboardSamplePurpose = "sampleDashboardSamplePurpose";
 	String sampleDashboardShipmentStatus = "sampleDashboardShipmentStatus";
 	String sampleDashboardShowCaseSamples = "sampleDashboardShowCaseSamples";
 	String sampleDashboardShowContactSamples = "sampleDashboardShowContactSamples";
+	String sampleDashboardShowEnvironmentSamples = "sampleDashboardShowEnvironmentSamples";
 	String sampleDashboardShowEventParticipantSamples = "sampleDashboardShowEventParticipantSamples";
 	String sampleDashboardSpecimenCondition = "sampleDashboardSpecimenCondition";
 	String sampleDashboardTestResults = "sampleDashboardTestResults";

@@ -41,7 +41,7 @@ import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.uuid.HasUuid;
 
 @MappedSuperclass
-public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, HasUuid, HasCaption {
+public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable, HasUuid, HasCaption, HasLocalChangeDate {
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";
@@ -233,6 +233,7 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 		return changeDate == null || creationDate == null || changeDate.getTime() == 0;
 	}
 
+	@Override
 	public Date getLocalChangeDate() {
 		return localChangeDate;
 	}

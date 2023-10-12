@@ -70,6 +70,7 @@ import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -1496,6 +1497,31 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
+		EnvironmentSampleReferenceDto sample,
+		PathogenTestType testType,
+		Pathogen testedPathogen,
+		FacilityReferenceDto lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestType(testType);
+		sampleTest.setLab(lab);
+		sampleTest.setTestedPathogen(testedPathogen);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultVerified(true);
+		sampleTest.setTestDateTime(new Date());
+
+		if (extraConfig != null) {
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
+	public PathogenTestDto createPathogenTest(
 		SampleReferenceDto sample,
 		PathogenTestType testType,
 		Disease testedDisease,
@@ -1525,7 +1551,7 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
-		return createPathogenTest(associatedCase, null, testType, resultType);
+		return createPathogenTest(associatedCase, Disease.CORONAVIRUS, testType, resultType);
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
@@ -2139,6 +2165,8 @@ public class TestDataCreator {
 		pathogen.setCaption(caption);
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
+
+		beanTest.getCustomizableEnumFacade().loadData();
 
 		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, value);
 	}

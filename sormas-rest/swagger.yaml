@@ -19894,6 +19894,8 @@ components:
           type: string
           maxLength: 512
           minLength: 0
+        testedPathogen:
+          $ref: '#/components/schemas/Pathogen'
         typingId:
           type: string
           maxLength: 1000000
@@ -19910,7 +19912,6 @@ components:
       - testResult
       - testResultVerified
       - testType
-      - testedDisease
     PeriodDto:
       type: object
       properties:
