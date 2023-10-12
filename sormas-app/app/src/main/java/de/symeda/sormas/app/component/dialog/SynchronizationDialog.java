@@ -31,7 +31,6 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -49,7 +48,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.DtoFeatureConfigHelper;
 import de.symeda.sormas.app.backend.common.DtoUserRightsHelper;
 import de.symeda.sormas.app.databinding.DialogSynchronizationProgressItemLayoutBinding;
@@ -282,8 +280,10 @@ public class SynchronizationDialog extends AbstractDialog {
 			captions.forEach(caption -> progressItemBindings.add(createBinding(inflater, caption, showPulls, showPushes, showDeletions)));
 
 			synchronized (BINDING_LOCK) {
-				currentProgressItemBinding = progressItemBindings.get(0);
-				currentProgressItemBinding.setActive(true);
+				if (!progressItemBindings.isEmpty()) {
+					currentProgressItemBinding = progressItemBindings.get(0);
+					currentProgressItemBinding.setActive(true);
+				}
 				updatingProgressItemBindings = false;
 				BINDING_LOCK.notify();
 			}
@@ -316,183 +316,434 @@ public class SynchronizationDialog extends AbstractDialog {
 	private void showDeleteObsoleteProgressItems() {
 
 		List<String> allowedEntities = new ArrayList<>();
-		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities);
-		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
-		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
-		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
-		addEntityIfViewAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
-		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
-		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
-		addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities);
-		addEntityIfViewAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
+		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled());
+		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
+		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled());
+		addEntityIfViewAllowed(
+			EventParticipantDto.class,
+			Strings.entityEventParticipants,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfViewAllowed(
+			ImmunizationDto.class,
+			Strings.entityImmunizations,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled());
+		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
+		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
+		addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities, true);
+		addEntityIfViewAllowed(
+			AggregateReportDto.class,
+			Strings.entityAggregateReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled());
 		showProgressItems(true, false, allowedEntities);
 	}
 
 	private void showPushNewProgressItems() {
 
 		List<String> allowedEntities = new ArrayList<>();
-		addEntityIfEditAllowed(PersonDto.class, Strings.entityPersons, allowedEntities);
-		addEntityIfEditAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities);
-		addEntityIfEditAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
-		addEntityIfEditAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
-		addEntityIfEditAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
-		addEntityIfEditAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfEditAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
-		addEntityIfEditAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
-		addEntityIfEditAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-		addEntityIfEditAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
-		addEntityIfEditAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
-		addEntityIfEditAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
-		addEntityIfEditAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
-		addEntityIfEditAllowed(WeeklyReportDto.class, Strings.entityWeeklyReports, allowedEntities);
-		addEntityIfEditAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
-		addEntityIfEditAllowed(PrescriptionDto.class, Strings.entityPrescriptions, allowedEntities);
-		addEntityIfEditAllowed(TreatmentDto.class, Strings.entityTreatments, allowedEntities);
-		addEntityIfEditAllowed(ClinicalVisitDto.class, Strings.entityClinicalVisits, allowedEntities);
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			addEntityIfEditAllowed(CampaignFormDataDto.class, Strings.entityCampaignFormData, allowedEntities);
-		}
+		addEntityIfEditAllowed(PersonDto.class, Strings.entityPersons, allowedEntities, true);
+		addEntityIfEditAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled());
+		addEntityIfEditAllowed(
+			ImmunizationDto.class,
+			Strings.entityImmunizations,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled());
+		addEntityIfEditAllowed(EventDto.class, Strings.entityEvents, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled());
+		addEntityIfEditAllowed(
+			EventParticipantDto.class,
+			Strings.entityEventParticipants,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfEditAllowed(SampleDto.class, Strings.entitySamples, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
+		addEntityIfEditAllowed(
+			PathogenTestDto.class,
+			Strings.entityPathogenTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPathogenTestsEnabled());
+		addEntityIfEditAllowed(
+			AdditionalTestDto.class,
+			Strings.entityAdditionalTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled());
+		addEntityIfEditAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfEditAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
+		addEntityIfEditAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
+		addEntityIfEditAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfEditAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
+		addEntityIfEditAllowed(
+			WeeklyReportDto.class,
+			Strings.entityWeeklyReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled());
+		addEntityIfEditAllowed(
+			AggregateReportDto.class,
+			Strings.entityAggregateReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled());
+		addEntityIfEditAllowed(
+			PrescriptionDto.class,
+			Strings.entityPrescriptions,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled());
+		addEntityIfEditAllowed(
+			TreatmentDto.class,
+			Strings.entityTreatments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled());
+		addEntityIfEditAllowed(
+			ClinicalVisitDto.class,
+			Strings.entityClinicalVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled());
+		addEntityIfEditAllowed(
+			CampaignFormDataDto.class,
+			Strings.entityCampaignFormData,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
 		showProgressItems(false, true, allowedEntities);
 	}
 
 	private void showRepullProgressItems() {
 
 		List<String> allowedEntities = new ArrayList<>();
-		addEntityIfViewAllowed(UserRoleDto.class, Strings.entityUserRoles, allowedEntities);
-		addEntityIfViewAllowed(DiseaseClassificationCriteriaDto.class, Strings.entityDiseaseClassifications, allowedEntities);
-		addEntityIfViewAllowed(UserDto.class, Strings.entityUsers, allowedEntities);
-		addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities);
-		addEntityIfViewAllowed(DiseaseConfigurationDto.class, Strings.entityDiseaseConfigurations, allowedEntities);
-		addEntityIfViewAllowed(CustomizableEnumValueDto.class, Strings.entityCustomizableEnumValues, allowedEntities);
-		addEntityIfViewAllowed(FeatureConfigurationDto.class, Strings.entityFeatureConfigurations, allowedEntities);
-		addEntityIfViewAllowed(PersonDto.class, Strings.entityPersons, allowedEntities);
-		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities);
-		addEntityIfViewAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
-		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
-		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
-		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
-		addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
-		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
-		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
-		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
-		addEntityIfViewAllowed(WeeklyReportDto.class, Strings.entityWeeklyReports, allowedEntities);
-		addEntityIfViewAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
-		addEntityIfViewAllowed(PrescriptionDto.class, Strings.entityPrescriptions, allowedEntities);
-		addEntityIfViewAllowed(TreatmentDto.class, Strings.entityTreatments, allowedEntities);
-		addEntityIfViewAllowed(ClinicalVisitDto.class, Strings.entityClinicalVisits, allowedEntities);
+		addEntityIfViewAllowed(UserRoleDto.class, Strings.entityUserRoles, allowedEntities, true);
+		addEntityIfViewAllowed(DiseaseClassificationCriteriaDto.class, Strings.entityDiseaseClassifications, allowedEntities, true);
+		addEntityIfViewAllowed(UserDto.class, Strings.entityUsers, allowedEntities, true);
+		addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities, true);
+		addEntityIfViewAllowed(DiseaseConfigurationDto.class, Strings.entityDiseaseConfigurations, allowedEntities, true);
+		addEntityIfViewAllowed(CustomizableEnumValueDto.class, Strings.entityCustomizableEnumValues, allowedEntities, true);
+		addEntityIfViewAllowed(FeatureConfigurationDto.class, Strings.entityFeatureConfigurations, allowedEntities, true);
+		addEntityIfViewAllowed(PersonDto.class, Strings.entityPersons, allowedEntities, true);
+		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled());
+		addEntityIfViewAllowed(
+			ImmunizationDto.class,
+			Strings.entityImmunizations,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled());
+		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled());
+		addEntityIfViewAllowed(
+			EventParticipantDto.class,
+			Strings.entityEventParticipants,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
+		addEntityIfViewAllowed(
+			PathogenTestDto.class,
+			Strings.entityPathogenTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPathogenTestsEnabled());
+		addEntityIfViewAllowed(
+			AdditionalTestDto.class,
+			Strings.entityAdditionalTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
+		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
+		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
+		addEntityIfViewAllowed(
+			WeeklyReportDto.class,
+			Strings.entityWeeklyReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled());
+		addEntityIfViewAllowed(
+			AggregateReportDto.class,
+			Strings.entityAggregateReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled());
+		addEntityIfViewAllowed(
+			PrescriptionDto.class,
+			Strings.entityPrescriptions,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled());
+		addEntityIfViewAllowed(
+			TreatmentDto.class,
+			Strings.entityTreatments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled());
+		addEntityIfViewAllowed(
+			ClinicalVisitDto.class,
+			Strings.entityClinicalVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled());
 		showProgressItems(true, false, allowedEntities);
 	}
 
 	private void showSynchronizeProgressItems() {
 
 		List<String> allowedEntities = new ArrayList<>();
-		addEntityIfViewOrEditAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities);
-		addEntityIfViewOrEditAllowed(DiseaseConfigurationDto.class, Strings.entityDiseaseConfigurations, allowedEntities);
-		addEntityIfViewOrEditAllowed(CustomizableEnumValueDto.class, Strings.entityCustomizableEnumValues, allowedEntities);
-		addEntityIfViewOrEditAllowed(PersonDto.class, Strings.entityPersons, allowedEntities);
-		addEntityIfViewOrEditAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities);
-		addEntityIfViewOrEditAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
-		addEntityIfViewOrEditAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
-		addEntityIfViewOrEditAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
-		addEntityIfViewOrEditAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewOrEditAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
-		addEntityIfViewOrEditAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
-		addEntityIfViewOrEditAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-		addEntityIfViewOrEditAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
-		addEntityIfViewOrEditAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
-		addEntityIfViewOrEditAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
-		addEntityIfViewOrEditAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
-		addEntityIfViewOrEditAllowed(WeeklyReportDto.class, Strings.entityWeeklyReports, allowedEntities);
-		addEntityIfViewOrEditAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
-		addEntityIfViewOrEditAllowed(PrescriptionDto.class, Strings.entityPrescriptions, allowedEntities);
-		addEntityIfViewOrEditAllowed(TreatmentDto.class, Strings.entityTreatments, allowedEntities);
-		addEntityIfViewOrEditAllowed(ClinicalVisitDto.class, Strings.entityClinicalVisits, allowedEntities);
+		addEntityIfViewOrEditAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities, true);
+		addEntityIfViewOrEditAllowed(DiseaseConfigurationDto.class, Strings.entityDiseaseConfigurations, allowedEntities, true);
+		addEntityIfViewOrEditAllowed(CustomizableEnumValueDto.class, Strings.entityCustomizableEnumValues, allowedEntities, true);
+		addEntityIfViewOrEditAllowed(PersonDto.class, Strings.entityPersons, allowedEntities, true);
+		addEntityIfViewOrEditAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled());
+		addEntityIfViewOrEditAllowed(
+			ImmunizationDto.class,
+			Strings.entityImmunizations,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled());
+		addEntityIfViewOrEditAllowed(EventDto.class, Strings.entityEvents, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled());
+		addEntityIfViewOrEditAllowed(
+			EventParticipantDto.class,
+			Strings.entityEventParticipants,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfViewOrEditAllowed(
+			SampleDto.class,
+			Strings.entitySamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
+		addEntityIfViewOrEditAllowed(
+			PathogenTestDto.class,
+			Strings.entityPathogenTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPathogenTestsEnabled());
+		addEntityIfViewOrEditAllowed(
+			AdditionalTestDto.class,
+			Strings.entityAdditionalTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled());
+		addEntityIfViewOrEditAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfViewOrEditAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
+		addEntityIfViewOrEditAllowed(
+			ContactDto.class,
+			Strings.entityContacts,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
+		addEntityIfViewOrEditAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewOrEditAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
+		addEntityIfViewOrEditAllowed(
+			WeeklyReportDto.class,
+			Strings.entityWeeklyReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled());
+		addEntityIfViewOrEditAllowed(
+			AggregateReportDto.class,
+			Strings.entityAggregateReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled());
+		addEntityIfViewOrEditAllowed(
+			PrescriptionDto.class,
+			Strings.entityPrescriptions,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled());
+		addEntityIfViewOrEditAllowed(
+			TreatmentDto.class,
+			Strings.entityTreatments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled());
+		addEntityIfViewOrEditAllowed(
+			ClinicalVisitDto.class,
+			Strings.entityClinicalVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled());
 		showProgressItems(true, true, allowedEntities);
 	}
 
 	private void showPullModifiedProgressItems() {
 
 		List<String> allowedEntities = new ArrayList<>();
-		addEntityIfViewAllowed(PersonDto.class, Strings.entityPersons, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled())
-			addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled())
-			addEntityIfViewAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled())
-			addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled())
-			addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled())
-			addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForSampleTestsEnabled()) {
-			addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
-		}
-		if (DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled()) {
-			addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
-		}
-		if (DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled()) {
-			addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-			addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
-		}
-		if (DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled())
-			addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled())
-			addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled())
-			addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled())
-			addEntityIfViewAllowed(WeeklyReportDto.class, Strings.entityWeeklyReports, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled())
-			addEntityIfViewAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled())
-			addEntityIfViewAllowed(PrescriptionDto.class, Strings.entityPrescriptions, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled())
-			addEntityIfViewAllowed(TreatmentDto.class, Strings.entityTreatments, allowedEntities);
-		if (DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled())
-			addEntityIfViewAllowed(ClinicalVisitDto.class, Strings.entityClinicalVisits, allowedEntities);
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			addEntityIfViewAllowed(CampaignFormMetaDto.class, Strings.entityCampaignFormMeta, allowedEntities);
-			addEntityIfViewAllowed(CampaignDto.class, Strings.entityCampaigns, allowedEntities);
-			addEntityIfViewAllowed(CampaignFormDataDto.class, Strings.entityCampaignFormData, allowedEntities);
-		}
+		addEntityIfViewAllowed(PersonDto.class, Strings.entityPersons, allowedEntities, true);
+		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled());
+		addEntityIfViewAllowed(
+			ImmunizationDto.class,
+			Strings.entityImmunizations,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled());
+		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled());
+		addEntityIfViewAllowed(
+			EventParticipantDto.class,
+			Strings.entityEventParticipants,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
+		addEntityIfViewAllowed(
+			PathogenTestDto.class,
+			Strings.entityPathogenTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPathogenTestsEnabled());
+		addEntityIfViewAllowed(
+			AdditionalTestDto.class,
+			Strings.entityAdditionalTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
+		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
+		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
+		addEntityIfViewAllowed(
+			WeeklyReportDto.class,
+			Strings.entityWeeklyReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled());
+		addEntityIfViewAllowed(
+			AggregateReportDto.class,
+			Strings.entityAggregateReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled());
+		addEntityIfViewAllowed(
+			PrescriptionDto.class,
+			Strings.entityPrescriptions,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled());
+		addEntityIfViewAllowed(
+			TreatmentDto.class,
+			Strings.entityTreatments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled());
+		addEntityIfViewAllowed(
+			ClinicalVisitDto.class,
+			Strings.entityClinicalVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled());
+		addEntityIfViewAllowed(
+			CampaignFormMetaDto.class,
+			Strings.entityCampaignFormMeta,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
+		addEntityIfViewAllowed(
+			CampaignDto.class,
+			Strings.entityCampaigns,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
+		addEntityIfViewAllowed(
+			CampaignFormDataDto.class,
+			Strings.entityCampaignFormData,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
 		showProgressItems(true, false, allowedEntities);
 	}
 
 	private void showClearUpProgressItems(boolean forDeletion) {
 
 		List<String> allowedEntities = new ArrayList<>();
-		addEntityIfViewAllowed(PersonDto.class, Strings.entityPersons, allowedEntities);
-		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities);
-		addEntityIfViewAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
-		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
-		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
-		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
-		addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
-		addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
-		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
-		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
-		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
-		addEntityIfViewAllowed(WeeklyReportDto.class, Strings.entityWeeklyReports, allowedEntities);
-		addEntityIfViewAllowed(AggregateReportDto.class, Strings.entityAggregateReports, allowedEntities);
-		addEntityIfViewAllowed(PrescriptionDto.class, Strings.entityPrescriptions, allowedEntities);
-		addEntityIfViewAllowed(TreatmentDto.class, Strings.entityTreatments, allowedEntities);
-		addEntityIfViewAllowed(ClinicalVisitDto.class, Strings.entityClinicalVisits, allowedEntities);
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			addEntityIfViewAllowed(CampaignFormMetaDto.class, Strings.entityCampaignFormMeta, allowedEntities);
-			addEntityIfViewAllowed(CampaignDto.class, Strings.entityCampaigns, allowedEntities);
-			addEntityIfViewAllowed(CampaignFormDataDto.class, Strings.entityCampaignFormData, allowedEntities);
-		}
+		addEntityIfViewAllowed(PersonDto.class, Strings.entityPersons, allowedEntities, true);
+		addEntityIfViewAllowed(CaseDataDto.class, Strings.entityCases, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForCaseEnabled());
+		addEntityIfViewAllowed(
+			ImmunizationDto.class,
+			Strings.entityImmunizations,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForImmunizationEnabled());
+		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForEventsEnabled());
+		addEntityIfViewAllowed(
+			EventParticipantDto.class,
+			Strings.entityEventParticipants,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
+		addEntityIfViewAllowed(
+			PathogenTestDto.class,
+			Strings.entityPathogenTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPathogenTestsEnabled());
+		addEntityIfViewAllowed(
+			AdditionalTestDto.class,
+			Strings.entityAdditionalTests,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
+		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
+		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
+		addEntityIfViewAllowed(
+			WeeklyReportDto.class,
+			Strings.entityWeeklyReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForWeeklyReportsEnabled());
+		addEntityIfViewAllowed(
+			AggregateReportDto.class,
+			Strings.entityAggregateReports,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForAggregateReportsEnabled());
+		addEntityIfViewAllowed(
+			PrescriptionDto.class,
+			Strings.entityPrescriptions,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForPrescriptionsEnabled());
+		addEntityIfViewAllowed(
+			TreatmentDto.class,
+			Strings.entityTreatments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForTreatmentsEnabled());
+		addEntityIfViewAllowed(
+			ClinicalVisitDto.class,
+			Strings.entityClinicalVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForClinicalVisitsEnabled());
+		addEntityIfViewAllowed(
+			CampaignFormMetaDto.class,
+			Strings.entityCampaignFormMeta,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
+		addEntityIfViewAllowed(
+			CampaignDto.class,
+			Strings.entityCampaigns,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
+		addEntityIfViewAllowed(
+			CampaignFormDataDto.class,
+			Strings.entityCampaignFormData,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForCampaignsEnabled());
 
 		if (forDeletion) {
 			Collections.reverse(allowedEntities);
-			addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities);
+			addEntityIfViewAllowed(OutbreakDto.class, Strings.entityOutbreaks, allowedEntities, true);
 		}
 
 		showProgressItems(!forDeletion, false, forDeletion, allowedEntities);
@@ -523,23 +774,23 @@ public class SynchronizationDialog extends AbstractDialog {
 		showProgressItems(!forDeletion, false, forDeletion, allowedEntities);
 	}
 
-	private void addEntityIfViewAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list) {
+	private void addEntityIfViewAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list, boolean featureEnabled) {
 
-		if (DtoUserRightsHelper.isViewAllowed(dtoClass)) {
+		if (featureEnabled && DtoUserRightsHelper.isViewAllowed(dtoClass)) {
 			list.add(entityString);
 		}
 	}
 
-	private void addEntityIfEditAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list) {
+	private void addEntityIfEditAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list, boolean featureEnabled) {
 
-		if (DtoUserRightsHelper.isEditAllowed(dtoClass)) {
+		if (featureEnabled && DtoUserRightsHelper.isEditAllowed(dtoClass)) {
 			list.add(entityString);
 		}
 	}
 
-	private void addEntityIfViewOrEditAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list) {
+	private void addEntityIfViewOrEditAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list, boolean featureEnabled) {
 
-		if (DtoUserRightsHelper.isViewAllowed(dtoClass) || DtoUserRightsHelper.isEditAllowed(dtoClass)) {
+		if (featureEnabled && DtoUserRightsHelper.isViewAllowed(dtoClass) || DtoUserRightsHelper.isEditAllowed(dtoClass)) {
 			list.add(entityString);
 		}
 	}

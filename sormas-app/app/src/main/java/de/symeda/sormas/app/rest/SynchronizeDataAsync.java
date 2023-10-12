@@ -395,7 +395,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			DtoUserRightsHelper.isViewAllowed(EnvironmentSampleDto.class) && DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled();
 		boolean samplesVisible = DtoUserRightsHelper.isViewAllowed(SampleDto.class) && DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled();
 		boolean sampleTestsVisible =
-			DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class) && DtoFeatureConfigHelper.isFeatureConfigForSampleTestsEnabled();
+			DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class) && DtoFeatureConfigHelper.isFeatureConfigForPathogenTestsEnabled();
 		boolean additionalTestsVisible =
 			DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class) && DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled();
 		boolean contactsVisible = DtoUserRightsHelper.isViewAllowed(ContactDto.class) && DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled();
