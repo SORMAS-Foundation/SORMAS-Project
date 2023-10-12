@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import com.j256.ormlite.logger.Logger;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -45,6 +47,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.R;
@@ -388,7 +391,12 @@ public class SynchronizationDialog extends AbstractDialog {
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
 		addEntityIfEditAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
-		addEntityIfEditAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfEditAllowedWithFeatureDependencies(
+			VisitDto.class,
+			Strings.entityVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled(),
+			Map.of(UserRight.CASE_VIEW, FeatureType.CASE_FOLLOWUP));
 		addEntityIfEditAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
 		addEntityIfEditAllowed(
 			WeeklyReportDto.class,
@@ -468,7 +476,12 @@ public class SynchronizationDialog extends AbstractDialog {
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
-		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewAllowedWithFeatureDependencies(
+			VisitDto.class,
+			Strings.entityVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled(),
+			Map.of(UserRight.CASE_VIEW, FeatureType.CASE_FOLLOWUP));
 		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
 		addEntityIfViewAllowed(
 			WeeklyReportDto.class,
@@ -547,7 +560,12 @@ public class SynchronizationDialog extends AbstractDialog {
 			Strings.entityContacts,
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
-		addEntityIfViewOrEditAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewOrEditAllowedWithFeatureDependencies(
+			VisitDto.class,
+			Strings.entityVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled(),
+			Map.of(UserRight.CASE_VIEW, FeatureType.CASE_FOLLOWUP));
 		addEntityIfViewOrEditAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
 		addEntityIfViewOrEditAllowed(
 			WeeklyReportDto.class,
@@ -615,7 +633,12 @@ public class SynchronizationDialog extends AbstractDialog {
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
-		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewAllowedWithFeatureDependencies(
+			VisitDto.class,
+			Strings.entityVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled(),
+			Map.of(UserRight.CASE_VIEW, FeatureType.CASE_FOLLOWUP));
 		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
 		addEntityIfViewAllowed(
 			WeeklyReportDto.class,
@@ -698,7 +721,12 @@ public class SynchronizationDialog extends AbstractDialog {
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
-		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled());
+		addEntityIfViewAllowedWithFeatureDependencies(
+			VisitDto.class,
+			Strings.entityVisits,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForVisitsEnabled(),
+			Map.of(UserRight.CASE_VIEW, FeatureType.CASE_FOLLOWUP));
 		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForTasksEnabled());
 		addEntityIfViewAllowed(
 			WeeklyReportDto.class,
@@ -781,6 +809,18 @@ public class SynchronizationDialog extends AbstractDialog {
 		}
 	}
 
+	private void addEntityIfViewAllowedWithFeatureDependencies(
+		Class<? extends EntityDto> dtoClass,
+		String entityString,
+		List<String> list,
+		boolean featureEnabled,
+		Map<UserRight, FeatureType> featureDependencies) {
+
+		if (featureEnabled && DtoUserRightsHelper.isViewAllowedWithFeatureDependencies(dtoClass, featureDependencies)) {
+			list.add(entityString);
+		}
+	}
+
 	private void addEntityIfEditAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list, boolean featureEnabled) {
 
 		if (featureEnabled && DtoUserRightsHelper.isEditAllowed(dtoClass)) {
@@ -788,9 +828,35 @@ public class SynchronizationDialog extends AbstractDialog {
 		}
 	}
 
+	private void addEntityIfEditAllowedWithFeatureDependencies(
+		Class<? extends EntityDto> dtoClass,
+		String entityString,
+		List<String> list,
+		boolean featureEnabled,
+		Map<UserRight, FeatureType> featureDependencies) {
+
+		if (featureEnabled && DtoUserRightsHelper.isEditAllowedWithFeatureDependencies(dtoClass, featureDependencies)) {
+			list.add(entityString);
+		}
+	}
+
 	private void addEntityIfViewOrEditAllowed(Class<? extends EntityDto> dtoClass, String entityString, List<String> list, boolean featureEnabled) {
 
 		if (featureEnabled && DtoUserRightsHelper.isViewAllowed(dtoClass) || DtoUserRightsHelper.isEditAllowed(dtoClass)) {
+			list.add(entityString);
+		}
+	}
+
+	private void addEntityIfViewOrEditAllowedWithFeatureDependencies(
+		Class<? extends EntityDto> dtoClass,
+		String entityString,
+		List<String> list,
+		boolean featureEnabled,
+		Map<UserRight, FeatureType> featureDependencies) {
+
+		if (featureEnabled
+			&& (DtoUserRightsHelper.isViewAllowedWithFeatureDependencies(dtoClass, featureDependencies)
+				|| DtoUserRightsHelper.isEditAllowedWithFeatureDependencies(dtoClass, featureDependencies))) {
 			list.add(entityString);
 		}
 	}

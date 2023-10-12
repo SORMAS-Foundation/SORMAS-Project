@@ -30,14 +30,14 @@ public class DtoUserRightsHelper {
 		return userRightsView == null || userRightsView.stream().anyMatch(ConfigProvider::hasUserRight);
 	}
 
-	public static boolean isViewAllowedWithFeatureEnabled(Class<?> clazz, Map<UserRight, FeatureType> dependingFeatures) {
+	public static boolean isViewAllowedWithFeatureDependencies(Class<?> clazz, Map<UserRight, FeatureType> featureDependencies) {
 		Set<UserRight> userRightsView = DtoViewAndEditRights.getUserRightsView(clazz);
 		return userRightsView == null
 			|| userRightsView.stream()
 				.anyMatch(
 					r -> ConfigProvider.hasUserRight(r)
-						&& (!dependingFeatures.containsKey(r)
-							|| DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(dependingFeatures.get(r))));
+						&& (!featureDependencies.containsKey(r)
+							|| DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(featureDependencies.get(r))));
 	}
 
 	public static boolean isEditAllowed(Class<?> clazz) {
@@ -45,13 +45,13 @@ public class DtoUserRightsHelper {
 		return userRightsEdit == null || userRightsEdit.stream().anyMatch(ConfigProvider::hasUserRight);
 	}
 
-	public static boolean isEditAllowedWithFeatureEnabled(Class<?> clazz, Map<UserRight, FeatureType> dependingFeatures) {
+	public static boolean isEditAllowedWithFeatureDependencies(Class<?> clazz, Map<UserRight, FeatureType> featureDependencies) {
 		Set<UserRight> userRightsEdit = DtoViewAndEditRights.getUserRightsEdit(clazz);
 		return userRightsEdit == null
 			|| userRightsEdit.stream()
 				.anyMatch(
 					r -> ConfigProvider.hasUserRight(r)
-						&& (!dependingFeatures.containsKey(r)
-							|| DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(dependingFeatures.get(r))));
+						&& (!featureDependencies.containsKey(r)
+							|| DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(featureDependencies.get(r))));
 	}
 }
