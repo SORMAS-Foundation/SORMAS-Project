@@ -45,6 +45,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -320,51 +321,53 @@ public class ExternalMessageController {
 			buttonsPanel.addComponent(deleteButton);
 		}
 
-		Button unclearButton = ButtonHelper.createButton(
-			Captions.actionUnclearLabMessage,
-			I18nProperties.getCaption(Captions.actionUnclearLabMessage),
-			e -> VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
-				new Label(I18nProperties.getString(Strings.confirmationUnclearExternalMessage)),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				confirmed -> {
-					if (BooleanUtils.isTrue(confirmed)) {
-						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
-							showAlreadyProcessedPopup(null, false);
-						} else {
-							externalMessage.setStatus(ExternalMessageStatus.UNCLEAR);
-							FacadeProvider.getExternalMessageFacade().save(externalMessage);
-							callback.run();
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			Button unclearButton = ButtonHelper.createButton(
+				Captions.actionUnclearLabMessage,
+				I18nProperties.getCaption(Captions.actionUnclearLabMessage),
+				e -> VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
+					new Label(I18nProperties.getString(Strings.confirmationUnclearExternalMessage)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					null,
+					confirmed -> {
+						if (BooleanUtils.isTrue(confirmed)) {
+							if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
+								showAlreadyProcessedPopup(null, false);
+							} else {
+								externalMessage.setStatus(ExternalMessageStatus.UNCLEAR);
+								FacadeProvider.getExternalMessageFacade().save(externalMessage);
+								callback.run();
+							}
 						}
-					}
-				}));
+					}));
 
-		buttonsPanel.addComponent(unclearButton);
+			buttonsPanel.addComponent(unclearButton);
 
-		Button forwardButton = ButtonHelper.createButton(
-			Captions.actionManualForwardLabMessage,
-			I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
-			e -> VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
-				new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedExternalMessage)),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				confirmed -> {
-					if (BooleanUtils.isTrue(confirmed)) {
-						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
-							showAlreadyProcessedPopup(null, false);
-						} else {
-							externalMessage.setStatus(ExternalMessageStatus.FORWARDED);
-							FacadeProvider.getExternalMessageFacade().save(externalMessage);
-							callback.run();
+			Button forwardButton = ButtonHelper.createButton(
+				Captions.actionManualForwardLabMessage,
+				I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
+				e -> VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
+					new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedExternalMessage)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					null,
+					confirmed -> {
+						if (BooleanUtils.isTrue(confirmed)) {
+							if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
+								showAlreadyProcessedPopup(null, false);
+							} else {
+								externalMessage.setStatus(ExternalMessageStatus.FORWARDED);
+								FacadeProvider.getExternalMessageFacade().save(externalMessage);
+								callback.run();
+							}
 						}
-					}
-				}));
+					}));
 
-		buttonsPanel.addComponent(forwardButton);
+			buttonsPanel.addComponent(forwardButton);
+		}
 
 		if (FacadeProvider.getSormasToSormasFacade().isSharingExternalMessagesEnabledForUser()) {
 			Button shareButton = ButtonHelper.createIconButton(
