@@ -12731,5 +12731,11 @@ UPDATE pathogentest SET testedpathogen = 'OTHER', testeddisease = NULL WHERE env
 
 INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add tested pathogen attribute to pathogen test #11582');
 
+-- 2023-10-10 Add an automatic processing logic to external messages #12573
+ALTER TABLE diseaseconfiguration ADD COLUMN automaticsampleassignmentthreshold integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN automaticsampleassignmentthreshold integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add an automatic processing logic to external messages #12573');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

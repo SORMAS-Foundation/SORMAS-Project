@@ -52,7 +52,7 @@ import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
+public class EntrySelectionField extends CustomField<de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult> {
 
 	private static final long serialVersionUID = 5315286409460459687L;
 
@@ -317,7 +317,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	}
 
 	@Override
-	protected void doSetValue(PickOrCreateEntryResult pickOrCreateEntryResult) {
+	protected void doSetValue(de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult pickOrCreateEntryResult) {
 		if (pickOrCreateEntryResult == null) {
 			throw new IllegalArgumentException();
 		}
@@ -335,29 +335,35 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	}
 
 	@Override
-	public PickOrCreateEntryResult getValue() {
+	public de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult getValue() {
 		if (caseGrid != null && rbSelectCase.getValue() != null) {
-			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			value.setCaze((CaseSelectionDto) caseGrid.getSelectedRow());
 			return value;
 		} else if (contactGrid != null && rbSelectContact.getValue() != null) {
-			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			value.setContact((SimilarContactDto) contactGrid.getSelectedRow());
 			return value;
 		} else if (eventParticipantGrid != null && rbSelectEventParticipant.getValue() != null) {
-			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			value.setEventParticipant((SimilarEventParticipantDto) eventParticipantGrid.getSelectedRow());
 			return value;
 		} else if (OptionType.CREATE_CASE.equals(rbCreateEntity.getValue())) {
-			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			value.setNewCase(true);
 			return value;
 		} else if (OptionType.CREATE_CONTACT.equals(rbCreateEntity.getValue())) {
-			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			value.setNewContact(true);
 			return value;
 		} else if (OptionType.CREATE_EVENT_PARTICIPANT.equals(rbCreateEntity.getValue())) {
-			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			value.setNewEventParticipant(true);
 			return value;
 		}
@@ -466,11 +472,12 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 				return options.size();
 			}
 
-			public PickOrCreateEntryResult getSingleAvailableCreateResult() {
+			public de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult getSingleAvailableCreateResult() {
 				if (size() != 1) {
 					return null;
 				} else {
-					PickOrCreateEntryResult result = new PickOrCreateEntryResult();
+					de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult result =
+						new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 					switch (options.get(0).type) {
 					case CREATE_CASE:
 						result.setNewCase(true);

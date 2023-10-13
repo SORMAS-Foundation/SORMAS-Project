@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage;
+package de.symeda.sormas.api.externalmessage.processing;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,7 +51,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class ExternalMessageMapper {
+public final class ExternalMessageMapper {
 
 	private final ExternalMessageDto externalMessage;
 
@@ -418,7 +418,7 @@ public class ExternalMessageMapper {
 	 * If yes, the enum is set as disease variant. If not, the disease variant is added to the test result text,
 	 * along with the disease variant details.
 	 */
-	protected ImmutableTriple<String, DiseaseVariant, String> migrateDiseaseVariant(TestReportDto sourceTestReport) {
+	public ImmutableTriple<String, DiseaseVariant, String> migrateDiseaseVariant(TestReportDto sourceTestReport) {
 		if (sourceTestReport.getTestedDiseaseVariant() == null && sourceTestReport.getTestedDiseaseVariantDetails() == null) {
 			return new ImmutableTriple<>(null, null, null);
 		}

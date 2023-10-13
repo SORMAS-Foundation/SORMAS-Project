@@ -39,6 +39,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
 
+	private Integer automaticSampleAssignmentThreshold;
+
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
 		configuration.setDisease(disease);
@@ -153,5 +155,14 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 
 	public void setAgeGroups(List<String> ageGroups) {
 		this.ageGroups = ageGroups;
+	}
+
+	@Column
+	public Integer getAutomaticSampleAssignmentThreshold() {
+		return automaticSampleAssignmentThreshold;
+	}
+
+	public void setAutomaticSampleAssignmentThreshold(Integer automaticSampleAssignmentThreshold) {
+		this.automaticSampleAssignmentThreshold = automaticSampleAssignmentThreshold;
 	}
 }

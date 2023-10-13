@@ -23,19 +23,20 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PersonAndPickOrCreateEntryResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
-	public AbstractPhysiciansReportProcessingFlow(UserDto user) {
-		super(user);
+	public AbstractPhysiciansReportProcessingFlow(UserDto user, ExternalMessageProcessingFacade processingFacade) {
+		super(user, processingFacade);
 	}
 
 	public CompletionStage<ProcessingResult<CaseDataDto>> run(ExternalMessageDto externalMessage) {
@@ -63,7 +64,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 		PersonReferenceDto personRef = person.toReference();
 		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
 
-		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
+		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback = new AbstractProcessingFlow.HandlerCallback<>();
 
 		handlePickOrCreateEntry(similarCases, externalMessage, callback);
 
@@ -79,7 +80,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 	protected abstract void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
 		ExternalMessageDto externalMessage,
-		HandlerCallback<PickOrCreateEntryResult> callback);
+		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback);
 
 	private CompletionStage<ProcessingResult<CaseDataDto>> createCase(PersonDto person, ExternalMessageDto externalMessage) {
 

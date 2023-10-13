@@ -527,7 +527,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		em.flush();
 	}
 
-	public boolean exists(ExistsPredicateBuilder<ADO> filterBuilder) {
+	public boolean exists(PredicateBuilder<ADO> filterBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -555,12 +555,23 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		}
 	}
 
+	public List<ADO> getByPredicate(PredicateBuilder<ADO> filterBuilder) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		final Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(filterBuilder.buildPredicate(cb, from, cq));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public void incrementChangeDate(ADO ado) {
 		Session session = em.unwrap(Session.class);
 		session.lock(ado, LockMode.OPTIMISTIC_FORCE_INCREMENT);
 	}
 
-	public interface ExistsPredicateBuilder<ADO extends AbstractDomainObject> {
+	public interface PredicateBuilder<ADO extends AbstractDomainObject> {
 
 		Predicate buildPredicate(CriteriaBuilder cb, Root<ADO> root, CriteriaQuery<?> cq);
 	}

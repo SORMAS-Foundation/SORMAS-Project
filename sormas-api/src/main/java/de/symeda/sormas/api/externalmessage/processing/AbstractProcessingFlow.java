@@ -13,20 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -35,19 +36,16 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public abstract class AbstractProcessingFlow {
 
 	protected final UserDto user;
 
-	public AbstractProcessingFlow(UserDto user) {
+	protected final ExternalMessageProcessingFacade processingFacade;
+
+	public AbstractProcessingFlow(UserDto user, ExternalMessageProcessingFacade processingFacade) {
 		this.user = user;
+		this.processingFacade = processingFacade;
 	}
 
 	protected FlowThen<Void> doInitialChecks(ExternalMessageDto externalMessageDto) {
@@ -71,7 +69,7 @@ public abstract class AbstractProcessingFlow {
 
 	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(ExternalMessageDto externalMessageDto) {
 
-		if (FacadeProvider.getExternalMessageFacade().existsForwardedExternalMessageWith(externalMessageDto.getReportId())) {
+		if (processingFacade.existsForwardedExternalMessageWith(externalMessageDto.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
 				next -> ProcessingResult
 					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -87,7 +85,7 @@ public abstract class AbstractProcessingFlow {
 
 		final PersonDto person = buildPerson(ExternalMessageMapper.forLabMessage(externalMessageDto));
 
-		AbstractLabMessageProcessingFlow.HandlerCallback<PersonDto> callback = new HandlerCallback<>();
+		HandlerCallback<PersonDto> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
 
 		return callback.futureResult;
@@ -107,8 +105,8 @@ public abstract class AbstractProcessingFlow {
 
 	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessageDto) {
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
-			|| !Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
+		if (processingFacade.isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
+			|| !processingFacade.hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
 			return Collections.emptyList();
 		}
 
@@ -119,7 +117,7 @@ public abstract class AbstractProcessingFlow {
 		caseSimilarityCriteria.caseCriteria(caseCriteria);
 		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
 
-		return FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
+		return processingFacade.getSimilarCases(caseSimilarityCriteria);
 	}
 
 	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto externalMessageDto) {
@@ -133,7 +131,7 @@ public abstract class AbstractProcessingFlow {
 
 		FacilityReferenceDto personFacility = externalMessageDto.getPersonFacility();
 		if (personFacility != null) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(personFacility.getUuid());
+			FacilityDto facility = processingFacade.getFacilityByUuid(personFacility.getUuid());
 			FacilityType facilityType = facility.getType();
 
 			caseDto.setResponsibleRegion(facility.getRegion());
@@ -143,7 +141,7 @@ public abstract class AbstractProcessingFlow {
 				caseDto.setFacilityType(facilityType);
 				caseDto.setHealthFacility(personFacility);
 			} else {
-				caseDto.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
+				caseDto.setHealthFacility(processingFacade.getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
 			}
 		}
 

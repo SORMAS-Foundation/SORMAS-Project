@@ -47,6 +47,11 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResultStatus;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.RelatedEntities;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.RelatedLabMessageHandlerChain;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -63,11 +68,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.RelatedEntities;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.RelatedLabMessageHandlerChain;
 
 public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 

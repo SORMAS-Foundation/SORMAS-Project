@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage;
 
-import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
-import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.DONE;
+import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
+import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
+import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -67,6 +67,18 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResultStatus;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.RelatedSamplesReportsAndPathogenTests;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
@@ -79,21 +91,10 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.RelatedSamplesReportsAndPathogenTests;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 
@@ -224,7 +225,25 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		country = new CountryReferenceDto(DataHelper.createUuid(), "de-DE");
-		flow = new AbstractLabMessageProcessingFlow(user, country) {
+		flow = new AbstractLabMessageProcessingFlow(
+			user,
+			new ExternalMessageProcessingFacade(
+				getExternalMessageFacade(),
+				getFeatureConfigurationFacade(),
+				getCaseFacade(),
+				getContactFacade(),
+				getEventFacade(),
+				getEventParticipantFacade(),
+				getSampleFacade(),
+				getPathogenTestFacade(),
+				getFacilityFacade()) {
+
+				@Override
+				public boolean hasAllUserRights(UserRight... userRights) {
+					return true;
+				}
+			},
+			country) {
 
 			@Override
 			protected CompletionStage<Boolean> handleMissingDisease() {
@@ -2337,7 +2356,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
+		assertThat(result.getStatus(), is(CANCELED));
 	}
 
 	@Test
@@ -2406,7 +2425,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 
 		ProcessingResult<RelatedSamplesReportsAndPathogenTests> result = runFlow(createStandardLabMessageWithTwoSampleReports());
 
-		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
+		assertThat(result.getStatus(), is(CANCELED));
 	}
 
 	private ProcessingResult<RelatedSamplesReportsAndPathogenTests> runFlow(ExternalMessageDto labMessage)

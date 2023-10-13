@@ -216,6 +216,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
+		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 
 		return target;
 	}
@@ -278,6 +279,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
+		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 
 		return target;
 	}

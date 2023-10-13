@@ -139,9 +139,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private CountryService countryService;
 	@EJB
 	private FacilityService facilityService;
-
 	@EJB
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
+	@EJB
+	private ExternalMessageProcessor externalMessageProcessor;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -220,6 +221,15 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
 		return save(dto, true, false);
+	}
+
+	@Override
+	public ExternalMessageDto saveAndProcessIntoCase(@Valid ExternalMessageDto dto) {
+		ExternalMessageDto savedMessage = save(dto, true, false);
+
+		externalMessageProcessor.processIntoCase(savedMessage);
+
+		return savedMessage;
 	}
 
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {

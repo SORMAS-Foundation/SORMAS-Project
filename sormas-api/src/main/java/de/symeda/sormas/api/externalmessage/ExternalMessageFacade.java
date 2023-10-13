@@ -20,6 +20,8 @@ public interface ExternalMessageFacade extends PermanentlyDeletableFacade {
 
 	ExternalMessageDto save(@Valid ExternalMessageDto dto);
 
+	ExternalMessageDto saveAndProcessIntoCase(@Valid ExternalMessageDto dto);
+
 	void validate(ExternalMessageDto dto);
 
 	// Also returns deleted lab messages

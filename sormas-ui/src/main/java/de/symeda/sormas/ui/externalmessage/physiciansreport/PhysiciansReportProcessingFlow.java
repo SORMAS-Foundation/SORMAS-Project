@@ -15,11 +15,6 @@
 
 package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
-import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
@@ -27,18 +22,42 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
+import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProcessingFlow {
 
 	public PhysiciansReportProcessingFlow() {
-		super(UserProvider.getCurrent().getUser());
+		super(
+			UserProvider.getCurrent().getUser(),
+			new ExternalMessageProcessingFacade(
+				FacadeProvider.getExternalMessageFacade(),
+				FacadeProvider.getFeatureConfigurationFacade(),
+				FacadeProvider.getCaseFacade(),
+				FacadeProvider.getContactFacade(),
+				FacadeProvider.getEventFacade(),
+				FacadeProvider.getEventParticipantFacade(),
+				FacadeProvider.getSampleFacade(),
+				FacadeProvider.getPathogenTestFacade(),
+				FacadeProvider.getFacilityFacade()) {
+
+				@Override
+				public boolean hasAllUserRights(UserRight... userRights) {
+					return UserProvider.getCurrent().hasAllUserRights(userRights);
+				}
+			});
 	}
 
 	@Override
@@ -60,10 +79,11 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 	protected void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
 		ExternalMessageDto externalMessage,
-		HandlerCallback<PickOrCreateEntryResult> callback) {
+		HandlerCallback<de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult> callback) {
 
 		if (CollectionUtils.isEmpty(similarCases)) {
-			PickOrCreateEntryResult result = new PickOrCreateEntryResult();
+			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult result =
+				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
 			result.setNewCase(true);
 
 			callback.done(result);

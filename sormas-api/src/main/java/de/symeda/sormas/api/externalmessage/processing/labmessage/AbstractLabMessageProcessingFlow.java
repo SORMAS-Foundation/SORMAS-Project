@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,11 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing.labmessage;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -25,7 +24,6 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -40,6 +38,13 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -50,14 +55,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to choose between multiple options like create or select a
@@ -69,8 +66,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	protected final CountryReferenceDto country;
 
-	public AbstractLabMessageProcessingFlow(UserDto user, CountryReferenceDto country) {
-		super(user);
+	public AbstractLabMessageProcessingFlow(UserDto user, ExternalMessageProcessingFacade processingFacade, CountryReferenceDto country) {
+		super(user, processingFacade);
 		this.country = country;
 	}
 
@@ -151,7 +148,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 						EventValidationResult::isEventSelected,
 						(vf, v) -> doCreateEventParticipantAndSamplesFlow(v.getEvent(), p.getPerson(), vf, labMessage))
 					.when(EventValidationResult::isEventParticipantSelected, (vf, v) -> {
-						EventDto event = FacadeProvider.getEventFacade().getEventByUuid(p.getEvent().getUuid(), false);
+						EventDto event = processingFacade.getEventByUuid(p.getEvent().getUuid());
 
 						IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForEventParticipant =
 							sampleReportIndex -> createOneSampleAndPathogenTests(v.eventParticipant, event, labMessage, sampleReportIndex, false);
@@ -231,7 +228,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
 
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseSelection.getUuid());
+		CaseDataDto caze = processingFacade.getCaseDataByUuid(caseSelection.getUuid());
 
 		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForCase =
 			sampleReportIndex -> createOneSampleAndPathogenTests(caze, labMessage, sampleReportIndex, false);
@@ -249,7 +246,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
 
-		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactSelection.getUuid());
+		ContactDto contact = processingFacade.getContactByUuid(contactSelection.getUuid());
 
 		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForContact =
 			sampleReportIndex -> createOneSampleAndPathogenTests(contact, labMessage, sampleReportIndex, false);
@@ -267,8 +264,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		ExternalMessageDto labMessage) {
 
-		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipantSelection.getUuid());
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+		EventParticipantDto eventParticipant = processingFacade.getEventParticipantByUuid(eventParticipantSelection.getUuid());
+		EventDto event = processingFacade.getEventByUuid(eventParticipant.getEvent().getUuid());
 
 		IntFunction<CompletionStage<ProcessingResult<SampleAndPathogenTests>>> createSampleForEventParticipant =
 			sampleReportIndex -> createOneSampleAndPathogenTests(eventParticipant.toReference(), event, labMessage, sampleReportIndex, false);
@@ -320,7 +317,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 				RelatedSamplesReportsAndPathogenTests handlerResult = new RelatedSamplesReportsAndPathogenTests();
 				handlerResult.add(
 					firstSampleReport,
-					new SampleAndPathogenTests(relatedSample, FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference())));
+					new SampleAndPathogenTests(relatedSample, processingFacade.getPathogenTestsBySample(relatedSample.toReference())));
 
 				return ProcessingResult.of(ProcessingResultStatus.DONE, handlerResult).asCompletedFuture();
 			}
@@ -360,22 +357,21 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
-			|| !Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
+		if (processingFacade.isFeatureDisabled(FeatureType.CONTACT_TRACING)
+			|| !processingFacade.hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
 			return Collections.emptyList();
 		}
 		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
 		contactSimilarityCriteria.setPerson(selectedPerson);
 		contactSimilarityCriteria.setDisease(externalMessage.getDisease());
 
-		return FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+		return processingFacade.getMatchingContacts(contactSimilarityCriteria);
 	}
 
 	private List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)
-			|| !Objects.requireNonNull(UserProvider.getCurrent())
-				.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
+		if (processingFacade.isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)
+			|| !processingFacade.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
 			return Collections.emptyList();
 		}
 
@@ -383,7 +379,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		eventParticipantCriteria.setPerson(selectedPerson);
 		eventParticipantCriteria.setDisease(labMessage.getDisease());
 
-		return FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		return processingFacade.getMatchingEventParticipants(eventParticipantCriteria);
 	}
 
 	private CompletionStage<ProcessingResult<CaseDataDto>> createCase(PersonDto person, ExternalMessageDto labMessage) {
@@ -559,15 +555,14 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.setPerson(person.toReference());
 		eventCriteria.setUserFilterIncluded(false);
-		List<EventIndexDto> personEvents = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
+		List<EventIndexDto> personEvents = processingFacade.getEventsByCriteria(eventCriteria);
 
 		EventValidationResult validationResult = new EventValidationResult();
 		if (personEvents.contains(event)) {
 			// event participant already exists
 			return confirmPickExistingEventParticipant().thenCompose(useEventParticipant -> {
 				if (Boolean.TRUE.equals(useEventParticipant)) {
-					validationResult.setEventParticipant(
-						FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(event.getUuid(), person.getUuid()));
+					validationResult.setEventParticipant(processingFacade.getEventParticipantRefByEventAndPerson(event.getUuid(), person.getUuid()));
 				} else {
 					validationResult.setEventSelectionCanceled(true);
 				}
@@ -575,7 +570,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 				return ProcessingResult.continueWith(validationResult).asCompletedFuture();
 			});
 		} else {
-			validationResult.setEvent(FacadeProvider.getEventFacade().getEventByUuid(event.getUuid(), false));
+			validationResult.setEvent(processingFacade.getEventByUuid(event.getUuid()));
 			ret.complete(ProcessingResult.continueWith(validationResult));
 		}
 
@@ -592,8 +587,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		SampleSimilarityCriteria sampleSimilarityCriteria = createSampleSimilarCriteria(labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
 		addSampleSearchCriteria.accept(sampleSimilarityCriteria);
 
-		List<SampleDto> selectableSamples = FacadeProvider.getSampleFacade().getSamplesByCriteria(sampleSimilarityCriteria.getSampleCriteria());
-		List<SampleDto> similarSamples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleSimilarityCriteria);
+		List<SampleDto> selectableSamples = processingFacade.getSamplesByCriteria(sampleSimilarityCriteria.getSampleCriteria());
+		List<SampleDto> similarSamples = processingFacade.getSimilarSamples(sampleSimilarityCriteria);
 		List<SampleDto> otherSamples = selectableSamples.stream().filter(s -> !similarSamples.contains(s)).collect(Collectors.toList());
 
 		PickOrCreateSampleResult result = new PickOrCreateSampleResult();

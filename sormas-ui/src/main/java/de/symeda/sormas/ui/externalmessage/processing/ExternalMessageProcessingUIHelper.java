@@ -51,6 +51,11 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -65,8 +70,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
@@ -161,7 +164,7 @@ public class ExternalMessageProcessingUIHelper {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
-			LabMessageProcessingHelper.updateAddressAndSavePerson(
+			updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessage);
 
@@ -177,6 +180,16 @@ public class ExternalMessageProcessingUIHelper {
 		caseCreateComponent.getWrappedComponent().setPerson(person);
 
 		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
+	}
+
+	public static void updateAddressAndSavePerson(PersonDto personDto, ExternalMessageDto labMessageDto) {
+		if (personDto.getAddress().getCity() == null
+			&& personDto.getAddress().getHouseNumber() == null
+			&& personDto.getAddress().getPostalCode() == null
+			&& personDto.getAddress().getStreet() == null) {
+			ExternalMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
+		}
+		FacadeProvider.getPersonFacade().save(personDto);
 	}
 
 	public static void showEditSampleWindow(

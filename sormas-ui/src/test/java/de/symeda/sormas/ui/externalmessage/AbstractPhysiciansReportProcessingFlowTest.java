@@ -52,17 +52,19 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.AbstractPhysiciansReportProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTest {
 
@@ -138,7 +140,24 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
-		flow = new AbstractPhysiciansReportProcessingFlow(user) {
+		flow = new AbstractPhysiciansReportProcessingFlow(
+			user,
+			new ExternalMessageProcessingFacade(
+				getExternalMessageFacade(),
+				getFeatureConfigurationFacade(),
+				getCaseFacade(),
+				getContactFacade(),
+				getEventFacade(),
+				getEventParticipantFacade(),
+				getSampleFacade(),
+				getPathogenTestFacade(),
+				getFacilityFacade()) {
+
+				@Override
+				public boolean hasAllUserRights(UserRight... userRights) {
+					return true;
+				}
+			}) {
 
 			@Override
 			protected CompletionStage<Boolean> handleMissingDisease() {

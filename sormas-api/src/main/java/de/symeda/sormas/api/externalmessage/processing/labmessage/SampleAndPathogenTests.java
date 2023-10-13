@@ -13,29 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing.labmessage;
 
-import de.symeda.sormas.api.event.EventIndexDto;
+import java.util.List;
 
-public class PickOrCreateEventResult {
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
 
-	private EventIndexDto event;
+public class SampleAndPathogenTests {
 
-	private boolean newEvent;
+	private final SampleDto sample;
+	private final List<PathogenTestDto> pathogenTests;
 
-	public EventIndexDto getEvent() {
-		return event;
+	public SampleAndPathogenTests(SampleDto sample, List<PathogenTestDto> pathogenTests) {
+		this.sample = sample;
+		this.pathogenTests = pathogenTests;
 	}
 
-	public void setEvent(EventIndexDto event) {
-		this.event = event;
+	public SampleDto getSample() {
+		return sample;
 	}
 
-	public boolean isNewEvent() {
-		return newEvent;
-	}
-
-	public void setNewEvent(boolean newEvent) {
-		this.newEvent = newEvent;
+	public List<PathogenTestDto> getPathogenTests() {
+		return pathogenTests;
 	}
 }

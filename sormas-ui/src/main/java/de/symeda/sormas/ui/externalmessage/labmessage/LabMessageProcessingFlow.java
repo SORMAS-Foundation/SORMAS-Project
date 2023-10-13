@@ -53,6 +53,13 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -68,14 +75,8 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
 import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
 import de.symeda.sormas.ui.samples.humansample.SampleEditPathogenTestListHandler;
@@ -89,7 +90,25 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	public LabMessageProcessingFlow() {
-		super(UserProvider.getCurrent().getUser(), FacadeProvider.getCountryFacade().getServerCountry());
+		super(
+			UserProvider.getCurrent().getUser(),
+			new ExternalMessageProcessingFacade(
+				FacadeProvider.getExternalMessageFacade(),
+				FacadeProvider.getFeatureConfigurationFacade(),
+				FacadeProvider.getCaseFacade(),
+				FacadeProvider.getContactFacade(),
+				FacadeProvider.getEventFacade(),
+				FacadeProvider.getEventParticipantFacade(),
+				FacadeProvider.getSampleFacade(),
+				FacadeProvider.getPathogenTestFacade(),
+				FacadeProvider.getFacilityFacade()) {
+
+				@Override
+				public boolean hasAllUserRights(UserRight... userRights) {
+					return UserProvider.getCurrent().hasAllUserRights(userRights);
+				}
+			},
+			FacadeProvider.getCountryFacade().getServerCountry());
 	}
 
 	@Override
@@ -180,7 +199,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			LabMessageProcessingHelper.updateAddressAndSavePerson(
+			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessage);
 

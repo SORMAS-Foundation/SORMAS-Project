@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.processing.flow;
+package de.symeda.sormas.api.externalmessage.processing.flow;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 

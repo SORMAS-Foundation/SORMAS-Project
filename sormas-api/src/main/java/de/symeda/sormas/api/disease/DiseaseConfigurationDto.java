@@ -21,6 +21,7 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
+	private Integer automaticSampleAssignmentThreshold;
 
 	public Disease getDisease() {
 		return disease;
@@ -116,5 +117,13 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setAgeGroups(List<String> ageGroups) {
 		this.ageGroups = ageGroups;
+	}
+
+	public Integer getAutomaticSampleAssignmentThreshold() {
+		return automaticSampleAssignmentThreshold;
+	}
+
+	public void setAutomaticSampleAssignmentThreshold(Integer automaticSampleAssignmentThreshold) {
+		this.automaticSampleAssignmentThreshold = automaticSampleAssignmentThreshold;
 	}
 }

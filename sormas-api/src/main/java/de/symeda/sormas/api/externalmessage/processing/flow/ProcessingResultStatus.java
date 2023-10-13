@@ -13,33 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing.flow;
 
-import de.symeda.sormas.api.sample.SampleDto;
+public enum ProcessingResultStatus {
 
-public class PickOrCreateSampleResult {
+	CONTINUE(false, false),
+	CANCELED(true, false),
+	CANCELED_WITH_CORRECTIONS(true, false),
+	DONE(false, true);
 
-	private SampleDto sample;
+	private final boolean canceled;
+	private final boolean done;
 
-	private boolean newSample;
-
-	public SampleDto getSample() {
-		return sample;
+	ProcessingResultStatus(boolean canceled, boolean done) {
+		this.canceled = canceled;
+		this.done = done;
 	}
 
-	public void setSample(SampleDto sample) {
-		this.sample = sample;
+	public boolean isCanceled() {
+		return canceled;
 	}
 
-	public boolean isSelectedSample() {
-		return sample != null;
-	}
-
-	public boolean isNewSample() {
-		return newSample;
-	}
-
-	public void setNewSample(boolean newSample) {
-		this.newSample = newSample;
+	public boolean isDone() {
+		return done;
 	}
 }
