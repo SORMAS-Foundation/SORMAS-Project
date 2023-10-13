@@ -155,3 +155,29 @@ Feature: User roles checks
     And I click on the Users from navbar
     And I click on User roles tab from User Management Page
     And Validate user can see User roles tab from User Management Page
+
+  @tmsLink=HSP-6300 @env_main
+  Scenario: Check Delete Case right working without Edit rights
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "MyNationalTestUser" role and change his role
+    And I click on User roles tab from User Management Page
+    And I check if the "MyNationalTestUser" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "MyNationalTestUser" on Create New User Role form
+    And I click SAVE button on User Role Page
+    #we are right now in user rights editor!!
+    Then I click checkbox to uncheck "Edit existing cases"
+    Then I click checkbox to uncheck "Edit case investigation status"
+    Then I click checkbox to uncheck "Can be responsible for a case"
+    And I click SAVE button on User Role Page
+   # And I click on delete user role button
+    #And I confirm user role deletion
+    #And I check if Cannot delete user role popup message is displayed
+    #And I confirm Cannot delete user role popup message
+
+
+
+
+
