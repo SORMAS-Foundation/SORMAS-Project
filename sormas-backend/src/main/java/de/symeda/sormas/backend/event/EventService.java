@@ -238,7 +238,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> eventRoot = cq.from(Event.class);
-		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PARTICIPANTS, JoinType.INNER);
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
 		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
@@ -649,7 +649,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			actionService.deletePermanent(action);
 		}
 
-		event.getEventPersons().forEach(eventParticipant -> eventParticipantService.deletePermanent(eventParticipant));
+		event.getEventParticipants().forEach(eventParticipant -> eventParticipantService.deletePermanent(eventParticipant));
 
 		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.EVENT, event.getUuid()).forEach(s -> {
 			s.setEvent(null);

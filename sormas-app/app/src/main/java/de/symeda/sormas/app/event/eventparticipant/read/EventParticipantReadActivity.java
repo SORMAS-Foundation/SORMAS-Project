@@ -15,13 +15,13 @@
 
 package de.symeda.sormas.app.event.eventparticipant.read;
 
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
-
-import java.util.List;
 
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -126,7 +126,7 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 
 	@Override
 	protected int getActivityTitle() {
-		return R.string.heading_person_involved;
+		return R.string.heading_event_participant;
 	}
 
 	@Override

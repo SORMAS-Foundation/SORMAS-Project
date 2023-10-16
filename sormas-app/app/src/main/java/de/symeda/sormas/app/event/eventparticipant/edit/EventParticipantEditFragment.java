@@ -20,7 +20,6 @@ import static android.view.View.GONE;
 import java.util.List;
 
 import android.view.View;
-
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -91,7 +90,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
 	@Override
 	protected String getSubHeadingTitle() {
-		return getResources().getString(R.string.caption_person_involved);
+		return getResources().getString(R.string.caption_event_participant);
 	}
 
 	@Override

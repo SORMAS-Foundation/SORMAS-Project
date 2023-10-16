@@ -80,7 +80,7 @@
     <string name="action_new_task">Nuovo incarico</string>
     <string name="action_not_executable">Non eseguibile</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_person_case">Aprire il caso associato alla persona dell\'evento</string>
+    <string name="action_open_event_participant_case">Aprire il caso associato alla persona dell\'evento</string>
     <string name="action_open_prescription">Apri prescrizione</string>
     <string name="action_open_resulting_case">Apri caso risultato</string>
     <string name="action_open_source_case">Aprire il caso originale</string>

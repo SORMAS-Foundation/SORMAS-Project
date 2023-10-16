@@ -84,7 +84,7 @@
     <string name="action_new_task">New Task</string>
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_person_case">Open Case of Event Person</string>
+    <string name="action_open_event_participant_case">Open Case of Event Participant</string>
     <string name="action_open_prescription">Open Prescription</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_source_case">Open Source Case</string>
@@ -179,12 +179,13 @@
     <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Description</string>
-    <string name="caption_event_location">Location</string>
-    <string name="caption_event_period">Date of event</string>
     <string name="caption_event_information">Event Information</string>
-    <string name="caption_event_participants">Persons Involved</string>
+    <string name="caption_event_location">Location</string>
+    <string name="caption_event_participant">Event Participant</string>
     <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
     <string name="caption_event_participant_vaccinations">Event participant Vaccinations</string>
+    <string name="caption_event_participants">Event Participants</string>
+    <string name="caption_event_period">Date of event</string>
     <string name="caption_event_tasks">Event Tasks</string>
     <string name="caption_executed_by">Executed by</string>
     <string name="caption_facility_or_home">Place of stay</string>
@@ -203,7 +204,7 @@
     <string name="caption_negative">Negative</string>
     <string name="caption_new_case">New Case</string>
     <string name="caption_new_contact">New Contact</string>
-    <string name="caption_new_event_participant">New Person Involved</string>
+    <string name="caption_new_event_participant">New Event Participant</string>
     <string name="caption_new_sample">New Sample</string>
     <string name="caption_new_pathogen_test">New Pathogen Test</string>
     <string name="caption_new_task">New Task</string>
@@ -216,7 +217,6 @@
     <string name="caption_period_end">Period End</string>
     <string name="caption_period_start">Period Start</string>
     <string name="caption_person_information">Person Information</string>
-    <string name="caption_person_involved">Person Involved</string>
     <string name="caption_positive">Positive</string>
     <string name="caption_possible_events">Possible Events</string>
     <string name="caption_prescribed_by">Prescribed by</string>
@@ -359,6 +359,8 @@
     <string name="heading_error_notification_dialog">Oops, something went wrong.</string>
     <string name="heading_event_edit">Edit Event</string>
     <string name="heading_event_new">New Event</string>
+    <string name="heading_event_participant">Event Participant</string>
+    <string name="heading_event_participant_new">New Event Participant</string>
     <string name="heading_event_read">Read Event</string>
     <string name="heading_event_summary">Event Summary</string>
     <string name="heading_events_list">Event Listing</string>
@@ -381,8 +383,6 @@
     <string name="heading_most_recent_test">Most Recent Pathogen Test</string>
     <string name="heading_new_sormas_version">New SORMAS version</string>
     <string name="heading_outbreak_response">Outbreak Response</string>
-    <string name="heading_person_involved">Person Involved</string>
-    <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
