@@ -781,7 +781,7 @@
 			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
-				<version>29.2</version>
+				<version>30.0</version>
 				<scope>provided</scope>
 			</dependency>
 
