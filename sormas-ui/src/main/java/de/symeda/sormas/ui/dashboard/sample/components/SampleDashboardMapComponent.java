@@ -63,6 +63,10 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 		}
 
 		super.addComponents();
+
+		if (showEnvironmentalSamples) {
+			appendHeadingInfo(" " + I18nProperties.getString(Strings.infoHeadingEnvironmentSampleDashboardMap));
+		}
 	}
 
 	@Override

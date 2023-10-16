@@ -931,6 +931,7 @@ public interface Strings {
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
+	String infoHeadingEnvironmentSampleDashboardMap = "infoHeadingEnvironmentSampleDashboardMap";
 	String infoHeadingSampleDashboardMap = "infoHeadingSampleDashboardMap";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoHowToMergeContacts = "infoHowToMergeContacts";
