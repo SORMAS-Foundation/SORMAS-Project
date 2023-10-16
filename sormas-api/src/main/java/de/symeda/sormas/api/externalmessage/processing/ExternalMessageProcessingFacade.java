@@ -17,6 +17,8 @@ package de.symeda.sormas.api.externalmessage.processing;
 
 import java.util.List;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -25,6 +27,10 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
@@ -52,6 +58,7 @@ import de.symeda.sormas.api.user.UserRight;
 public abstract class ExternalMessageProcessingFacade {
 
 	protected final ExternalMessageFacade externalMessageFacade;
+	protected final ConfigFacade configFacade;
 	protected final FeatureConfigurationFacade featureConfigurationFacade;
 	protected final CaseFacade caseFacade;
 	protected final FacilityFacade facilityFacade;
@@ -60,9 +67,11 @@ public abstract class ExternalMessageProcessingFacade {
 	private final EventParticipantFacade eventParticipantFacade;
 	private final SampleFacade sampleFacade;
 	private final PathogenTestFacade pathogenTestFacade;
+	private final CustomizableEnumFacade customizableEnumFacade;
 
 	public ExternalMessageProcessingFacade(
 		ExternalMessageFacade externalMessageFacade,
+		ConfigFacade configFacade,
 		FeatureConfigurationFacade featureConfigurationFacade,
 		CaseFacade caseFacade,
 		ContactFacade contactFacade,
@@ -70,8 +79,10 @@ public abstract class ExternalMessageProcessingFacade {
 		EventParticipantFacade eventParticipantFacade,
 		SampleFacade sampleFacade,
 		PathogenTestFacade pathogenTestFacade,
-		FacilityFacade facilityFacade) {
+		FacilityFacade facilityFacade,
+		CustomizableEnumFacade customizableEnumFacade) {
 		this.externalMessageFacade = externalMessageFacade;
+		this.configFacade = configFacade;
 		this.featureConfigurationFacade = featureConfigurationFacade;
 		this.caseFacade = caseFacade;
 		this.facilityFacade = facilityFacade;
@@ -80,6 +91,7 @@ public abstract class ExternalMessageProcessingFacade {
 		this.eventParticipantFacade = eventParticipantFacade;
 		this.sampleFacade = sampleFacade;
 		this.pathogenTestFacade = pathogenTestFacade;
+		this.customizableEnumFacade = customizableEnumFacade;
 	}
 
 	public boolean existsForwardedExternalMessageWith(String reportId) {
@@ -146,5 +158,13 @@ public abstract class ExternalMessageProcessingFacade {
 
 	public List<SampleDto> getSimilarSamples(SampleSimilarityCriteria sampleSimilarityCriteria) {
 		return sampleFacade.getSimilarSamples(sampleSimilarityCriteria);
+	}
+
+	public boolean isConfiguredCountry(String countryCode) {
+		return configFacade.isConfiguredCountry(countryCode);
+	}
+
+	public DiseaseVariant getDiseaseVariant(String diseaseVariantValue, Disease disease) throws CustomEnumNotFoundException {
+		return customizableEnumFacade.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariantValue, disease);
 	}
 }

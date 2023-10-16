@@ -2322,4 +2322,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		return super.getDeleteReferenceField(deletionReference);
 	}
+
+	public Map<String, Date> getReferenceDatesForautomaticSampleAssignment(String uuid) {
+		return null;
+	}
 }

@@ -67,6 +67,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
+	private Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
 
 	@Override
 	@PermitAll
@@ -232,6 +233,11 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
+	public Integer getAutomaticSampleAssignmentThreshold(Disease disease) {
+		return automaticSampleAssignmentThresholds.get(disease);
+	}
+
+	@Override
 	public void saveDiseaseConfiguration(DiseaseConfigurationDto configuration) {
 		DiseaseConfiguration existingDiseaseConfiguration = service.getByUuid(configuration.getUuid());
 		service.ensurePersisted(fillOrBuildEntity(configuration, existingDiseaseConfiguration, true));
@@ -298,6 +304,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		extendedClassificationMultiDiseases.clear();
 		caseFollowUpDurations.clear();
 		eventParticipantFollowUpDurations.clear();
+		automaticSampleAssignmentThresholds.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
 			Disease disease = configuration.getDisease();
@@ -349,6 +356,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				eventParticipantFollowUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {
 				eventParticipantFollowUpDurations.put(disease, followUpDurations.get(disease));
+			}
+			if (configuration.getAutomaticSampleAssignmentThreshold() != null) {
+				automaticSampleAssignmentThresholds.put(disease, configuration.getAutomaticSampleAssignmentThreshold());
 			}
 		}
 	}

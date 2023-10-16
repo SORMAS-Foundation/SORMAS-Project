@@ -162,6 +162,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessageProcessingFlow;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -1009,5 +1010,9 @@ public abstract class AbstractBeanTest {
 
 	public EnvironmentSampleService getEnvironmentSampleService() {
 		return getBean(EnvironmentSampleService.class);
+	}
+
+	public AutomaticLabMessageProcessingFlow getAutomaticLabMessageProcessingFlow() {
+		return getBean(AutomaticLabMessageProcessingFlow.class);
 	}
 }

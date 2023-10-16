@@ -81,9 +81,9 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageDto externalMessageDto) {
+	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageMapper mapper) {
 
-		final PersonDto person = buildPerson(ExternalMessageMapper.forLabMessage(externalMessageDto));
+		final PersonDto person = buildPerson(mapper);
 
 		HandlerCallback<PersonDto> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);

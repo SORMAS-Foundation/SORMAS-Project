@@ -45,7 +45,6 @@ public class LabMessageProcessingHelper {
 	public static PathogenTestDto buildPathogenTest(TestReportDto testReport, ExternalMessageDto labMessage, SampleDto sample, UserDto user) {
 		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, user);
 		ExternalMessageMapper.forLabMessage(labMessage).mapToPathogenTest(testReport, pathogenTest);
-		ExternalMessageMapper.forLabMessage(labMessage).mapToPathogenTest(testReport, pathogenTest);
 
 		return pathogenTest;
 	}

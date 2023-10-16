@@ -16,11 +16,12 @@
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -36,9 +37,11 @@ import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.RelatedSamplesReportsAndPathogenTests;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
@@ -46,7 +49,9 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
@@ -63,8 +68,10 @@ import de.symeda.sormas.backend.user.UserService;
 @LocalBean
 public class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
-	@EJB
 	private PersonFacadeEjbLocal personFacade;
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	private CaseFacadeEjbLocal caseFacade;
+	private CaseService caseService;
 
 	@Inject
 	public AutomaticLabMessageProcessingFlow(
@@ -79,7 +86,10 @@ public class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcess
 		EventParticipantFacadeEjbLocal eventParticipantFacade,
 		SampleFacadeEjbLocal sampleFacade,
 		PathogenTestFacadeEjbLocal pathogenTestFacade,
-		FacilityFacadeEjbLocal facilityFacade) {
+		FacilityFacadeEjbLocal facilityFacade,
+		PersonFacadeEjbLocal personFacade,
+		DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade,
+		CaseService caseService) {
 		super(
 			userFacade.getCurrentUser(),
 			new ExternalMessageProcessingFacade(
@@ -99,6 +109,10 @@ public class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcess
 				}
 			},
 			countryFacade.getServerCountry());
+		this.personFacade = personFacade;
+		this.diseaseConfigurationFacade = diseaseConfigurationFacade;
+		this.caseFacade = caseFacade;
+		this.caseService = caseService;
 	}
 
 	private static <T> boolean unsetOrMatches(T personValue, T messageValue) {
@@ -121,19 +135,24 @@ public class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcess
 
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
-		List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(person.getNationalHealthId());
-		if (matchingPersons.isEmpty()) {
-			callback.done(personFacade.save(person));
-			return;
+		String nationalHealthId = person.getNationalHealthId();
+		if (nationalHealthId != null) {
+			List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
+			if (matchingPersons.isEmpty()) {
+				callback.done(personFacade.save(person));
+			} else if (matchingPersons.size() == 1 && personDetailsMatch(person, matchingPersons.get(0))) {
+				callback.done(matchingPersons.get(0));
+			} else {
+				callback.cancel();
+			}
+		} else {
+			PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true);
+			if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
+				callback.cancel();
+			} else {
+				callback.done(personFacade.save(person));
+			}
 		}
-
-		if (matchingPersons.size() == 1 && personDetailsMatch(person, matchingPersons.get(0))) {
-			callback.done(matchingPersons.get(0));
-			return;
-		}
-
-		PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true);
-		personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria);
 	}
 
 	@Override
@@ -144,16 +163,37 @@ public class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcess
 		ExternalMessageDto externalMessageDto,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
 
+		PickOrCreateEntryResult result = new PickOrCreateEntryResult();
+		if (similarCases.isEmpty() && similarContacts.isEmpty() && similarEventParticipants.isEmpty()) {
+			result.setNewCase(true);
+			callback.done(result);
+		} else if (!similarCases.isEmpty() && similarContacts.isEmpty() && similarEventParticipants.isEmpty()) {
+			CaseSelectionDto firstSimilarCase = similarCases.get(0);
+
+			Integer automaticSampleAssignmentThreshold =
+				diseaseConfigurationFacade.getAutomaticSampleAssignmentThreshold(firstSimilarCase.getDisease());
+			if (automaticSampleAssignmentThreshold == null) {
+				callback.cancel();
+				return;
+			}
+
+			Map<String, Date> referenceDates = caseService.getReferenceDatesForautomaticSampleAssignment(firstSimilarCase.getUuid());
+
+			result.setCaze(firstSimilarCase);
+			callback.done(result);
+		} else {
+			callback.cancel();
+		}
 	}
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-
+		callback.done(caseFacade.save(caze));
 	}
 
 	@Override
 	public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
-		return null;
+		return CompletableFuture.completedFuture(Boolean.TRUE);
 	}
 
 	@Override
@@ -230,5 +270,9 @@ public class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcess
 		}
 
 		return false;
+	}
+
+	public CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> run(ExternalMessageDto externalMessage) {
+		return run(externalMessage, null);
 	}
 }

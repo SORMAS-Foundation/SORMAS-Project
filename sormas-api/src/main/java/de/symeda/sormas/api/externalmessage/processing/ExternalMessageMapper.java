@@ -30,7 +30,6 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
@@ -54,6 +53,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 public final class ExternalMessageMapper {
 
 	private final ExternalMessageDto externalMessage;
+
+	private ExternalMessageProcessingFacade externalMessageProcessingFacade;
 
 	public static ExternalMessageMapper forLabMessage(ExternalMessageDto externalMessage) {
 		return new ExternalMessageMapper(externalMessage);
@@ -354,7 +355,7 @@ public final class ExternalMessageMapper {
 
 	private Date getPathogenTestReportDate() {
 		Date reportDate = null;
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (externalMessageProcessingFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			reportDate = externalMessage.getMessageDateTime();
 		}
 		return reportDate;
@@ -427,8 +428,8 @@ public final class ExternalMessageMapper {
 		String testedDiseaseVariantDetails = null;
 
 		try {
-			testedDiseaseVariant = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, sourceTestReport.getTestedDiseaseVariant(), externalMessage.getDisease());
+			testedDiseaseVariant =
+				externalMessageProcessingFacade.getDiseaseVariant(sourceTestReport.getTestedDiseaseVariant(), externalMessage.getDisease());
 			testedDiseaseVariantDetails = sourceTestReport.getTestedDiseaseVariantDetails();
 		} catch (CustomEnumNotFoundException e) {
 			String diseaseVariantString = sourceTestReport.getTestedDiseaseVariant();

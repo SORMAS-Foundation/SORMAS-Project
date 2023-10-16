@@ -75,10 +75,12 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		ExternalMessageDto externalMessage,
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler) {
 
+		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(externalMessage);
+
 		//@formatter:off
 		return doInitialChecks(externalMessage)
 			.then(ignored -> handleRelatedLabMessages(relatedLabMessageHandler, externalMessage))
-			.then(ignored -> pickOrCreatePerson(externalMessage))
+			.then(ignored -> pickOrCreatePerson(mapper))
 			.then(p -> pickOrCreateEntry(p.getData(), externalMessage))
 				.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, p) -> doCreateCaseFlow(f, externalMessage))
@@ -298,6 +300,10 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	private CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> handleRelatedLabMessages(
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler,
 		ExternalMessageDto labMessage) {
+
+		if (relatedLabMessageHandler == null) {
+			return ProcessingResult.<RelatedSamplesReportsAndPathogenTests> continueWith(null).asCompletedFuture();
+		}
 
 		// TODO currently, related messages handling is just done if one sample report exists. That's why this works.
 		SampleReportDto firstSampleReport = labMessage.getSampleReportsNullSafe().get(0);
