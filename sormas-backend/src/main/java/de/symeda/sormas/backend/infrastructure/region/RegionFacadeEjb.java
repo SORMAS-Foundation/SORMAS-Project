@@ -257,6 +257,7 @@ public class RegionFacadeEjb
 		dto.setExternalID(entity.getExternalID());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
+		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
 
 		return dto;
 	}

@@ -56,7 +56,6 @@ public class AreaDtoHelper extends AdoDtoHelper<Area, AreaDto> {
 		area.setName(dto.getName());
 		area.setExternalId(dto.getExternalId());
 		area.setArchived(dto.isArchived());
-		area.setDefaultInfrastructure(dto.isDefaultInfrastructure());
 	}
 
 	@Override

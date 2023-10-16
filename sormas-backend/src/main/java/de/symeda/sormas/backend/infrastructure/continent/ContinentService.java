@@ -12,8 +12,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
-import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureAdoService;
 
 @Stateless
 @LocalBean

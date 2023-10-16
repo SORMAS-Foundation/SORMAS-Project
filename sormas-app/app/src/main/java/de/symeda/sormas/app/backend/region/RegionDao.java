@@ -15,20 +15,20 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import java.sql.SQLException;
-import java.util.List;
+import android.util.Log;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.infrastructure.AbstractInfrastructureAdoDao;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureAdo;
 
 public class RegionDao extends AbstractInfrastructureAdoDao<Region> {
 

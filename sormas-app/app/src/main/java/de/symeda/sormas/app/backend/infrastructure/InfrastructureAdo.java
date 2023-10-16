@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,25 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.region;
+package de.symeda.sormas.app.backend.infrastructure;
 
-import com.j256.ormlite.dao.Dao;
+import javax.persistence.MappedSuperclass;
 
-import de.symeda.sormas.app.backend.infrastructure.AbstractInfrastructureAdoDao;
+import com.j256.ormlite.field.DatabaseField;
 
-public class AreaDao extends AbstractInfrastructureAdoDao<Area> {
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-	public AreaDao(Dao<Area, Long> innerDao) {
-		super(innerDao);
+@MappedSuperclass
+public class InfrastructureAdo extends AbstractDomainObject {
+
+	public static final String ARCHIVED = "archived";
+
+	@DatabaseField
+	private boolean archived = false;
+
+	public boolean isArchived() {
+		return archived;
 	}
 
-	@Override
-	protected Class<Area> getAdoClass() {
-		return Area.class;
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 
-	@Override
-	public String getTableName() {
-		return Area.TABLE_NAME;
-	}
 }

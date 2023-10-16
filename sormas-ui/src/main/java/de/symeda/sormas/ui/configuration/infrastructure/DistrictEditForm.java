@@ -26,7 +26,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -38,7 +38,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
 		+ fluidRowLocs(DistrictDto.REGION)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
-		+ fluidRowLocs(InfrastructureDto.DEFAULT_INFRASTRUCTURE); // ,DistrictDto.GROWTH_RATE);
+		+ fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE); // ,DistrictDto.GROWTH_RATE);
 
 	private final boolean create;
 
@@ -65,7 +65,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 		if (FacadeProvider.getFeatureConfigurationFacade()
 			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
-			addField(InfrastructureDto.DEFAULT_INFRASTRUCTURE, CheckBox.class);
+			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
 		}
 
 //		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);

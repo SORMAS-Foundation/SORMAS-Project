@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.app.backend.user;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.util.Arrays;
 import java.util.Set;
 
@@ -26,13 +23,16 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;

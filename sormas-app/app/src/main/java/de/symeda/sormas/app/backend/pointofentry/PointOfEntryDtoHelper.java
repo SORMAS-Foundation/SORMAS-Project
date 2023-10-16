@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.infrastructure;
+package de.symeda.sormas.app.backend.pointofentry;
 
 import java.util.List;
 
@@ -65,7 +65,6 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		target.setLongitude(source.getLongitude());
 		target.setActive(source.isActive());
 		target.setArchived(source.isArchived());
-		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -79,7 +78,6 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		target.setLongitude(source.getLongitude());
 		target.setActive(source.isActive());
 		target.setArchived(source.isArchived());
-		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 
 		if (source.getRegion() != null) {
 			Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());

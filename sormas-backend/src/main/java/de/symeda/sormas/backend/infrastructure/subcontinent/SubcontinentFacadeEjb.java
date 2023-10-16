@@ -51,9 +51,9 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;

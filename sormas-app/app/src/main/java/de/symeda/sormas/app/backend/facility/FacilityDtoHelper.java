@@ -189,7 +189,6 @@ public class FacilityDtoHelper extends AdoDtoHelper<Facility, FacilityDto> {
 		target.setPublicOwnership(source.isPublicOwnership());
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
-		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 	}
 
 	@Override

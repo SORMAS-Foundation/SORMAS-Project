@@ -30,7 +30,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -47,7 +47,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 					fluidRowLocs(RegionDto.COUNTRY) + 
 					fluidRowLocs(RegionDto.AREA) +
 					fluidRowLocs(RegionDto.EXTERNAL_ID) +
-					fluidRowLocs(InfrastructureDto.DEFAULT_INFRASTRUCTURE);
+					fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 	//@formatter:on
 
@@ -86,7 +86,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 		if (FacadeProvider.getFeatureConfigurationFacade()
 			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
-			addField(InfrastructureDto.DEFAULT_INFRASTRUCTURE, CheckBox.class);
+			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
 		}
 
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);

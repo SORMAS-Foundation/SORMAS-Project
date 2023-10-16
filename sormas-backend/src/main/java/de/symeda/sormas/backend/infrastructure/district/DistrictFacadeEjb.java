@@ -51,9 +51,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
@@ -62,6 +62,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -75,6 +76,8 @@ public class DistrictFacadeEjb
 
 	@EJB
 	private AreaService areaService;
+	@EJB
+	private RegionFacadeEjbLocal regionFacade;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -309,6 +312,7 @@ public class DistrictFacadeEjb
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setExternalID(entity.getExternalID());
+		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
 
 		return dto;
 	}
@@ -336,7 +340,11 @@ public class DistrictFacadeEjb
 
 		return (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "") + "-"
 			+ (district.getEpidCode() != null ? district.getEpidCode() : "");
+	}
 
+	@Override
+	protected boolean checkDefaultEligible(DistrictDto dto) {
+		return dto.getRegion().equals(regionFacade.getDefaultInfrastructureReference());
 	}
 
 	@LocalBean

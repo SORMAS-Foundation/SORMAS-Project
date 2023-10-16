@@ -21,17 +21,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -62,8 +58,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		+ fluidRowLocs(FacilityDto.CONTACT_PERSON_FIRST_NAME, FacilityDto.CONTACT_PERSON_LAST_NAME)
 		+ fluidRowLocs(FacilityDto.CONTACT_PERSON_PHONE, FacilityDto.CONTACT_PERSON_EMAIL)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
-		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
-		+ fluidRowLocs(InfrastructureDto.DEFAULT_INFRASTRUCTURE);
+		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean create;
 	private ComboBox typeGroup;
@@ -117,11 +112,6 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		longitude.setConverter(new StringToAngularLocationConverter());
 		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
-
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
-			addField(InfrastructureDto.DEFAULT_INFRASTRUCTURE, CheckBox.class);
-		}
 
 		setRequired(true, FacilityDto.NAME, TYPE_GROUP_LOC, FacilityDto.TYPE, FacilityDto.REGION, FacilityDto.DISTRICT);
 

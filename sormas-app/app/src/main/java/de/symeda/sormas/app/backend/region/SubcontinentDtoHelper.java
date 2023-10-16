@@ -57,7 +57,6 @@ public class SubcontinentDtoHelper extends AdoDtoHelper<Subcontinent, Subcontine
 	protected void fillInnerFromDto(Subcontinent subcontinent, SubcontinentDto dto) {
 		subcontinent.setDefaultName(dto.getDefaultName());
 		subcontinent.setArchived(dto.isArchived());
-		subcontinent.setDefaultInfrastructure(dto.isDefaultInfrastructure());
 		subcontinent.setContinent(DatabaseHelper.getContinentDao().queryUuid(dto.getContinent().getUuid()));
 	}
 

@@ -2,14 +2,10 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -22,8 +18,7 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT =
             fluidRowLocs(CountryDto.ISO_CODE, CountryDto.DEFAULT_NAME) +
-            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE, CountryDto.SUBCONTINENT) +
-			fluidRowLocs(InfrastructureDto.DEFAULT_INFRASTRUCTURE);
+            fluidRowLocs(CountryDto.EXTERNAL_ID, CountryDto.UNO_CODE, CountryDto.SUBCONTINENT);
     //@formatter:on
 
 	private final Boolean create;
@@ -58,11 +53,6 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 		addField(CountryDto.EXTERNAL_ID, TextField.class);
 		addField(CountryDto.UNO_CODE, TextField.class).setMaxLength(3);
 		ComboBox subcontinent = addInfrastructureField(CountryDto.SUBCONTINENT);
-
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
-			addField(InfrastructureDto.DEFAULT_INFRASTRUCTURE, CheckBox.class);
-		}
 
 		subcontinent.addItems(FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 

@@ -115,8 +115,6 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalizationDao;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationDao;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDao;
 import de.symeda.sormas.app.backend.lbds.LbdsSync;
 import de.symeda.sormas.app.backend.lbds.LbdsSyncDao;
 import de.symeda.sormas.app.backend.location.Location;
@@ -127,6 +125,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.backend.person.PersonContactDetailDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntryDao;
 import de.symeda.sormas.app.backend.region.Area;
 import de.symeda.sormas.app.backend.region.AreaDao;
 import de.symeda.sormas.app.backend.region.Community;
@@ -3139,15 +3139,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 353:
 				currentVersion = 353;
-				getDao(Continent.class).executeRaw("ALTER TABLE continent ADD COLUMN defaultInfrastructure boolean default false;");
-				getDao(Subcontinent.class).executeRaw("ALTER TABLE subcontinent ADD COLUMN defaultInfrastructure boolean default false;");
-				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN defaultInfrastructure boolean default false;");
-				getDao(Area.class).executeRaw("ALTER TABLE area ADD COLUMN defaultInfrastructure boolean default false;");
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN defaultInfrastructure boolean default false;");
 				getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN defaultInfrastructure boolean default false;");
 				getDao(Community.class).executeRaw("ALTER TABLE community ADD COLUMN defaultInfrastructure boolean default false;");
-				getDao(PointOfEntry.class).executeRaw("ALTER TABLE pointOfEntry ADD COLUMN defaultInfrastructure boolean default false;");
-				getDao(Facility.class).executeRaw("ALTER TABLE facility ADD COLUMN defaultInfrastructure boolean default false;");
 
 				// ATTENTION: break should only be done after last version
 				break;

@@ -14,8 +14,13 @@
  */
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
@@ -23,6 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -46,13 +52,18 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			setCriteria(criteria);
 		}
 
-		setColumns(
+		String[] columns = new String[] {
 			DistrictIndexDto.NAME,
 			DistrictIndexDto.REGION,
 			DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
 			DistrictIndexDto.POPULATION,
-			DistrictIndexDto.GROWTH_RATE);
+			DistrictIndexDto.GROWTH_RATE };
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			columns = ArrayUtils.add(columns, DistrictIndexDto.DEFAULT_INFRASTRUCTURE);
+		}
+		setColumns(columns);
 
 		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
 
@@ -60,6 +71,9 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));
 		}
+
+		Optional.ofNullable(((Column<DistrictIndexDto, Boolean>) getColumn(DistrictIndexDto.DEFAULT_INFRASTRUCTURE)))
+			.ifPresent(c -> c.setRenderer(new BooleanRenderer()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));

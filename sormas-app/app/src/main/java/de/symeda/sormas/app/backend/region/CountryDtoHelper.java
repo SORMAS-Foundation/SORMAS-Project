@@ -43,7 +43,6 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 		ado.setName(dto.getDefaultName());
 		ado.setIsoCode(dto.getIsoCode());
 		ado.setArchived(dto.isArchived());
-		ado.setDefaultInfrastructure(dto.isDefaultInfrastructure());
 		ado.setSubcontinent(DatabaseHelper.getSubcontinentDao().getByReferenceDto(dto.getSubcontinent()));
 	}
 

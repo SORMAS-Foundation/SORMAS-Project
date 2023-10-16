@@ -17,10 +17,10 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureAdo;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.user.User;
 

@@ -23,6 +23,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -31,9 +32,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
@@ -136,7 +136,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 
 		ADO existingEntity = service.getByUuid(dtoToSave.getUuid());
 
-		if (dtoToSave.isDefaultInfrastructure()) {
+		if (dtoToSave instanceof InfrastructureDtoWithDefault && ((InfrastructureDtoWithDefault) dtoToSave).isDefaultInfrastructure()) {
 			ADO defaultInfrastructure = getDefaultInfrastructure();
 			if (defaultInfrastructure != null) {
 				if (!dtoToSave.getUuid().equals(defaultInfrastructure.getUuid())) {
@@ -146,11 +146,18 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 							I18nProperties.getCaption(adoClass.getSimpleName()),
 							I18nProperties.getCaption(adoClass.getSimpleName())));
 				}
-			} else {
+			} else if (checkDefaultEligible(dtoToSave)) {
 				// Default infrastructure set for the first time, needs to be re-queried
 				defaultInfrastructureCache.setQueried(false);
+			} else {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						adoClass == District.class
+							? Validations.defaultInfrastructureInvalidParentRegion
+							: Validations.defaultInfrastructureInvalidParentDistrict));
 			}
-		} else if (existingEntity != null && existingEntity.isDefaultInfrastructure()) {
+		} else if (existingEntity instanceof InfrastructureAdoWithDefault
+			&& ((InfrastructureAdoWithDefault) existingEntity).isDefaultInfrastructure()) {
 			// Default infrastructure removed
 			if (defaultInfrastructureCache != null) {
 				defaultInfrastructureCache.setDefaultInfrastructure(null);
@@ -341,13 +348,21 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	protected void applyToDtoInheritance(DTO dto, ADO entity) {
 		dto.setArchived(entity.isArchived());
 		dto.setCentrallyManaged(entity.isCentrallyManaged());
-		dto.setDefaultInfrastructure(entity.isDefaultInfrastructure());
+		if (dto instanceof InfrastructureDtoWithDefault) {
+			((InfrastructureDtoWithDefault) dto).setDefaultInfrastructure(((InfrastructureAdoWithDefault) entity).isDefaultInfrastructure());
+		}
 	}
 
 	protected void applyFillOrBuildEntityInheritance(ADO entity, DTO dto) {
 		entity.setArchived(dto.isArchived());
 		entity.setCentrallyManaged(dto.isCentrallyManaged());
-		entity.setDefaultInfrastructure(dto.isDefaultInfrastructure());
+		if (entity instanceof InfrastructureAdoWithDefault) {
+			((InfrastructureAdoWithDefault) entity).setDefaultInfrastructure(((InfrastructureDtoWithDefault) dto).isDefaultInfrastructure());
+		}
+	}
+
+	protected boolean checkDefaultEligible(DTO dto) {
+		return true;
 	}
 
 	protected ADO getDefaultInfrastructure() {

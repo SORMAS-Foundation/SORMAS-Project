@@ -27,7 +27,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -43,7 +43,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	private static final String HTML_LAYOUT = loc(CommunityDto.NAME)
 		+ fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
-		+ fluidRowLocs(InfrastructureDto.DEFAULT_INFRASTRUCTURE);
+		+ fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE);
 
 	private boolean create;
 
@@ -70,7 +70,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 		if (FacadeProvider.getFeatureConfigurationFacade()
 			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
-			addField(InfrastructureDto.DEFAULT_INFRASTRUCTURE, CheckBox.class);
+			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
 		}
 
 		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);

@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 
 @Entity(name = "areas")
 @Cacheable
