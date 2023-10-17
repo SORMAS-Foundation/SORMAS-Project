@@ -55,7 +55,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 	}
 
 	private void setUpControlListeners(FragmentEventParticipantReadLayoutBinding contentBinding) {
-		contentBinding.openEventPersonCase.setOnClickListener(new View.OnClickListener() {
+		contentBinding.openEventParticipantCase.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {

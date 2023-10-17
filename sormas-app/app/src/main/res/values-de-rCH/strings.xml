@@ -42,7 +42,7 @@
     <string name="action_confirm">Bestätigen</string>
     <string name="action_create">Erstellen</string>
     <string name="action_create_case_from_contact">In Fall konvertieren</string>
-    <string name="action_create_case_from_event_person">Fall für diese Ereignisperson erstellen</string>
+    <string name="action_create_case_from_event_participant">Fall für diese Ereignisperson erstellen</string>
     <string name="action_create_treatment">Behandlung erstellen</string>
     <string name="action_edit_data">Daten bearbeiten</string>
     <string name="action_delete">Löschen</string>

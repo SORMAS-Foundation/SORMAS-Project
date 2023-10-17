@@ -42,7 +42,7 @@
     <string name="action_confirm">تصدیق کریں۔</string>
     <string name="action_create">اندراج کریں</string>
     <string name="action_create_case_from_contact">اس رابطہ شدہ شخص کے لیے کیس بنائیں</string>
-    <string name="action_create_case_from_event_person"> تقریب میں جانے والےاس شخص کے لیے کیس بنائیں</string>
+    <string name="action_create_case_from_event_participant"> تقریب میں جانے والےاس شخص کے لیے کیس بنائیں</string>
     <string name="action_create_treatment">علاج کا انداج کریں</string>
     <string name="action_edit_data">ڈیٹا میں ترمیم کریں</string>
     <string name="action_delete">مٹا ديں</string>

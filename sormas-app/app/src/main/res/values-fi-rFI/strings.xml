@@ -42,7 +42,7 @@
     <string name="action_confirm">Vahvista</string>
     <string name="action_create">Luo</string>
     <string name="action_create_case_from_contact">Lisää tämä kontaktihenkilö potilaaksi</string>
-    <string name="action_create_case_from_event_person">Lisää tapahtuman henkilö potilaaksi</string>
+    <string name="action_create_case_from_event_participant">Lisää tapahtuman henkilö potilaaksi</string>
     <string name="action_create_treatment">Luo hoito</string>
     <string name="action_edit_data">Muokkaa arvoja</string>
     <string name="action_delete">Poista</string>

@@ -42,7 +42,7 @@
     <string name="action_confirm">Potvrdit</string>
     <string name="action_create">Vytvořit</string>
     <string name="action_create_case_from_contact">Vytvořit případ pro tuto kontaktní osobu</string>
-    <string name="action_create_case_from_event_person">Vytvořit případ pro tuto osobu události</string>
+    <string name="action_create_case_from_event_participant">Vytvořit případ pro tuto osobu události</string>
     <string name="action_create_treatment">Vytvořit léčbu</string>
     <string name="action_edit_data">Upravit data</string>
     <string name="action_delete">Vymazat</string>

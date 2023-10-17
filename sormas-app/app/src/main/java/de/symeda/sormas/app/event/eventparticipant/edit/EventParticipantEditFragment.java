@@ -59,17 +59,17 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 
 		if (record.getResultingCaseUuid() != null) {
-			contentBinding.createCaseFromEventPerson.setVisibility(GONE);
+			contentBinding.createCaseFromEventParticipant.setVisibility(GONE);
 			if (DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
 				contentBinding.eventParticipantButtonsPanel.setVisibility(GONE);
 			}
 		} else {
-			contentBinding.openEventPersonCase.setVisibility(GONE);
+			contentBinding.openEventParticipantCase.setVisibility(GONE);
 		}
 	}
 
 	private void setUpControlListeners(FragmentEventParticipantEditLayoutBinding contentBinding) {
-		contentBinding.openEventPersonCase.setOnClickListener(new View.OnClickListener() {
+		contentBinding.openEventParticipantCase.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -77,7 +77,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 			}
 		});
 
-		contentBinding.createCaseFromEventPerson.setOnClickListener(new View.OnClickListener() {
+		contentBinding.createCaseFromEventParticipant.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
