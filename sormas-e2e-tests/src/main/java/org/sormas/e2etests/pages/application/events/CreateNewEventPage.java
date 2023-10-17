@@ -89,4 +89,6 @@ public class CreateNewEventPage {
   public static final By MULTI_DAY_EVENT_CHECKBOX = By.cssSelector("[id='multiDayEvent'] label");
   public static final By START_DATA_EVENT = By.xpath("//div[@id='startDate_date']/input");
   public static final By END_DATA_EVENT = By.xpath("//div[@id='endDate_date']/input");
+  public static final By LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP =
+      By.xpath("//*[contains(text(),'All cases have been linked to the selected event.')]");
 }

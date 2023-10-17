@@ -34,6 +34,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACT_LINKED_TO_EVENT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
@@ -437,6 +438,9 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SAVE_BUTTON_IN_LINK_FORM);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP);
         });
 
     When(

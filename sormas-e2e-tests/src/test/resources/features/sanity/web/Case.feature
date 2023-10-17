@@ -363,9 +363,9 @@ Feature: Case end to end tests
     And I click on Link to Event from Bulk Actions combobox on Case Directory Page
     And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event to group form
-    And I create a new event with status CLUSTER
+    And I create a new linked event with status CLUSTER
     And I navigate to the last created Event page via URL
-    And I check that number of displayed Event Participants is 1
+    And I check that number of displayed Event Participants is 2
 
   @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
@@ -392,7 +392,7 @@ Feature: Case end to end tests
     And I click first result in grid on Link to Event form
     And I click on SAVE button in Link Event to group form
     And I navigate to the last created through API Event page via URL
-    And I check that number of displayed Event Participants is 1
+    And I check that number of displayed Event Participants is 2
 
   @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and case filters
