@@ -249,7 +249,7 @@ Scenario: Create and send laboratory request via Demis
     Then I filter by last created person via API in Messages Directory
     And I collect message data from searched record in Messages directory
     Then I check if "laboratory name" in received message is set to "Testlabor"
-    And I check if "laboratory postal code" in received message is set to "12347"
+    And I check if "laboratory postal code" in received message is set to "20095"
     And I check if postal code for test instance in received message is set correctly
 
   @tmsLink=SORDEV-8810 @env_d2s @LoginKeycloak
