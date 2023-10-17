@@ -363,7 +363,7 @@ Feature: Case end to end tests
     And I click on Link to Event from Bulk Actions combobox on Case Directory Page
     And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event to group form
-    And I create a new linked event with status CLUSTER
+    And I create a new linked event with status CLUSTER for cases
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 2
 
