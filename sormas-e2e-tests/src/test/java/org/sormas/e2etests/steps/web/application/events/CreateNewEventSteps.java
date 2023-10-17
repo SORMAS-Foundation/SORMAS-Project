@@ -30,6 +30,8 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EV
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_REGION;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.LINKED_CONTACTS_TO_THE_SELECTED_EVENT_POPUP;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.MEANS_OF_TRANSPORT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.MULTI_DAY_EVENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.NEW_EVENT_CREATED_DE_MESSAGE;
@@ -176,6 +178,40 @@ public class CreateNewEventSteps implements En {
           selectResponsibleRegion(RegionsValues.VoreingestellteBundeslander.getName());
           selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "^I create a new linked event with status ([^\"]*) for cases",
+        (String eventStatus) -> {
+          newEvent = collectEventUuid();
+          String timestamp = String.valueOf(System.currentTimeMillis());
+          webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp);
+          selectEventStatus(eventStatus);
+          selectResponsibleRegion(RegionsValues.VoreingestellteBundeslander.getName());
+          selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "^I create a new linked event with status ([^\"]*) for contacts",
+        (String eventStatus) -> {
+          newEvent = collectEventUuid();
+          String timestamp = String.valueOf(System.currentTimeMillis());
+          webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp);
+          selectEventStatus(eventStatus);
+          selectResponsibleRegion(RegionsValues.VoreingestellteBundeslander.getName());
+          selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              LINKED_CONTACTS_TO_THE_SELECTED_EVENT_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(LINKED_CONTACTS_TO_THE_SELECTED_EVENT_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
 
