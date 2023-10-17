@@ -1289,7 +1289,11 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(Contact.PERSON, JoinType.LEFT);
 		Join<EventParticipant, Event> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.INNER);
 
-		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
+		cq.where(
+			cb.and(
+				cb.equal(eventJoin.get(Event.UUID), eventUuid),
+				cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids),
+				service.createDefaultFilter(cb, eventParticipantRoot)));
 
 		return toDtos(em.createQuery(cq).getResultList().stream());
 	}

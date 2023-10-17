@@ -67,7 +67,7 @@ public class EnvironmentNewFragment extends BaseEditFragment<FragmentEnvironment
 		setUpControlListeners(contentBinding);
 		contentBinding.setData(record);
 
-		EnvironmentValidator.initializeLocationValidations(contentBinding.environmentEnvironmentLocation, () -> record.getLocation());
+		EnvironmentValidator.initializeLocationValidations(contentBinding.environmentLocation, () -> record.getLocation());
 
 		contentBinding.environmentEnvironmentMedia.initializeSpinner(environmentMediaList);
 
@@ -77,7 +77,7 @@ public class EnvironmentNewFragment extends BaseEditFragment<FragmentEnvironment
 	}
 
 	private void setUpControlListeners(final FragmentEnvironmentNewLayoutBinding contentBinding) {
-		contentBinding.environmentEnvironmentLocation.setOnClickListener(new View.OnClickListener() {
+		contentBinding.environmentLocation.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -100,7 +100,7 @@ public class EnvironmentNewFragment extends BaseEditFragment<FragmentEnvironment
 		locationDialog.setPositiveCallback(() -> {
 			try {
 				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
-				contentBinding.environmentEnvironmentLocation.setValue(locationClone);
+				contentBinding.environmentLocation.setValue(locationClone);
 				record.setLocation(locationClone);
 				contentBinding.environmentResponsibleUser.initializeSpinner(updateResponsibleUserList(record.getLocation().getDistrict()));
 

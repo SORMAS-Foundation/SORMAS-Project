@@ -40,6 +40,7 @@ import androidx.databinding.ObservableList;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -1226,6 +1227,16 @@ public class TextViewBindingAdapters {
 			visibilityDependencies = null;
 
 		setVisibilityDependencies(field, visibilityDependencies, true);
+	}
+
+	@BindingAdapter(value = {
+			"value"})
+	public static void setPathogenValue(TextView textField, Pathogen pathogen) {
+		if (pathogen == null) {
+			textField.setText("");
+		} else {
+			textField.setText(pathogen.getCaption());
+		}
 	}
 
 	public static void setVisibilityDependencies(

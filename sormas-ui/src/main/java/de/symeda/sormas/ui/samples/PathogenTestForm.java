@@ -87,6 +87,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.PCR_TEST_SPECIFICATION, "") +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
+			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, "") +
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
@@ -234,16 +235,16 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
-		DateTimeField sampleTestDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
-		sampleTestDateField.addValidator(
+		DateTimeField testDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
+		testDateField.addValidator(
 			new DateComparisonValidator(
-				sampleTestDateField,
+				testDateField,
 				this::getSampleDate,
 				false,
 				false,
 				I18nProperties.getValidationError(
 					Validations.afterDateWithDate,
-					sampleTestDateField.getCaption(),
+					testDateField.getCaption(),
 					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
 					DateFormatHelper.formatDate(getSampleDate()))));
 		ComboBox lab = addInfrastructureField(PathogenTestDto.LAB);
@@ -252,12 +253,31 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		labDetails.setVisible(false);
 		typingIdField = addField(PathogenTestDto.TYPING_ID, TextField.class);
 		typingIdField.setVisible(false);
+
+		// Tested Desease or Tested Pathogen, depending on sample type
 		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create);
+		TextField diseaseDetailsField = addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
-		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
+
+		ComboBox testedPathogenField = addField(PathogenTestDto.TESTED_PATHOGEN, ComboBox.class);
+		FieldHelper.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
+
+		if (environmentSample == null) {
+			diseaseField.setVisible(true);
+			diseaseField.setRequired(true);
+
+			testedPathogenField.setVisible(false);
+			testedPathogenField.setRequired(false);
+		} else {
+			diseaseField.setVisible(false);
+			diseaseField.setRequired(false);
+
+			testedPathogenField.setVisible(true);
+			testedPathogenField.setRequired(true);
+		}
 
 		ComboBox testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
@@ -310,7 +330,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			getContent().addComponent(prescriberHeadingLabel, PRESCRIBER_HEADING_LOC);
 		}
 
-		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<Object, List<Object>>() {
+		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<>() {
 
 			{
 				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CORONAVIRUS));
@@ -409,6 +429,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		if (SamplePurpose.INTERNAL.equals(getSamplePurpose())) { // this only works for already saved samples
 			setRequired(true, PathogenTestDto.LAB);
 		}
-		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_RESULT);
+		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_RESULT);
 	}
 }

@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.app.environmentsample.list;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -26,14 +30,17 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.HasLocalChangeDate;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSampleCriteria;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
 
 public class EnvironmentSampleListViewModel extends ViewModel {
 
-	private LiveData<PagedList<EnvironmentSample>> environmentSamples;
+	private LiveData<PagedList<SampleWithTestedPathogens>> environmentSamples;
 	private EnvironmentSampleDataFactory environmentSampleDataFactory;
 
 	public void initializeViewModel(Environment environment) {
@@ -52,7 +59,7 @@ public class EnvironmentSampleListViewModel extends ViewModel {
 		initializeList();
 	}
 
-	public LiveData<PagedList<EnvironmentSample>> getEnvironmentSamples() {
+	public LiveData<PagedList<SampleWithTestedPathogens>> getEnvironmentSamples() {
 		return environmentSamples;
 	}
 
@@ -69,7 +76,7 @@ public class EnvironmentSampleListViewModel extends ViewModel {
 		return environmentSampleDataFactory.getCriteria();
 	}
 
-	public static class EnvironmmentSampleDataSource extends PositionalDataSource<EnvironmentSample> {
+	public static class EnvironmmentSampleDataSource extends PositionalDataSource<SampleWithTestedPathogens> {
 
 		private EnvironmentSampleCriteria criteria;
 
@@ -78,22 +85,31 @@ public class EnvironmentSampleListViewModel extends ViewModel {
 		}
 
 		@Override
-		public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<EnvironmentSample> callback) {
+		public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<SampleWithTestedPathogens> callback) {
 			long totalCount = DatabaseHelper.getEnvironmentSampleDao().countByCriteria(criteria);
 			int offset = params.requestedStartPosition;
 			int count = params.requestedLoadSize;
 			if (offset + count > totalCount) {
 				offset = (int) Math.max(0, totalCount - count);
 			}
-			List<EnvironmentSample> environmentSamples = DatabaseHelper.getEnvironmentSampleDao().queryByCriteria(criteria, offset, count);
-			callback.onResult(environmentSamples, offset, (int) totalCount);
+
+            callback.onResult(loadSampleWithTestedPathogens(offset, count), offset, (int) totalCount);
 		}
 
-		@Override
-		public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<EnvironmentSample> callback) {
-			List<EnvironmentSample> environmentSamples =
-				DatabaseHelper.getEnvironmentSampleDao().queryByCriteria(criteria, params.startPosition, params.loadSize);
-			callback.onResult(environmentSamples);
+        private List<SampleWithTestedPathogens> loadSampleWithTestedPathogens(int offset, int count) {
+            List<EnvironmentSample> environmentSamples = DatabaseHelper.getEnvironmentSampleDao().queryByCriteria(criteria, offset, count);
+            Map<Long, List<Pathogen>> pathogenTests = DatabaseHelper.getSampleTestDao().queryAllPositiveByEnvironmentSamples(environmentSamples)
+                    .stream().collect(Collectors.groupingBy(t -> t.getEnvironmentSample().getId(), Collectors.mapping(PathogenTest::getTestedPathogen, Collectors.toList())));
+            List<SampleWithTestedPathogens> samplesWithPathogens = environmentSamples.stream().map(s -> {
+                String testedPathogens = pathogenTests.getOrDefault(s.getId(), Collections.emptyList()).stream().map(Pathogen::getCaption).collect(Collectors.joining(", "));
+                return new SampleWithTestedPathogens(s, testedPathogens);
+            }).collect(Collectors.toList());
+            return samplesWithPathogens;
+        }
+
+        @Override
+		public void loadRange(@NonNull LoadRangeParams params, @NonNull LoadRangeCallback<SampleWithTestedPathogens> callback) {
+			callback.onResult(loadSampleWithTestedPathogens(params.startPosition, params.loadSize));
 		}
 	}
 
@@ -129,6 +145,33 @@ public class EnvironmentSampleListViewModel extends ViewModel {
 
 		LivePagedListBuilder listBuilder = new LivePagedListBuilder(environmentSampleDataFactory, config);
 		environmentSamples = listBuilder.build();
+	}
+
+	public static class SampleWithTestedPathogens implements HasLocalChangeDate {
+		private final EnvironmentSample sample;
+		private String testedPathogens;
+
+		public SampleWithTestedPathogens(EnvironmentSample sample, String testedPathogens) {
+			this.sample = sample;
+			this.testedPathogens = testedPathogens;
+		}
+
+		public EnvironmentSample getSample() {
+			return sample;
+		}
+
+		public String getTestedPathogens() {
+			return testedPathogens;
+		}
+
+		public void setTestedPathogens(String testedPathogens) {
+			this.testedPathogens = testedPathogens;
+		}
+
+		@Override
+		public Date getLocalChangeDate() {
+			return sample.getLocalChangeDate();
+		}
 	}
 
 }

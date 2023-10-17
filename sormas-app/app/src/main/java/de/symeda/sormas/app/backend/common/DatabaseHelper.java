@@ -3136,6 +3136,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 352;
 				getDao(PathogenTest.class)
 					.executeRaw("ALTER TABLE pathogentest ADD COLUMN environmentSample_id BIGINT REFERENCES environmentSamples(id);");
+			case 353:
+				currentVersion = 353;
+				getDao(PathogenTest.class)
+					.executeRaw("ALTER TABLE pathogentest ADD COLUMN testedPathogen varchar(255);");
 
 			case 353:
 				currentVersion = 353;

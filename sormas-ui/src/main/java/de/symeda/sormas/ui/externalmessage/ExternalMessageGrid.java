@@ -193,7 +193,10 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	}
 
 	private Component buildProcessComponent(ExternalMessageIndexDto indexDto) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_PROCESS) && indexDto.getStatus().isProcessable()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_PROCESS)
+			&& indexDto.getStatus().isProcessable()
+			&& (indexDto.getType() != ExternalMessageType.PHYSICIANS_REPORT
+				|| UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT))) {
 			// build process button
 			return ButtonHelper.createButton(Captions.externalMessageProcess, e -> {
 				if (ExternalMessageType.LAB_MESSAGE == indexDto.getType()) {

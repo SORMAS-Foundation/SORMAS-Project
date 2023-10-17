@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
-public class BindingViewHolder<T extends AbstractDomainObject, V extends ViewDataBinding> extends RecyclerView.ViewHolder
+public class BindingViewHolder<T, V extends ViewDataBinding> extends RecyclerView.ViewHolder
 	implements OnListItemClickListener.HasOnListItemClickListener, View.OnClickListener {
 
 	public final V binding;
@@ -58,7 +58,7 @@ public class BindingViewHolder<T extends AbstractDomainObject, V extends ViewDat
 	 *            The type of the Binding class that will be generated for the <code>layoutId</code>.
 	 * @return A new ViewHolder that has a reference to the binding class
 	 */
-	public static <T extends AbstractDomainObject, V extends ViewDataBinding> BindingViewHolder<T, V> create(
+	public static <T, V extends ViewDataBinding> BindingViewHolder<T, V> create(
 		ViewGroup parent,
 		@LayoutRes int layoutId) {
 		LayoutInflater inflater = LayoutInflater.from(parent.getContext());

@@ -28,6 +28,11 @@ public class MapSampleDto implements Serializable {
 
 	private SampleAssociationType associationType;
 
+	public MapSampleDto(Double longitude, Double latitude, Double associatedEntityLongitude, Double associatedEntityLatitude) {
+		if (!setLatLonIfPresent(longitude, latitude, null))
+			setLatLonIfPresent(associatedEntityLongitude, associatedEntityLatitude, null);
+	}
+
 	public MapSampleDto(
 		Double casePersonLon,
 		Double casePersonLat,

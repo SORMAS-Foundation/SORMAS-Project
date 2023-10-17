@@ -178,16 +178,6 @@ Feature: Create events
     And I fill all fields for a new case created for event participant
     And I click on save case button
 
-  @tmsLink=SORDEV-9426 @env_main
-  Scenario: Filter for the report date of events
-    Given I log in as a National User
-    And I click on the Events button from navbar
-    Then I click on Show more filters in Events
-    And I select Report Date among Event Reference Date options
-    And I fill in a date range in Date of Event From Epi Week and ...To fields
-    And I apply on the APPLY FILTERS button from Event
-    And I check that the dates of displayed Event results are correct
-
   @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen from Event Directory Page
     Given API: I create a new event

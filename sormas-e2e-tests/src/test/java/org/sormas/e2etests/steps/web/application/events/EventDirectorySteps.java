@@ -1000,7 +1000,7 @@ public class EventDirectorySteps implements En {
     When(
         "I search for the last event uuid created by UI",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT, CreateNewEventSteps.eventUUID);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
