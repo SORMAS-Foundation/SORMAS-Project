@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.environment.environmentsample;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -145,6 +146,7 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 
 		sample.setUuid(DataHelper.createUuid());
 		sample.setEnvironment(environment);
+		sample.setWeatherConditions(new HashMap<>());
 		sample.setReportDate(new Date());
 		sample.setReportingUser(reportingUser);
 		sample.setSampleDateTime(new Date());
