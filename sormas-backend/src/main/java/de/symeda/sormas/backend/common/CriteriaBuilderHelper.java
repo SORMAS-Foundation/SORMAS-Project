@@ -19,8 +19,8 @@ import javax.persistence.criteria.Predicate;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
-import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -86,12 +86,7 @@ public class CriteriaBuilderHelper {
 	 *            The property on which to filter.
 	 * @return The original filter if {@code filterValue == null} or the amended filter combined with AND.
 	 */
-	public static Predicate andEquals(
-		CriteriaBuilder cb,
-		Path<?> entityPath,
-		Predicate filter,
-		Object filterValue,
-		String entityProperty) {
+	public static Predicate andEquals(CriteriaBuilder cb, Path<?> entityPath, Predicate filter, Object filterValue, String entityProperty) {
 
 		return filterValue == null ? filter : and(cb, filter, cb.equal(entityPath.get(entityProperty), filterValue));
 	}
@@ -107,11 +102,7 @@ public class CriteriaBuilderHelper {
 	 *            The entity or reference object on which to filter.
 	 * @return The original filter if {@code hasUuid == null} or the amended filter combined with AND.
 	 */
-	public static Predicate andEquals(
-		CriteriaBuilder cb,
-		Supplier<Join<?, ?>> joinSupplier,
-		Predicate filter,
-		HasUuid hasUuid) {
+	public static Predicate andEquals(CriteriaBuilder cb, Supplier<Join<?, ?>> joinSupplier, Predicate filter, HasUuid hasUuid) {
 
 		return hasUuid == null ? filter : andEquals(cb, joinSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
 	}
@@ -202,5 +193,12 @@ public class CriteriaBuilderHelper {
 			filter = and(cb, filter, cb.lessThanOrEqualTo(path, toDate));
 		}
 		return filter;
+	}
+
+	public static Expression<Double> dateDiff(CriteriaBuilder cb, Expression<?> date1, Expression<?> date2) {
+		return cb.abs(
+			cb.diff(
+				cb.function("date_part", Double.class, cb.literal("epoch"), date1),
+				cb.function("date_part", Double.class, cb.literal("epoch"), date2)));
 	}
 }

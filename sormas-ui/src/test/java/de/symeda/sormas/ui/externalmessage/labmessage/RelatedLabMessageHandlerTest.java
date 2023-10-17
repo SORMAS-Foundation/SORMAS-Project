@@ -47,6 +47,8 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResultStatus;
@@ -79,8 +81,6 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	private final String reportId = "test-report-id";
 	private final String labSampleId = "test-lab-si";
 
-	private RelatedLabMessageTestHandler handler;
-
 	@Override
 	public void init() {
 		super.init();
@@ -96,8 +96,6 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 		userRef = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER)).toReference();
 		person = creator.createPerson("James", "Smith", Sex.MALE);
-
-		handler = new RelatedLabMessageTestHandler();
 	}
 
 	@Test
@@ -107,6 +105,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessage.setReportId(null);
 		labMessage.addSampleReport(SampleReportDto.build());
 		labMessage.getSampleReports().get(0).setLabSampleId(null);
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessage);
 
 		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessage);
 		assertThat(relatedEntities, is(nullValue()));
@@ -134,7 +134,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getSample(), equalTo(sample));
 	}
 
@@ -159,7 +159,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.getSampleReportsNullSafe().get(0).setLabSampleId(labSampleId);
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities, is(nullValue()));
 	}
 
@@ -172,7 +172,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.addSampleReport(SampleReportDto.build());
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPerson(), equalTo(person));
 	}
 
@@ -198,7 +198,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.addSampleReport(SampleReportDto.build());
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPerson(), equalTo(person));
 	}
 
@@ -230,7 +230,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.addSampleReport(sampleReport);
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getPathogenTests(), hasSize(1));
 		assertThat(relatedEntities.getPathogenTests().get(0), equalTo(pathogenTest));
 	}
@@ -256,7 +256,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport1));
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(1));
 		assertThat(relatedEntities.getUnmatchedTestReports().get(0).getUuid(), equalTo(testReport1.getUuid()));
 		assertThat(relatedEntities.isPathogenTestMisMatch(), is(true));
@@ -287,7 +287,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
-		RelatedEntities relatedEntities = handler.getRelatedEntities(labMessageToProcess);
+		RelatedEntities relatedEntities = getHandler(labMessageToProcess).getRelatedEntities(labMessageToProcess);
 		assertThat(relatedEntities.getUnmatchedTestReports(), hasSize(2));
 		assertThat(relatedEntities.getUnmatchedTestReports().get(0).getExternalId(), equalTo("external2"));
 		assertThat(relatedEntities.getUnmatchedTestReports().get(1).getUuid(), equalTo(testReport2.getUuid()));
@@ -303,6 +303,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.addSampleReport(SampleReportDto.build());
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId + "1");
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
 		assertThat(result.getStatus(), is(HandlerResultStatus.NOT_HANDLED));
@@ -325,6 +326,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.addSampleReport(SampleReportDto.build());
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(handler.correctionFlowConfirmation).get();
 
@@ -351,6 +354,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.addSampleReport(SampleReportDto.build());
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(handler.correctionFlowConfirmation).get();
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(handler.shortcutConfirmation).apply(Mockito.any());
@@ -381,6 +386,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setPersonFirstName(person.getFirstName());
 		labMessageToProcess.setPersonLastName("NewLastName");
 		labMessageToProcess.setPersonSex(person.getSex());
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			PersonDto originalPersonData = invocation.getArgument(1);
@@ -422,6 +429,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			SampleDto originalSample = invocation.getArgument(1);
@@ -479,6 +488,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport.setTestDateTime(pathogenTest.getTestDateTime());
 		testReport.setTestType(PathogenTestType.RAPID_TEST);
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport));
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			PathogenTestDto originalTest = invocation.getArgument(1);
@@ -557,6 +568,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		testReport2.setTestType(pathogenTest2.getTestType());
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			PathogenTestDto originalTest = invocation.getArgument(1);
@@ -639,6 +652,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		Mockito.doAnswer(invocation -> {
 			TestReportDto testReport = invocation.getArgument(1);
 
@@ -695,6 +710,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Arrays.asList(testReport1, testReport2));
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(handler.correctionFlowConfirmation).get();
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
@@ -727,6 +744,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false)).when(handler.correctionFlowConfirmation).get();
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(true)).when(handler.shortcutConfirmation).apply(Mockito.any());
@@ -766,6 +785,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
 		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
@@ -795,6 +816,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.getSampleReports().get(0).setSpecimenCondition(sample.getSpecimenCondition());
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
 		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
@@ -822,6 +845,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).cancel();
 			return null;
@@ -847,6 +872,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(SampleMaterial.RECTAL_SWAB);
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).cancel();
@@ -874,6 +901,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 		labMessageToProcess.getSampleReports().get(0).setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			((RelatedLabMessageHandlerChain) invocation.getArgument(4)).next(false);
@@ -910,6 +939,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		Mockito.doAnswer(invocation -> {
 			throw new TestException();
 		}).when(handler.personChangesHandler).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -937,6 +968,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 		labMessageToProcess.getSampleReports().get(0).setSampleMaterial(SampleMaterial.RECTAL_SWAB);
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		Mockito.doAnswer(invocation -> {
 			throw new TestException();
@@ -967,6 +1000,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		labMessageToProcess.getSampleReports().get(0).setLabSampleId(labSampleId);
 		labMessageToProcess.setPersonFirstName("Updated");
 
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
+
 		Mockito.doAnswer(invocation -> CompletableFuture.completedFuture(false))
 			.when(handler.continueProcessingConfirmation)
 			.apply(Mockito.any(), Mockito.any());
@@ -992,6 +1027,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setExternalId("external 2");
 		labMessageToProcess.getSampleReports().get(0).setTestReports(Collections.singletonList(testReport));
+
+		RelatedLabMessageTestHandler handler = getHandler(labMessageToProcess);
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
@@ -1031,6 +1068,10 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		var sampleReport = SampleReportDto.build();
 		sampleReport.setSample(sample.toReference());
 		return sampleReport;
+	}
+
+	private RelatedLabMessageTestHandler getHandler(ExternalMessageDto labMessage) {
+		return new RelatedLabMessageTestHandler(labMessage, getExternalMessageProcessingFacade());
 	}
 
 	public interface CreatePathogenTestHandler {
@@ -1075,7 +1116,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		public BiFunction<ExternalMessageDto, SampleReferenceDto, CompletionStage<Boolean>> continueProcessingConfirmation;
 		public ShortcutHandler shortcutHandler;
 
-		public RelatedLabMessageTestHandler() {
+		public RelatedLabMessageTestHandler(ExternalMessageDto labMessage, ExternalMessageProcessingFacade processingFacade) {
+			super(new ExternalMessageMapper(labMessage, processingFacade));
 
 			personChangesHandler = Mockito.mock(CorrectedPersonHandler.class);
 			Mockito.doAnswer(invocation -> {

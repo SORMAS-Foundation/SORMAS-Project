@@ -41,10 +41,12 @@ public abstract class AbstractProcessingFlow {
 
 	protected final UserDto user;
 
+	protected final ExternalMessageMapper mapper;
 	protected final ExternalMessageProcessingFacade processingFacade;
 
-	public AbstractProcessingFlow(UserDto user, ExternalMessageProcessingFacade processingFacade) {
+	public AbstractProcessingFlow(UserDto user, ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
 		this.user = user;
+		this.mapper = mapper;
 		this.processingFacade = processingFacade;
 	}
 
@@ -81,9 +83,9 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageMapper mapper) {
+	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson() {
 
-		final PersonDto person = buildPerson(mapper);
+		final PersonDto person = buildPerson();
 
 		HandlerCallback<PersonDto> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
@@ -93,7 +95,7 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback);
 
-	private PersonDto buildPerson(ExternalMessageMapper mapper) {
+	private PersonDto buildPerson() {
 
 		final PersonDto personDto = PersonDto.build();
 

@@ -33,6 +33,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,6 +71,7 @@ import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -993,5 +995,27 @@ public abstract class AbstractBeanTest {
 	public <T extends Throwable> void assertThrowsWithMessage(Class<T> expectedType, String expectedMessage, Executable executable) {
 		T throwable = assertThrows(expectedType, executable);
 		assertEquals(expectedMessage, throwable.getMessage());
+	}
+
+	@NotNull
+	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
+		return new ExternalMessageProcessingFacade(
+			getExternalMessageFacade(),
+			getConfigFacade(),
+			getFeatureConfigurationFacade(),
+			getCaseFacade(),
+			getContactFacade(),
+			getEventFacade(),
+			getEventParticipantFacade(),
+			getSampleFacade(),
+			getPathogenTestFacade(),
+			getFacilityFacade(),
+			getCustomizableEnumFacade()) {
+
+			@Override
+			public boolean hasAllUserRights(UserRight... userRights) {
+				return true;
+			}
+		};
 	}
 }

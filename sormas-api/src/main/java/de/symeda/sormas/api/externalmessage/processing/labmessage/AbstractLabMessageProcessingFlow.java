@@ -64,23 +64,29 @@ import de.symeda.sormas.api.user.UserRight;
  */
 public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessingFlow {
 
+	private final ExternalMessageDto externalMessage;
 	protected final CountryReferenceDto country;
+	private final AbstractRelatedLabMessageHandler relatedLabMessageHandler;
 
-	public AbstractLabMessageProcessingFlow(UserDto user, ExternalMessageProcessingFacade processingFacade, CountryReferenceDto country) {
-		super(user, processingFacade);
+	public AbstractLabMessageProcessingFlow(
+		ExternalMessageDto externalMessage,
+		UserDto user,
+		CountryReferenceDto country,
+		ExternalMessageMapper mapper,
+		ExternalMessageProcessingFacade processingFacade,
+		AbstractRelatedLabMessageHandler relatedLabMessageHandler) {
+		super(user, mapper, processingFacade);
+		this.externalMessage = externalMessage;
 		this.country = country;
+		this.relatedLabMessageHandler = relatedLabMessageHandler;
 	}
 
-	public CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> run(
-		ExternalMessageDto externalMessage,
-		AbstractRelatedLabMessageHandler relatedLabMessageHandler) {
-
-		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(externalMessage);
+	public CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> run() {
 
 		//@formatter:off
 		return doInitialChecks(externalMessage)
 			.then(ignored -> handleRelatedLabMessages(relatedLabMessageHandler, externalMessage))
-			.then(ignored -> pickOrCreatePerson(mapper))
+			.then(ignored -> pickOrCreatePerson())
 			.then(p -> pickOrCreateEntry(p.getData(), externalMessage))
 				.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, p) -> doCreateCaseFlow(f, externalMessage))
@@ -442,8 +448,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		int sampleReportIndex,
 		boolean entityCreated) {
 
-		ExternalMessageMapper.forLabMessage(labMessage).mapToSample(sample, labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
-		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, user);
+		mapper.mapToSample(sample, labMessage.getSampleReportsNullSafe().get(sampleReportIndex));
+		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, mapper, user);
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
 		handleCreateSampleAndPathogenTests(
 			sample,
@@ -631,9 +637,9 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		int sampleReportIndex,
 		ExternalMessageDto labMessage) {
 
-		List<PathogenTestDto> newTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, user);
+		List<PathogenTestDto> newTests = LabMessageProcessingHelper.buildPathogenTests(sample, sampleReportIndex, labMessage, mapper, user);
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
-		handleEditSample(sample, newTests, labMessage, isLastSample(labMessage, sampleReportIndex), callback);
+		handleEditSample(sample, newTests, labMessage, mapper, isLastSample(labMessage, sampleReportIndex), callback);
 
 		return callback.futureResult;
 	}
@@ -649,8 +655,13 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		SampleDto sample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto labMessage,
+		ExternalMessageMapper mapper,
 		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback);
+
+	public ExternalMessageMapper getMapper() {
+		return mapper;
+	}
 
 	private static final class PersonAndPickOrCreateEventResult {
 

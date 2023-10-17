@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.RelatedSamplesReportsAndPathogenTests;
@@ -89,15 +91,35 @@ public class ExternalMessageController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final RelatedLabMessageHandler relatedLabMessageHandler;
+	@NotNull
+	private static ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
+		return new ExternalMessageProcessingFacade(
+			FacadeProvider.getExternalMessageFacade(),
+			FacadeProvider.getConfigFacade(),
+			FacadeProvider.getFeatureConfigurationFacade(),
+			FacadeProvider.getCaseFacade(),
+			FacadeProvider.getContactFacade(),
+			FacadeProvider.getEventFacade(),
+			FacadeProvider.getEventParticipantFacade(),
+			FacadeProvider.getSampleFacade(),
+			FacadeProvider.getPathogenTestFacade(),
+			FacadeProvider.getFacilityFacade(),
+			FacadeProvider.getCustomizableEnumFacade()) {
 
-	public ExternalMessageController() {
-		relatedLabMessageHandler = new RelatedLabMessageHandler();
+			@Override
+			public boolean hasAllUserRights(UserRight... userRights) {
+				return UserProvider.getCurrent().hasAllUserRights(userRights);
+			}
+		};
 	}
 
-	public void showExternalMessage(String MessageUuid, boolean withActions, Runnable onFormActionPerformed) {
+	public void showLabMessagesSlider(List<ExternalMessageDto> labMessages) {
+		new LabMessageSlider(labMessages);
+	}
 
-		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(MessageUuid);
+	public void showExternalMessage(String messageUuid, boolean withActions, Runnable onFormActionPerformed) {
+
+		ExternalMessageDto newDto = FacadeProvider.getExternalMessageFacade().getByUuid(messageUuid);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
@@ -120,53 +142,53 @@ public class ExternalMessageController {
 		form.setValue(newDto);
 	}
 
-	public void showLabMessagesSlider(List<ExternalMessageDto> labMessages) {
-		new LabMessageSlider(labMessages);
-	}
-
 	public void processLabMessage(String labMessageUuid) {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
-		LabMessageProcessingFlow flow = new LabMessageProcessingFlow();
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
+		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(mapper);
+		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
 
-		flow.run(labMessage, relatedLabMessageHandler)
-			.handle((BiFunction<? super ProcessingResult<RelatedSamplesReportsAndPathogenTests>, Throwable, Void>) (result, exception) -> {
-				if (exception != null) {
-					logger.error("Unexpected exception while processing lab message", exception);
+		flow.run().handle((BiFunction<? super ProcessingResult<RelatedSamplesReportsAndPathogenTests>, Throwable, Void>) (result, exception) -> {
+			if (exception != null) {
+				logger.error("Unexpected exception while processing lab message", exception);
 
-					Notification.show(
-						I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
-						I18nProperties.getString(Strings.errorWasReported),
-						Notification.Type.ERROR_MESSAGE);
-
-					return null;
-				}
-
-				ProcessingResultStatus status = result.getStatus();
-
-				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
-					showCorrectionsSavedPopup();
-				} else if (status == ProcessingResultStatus.DONE) {
-
-					CaseReferenceDto caseReference =
-						result.getData().getRelatedSampleReportsWithSamples().values().stream().findFirst().get().getAssociatedCase();
-					SurveillanceReportDto surveillanceReport = null;
-					if (caseReference != null) {
-						surveillanceReport = createSurveillanceReport(labMessage, caseReference);
-						FacadeProvider.getSurveillanceReportFacade().save(surveillanceReport);
-					}
-					markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples(), surveillanceReport);
-					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
-				}
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
 
 				return null;
-			});
+			}
+
+			ProcessingResultStatus status = result.getStatus();
+
+			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
+				showCorrectionsSavedPopup();
+			} else if (status == ProcessingResultStatus.DONE) {
+
+				CaseReferenceDto caseReference =
+					result.getData().getRelatedSampleReportsWithSamples().values().stream().findFirst().get().getAssociatedCase();
+				SurveillanceReportDto surveillanceReport = null;
+				if (caseReference != null) {
+					surveillanceReport = createSurveillanceReport(labMessage, caseReference);
+					FacadeProvider.getSurveillanceReportFacade().save(surveillanceReport);
+				}
+				markExternalMessageAsProcessed(labMessage, result.getData().getRelatedSampleReportsWithSamples(), surveillanceReport);
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+			}
+
+			return null;
+		});
 	}
 
 	public void processPhysiciansReport(String uuid) {
-		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
-		PhysiciansReportProcessingFlow flow = new PhysiciansReportProcessingFlow();
+		ExternalMessageDto physicianReport = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		ExternalMessageMapper mapper = new ExternalMessageMapper(physicianReport, processingFacade);
+		PhysiciansReportProcessingFlow flow = new PhysiciansReportProcessingFlow(mapper, processingFacade);
 
-		flow.run(labMessage).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {
+		flow.run(physicianReport).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {
 			if (exception != null) {
 				logger.error("Unexpected exception while processing lab message", exception);
 
@@ -182,9 +204,9 @@ public class ExternalMessageController {
 
 			if (status == ProcessingResultStatus.DONE) {
 				CaseReferenceDto caseReferenceDto = result.getData().toReference();
-				SurveillanceReportDto surveillanceReport = createSurveillanceReport(labMessage, caseReferenceDto);
+				SurveillanceReportDto surveillanceReport = createSurveillanceReport(physicianReport, caseReferenceDto);
 				FacadeProvider.getSurveillanceReportFacade().save(surveillanceReport);
-				markExternalMessageAsProcessed(labMessage, surveillanceReport);
+				markExternalMessageAsProcessed(physicianReport, surveillanceReport);
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
 
@@ -223,7 +245,8 @@ public class ExternalMessageController {
 	}
 
 	private void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseReferenceDto caze) {
-		FacilityReferenceDto reporterReference = ExternalMessageMapper.getFacilityReference(externalMessage.getReporterExternalIds());
+		FacilityReferenceDto reporterReference =
+			ExternalMessageMapper.getFacilityReference(externalMessage.getReporterExternalIds(), FacadeProvider.getFacilityFacade());
 		FacilityDto reporter;
 		if (reporterReference != null) {
 			reporter = FacadeProvider.getFacilityFacade().getByUuid(reporterReference.getUuid());

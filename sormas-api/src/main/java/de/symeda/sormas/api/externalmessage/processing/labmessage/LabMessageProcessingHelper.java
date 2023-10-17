@@ -33,18 +33,23 @@ public class LabMessageProcessingHelper {
 	private LabMessageProcessingHelper() {
 	}
 
-	public static List<PathogenTestDto> buildPathogenTests(SampleDto sample, int sampleReportIndex, ExternalMessageDto labMessage, UserDto user) {
+	public static List<PathogenTestDto> buildPathogenTests(
+		SampleDto sample,
+		int sampleReportIndex,
+		ExternalMessageDto labMessage,
+		ExternalMessageMapper mapper,
+		UserDto user) {
 		ArrayList<PathogenTestDto> pathogenTests = new ArrayList<>();
 		for (TestReportDto testReport : labMessage.getSampleReportsNullSafe().get(sampleReportIndex).getTestReports()) {
-			pathogenTests.add(buildPathogenTest(testReport, labMessage, sample, user));
+			pathogenTests.add(buildPathogenTest(testReport, mapper, sample, user));
 		}
 
 		return pathogenTests;
 	}
 
-	public static PathogenTestDto buildPathogenTest(TestReportDto testReport, ExternalMessageDto labMessage, SampleDto sample, UserDto user) {
+	public static PathogenTestDto buildPathogenTest(TestReportDto testReport, ExternalMessageMapper mapper, SampleDto sample, UserDto user) {
 		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, user);
-		ExternalMessageMapper.forLabMessage(labMessage).mapToPathogenTest(testReport, pathogenTest);
+		mapper.mapToPathogenTest(testReport, pathogenTest);
 
 		return pathogenTest;
 	}

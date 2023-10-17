@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
@@ -35,15 +36,15 @@ import de.symeda.sormas.api.user.UserDto;
 
 public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
-	public AbstractPhysiciansReportProcessingFlow(UserDto user, ExternalMessageProcessingFacade processingFacade) {
-		super(user, processingFacade);
+	public AbstractPhysiciansReportProcessingFlow(UserDto user, ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
+		super(user, mapper, processingFacade);
 	}
 
 	public CompletionStage<ProcessingResult<CaseDataDto>> run(ExternalMessageDto externalMessage) {
 
 		//@formatter:off
 		return doInitialChecks(externalMessage)
-			.then((ignored) -> pickOrCreatePerson(externalMessage))
+			.then((ignored) -> pickOrCreatePerson())
 			.then((p) -> pickOrCreateEntry(p.getData(), externalMessage))
 			.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e) -> f

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage;
+package de.symeda.sormas.backend.externalmessage.labmessage.processing;
 
 import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
 import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
@@ -52,7 +52,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -68,6 +67,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
@@ -91,14 +91,11 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.ui.AbstractUiBeanTest;
 
-public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
-
-	private AbstractLabMessageProcessingFlow flow;
+public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	private Supplier<CompletionStage<Boolean>> missingDiseaseHandler;
 
@@ -225,130 +222,6 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		country = new CountryReferenceDto(DataHelper.createUuid(), "de-DE");
-		flow = new AbstractLabMessageProcessingFlow(
-			user,
-			new ExternalMessageProcessingFacade(
-				getExternalMessageFacade(),
-				getFeatureConfigurationFacade(),
-				getCaseFacade(),
-				getContactFacade(),
-				getEventFacade(),
-				getEventParticipantFacade(),
-				getSampleFacade(),
-				getPathogenTestFacade(),
-				getFacilityFacade()) {
-
-				@Override
-				public boolean hasAllUserRights(UserRight... userRights) {
-					return true;
-				}
-			},
-			country) {
-
-			@Override
-			protected CompletionStage<Boolean> handleMissingDisease() {
-				return missingDiseaseHandler.get();
-			}
-
-			@Override
-			protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-				return relatedForwardedMessagesHandler.get();
-			}
-
-			@Override
-			protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
-				handlePickOrCreatePerson.apply(person, callback);
-			}
-
-			@Override
-			protected void handlePickOrCreateEntry(
-				List<CaseSelectionDto> similarCases,
-				List<SimilarContactDto> similarContacts,
-				List<SimilarEventParticipantDto> similarEventParticipants,
-				ExternalMessageDto externalMessageDto,
-				HandlerCallback<PickOrCreateEntryResult> callback) {
-				handlePickOrCreateEntry.handle(similarCases, similarContacts, similarEventParticipants, callback);
-			}
-
-			@Override
-			protected void handleCreateCase(
-				CaseDataDto caze,
-				PersonDto person,
-				ExternalMessageDto labMessage,
-				HandlerCallback<CaseDataDto> callback) {
-				handleCreateCase.handle(caze, person, callback);
-			}
-
-			@Override
-			public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
-				return multipleSamplesConfirmationHandler.get();
-			}
-
-			@Override
-			protected void handleCreateSampleAndPathogenTests(
-				SampleDto sample,
-				List<PathogenTestDto> pathogenTests,
-				Disease disease,
-				ExternalMessageDto labMessage,
-				boolean entityCreated,
-				boolean lastSample,
-				HandlerCallback<SampleAndPathogenTests> callback) {
-				handleCreateSampleAndPathogenTests.handle(sample, pathogenTests, entityCreated, lastSample, callback);
-			}
-
-			@Override
-			protected void handleCreateContact(
-				ContactDto contact,
-				PersonDto person,
-				ExternalMessageDto labMessage,
-				HandlerCallback<ContactDto> callback) {
-				handleCreateContact.handle(contact, person, callback);
-			}
-
-			@Override
-			protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
-				handlePickOrCreateEvent.accept(callback);
-			}
-
-			@Override
-			protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
-				handleCreateEvent.accept(event, callback);
-			}
-
-			@Override
-			protected void handleCreateEventParticipant(
-				EventParticipantDto eventParticipant,
-				EventDto event,
-				ExternalMessageDto labMessage,
-				HandlerCallback<EventParticipantDto> callback) {
-				handleCreateEventParticipant.accept(eventParticipant, callback);
-			}
-
-			@Override
-			protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {
-				return confirmPickExistingEventParticipantHandler.get();
-			}
-
-			@Override
-			protected void handlePickOrCreateSample(
-				List<SampleDto> similarSamples,
-				List<SampleDto> otherSamples,
-				ExternalMessageDto externalMessageDto,
-				int sampleReportIndex,
-				HandlerCallback<PickOrCreateSampleResult> callback) {
-				handlePickOrCreateSample.handle(similarSamples, otherSamples, callback);
-			}
-
-			@Override
-			protected void handleEditSample(
-				SampleDto sample,
-				List<PathogenTestDto> newPathogenTests,
-				ExternalMessageDto labMessage,
-				boolean lastSample,
-				HandlerCallback<SampleAndPathogenTests> callback) {
-				handleEditSample.handle(sample, newPathogenTests, lastSample, callback);
-			}
-		};
 	}
 
 	@Test
@@ -388,7 +261,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 	@Test
 	public void testHandleRelatedForwardedMessages() throws ExecutionException, InterruptedException {
 
-		FacadeProvider.getExternalMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.FORWARDED));
+		getExternalMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.FORWARDED));
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
@@ -414,7 +287,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 	@Test
 	public void testHandleRelatedForwardedMessagesCancel() throws ExecutionException, InterruptedException {
 
-		FacadeProvider.getExternalMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.FORWARDED));
+		getExternalMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.FORWARDED));
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(false));
 
@@ -2430,8 +2303,122 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractUiBeanTest {
 
 	private ProcessingResult<RelatedSamplesReportsAndPathogenTests> runFlow(ExternalMessageDto labMessage)
 		throws ExecutionException, InterruptedException {
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		AbstractLabMessageProcessingFlow flow = new AbstractLabMessageProcessingFlow(
+			labMessage,
+			user,
+			country,
+			new ExternalMessageMapper(labMessage, processingFacade),
+			processingFacade,
+			relatedLabMessageHandler) {
 
-		return flow.run(labMessage, relatedLabMessageHandler).toCompletableFuture().get();
+			@Override
+			protected CompletionStage<Boolean> handleMissingDisease() {
+				return missingDiseaseHandler.get();
+			}
+
+			@Override
+			protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
+				return relatedForwardedMessagesHandler.get();
+			}
+
+			@Override
+			protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+				handlePickOrCreatePerson.apply(person, callback);
+			}
+
+			@Override
+			protected void handlePickOrCreateEntry(
+				List<CaseSelectionDto> similarCases,
+				List<SimilarContactDto> similarContacts,
+				List<SimilarEventParticipantDto> similarEventParticipants,
+				ExternalMessageDto externalMessageDto,
+				HandlerCallback<PickOrCreateEntryResult> callback) {
+				handlePickOrCreateEntry.handle(similarCases, similarContacts, similarEventParticipants, callback);
+			}
+
+			@Override
+			protected void handleCreateCase(
+				CaseDataDto caze,
+				PersonDto person,
+				ExternalMessageDto labMessage,
+				HandlerCallback<CaseDataDto> callback) {
+				handleCreateCase.handle(caze, person, callback);
+			}
+
+			@Override
+			public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
+				return multipleSamplesConfirmationHandler.get();
+			}
+
+			@Override
+			protected void handleCreateSampleAndPathogenTests(
+				SampleDto sample,
+				List<PathogenTestDto> pathogenTests,
+				Disease disease,
+				ExternalMessageDto labMessage,
+				boolean entityCreated,
+				boolean lastSample,
+				HandlerCallback<SampleAndPathogenTests> callback) {
+				handleCreateSampleAndPathogenTests.handle(sample, pathogenTests, entityCreated, lastSample, callback);
+			}
+
+			@Override
+			protected void handleCreateContact(
+				ContactDto contact,
+				PersonDto person,
+				ExternalMessageDto labMessage,
+				HandlerCallback<ContactDto> callback) {
+				handleCreateContact.handle(contact, person, callback);
+			}
+
+			@Override
+			protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
+				handlePickOrCreateEvent.accept(callback);
+			}
+
+			@Override
+			protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
+				handleCreateEvent.accept(event, callback);
+			}
+
+			@Override
+			protected void handleCreateEventParticipant(
+				EventParticipantDto eventParticipant,
+				EventDto event,
+				ExternalMessageDto labMessage,
+				HandlerCallback<EventParticipantDto> callback) {
+				handleCreateEventParticipant.accept(eventParticipant, callback);
+			}
+
+			@Override
+			protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {
+				return confirmPickExistingEventParticipantHandler.get();
+			}
+
+			@Override
+			protected void handlePickOrCreateSample(
+				List<SampleDto> similarSamples,
+				List<SampleDto> otherSamples,
+				ExternalMessageDto externalMessageDto,
+				int sampleReportIndex,
+				HandlerCallback<PickOrCreateSampleResult> callback) {
+				handlePickOrCreateSample.handle(similarSamples, otherSamples, callback);
+			}
+
+			@Override
+			protected void handleEditSample(
+				SampleDto sample,
+				List<PathogenTestDto> newPathogenTests,
+				ExternalMessageDto labMessage,
+				ExternalMessageMapper mapper,
+				boolean lastSample,
+				HandlerCallback<SampleAndPathogenTests> callback) {
+				handleEditSample.handle(sample, newPathogenTests, lastSample, callback);
+			}
+		};
+
+		return flow.run().toCompletableFuture().get();
 	}
 
 	private ExternalMessageDto createLabMessage(Disease disease, String reportId, ExternalMessageStatus status) {

@@ -40,6 +40,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.i18n.Captions;
@@ -64,6 +65,10 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  * Related lab messages handler implemented with vaadin dialogs/components for handling confirmation and object edit/save steps
  */
 public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
+
+	public RelatedLabMessageHandler(ExternalMessageMapper mapper) {
+		super(mapper);
+	}
 
 	@Override
 	protected CompletionStage<Boolean> confirmShortcut(boolean hasRelatedLabMessages) {
@@ -111,8 +116,8 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 	protected void handleShortcut(ExternalMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain) {
 		// Currently, related entities are only looked at when there is just one sample report in the lab message
 		List<PathogenTestDto> newPathogenTests =
-			LabMessageProcessingHelper.buildPathogenTests(sample, 0, labMessage, UserProvider.getCurrent().getUser());
-		showEditSampleWindow(sample, true, newPathogenTests, labMessage, s -> chain.next(true), chain::cancel);
+			LabMessageProcessingHelper.buildPathogenTests(sample, 0, labMessage, mapper, UserProvider.getCurrent().getUser());
+		showEditSampleWindow(sample, true, newPathogenTests, labMessage, mapper, s -> chain.next(true), chain::cancel);
 	}
 
 	@Override
@@ -238,7 +243,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		});
 
 		pathogenTestCreateComponent.getWrappedComponent()
-			.setValue(LabMessageProcessingHelper.buildPathogenTest(testReport, labMessage, sample, UserProvider.getCurrent().getUser()));
+			.setValue(LabMessageProcessingHelper.buildPathogenTest(testReport, mapper, sample, UserProvider.getCurrent().getUser()));
 		ControllerProvider.getSampleController().setViaLimsFieldChecked(pathogenTestCreateComponent.getWrappedComponent());
 
 		showFormWithLabMessage(

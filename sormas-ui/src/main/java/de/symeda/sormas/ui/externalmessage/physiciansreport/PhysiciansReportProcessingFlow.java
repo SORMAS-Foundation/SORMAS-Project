@@ -22,15 +22,14 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
@@ -39,25 +38,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProcessingFlow {
 
-	public PhysiciansReportProcessingFlow() {
-		super(
-			UserProvider.getCurrent().getUser(),
-			new ExternalMessageProcessingFacade(
-				FacadeProvider.getExternalMessageFacade(),
-				FacadeProvider.getFeatureConfigurationFacade(),
-				FacadeProvider.getCaseFacade(),
-				FacadeProvider.getContactFacade(),
-				FacadeProvider.getEventFacade(),
-				FacadeProvider.getEventParticipantFacade(),
-				FacadeProvider.getSampleFacade(),
-				FacadeProvider.getPathogenTestFacade(),
-				FacadeProvider.getFacilityFacade()) {
-
-				@Override
-				public boolean hasAllUserRights(UserRight... userRights) {
-					return UserProvider.getCurrent().hasAllUserRights(userRights);
-				}
-			});
+	public PhysiciansReportProcessingFlow(ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
+		super(UserProvider.getCurrent().getUser(), mapper, processingFacade);
 	}
 
 	@Override
@@ -98,7 +80,7 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, callback);
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, mapper, callback);
 	}
 
 	@Override

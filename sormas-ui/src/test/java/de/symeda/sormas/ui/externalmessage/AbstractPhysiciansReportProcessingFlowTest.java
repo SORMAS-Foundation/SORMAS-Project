@@ -53,6 +53,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
@@ -61,14 +62,11 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.ui.AbstractUiBeanTest;
 import de.symeda.sormas.ui.externalmessage.physiciansreport.AbstractPhysiciansReportProcessingFlow;
 
 public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTest {
-
-	private AbstractPhysiciansReportProcessingFlow flow;
 
 	private Supplier<CompletionStage<Boolean>> missingDiseaseHandler;
 
@@ -139,68 +137,6 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-
-		flow = new AbstractPhysiciansReportProcessingFlow(
-			user,
-			new ExternalMessageProcessingFacade(
-				getExternalMessageFacade(),
-				getFeatureConfigurationFacade(),
-				getCaseFacade(),
-				getContactFacade(),
-				getEventFacade(),
-				getEventParticipantFacade(),
-				getSampleFacade(),
-				getPathogenTestFacade(),
-				getFacilityFacade()) {
-
-				@Override
-				public boolean hasAllUserRights(UserRight... userRights) {
-					return true;
-				}
-			}) {
-
-			@Override
-			protected CompletionStage<Boolean> handleMissingDisease() {
-				return missingDiseaseHandler.get();
-			}
-
-			@Override
-			protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-				return relatedForwardedMessagesHandler.get();
-			}
-
-			@Override
-			protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
-				handlePickOrCreatePerson.apply(person, callback);
-			}
-
-			@Override
-			protected void handlePickOrCreateEntry(
-				List<CaseSelectionDto> similarCases,
-				ExternalMessageDto externalMessage,
-				HandlerCallback<PickOrCreateEntryResult> callback) {
-				handlePickOrCreateEntry.handle(similarCases, callback);
-			}
-
-			@Override
-			protected void handleCreateCase(
-				CaseDataDto caze,
-				PersonDto person,
-				ExternalMessageDto externalMessage,
-				HandlerCallback<CaseDataDto> callback) {
-				handleCreateCase.handle(caze, person, callback);
-			}
-
-			@Override
-			protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
-				handleUpdateCase.apply(caze, callback);
-			}
-
-			@Override
-			protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
-				handleConvertSamePersonContactsAndEventParticipants.apply(caze, callback);
-			}
-		};
 	}
 
 	@Test
@@ -538,7 +474,52 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 	}
 
 	private ProcessingResult<CaseDataDto> runFlow(ExternalMessageDto externalMessage) throws ExecutionException, InterruptedException {
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		AbstractPhysiciansReportProcessingFlow flow =
+			new AbstractPhysiciansReportProcessingFlow(user, new ExternalMessageMapper(externalMessage, processingFacade), processingFacade) {
 
+				@Override
+				protected CompletionStage<Boolean> handleMissingDisease() {
+					return missingDiseaseHandler.get();
+				}
+
+				@Override
+				protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
+					return relatedForwardedMessagesHandler.get();
+				}
+
+				@Override
+				protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+					handlePickOrCreatePerson.apply(person, callback);
+				}
+
+				@Override
+				protected void handlePickOrCreateEntry(
+					List<CaseSelectionDto> similarCases,
+					ExternalMessageDto externalMessage,
+					HandlerCallback<PickOrCreateEntryResult> callback) {
+					handlePickOrCreateEntry.handle(similarCases, callback);
+				}
+
+				@Override
+				protected void handleCreateCase(
+					CaseDataDto caze,
+					PersonDto person,
+					ExternalMessageDto externalMessage,
+					HandlerCallback<CaseDataDto> callback) {
+					handleCreateCase.handle(caze, person, callback);
+				}
+
+				@Override
+				protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
+					handleUpdateCase.apply(caze, callback);
+				}
+
+				@Override
+				protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
+					handleConvertSamePersonContactsAndEventParticipants.apply(caze, callback);
+				}
+			};
 		return flow.run(externalMessage).toCompletableFuture().get();
 	}
 

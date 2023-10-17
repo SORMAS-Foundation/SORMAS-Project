@@ -82,7 +82,10 @@ public abstract class AbstractRelatedLabMessageHandler {
 		CONTINUE
 	}
 
-	public AbstractRelatedLabMessageHandler() {
+	protected final ExternalMessageMapper mapper;
+
+	public AbstractRelatedLabMessageHandler(ExternalMessageMapper mapper) {
+		this.mapper = mapper;
 	}
 
 	public CompletionStage<HandlerResult> handle(ExternalMessageDto labMessage) {
@@ -91,8 +94,6 @@ public abstract class AbstractRelatedLabMessageHandler {
 		if (relatedEntities == null) {
 			return CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.NOT_HANDLED, null));
 		}
-
-		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 
 		ChainHandler chainHandler = new ChainHandler();
 		Supplier<CompletionStage<Boolean>> correctionFlowConfirmationSupplier = createCachedCorrectionFlowConfirmationSupplier();

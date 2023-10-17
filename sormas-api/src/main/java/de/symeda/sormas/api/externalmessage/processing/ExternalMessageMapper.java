@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -54,14 +53,11 @@ public final class ExternalMessageMapper {
 
 	private final ExternalMessageDto externalMessage;
 
-	private ExternalMessageProcessingFacade externalMessageProcessingFacade;
+	private final ExternalMessageProcessingFacade processingFacade;
 
-	public static ExternalMessageMapper forLabMessage(ExternalMessageDto externalMessage) {
-		return new ExternalMessageMapper(externalMessage);
-	}
-
-	private ExternalMessageMapper(ExternalMessageDto externalMessage) {
+	public ExternalMessageMapper(ExternalMessageDto externalMessage, ExternalMessageProcessingFacade processingFacade) {
 		this.externalMessage = externalMessage;
+		this.processingFacade = processingFacade;
 	}
 
 	public List<String[]> mapToPerson(PersonDto person) {
@@ -110,13 +106,41 @@ public final class ExternalMessageMapper {
 		return changedFields;
 	}
 
+	public static FacilityReferenceDto getFacilityReference(List<String> facilityExternalIds, FacilityFacade facilityFacade) {
+
+		List<FacilityReferenceDto> labs;
+
+		if (facilityExternalIds != null && !facilityExternalIds.isEmpty()) {
+
+			labs = facilityExternalIds.stream()
+				.filter(Objects::nonNull)
+				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
+				.flatMap(List::stream)
+				.collect(Collectors.toList());
+		} else {
+			labs = null;
+		}
+
+		if (labs == null || labs.isEmpty()) {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		} else if (labs.size() == 1) {
+			return labs.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {
+		return mapToSample(sample, externalMessage.getSampleReportsNullSafe().get(0));
+	}
+
 	public List<String[]> mapToLocation(LocationDto location) {
 
 		RegionReferenceDto region = null;
 		DistrictReferenceDto district = null;
 		FacilityType facilityType = null;
 		if (externalMessage.getPersonFacility() != null) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(externalMessage.getPersonFacility().getUuid());
+			FacilityDto facility = processingFacade.getFacilityByUuid(externalMessage.getPersonFacility().getUuid());
 			region = facility.getRegion();
 			district = facility.getDistrict();
 			facilityType = facility.getType();
@@ -150,10 +174,6 @@ public final class ExternalMessageMapper {
 					LocationDto.FACILITY)));
 	}
 
-	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {
-		return mapToSample(sample, externalMessage.getSampleReportsNullSafe().get(0));
-	}
-
 	public List<String[]> mapToSample(SampleDto sample, SampleReportDto sampleReport) {
 		List<String[]> changedFields = map(
 			Stream.of(
@@ -169,7 +189,11 @@ public final class ExternalMessageMapper {
 					sample.getSpecimenCondition(),
 					sampleReport.getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
-				Mapping.of(sample::setLab, sample.getLab(), getFacilityReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
+				Mapping.of(
+					sample::setLab,
+					sample.getLab(),
+					getFacilityReference(externalMessage.getReporterExternalIds(), processingFacade.facilityFacade),
+					SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
 		if (sampleReport.getSampleReceivedDate() != null) {
@@ -257,7 +281,7 @@ public final class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							getFacilityReference(sourceTestReport.getTestLabExternalIds()),
+							getFacilityReference(sourceTestReport.getTestLabExternalIds(), processingFacade.facilityFacade),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,
@@ -353,14 +377,6 @@ public final class ExternalMessageMapper {
 		return changedFields;
 	}
 
-	private Date getPathogenTestReportDate() {
-		Date reportDate = null;
-		if (externalMessageProcessingFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			reportDate = externalMessage.getMessageDateTime();
-		}
-		return reportDate;
-	}
-
 	private List<String[]> map(Stream<Mapping<?>> mappings) {
 		List<String[]> changedFields = new ArrayList<>();
 
@@ -414,6 +430,14 @@ public final class ExternalMessageMapper {
 		}
 	}
 
+	private Date getPathogenTestReportDate() {
+		Date reportDate = null;
+		if (processingFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			reportDate = externalMessage.getMessageDateTime();
+		}
+		return reportDate;
+	}
+
 	/**
 	 * The migration depends on whether the disease variant can be found as a customizable enum value or not.
 	 * If yes, the enum is set as disease variant. If not, the disease variant is added to the test result text,
@@ -428,8 +452,7 @@ public final class ExternalMessageMapper {
 		String testedDiseaseVariantDetails = null;
 
 		try {
-			testedDiseaseVariant =
-				externalMessageProcessingFacade.getDiseaseVariant(sourceTestReport.getTestedDiseaseVariant(), externalMessage.getDisease());
+			testedDiseaseVariant = processingFacade.getDiseaseVariant(sourceTestReport.getTestedDiseaseVariant(), externalMessage.getDisease());
 			testedDiseaseVariantDetails = sourceTestReport.getTestedDiseaseVariantDetails();
 		} catch (CustomEnumNotFoundException e) {
 			String diseaseVariantString = sourceTestReport.getTestedDiseaseVariant();
@@ -447,31 +470,6 @@ public final class ExternalMessageMapper {
 			}
 		}
 		return new ImmutableTriple<>(testResultText, testedDiseaseVariant, testedDiseaseVariantDetails);
-	}
-
-	public static FacilityReferenceDto getFacilityReference(List<String> facilityExternalIds) {
-
-		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
-		List<FacilityReferenceDto> labs;
-
-		if (facilityExternalIds != null && !facilityExternalIds.isEmpty()) {
-
-			labs = facilityExternalIds.stream()
-				.filter(Objects::nonNull)
-				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
-				.flatMap(List::stream)
-				.collect(Collectors.toList());
-		} else {
-			labs = null;
-		}
-
-		if (labs == null || labs.isEmpty()) {
-			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
-		} else if (labs.size() == 1) {
-			return labs.get(0);
-		} else {
-			return null;
-		}
 	}
 
 	private boolean homogenousTestResultTypesIn(SampleReportDto sampleReport) {
