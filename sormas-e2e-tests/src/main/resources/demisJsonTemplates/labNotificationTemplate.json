@@ -117,7 +117,7 @@
                 },
                 "identifier": [
                      {
-                        "system": "https://fhir.kbv.de/NamingSystem/KBV_NS_Base_BSNR",
+                        "system": "https://demis.rki.de/fhir/NamingSystem/DemisLaboratoryId",
                         "value": "123456789"
                     },
                      {
