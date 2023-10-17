@@ -516,17 +516,6 @@ public class DemisSteps implements En {
           }
         });
 
-    When(
-        "I check if postal code for test instance in received message is set correctly",
-        () -> {
-          DemisData demisData = runningConfiguration.getDemisData(locale);
-          softly.assertEquals(
-              demisData.getPostalCode(),
-              collectedMessagesTable.get(MessagesTableViewHeaders.POSTLEITZAHL.toString()),
-              "Postal codes are not equal");
-          softly.assertAll();
-        });
-
     Given(
         "I create and send Laboratory Notification with patient's phone and email",
         () -> {
