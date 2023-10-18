@@ -290,8 +290,12 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 			userEntityJoinUsed = true;
 		}
 		if (filterByJurisdiction) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
-			userEntityJoinUsed = true;
+			if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.conjunction());
+			} else {
+				filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
+				userEntityJoinUsed = true;
+			}
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, buildUserRightsFilter(userRoot, userRights));
@@ -712,13 +716,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	}
 
 	public Predicate createCurrentUserJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
-		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-			return cb.conjunction();
-		}
-		return createCurrentUserJurisdictionFilterForTasks(cb, from);
-	}
-
-	public Predicate createCurrentUserJurisdictionFilterForTasks(CriteriaBuilder cb, From<?, User> from) {
 		User currentUser = getCurrentUser();
 
 		if (currentUser.getHealthFacility() != null) {
