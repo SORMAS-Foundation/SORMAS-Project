@@ -769,6 +769,7 @@ Scenario: Create and send laboratory request via Demis
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
+    Then I collect "DiagnosedAt" Date from Sample side card for DE
     And I click on edit Sample
     Then I collect date of sample from on Edit Sample page for DE version
     And I click on edit pathogen test
