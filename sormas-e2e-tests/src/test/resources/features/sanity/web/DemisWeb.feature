@@ -752,8 +752,8 @@ Scenario: Create and send laboratory request via Demis
     And I check that all displayed messages have "Labormeldung" in grid Message Directory Type column
 
   @tmsLink=HSP-6177 @env_d2s @LoginKeycloak
-  Scenario: Implement "Check Laboratory messages of case when sending from SORMAS to Meldesoftware"
-   Given API : Login to DEMIS server
+  Scenario: Check Laboratory messages of case when sending from SORMAS to Meldesoftware
+    Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
     And I navigate to "survnet" environment
     And I log in as a Survnet
@@ -764,11 +764,11 @@ Scenario: Create and send laboratory request via Demis
     Then I create a new person and a new case from received message
     And I click on the eye icon next for the first fetched message
     And I collect message uuid
-    Then I collect "DiagnosedAt" Date from Message
     And I close HTML message
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
+    Then I collect "DiagnosedAt" Date from Sample side card for DE
     And I click on edit Sample
     Then I collect date of sample from on Edit Sample page for DE version
     And I click on edit pathogen test
