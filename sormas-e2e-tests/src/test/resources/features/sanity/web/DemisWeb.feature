@@ -764,7 +764,6 @@ Scenario: Create and send laboratory request via Demis
     Then I create a new person and a new case from received message
     And I click on the eye icon next for the first fetched message
     And I collect message uuid
-    Then I collect "DiagnosedAt" Date from Message
     And I close HTML message
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
