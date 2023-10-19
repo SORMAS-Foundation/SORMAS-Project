@@ -534,13 +534,13 @@ public class MessagesDirectorySteps implements En {
         });
 
     Then(
-        "I collect {string} Date from Message",
+        "I collect {string} Date from Sample side card for DE",
         (String dateOption) -> {
           String localDiagnosedAt =
               String.format(
                   webDriverHelpers
-                      .getTextFromWebElement(DIAGNOSED_AT_DATE)
-                      .substring(0, 10)
+                      .getTextFromWebElement(DIAGNOSED_AT_DATE_DE)
+                      .substring(34, 45)
                       .replace(".", "-"));
           diagnosedAt =
               convertStringToChosenFormatDate("dd-MM-yyyy", "yyyy-MM-dd", localDiagnosedAt);

@@ -217,6 +217,12 @@ public class UserManagementSteps implements En {
         });
 
     And(
+        "Validate user can see User roles tab from User Management Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_ROLES_TAB);
+        });
+
+    And(
         "^I check that \"([^\"]*)\" is not available in the user role filter$",
         (String userRole) -> {
           softly.assertFalse(

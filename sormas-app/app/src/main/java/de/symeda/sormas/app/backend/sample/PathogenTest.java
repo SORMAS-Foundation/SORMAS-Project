@@ -35,6 +35,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -57,6 +58,8 @@ public class PathogenTest extends PseudonymizableAdo {
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String SAMPLE = "sample";
 	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
+
+	public static final String TEST_RESULT = "testResult";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Sample sample;
@@ -85,6 +88,11 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String testedDiseaseVariantDetails;
+
+	@Column(name = "testedPathogen", length = CHARACTER_LIMIT_DEFAULT)
+	private String testedPathogenString;
+
+	private Pathogen testedPathogen;
 
 	@Column
 	private String typingId;
@@ -206,6 +214,32 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	public void setTestedDiseaseVariantDetails(String testedDiseaseVariantDetails) {
 		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
+	}
+
+	public String getTestedPathogenString() {
+		return testedPathogenString;
+	}
+
+	public void setTestedPathogenString(String testedPathogenString) {
+		this.testedPathogenString = testedPathogenString;
+	}
+
+	@Transient
+	public Pathogen getTestedPathogen() {
+		if (StringUtils.isBlank(testedPathogenString)) {
+			return null;
+		} else {
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.PATHOGEN, testedPathogenString);
+		}
+	}
+
+	public void setTestedPathogen(Pathogen testedPathogen) {
+		this.testedPathogen = testedPathogen;
+		if (testedPathogen == null) {
+			testedPathogenString = null;
+		} else {
+			testedPathogenString = testedPathogen.getValue();
+		}
 	}
 
 	public String getTypingId() {

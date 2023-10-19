@@ -374,12 +374,11 @@ public class SampleDashboardFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(
 			sample.toReference(),
 			PathogenTestType.CULTURE,
-			Disease.CORONAVIRUS,
-			DateHelper.subtractDays(new Date(), 2),
+			creator.createPathogen("TEST_PATHOGEN", "Test Pathogen"),
 			lab.toReference(),
 			user.toReference(),
 			PathogenTestResultType.POSITIVE,
-			null);
+			t -> t.setTestDateTime(DateHelper.subtractDays(new Date(), 2)));
 
 		SampleDashboardCriteria criteria = new SampleDashboardCriteria();
 		criteria.dateBetween(DateHelper.subtractDays(new Date(), 5), new Date());

@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -28,6 +29,9 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -127,6 +131,25 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setReportingUser(user.toReference());
 		caseDto.setReportDate(
 			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
+
+		FacilityReferenceDto personFacility = externalMessageDto.getPersonFacility();
+		if (personFacility != null) {
+			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(personFacility.getUuid());
+			FacilityType facilityType = facility.getType();
+
+			caseDto.setResponsibleRegion(facility.getRegion());
+			caseDto.setResponsibleDistrict(facility.getDistrict());
+
+			if (facilityType.isAccommodation()) {
+				caseDto.setFacilityType(facilityType);
+				caseDto.setHealthFacility(personFacility);
+			} else {
+				caseDto.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
+			}
+		} else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			caseDto.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
+		}
+
 		return caseDto;
 	}
 

@@ -20621,6 +20621,9 @@
             "maxLength" : 512,
             "minLength" : 0
           },
+          "testedPathogen" : {
+            "$ref" : "#/components/schemas/Pathogen"
+          },
           "typingId" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -20636,7 +20639,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "lab", "testResult", "testResultVerified", "testType", "testedDisease" ]
+        "required" : [ "lab", "testResult", "testResultVerified", "testType" ]
       },
       "PeriodDto" : {
         "type" : "object",

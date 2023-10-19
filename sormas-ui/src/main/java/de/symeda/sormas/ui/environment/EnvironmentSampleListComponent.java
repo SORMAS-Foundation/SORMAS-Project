@@ -190,7 +190,7 @@ public class EnvironmentSampleListComponent extends SideComponent {
 				Label heading = new Label(I18nProperties.getCaption(Captions.latestPathogenTest));
 				CssStyles.style(heading, CssStyles.LABEL_BOLD);
 
-				Label testDate = new Label(sampleIndex.getLatestPathogenTest());
+				Label testDate = new Label(sampleIndex.getLatestPathogenTestResult().toString());
 				latestTestLayout.addComponents(heading, testDate);
 				topLeftLayout.addComponent(latestTestLayout);
 			}

@@ -26,6 +26,7 @@ import com.j256.ormlite.stmt.Where;
 import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -71,10 +72,7 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 		pathogenTest.setEnvironmentSample(environmentSample);
 		pathogenTest.setTestDateTime(new Date());
 		pathogenTest.setLabUser(ConfigProvider.getUser());
-		Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
-		if (defaultDisease != null) {
-			pathogenTest.setTestedDisease(defaultDisease);
-		}
+
 		return pathogenTest;
 	}
 
@@ -119,6 +117,21 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 				.query();
 		} catch (SQLException e) {
 			android.util.Log.e(getTableName(), "Could not perform queryBySample on PathogenTest");
+			throw new RuntimeException(e);
+		}
+	}
+	public List<PathogenTest> queryAllPositiveByEnvironmentSamples(List<EnvironmentSample> samples) {
+		try {
+			return queryBuilder().orderBy(PathogenTest.TEST_DATE_TIME, true)
+				.where()
+				.eq(PathogenTest.TEST_RESULT, PathogenTestResultType.POSITIVE)
+				.and()
+				.in(PathogenTest.ENVIRONMENT_SAMPLE + "_id", samples)
+				.and()
+				.eq(AbstractDomainObject.SNAPSHOT, false)
+				.query();
+		} catch (SQLException e) {
+			android.util.Log.e(getTableName(), "Could not perform queryAllPositiveByEnvironmentSamples on PathogenTest");
 			throw new RuntimeException(e);
 		}
 	}

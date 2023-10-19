@@ -208,7 +208,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		SampleDto sample = createProcessedLabMessage();
 
 		final String sampleExternalId = "test-sample-ext-id";
-		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, t -> {
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, t -> {
 			t.setExternalId(sampleExternalId);
 		});
 
@@ -239,10 +239,10 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	public void test_getRelatedEntities_pathogenTestMismatch() {
 
 		SampleDto sample = createProcessedLabMessage();
-		creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+		creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, (t) -> {
 			t.setExternalId("external");
 		});
-		creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+		creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, (t) -> {
 			t.setExternalId("external");
 		});
 
@@ -266,11 +266,11 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	public void test_getRelatedEntities_unmatchedTestReports() {
 
 		SampleDto sample = createProcessedLabMessage();
-		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, (t) -> {
 			t.setExternalId(null);
 		});
 
-		creator.createPathogenTest(sample.toReference(), userRef, (t) -> {
+		creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, (t) -> {
 			t.setExternalId("external");
 		});
 
@@ -453,7 +453,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	public void test_handle_handlePathogenTestChanges() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
-		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, p -> {
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, p -> {
 			p.setExternalId("test-external-id");
 			p.setTestResult(sample.getPathogenTestResult());
 			p.setTestType(PathogenTestType.CULTURE);
@@ -516,14 +516,14 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	public void test_handle_handleMultiplePathogenTests() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
-		PathogenTestDto pathogenTest1 = creator.createPathogenTest(sample.toReference(), userRef, p -> {
+		PathogenTestDto pathogenTest1 = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, p -> {
 			p.setExternalId("test-external-id-1");
 			p.setTestResult(sample.getPathogenTestResult());
 			p.setTestType(PathogenTestType.CULTURE);
 			p.setTestResultVerified(true);
 		});
 
-		PathogenTestDto pathogenTest2 = creator.createPathogenTest(sample.toReference(), userRef, p -> {
+		PathogenTestDto pathogenTest2 = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, p -> {
 			p.setExternalId("test-external-id-2");
 			p.setTestResult(sample.getPathogenTestResult());
 			p.setTestType(PathogenTestType.CULTURE);
@@ -603,7 +603,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	public void test_handle_createPathogenTest() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
-		PathogenTestDto pathogenTest1 = creator.createPathogenTest(sample.toReference(), userRef, p -> {
+		PathogenTestDto pathogenTest1 = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, p -> {
 			p.setExternalId("test-external-id-1");
 			p.setTestResult(sample.getPathogenTestResult());
 			p.setTestType(PathogenTestType.CULTURE);
@@ -664,7 +664,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	@Test
 	public void test_handle_confirmCorrectionFlowCalledOnce() throws ExecutionException, InterruptedException {
 		SampleDto sample = createProcessedLabMessage();
-		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, p -> {
+		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, p -> {
 			p.setExternalId("test-external-id");
 			p.setTestResult(sample.getPathogenTestResult());
 			p.setTestType(PathogenTestType.CULTURE);
@@ -981,7 +981,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	public void test_handle_newTestReportOnly() throws ExecutionException, InterruptedException {
 
 		SampleDto sample = createProcessedLabMessage();
-		creator.createPathogenTest(sample.toReference(), userRef, t -> {
+		creator.createPathogenTest(sample.toReference(), userRef, rdcf.facility, t -> {
 			t.setExternalId("external");
 		});
 		ExternalMessageDto labMessageToProcess = ExternalMessageDto.build();

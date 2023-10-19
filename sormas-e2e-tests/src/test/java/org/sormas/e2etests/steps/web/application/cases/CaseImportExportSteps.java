@@ -173,27 +173,32 @@ public class CaseImportExportSteps implements En {
           Case reader = parseBasicCaseExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
+          String UuidXml = checkCsvEmptyCell(reader.getUuid());
+          softly.assertEquals(UuidXml, apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
+          String DiseaseXml = checkCsvEmptyCell(reader.getDisease());
           softly.assertEquals(
-              reader.getUuid(), apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
-          softly.assertEquals(
-              reader.getDisease(),
+              DiseaseXml,
               DiseasesValues.getCaptionForName(apiState.getCreatedCase().getDisease()),
               "Diseases are not equal");
+          String caseClassificationXml = checkCsvEmptyCell(reader.getCaseClassification());
           softly.assertEquals(
-              reader.getCaseClassification(),
+              caseClassificationXml,
               CaseClassification.getUIValueForGivenAPIValue(
                   apiState.getCreatedCase().getCaseClassification()),
               "Cases Classification are not equal");
+          String pointOfEntryXml = checkCsvEmptyCell(reader.getPointOfEntry());
           softly.assertEquals(
-              reader.getPointOfEntry(),
+              pointOfEntryXml,
               apiState.getCreatedCase().getPointOfEntry(),
               "Point of entries of case are not equal");
+          String firstNameXml = checkCsvEmptyCell(reader.getFirstName());
           softly.assertEquals(
-              String.format(reader.getFirstName(), Locale.GERMAN),
+              String.format(firstNameXml, Locale.GERMAN),
               String.format(apiState.getLastCreatedPerson().getFirstName(), Locale.GERMAN),
               "First names are not equal");
+          String lastNameXml = checkCsvEmptyCell(reader.getLastName());
           softly.assertEquals(
-              String.format(reader.getLastName(), Locale.GERMAN),
+              String.format(lastNameXml, Locale.GERMAN),
               String.format(apiState.getLastCreatedPerson().getLastName(), Locale.GERMAN),
               "Last names are not equal");
           softly.assertAll();
@@ -320,6 +325,11 @@ public class CaseImportExportSteps implements En {
               "There is no expected Pre Existing Condition value in docx file!");
           Files.delete(Paths.get(file));
         });
+  }
+
+  private String checkCsvEmptyCell(String rowValue) {
+    if (rowValue.length() == 0) rowValue = null;
+    return rowValue;
   }
 
   public CustomCaseExportCSV parseCustomCaseExport(String fileName) {

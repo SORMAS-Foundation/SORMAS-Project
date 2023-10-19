@@ -82,6 +82,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
+	public static final String AUTOMATIC_PROCESSING_POSSIBLE = "automaticProcessingPossible";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;

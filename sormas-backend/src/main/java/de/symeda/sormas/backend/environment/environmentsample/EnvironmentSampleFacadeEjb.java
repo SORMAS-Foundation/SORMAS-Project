@@ -20,6 +20,7 @@ import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -61,6 +63,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -80,6 +83,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -183,9 +187,10 @@ public class EnvironmentSampleFacadeEjb
 			numberOfTests.select(cb.countDistinct(numberOfTestsRoot.get(PathogenTest.ID)));
 
 			cq.multiselect(
-				from.get(EnvironmentSampleIndexDto.UUID),
-				from.get(EnvironmentSampleIndexDto.FIELD_SAMPLE_ID),
-				from.get(EnvironmentSampleIndexDto.SAMPLE_DATE_TIME),
+				from.get(EnvironmentSample.ID),
+				from.get(EnvironmentSample.UUID),
+				from.get(EnvironmentSample.FIELD_SAMPLE_ID),
+				from.get(EnvironmentSample.SAMPLE_DATE_TIME),
 				joins.getEnvironment().get(Environment.ENVIRONMENT_NAME),
 				location.get(Location.STREET),
 				location.get(Location.HOUSE_NUMBER),
@@ -208,16 +213,65 @@ public class EnvironmentSampleFacadeEjb
 				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
 			cq.where(from.get(EnvironmentSample.ID).in(batchedIds));
-
 			sortBy(sortProperties, queryContext);
 
-			indexList.addAll(QueryHelper.getResultList(em, cq, null, null));
+			List<EnvironmentSampleIndexDto> samples = QueryHelper.getResultList(em, cq, null, null);
+
+			loadAndSetPositivePathogens(cb, samples);
+			loadAndSetLatestTest(cb, samples);
+
+			indexList.addAll(samples);
 		});
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(EnvironmentSampleIndexDto.class, indexList, EnvironmentSampleIndexDto::isInJurisdiction, null);
 
 		return indexList;
+	}
+
+	private void loadAndSetPositivePathogens(CriteriaBuilder cb, List<EnvironmentSampleIndexDto> samples) {
+		List<Long> sampleIds = samples.stream().map(EnvironmentSampleIndexDto::getId).collect(Collectors.toList());
+
+		CriteriaQuery<Tuple> positivePathogensCq = cb.createTupleQuery();
+		Root<PathogenTest> positivePathogensRoot = positivePathogensCq.from(PathogenTest.class);
+		Path<Object> pathogenTestSampledId = positivePathogensRoot.get(PathogenTest.ENVIRONMENT_SAMPLE).get(EnvironmentSample.ID);
+		positivePathogensCq.where(
+			pathogenTestSampledId.in(sampleIds),
+			cb.isFalse(positivePathogensRoot.get(PathogenTest.DELETED)),
+			cb.equal(positivePathogensRoot.get(PathogenTest.TEST_RESULT), PathogenTestResultType.POSITIVE));
+		positivePathogensCq.multiselect(pathogenTestSampledId, positivePathogensRoot.get(PathogenTest.TESTED_PATHOGEN));
+
+		List<Tuple> positivePathogens = QueryHelper.getResultList(em, positivePathogensCq, null, null);
+		positivePathogens.stream()
+			.collect(Collectors.groupingBy(t -> (Long) t.get(0), Collectors.mapping(t -> (Pathogen) t.get(1), Collectors.toList())))
+			.forEach(
+				(sampleId, pathogens) -> samples.stream()
+					.filter(s -> s.getId().equals(sampleId))
+					.findFirst()
+					.ifPresent(s -> s.setPositivePathogenTests(pathogens)));
+	}
+
+	private void loadAndSetLatestTest(CriteriaBuilder cb, List<EnvironmentSampleIndexDto> samples) {
+		List<Long> sampleIds = samples.stream().map(EnvironmentSampleIndexDto::getId).collect(Collectors.toList());
+
+		CriteriaQuery<Tuple> testCq = cb.createTupleQuery();
+		Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
+		Expression<String> sampleIdExpr = testRoot.get(PathogenTest.ENVIRONMENT_SAMPLE).get(Sample.ID);
+
+		testCq.multiselect(testRoot.get(PathogenTest.TESTED_PATHOGEN), testRoot.get(PathogenTest.TEST_RESULT), sampleIdExpr);
+
+		testCq.where(cb.isFalse(testRoot.get(PathogenTest.DELETED)), sampleIdExpr.in(sampleIds));
+		testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
+
+		List<Tuple> testList = em.createQuery(testCq).getResultList();
+
+		testList.stream()
+			// collecting to map keyed by sample id, keeping the first result that is the latest test for each sample
+			.collect(Collectors.toMap(pathogenTest -> (Long) pathogenTest.get(2), Function.identity(), (t1, t2) -> t1))
+			.forEach((sampleId, t) -> samples.stream().filter(s -> s.getId().equals(sampleId)).findFirst().ifPresent(s -> {
+				s.setLatestTestedPathogen((Pathogen) t.get(0));
+				s.setLatestPathogenTestResult((PathogenTestResultType) t.get(1));
+			}));
 	}
 
 	private List<Long> getIndexListIds(EnvironmentSampleCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -244,6 +298,8 @@ public class EnvironmentSampleFacadeEjb
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		cq.distinct(true);
 
 		List<Tuple> samples = QueryHelper.getResultList(em, cq, first, max);
 		return samples.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());

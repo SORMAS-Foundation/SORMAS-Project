@@ -27,9 +27,10 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.HasLocalChangeDate;
 import de.symeda.sormas.app.databinding.RowLoadingListItemLayoutBinding;
 
-public abstract class BindingPagedListAdapter<T extends AbstractDomainObject, V extends ViewDataBinding>
+public abstract class BindingPagedListAdapter<T extends HasLocalChangeDate, V extends ViewDataBinding>
 	extends PagedListAdapter<T, RecyclerView.ViewHolder>
 	implements OnListItemClickListener.HasOnListItemClickListener {
 
@@ -46,12 +47,12 @@ public abstract class BindingPagedListAdapter<T extends AbstractDomainObject, V 
 		super(new DiffUtil.ItemCallback<T>() {
 
 			@Override
-			public boolean areItemsTheSame(@NonNull AbstractDomainObject oldItem, @NonNull AbstractDomainObject newItem) {
+			public boolean areItemsTheSame(@NonNull T oldItem, @NonNull T newItem) {
 				return oldItem.equals(newItem);
 			}
 
 			@Override
-			public boolean areContentsTheSame(@NonNull AbstractDomainObject oldItem, @NonNull AbstractDomainObject newItem) {
+			public boolean areContentsTheSame(@NonNull T oldItem, @NonNull T newItem) {
 				return oldItem.getLocalChangeDate().equals(newItem.getLocalChangeDate());
 			}
 		});
