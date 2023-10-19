@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -80,8 +81,16 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 		BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithEmptyReportDate());
 	}
 
-	public static void startActivityFromContact(Context fromActivity, String contactUuid) {
-		BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithContact(contactUuid));
+	public static void startActivityFromContact(Context fromActivity, Contact contact) {
+		if (contact.getContactClassification() == ContactClassification.UNCONFIRMED) {
+			NotificationHelper.showNotification(
+				getActiveActivity(),
+				NotificationType.WARNING,
+				getActiveActivity().getResources().getString(R.string.message_contact_to_case_confirmation_required));
+			return;
+		}
+
+		BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithContact(contact.getUuid()));
 	}
 
 	public static void startActivityFromEventPerson(Context fromActivity, EventParticipant eventParticipant) {

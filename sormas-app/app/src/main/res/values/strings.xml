@@ -592,6 +592,7 @@
     <string name="message_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>
     <string name="message_case_numbers_submitted">Thank you for submitting your collected case numbers.</string>
+    <string name="message_contact_to_case_confirmation_required">You can only convert contacts to cases that have been confirmed. Please confirm this contact before creating a case for its contact person.</string>
     <string name="message_change_final_laboratory_result">The result of this pathogen test differs from the current final laboratory result of the sample. Do you want to update the final laboratory result?</string>
     <string name="message_change_case_disease">Really change case disease?</string>
     <string name="action_change_case_disease">Yes, change disease</string>
