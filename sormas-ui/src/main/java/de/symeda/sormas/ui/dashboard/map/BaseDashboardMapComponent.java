@@ -64,6 +64,8 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	private Label overlayMessageLabel;
 	private PopupButton legendDropdown;
 
+	private Label headingInfoIcon;
+
 	private Consumer<Boolean> externalExpandListener;
 
 	public BaseDashboardMapComponent(String headingStringTag, P dashboardDataProvider, String headingInfoTag) {
@@ -141,12 +143,12 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 
 		Component mapLabelComponent = mapLabel;
 
-		if (headingInfoTag != null) {
-			Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-			CssStyles.style(infoIcon, CssStyles.H3, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_4);
-			infoIcon.setDescription(I18nProperties.getString(headingInfoTag));
+		headingInfoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		CssStyles.style(headingInfoIcon, CssStyles.H3, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_4);
 
-			HorizontalLayout mapLabelLayout = new HorizontalLayout(mapLabel, infoIcon);
+		if (headingInfoTag != null) {
+			headingInfoIcon.setDescription(I18nProperties.getString(headingInfoTag));
+			HorizontalLayout mapLabelLayout = new HorizontalLayout(mapLabel, headingInfoIcon);
 			mapLabelLayout.setMargin(false);
 			mapLabelLayout.setSpacing(false);
 
@@ -313,5 +315,9 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		setExpandRatio(mapLayout, 1);
 
 		addComponent(createFooter());
+	}
+
+	public void appendHeadingInfo(String description) {
+		headingInfoIcon.setDescription(headingInfoIcon.getDescription() + description);
 	}
 }
