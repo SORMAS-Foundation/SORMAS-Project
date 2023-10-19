@@ -28,6 +28,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -57,6 +58,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
+	public static final String TESTED_PATHOGEN = "testedPathogen";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
@@ -93,16 +95,17 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
+	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
-	@NotNull(message = Validations.validDisease)
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String testedDiseaseDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String testedDiseaseVariantDetails;
+	private Pathogen testedPathogen;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
 	@NotNull(message = Validations.requiredField)
@@ -286,6 +289,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setTestedDiseaseVariantDetails(String testedDiseaseVariantDetails) {
 		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
+	}
+
+	public Pathogen getTestedPathogen() {
+		return testedPathogen;
+	}
+
+	public void setTestedPathogen(Pathogen testedPathogen) {
+		this.testedPathogen = testedPathogen;
 	}
 
 	public String getTypingId() {

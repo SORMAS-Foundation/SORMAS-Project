@@ -35,6 +35,7 @@ import java.util.List;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
@@ -50,6 +51,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
+import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -171,7 +173,7 @@ public class LocationDialog extends FormDialog {
 			this.contentBinding.locationRegion.setEnabled(false);
 			this.contentBinding.locationDistrict.setEnabled(false);
 		}
-		if(!isFieldAccessible(LocationDto.class, LocationDto.FACILITY)){
+		if (!isFieldAccessible(LocationDto.class, LocationDto.FACILITY)) {
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		}
 
@@ -197,6 +199,16 @@ public class LocationDialog extends FormDialog {
 				}
 			});
 			confirmationDialog.show();
+		});
+
+		contentBinding.locationLatitude.setValidationCallback(() -> {
+			Double latitude = ControlTextEditField.getDoubleValue(contentBinding.locationLatitude);
+			return ValidationHelper.validateLatitude(latitude, contentBinding.locationLatitude);
+		});
+
+		contentBinding.locationLongitude.setValidationCallback(() -> {
+			Double longitude = ControlTextEditField.getDoubleValue(contentBinding.locationLongitude);
+			return ValidationHelper.validateLongitude(longitude, contentBinding.locationLongitude);
 		});
 
 		if (data.getId() == null) {

@@ -67,6 +67,7 @@ public class EnvironmentSample extends DeletableAdo {
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleId";
+	public static final String PATHOGEN_TESTS = "pathogenTests";
 
 	private static final long serialVersionUID = 7237701234186874155L;
 

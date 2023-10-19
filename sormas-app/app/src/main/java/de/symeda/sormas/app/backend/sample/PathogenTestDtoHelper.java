@@ -72,6 +72,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
+		target.setTestedPathogen(source.getTestedPathogen());
 		target.setTypingId(source.getTypingId());
 		target.setTestResultVerified(source.getTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
@@ -110,6 +111,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
+		target.setTestedPathogen(source.getTestedPathogen());
 		target.setTypingId(source.getTypingId());
 
 		if (source.getLab() != null) {

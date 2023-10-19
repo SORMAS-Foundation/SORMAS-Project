@@ -3009,6 +3009,25 @@ public class EditCaseSteps implements En {
           softly.assertAll();
         });
 
+    When(
+        "I check if Follow up until date is ([^\"]*) days before last created API case report date",
+        (Integer days) -> {
+          TimeUnit.SECONDS.sleep(3);
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(
+              DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                  .format(
+                      apiState
+                          .getCreatedCase()
+                          .getReportDate()
+                          .toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate()
+                          .minusDays(days)),
+              date);
+          softly.assertAll();
+        });
+
     And(
         "^I select \"([^\"]*)\" from the infection settings on Edit Case page$",
         (String infectionOption) -> {

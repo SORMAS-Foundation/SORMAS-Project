@@ -47,6 +47,8 @@ public interface Validations {
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
+	String environmentMedia = "environmentMedia";
+	String environmentName = "environmentName";
 	String environmentWaterFieldsSetWithNotWaterMedia = "environmentWaterFieldsSetWithNotWaterMedia";
 	String errorsInForm = "errorsInForm";
 	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
@@ -133,6 +135,8 @@ public interface Validations {
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
+	String latitudeBetween = "latitudeBetween";
+	String longitudeBetween = "longitudeBetween";
 	String missingRequiredUserRightsBaseText = "missingRequiredUserRightsBaseText";
 	String missingRequiredUserRightsLargeDependency = "missingRequiredUserRightsLargeDependency";
 	String missingRequiredUserRightsNoDependency = "missingRequiredUserRightsNoDependency";
@@ -171,6 +175,9 @@ public interface Validations {
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";
+	String pathogenTestValidDisease = "pathogenTestValidDisease";
+	String pathogenTestValidPathogen = "pathogenTestValidPathogen";
+	String pathogenTestValidSampleOrEnvironment = "pathogenTestValidSampleOrEnvironment";
 	String patternNotMatching = "patternNotMatching";
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
@@ -260,7 +267,6 @@ public interface Validations {
 	String validReportingUser = "validReportingUser";
 	String validResponsibleDistrict = "validResponsibleDistrict";
 	String validResponsibleRegion = "validResponsibleRegion";
-	String validSample = "validSample";
 	String visitAfterFollowUp = "visitAfterFollowUp";
 	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";

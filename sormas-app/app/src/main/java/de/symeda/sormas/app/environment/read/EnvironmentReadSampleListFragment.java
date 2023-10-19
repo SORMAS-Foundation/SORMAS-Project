@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.environment.read;
 
-import java.util.List;
-
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,17 +26,19 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.environment.Environment;
-import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.environmentsample.list.EnvironmentSampleListAdapter;
 import de.symeda.sormas.app.environmentsample.list.EnvironmentSampleListViewModel;
+import de.symeda.sormas.app.environmentsample.list.EnvironmentSampleListViewModel.SampleWithTestedPathogens;
 import de.symeda.sormas.app.environmentsample.read.EnvironmentSampleReadActivity;
 
-public class EnvironmentReadSampleListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<EnvironmentSample>, Environment>
+public class EnvironmentReadSampleListFragment extends BaseReadFragment<FragmentFormListLayoutBinding, List<SampleWithTestedPathogens>, Environment>
 	implements OnListItemClickListener {
 
 	private EnvironmentSampleListAdapter adapter;
@@ -88,7 +88,7 @@ public class EnvironmentReadSampleListFragment extends BaseReadFragment<Fragment
 	}
 
 	@Override
-	public List<EnvironmentSample> getPrimaryData() {
+	public List<SampleWithTestedPathogens> getPrimaryData() {
 		throw new UnsupportedOperationException("Sub list fragments don't hold their data");
 	}
 
@@ -104,8 +104,8 @@ public class EnvironmentReadSampleListFragment extends BaseReadFragment<Fragment
 
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
-		EnvironmentSample sample = (EnvironmentSample) item;
-		EnvironmentSampleReadActivity.startActivity(getActivity(), sample.getUuid());
+		SampleWithTestedPathogens sample = (SampleWithTestedPathogens) item;
+		EnvironmentSampleReadActivity.startActivity(getActivity(), sample.getSample().getUuid());
 	}
 
 }

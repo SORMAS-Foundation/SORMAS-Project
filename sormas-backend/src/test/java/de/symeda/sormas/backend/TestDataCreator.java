@@ -70,6 +70,7 @@ import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
+import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -1496,6 +1497,31 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
+		EnvironmentSampleReferenceDto sample,
+		PathogenTestType testType,
+		Pathogen testedPathogen,
+		FacilityReferenceDto lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestType(testType);
+		sampleTest.setLab(lab);
+		sampleTest.setTestedPathogen(testedPathogen);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultVerified(true);
+		sampleTest.setTestDateTime(new Date());
+
+		if (extraConfig != null) {
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getPathogenTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
+	public PathogenTestDto createPathogenTest(
 		SampleReferenceDto sample,
 		PathogenTestType testType,
 		Disease testedDisease,
@@ -1525,7 +1551,7 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(CaseDataDto associatedCase, PathogenTestType testType, PathogenTestResultType resultType) {
-		return createPathogenTest(associatedCase, null, testType, resultType);
+		return createPathogenTest(associatedCase, Disease.CORONAVIRUS, testType, resultType);
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, CaseDataDto associatedCase) {
@@ -2140,6 +2166,8 @@ public class TestDataCreator {
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
 
+		beanTest.getCustomizableEnumFacade().loadData();
+
 		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, value);
 	}
 
@@ -2299,8 +2327,10 @@ public class TestDataCreator {
 		environment.setReportDate(new Date());
 		environment.setReportingUser(reportingUser);
 
+		LocationDto location = environment.getLocation();
+		location.setLongitude(1.0);
+		location.setLatitude(1.0);
 		if (rdcf != null) {
-			LocationDto location = environment.getLocation();
 			location.setRegion(rdcf.region);
 			location.setDistrict(rdcf.district);
 			location.setCommunity(rdcf.community);
@@ -2323,10 +2353,15 @@ public class TestDataCreator {
 	public EnvironmentSampleDto createEnvironmentSample(
 		EnvironmentReferenceDto environment,
 		UserReferenceDto reportingUser,
+		RDCF rdcf,
 		FacilityReferenceDto lab,
 		@Nullable Consumer<EnvironmentSampleDto> extraConfig) {
 		EnvironmentSampleDto sample = EnvironmentSampleDto.build(environment, reportingUser);
 		sample.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+		sample.getLocation().setRegion(rdcf.region);
+		sample.getLocation().setDistrict(rdcf.district);
+		sample.getLocation().setLatitude(1.0);
+		sample.getLocation().setLongitude(1.0);
 		sample.setLaboratory(lab);
 
 		if (extraConfig != null) {

@@ -39,6 +39,14 @@ public class SideCardsSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Faker faker;
   private final BaseSteps baseSteps;
+  public static String reportUuid;
+  public static String reportingUser;
+  public static String typeOfReporting;
+  public static String externalId;
+  public static String reporterFacility;
+  public static String reporterFacilityDetails;
+  public static LocalDate dateOfReport;
+  public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   /**
    * This class contains Contacts, Cases etc right side mini components (Tasks, Samples, Events,
@@ -67,6 +75,20 @@ public class SideCardsSteps implements En {
                   + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
           softly.assertAll();
         });
+
+    When(
+        "I check if handover card not contains {string} shared information",
+        (String information) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
+          TimeUnit.SECONDS.sleep(3);
+          softly.assertFalse(
+              webDriverHelpers.isElementPresent(checkTextInHandoverSideComponent(information)),
+              information
+                  + " text is not present in handover component. Found only "
+                  + webDriverHelpers.getTextFromPresentWebElement(HANDOVER_SIDE_CARD));
+          softly.assertAll();
+        });
+
     When(
         "I check if handover card contains shared with {string} information",
         (String environmentIdentifier) -> {
@@ -101,6 +123,18 @@ public class SideCardsSteps implements En {
     When(
         "I click to hand over the ownership in Share popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(HAND_THE_OWNERSHIP_CHECKBOX));
+
+    When(
+        "I click to exclude personal data in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EXCLUDE_PERSONAL_DATA_CHECKBOX));
+
+    When(
+        "I click to share report data in Share popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHARE_REPORT_CHECKBOX));
+
+    When(
+        "I click on Save popup button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(POPUP_EDIT_REPORT_WINDOW_SAVE_BUTTON));
     When(
         "I check if sample card has {string} information",
         (String information) -> {
@@ -155,11 +189,97 @@ public class SideCardsSteps implements En {
           softly.assertAll();
         });
 
+    Then(
+        "^I check that the case has no samples on side card for DE$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(ADDED_SAMPLES_IN_SAMPLE_CARD),
+              "Es gibt keine Proben f\u00FCr diesen Fall",
+              "The case has sample!");
+          softly.assertAll();
+        });
+
     When(
         "I click on edit Sample",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I click on edit surveillance report",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EDIT_SURVEILLANCE_REPORT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SURVEILLANCE_REPORT_BUTTON);
+        });
+
+    When(
+        "I collect data from surveillance report",
+        () -> {
+          reportUuid = webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_UUID_TEXT);
+          reportingUser =
+              webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_REPORTING_USER_TEXT);
+          typeOfReporting = webDriverHelpers.getValueFromCombobox(TYPE_OF_REPORTING_COMBOBOX);
+          externalId =
+              webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT);
+          reporterFacility = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX);
+          reporterFacilityDetails =
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS);
+          dateOfReport =
+              LocalDate.parse(
+                  webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT),
+                  formatterDE);
+        });
+
+    When(
+        "I check that data present in target are match to data from source in surveillance report",
+        () -> {
+          softly.assertEquals(
+              reportUuid,
+              webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_UUID_TEXT),
+              "Report uuid is not equal");
+          softly.assertEquals(
+              reportingUser,
+              webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_REPORTING_USER_TEXT),
+              "Reporting user is not equal");
+          softly.assertEquals(
+              typeOfReporting,
+              webDriverHelpers.getValueFromCombobox(TYPE_OF_REPORTING_COMBOBOX),
+              "Type of reporting is not equal");
+          softly.assertEquals(
+              externalId,
+              webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT),
+              "External Id is not equal");
+          softly.assertEquals(
+              reporterFacility,
+              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX),
+              "Reporter facility is not equal");
+          softly.assertEquals(
+              reporterFacilityDetails,
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
+              "Reporter facility details is not equal");
+          softly.assertEquals(
+              dateOfReport,
+              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
+              "Date of report is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on view surveillance report",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              VIEW_SURVEILLANCE_REPORT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(VIEW_SURVEILLANCE_REPORT_BUTTON);
+        });
+
+    When(
+        "I check that that surveillance report has no connected with lab message",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementPresent(DISPLAY_ASSOCIATED_EXTERNAL_MESSAGE_BUTTON));
+          softly.assertAll();
         });
 
     When(

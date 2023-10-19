@@ -1277,3 +1277,66 @@ Feature: Sharing cases between environments tests
     And I check that Revoked status value is corresponding with entities
     And I click on the The Eye Icon located in the Shares Page
     And I click on the shortened case/contact ID to open the case
+
+  @tmsLink=HSP-6268 @env_s2s_2
+  Scenario: S2S - Share a case which was sent to Survnet
+    Given I log in as a S2S
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data using created facility for Survnet DE
+    And I collect uuid of the case
+    And I click on Send to reporting tool button on Edit Case page
+    Then I click on share button
+    And I select organization to share with "s2s_1"
+    And I click to hand over the ownership in Share popup
+    And I fill comment in share popup with "shared to be deleted after"
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_1" environment in new driver tab
+    Given I log in as a S2S
+    And I click on the Shares button from navbar
+    Then I accept first entity from table in Shares Page
+    And I click on the Cases button from navbar
+    And I open the last created case with collected UUID by url on "s2s_1" instance
+    Then I check if editable fields are enabled for the case in view
+    And I check if handover card not contains "Status: Ausstehend" shared information
+    And I check if handover card not contains "Kommentar: shared to be deleted after" shared information
+    When I back to tab number 1
+    And I refresh current page
+    And Total number of read only fields should be 10
+    Then Total number of read only fields in Survnet details section should be 3
+
+  @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
+  Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
+  Given API : Login to DEMIS server
+   Then I create and send Laboratory Notification
+    And I log in as a S2S
+    Then I click on the Messages button from navbar
+    And I click on fetch messages button
+    Then I filter by last created person via API in Messages Directory
+    And I click on Verarbeiten button in Messages Directory
+    Then I create a new person and a new case from received message
+    Then I click on the Cases button from navbar
+    And I search the case by last created person via Demis message
+    Then I click on the first Case ID from Case Directory
+    And I click on edit surveillance report
+    Then I collect data from surveillance report
+    And I fill comment in surveillance report notification details with random string
+    And I click on Save popup button
+    Then I click on share button
+    And I select organization to share with "s2s_1"
+    Then I click to exclude personal data in Share popup
+    And I click to share report data in Share popup
+    And I fill comment in share popup for case with random string
+    Then I click on share button in s2s share popup and wait for share to finish
+    Then I navigate to "s2s_1" environment in new driver tab
+    Given I log in as a S2S
+    And I click on the Shares button from navbar
+    Then I accept first entity from table in Shares Page
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
+    And Total number of read only fields should be 9
+    Then I check that the case has no samples on side card for DE
+    And I check that that surveillance report has no connected with lab message
+    And I click on view surveillance report
+    And Total number of read only fields should be 13
+    Then I check that data present in target are match to data from source in surveillance report

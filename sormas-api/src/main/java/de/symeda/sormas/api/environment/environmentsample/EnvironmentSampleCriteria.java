@@ -101,12 +101,22 @@ public class EnvironmentSampleCriteria extends BaseCriteria implements Serializa
 		this.region = region;
 	}
 
+	public EnvironmentSampleCriteria region(RegionReferenceDto region) {
+		this.region = region;
+		return this;
+	}
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public EnvironmentSampleCriteria district(DistrictReferenceDto district) {
+		this.district = district;
+		return this;
 	}
 
 	public Double getGpsLatFrom() {

@@ -363,9 +363,9 @@ Feature: Case end to end tests
     And I click on Link to Event from Bulk Actions combobox on Case Directory Page
     And I click on New Event option in Link to Event Form
     And I click on SAVE button in Link Event to group form
-    And I create a new event with status CLUSTER
+    And I create a new linked event with status CLUSTER for cases
     And I navigate to the last created Event page via URL
-    And I check that number of displayed Event Participants is 1
+    And I check that number of displayed Event Participants is 2
 
   @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
@@ -391,8 +391,9 @@ Feature: Case end to end tests
     And I fill Event Id filter in Link to Event form with last created via API Event uuid
     And I click first result in grid on Link to Event form
     And I click on SAVE button in Link Event to group form
+    And I click on success popup message for cases that linked to selected event
     And I navigate to the last created through API Event page via URL
-    And I check that number of displayed Event Participants is 1
+    And I check that number of displayed Event Participants is 2
 
   @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and case filters
@@ -1913,24 +1914,3 @@ Feature: Case end to end tests
     Given I log in as a National User
     Then I navigate to the last created case via the url
     And I check if Follow up until date is 14 days after last created API case report date
-    When I click on New Sample in German
-    Then I create a new Sample with positive test result for DE version
-    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I set date of sample collection to 5 day ago in Sample form
-    And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
-    And I check if Follow up until date is 9 days after last created API case report date
-    And I navigate to symptoms tab
-    When I check Yes Option for Soar Throat on Symptoms tab page
-    And I select sore throat option
-    And I set date of symptoms to 6 day ago from Symptoms tab
-    And I click on save button from Edit Case page
-    Then I navigate to the last created case via the url
-    And I check if Follow up until date is 8 days after last created API case report date
-    When I click on New Sample in German
-    Then I create a new Sample with positive test result for DE version
-    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
-    And I set date of sample collection to 7 day ago in Sample form
-    And I set Final Laboratory Result to "Positiv" on Create new Sample page
-    And I save the created sample
-    And I check if Follow up until date is 8 days after last created API case report date

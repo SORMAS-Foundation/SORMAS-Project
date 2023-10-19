@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.environment.environmentsample;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
@@ -34,12 +35,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
@@ -52,6 +55,9 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -60,6 +66,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
@@ -89,7 +96,8 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSave() {
-		EnvironmentSampleDto dto = creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+		EnvironmentSampleDto dto =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 			s.setSampleMaterial(EnvironmentSampleMaterial.WATER);
 			s.setLaboratory(lab.toReference());
 			s.setFieldSampleId("123");
@@ -161,7 +169,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetByUuid() {
 		EnvironmentSampleDto originalDto =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setSampleMaterial(EnvironmentSampleMaterial.WATER);
 				s.setLaboratory(lab.toReference());
 				s.setFieldSampleId("123");
@@ -200,7 +208,8 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetReferenceByUuid() {
-		EnvironmentSampleDto dto = creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+		EnvironmentSampleDto dto =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 			s.setSampleMaterial(EnvironmentSampleMaterial.AIR);
 		});
 
@@ -214,7 +223,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testPseudonymization() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setSampleMaterial(EnvironmentSampleMaterial.OTHER);
 				s.setOtherSampleMaterial("Test material");
 				s.setFieldSampleId("Test id");
@@ -261,25 +270,19 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllAfter() {
 		EnvironmentSampleDto sampleOwned =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
-				s.getLocation().setRegion(rdcf.region);
-				s.getLocation().setDistrict(rdcf.district);
-			});
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentSampleDto sampleWithEmptyLocation =
-			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentSampleDto sampleInJurisdiction =
-			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), rdcf, lab.toReference(), s -> {
 				s.getLocation().setRegion(rdcf.region);
 				s.getLocation().setDistrict(rdcf.district);
 			});
 
 		EnvironmentSampleDto sampleOutsideJurisdiction =
-			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), lab.toReference(), s -> {
-				s.getLocation().setRegion(rdcf2.region);
-				s.getLocation().setDistrict(rdcf2.district);
-			});
+			creator.createEnvironmentSample(environment.toReference(), userInDifferentJurisdiction.toReference(), rdcf2, lab.toReference(), null);
 
 		loginWith(reportingUser);
 
@@ -294,7 +297,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUpdatePesudonymized() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setSampleMaterial(EnvironmentSampleMaterial.OTHER);
 				s.setOtherSampleMaterial("Test material");
 				s.setFieldSampleId("Test id");
@@ -342,7 +345,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUpdateDispatchStatusWithoutRight() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		UserDto noDispatchUser = creator.createUser(
 			rdcf.region.getUuid(),
@@ -365,7 +368,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUpdateReceivalStatusWithoutRight() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		UserDto noDispatchUser = creator.createUser(
 			rdcf.region.getUuid(),
@@ -387,7 +390,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUpdateWithUserOutsideJurisdiction() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		loginWith(userInDifferentJurisdiction);
 
@@ -398,18 +401,13 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testCount() {
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		FacilityDto lab2 = creator.createFacility("Lab2", rdcf2.region, rdcf2.district, rdcf2.community, FacilityType.LABORATORY);
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
-			s.getLocation().setRegion(rdcf2.region);
-			s.getLocation().setDistrict(rdcf2.district);
-		});
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf2, lab2.toReference(), null);
 
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf2, lab2.toReference(), (s) -> {
 			s.setDispatched(true);
-			s.getLocation().setRegion(rdcf2.region);
-			s.getLocation().setDistrict(rdcf2.district);
 		});
 
 		assertThat(getEnvironmentSampleFacade().count(null), is(4L));
@@ -427,7 +425,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 		EnvironmentSampleDto sample1InLab1 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setFieldSampleId("field_sample-1");
 				s.getLocation().setRegion(rdcf.region);
 				s.getLocation().setDistrict(rdcf.district);
@@ -441,17 +439,36 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 				s.setSampleMaterial(EnvironmentSampleMaterial.OTHER);
 				s.setOtherSampleMaterial("Other sample material");
 			});
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
-		FacilityDto lab2 = creator.createFacility("Lab2", rdcf2.region, rdcf2.district, rdcf2.community, FacilityType.LABORATORY);
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
-			s.getLocation().setRegion(rdcf2.region);
-			s.getLocation().setDistrict(rdcf2.district);
-		});
+		Pathogen positivePathogen = creator.createPathogen("TEST_PATHOGEN", "Test pathogen");
+		PathogenTestDto positiveTest = creator.createPathogenTest(
+			sample1InLab1.toReference(),
+			PathogenTestType.ISOLATION,
+			positivePathogen,
+			lab.toReference(),
+			reportingUser.toReference(),
+			PathogenTestResultType.POSITIVE,
+			null);
+		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.PATHOGEN, positivePathogen.getValue()))
+			.thenReturn(positivePathogen);
 
-		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab2.toReference(), (s) -> {
+		Pathogen pendingPathogen = creator.createPathogen("TEST_PATHOGEN_2", "Test pathogen 2");
+		PathogenTestDto negativeTest = creator.createPathogenTest(
+			sample1InLab1.toReference(),
+			PathogenTestType.ISOLATION,
+			pendingPathogen,
+			lab.toReference(),
+			reportingUser.toReference(),
+			PathogenTestResultType.PENDING,
+			null);
+		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.PATHOGEN, pendingPathogen.getValue()))
+			.thenReturn(pendingPathogen);
+
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
+		FacilityDto lab2 = creator.createFacility("Lab2", rdcf2.region, rdcf2.district, rdcf2.community, FacilityType.LABORATORY);
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf2, lab2.toReference(), null);
+
+		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf2, lab2.toReference(), (s) -> {
 			s.setDispatched(true);
-			s.getLocation().setRegion(rdcf2.region);
-			s.getLocation().setDistrict(rdcf2.district);
 		});
 
 		assertThat(getEnvironmentSampleFacade().getIndexList(null, null, null, null), hasSize(4));
@@ -479,9 +496,11 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(sample1Index.getLaboratory(), is(lab.getName()));
 		assertThat(sample1Index.getSampleMaterial(), is(sample1InLab1.getSampleMaterial()));
 		assertThat(sample1Index.getOtherSampleMaterial(), is(sample1InLab1.getOtherSampleMaterial()));
-		assertThat(sample1Index.getPositivePathogenTests(), is(0L));
-		assertThat(sample1Index.getLatestPathogenTest(), is(nullValue()));
-		assertThat(sample1Index.getNumberOfTests(), is(0L));
+		assertThat(sample1Index.getPositivePathogenTests(), hasSize(1));
+		assertThat(sample1Index.getPositivePathogenTests(), contains(positivePathogen));
+		assertThat(sample1Index.getLatestTestedPathogen(), is(pendingPathogen));
+		assertThat(sample1Index.getLatestPathogenTestResult(), is(PathogenTestResultType.PENDING));
+		assertThat(sample1Index.getNumberOfTests(), is(2L));
 		assertThat(sample1Index.getDeletionReason(), is(nullValue()));
 		assertThat(sample1Index.getOtherDeletionReason(), is(nullValue()));
 
@@ -510,16 +529,16 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	public void testRelevanceStatusFilter() {
 		EnvironmentDto environment1 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
 		EnvironmentSampleDto sample1 =
-			creator.createEnvironmentSample(environment1.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment1.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentDto environment2 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
 		EnvironmentSampleDto sample2 =
-			creator.createEnvironmentSample(environment2.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment2.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		getEnvironmentFacade().archive(environment1.getUuid(), new Date());
 
 		EnvironmentDto environment3 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf);
 		EnvironmentSampleDto sample3 =
-			creator.createEnvironmentSample(environment3.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment3.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		getEnvironmentSampleFacade().delete(sample3.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
 
 		EnvironmentSampleCriteria noRelevanceCriteria = new EnvironmentSampleCriteria();
@@ -545,17 +564,17 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSampleDateFilter() {
 		EnvironmentSampleDto sample1 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setReportDate(Date.from(LocalDate.of(2023, 9, 4).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 			});
 
 		EnvironmentSampleDto sample2 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setReportDate(Date.from(LocalDate.of(2023, 9, 6).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 			});
 
 		EnvironmentSampleDto sample3 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), s -> {
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setReportDate(Date.from(LocalDate.of(2023, 9, 7).atStartOfDay(ZoneId.systemDefault()).toInstant()));
 			});
 
@@ -587,21 +606,21 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			e.getLocation().setLongitude(36.0);
 		});
 		EnvironmentSampleDto sample1 =
-			creator.createEnvironmentSample(environment1.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment1.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentDto environment2 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf, e -> {
 			e.getLocation().setLatitude(23.0);
 			e.getLocation().setLongitude(38.0);
 		});
 		EnvironmentSampleDto sample2 =
-			creator.createEnvironmentSample(environment2.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment2.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentDto environment3 = creator.createEnvironment("Env1", EnvironmentMedia.WATER, reportingUser.toReference(), rdcf, e -> {
 			e.getLocation().setLatitude(24.0);
 			e.getLocation().setLongitude(39.0);
 		});
 		EnvironmentSampleDto sample3 =
-			creator.createEnvironmentSample(environment3.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment3.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentSampleCriteria gpsLatFromCriteria = new EnvironmentSampleCriteria();
 		gpsLatFromCriteria.setGpsLatFrom(22.0);
@@ -658,16 +677,31 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	public void testTestedPathogenFilter() {
 		Pathogen pathogen = creator.createPathogen("TEST_PATHOGEN", "test pathogen");
 
+		EnvironmentSampleDto environmentSample =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
+		creator.createPathogenTest(
+			environmentSample.toReference(),
+			PathogenTestType.ISOLATION,
+			pathogen,
+			lab.toReference(),
+			reportingUser.toReference(),
+			PathogenTestResultType.POSITIVE,
+			null);
+
 		EnvironmentSampleCriteria criteria = new EnvironmentSampleCriteria();
 		criteria.setTestedPathogen(pathogen);
 
-		assertThrows(UnsupportedOperationException.class, () -> getEnvironmentSampleFacade().getIndexList(criteria, null, null, null));
+		assertThat(getEnvironmentSampleFacade().count(criteria), is(1L));
+		List<EnvironmentSampleIndexDto> indexList = getEnvironmentSampleFacade().getIndexList(criteria, null, null, null);
+		assertThat(indexList, hasSize(1));
+		assertThat(indexList.get(0).getUuid(), is(environmentSample.getUuid()));
+
 	}
 
 	@Test
 	public void testDelete() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		getEnvironmentSampleFacade().delete(sample.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
 
@@ -677,12 +711,12 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 		// delete multiple samples
 		EnvironmentSampleDto sample1 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		EnvironmentSampleDto sample2 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		EnvironmentSampleDto deletedSample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		getEnvironmentSampleFacade().delete(deletedSample.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
 
 		List<ProcessedEntity> processedEntities = getEnvironmentSampleFacade().delete(
@@ -702,7 +736,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testRestore() {
 		EnvironmentSampleDto sample =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		getEnvironmentSampleFacade().delete(sample.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));
 
 		getEnvironmentSampleFacade().restore(sample.getUuid());
@@ -713,9 +747,9 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 		// restore multiple samples
 		EnvironmentSampleDto sample1 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 		EnvironmentSampleDto sample2 =
-			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), lab.toReference(), null);
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);
 
 		getEnvironmentSampleFacade()
 			.delete(Arrays.asList(sample1.getUuid(), sample2.getUuid()), new DeletionDetails(DeletionReason.OTHER_REASON, "Test reason"));

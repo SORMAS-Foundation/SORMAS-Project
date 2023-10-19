@@ -82,6 +82,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
+	public static final String AUTOMATIC_PROCESSING_POSSIBLE = "automaticProcessingPossible";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -154,6 +155,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	 * Used in S2S context
 	 */
 	private UserReferenceDto reportingUser;
+
+	private boolean automaticProcessingPossible;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -497,4 +500,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.reportingUser = reportingUser;
 	}
 
+	public boolean isAutomaticProcessingPossible() {
+		return automaticProcessingPossible;
+	}
+
+	public void setAutomaticProcessingPossible(boolean automaticProcessingPossible) {
+		this.automaticProcessingPossible = automaticProcessingPossible;
+	}
 }

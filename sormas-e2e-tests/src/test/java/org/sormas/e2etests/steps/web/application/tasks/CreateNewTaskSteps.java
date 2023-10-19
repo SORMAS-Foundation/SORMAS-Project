@@ -153,7 +153,7 @@ public class CreateNewTaskSteps implements En {
     When(
         "I check that ([^\"]*) is visible in Observed By on Edit Task Page",
         (String option) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           By selector = getDeleteIconByUser(option);
           Boolean elementVisible = true;
           try {

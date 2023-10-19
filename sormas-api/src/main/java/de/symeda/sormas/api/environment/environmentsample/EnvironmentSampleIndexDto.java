@@ -17,10 +17,12 @@ package de.symeda.sormas.api.environment.environmentsample;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -44,12 +46,11 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 	public static final String RECEIVED = "received";
 	public static final String LABORATORY = "laboratory";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String OTHER_SAMPLE_MATERIAL = "otherSampleMaterial";
 	public static final String POSITIVE_PATHOGEN_TESTS = "positivePathogenTests";
-	public static final String LATEST_PATHOGEN_TEST = "latestPathogenTest";
 	public static final String NUMBER_OF_TESTS = "numberOfTests";
 	public static final String DELETION_REASON = "deletionReason";
 
+	private Long id;
 	private String fieldSampleId;
 	private Date sampleDateTime;
 	@SensitiveData
@@ -68,14 +69,16 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 	private EnvironmentSampleMaterial sampleMaterial;
 	@PersonalData
 	private String otherSampleMaterial;
-	private long positivePathogenTests;
-	private String latestPathogenTest;
-	private long numberOfTests;
 	private DeletionReason deletionReason;
 	@SensitiveData
 	private String otherDeletionReason;
+	private long numberOfTests;
+	private List<Pathogen> positivePathogenTests;
+	private Pathogen latestTestedPathogen;
+	private PathogenTestResultType latestPathogenTestResult;
 
 	public EnvironmentSampleIndexDto(
+		Long id,
 		String uuid,
 		String fieldSampleId,
 		Date sampleDateTime,
@@ -100,6 +103,7 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		Long numberOfTests,
 		boolean isInJurisdiction) {
 		super(uuid);
+		this.id = id;
 		this.fieldSampleId = fieldSampleId;
 		this.sampleDateTime = sampleDateTime;
 		this.environment = environment;
@@ -117,6 +121,10 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		this.otherDeletionReason = otherDeletionReason;
 		this.numberOfTests = numberOfTests;
 		setInJurisdiction(isInJurisdiction);
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getFieldSampleId() {
@@ -171,23 +179,39 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 		return otherSampleMaterial;
 	}
 
-	public long getPositivePathogenTests() {
-		return positivePathogenTests;
-	}
-
-	public String getLatestPathogenTest() {
-		return latestPathogenTest;
-	}
-
-	public long getNumberOfTests() {
-		return numberOfTests;
-	}
-
 	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
 	public String getOtherDeletionReason() {
 		return otherDeletionReason;
+	}
+
+	public long getNumberOfTests() {
+		return numberOfTests;
+	}
+
+	public List<Pathogen> getPositivePathogenTests() {
+		return positivePathogenTests;
+	}
+
+	public void setPositivePathogenTests(List<Pathogen> positivePathogenTests) {
+		this.positivePathogenTests = positivePathogenTests;
+	}
+
+	public Pathogen getLatestTestedPathogen() {
+		return latestTestedPathogen;
+	}
+
+	public void setLatestTestedPathogen(Pathogen latestTestedPathogen) {
+		this.latestTestedPathogen = latestTestedPathogen;
+	}
+
+	public PathogenTestResultType getLatestPathogenTestResult() {
+		return latestPathogenTestResult;
+	}
+
+	public void setLatestPathogenTestResult(PathogenTestResultType latestPathogenTestResult) {
+		this.latestPathogenTestResult = latestPathogenTestResult;
 	}
 }

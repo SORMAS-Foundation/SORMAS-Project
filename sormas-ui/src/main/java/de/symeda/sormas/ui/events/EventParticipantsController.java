@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -245,7 +246,11 @@ public class EventParticipantsController {
 				null,
 				I18nProperties.getString(Strings.entityEventParticipant),
 				eventParticipant.getUuid(),
-				FacadeProvider.getEventParticipantFacade());
+				FacadeProvider.getEventParticipantFacade(),
+				I18nProperties.getString(Strings.messageRestoreNotPossibleAlreadyInEvent),
+				uuid -> FacadeProvider.getEventParticipantFacade()
+					.getByEventAndPersons(event.getUuid(), Collections.singletonList(eventParticipant.getPerson().getUuid()))
+					.isEmpty());
 		}
 
 		// Initialize 'Archive' button

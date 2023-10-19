@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
-public class SampleJoins extends QueryJoins<Sample> {
+public class SampleJoins extends QueryJoins<Sample> implements ISampleJoins {
 
 	private Join<Sample, User> reportingUser;
 	private Join<Sample, Sample> referredSample;

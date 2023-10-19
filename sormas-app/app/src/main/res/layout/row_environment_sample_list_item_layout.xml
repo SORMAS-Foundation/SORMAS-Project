@@ -21,7 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="data" type="de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample"/>
+        <variable name="data" type="de.symeda.sormas.app.environmentsample.list.EnvironmentSampleListViewModel.SampleWithTestedPathogens"/>
         <variable name="testResultMessage" type="String" />
     </data>
 
@@ -59,7 +59,7 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
-                    app:value="@{data.sampleMaterial}"
+                    app:value="@{data.sample.sampleMaterial}"
                     app:defaultValue='@{@string/value_sample_material_unknown}'
                     />
 
@@ -81,7 +81,7 @@
                     android:textSize="@dimen/row_entry_date_text_size"
                     android:textColor="@color/listActivityRowDateText"
                     android:fontFamily="sans-serif"
-                    app:timeAgoValue="@{data.sampleDateTime}"
+                    app:timeAgoValue="@{data.sample.sampleDateTime}"
                     app:defaultValue='@{@string/value_sample_date_unknown}'
                     />
 
@@ -101,7 +101,7 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"
-                    app:value="@{data.uuid}"
+                    app:value="@{data.sample.uuid}"
                     app:shortUuid="@{true}"
                     app:defaultValue='@{@string/value_uuid_unknown}' />
 
@@ -130,7 +130,7 @@
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        app:environmentValue="@{data.environment}"
+                        app:environmentValue="@{data.sample.environment}"
                         app:defaultValue='@{@string/value_environment_name_unknown}'
                         />
 
@@ -143,8 +143,21 @@
                         android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
                         android:textSize="@dimen/row_entry_secondary_text_size"
                         android:textColor="@color/row_entry_secondary_text"
-                        app:facilityValue="@{data.laboratory}"
+                        app:facilityValue="@{data.sample.laboratory}"
                         app:defaultValue='@{@string/value_lab_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtEnvSampleTestedPathogens"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif-medium"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:value="@{data.testedPathogens}"
                         />
 
                 </LinearLayout>

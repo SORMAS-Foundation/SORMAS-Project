@@ -152,6 +152,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		pathogenTestDto.setTestResult(PathogenTestResultType.POSITIVE);
 		pathogenTestDto.setTestResultVerified(false);
 		pathogenTestDto.setTestType(PathogenTestType.ANTIBODY_DETECTION);
+		pathogenTestDto.setLab(rdcf.facility);
 		pathogenTestDto = getPathogenTestFacade().savePathogenTest(pathogenTestDto);
 
 		travelEntryDto = TravelEntryDto.build(personDto.toReference());

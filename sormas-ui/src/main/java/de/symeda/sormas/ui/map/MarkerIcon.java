@@ -37,7 +37,8 @@ public enum MarkerIcon {
 	EVENT_RUMOR,
 	SAMPLE_CASE,
 	SAMPLE_CONTACT,
-	SAMPLE_EVENT_PARTICIPANT;
+	SAMPLE_EVENT_PARTICIPANT,
+	SAMPLE_ENVIRONMENT;
 
 	/**
 	 * E.g. "contact long-overdue"

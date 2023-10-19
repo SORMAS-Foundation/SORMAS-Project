@@ -21,12 +21,14 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class LocationJoins extends QueryJoins<Location> {
 
+	private Join<Location, Country> country;
 	private Join<Location, Region> region;
 	private Join<Location, District> district;
 	private Join<Location, Community> community;
@@ -34,6 +36,14 @@ public class LocationJoins extends QueryJoins<Location> {
 
 	public LocationJoins(From<?, Location> root) {
 		super(root);
+	}
+
+	public Join<Location, Country> getCountry() {
+		return getOrCreate(country, Location.COUNTRY, JoinType.LEFT, this::setCountry);
+	}
+
+	private void setCountry(Join<Location, Country> country) {
+		this.country = country;
 	}
 
 	public Join<Location, Region> getRegion() {
@@ -67,4 +77,5 @@ public class LocationJoins extends QueryJoins<Location> {
 	private void setFacility(Join<Location, Facility> facility) {
 		this.facility = facility;
 	}
+
 }
