@@ -167,17 +167,36 @@ Feature: User roles checks
     And I choose "National User" as the user role template
     And I fill caption input as "MyNationalTestUser" on Create New User Role form
     And I click SAVE button on User Role Page
-    #we are right now in user rights editor!!
     Then I click checkbox to uncheck "Edit existing cases"
     Then I click checkbox to uncheck "Edit case investigation status"
+    Then I click checkbox to uncheck "Edit case disease"
+    Then I click checkbox to uncheck "Transfer cases to another region/district/facility"
+    Then I click checkbox to uncheck "Edit case classification and outcome"
+    Then I click checkbox to uncheck "Edit case epid number"
+    Then I click checkbox to uncheck "Refer case from point of entry"
     Then I click checkbox to uncheck "Can be responsible for a case"
+    Then I click checkbox to uncheck "Work with message"
     And I click SAVE button on User Role Page
-   # And I click on delete user role button
-    #And I confirm user role deletion
-    #And I check if Cannot delete user role popup message is displayed
-    #And I confirm Cannot delete user role popup message
-
-
-
-
-
+    And I back to the User role list
+    Then I click on User Management tab from User Roles Page
+    And I click on the NEW USER button
+    And I create new "MyNationalTestUser" with english language for test
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    And I click on the Cases button from navbar
+    And I open the first Case result in Case Directory
+    Then I get the case person UUID displayed on Edit case page
+    Then I click on Delete button from case
+    And I click on Yes option in Confirm deletion popup
+    When I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    And I set the Relevance Status Filter to "Deleted cases" on Case Directory page
+    And I search for the last "deleted" case on Case directory page
+    Then I open the first Case result in Case Directory
+    And Total number of read only fields should be 17
+    Then I check that "Discard" button is readonly on Edit case page
+    And I check that "Save" button is readonly on Edit case page
+    Then I click on Restore button from case
+    And I set the Relevance Status Filter to "Active cases" on Case Directory page
+    And I search for the last "restored" case on Case directory page
+    And I check that number of displayed cases results is 1

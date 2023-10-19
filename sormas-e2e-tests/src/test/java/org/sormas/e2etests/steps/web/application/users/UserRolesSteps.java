@@ -18,20 +18,23 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_VACCINATION_NAME;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.SEARCH_USER_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CASES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ARCHIVE_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_DELETE_USER_ROLE_POPUP;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_DELETE_USER_ROLE_POPUP_OKAY_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_DISEASE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_DISEASE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_EPID_NUMBER_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_EPID_NUMBER_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_CASES_CHECKBOX;
@@ -42,8 +45,10 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_MANAGEMENT_TAB;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
@@ -52,17 +57,14 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROL
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserRoleCaptionByText;
 
 import cucumber.api.java8.En;
-
-import java.nio.channels.Selector;
 import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-
 import org.openqa.selenium.By;
-import org.sormas.e2etests.entities.pojo.web.Vaccination;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.testng.asserts.SoftAssert;
@@ -124,73 +126,76 @@ public class UserRolesSteps implements En {
     And(
         "^I click checkbox to uncheck \"([^\"]*)\"$",
         (String checkboxLabel) -> {
-            Boolean checkboxState;
+          Boolean checkboxState;
           switch (checkboxLabel) {
-              // TODO -wrote method that check if checkbox is checked !! and refactor below
             case "Edit existing cases":
+              webDriverHelpers.scrollToElement(EDIT_EXISTING_CASES_CHECKBOX);
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_EXISTING_CASES_CHECKBOX);
               checkboxState = webDriverHelpers.isElementChecked(EDIT_EXISTING_CASES_CHECKBOX_VALUE);
-              System.out.print(checkboxState);
-                uncheckCheckbox(checkboxState, EDIT_EXISTING_CASES_CHECKBOX);
-              webDriverHelpers.scrollToElement(EDIT_EXISTING_CASES_CHECKBOX);
-              System.out.print(
-                  webDriverHelpers.isElementChecked(EDIT_EXISTING_CASES_CHECKBOX_VALUE));
-              TimeUnit.SECONDS.sleep(5);
+              uncheckCheckbox(checkboxState, EDIT_EXISTING_CASES_CHECKBOX);
               break;
             case "Edit case investigation status":
+              webDriverHelpers.scrollToElement(EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX);
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(
                   EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX);
-              Boolean value1 =
-                webDriverHelpers.isElementChecked(EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX_VALUE);
-                if (value1 == true)
-                    webDriverHelpers.clickOnWebElementBySelector(EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX);
-              webDriverHelpers.scrollToElement(EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX);
               break;
-            case "Edit case disease status":
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_CASE_DISEASE_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(EDIT_CASE_DISEASE_CHECKBOX);
+            case "Edit case disease":
               webDriverHelpers.scrollToElement(EDIT_CASE_DISEASE_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_CASE_DISEASE_CHECKBOX);
+              checkboxState = webDriverHelpers.isElementChecked(EDIT_CASE_DISEASE_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, EDIT_CASE_DISEASE_CHECKBOX);
               break;
             case "Transfer cases to another region/district/facility":
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-                  TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(
-                  TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX);
               webDriverHelpers.scrollToElement(
                   TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                  TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(
+                      TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX_VALUE);
+              uncheckCheckbox(
+                  checkboxState, TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX);
               break;
             case "Edit case classification and outcome":
+              webDriverHelpers.scrollToElement(EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX);
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(
                   EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(
-                  EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX);
-              webDriverHelpers.scrollToElement(EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(
+                      EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX);
               break;
             case "Edit case epid number":
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_CASE_EPID_NUMBER_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(EDIT_CASE_EPID_NUMBER_CHECKBOX);
               webDriverHelpers.scrollToElement(EDIT_CASE_EPID_NUMBER_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_CASE_EPID_NUMBER_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(EDIT_CASE_EPID_NUMBER_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, EDIT_CASE_EPID_NUMBER_CHECKBOX);
               break;
             case "Refer case from point of entry":
+              webDriverHelpers.scrollToElement(REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX);
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(
                   REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX);
-              webDriverHelpers.scrollToElement(REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX);
               break;
             case "Can be responsible for a case":
+              webDriverHelpers.scrollToElement(CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX);
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(
                   CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX);
-              Boolean value332 =
-                  webDriverHelpers.isElementChecked(CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX);
-              System.out.print(value332);
-              // webDriverHelpers.clickOnWebElementBySelector(CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX);
-              webDriverHelpers.scrollToElement(CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX);
               break;
             case "Work with message":
-              webDriverHelpers.waitUntilIdentifiedElementIsPresent(WORK_WITH_MESSAGE_CHECKBOX);
-              webDriverHelpers.clickOnWebElementBySelector(WORK_WITH_MESSAGE_CHECKBOX);
               webDriverHelpers.scrollToElement(WORK_WITH_MESSAGE_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(WORK_WITH_MESSAGE_CHECKBOX);
+              checkboxState = webDriverHelpers.isElementChecked(WORK_WITH_MESSAGE_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, WORK_WITH_MESSAGE_CHECKBOX);
               break;
           }
         });
@@ -383,8 +388,7 @@ public class UserRolesSteps implements En {
         });
   }
 
-    private void uncheckCheckbox(Boolean checkboxState,By checkboxName) {
-      if(checkboxState == true)
-          webDriverHelpers.clickOnWebElementBySelector(checkboxName);
-    }
+  private void uncheckCheckbox(Boolean checkboxState, By checkboxName) {
+    if (checkboxState == true) webDriverHelpers.clickOnWebElementBySelector(checkboxName);
+  }
 }
