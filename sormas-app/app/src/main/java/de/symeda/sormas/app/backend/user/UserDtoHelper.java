@@ -93,7 +93,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		target.setLastName(source.getLastName());
 		target.setUserEmail(source.getUserEmail());
 
-		if (source.getUserRoles().size() > 0) {
+		if (source.getUserRoles() != null && source.getUserRoles().size() > 0) {
 			Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
 			target.setUserRoles(userRoles);
 			userRoles.clear();
@@ -116,7 +116,7 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		target.setPhone(source.getPhone());
 		target.setLanguage(source.getLanguage());
 
-		target.setJurisdictionLevel(DatabaseHelper.getUserDao().getJurisdictionLevel(target.getUserRoles()));
+		target.setJurisdictionLevel(source.getJurisdictionLevel());
 	}
 
 	@Override
