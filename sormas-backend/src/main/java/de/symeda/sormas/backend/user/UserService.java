@@ -198,43 +198,28 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	 * @param activeOnly
 	 * @param userRights
 	 */
-	public List<UserReference> getUserReferences(
-		List<String> regionUuids,
-		List<String> districtUuids,
-		boolean filterByCurrentUserJurisdiction,
-		boolean activeOnly,
-		UserRight... userRights) {
+	public List<UserReference> getUserReferences(List<String> regionUuids, List<String> districtUuids, boolean activeOnly, UserRight... userRights) {
 
-		return getUserReferences(regionUuids, districtUuids, null, filterByCurrentUserJurisdiction, activeOnly, userRights);
+		return getUserReferences(regionUuids, districtUuids, null, activeOnly, userRights);
 	}
 
 	public List<UserReference> getUserReferences(
 		List<String> regionUuids,
 		List<String> districtUuids,
 		List<String> communityUuids,
-		boolean filterByJurisdiction,
 		boolean activeOnly,
 		UserRight... userRights) {
-		return getUserReferences(regionUuids, districtUuids, communityUuids, filterByJurisdiction, activeOnly, null, userRights);
+		return getUserReferences(regionUuids, districtUuids, communityUuids, activeOnly, null, userRights);
 	}
 
 	public List<UserReference> getUserReferences(
 		List<String> regionUuids,
 		List<String> districtUuids,
 		List<String> communityUuids,
-		boolean filterByJurisdiction,
 		boolean activeOnly,
 		Disease limitedDisease,
 		UserRight... userRights) {
-		return getUserReferences(
-			regionUuids,
-			districtUuids,
-			communityUuids,
-			filterByJurisdiction,
-			activeOnly,
-			limitedDisease,
-			false,
-			Arrays.asList(userRights));
+		return getUserReferences(regionUuids, districtUuids, communityUuids, activeOnly, limitedDisease, false, Arrays.asList(userRights));
 	}
 
 	/**
@@ -254,7 +239,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		List<String> regionUuids,
 		List<String> districtUuids,
 		List<String> communityUuids,
-		boolean filterByJurisdiction,
 		boolean activeOnly,
 		Disease limitedDisease,
 		boolean excludeLimitedDiseaseUsers,
@@ -289,12 +273,12 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, districtFilter);
 			userEntityJoinUsed = true;
 		}
-		if (filterByJurisdiction) {
-			if (!hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-				filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
-				userEntityJoinUsed = true;
-			}
+//		if (filterByJurisdiction) {
+		if (!hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
+			userEntityJoinUsed = true;
 		}
+//		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, buildUserRightsFilter(userRoot, userRights));
 
