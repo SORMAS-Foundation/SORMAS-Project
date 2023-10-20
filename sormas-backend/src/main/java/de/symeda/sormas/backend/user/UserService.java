@@ -290,9 +290,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 			userEntityJoinUsed = true;
 		}
 		if (filterByJurisdiction) {
-			if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.conjunction());
-			} else {
+			if (!hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
 				filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
 				userEntityJoinUsed = true;
 			}
