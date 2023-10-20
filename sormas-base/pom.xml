@@ -35,7 +35,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.2.15</swagger.version>
 		<bouncycastle.version>1.76</bouncycastle.version>
-		<grpc.version>1.56.1</grpc.version>
+		<grpc.version>1.59.0</grpc.version>
 		<keycloak.version>21.1.2</keycloak.version>
 		<netty.version>4.1.95.Final</netty.version>
 		<resteasy.version>5.0.7.Final</resteasy.version>
