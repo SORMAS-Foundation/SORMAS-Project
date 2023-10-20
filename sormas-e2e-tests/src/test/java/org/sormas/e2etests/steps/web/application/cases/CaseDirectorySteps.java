@@ -173,6 +173,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPO
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.caseUuid;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -290,6 +291,13 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "I open the first Case result in Case Directory",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
+        });
+
+    When(
         "I check if downloaded zip file for Quarantine Order is correct",
         () -> {
           String fileName = "sormas_documents_" + LocalDate.now() + "_.zip";
@@ -311,6 +319,15 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "I search for the last {string} case on Case directory page",
+        (String option) -> {
+          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, caseUuid);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
         });
 
     When(

@@ -22,6 +22,8 @@ import static org.sormas.e2etests.pages.application.LoginPage.*;
 import static org.sormas.e2etests.pages.application.NavBarPage.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.users.CreateNewUserSteps.userName;
+import static org.sormas.e2etests.steps.web.application.users.CreateNewUserSteps.userPass;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
@@ -155,6 +157,20 @@ public class LoginSteps implements En {
           log.info("Filling password");
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    Then(
+        "I login with new created user with chosen new role",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
           log.info("Click on Login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
