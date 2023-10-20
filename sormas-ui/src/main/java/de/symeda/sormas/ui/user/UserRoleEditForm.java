@@ -34,12 +34,15 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRightGroup;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
@@ -118,8 +121,16 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 		UserRoleFormHelper.createFieldDependencies(this);
 	}
 
+	private boolean checkFeatureConfigurationAllowsUserGroups(UserRightGroup userRightGroup) {
+		if ((userRightGroup.equals(UserRightGroup.CASE) || userRightGroup.equals(UserRightGroup.CASE_MANAGEMENT))
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)) {
+			return false;
+		}
+		return true;
+	}
+
 	private List<UserRight> getSortedUserRights() {
-		return Stream.of(UserRight.values()).sorted((r1, r2) -> {
+		final List<UserRight> collect = Stream.of(UserRight.values()).sorted((r1, r2) -> {
 			int groupOrder1 = r1.getUserRightGroup().ordinal();
 			int groupOrder2 = r2.getUserRightGroup().ordinal();
 
@@ -134,6 +145,10 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 			return groupOrder1 != groupOrder2 ? groupOrder1 - groupOrder2 : rightOrder1 - rightOrder2;
 		}).collect(Collectors.toList());
+
+		return collect.stream()
+			.filter(userRight -> checkFeatureConfigurationAllowsUserGroups(userRight.getUserRightGroup()))
+			.collect(Collectors.toList());
 	}
 
 	void applyTemplateData(UserRoleDto templateRole) {

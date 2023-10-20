@@ -51,6 +51,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleRefer
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -326,7 +327,7 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		if (positiveWithSameDisease.isPresent()) {
+		if (positiveWithSameDisease.isPresent() && FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 			showChangeAssociatedSampleResultDialog(positiveWithSameDisease.get(), (accepted) -> {
 				if (accepted) {
 					checkForDiseaseVariantUpdate(positiveWithSameDisease.get(), caze, suppressNavigateToCase, this::showConfirmCaseDialog);
@@ -342,7 +343,8 @@ public class PathogenTestController {
 			Optional<PathogenTestDto> positiveWithOtherDisease =
 				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
 
-			if (positiveWithOtherDisease.isPresent()) {
+			if (positiveWithOtherDisease.isPresent()
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 				List<CaseDataDto> duplicatedCases =
 					FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(caze.getPerson(), positiveWithOtherDisease.get());
 				if (duplicatedCases == null || duplicatedCases.size() == 0) {
@@ -388,7 +390,7 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		if (positiveWithSameDisease.isPresent()) {
+		if (positiveWithSameDisease.isPresent() && FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 			if (contact.getResultingCase() == null && !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
 				showConvertContactToCaseDialog(
 					contact,
@@ -405,7 +407,8 @@ public class PathogenTestController {
 
 			Optional<PathogenTestDto> positiveWithOtherDisease =
 				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
-			if (positiveWithOtherDisease.isPresent()) {
+			if (positiveWithOtherDisease.isPresent()
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 				List<CaseDataDto> duplicatedCases =
 					FacadeProvider.getCaseFacade().getDuplicatesWithPathogenTest(contact.getPerson(), positiveWithOtherDisease.get());
 				if (CollectionUtils.isEmpty(duplicatedCases)) {
@@ -448,7 +451,7 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		if (positiveWithSameDisease.isPresent()) {
+		if (positiveWithSameDisease.isPresent() && FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 			if (eventParticipant.getResultingCase() == null) {
 				showConvertEventParticipantToCaseDialog(eventParticipant, positiveWithSameDisease.get().getTestedDisease(), caseCreated -> {
 					handleCaseCreationFromContactOrEventParticipant(caseCreated, positiveWithSameDisease.get());
@@ -465,7 +468,8 @@ public class PathogenTestController {
 
 			Optional<PathogenTestDto> positiveWithOtherDisease =
 				tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
-			if (positiveWithOtherDisease.isPresent()) {
+			if (positiveWithOtherDisease.isPresent()
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
 				List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade()
 					.getDuplicatesWithPathogenTest(eventParticipant.getPerson().toReference(), positiveWithOtherDisease.get());
 				if (CollectionUtils.isEmpty(duplicatedCases)) {
