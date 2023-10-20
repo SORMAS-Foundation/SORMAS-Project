@@ -121,7 +121,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 		UserRoleFormHelper.createFieldDependencies(this);
 	}
 
-	private boolean checkFeatureConfigurationAllowsUserGroups(UserRightGroup userRightGroup) {
+	private boolean doesFeatureConfigurationsAllowUserGroup(UserRightGroup userRightGroup) {
 		if ((userRightGroup.equals(UserRightGroup.CASE) || userRightGroup.equals(UserRightGroup.CASE_MANAGEMENT))
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)) {
 			return false;
@@ -147,7 +147,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 		}).collect(Collectors.toList());
 
 		return collect.stream()
-			.filter(userRight -> checkFeatureConfigurationAllowsUserGroups(userRight.getUserRightGroup()))
+			.filter(userRight -> doesFeatureConfigurationsAllowUserGroup(userRight.getUserRightGroup()))
 			.collect(Collectors.toList());
 	}
 
