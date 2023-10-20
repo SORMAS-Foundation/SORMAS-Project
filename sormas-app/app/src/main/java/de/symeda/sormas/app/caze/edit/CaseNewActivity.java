@@ -27,13 +27,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-
 import androidx.annotation.NonNull;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -82,11 +82,11 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 	}
 
 	public static void startActivityFromContact(Context fromActivity, Contact contact) {
-		if (contact.getContactClassification() == ContactClassification.UNCONFIRMED) {
+		if (contact.getContactClassification() != ContactClassification.CONFIRMED) {
 			NotificationHelper.showNotification(
 				getActiveActivity(),
 				NotificationType.WARNING,
-				getActiveActivity().getResources().getString(R.string.message_contact_to_case_confirmation_required));
+				I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 			return;
 		}
 
