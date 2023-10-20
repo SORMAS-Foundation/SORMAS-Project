@@ -37,6 +37,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.DefaultInfrastructureCache;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -55,6 +56,8 @@ public class CommunityFacadeEjb
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private DefaultInfrastructureCache defaultInfrastructureCache;
 
 	public CommunityFacadeEjb() {
 	}
@@ -183,6 +186,16 @@ public class CommunityFacadeEjb
 	@Override
 	protected boolean checkDefaultEligible(CommunityDto dto) {
 		return dto.getDistrict().equals(districtFacade.getDefaultInfrastructureReference());
+	}
+
+	@Override
+	protected Community getDefaultInfrastructure() {
+		return defaultInfrastructureCache.getDefaultCommunity();
+	}
+
+	@Override
+	protected void resetDefaultInfrastructure() {
+		defaultInfrastructureCache.resetDefaultCommunity();
 	}
 
 	@LocalBean

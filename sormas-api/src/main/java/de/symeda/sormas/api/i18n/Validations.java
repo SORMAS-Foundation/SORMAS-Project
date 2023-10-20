@@ -47,6 +47,8 @@ public interface Validations {
 	String defaultInfrastructureAlreadyExisting = "defaultInfrastructureAlreadyExisting";
 	String defaultInfrastructureInvalidParentDistrict = "defaultInfrastructureInvalidParentDistrict";
 	String defaultInfrastructureInvalidParentRegion = "defaultInfrastructureInvalidParentRegion";
+	String defaultInfrastructureNotRemovableChildCommunity = "defaultInfrastructureNotRemovableChildCommunity";
+	String defaultInfrastructureNotRemovableChildDistrict = "defaultInfrastructureNotRemovableChildDistrict";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";

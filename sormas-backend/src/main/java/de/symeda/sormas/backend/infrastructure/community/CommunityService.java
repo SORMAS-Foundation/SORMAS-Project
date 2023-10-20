@@ -189,6 +189,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				case Community.NAME:
 				case Community.GROWTH_RATE:
 				case Community.EXTERNAL_ID:
+				case Community.DEFAULT_INFRASTRUCTURE:
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:

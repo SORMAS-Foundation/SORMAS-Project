@@ -47,7 +47,6 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	private String duplicateErrorMessageProperty;
 	private String archivingNotPossibleMessageProperty;
 	private String dearchivingNotPossibleMessageProperty;
-	private CachedDefaultInfrastructure defaultInfrastructureCache;
 
 	protected AbstractInfrastructureFacadeEjb() {
 		super();
@@ -147,8 +146,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 							I18nProperties.getCaption(adoClass.getSimpleName())));
 				}
 			} else if (checkDefaultEligible(dtoToSave)) {
-				// Default infrastructure set for the first time, needs to be re-queried
-				defaultInfrastructureCache.setQueried(false);
+				resetDefaultInfrastructure();
 			} else {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(
@@ -159,8 +157,14 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		} else if (existingEntity instanceof InfrastructureAdoWithDefault
 			&& ((InfrastructureAdoWithDefault) existingEntity).isDefaultInfrastructure()) {
 			// Default infrastructure removed
-			if (defaultInfrastructureCache != null) {
-				defaultInfrastructureCache.setDefaultInfrastructure(null);
+			if (!checkDefaultRemovalAllowed(dtoToSave)) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						adoClass == District.class
+							? Validations.defaultInfrastructureNotRemovableChildCommunity
+							: Validations.defaultInfrastructureNotRemovableChildDistrict));
+			} else {
+				resetDefaultInfrastructure();
 			}
 		}
 
@@ -365,39 +369,15 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return true;
 	}
 
-	protected ADO getDefaultInfrastructure() {
-
-		if (defaultInfrastructureCache == null) {
-			defaultInfrastructureCache = new CachedDefaultInfrastructure();
-		}
-
-		if (!defaultInfrastructureCache.isQueried()) {
-			defaultInfrastructureCache.setDefaultInfrastructure(service.getDefaultInfrastructure());
-			defaultInfrastructureCache.setQueried(true);
-		}
-
-		return defaultInfrastructureCache.getDefaultInfrastructure();
+	protected boolean checkDefaultRemovalAllowed(DTO dto) {
+		return true;
 	}
 
-	protected class CachedDefaultInfrastructure {
+	protected ADO getDefaultInfrastructure() {
+		return null;
+	}
 
-		private ADO defaultInfrastructure = null;
-		private boolean queried;
-
-		public ADO getDefaultInfrastructure() {
-			return defaultInfrastructure;
-		}
-
-		public void setDefaultInfrastructure(ADO defaultInfrastructure) {
-			this.defaultInfrastructure = defaultInfrastructure;
-		}
-
-		public boolean isQueried() {
-			return queried;
-		}
-
-		public void setQueried(boolean queried) {
-			this.queried = queried;
-		}
+	protected void resetDefaultInfrastructure() {
+		// No default implementation
 	}
 }

@@ -1645,7 +1645,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public PersonReferenceDto toRefDto(Person person) {
+	protected PersonReferenceDto toRefDto(Person person) {
 		return toReferenceDto(person);
 	}
 

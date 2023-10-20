@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.DefaultInfrastructureCache;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
@@ -61,6 +62,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -78,9 +80,13 @@ public class RegionFacadeEjb
 	@EJB
 	private AreaService areaService;
 	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
 	private CountryService countryService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private DefaultInfrastructureCache defaultInfrastructureCache;
 
 	public RegionFacadeEjb() {
 	}
@@ -156,6 +162,7 @@ public class RegionFacadeEjb
 				case Region.EPID_CODE:
 				case Region.GROWTH_RATE:
 				case Region.EXTERNAL_ID:
+				case Region.DEFAULT_INFRASTRUCTURE:
 					expression = region.get(sortProperty.propertyName);
 					break;
 				case Region.AREA:
@@ -312,6 +319,21 @@ public class RegionFacadeEjb
 		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 
 		return target;
+	}
+
+	@Override
+	protected boolean checkDefaultRemovalAllowed(RegionDto dto) {
+		return districtFacade.getDefaultInfrastructureReference() == null;
+	}
+
+	@Override
+	protected Region getDefaultInfrastructure() {
+		return defaultInfrastructureCache.getDefaultRegion();
+	}
+
+	@Override
+	protected void resetDefaultInfrastructure() {
+		defaultInfrastructureCache.resetDefaultRegion();
 	}
 
 	@LocalBean

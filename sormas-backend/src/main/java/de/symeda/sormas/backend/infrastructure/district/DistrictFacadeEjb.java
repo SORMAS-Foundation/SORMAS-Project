@@ -53,11 +53,13 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.DefaultInfrastructureCache;
 import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -81,7 +83,11 @@ public class DistrictFacadeEjb
 	@EJB
 	private RegionService regionService;
 	@EJB
+	private CommunityFacadeEjbLocal communityFacade;
+	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
+	@EJB
+	private DefaultInfrastructureCache defaultInfrastructureCache;
 
 	public DistrictFacadeEjb() {
 	}
@@ -145,6 +151,7 @@ public class DistrictFacadeEjb
 				case District.EPID_CODE:
 				case District.GROWTH_RATE:
 				case District.EXTERNAL_ID:
+				case District.DEFAULT_INFRASTRUCTURE:
 					expression = district.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
@@ -345,6 +352,21 @@ public class DistrictFacadeEjb
 	@Override
 	protected boolean checkDefaultEligible(DistrictDto dto) {
 		return dto.getRegion().equals(regionFacade.getDefaultInfrastructureReference());
+	}
+
+	@Override
+	protected boolean checkDefaultRemovalAllowed(DistrictDto dto) {
+		return communityFacade.getDefaultInfrastructureReference() == null;
+	}
+
+	@Override
+	protected District getDefaultInfrastructure() {
+		return defaultInfrastructureCache.getDefaultDistrict();
+	}
+
+	@Override
+	protected void resetDefaultInfrastructure() {
+		defaultInfrastructureCache.resetDefaultDistrict();
 	}
 
 	@LocalBean
