@@ -372,11 +372,11 @@ public class SynchronizationDialog extends AbstractDialog {
 		addEntityIfViewAllowed(ImmunizationDto.class, Strings.entityImmunizations, allowedEntities);
 		addEntityIfViewAllowed(EventDto.class, Strings.entityEvents, allowedEntities);
 		addEntityIfViewAllowed(EventParticipantDto.class, Strings.entityEventParticipants, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
+		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities);
 		addEntityIfViewAllowed(PathogenTestDto.class, Strings.entityPathogenTests, allowedEntities);
 		addEntityIfViewAllowed(AdditionalTestDto.class, Strings.entityAdditionalTests, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentDto.class, Strings.entityEnvironments, allowedEntities);
-		addEntityIfViewAllowed(EnvironmentSampleDto.class, Strings.entityEnvironmentSamples, allowedEntities);
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities);
 		addEntityIfViewAllowed(VisitDto.class, Strings.entityVisits, allowedEntities);
 		addEntityIfViewAllowed(TaskDto.class, Strings.entityTasks, allowedEntities);
