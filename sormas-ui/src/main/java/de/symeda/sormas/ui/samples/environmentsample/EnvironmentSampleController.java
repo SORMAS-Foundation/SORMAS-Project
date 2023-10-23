@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.samples.environmentsample;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -94,6 +95,10 @@ public class EnvironmentSampleController {
 		String sampleUuid = sample.getUuid();
 		DeletionInfoDto automaticDeletionInfoDto = environmentSampleFacade.getAutomaticDeletionInfo(sampleUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = environmentSampleFacade.getManuallyDeletionInfo(sampleUuid);
+
+		if (sample.getWeatherConditions() == null) {
+			sample.setWeatherConditions(new HashMap<>());
+		}
 
 		EnvironmentSampleEditForm editForm = new EnvironmentSampleEditForm(sample.isPseudonymized(), false);
 		editForm.setValue(sample);

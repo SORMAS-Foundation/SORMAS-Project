@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.90.0-SNAPSHOT
+  version: 1.91.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:

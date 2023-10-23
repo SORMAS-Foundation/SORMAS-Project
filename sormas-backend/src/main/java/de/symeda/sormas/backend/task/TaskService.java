@@ -127,6 +127,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(taskQueryContext));
 		}
 
+		Predicate criteriaFilter = this.buildCriteriaFilter(new TaskCriteria(), taskQueryContext);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+
 		return filter;
 	}
 
@@ -143,6 +146,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			Predicate userFilter = createUserFilter(taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
+
+		Predicate criteriaFilter = this.buildCriteriaFilter(new TaskCriteria(), taskQueryContext);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (RequestContextHolder.isMobileSync()) {
 			Predicate predicate = createLimitedChangeDateFilter(cb, from);
@@ -190,7 +196,9 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				|| !taskCriteria.hasContextCriteria()
 				|| (taskCriteria.getTaskContext() == TaskContext.TRAVEL_ENTRY || taskCriteria.getTravelEntry() != null);
 		case ENVIRONMENT:
-			return taskCriteria == null || (taskCriteria.getTaskContext() == TaskContext.ENVIRONMENT || taskCriteria.getEnvironment() != null);
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.ENVIRONMENT || taskCriteria.getEnvironment() != null);
 		case GENERAL:
 			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.GENERAL;
 		default:

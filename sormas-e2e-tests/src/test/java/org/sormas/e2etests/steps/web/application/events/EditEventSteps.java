@@ -1160,7 +1160,7 @@ public class EditEventSteps implements En {
         "I click on Yes option in Confirm deletion on Edit Event Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
     When(
         "I check that error message is equal to {string} in Reason for Deletion in popup",
@@ -1174,6 +1174,7 @@ public class EditEventSteps implements En {
     When(
         "I check if Reason for deletion is set to {string} on Edit Event Page",
         (String expected) -> {
+          webDriverHelpers.scrollToElement(REASON_FOR_DELETION_INPUT);
           String collectedReason =
               webDriverHelpers.getValueFromWebElement(REASON_FOR_DELETION_INPUT);
           softly.assertEquals(expected, collectedReason, "Reasons for deletion are not equal");

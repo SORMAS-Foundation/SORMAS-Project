@@ -39,8 +39,9 @@ public class DtoFeatureConfigHelper {
 		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.SAMPLES_LAB);
 	}
 
-	public static boolean isFeatureConfigForSampleTestsEnabled() {
-		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.SAMPLES_LAB);
+	public static boolean isFeatureConfigForPathogenTestsEnabled() {
+		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.SAMPLES_LAB)
+			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.ENVIRONMENT_MANAGEMENT);
 	}
 
 	public static boolean isFeatureConfigForAdditionalTestsEnabled() {
@@ -69,11 +70,11 @@ public class DtoFeatureConfigHelper {
 	}
 
 	public static boolean isFeatureConfigForPrescriptionsEnabled() {
-		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.CLINICAL_MANAGEMENT);
 	}
 
 	public static boolean isFeatureConfigForTreatmentsEnabled() {
-		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.CLINICAL_MANAGEMENT);
 	}
 
 	public static boolean isFeatureConfigForClinicalVisitsEnabled() {
@@ -82,5 +83,13 @@ public class DtoFeatureConfigHelper {
 
 	public static boolean isFeatureConfigForEnvironmentEnabled() {
 		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.ENVIRONMENT_MANAGEMENT);
+	}
+
+	public static boolean isFeatureConfigForEnvironmentSamplesEnabled() {
+		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.ENVIRONMENT_MANAGEMENT);
+	}
+
+	public static boolean isFeatureConfigForCampaignsEnabled() {
+		return DatabaseHelper.getFeatureConfigurationDao().isFeatureEnabled(FeatureType.CAMPAIGNS);
 	}
 }
