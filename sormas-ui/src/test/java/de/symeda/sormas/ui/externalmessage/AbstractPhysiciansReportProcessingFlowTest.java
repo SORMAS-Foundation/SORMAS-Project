@@ -55,6 +55,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
@@ -78,7 +79,54 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 
 	private RelatedForwardedMessageHandler relatedForwardedMessagesHandler;
 
-	private interface PickOrCreatePersonHandler extends BiFunction<PersonDto, HandlerCallback<PersonDto>, Void> {
+	private ProcessingResult<CaseDataDto> runFlow(ExternalMessageDto externalMessage) throws ExecutionException, InterruptedException {
+		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
+		AbstractPhysiciansReportProcessingFlow flow =
+			new AbstractPhysiciansReportProcessingFlow(user, new ExternalMessageMapper(externalMessage, processingFacade), processingFacade) {
+
+				@Override
+				protected CompletionStage<Boolean> handleMissingDisease() {
+					return missingDiseaseHandler.get();
+				}
+
+				@Override
+				protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
+					return relatedForwardedMessagesHandler.get();
+				}
+
+				@Override
+				protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+					handlePickOrCreatePerson.apply(person, callback);
+				}
+
+				@Override
+				protected void handlePickOrCreateEntry(
+					List<CaseSelectionDto> similarCases,
+					ExternalMessageDto externalMessage,
+					HandlerCallback<PickOrCreateEntryResult> callback) {
+					handlePickOrCreateEntry.handle(similarCases, callback);
+				}
+
+				@Override
+				protected void handleCreateCase(
+					CaseDataDto caze,
+					PersonDto person,
+					ExternalMessageDto externalMessage,
+					HandlerCallback<CaseDataDto> callback) {
+					handleCreateCase.handle(caze, person, callback);
+				}
+
+				@Override
+				protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
+					handleUpdateCase.apply(caze, callback);
+				}
+
+				@Override
+				protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
+					handleConvertSamePersonContactsAndEventParticipants.apply(caze, callback);
+				}
+			};
+		return flow.run(externalMessage).toCompletableFuture().get();
 	}
 
 	private PickOrCreatePersonHandler handlePickOrCreatePerson;
@@ -473,54 +521,15 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 			() -> runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED)));
 	}
 
-	private ProcessingResult<CaseDataDto> runFlow(ExternalMessageDto externalMessage) throws ExecutionException, InterruptedException {
-		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
-		AbstractPhysiciansReportProcessingFlow flow =
-			new AbstractPhysiciansReportProcessingFlow(user, new ExternalMessageMapper(externalMessage, processingFacade), processingFacade) {
+	@NotNull
+	private Answer<Object> answerPickOrCreatePerson(@Nullable PersonDto existingPerson) {
+		return invocation -> {
+			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
+			PersonDto person = existingPerson != null ? existingPerson : invocation.getArgument(0);
+			callback.done(new EntitySelection<>(person, existingPerson != null));
 
-				@Override
-				protected CompletionStage<Boolean> handleMissingDisease() {
-					return missingDiseaseHandler.get();
-				}
-
-				@Override
-				protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-					return relatedForwardedMessagesHandler.get();
-				}
-
-				@Override
-				protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
-					handlePickOrCreatePerson.apply(person, callback);
-				}
-
-				@Override
-				protected void handlePickOrCreateEntry(
-					List<CaseSelectionDto> similarCases,
-					ExternalMessageDto externalMessage,
-					HandlerCallback<PickOrCreateEntryResult> callback) {
-					handlePickOrCreateEntry.handle(similarCases, callback);
-				}
-
-				@Override
-				protected void handleCreateCase(
-					CaseDataDto caze,
-					PersonDto person,
-					ExternalMessageDto externalMessage,
-					HandlerCallback<CaseDataDto> callback) {
-					handleCreateCase.handle(caze, person, callback);
-				}
-
-				@Override
-				protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
-					handleUpdateCase.apply(caze, callback);
-				}
-
-				@Override
-				protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
-					handleConvertSamePersonContactsAndEventParticipants.apply(caze, callback);
-				}
-			};
-		return flow.run(externalMessage).toCompletableFuture().get();
+			return null;
+		};
 	}
 
 	private ExternalMessageDto createExternalMessage(Disease disease, String reportId, ExternalMessageStatus status) {
@@ -545,15 +554,7 @@ public class AbstractPhysiciansReportProcessingFlowTest extends AbstractUiBeanTe
 		return externalMessage;
 	}
 
-	@NotNull
-	private Answer<Object> answerPickOrCreatePerson(@Nullable PersonDto existingPerson) {
-		return invocation -> {
-			HandlerCallback<PersonDto> callback = invocation.getArgument(1);
-			PersonDto person = existingPerson != null ? existingPerson : invocation.getArgument(0);
-			callback.done(person);
-
-			return null;
-		};
+	private interface PickOrCreatePersonHandler extends BiFunction<PersonDto, HandlerCallback<EntitySelection<PersonDto>>, Void> {
 	}
 
 	@NotNull

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -60,6 +61,8 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -79,6 +82,7 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportServic
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessageProcessor;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
@@ -100,6 +104,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @RightsAllowed(UserRight._EXTERNAL_MESSAGE_VIEW)
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
 		ExternalMessageIndexDto.UUID,
 		ExternalMessageIndexDto.TYPE,
@@ -115,8 +121,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private ExternalMessageService externalMessageService;
@@ -142,7 +146,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
-	private ExternalMessageProcessor externalMessageProcessor;
+	private AutomaticLabMessageProcessor automaticLabMessageProcessor;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -224,12 +228,36 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	public ExternalMessageDto saveAndProcessIntoCase(@Valid ExternalMessageDto dto) {
-		ExternalMessageDto savedMessage = save(dto, true, false);
+	public ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto labMessage) {
+		ExternalMessageDto savedMessage = save(labMessage);
 
-		externalMessageProcessor.processIntoCase(savedMessage);
+		if (!labMessage.isAutomaticProcessingPossible()) {
+			return savedMessage;
+		}
 
-		return savedMessage;
+		try {
+			ProcessingResult<ExternalMessageProcessingResult> result = automaticLabMessageProcessor.processLabMessage(savedMessage);
+
+			if (result.getStatus().isCanceled()) {
+				logger.error("Processing of lab message with UUID {} has benn canceled", savedMessage.getUuid());
+
+				// rollback transaction and save only the lab message
+				em.getTransaction().rollback();
+				save(labMessage);
+			}
+		} catch (ExecutionException e) {
+			logger.error("Could not process lab message with UUID " + savedMessage.getUuid(), e);
+
+			// rollback transaction and save only the lab message
+			em.getTransaction().rollback();
+			save(labMessage);
+
+		} catch (InterruptedException e) {
+			logger.error("Could not process lab message with UUID " + savedMessage.getUuid(), e);
+			Thread.currentThread().interrupt();
+		}
+
+		return getByUuid(savedMessage.getUuid());
 	}
 
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {

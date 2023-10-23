@@ -40,6 +40,7 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,7 +53,7 @@ import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class EntrySelectionField extends CustomField<de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult> {
+public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 	private static final long serialVersionUID = 5315286409460459687L;
 
@@ -317,7 +318,7 @@ public class EntrySelectionField extends CustomField<de.symeda.sormas.api.extern
 	}
 
 	@Override
-	protected void doSetValue(de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult pickOrCreateEntryResult) {
+	protected void doSetValue(PickOrCreateEntryResult pickOrCreateEntryResult) {
 		if (pickOrCreateEntryResult == null) {
 			throw new IllegalArgumentException();
 		}
@@ -335,35 +336,29 @@ public class EntrySelectionField extends CustomField<de.symeda.sormas.api.extern
 	}
 
 	@Override
-	public de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult getValue() {
+	public PickOrCreateEntryResult getValue() {
 		if (caseGrid != null && rbSelectCase.getValue() != null) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setCaze((CaseSelectionDto) caseGrid.getSelectedRow());
 			return value;
 		} else if (contactGrid != null && rbSelectContact.getValue() != null) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setContact((SimilarContactDto) contactGrid.getSelectedRow());
 			return value;
 		} else if (eventParticipantGrid != null && rbSelectEventParticipant.getValue() != null) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setEventParticipant((SimilarEventParticipantDto) eventParticipantGrid.getSelectedRow());
 			return value;
 		} else if (OptionType.CREATE_CASE.equals(rbCreateEntity.getValue())) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewCase(true);
 			return value;
 		} else if (OptionType.CREATE_CONTACT.equals(rbCreateEntity.getValue())) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewContact(true);
 			return value;
 		} else if (OptionType.CREATE_EVENT_PARTICIPANT.equals(rbCreateEntity.getValue())) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult value =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewEventParticipant(true);
 			return value;
 		}
@@ -472,12 +467,11 @@ public class EntrySelectionField extends CustomField<de.symeda.sormas.api.extern
 				return options.size();
 			}
 
-			public de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult getSingleAvailableCreateResult() {
+			public PickOrCreateEntryResult getSingleAvailableCreateResult() {
 				if (size() != 1) {
 					return null;
 				} else {
-					de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult result =
-						new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+					PickOrCreateEntryResult result = new PickOrCreateEntryResult();
 					switch (options.get(0).type) {
 					case CREATE_CASE:
 						result.setNewCase(true);

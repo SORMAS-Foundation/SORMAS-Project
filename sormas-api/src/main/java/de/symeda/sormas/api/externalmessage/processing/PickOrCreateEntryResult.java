@@ -76,6 +76,18 @@ public class PickOrCreateEntryResult implements Serializable {
 		return newEventParticipant;
 	}
 
+	public boolean isSelectedCase() {
+		return caze != null;
+	}
+
+	public boolean isSelectedContact() {
+		return contact != null;
+	}
+
+	public boolean isSelectedEventParticipant() {
+		return eventParticipant != null;
+	}
+
 	public void setNewEventParticipant(boolean newEventParticipant) {
 		this.newEventParticipant = newEventParticipant;
 	}

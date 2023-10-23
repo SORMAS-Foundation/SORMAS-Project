@@ -102,8 +102,22 @@ public class PathogenTestController {
 		int caseSampleCount,
 		Consumer<PathogenTestDto> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
+		return getPathogenTestCreateComponent(
+			PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()),
+			sampleDto,
+			caseSampleCount,
+			onSavedPathogenTest,
+			suppressNavigateToCase);
+	}
+
+	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
+		PathogenTestDto pathogenTest,
+		SampleDto sampleDto,
+		int caseSampleCount,
+		Consumer<PathogenTestDto> onSavedPathogenTest,
+		boolean suppressNavigateToCase) {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created 
-		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
+		createForm.setValue(pathogenTest);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
@@ -111,11 +125,11 @@ public class PathogenTestController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				PathogenTestDto pathogenTest = createForm.getValue();
-				savePathogenTestForSample(pathogenTest, suppressNavigateToCase);
+				PathogenTestDto editedPathogenTest = createForm.getValue();
+				savePathogenTestForSample(editedPathogenTest, suppressNavigateToCase);
 
 				if (onSavedPathogenTest != null) {
-					onSavedPathogenTest.accept(pathogenTest);
+					onSavedPathogenTest.accept(editedPathogenTest);
 				}
 
 				SormasUI.refreshView();

@@ -27,6 +27,8 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -53,7 +55,7 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 	}
 
 	@Override
-	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<ExternalMessageProcessingResult.EntitySelection<PersonDto>> callback) {
 		ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow(person, callback);
 	}
 
@@ -61,11 +63,10 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 	protected void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
 		ExternalMessageDto externalMessage,
-		HandlerCallback<de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult> callback) {
+		HandlerCallback<PickOrCreateEntryResult> callback) {
 
 		if (CollectionUtils.isEmpty(similarCases)) {
-			de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult result =
-				new de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult();
+			PickOrCreateEntryResult result = new PickOrCreateEntryResult();
 			result.setNewCase(true);
 
 			callback.done(result);

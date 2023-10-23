@@ -55,6 +55,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
@@ -98,7 +99,6 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		super(
 			labMessage,
 			UserProvider.getCurrent().getUser(),
-			FacadeProvider.getCountryFacade().getServerCountry(),
 			mapper,
 			processingFacade,
 			relatedLabMessageHandler);
@@ -115,7 +115,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	@Override
-	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
 		showPickOrCreatePersonWindow(person, callback);
 	}
 
@@ -428,11 +428,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		return sampleCreateComponent;
 	}
 
-	private void addPathogenTests(
-		List<PathogenTestDto> pathogenTests,
-		ExternalMessageDto labMessage,
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
-		Consumer<PathogenTestDto> saveHandler) {
-
+	@Override
+	protected CompletionStage<Void> notifyCorrectionsSaved() {
+		return null;
 	}
 }

@@ -66,6 +66,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
@@ -74,6 +75,7 @@ import de.symeda.sormas.ui.AbstractUiBeanTest;
 public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 
 	private TestDataCreator.RDCF rdcf;
+	private UserDto user;
 	private UserReferenceDto userRef;
 	private PersonDto person;
 	private FacilityDto lab;
@@ -94,7 +96,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		lab.setDistrict(rdcf.district);
 		getFacilityFacade().save(lab);
 
-		userRef = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER)).toReference();
+		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		userRef = user.toReference();
 		person = creator.createPerson("James", "Smith", Sex.MALE);
 	}
 
@@ -1071,7 +1074,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 	}
 
 	private RelatedLabMessageTestHandler getHandler(ExternalMessageDto labMessage) {
-		return new RelatedLabMessageTestHandler(labMessage, getExternalMessageProcessingFacade());
+		return new RelatedLabMessageTestHandler(labMessage, getExternalMessageProcessingFacade(), user);
 	}
 
 	public interface CreatePathogenTestHandler {
@@ -1116,8 +1119,8 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		public BiFunction<ExternalMessageDto, SampleReferenceDto, CompletionStage<Boolean>> continueProcessingConfirmation;
 		public ShortcutHandler shortcutHandler;
 
-		public RelatedLabMessageTestHandler(ExternalMessageDto labMessage, ExternalMessageProcessingFacade processingFacade) {
-			super(new ExternalMessageMapper(labMessage, processingFacade));
+		public RelatedLabMessageTestHandler(ExternalMessageDto labMessage, ExternalMessageProcessingFacade processingFacade, UserDto user) {
+			super(user, new ExternalMessageMapper(labMessage, processingFacade));
 
 			personChangesHandler = Mockito.mock(CorrectedPersonHandler.class);
 			Mockito.doAnswer(invocation -> {

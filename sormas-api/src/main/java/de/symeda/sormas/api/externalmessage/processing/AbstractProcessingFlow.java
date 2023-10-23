@@ -19,12 +19,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
 import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
@@ -50,50 +52,72 @@ public abstract class AbstractProcessingFlow {
 		this.processingFacade = processingFacade;
 	}
 
-	protected FlowThen<Void> doInitialChecks(ExternalMessageDto externalMessageDto) {
-		return new FlowThen<Void>().then(ignored -> checkDisease(externalMessageDto))
-			.then(ignored -> checkRelatedForwardedMessages(externalMessageDto));
+	protected FlowThen<ExternalMessageProcessingResult> doInitialChecks(
+		ExternalMessageDto externalMessage,
+		ExternalMessageProcessingResult defaultResult) {
+		return new FlowThen<ExternalMessageProcessingResult>().then(ignored -> checkDisease(externalMessage, defaultResult))
+			.then(ignored -> checkRelatedForwardedMessages(externalMessage, defaultResult));
 	}
 
-	private CompletionStage<ProcessingResult<Void>> checkDisease(ExternalMessageDto externalMessageDto) {
+	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> checkDisease(
+		ExternalMessageDto externalMessageDto,
+		ExternalMessageProcessingResult defaultResult) {
 
 		if (externalMessageDto.getDisease() == null) {
 			return handleMissingDisease().thenCompose(
 				next -> ProcessingResult
-					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+					.withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED, defaultResult)
 					.asCompletedFuture());
 		} else {
-			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
+			return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
 		}
 	}
 
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
 
-	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(ExternalMessageDto externalMessageDto) {
+	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> checkRelatedForwardedMessages(
+		ExternalMessageDto externalMessageDto,
+		ExternalMessageProcessingResult defaultResult) {
 
 		if (processingFacade.existsForwardedExternalMessageWith(externalMessageDto.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
 				next -> ProcessingResult
-					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+					.withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED, defaultResult)
 					.asCompletedFuture());
 		} else {
-			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
+			return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
 		}
 	}
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson() {
+	protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult) {
 
 		final PersonDto person = buildPerson();
 
-		HandlerCallback<PersonDto> callback = new HandlerCallback<>();
+		HandlerCallback<EntitySelection<PersonDto>> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
 
-		return callback.futureResult;
+		return mapHandlerResult(
+			callback,
+			previousResult,
+			personSelection -> previousResult.withPerson(personSelection.getEntity(), personSelection.isNew()));
 	}
 
-	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback);
+	protected <T> CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> mapHandlerResult(
+		HandlerCallback<T> callback,
+		ExternalMessageProcessingResult previousResult,
+		Function<T, ExternalMessageProcessingResult> resultMapper) {
+		return callback.futureResult.thenCompose(p -> {
+			if (p.getStatus().isCanceled()) {
+				return ProcessingResult.withStatus(p.getStatus(), previousResult).asCompletedFuture();
+			}
+
+			return ProcessingResult.of(p.getStatus(), resultMapper.apply(p.getData())).asCompletedFuture();
+		});
+	}
+
+	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback);
 
 	private PersonDto buildPerson() {
 
@@ -163,7 +187,7 @@ public abstract class AbstractProcessingFlow {
 		}
 
 		public void cancel() {
-			futureResult.complete(ProcessingResult.withStatus(ProcessingResultStatus.CANCELED));
+			futureResult.complete(ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, null));
 		}
 	}
 

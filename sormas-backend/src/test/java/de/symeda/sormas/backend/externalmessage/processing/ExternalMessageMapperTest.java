@@ -13,16 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.externalmessage.labmessage.processing;
+package de.symeda.sormas.backend.externalmessage.processing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -35,10 +32,6 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -212,36 +205,5 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 		assertEquals(expectedResult.get(0)[0], result.get(0)[0]);
 		assertEquals(PresentCondition.ALIVE, person.getPresentCondition());
 
-	}
-
-	@Test
-	public void testGetLabReference() {
-		var rdcf = creator.createRDCF();
-		FacilityFacade facilityFacade = getFacilityFacade();
-		final FacilityReferenceDto otherFacilityRef = facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
-
-		ExternalMessageDto labMessageDto = ExternalMessageDto.build();
-		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessageDto, getExternalMessageProcessingFacade());
-
-		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.emptyList(), facilityFacade));
-		assertEquals(otherFacilityRef, mapper.getFacilityReference(Collections.singletonList("unknown"), facilityFacade));
-
-		FacilityDto one = creator.createFacility("One", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
-		one.setExternalID("oneExternal");
-		one.setChangeDate(new Date());
-		facilityFacade.save(one);
-
-		FacilityDto two = creator.createFacility("Two", rdcf.region, rdcf.district, rdcf.community, FacilityType.LABORATORY);
-		two.setExternalID("twoExternal");
-		two.setChangeDate(new Date());
-		facilityFacade.save(two);
-
-		FacilityReferenceDto oneExternal = mapper.getFacilityReference(Collections.singletonList("oneExternal"), facilityFacade);
-		assertEquals(one.toReference(), oneExternal);
-
-		FacilityReferenceDto twoExternal = mapper.getFacilityReference(Collections.singletonList("twoExternal"), facilityFacade);
-		assertEquals(two.toReference(), twoExternal);
-
-		assertNull(mapper.getFacilityReference(Arrays.asList("oneExternal", "twoExternal"), facilityFacade));
 	}
 }

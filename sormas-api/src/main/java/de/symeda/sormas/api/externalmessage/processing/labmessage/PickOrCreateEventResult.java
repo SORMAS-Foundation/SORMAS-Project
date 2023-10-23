@@ -31,6 +31,10 @@ public class PickOrCreateEventResult {
 		this.event = event;
 	}
 
+	public boolean isEventSelected() {
+		return event != null;
+	}
+
 	public boolean isNewEvent() {
 		return newEvent;
 	}

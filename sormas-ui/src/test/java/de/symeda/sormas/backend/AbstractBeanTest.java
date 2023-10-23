@@ -1010,7 +1010,9 @@ public abstract class AbstractBeanTest {
 			getSampleFacade(),
 			getPathogenTestFacade(),
 			getFacilityFacade(),
-			getCustomizableEnumFacade()) {
+			getCustomizableEnumFacade(),
+			getCountryFacade(),
+			getSurveillanceReportFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {

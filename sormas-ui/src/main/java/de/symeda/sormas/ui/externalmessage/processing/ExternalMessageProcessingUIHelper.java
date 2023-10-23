@@ -53,6 +53,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
@@ -113,19 +114,17 @@ public class ExternalMessageProcessingUIHelper {
 			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
-	public static void showPickOrCreatePersonWindow(PersonDto person, AbstractProcessingFlow.HandlerCallback<PersonDto> callback) {
+	public static void showPickOrCreatePersonWindow(
+		PersonDto person,
+		AbstractProcessingFlow.HandlerCallback<ExternalMessageProcessingResult.EntitySelection<PersonDto>> callback) {
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
-				PersonDto selectedPersonDto = null;
-				if (selectedPersonRef != null) {
-					if (selectedPersonRef.getUuid().equals(person.getUuid())) {
-						selectedPersonDto = person;
-					} else {
-						selectedPersonDto = FacadeProvider.getPersonFacade().getByUuid(selectedPersonRef.getUuid());
-					}
-				}
+				PersonDto selectedPersonDto = selectedPersonRef.getUuid().equals(person.getUuid())
+					? person
+					: FacadeProvider.getPersonFacade().getByUuid(selectedPersonRef.getUuid());
 
-				callback.done(selectedPersonDto);
+				callback.done(
+					new ExternalMessageProcessingResult.EntitySelection<>(selectedPersonDto, person.getUuid().equals(selectedPersonRef.getUuid())));
 			},
 				callback::cancel,
 				false,

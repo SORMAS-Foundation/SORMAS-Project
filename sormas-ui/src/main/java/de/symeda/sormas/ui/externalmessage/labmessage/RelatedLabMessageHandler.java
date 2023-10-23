@@ -50,6 +50,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.CorrectionPanel;
@@ -66,8 +67,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 
-	public RelatedLabMessageHandler(ExternalMessageMapper mapper) {
-		super(mapper);
+	public RelatedLabMessageHandler(UserDto user, ExternalMessageMapper mapper) {
+		super(user, mapper);
 	}
 
 	@Override

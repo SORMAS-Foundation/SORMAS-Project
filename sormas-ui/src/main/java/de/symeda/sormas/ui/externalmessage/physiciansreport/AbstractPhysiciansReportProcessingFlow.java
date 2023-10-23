@@ -26,6 +26,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
@@ -43,15 +44,14 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 	public CompletionStage<ProcessingResult<CaseDataDto>> run(ExternalMessageDto externalMessage) {
 
 		//@formatter:off
-		return doInitialChecks(externalMessage)
-			.then((ignored) -> pickOrCreatePerson())
-			.then((p) -> pickOrCreateEntry(p.getData(), externalMessage))
-			.thenSwitch()
-				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e) -> f
-						.then((ignored) -> createCase(e.getPerson(), externalMessage)).then((c) ->
-								convertSamePersonContactsAndEventParticipants(c.getData()).thenCompose((ignored) -> CompletableFuture.completedFuture(c)))
-						.then((c) -> updateCase(c.getData(), externalMessage)))
-				.when(PersonAndPickOrCreateEntryResult::isSelectedCase, (f, e) -> f.then((ignored) -> updateCase(e.getCaze(), externalMessage)))
+		return doInitialChecks(externalMessage, new ExternalMessageProcessingResult())
+			.then(initialResult -> pickOrCreatePerson(initialResult.getData()))
+			.thenSwitch(p -> pickOrCreateEntry(p.getData(), externalMessage))
+				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e, p) -> f
+						.then(ignored -> createCase(e.getPerson(), externalMessage)).then(c ->
+								convertSamePersonContactsAndEventParticipants(c.getData()).thenCompose(ignored -> CompletableFuture.completedFuture(c)))
+						.then(c -> updateCase(c.getData(), externalMessage)))
+				.when(PersonAndPickOrCreateEntryResult::isSelectedCase, (f, e, p) -> f.then(ignored -> updateCase(e.getCaze(), externalMessage)))
 				.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture())
 			.then(currentResult -> ProcessingResult.of(ProcessingResultStatus.DONE, currentResult.getData()).asCompletedFuture())
 			.getResult();
@@ -59,9 +59,10 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 	}
 
 	private CompletionStage<ProcessingResult<PersonAndPickOrCreateEntryResult>> pickOrCreateEntry(
-		PersonDto person,
+		ExternalMessageProcessingResult previousResult,
 		ExternalMessageDto externalMessage) {
 
+		PersonDto person = previousResult.getPerson();
 		PersonReferenceDto personRef = person.toReference();
 		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
 
@@ -71,7 +72,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 
 		return callback.futureResult.thenCompose(p -> {
 			if (p.getStatus().isCanceled()) {
-				return ProcessingResult.<PersonAndPickOrCreateEntryResult> withStatus(p.getStatus()).asCompletedFuture();
+				return ProcessingResult.<PersonAndPickOrCreateEntryResult> withStatus(p.getStatus(), null).asCompletedFuture();
 			}
 
 			return ProcessingResult.of(p.getStatus(), new PersonAndPickOrCreateEntryResult(person, p.getData())).asCompletedFuture();

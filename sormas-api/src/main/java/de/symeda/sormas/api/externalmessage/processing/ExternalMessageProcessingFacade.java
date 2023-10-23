@@ -16,6 +16,8 @@
 package de.symeda.sormas.api.externalmessage.processing;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
@@ -23,6 +25,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
@@ -40,12 +44,16 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.country.CountryFacade;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -68,6 +76,8 @@ public abstract class ExternalMessageProcessingFacade {
 	private final SampleFacade sampleFacade;
 	private final PathogenTestFacade pathogenTestFacade;
 	private final CustomizableEnumFacade customizableEnumFacade;
+	private final CountryFacade countryFacade;
+	private final SurveillanceReportFacade surveillanceReportFacade;
 
 	public ExternalMessageProcessingFacade(
 		ExternalMessageFacade externalMessageFacade,
@@ -80,7 +90,9 @@ public abstract class ExternalMessageProcessingFacade {
 		SampleFacade sampleFacade,
 		PathogenTestFacade pathogenTestFacade,
 		FacilityFacade facilityFacade,
-		CustomizableEnumFacade customizableEnumFacade) {
+		CustomizableEnumFacade customizableEnumFacade,
+		CountryFacade countryFacade,
+		SurveillanceReportFacade surveillanceReportFacade) {
 		this.externalMessageFacade = externalMessageFacade;
 		this.configFacade = configFacade;
 		this.featureConfigurationFacade = featureConfigurationFacade;
@@ -92,6 +104,8 @@ public abstract class ExternalMessageProcessingFacade {
 		this.sampleFacade = sampleFacade;
 		this.pathogenTestFacade = pathogenTestFacade;
 		this.customizableEnumFacade = customizableEnumFacade;
+		this.countryFacade = countryFacade;
+		this.surveillanceReportFacade = surveillanceReportFacade;
 	}
 
 	public boolean existsForwardedExternalMessageWith(String reportId) {
@@ -166,5 +180,41 @@ public abstract class ExternalMessageProcessingFacade {
 
 	public DiseaseVariant getDiseaseVariant(String diseaseVariantValue, Disease disease) throws CustomEnumNotFoundException {
 		return customizableEnumFacade.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariantValue, disease);
+	}
+
+	public CountryReferenceDto getServerCountry() {
+		return countryFacade.getServerCountry();
+	}
+
+	public FacilityReferenceDto getFacilityReference(List<String> facilityExternalIds) {
+
+		List<FacilityReferenceDto> labs;
+
+		if (facilityExternalIds != null && !facilityExternalIds.isEmpty()) {
+
+			labs = facilityExternalIds.stream()
+				.filter(Objects::nonNull)
+				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
+				.flatMap(List::stream)
+				.collect(Collectors.toList());
+		} else {
+			labs = null;
+		}
+
+		if (labs == null || labs.isEmpty()) {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		} else if (labs.size() == 1) {
+			return labs.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public void saveExternalMessage(ExternalMessageDto externalMessage) {
+		externalMessageFacade.save(externalMessage);
+	}
+
+	public void saveSurveillanceReport(SurveillanceReportDto surveillanceReport) {
+		surveillanceReportFacade.save(surveillanceReport);
 	}
 }

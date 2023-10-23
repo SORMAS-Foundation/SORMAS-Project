@@ -25,8 +25,8 @@ public class ProcessingResult<T> {
 
 	private final T data;
 
-	public static <T> ProcessingResult<T> withStatus(ProcessingResultStatus status) {
-		return new ProcessingResult<>(status, null);
+	public static <T> ProcessingResult<T> withStatus(ProcessingResultStatus status, T data) {
+		return new ProcessingResult<>(status, data);
 	}
 
 	public static <T> ProcessingResult<T> continueWith(T data) {

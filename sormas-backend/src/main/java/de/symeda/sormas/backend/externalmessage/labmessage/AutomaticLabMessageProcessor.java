@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.externalmessage.labmessage;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -35,14 +36,14 @@ import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.RelatedSamplesReportsAndPathogenTests;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -54,7 +55,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
@@ -63,11 +63,8 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 @Stateless
 @LocalBean
 public class AutomaticLabMessageProcessor {
-
 	@EJB
 	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private ExternalMessageProcessingFacadeEjbLocal processingFacade;
 	@EJB
@@ -83,13 +80,13 @@ public class AutomaticLabMessageProcessor {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 
-	public CompletionStage<ProcessingResult<RelatedSamplesReportsAndPathogenTests>> processLabMessage(ExternalMessageDto externalMessage) {
+	public ProcessingResult<ExternalMessageProcessingResult> processLabMessage(ExternalMessageDto externalMessage)
+		throws ExecutionException, InterruptedException {
 		return new AutomaticLabMessageProcessingFlow(
 			externalMessage,
 			userFacade.getCurrentUser(),
-			countryFacade.getServerCountry(),
 			new ExternalMessageMapper(externalMessage, processingFacade),
-			processingFacade).run();
+			processingFacade).run().toCompletableFuture().get();
 	}
 
 	private class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
@@ -97,18 +94,9 @@ public class AutomaticLabMessageProcessor {
 		public AutomaticLabMessageProcessingFlow(
 			ExternalMessageDto externalMessage,
 			UserDto user,
-			CountryReferenceDto country,
 			ExternalMessageMapper mapper,
 			ExternalMessageProcessingFacade processingFacade) {
-			super(externalMessage, user, country, mapper, processingFacade, null);
-		}
-
-		private <T> boolean unsetOrMatches(T personValue, T messageValue) {
-			if (personValue == null || messageValue == null) {
-				return true;
-			}
-
-			return personValue.equals(messageValue);
+			super(externalMessage, user, mapper, processingFacade, null, true);
 		}
 
 		@Override
@@ -118,18 +106,18 @@ public class AutomaticLabMessageProcessor {
 
 		@Override
 		protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-			return CompletableFuture.completedFuture(Boolean.FALSE);
+			throw new UnsupportedOperationException("Related forwarded messages not supported yet");
 		}
 
 		@Override
-		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
 			String nationalHealthId = person.getNationalHealthId();
 			if (nationalHealthId != null) {
 				List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
 				if (matchingPersons.isEmpty()) {
-					callback.done(personFacade.save(person));
+					callback.done(new EntitySelection<>(personFacade.save(person), true));
 				} else if (matchingPersons.size() == 1 && personDetailsMatch(person, matchingPersons.get(0))) {
-					callback.done(matchingPersons.get(0));
+					callback.done(new EntitySelection<>(matchingPersons.get(0), false));
 				} else {
 					callback.cancel();
 				}
@@ -138,7 +126,7 @@ public class AutomaticLabMessageProcessor {
 				if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
 					callback.cancel();
 				} else {
-					callback.done(personFacade.save(person));
+					callback.done(new EntitySelection<>(personFacade.save(person), true));
 				}
 			}
 		}
@@ -152,10 +140,10 @@ public class AutomaticLabMessageProcessor {
 			HandlerCallback<PickOrCreateEntryResult> callback) {
 
 			PickOrCreateEntryResult result = new PickOrCreateEntryResult();
-			if (similarCases.isEmpty() && similarContacts.isEmpty() && similarEventParticipants.isEmpty()) {
+			if (similarCases.isEmpty()) {
 				result.setNewCase(true);
 				callback.done(result);
-			} else if (!similarCases.isEmpty() && similarContacts.isEmpty() && similarEventParticipants.isEmpty()) {
+			} else {
 				String caseUuid = caseService.getCaseUuidForAutomaticSampleAssignment(
 					similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet()),
 					similarCases.get(0).getDisease());
@@ -168,8 +156,6 @@ public class AutomaticLabMessageProcessor {
 				} else {
 					callback.cancel();
 				}
-			} else {
-				callback.cancel();
 			}
 		}
 
@@ -216,17 +202,17 @@ public class AutomaticLabMessageProcessor {
 			PersonDto person,
 			ExternalMessageDto labMessage,
 			HandlerCallback<ContactDto> callback) {
-			throw new UnsupportedOperationException("Not implemented yet");
+			throw new UnsupportedOperationException("Creating contact not supported yet");
 		}
 
 		@Override
 		protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
-			throw new UnsupportedOperationException("Not implemented yet");
+			throw new UnsupportedOperationException("Pcik or create event supported yet");
 		}
 
 		@Override
 		protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
-			throw new UnsupportedOperationException("Not implemented yet");
+			throw new UnsupportedOperationException("Creating event not supported yet");
 		}
 
 		@Override
@@ -235,12 +221,12 @@ public class AutomaticLabMessageProcessor {
 			EventDto event,
 			ExternalMessageDto labMessage,
 			HandlerCallback<EventParticipantDto> callback) {
-			throw new UnsupportedOperationException("Not implemented yet");
+			throw new UnsupportedOperationException("Creating event not supported yet");
 		}
 
 		@Override
 		protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {
-			throw new UnsupportedOperationException("Not implemented yet");
+			throw new UnsupportedOperationException("Editing event participant not supported yet");
 		}
 
 		@Override
@@ -250,7 +236,9 @@ public class AutomaticLabMessageProcessor {
 			ExternalMessageDto labMessage,
 			int sampleReportIndex,
 			HandlerCallback<PickOrCreateSampleResult> callback) {
-			throw new UnsupportedOperationException("Not implemented yet");
+			PickOrCreateSampleResult result = new PickOrCreateSampleResult();
+			result.setNewSample(true);
+			callback.done(result);
 		}
 
 		@Override
@@ -261,7 +249,20 @@ public class AutomaticLabMessageProcessor {
 			ExternalMessageMapper mapper,
 			boolean lastSample,
 			HandlerCallback<SampleAndPathogenTests> callback) {
-			throw new UnsupportedOperationException("Not implemented yet");
+			throw new UnsupportedOperationException("Sample editing not supported yet");
+		}
+
+		@Override
+		protected CompletionStage<Void> notifyCorrectionsSaved() {
+			throw new UnsupportedOperationException("Corrections not supported yet");
+		}
+
+		private void handleException(Runnable action, HandlerCallback callback) {
+			try {
+				action.run();
+			} catch (Exception e) {
+				callback.cancel();
+			}
 		}
 
 		private boolean personDetailsMatch(PersonDto person1, PersonDto person2) {
@@ -277,6 +278,14 @@ public class AutomaticLabMessageProcessor {
 			}
 
 			return false;
+		}
+
+		private <T> boolean unsetOrMatches(T personValue, T messageValue) {
+			if (personValue == null || messageValue == null) {
+				return true;
+			}
+
+			return personValue.equals(messageValue);
 		}
 	}
 }

@@ -18,7 +18,6 @@ package de.symeda.sormas.api.externalmessage.processing;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,8 +35,6 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -106,30 +103,6 @@ public final class ExternalMessageMapper {
 		return changedFields;
 	}
 
-	public static FacilityReferenceDto getFacilityReference(List<String> facilityExternalIds, FacilityFacade facilityFacade) {
-
-		List<FacilityReferenceDto> labs;
-
-		if (facilityExternalIds != null && !facilityExternalIds.isEmpty()) {
-
-			labs = facilityExternalIds.stream()
-				.filter(Objects::nonNull)
-				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
-				.flatMap(List::stream)
-				.collect(Collectors.toList());
-		} else {
-			labs = null;
-		}
-
-		if (labs == null || labs.isEmpty()) {
-			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
-		} else if (labs.size() == 1) {
-			return labs.get(0);
-		} else {
-			return null;
-		}
-	}
-
 	public List<String[]> mapFirstSampleReportToSample(SampleDto sample) {
 		return mapToSample(sample, externalMessage.getSampleReportsNullSafe().get(0));
 	}
@@ -192,7 +165,7 @@ public final class ExternalMessageMapper {
 				Mapping.of(
 					sample::setLab,
 					sample.getLab(),
-					getFacilityReference(externalMessage.getReporterExternalIds(), processingFacade.facilityFacade),
+					processingFacade.getFacilityReference(externalMessage.getReporterExternalIds()),
 					SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
@@ -281,7 +254,7 @@ public final class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							getFacilityReference(sourceTestReport.getTestLabExternalIds(), processingFacade.facilityFacade),
+							processingFacade.getFacilityReference(sourceTestReport.getTestLabExternalIds()),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,

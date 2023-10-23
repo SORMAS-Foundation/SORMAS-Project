@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
@@ -31,6 +32,7 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
@@ -55,6 +57,8 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 		PathogenTestFacadeEjbLocal pathogenTestFacade,
 		FacilityFacadeEjbLocal facilityFacade,
 		CustomizableEnumFacadeEjbLocal customizableEnumFacade,
+		CountryFacadeEjbLocal countryFacade,
+		SurveillanceReportFacadeEjbLocal surveillanceReportFacade,
 		UserService userService) {
 		super(
 			externalMessageFacade,
@@ -67,7 +71,9 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 			sampleFacade,
 			pathogenTestFacade,
 			facilityFacade,
-			customizableEnumFacade);
+			customizableEnumFacade,
+			countryFacade,
+			surveillanceReportFacade);
 		this.userService = userService;
 	}
 
