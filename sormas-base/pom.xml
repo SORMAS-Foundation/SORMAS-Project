@@ -1695,7 +1695,7 @@
 				<plugin>
 					<groupId>org.owasp</groupId>
 					<artifactId>dependency-check-maven</artifactId>
-					<version>8.3.1</version>
+					<version>8.4.2</version>
 					<!-- Did not work with Maven 3.3.9, at least 3.6.3 is needed -->
 					<configuration>
 						<cveValidForHours>12</cveValidForHours>
