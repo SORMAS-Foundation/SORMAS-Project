@@ -2166,6 +2166,24 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
         });
     When(
+        "I check that {string} button is readonly on Edit case page",
+        (String button) -> {
+          switch (button) {
+            case "Discard":
+              softly.assertEquals(
+                  webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+                  false,
+                  "Discard button is editable state!");
+              break;
+            case "Save":
+              softly.assertEquals(
+                  webDriverHelpers.isElementEnabled(SAVE_BUTTON),
+                  false,
+                  "Save button is editable state!");
+              break;
+          }
+        });
+    When(
         "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);

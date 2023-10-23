@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -75,10 +76,7 @@ public class PathogenTestListEntry extends SideComponentField {
 		middleLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponentToField(middleLabelLayout);
 
-		String diseaseOrPathogen = pathogenTest.getTestedDisease() != null
-			? DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())
-			: pathogenTest.getTestedPathogen().getCaption();
-		Label labelMiddleLeft = new Label(diseaseOrPathogen);
+		Label labelMiddleLeft = new Label(getDiseaseOrPathogenCaption(pathogenTest));
 		middleLabelLayout.addComponent(labelMiddleLeft);
 
 		Label labelMiddleRight = new Label(DateFormatHelper.formatLocalDateTime(pathogenTest.getTestDateTime()));
@@ -115,6 +113,19 @@ public class PathogenTestListEntry extends SideComponentField {
 			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
 		}
 		addComponentToField(labelResult);
+	}
+
+	@Nullable
+	private static String getDiseaseOrPathogenCaption(PathogenTestDto pathogenTest) {
+		final String diseaseOrPathogen;
+		if (pathogenTest.getTestedDisease() != null) {
+			diseaseOrPathogen = DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails());
+		} else if (pathogenTest.getTestedPathogen() != null) {
+			diseaseOrPathogen = pathogenTest.getTestedPathogen().getCaption();
+		} else {
+			diseaseOrPathogen = null;
+		}
+		return diseaseOrPathogen;
 	}
 
 	public PathogenTestDto getPathogenTest() {

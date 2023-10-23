@@ -241,7 +241,6 @@ public class UserFacadeEjb implements UserFacade {
 				null,
 				null,
 				true,
-				true,
 				limitedDisease,
 				userRights)
 			.stream()
@@ -316,7 +315,6 @@ public class UserFacadeEjb implements UserFacade {
 				districtRef != null ? Collections.singletonList(districtRef.getUuid()) : null,
 				null,
 				true,
-				true,
 				limitedDisease,
 				userRights)
 			.stream()
@@ -336,7 +334,6 @@ public class UserFacadeEjb implements UserFacade {
 				districtRef != null ? Collections.singletonList(districtRef.getUuid()) : null,
 				null,
 				true,
-				true,
 				null,
 				excludeLimitedDiseaseUsers,
 				Arrays.asList(userRights))
@@ -354,7 +351,6 @@ public class UserFacadeEjb implements UserFacade {
 				null,
 				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
 				null,
-				true,
 				true,
 				limitedDisease,
 				userRights)
@@ -392,10 +388,7 @@ public class UserFacadeEjb implements UserFacade {
 	@PermitAll
 	public List<UserReferenceDto> getAllUserRefs(boolean includeInactive) {
 
-		return userService.getUserReferences(null, null, true, !includeInactive)
-			.stream()
-			.map(UserFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
+		return userService.getUserReferences(null, null, !includeInactive).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndexCriteria taskContextIndexCriteria) {

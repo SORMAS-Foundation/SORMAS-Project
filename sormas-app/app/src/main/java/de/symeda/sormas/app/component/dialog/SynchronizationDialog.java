@@ -454,6 +454,16 @@ public class SynchronizationDialog extends AbstractDialog {
 			Strings.entityEventParticipants,
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForEventParticipantsEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentDto.class,
+			Strings.entityEnvironments,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
+		addEntityIfViewAllowed(
+			EnvironmentSampleDto.class,
+			Strings.entityEnvironmentSamples,
+			allowedEntities,
+			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
 		addEntityIfViewAllowed(SampleDto.class, Strings.entitySamples, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForSampleEnabled());
 		addEntityIfViewAllowed(
 			PathogenTestDto.class,
@@ -465,16 +475,6 @@ public class SynchronizationDialog extends AbstractDialog {
 			Strings.entityAdditionalTests,
 			allowedEntities,
 			DtoFeatureConfigHelper.isFeatureConfigForAdditionalTestsEnabled());
-		addEntityIfViewAllowed(
-			EnvironmentDto.class,
-			Strings.entityEnvironments,
-			allowedEntities,
-			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentEnabled());
-		addEntityIfViewAllowed(
-			EnvironmentSampleDto.class,
-			Strings.entityEnvironmentSamples,
-			allowedEntities,
-			DtoFeatureConfigHelper.isFeatureConfigForEnvironmentSamplesEnabled());
 		addEntityIfViewAllowed(ContactDto.class, Strings.entityContacts, allowedEntities, DtoFeatureConfigHelper.isFeatureConfigForContactsEnabled());
 		addEntityIfViewAllowedWithFeatureDependencies(
 			VisitDto.class,
