@@ -1003,6 +1003,7 @@ public abstract class AbstractBeanTest {
 			getExternalMessageFacade(),
 			getConfigFacade(),
 			getFeatureConfigurationFacade(),
+			getPersonFacade(),
 			getCaseFacade(),
 			getContactFacade(),
 			getEventFacade(),

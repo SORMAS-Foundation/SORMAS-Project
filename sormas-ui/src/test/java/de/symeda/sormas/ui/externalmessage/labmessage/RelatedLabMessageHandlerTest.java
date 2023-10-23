@@ -1120,7 +1120,7 @@ public class RelatedLabMessageHandlerTest extends AbstractUiBeanTest {
 		public ShortcutHandler shortcutHandler;
 
 		public RelatedLabMessageTestHandler(ExternalMessageDto labMessage, ExternalMessageProcessingFacade processingFacade, UserDto user) {
-			super(user, new ExternalMessageMapper(labMessage, processingFacade));
+			super(user, processingFacade, new ExternalMessageMapper(labMessage, processingFacade));
 
 			personChangesHandler = Mockito.mock(CorrectedPersonHandler.class);
 			Mockito.doAnswer(invocation -> {

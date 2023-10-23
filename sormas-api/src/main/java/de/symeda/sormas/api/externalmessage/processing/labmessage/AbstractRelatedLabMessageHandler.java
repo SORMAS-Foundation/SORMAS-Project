@@ -34,12 +34,12 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -67,9 +67,12 @@ public abstract class AbstractRelatedLabMessageHandler {
 		CONTINUE
 	}
 
+	protected final ExternalMessageProcessingFacade processingFacade;
 	protected final ExternalMessageMapper mapper;
-	public AbstractRelatedLabMessageHandler(UserDto user, ExternalMessageMapper mapper) {
+
+	public AbstractRelatedLabMessageHandler(UserDto user, ExternalMessageProcessingFacade processingFacade, ExternalMessageMapper mapper) {
 		this.user = user;
+		this.processingFacade = processingFacade;
 		this.mapper = mapper;
 	}
 
@@ -185,14 +188,13 @@ public abstract class AbstractRelatedLabMessageHandler {
 			return null;
 		}
 
-		List<SampleDto> relatedSamples = FacadeProvider.getSampleFacade().getByLabSampleId(labSampleId);
+		List<SampleDto> relatedSamples = processingFacade.getSamplesByLabSampleId(labSampleId);
 		if (relatedSamples.size() != 1) {
 			return null;
 		}
 
 		SampleDto relatedSample = relatedSamples.get(0);
-		List<ExternalMessageDto> relatedLabMessages = FacadeProvider.getExternalMessageFacade()
-			.getForSample(relatedSample.toReference())
+		List<ExternalMessageDto> relatedLabMessages = processingFacade.getExternalMessagesForSample(relatedSample.toReference())
 			.stream()
 			.filter(
 				otherLabMessage -> reportId.equals(otherLabMessage.getReportId())
@@ -201,12 +203,12 @@ public abstract class AbstractRelatedLabMessageHandler {
 
 		PersonDto relatedPerson;
 		if (relatedSample.getAssociatedCase() != null) {
-			relatedPerson = FacadeProvider.getPersonFacade().getByContext(PersonContext.CASE, relatedSample.getAssociatedCase().getUuid());
+			relatedPerson = processingFacade.getPersonByContext(PersonContext.CASE, relatedSample.getAssociatedCase().getUuid());
 		} else if (relatedSample.getAssociatedContact() != null) {
-			relatedPerson = FacadeProvider.getPersonFacade().getByContext(PersonContext.CONTACT, relatedSample.getAssociatedContact().getUuid());
+			relatedPerson = processingFacade.getPersonByContext(PersonContext.CONTACT, relatedSample.getAssociatedContact().getUuid());
 		} else {
-			relatedPerson = FacadeProvider.getPersonFacade()
-				.getByContext(PersonContext.EVENT_PARTICIPANT, relatedSample.getAssociatedEventParticipant().getUuid());
+			relatedPerson =
+				processingFacade.getPersonByContext(PersonContext.EVENT_PARTICIPANT, relatedSample.getAssociatedEventParticipant().getUuid());
 		}
 
 		List<PathogenTestDto> relatedPathogenTests = new ArrayList<>();
@@ -214,7 +216,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		boolean pathogenTestMisMatch = false;
 
 		List<TestReportDto> testReports = getFirstSampleReport(labMessage).getTestReports();
-		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
+		List<PathogenTestDto> samplePathogenTests = processingFacade.getPathogenTestsBySample(relatedSample.toReference());
 
 		for (TestReportDto testReport : testReports) {
 			List<PathogenTestDto> matchedPathogenTests = StringUtils.isBlank(testReport.getExternalId())

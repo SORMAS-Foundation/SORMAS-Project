@@ -34,6 +34,7 @@ import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.Externa
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -49,6 +50,7 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 		ExternalMessageFacadeEjbLocal externalMessageFacade,
 		ConfigFacadeEjbLocal configFacade,
 		FeatureConfigurationFacadeEjbLocal featureConfigurationFacade,
+		PersonFacadeEjbLocal personFacade,
 		CaseFacadeEjbLocal caseFacade,
 		ContactFacadeEjbLocal contactFacade,
 		EventFacadeEjbLocal eventFacade,
@@ -64,6 +66,7 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 			externalMessageFacade,
 			configFacade,
 			featureConfigurationFacade,
+			personFacade,
 			caseFacade,
 			contactFacade,
 			eventFacade,

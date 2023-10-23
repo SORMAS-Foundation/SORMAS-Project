@@ -54,6 +54,9 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -68,6 +71,7 @@ public abstract class ExternalMessageProcessingFacade {
 	protected final ExternalMessageFacade externalMessageFacade;
 	protected final ConfigFacade configFacade;
 	protected final FeatureConfigurationFacade featureConfigurationFacade;
+	protected final PersonFacade personFacade;
 	protected final CaseFacade caseFacade;
 	protected final FacilityFacade facilityFacade;
 	private final ContactFacade contactFacade;
@@ -83,6 +87,7 @@ public abstract class ExternalMessageProcessingFacade {
 		ExternalMessageFacade externalMessageFacade,
 		ConfigFacade configFacade,
 		FeatureConfigurationFacade featureConfigurationFacade,
+		PersonFacade personFacade,
 		CaseFacade caseFacade,
 		ContactFacade contactFacade,
 		EventFacade eventFacade,
@@ -96,6 +101,7 @@ public abstract class ExternalMessageProcessingFacade {
 		this.externalMessageFacade = externalMessageFacade;
 		this.configFacade = configFacade;
 		this.featureConfigurationFacade = featureConfigurationFacade;
+		this.personFacade = personFacade;
 		this.caseFacade = caseFacade;
 		this.facilityFacade = facilityFacade;
 		this.contactFacade = contactFacade;
@@ -216,5 +222,18 @@ public abstract class ExternalMessageProcessingFacade {
 
 	public void saveSurveillanceReport(SurveillanceReportDto surveillanceReport) {
 		surveillanceReportFacade.save(surveillanceReport);
+	}
+
+	public List<SampleDto> getSamplesByLabSampleId(String labSampleId) {
+		return sampleFacade.getByLabSampleId(labSampleId);
+	}
+
+	public List<ExternalMessageDto> getExternalMessagesForSample(SampleReferenceDto reference) {
+		return externalMessageFacade.getForSample(reference);
+	}
+
+	public PersonDto getPersonByContext(PersonContext personContext, String personUuid) {
+		return personFacade.getByContext(personContext, personUuid);
+
 	}
 }

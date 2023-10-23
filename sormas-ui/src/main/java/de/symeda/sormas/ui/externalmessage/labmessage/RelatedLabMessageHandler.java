@@ -41,6 +41,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.i18n.Captions;
@@ -67,8 +68,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 
-	public RelatedLabMessageHandler(UserDto user, ExternalMessageMapper mapper) {
-		super(user, mapper);
+	public RelatedLabMessageHandler(UserDto user, ExternalMessageProcessingFacade processingFacade, ExternalMessageMapper mapper) {
+		super(user, processingFacade, mapper);
 	}
 
 	@Override

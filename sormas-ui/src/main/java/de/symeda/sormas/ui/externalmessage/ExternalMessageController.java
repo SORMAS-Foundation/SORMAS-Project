@@ -95,6 +95,7 @@ public class ExternalMessageController {
 			FacadeProvider.getExternalMessageFacade(),
 			FacadeProvider.getConfigFacade(),
 			FacadeProvider.getFeatureConfigurationFacade(),
+			FacadeProvider.getPersonFacade(),
 			FacadeProvider.getCaseFacade(),
 			FacadeProvider.getContactFacade(),
 			FacadeProvider.getEventFacade(),
@@ -146,7 +147,8 @@ public class ExternalMessageController {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
 		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
-		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(UserProvider.getCurrent().getUser(), mapper);
+		RelatedLabMessageHandler relatedLabMessageHandler =
+			new RelatedLabMessageHandler(UserProvider.getCurrent().getUser(), processingFacade, mapper);
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
 
 		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
@@ -203,6 +205,7 @@ public class ExternalMessageController {
 			return null;
 		});
 	}
+
 	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SurveillanceReportDto surveillanceReport) {
 		externalMessage.setSurveillanceReport(surveillanceReport.toReference());
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
