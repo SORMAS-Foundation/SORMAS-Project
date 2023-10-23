@@ -42,7 +42,7 @@
     <string name="action_confirm">Conferma</string>
     <string name="action_create">Crea</string>
     <string name="action_create_case_from_contact">Crea un caso per questa persona di contatto</string>
-    <string name="action_create_case_from_event_participant">Crea un caso per questo evento</string>
+    <string name="action_create_case_from_event_person">Crea un caso per questo evento</string>
     <string name="action_create_treatment">Crea trattamento</string>
     <string name="action_edit_data">Modifica dati</string>
     <string name="action_delete">Elimina</string>
