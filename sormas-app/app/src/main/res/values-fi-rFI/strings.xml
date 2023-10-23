@@ -80,7 +80,7 @@
     <string name="action_new_task">Uusi tehtävä</string>
     <string name="action_not_executable">Ei toteutettavissa</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_participant_case">Avaa potilas tai tapahtuman henkilö</string>
+    <string name="action_open_event_person_case">Avaa potilas tai tapahtuman henkilö</string>
     <string name="action_open_prescription">Avaa Lääkemääräys</string>
     <string name="action_open_resulting_case">Avaa tartunnan saanut potilas</string>
     <string name="action_open_source_case">Avaa tartuttava potilas</string>

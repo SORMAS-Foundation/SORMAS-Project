@@ -80,7 +80,7 @@
     <string name="action_new_task">نیا کام</string>
     <string name="action_not_executable">غیر قابل عمل</string>
     <string name="action_ok">ٹھیک ہے</string>
-    <string name="action_open_event_participant_case">تقریب میں شامل شخص کا کيس کھولیں</string>
+    <string name="action_open_event_person_case">تقریب میں شامل شخص کا کيس کھولیں</string>
     <string name="action_open_prescription">نسخہ کھولیں</string>
     <string name="action_open_resulting_case">نتیجہ خیز کیس کھولیں</string>
     <string name="action_open_source_case">اوپن سورس کیس</string>

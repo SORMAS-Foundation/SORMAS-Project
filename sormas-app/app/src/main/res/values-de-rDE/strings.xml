@@ -80,7 +80,7 @@
     <string name="action_new_task">Neue Aufgabe</string>
     <string name="action_not_executable">Nicht ausführbar</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_participant_case">Öffne Fall der Event-Person</string>
+    <string name="action_open_event_person_case">Öffne Fall der Event-Person</string>
     <string name="action_open_prescription">Öffne Verschreibung</string>
     <string name="action_open_resulting_case">Resultierenden Fall öffnen</string>
     <string name="action_open_source_case">Indexfall öffnen</string>

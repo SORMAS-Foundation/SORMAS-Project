@@ -80,7 +80,7 @@
     <string name="action_new_task">Nový úkol</string>
     <string name="action_not_executable">Nevykonatelný</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_participant_case">Otevřít případ osoby události</string>
+    <string name="action_open_event_person_case">Otevřít případ osoby události</string>
     <string name="action_open_prescription">Otevřít předpis</string>
     <string name="action_open_resulting_case">Otevřít výsledný případ</string>
     <string name="action_open_source_case">Otevřít zdroj případu</string>

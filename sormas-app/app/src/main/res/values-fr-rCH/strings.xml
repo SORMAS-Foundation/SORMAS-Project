@@ -80,7 +80,7 @@
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_participant_case">Ouvrez le cas associé à cette personne de l\'événement</string>
+    <string name="action_open_event_person_case">Ouvrez le cas associé à cette personne de l\'événement</string>
     <string name="action_open_prescription">Ouvrir l\'ordonnance</string>
     <string name="action_open_resulting_case">Ouvrir le cas de résultat</string>
     <string name="action_open_source_case">Ouvrez le cas de source</string>

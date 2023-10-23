@@ -74,7 +74,7 @@
     <string name="action_new_task">New Task</string>
     <string name="action_not_executable">Not Executable</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_participant_case">Open Case of Event Person</string>
+    <string name="action_open_event_person_case">Open Case of Event Person</string>
     <string name="action_open_prescription">Open Prescription</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_source_case">Open Source Case</string>
