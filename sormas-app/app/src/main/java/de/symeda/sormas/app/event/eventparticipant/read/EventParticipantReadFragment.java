@@ -19,7 +19,6 @@ import static android.view.View.GONE;
 
 import android.os.Bundle;
 import android.view.View;
-
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -56,7 +55,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 	}
 
 	private void setUpControlListeners(FragmentEventParticipantReadLayoutBinding contentBinding) {
-		contentBinding.openEventPersonCase.setOnClickListener(new View.OnClickListener() {
+		contentBinding.openEventParticipantCase.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -86,7 +85,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 
 	@Override
 	protected String getSubHeadingTitle() {
-		return getResources().getString(R.string.caption_person_involved);
+		return getResources().getString(R.string.caption_event_participant);
 	}
 
 	@Override

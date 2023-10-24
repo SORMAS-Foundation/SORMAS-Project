@@ -62,7 +62,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String SPECIFIC_RISK = "specificRisk";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
-	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String PARTICIPANTS_COUNT = "participantCount";
 	public static final String EVENT_ACTIONS = "eventActions";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";

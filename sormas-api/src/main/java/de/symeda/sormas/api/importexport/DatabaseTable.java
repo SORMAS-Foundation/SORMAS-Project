@@ -59,7 +59,7 @@ public enum DatabaseTable {
 	EVENTS(DatabaseTableType.SORMAS, "events", dependingOnFeature(FeatureType.EVENT_SURVEILLANCE)),
 	EVENTS_EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "events_eventgroups"),
 	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups", dependingOnFeature(FeatureType.EVENT_GROUPS)),
-	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_persons_involved"),
+	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_participants"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
 
 	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, "travel_entries", dependingOnFeature(FeatureType.TRAVEL_ENTRIES)),
