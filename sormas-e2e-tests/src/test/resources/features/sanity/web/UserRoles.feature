@@ -127,7 +127,8 @@ Feature: User roles checks
     And I click on User roles tab from User Management Page
     And I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page
 
-  @#10421 @env_main
+  #@#10421 @env_main
+  @tmsLink=HSP-6240-mk @env_main
   Scenario: Validate newly created User Role cannot be deleted if assigned towards an user
     Given I log in as a Admin User
     And I click on the Users from navbar
