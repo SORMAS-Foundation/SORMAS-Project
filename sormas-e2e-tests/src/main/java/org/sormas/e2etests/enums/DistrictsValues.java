@@ -27,7 +27,11 @@ public enum DistrictsValues {
   VoreingestellterLandkreis(
       "Voreingestellter Landkreis",
       "SZ75BK-5OUMFU-V2DTKG-5BYACHFE",
-      "R5N4WB-3LGKHX-HGFZ3K-7POBSFBQ");
+      "R5N4WB-3LGKHX-HGFZ3K-7POBSFBQ"),
+  SKBerlinCharlottenburgWilmersdorf(
+      "SK Berlin Charlottenburg-Wilmersdorf",
+      "NBNTEP-2AVREB-XKXDET-PWYYBIOE",
+      "UWRLRS-XKKOJZ-25ULJL-JAELCKYE");
 
   private final String name;
   private final String uuidMain;

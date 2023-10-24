@@ -63,6 +63,44 @@ public class BusinessFlows implements En {
         });
 
     When(
+        "API: I create {int} new cases with chosen {string} region",
+        (Integer numberOfCases, String region) -> {
+          List<Case> caseList = new ArrayList<>();
+          Person person = personApiService.buildGeneratedPerson();
+          personsHelper.createNewPerson(person);
+          apiState.setLastCreatedPerson(person);
+          RegionsValues regionName = RegionsValues.Berlin;
+          // System.out.print(" getUuidDE " + regionName.getUuidDE() + "\n");
+          // System.out.print(" getUuidMain " + regionName.getUuidMain() + "\n");
+          // System.out.print("ssss ss " + regionName.getName() + "\n");
+          DistrictsValues districtName = DistrictsValues.SKBerlinCharlottenburgWilmersdorf;
+          // System.out.print("getUuidDE   " + districtName.getUuidDE() + "\n");
+          // System.out.print(" getUuidMain " + districtName.getUuidMain() + "\n");
+          // System.out.print(" dsdsd " + districtName.getName() + "\n");
+
+          //   RegionsValues regionName = null;
+          //  DistrictsValues districtName = null;
+          // switch (region) {
+          //  case "Berlin":
+          //   regionName = RegionsValues.Berlin;
+          //  districtName = DistrictsValues.SKBerlinCharlottenburgWilmersdorf;
+          // break;
+          // case "Voreingestellte Bundesl\u00E4nder":
+          //  regionName = RegionsValues.VoreingestellteBundeslander;
+          // districtName = DistrictsValues.VoreingestellterLandkreis;
+          // break;
+          // }
+          for (int i = 0; i < numberOfCases; i++) {
+            Case caze =
+                caseApiService.buildGeneratedCaseWithCustomDistrictRegion(
+                    apiState.getLastCreatedPerson(), regionName, districtName);
+            caseHelper.createCase(caze);
+            caseList.add(caze);
+          }
+          apiState.setCreatedCases(caseList);
+        });
+
+    When(
         "API: I create {int} new cases with a new sample foreach of them",
         (Integer numberOfCasesAndSamples) -> {
           List<Sample> sampleList = new ArrayList<>();

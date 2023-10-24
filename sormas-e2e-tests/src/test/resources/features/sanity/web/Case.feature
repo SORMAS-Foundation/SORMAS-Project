@@ -1914,3 +1914,36 @@ Feature: Case end to end tests
     Given I log in as a National User
     Then I navigate to the last created case via the url
     And I check if Follow up until date is 14 days after last created API case report date
+
+  @tmsLink=HSP-6293 @env_main
+  Scenario: Surveillance Officer - Check Cases displayed depending of the jurisdiction
+    When API: I create 1 new cases with chosen "Berlin" region
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the first Case result in Case Directory
+    #open one f created case and archive it
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data and Baden-Württemberg region
+    And I get the case person UUID displayed on Edit case page
+    And I click on the Users from navbar
+    And I click on the NEW USER button
+    And I create new Surveillance Officer with region set to Berlin
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    And I navigate to the last created case by ui via the url
+    And Total number of read only fields should be 12
+    And I click on the Cases button from navbar
+    And I apply "Active cases" to combobox on Case Directory Page
+    And I open the first Case result in Case Directory
+    Then I check that the region of the case is set to Berlin and district is set to SK Berlin Charlottenburg-Wilmersdorf
+    And I check that the Delete button is not available
+    And I check that the Archive case button is not available
+    Then I back to Case Directory using case list button
+    And I apply "Archived cases" to combobox on Case Directory Page
+    And I open the first Case result in Case Directory
+
+
+
+

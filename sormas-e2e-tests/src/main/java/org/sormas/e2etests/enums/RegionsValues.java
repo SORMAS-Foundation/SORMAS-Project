@@ -27,7 +27,8 @@ public enum RegionsValues {
   VoreingestellteBundeslander(
       "Voreingestellte Bundesl\u00E4nder",
       "RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY",
-      "UXYTS3-SYILLD-2YI5UM-BZD62B6I");
+      "UXYTS3-SYILLD-2YI5UM-BZD62B6I"),
+  Berlin("Berlin", "UYHWOW-FAK3VM-LZCSSL-RK7S2LFM", "VVFD7Z-N3LD6C-5J2KSD-I4WNKLDE");
 
   private final String name;
   private final String uuidMain;
