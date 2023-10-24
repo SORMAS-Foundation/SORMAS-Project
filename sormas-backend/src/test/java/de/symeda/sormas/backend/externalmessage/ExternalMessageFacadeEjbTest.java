@@ -352,7 +352,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSaveAndProcess() {
 
-		ExternalMessageDto labMessage = createLabMessage(null);
+		ExternalMessageDto labMessage = createLabMessage(m -> m.setAutomaticProcessingPossible(true));
 		ExternalMessageDto savedLabMessage = getExternalMessageFacade().saveAndProcessLabmessage(labMessage);
 
 		assertThat(savedLabMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
@@ -372,8 +372,10 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testOnlyLabmessageSavedOnExceptionWhileProcessing() {
-		ExternalMessageDto labMessageWithNoLab = createLabMessage(null);
-		labMessageWithNoLab.setReporterExternalIds(null);
+		ExternalMessageDto labMessageWithNoLab = createLabMessage(m -> {
+			m.setAutomaticProcessingPossible(true);
+			m.setReporterExternalIds(null);
+		});
 
 		// error when saving sample
 		getExternalMessageFacade().saveAndProcessLabmessage(labMessageWithNoLab);
@@ -387,6 +389,8 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedLabMessageWithNoLab.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
 
 		ExternalMessageDto labMessageWithIncompleteTest = createLabMessage(m -> {
+			m.setAutomaticProcessingPossible(true);
+
 			TestReportDto testReport = TestReportDto.build();
 			testReport.setTestResult(null);
 			testReport.setTestDateTime(new Date());
