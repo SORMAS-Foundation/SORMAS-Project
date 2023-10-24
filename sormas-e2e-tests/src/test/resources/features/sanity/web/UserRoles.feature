@@ -160,12 +160,12 @@ Feature: User roles checks
   Scenario: Check Delete Case right working without Edit rights
     Given I log in as a Admin User
     And I click on the Users from navbar
-    And I check if there is any user with the "MyNationalTestUser" role and change his role
+    And I check if there is any user with the "NationalTestUser" role and change his role
     And I click on User roles tab from User Management Page
-    And I check if the "MyNationalTestUser" user role exist and delete it
+    And I check if the "NationalTestUser" user role exist and delete it
     And I click on New user role button on User Roles Page
     And I choose "National User" as the user role template
-    And I fill caption input as "MyNationalTestUser" on Create New User Role form
+    And I fill caption input as "NationalTestUser" on Create New User Role form
     And I click SAVE button on User Role Page
     Then I click checkbox to uncheck "Edit existing cases"
     Then I click checkbox to uncheck "Edit case investigation status"
@@ -180,7 +180,7 @@ Feature: User roles checks
     And I back to the User role list
     Then I click on User Management tab from User Roles Page
     And I click on the NEW USER button
-    And I create new "MyNationalTestUser" with english language for test
+    And I create new "NationalTestUser" with english language for test
     Then I click on logout button from navbar
     And I login with new created user with chosen new role
     And I click on the Cases button from navbar
