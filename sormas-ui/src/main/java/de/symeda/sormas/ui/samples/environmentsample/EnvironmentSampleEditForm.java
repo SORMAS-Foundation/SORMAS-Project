@@ -54,6 +54,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
@@ -257,25 +258,27 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
 
 		initializeAccessAndAllowedAccesses();
-		disableFieldsBasedOnRights();
 	}
 
-	private void disableFieldsBasedOnRights() {
-		boolean hasEditReceivalRight = UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
-		boolean hasEditDispatchRight = UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
+	private void disableFieldsBasedOnRights(EnvironmentSampleDto sample) {
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		boolean hasEditReceivalRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
+		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
+		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
+
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {
 				String propertyId = f.getId();
 				boolean isReceivalField = RECEIVAL_FIELDS.contains(propertyId);
 				boolean canEdit = EnvironmentSampleDto.GENERAL_COMMENT.equals(propertyId)
-					|| (isReceivalField ? hasEditReceivalRight : isCreate || hasEditDispatchRight);
+					|| (isReceivalField ? hasEditReceivalRight : isCreate || (isOwner && hasEditDispatchRight));
 
 				if (!canEdit) {
 					f.setEnabled(false);
 				}
 			}
 		});
-		if (!isCreate && !hasEditDispatchRight) {
+		if (!isCreate && !isOwner && !hasEditDispatchRight) {
 			weatherConditionCheckBoxTree.setEnabled(false);
 		}
 	}
@@ -291,6 +294,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		super.setValue(newFieldValue);
 		weatherConditionCheckBoxTree.setValues(newFieldValue.getWeatherConditions());
 		weatherConditionCheckBoxTree.initCheckboxes();
+
+		disableFieldsBasedOnRights(newFieldValue);
 	}
 
 	@NotNull
