@@ -32,6 +32,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,9 +104,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		Set<Disease> diseases = EnumSet.noneOf(Disease.class);
 
 		if (caseSurveillance) {
-			if (currentUser.getLimitedDisease() != null) {
-				Disease limitedDisease = currentUser.getLimitedDisease();
-				diseases.add(limitedDisease);
+			if (CollectionUtils.isNotEmpty(currentUser.getLimitedDiseases())) {
+				diseases.addAll(currentUser.getLimitedDiseases());
 			} else {
 				diseases.addAll(caseSurveillanceDiseases);
 			}
@@ -164,17 +164,6 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
-	public List<Disease> getAllPrimaryDiseases() {
-
-		User currentUser = userService.getCurrentUser();
-		if (currentUser.getLimitedDisease() != null) {
-			return primaryDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
-		} else {
-			return primaryDiseases;
-		}
-	}
-
-	@Override
 	public boolean hasFollowUp(Disease disease) {
 		return followUpEnabledDiseases.contains(disease);
 	}
@@ -183,8 +172,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	public List<Disease> getAllDiseasesWithFollowUp() {
 
 		User currentUser = userService.getCurrentUser();
-		if (currentUser.getLimitedDisease() != null) {
-			return followUpEnabledDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(currentUser.getLimitedDiseases())) {
+			return followUpEnabledDiseases.stream().filter(currentUser.getLimitedDiseases()::contains).collect(Collectors.toList());
 		} else {
 			return followUpEnabledDiseases;
 		}

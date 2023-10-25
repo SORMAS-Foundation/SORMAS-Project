@@ -30,7 +30,6 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
@@ -82,14 +81,6 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	public List<OutbreakDto> getActive(OutbreakCriteria criteria) {
 
 		List<Outbreak> result = outbreakService.queryByCriteria(criteria, null, Outbreak.DISEASE, true);
-		return result.stream().map(OutbreakFacadeEjb::toDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<OutbreakDto> getActiveByRegionAndDisease(RegionReferenceDto regionRef, Disease disease) {
-
-		List<Outbreak> result =
-			outbreakService.queryByCriteria(new OutbreakCriteria().region(regionRef).disease(disease).active(true), null, Outbreak.DISTRICT, true);
 		return result.stream().map(OutbreakFacadeEjb::toDto).collect(Collectors.toList());
 	}
 

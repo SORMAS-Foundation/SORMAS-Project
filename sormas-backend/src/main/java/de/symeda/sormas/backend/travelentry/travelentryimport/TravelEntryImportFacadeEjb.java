@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -32,6 +33,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,16 +170,19 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 	private void fillTravelEntryWithDefaultValues(TravelEntryDto travelEntry) {
 		User currentUser = userService.getCurrentUser();
-		Disease userDisease = currentUser.getLimitedDisease();
+		Set<Disease> userDiseases = currentUser.getLimitedDiseases();
 		Region userRegion = currentUser.getRegion();
 		District userDistrict = currentUser.getDistrict();
 		Community userCommunity = currentUser.getCommunity();
 		PointOfEntry userPoe = currentUser.getPointOfEntry();
 
-		if (userDisease != null) {
-			travelEntry.setDisease(userDisease);
-		} else if (diseaseConfigurationFacade.getAllDiseases(true, true, true).size() == 1) {
-			travelEntry.setDisease(diseaseConfigurationFacade.getAllDiseases(true, true, true).get(0));
+		if (CollectionUtils.isNotEmpty(userDiseases) && userDiseases.size() == 1) {
+			travelEntry.setDisease(userDiseases.iterator().next());
+		} else {
+			List<Disease> allDiseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
+			if (allDiseases.size() == 1) {
+				travelEntry.setDisease(allDiseases.get(0));
+			}
 		}
 
 		if (userRegion != null) {

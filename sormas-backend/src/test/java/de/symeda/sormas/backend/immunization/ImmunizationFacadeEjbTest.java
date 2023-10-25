@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,7 +99,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"OffCovid",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
+		covidLimitedDistrictUser.setLimitedDiseases(Collections.singleton(Disease.CORONAVIRUS));
 		getUserFacade().saveUser(covidLimitedDistrictUser, false);
 	}
 

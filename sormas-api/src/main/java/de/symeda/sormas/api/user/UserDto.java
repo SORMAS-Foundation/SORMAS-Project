@@ -101,7 +101,7 @@ public class UserDto extends EntityDto {
 
 	private UserReferenceDto associatedOfficer;
 
-	private Disease limitedDisease;
+	private Set<Disease> limitedDiseases;
 
 	private Language language;
 
@@ -254,12 +254,12 @@ public class UserDto extends EntityDto {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
-	public Disease getLimitedDisease() {
-		return limitedDisease;
+	public Set<Disease> getLimitedDiseases() {
+		return limitedDiseases;
 	}
 
-	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+	public void setLimitedDiseases(Set<Disease> limitedDiseases) {
+		this.limitedDiseases = limitedDiseases;
 	}
 
 	public Language getLanguage() {

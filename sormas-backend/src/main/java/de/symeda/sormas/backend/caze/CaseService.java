@@ -1483,9 +1483,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		// only show cases of a specific disease if a limited disease is set
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease()));
-		}
+		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, casePath.get(Case.DISEASE)));
 
 		// port health users can only see port health cases
 		if (currentUser.getUserRoles().stream().anyMatch(userRole -> userRole.isPortHealthUser())) {
