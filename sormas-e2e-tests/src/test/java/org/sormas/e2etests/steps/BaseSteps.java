@@ -28,7 +28,6 @@ import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
-
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -159,7 +158,7 @@ public class BaseSteps implements StepLifecycleListener {
             "Screenshot at :"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
             imageType,
-                jpgValue,
+            jpgValue,
             screenShot);
   }
 
