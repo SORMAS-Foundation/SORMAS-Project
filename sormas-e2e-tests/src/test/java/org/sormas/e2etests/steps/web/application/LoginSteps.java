@@ -46,14 +46,11 @@ import org.sormas.e2etests.steps.web.application.users.EditUserSteps;
 @Slf4j
 public class LoginSteps implements En {
 
-  private RestAssuredClient restAssuredClient;
-
   @Inject
   public LoginSteps(
       WebDriverHelpers webDriverHelpers,
       RunningConfiguration runningConfiguration,
-      AssertHelpers assertHelpers,
-      RestAssuredClient restAssuredClient) {
+      AssertHelpers assertHelpers) {
 
     Given(
         "^I am logged in$",
