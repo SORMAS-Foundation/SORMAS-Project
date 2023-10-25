@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 public enum DistrictsValues {
-  VoreingestellterLandkreis(
-      "Voreingestellter Landkreis");
+  VoreingestellterLandkreis("Voreingestellter Landkreis"),
+  SKBerlinCharlottenburgWilmersdorf("SK Berlin Charlottenburg-Wilmersdorf");
 
   private final String name;
 

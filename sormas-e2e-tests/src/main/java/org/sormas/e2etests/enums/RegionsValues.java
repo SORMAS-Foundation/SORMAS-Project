@@ -18,14 +18,13 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
 public enum RegionsValues {
-  VoreingestellteBundeslander(
-      "Voreingestellte Bundesl\u00E4nder");
+  VoreingestellteBundeslander("Voreingestellte Bundesl\u00E4nder"),
+  Berlin("Berlin");
 
   private final String name;
 
