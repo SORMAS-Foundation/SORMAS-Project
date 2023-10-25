@@ -25,33 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public enum DistrictsValues {
   VoreingestellterLandkreis(
-      "Voreingestellter Landkreis",
-      "SZ75BK-5OUMFU-V2DTKG-5BYACHFE",
-      "R5N4WB-3LGKHX-HGFZ3K-7POBSFBQ"),
-  SKBerlinCharlottenburgWilmersdorf(
-      "SK Berlin Charlottenburg-Wilmersdorf",
-      "NBNTEP-2AVREB-XKXDET-PWYYBIOE",
-      "UWRLRS-XKKOJZ-25ULJL-JAELCKYE");
+      "Voreingestellter Landkreis");
 
   private final String name;
-  private final String uuidMain;
-  private final String uuidDE;
 
-  DistrictsValues(String name, String uuidMain, String uuidDE) {
+  DistrictsValues(String name) {
     this.name = name;
-    this.uuidMain = uuidMain;
-    this.uuidDE = uuidDE;
-  }
-
-  @SneakyThrows
-  public static String getNameValueForUuid(String option) {
-    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
-    DistrictsValues[] districtValuesOptions = DistrictsValues.values();
-    for (DistrictsValues value : districtValuesOptions) {
-      if (value.uuidMain.equalsIgnoreCase(option) || value.uuidDE.equalsIgnoreCase(option))
-        return value.name;
-    }
-    throw new Exception("Unable to find " + option + " value in District Enum");
   }
 
   @SneakyThrows
@@ -62,23 +41,5 @@ public enum DistrictsValues {
       if (value.getName().equalsIgnoreCase(option)) return value.getName();
     }
     throw new Exception("Unable to find " + option + " value in District Enum");
-  }
-
-  @SneakyThrows
-  public static String getUuidValueForLocale(String districtName, String locale) {
-    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
-    DistrictsValues[] districtsValues = DistrictsValues.values();
-    for (DistrictsValues value : districtsValues) {
-      if (value.name().equalsIgnoreCase(districtName)) {
-        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
-          return value.getUuidMain();
-        }
-        if (locale.equalsIgnoreCase("DE")) {
-          return value.getUuidDE();
-        }
-      }
-    }
-    throw new Exception(
-        String.format("Unable to find uuid for district: %s and locale: %s", districtName, locale));
   }
 }
