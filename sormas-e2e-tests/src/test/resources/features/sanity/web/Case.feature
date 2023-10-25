@@ -1917,12 +1917,12 @@ Feature: Case end to end tests
 
   @tmsLink=HSP-6293 @env_main
   Scenario: Surveillance Officer - Check Cases displayed depending of the jurisdiction
-    When API: I create 1 new cases with chosen "Berlin" region
+    When API: I create 2 new cases for Berlin region
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I open the first Case result in Case Directory
-    #open one f created case and archive it
+    Then I click on the Archive case button and confirm popup
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data and Baden-Württemberg region
@@ -1943,7 +1943,3 @@ Feature: Case end to end tests
     Then I back to Case Directory using case list button
     And I apply "Archived cases" to combobox on Case Directory Page
     And I open the first Case result in Case Directory
-
-
-
-
