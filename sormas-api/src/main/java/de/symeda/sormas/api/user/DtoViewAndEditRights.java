@@ -15,8 +15,12 @@
 
 package de.symeda.sormas.api.user;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -43,84 +47,84 @@ import de.symeda.sormas.api.visit.VisitDto;
 
 public class DtoViewAndEditRights {
 
-	private static Map<String, UserRight> viewRights = new HashMap<>();
-	private static Map<String, UserRight> editRights = new HashMap<>();
+	private static final Map<String, Set<UserRight>> viewRights = new HashMap<>();
+	private static final Map<String, Set<UserRight>> editRights = new HashMap<>();
 
 	static {
-		viewRights.put(AdditionalTestDto.class.getSimpleName(), UserRight.ADDITIONAL_TEST_VIEW);
-		editRights.put(AdditionalTestDto.class.getSimpleName(), UserRight.ADDITIONAL_TEST_EDIT);
+		viewRights.put(AdditionalTestDto.class.getSimpleName(), Collections.singleton(UserRight.ADDITIONAL_TEST_VIEW));
+		editRights.put(AdditionalTestDto.class.getSimpleName(), Collections.singleton(UserRight.ADDITIONAL_TEST_EDIT));
 
-		viewRights.put(AggregateReportDto.class.getSimpleName(), UserRight.AGGREGATE_REPORT_VIEW);
-		editRights.put(AggregateReportDto.class.getSimpleName(), UserRight.AGGREGATE_REPORT_EDIT);
+		viewRights.put(AggregateReportDto.class.getSimpleName(), Collections.singleton(UserRight.AGGREGATE_REPORT_VIEW));
+		editRights.put(AggregateReportDto.class.getSimpleName(), Collections.singleton(UserRight.AGGREGATE_REPORT_EDIT));
 
-		viewRights.put(CaseDataDto.class.getSimpleName(), UserRight.CASE_VIEW);
-		editRights.put(CaseDataDto.class.getSimpleName(), UserRight.CASE_EDIT);
+		viewRights.put(CaseDataDto.class.getSimpleName(), Collections.singleton(UserRight.CASE_VIEW));
+		editRights.put(CaseDataDto.class.getSimpleName(), Collections.singleton(UserRight.CASE_EDIT));
 
-		viewRights.put(ClinicalVisitDto.class.getSimpleName(), UserRight.CLINICAL_COURSE_VIEW);
-		editRights.put(ClinicalVisitDto.class.getSimpleName(), UserRight.CLINICAL_VISIT_EDIT);
+		viewRights.put(ClinicalVisitDto.class.getSimpleName(), Collections.singleton(UserRight.CLINICAL_COURSE_VIEW));
+		editRights.put(ClinicalVisitDto.class.getSimpleName(), Collections.singleton(UserRight.CLINICAL_VISIT_EDIT));
 
-		viewRights.put(ContactDto.class.getSimpleName(), UserRight.CONTACT_VIEW);
-		editRights.put(ContactDto.class.getSimpleName(), UserRight.CONTACT_EDIT);
+		viewRights.put(ContactDto.class.getSimpleName(), Collections.singleton(UserRight.CONTACT_VIEW));
+		editRights.put(ContactDto.class.getSimpleName(), Collections.singleton(UserRight.CONTACT_EDIT));
 
-		viewRights.put(EnvironmentDto.class.getSimpleName(), UserRight.ENVIRONMENT_VIEW);
-		editRights.put(EnvironmentDto.class.getSimpleName(), UserRight.ENVIRONMENT_EDIT);
+		viewRights.put(EnvironmentDto.class.getSimpleName(), Collections.singleton(UserRight.ENVIRONMENT_VIEW));
+		editRights.put(EnvironmentDto.class.getSimpleName(), Collections.singleton(UserRight.ENVIRONMENT_EDIT));
 
-		viewRights.put(EnvironmentSampleDto.class.getSimpleName(), UserRight.ENVIRONMENT_SAMPLE_VIEW);
-		editRights.put(EnvironmentSampleDto.class.getSimpleName(), UserRight.ENVIRONMENT_SAMPLE_EDIT);
+		viewRights.put(EnvironmentSampleDto.class.getSimpleName(), Collections.singleton(UserRight.ENVIRONMENT_SAMPLE_VIEW));
+		editRights.put(EnvironmentSampleDto.class.getSimpleName(), Collections.singleton(UserRight.ENVIRONMENT_SAMPLE_EDIT));
 
-		viewRights.put(EventDto.class.getSimpleName(), UserRight.EVENT_VIEW);
-		editRights.put(EventDto.class.getSimpleName(), UserRight.EVENT_EDIT);
+		viewRights.put(EventDto.class.getSimpleName(), Collections.singleton(UserRight.EVENT_VIEW));
+		editRights.put(EventDto.class.getSimpleName(), Collections.singleton(UserRight.EVENT_EDIT));
 
-		viewRights.put(EventParticipantDto.class.getSimpleName(), UserRight.EVENTPARTICIPANT_VIEW);
-		editRights.put(EventParticipantDto.class.getSimpleName(), UserRight.EVENTPARTICIPANT_EDIT);
+		viewRights.put(EventParticipantDto.class.getSimpleName(), Collections.singleton(UserRight.EVENTPARTICIPANT_VIEW));
+		editRights.put(EventParticipantDto.class.getSimpleName(), Collections.singleton(UserRight.EVENTPARTICIPANT_EDIT));
 
-		viewRights.put(ImmunizationDto.class.getSimpleName(), UserRight.IMMUNIZATION_VIEW);
-		editRights.put(ImmunizationDto.class.getSimpleName(), UserRight.IMMUNIZATION_EDIT);
+		viewRights.put(ImmunizationDto.class.getSimpleName(), Collections.singleton(UserRight.IMMUNIZATION_VIEW));
+		editRights.put(ImmunizationDto.class.getSimpleName(), Collections.singleton(UserRight.IMMUNIZATION_EDIT));
 
-		viewRights.put(OutbreakDto.class.getSimpleName(), UserRight.OUTBREAK_VIEW);
-		editRights.put(OutbreakDto.class.getSimpleName(), UserRight.OUTBREAK_EDIT);
+		viewRights.put(OutbreakDto.class.getSimpleName(), Collections.singleton(UserRight.OUTBREAK_VIEW));
+		editRights.put(OutbreakDto.class.getSimpleName(), Collections.singleton(UserRight.OUTBREAK_EDIT));
 
-		// no explicit UserRight to view PathogenTestDto
-		editRights.put(PathogenTestDto.class.getSimpleName(), UserRight.PATHOGEN_TEST_EDIT);
+		viewRights.put(
+			PathogenTestDto.class.getSimpleName(),
+			Stream.of(UserRight.SAMPLE_VIEW, UserRight.ENVIRONMENT_SAMPLE_VIEW).collect(Collectors.toSet()));
+		editRights.put(PathogenTestDto.class.getSimpleName(), Collections.singleton(UserRight.PATHOGEN_TEST_EDIT));
 
-		viewRights.put(PersonDto.class.getSimpleName(), UserRight.PERSON_VIEW);
-		editRights.put(PersonDto.class.getSimpleName(), UserRight.PERSON_EDIT);
+		viewRights.put(PersonDto.class.getSimpleName(), Collections.singleton(UserRight.PERSON_VIEW));
+		editRights.put(PersonDto.class.getSimpleName(), Collections.singleton(UserRight.PERSON_EDIT));
 
-		viewRights.put(PrescriptionDto.class.getSimpleName(), UserRight.CASE_VIEW);
-		editRights.put(PrescriptionDto.class.getSimpleName(), UserRight.PRESCRIPTION_EDIT);
+		viewRights.put(PrescriptionDto.class.getSimpleName(), Collections.singleton(UserRight.THERAPY_VIEW));
+		editRights.put(PrescriptionDto.class.getSimpleName(), Collections.singleton(UserRight.PRESCRIPTION_EDIT));
 
-		viewRights.put(SampleDto.class.getSimpleName(), UserRight.SAMPLE_VIEW);
-		editRights.put(SampleDto.class.getSimpleName(), UserRight.SAMPLE_EDIT);
+		viewRights.put(TreatmentDto.class.getSimpleName(), Collections.singleton(UserRight.THERAPY_VIEW));
+		editRights.put(TreatmentDto.class.getSimpleName(), Collections.singleton(UserRight.TREATMENT_EDIT));
 
-		viewRights.put(TaskDto.class.getSimpleName(), UserRight.TASK_VIEW);
-		editRights.put(TaskDto.class.getSimpleName(), UserRight.TASK_EDIT);
+		viewRights.put(SampleDto.class.getSimpleName(), Collections.singleton(UserRight.SAMPLE_VIEW));
+		editRights.put(SampleDto.class.getSimpleName(), Collections.singleton(UserRight.SAMPLE_EDIT));
 
-		viewRights.put(TreatmentDto.class.getSimpleName(), UserRight.CASE_VIEW);
-		editRights.put(TreatmentDto.class.getSimpleName(), UserRight.TREATMENT_EDIT);
+		viewRights.put(TaskDto.class.getSimpleName(), Collections.singleton(UserRight.TASK_VIEW));
+		editRights.put(TaskDto.class.getSimpleName(), Collections.singleton(UserRight.TASK_EDIT));
 
-		// can be with CONTACT_VIEW, too. Currently all user roles that can view
-		// cases can also view contacts.
-		viewRights.put(VisitDto.class.getSimpleName(), UserRight.CASE_VIEW);
-		editRights.put(VisitDto.class.getSimpleName(), UserRight.VISIT_EDIT);
+		viewRights.put(VisitDto.class.getSimpleName(), Stream.of(UserRight.CASE_VIEW, UserRight.CONTACT_VIEW).collect(Collectors.toSet()));
+		editRights.put(VisitDto.class.getSimpleName(), Collections.singleton(UserRight.VISIT_EDIT));
 
-		viewRights.put(WeeklyReportDto.class.getSimpleName(), UserRight.WEEKLYREPORT_VIEW);
-		// no explicit UserRight to edit WeeklyReportDto
+		viewRights.put(WeeklyReportDto.class.getSimpleName(), Collections.singleton(UserRight.WEEKLYREPORT_VIEW));
+		editRights.put(WeeklyReportDto.class.getSimpleName(), Collections.singleton(UserRight.WEEKLYREPORT_CREATE));
 
-		viewRights.put(CampaignFormMetaDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
-		editRights.put(CampaignFormMetaDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
+		viewRights.put(CampaignFormMetaDto.class.getSimpleName(), Collections.singleton(UserRight.CAMPAIGN_VIEW));
+		editRights.put(CampaignFormMetaDto.class.getSimpleName(), Collections.singleton(UserRight.CAMPAIGN_EDIT));
 
-		viewRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
-		editRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
+		viewRights.put(CampaignDto.class.getSimpleName(), Collections.singleton(UserRight.CAMPAIGN_VIEW));
+		editRights.put(CampaignDto.class.getSimpleName(), Collections.singleton(UserRight.CAMPAIGN_EDIT));
 
-		viewRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_FORM_DATA_VIEW);
-		editRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_FORM_DATA_EDIT);
+		viewRights.put(CampaignFormDataDto.class.getSimpleName(), Collections.singleton(UserRight.CAMPAIGN_FORM_DATA_VIEW));
+		editRights.put(CampaignFormDataDto.class.getSimpleName(), Collections.singleton(UserRight.CAMPAIGN_FORM_DATA_EDIT));
 	}
 
-	public static UserRight getUserRightView(Class clazz) {
+	public static Set<UserRight> getUserRightsView(Class<?> clazz) {
 		return viewRights.get(clazz.getSimpleName());
 	}
 
-	public static UserRight getUserRightEdit(Class clazz) {
+	public static Set<UserRight> getUserRightsEdit(Class<?> clazz) {
 		return editRights.get(clazz.getSimpleName());
 	}
 }
