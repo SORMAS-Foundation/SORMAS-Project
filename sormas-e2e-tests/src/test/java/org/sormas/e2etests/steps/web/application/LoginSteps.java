@@ -30,10 +30,13 @@ import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -43,11 +46,14 @@ import org.sormas.e2etests.steps.web.application.users.EditUserSteps;
 @Slf4j
 public class LoginSteps implements En {
 
+  private RestAssuredClient restAssuredClient;
+
   @Inject
   public LoginSteps(
       WebDriverHelpers webDriverHelpers,
       RunningConfiguration runningConfiguration,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      RestAssuredClient restAssuredClient) {
 
     Given(
         "^I am logged in$",
