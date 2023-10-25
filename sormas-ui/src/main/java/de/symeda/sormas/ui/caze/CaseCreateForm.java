@@ -280,11 +280,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		facilityType = ComboBoxHelper.createComboBoxV7();
-		facilityType.setId("type");
-		facilityType.setCaption(I18nProperties.getCaption(Captions.facilityType));
+		facilityType = addField(CaseDataDto.FACILITY_TYPE, ComboBox.class);
 		facilityType.setWidth(100, Unit.PERCENTAGE);
-		getContent().addComponent(facilityType, CaseDataDto.FACILITY_TYPE);
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
