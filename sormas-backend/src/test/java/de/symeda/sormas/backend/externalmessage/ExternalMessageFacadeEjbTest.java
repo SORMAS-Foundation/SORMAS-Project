@@ -57,6 +57,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -371,7 +372,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testOnlyLabmessageSavedOnExceptionWhileProcessing() {
+	public void testOnlyLabMessageSavedOnExceptionWhileProcessing() {
 		ExternalMessageDto labMessageWithNoLab = createLabMessage(m -> {
 			m.setAutomaticProcessingPossible(true);
 			m.setReporterExternalIds(null);
@@ -412,6 +413,29 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		ExternalMessageDto savedLabMessageWithIncompleteTest = getExternalMessageFacade().getByUuid(labMessageWithIncompleteTest.getUuid());
 		assertThat(savedLabMessageWithNoLab, is(notNullValue()));
 		assertThat(savedLabMessageWithIncompleteTest.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+	}
+
+	@Test
+	public void testOnlyLabMessageSavedOnCanceledProcessing() {
+		ExternalMessageDto labMessage = createLabMessage((m) -> m.setAutomaticProcessingPossible(true));
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_OFFICER);
+		PersonDto person = creator.createPerson(labMessage.getPersonFirstName(), labMessage.getPersonLastName(), labMessage.getPersonSex(), p -> {
+			p.setNationalHealthId(labMessage.getPersonNationalHealthId());
+		});
+		creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDisease(labMessage.getDisease()));
+
+		// cancelled processing
+		getExternalMessageFacade().saveAndProcessLabmessage(labMessage);
+		assertThat(labMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+		assertThat(getPersonFacade().getAllUuids(), hasSize(1));
+		assertThat(getCaseFacade().getAllUuids(), hasSize(1));
+		assertThat(getSampleFacade().getAllActiveUuids(), hasSize(0));
+		// the lab message has been saved as unprocessed
+		ExternalMessageDto savedLabMessageWithNoLab = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		assertThat(savedLabMessageWithNoLab, is(notNullValue()));
+		assertThat(savedLabMessageWithNoLab.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
 	}
 
 	private ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> customConfig) {

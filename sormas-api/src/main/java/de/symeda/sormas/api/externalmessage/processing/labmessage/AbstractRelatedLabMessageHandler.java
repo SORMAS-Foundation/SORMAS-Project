@@ -182,9 +182,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		String reportId = labMessage.getReportId();
 		String labSampleId = labMessage.getSampleReportsNullSafe().get(0).getLabSampleId();
 
-		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId))
-
-		{
+		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId)) {
 			return null;
 		}
 

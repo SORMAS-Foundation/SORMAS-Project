@@ -229,35 +229,26 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto labMessage) {
-		ExternalMessageDto savedMessage = save(labMessage);
-
 		if (!labMessage.isAutomaticProcessingPossible()) {
-			return savedMessage;
+			return save(labMessage);
 		}
 
 		try {
-			ProcessingResult<ExternalMessageProcessingResult> result = automaticLabMessageProcessor.processLabMessage(savedMessage);
+			ProcessingResult<ExternalMessageProcessingResult> result = automaticLabMessageProcessor.processLabMessage(labMessage);
 
 			if (result.getStatus().isCanceled()) {
-				logger.error("Processing of lab message with UUID {} has benn canceled", savedMessage.getUuid());
-
-				// rollback transaction and save only the lab message
-				em.getTransaction().rollback();
-				save(labMessage);
+				logger.error("Processing of lab message with UUID {} has been canceled", labMessage.getUuid());
 			}
 		} catch (ExecutionException e) {
-			logger.error("Could not process lab message with UUID " + savedMessage.getUuid(), e);
-
-			// rollback transaction and save only the lab message
-			em.getTransaction().rollback();
-			save(labMessage);
-
+			logger.error("Could not process lab message with UUID " + labMessage.getUuid(), e);
 		} catch (InterruptedException e) {
-			logger.error("Could not process lab message with UUID " + savedMessage.getUuid(), e);
+			logger.error("Could not process lab message with UUID " + labMessage.getUuid(), e);
 			Thread.currentThread().interrupt();
+		} finally {
+			save(labMessage);
 		}
 
-		return getByUuid(savedMessage.getUuid());
+		return getByUuid(labMessage.getUuid());
 	}
 
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {

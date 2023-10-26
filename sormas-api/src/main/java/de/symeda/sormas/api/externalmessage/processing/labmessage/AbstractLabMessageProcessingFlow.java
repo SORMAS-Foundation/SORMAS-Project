@@ -119,7 +119,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private static boolean isLastSample(ExternalMessageDto labMessage, int sampleReportIndex) {
 		if (sampleReportIndex >= labMessage.getSampleReportsNullSafe().size()) {
-			throw new IllegalArgumentException("The sample report index is out of bounds.");
+			throw new IndexOutOfBoundsException("The sample report index is out of bounds.");
 		}
 		return labMessage.getSampleReportsNullSafe().size() == sampleReportIndex + 1;
 	}

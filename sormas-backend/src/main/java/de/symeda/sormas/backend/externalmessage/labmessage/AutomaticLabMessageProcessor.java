@@ -24,6 +24,11 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -59,10 +64,15 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean
 public class AutomaticLabMessageProcessor {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
+
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
@@ -80,13 +90,23 @@ public class AutomaticLabMessageProcessor {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 
+	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	public ProcessingResult<ExternalMessageProcessingResult> processLabMessage(ExternalMessageDto externalMessage)
-		throws ExecutionException, InterruptedException {
+		throws InterruptedException, ExecutionException {
 		return new AutomaticLabMessageProcessingFlow(
 			externalMessage,
 			userFacade.getCurrentUser(),
 			new ExternalMessageMapper(externalMessage, processingFacade),
-			processingFacade).run().toCompletableFuture().get();
+			processingFacade).run().handle((result, throwable) -> {
+				if (throwable != null) {
+					em.getTransaction().rollback();
+					throw new RuntimeException(throwable);
+				} else if (result.getStatus().isCanceled()) {
+					em.getTransaction().rollback();
+				}
+
+				return result;
+			}).toCompletableFuture().get();
 	}
 
 	private class AutomaticLabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
@@ -112,7 +132,7 @@ public class AutomaticLabMessageProcessor {
 		@Override
 		protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
 			String nationalHealthId = person.getNationalHealthId();
-			if (nationalHealthId != null) {
+			if (StringUtils.isNotBlank(nationalHealthId)) {
 				List<PersonDto> matchingPersons = personFacade.getByNationalHealthId(nationalHealthId);
 				if (matchingPersons.isEmpty()) {
 					callback.done(new EntitySelection<>(personFacade.save(person), true));
@@ -149,9 +169,9 @@ public class AutomaticLabMessageProcessor {
 					similarCases.get(0).getDisease());
 
 				if (caseUuid != null) {
-					CaseSelectionDto caseToAsiignTo =
+					CaseSelectionDto caseToAssignTo =
 						similarCases.stream().filter(c -> c.getUuid().equals(caseUuid)).findFirst().orElseThrow(IllegalStateException::new);
-					result.setCaze(caseToAsiignTo);
+					result.setCaze(caseToAssignTo);
 					callback.done(result);
 				} else {
 					callback.cancel();
@@ -255,14 +275,6 @@ public class AutomaticLabMessageProcessor {
 		@Override
 		protected CompletionStage<Void> notifyCorrectionsSaved() {
 			throw new UnsupportedOperationException("Corrections not supported yet");
-		}
-
-		private void handleException(Runnable action, HandlerCallback callback) {
-			try {
-				action.run();
-			} catch (Exception e) {
-				callback.cancel();
-			}
 		}
 
 		private boolean personDetailsMatch(PersonDto person1, PersonDto person2) {
