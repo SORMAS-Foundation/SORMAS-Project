@@ -613,6 +613,21 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_POPUP_DE);
           TimeUnit.SECONDS.sleep(3);
         });
+
+    When(
+        "I check that the region of the case is set to ([^\"]*) and district is set to ([^\"]*)",
+        (String region, String district) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(REGION_COMBOBOX),
+              region,
+              "The region is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(DISTRICT_COMBOBOX),
+              district,
+              "The district is different than expected");
+          softly.assertAll();
+        });
+
     When(
         "I check if generated document for Case based on {string} was downloaded properly",
         (String name) -> {
@@ -1380,7 +1395,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I get the case person UUID displayed on Edit case page",
-        () -> caseUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT));
+        () -> {
+          caseUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          System.out.print(caseUuid);
+        });
 
     When(
         "I check case created from created contact is correctly displayed on Edit Case page",

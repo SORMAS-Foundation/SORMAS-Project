@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,9 +43,6 @@ import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class EventParticipantNewActivity extends BaseEditActivity<EventParticipant> {
 
@@ -103,7 +103,7 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
 	@Override
 	protected int getActivityTitle() {
-		return R.string.heading_person_involved_new;
+		return R.string.heading_event_participant_new;
 	}
 
 	@Override

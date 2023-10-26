@@ -15,20 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.enums;
+package org.sormas.e2etests.helpers.environmentdata.dto;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.*;
 
-@Getter
-@Slf4j
-public enum RegionsValues {
-  VoreingestellteBundeslander("Voreingestellte Bundesl\u00E4nder"),
-  Berlin("Berlin");
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class RegionDistrict {
 
-  private final String name;
-
-  RegionsValues(String name) {
-    this.name = name;
-  }
+  String uuid;
+  String caption;
 }

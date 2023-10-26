@@ -28,8 +28,6 @@ import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
-import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -55,7 +53,7 @@ public class BaseSteps implements StepLifecycleListener {
   public static String locale;
   private final DriverManager driverManager;
   private final String imageType = "image/png";
-  private final String pngValue = "png";
+  private final String jpgValue = "jpg";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {
@@ -77,24 +75,16 @@ public class BaseSteps implements StepLifecycleListener {
       driver = driverManager.borrowRemoteWebDriver(scenario.getName());
       StepsLogger.setRemoteWebDriver(driver);
       WebDriver.Options options = driver.manage();
-      options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
+      options.timeouts().scriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
       log.info("Starting test: {} with process ID [ {} ]", scenario.getName(), PROCESS_ID);
     }
-  }
-
-  @Before(value = "@API")
-  static void setup() {
-    RestAssured.registerParser("text/html", Parser.JSON);
   }
 
   @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
     if (isLanguageRiskScenario(scenario) && scenario.isFailed()) {
-      // TODO replace it with API call when implemented
-      log.info("Refreshing page to close any popups");
-      driver.navigate().refresh();
       BackupSteps.setAppLanguageToDefault(locale);
     }
     if (isNonApiScenario(scenario)) {
@@ -168,7 +158,7 @@ public class BaseSteps implements StepLifecycleListener {
             "Screenshot at :"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
             imageType,
-            pngValue,
+            jpgValue,
             screenShot);
   }
 

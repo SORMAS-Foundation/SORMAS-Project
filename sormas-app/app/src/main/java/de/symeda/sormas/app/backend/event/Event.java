@@ -75,7 +75,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
-	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String START_DATE = "startDate";

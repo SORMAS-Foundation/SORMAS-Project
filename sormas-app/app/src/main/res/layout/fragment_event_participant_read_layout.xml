@@ -104,10 +104,10 @@
                 app:userViewRight="@{UserRight.CASE_VIEW}">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/open_event_person_case"
+                    android:id="@+id/open_event_participant_case"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/action_open_event_person_case"
+                    android:text="@string/action_open_event_participant_case"
                     app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                     app:rounded="true"
                     app:iconStart="@drawable/ic_open_case_black_24dp" />
