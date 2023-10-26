@@ -11206,6 +11206,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         district:
           $ref: '#/components/schemas/DistrictReferenceDto'
         externalID:
@@ -13846,6 +13848,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
           maxLength: 255
@@ -13877,6 +13881,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
         externalID:
@@ -20998,6 +21004,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
           maxLength: 255
@@ -21031,6 +21039,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
         externalID:
