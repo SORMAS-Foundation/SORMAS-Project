@@ -265,20 +265,21 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		boolean hasEditReceivalRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
+		boolean canEditDispatchField = isCreate || (isOwner && hasEditDispatchRight);
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {
 				String propertyId = f.getId();
 				boolean isReceivalField = RECEIVAL_FIELDS.contains(propertyId);
-				boolean canEdit = EnvironmentSampleDto.GENERAL_COMMENT.equals(propertyId)
-					|| (isReceivalField ? hasEditReceivalRight : isCreate || (isOwner && hasEditDispatchRight));
+				boolean canEdit =
+					EnvironmentSampleDto.GENERAL_COMMENT.equals(propertyId) || (isReceivalField ? hasEditReceivalRight : canEditDispatchField);
 
 				if (!canEdit) {
 					f.setEnabled(false);
 				}
 			}
 		});
-		if (!isCreate && !isOwner && !hasEditDispatchRight) {
+		if (!(canEditDispatchField)) {
 			weatherConditionCheckBoxTree.setEnabled(false);
 		}
 	}
