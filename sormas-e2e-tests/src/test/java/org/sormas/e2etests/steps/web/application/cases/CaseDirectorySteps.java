@@ -221,6 +221,7 @@ import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
@@ -590,6 +591,18 @@ public class CaseDirectorySteps implements En {
               runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+        });
+
+    When(
+        "^I navigate to the last created case by ui via the url$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.CASES_BUTTON);
+          String LAST_CREATED_CASE_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/data/"
+                  + caseUuid;
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });

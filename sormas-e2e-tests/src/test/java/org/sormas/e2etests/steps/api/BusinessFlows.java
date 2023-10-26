@@ -63,6 +63,22 @@ public class BusinessFlows implements En {
         });
 
     When(
+        "API: I create {int} new cases for Berlin region",
+        (Integer numberOfCases) -> {
+          List<Case> caseList = new ArrayList<>();
+          Person person = personApiService.buildGeneratedPerson();
+          personsHelper.createNewPerson(person);
+          apiState.setLastCreatedPerson(person);
+          for (int i = 0; i < numberOfCases; i++) {
+            Case caze =
+                caseApiService.buildGeneratedCaseForBerlinRegion(apiState.getLastCreatedPerson());
+            caseHelper.createCase(caze);
+            caseList.add(caze);
+          }
+          apiState.setCreatedCases(caseList);
+        });
+
+    When(
         "API: I create {int} new cases with a new sample foreach of them",
         (Integer numberOfCasesAndSamples) -> {
           List<Sample> sampleList = new ArrayList<>();
