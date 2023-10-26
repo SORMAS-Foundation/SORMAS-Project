@@ -351,7 +351,7 @@ public class EventParticipantFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipantSelectionDto> cq = cb.createQuery(EventParticipantSelectionDto.class);
 		Root<Event> eventRoot = cq.from(Event.class);
-		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PARTICIPANTS, JoinType.INNER);
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
 		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, District> districtJoin = eventParticipantJoin.join(EventParticipant.DISTRICT, JoinType.LEFT);
@@ -404,7 +404,7 @@ public class EventParticipantFacadeEjb
 
 		final Subquery<Long> personSubquery = cq.subquery(Long.class);
 		final Root<Event> eventRoot = personSubquery.from(Event.class);
-		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PARTICIPANTS, JoinType.INNER);
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
 
 		personSubquery.select(eventRoot.get(Event.UUID));

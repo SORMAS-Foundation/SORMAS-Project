@@ -102,7 +102,7 @@ public class EventJoins extends QueryJoins<Event> {
 	public From<?, EventParticipant> getEventParticipants() {
 
 		if (eventParticipants == null) {
-			setEventParticipants(getRoot().join(Event.EVENT_PERSONS, JoinType.LEFT));
+			setEventParticipants(getRoot().join(Event.EVENT_PARTICIPANTS, JoinType.LEFT));
 		}
 		return eventParticipants;
 	}

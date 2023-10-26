@@ -34,15 +34,15 @@ import javax.persistence.OrderBy;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdoWithDefault;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class District extends InfrastructureAdo {
+public class District extends InfrastructureAdoWithDefault {
 
 	private static final long serialVersionUID = -6057113756091470463L;
 

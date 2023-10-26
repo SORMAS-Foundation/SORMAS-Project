@@ -53,6 +53,8 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -126,6 +128,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private ComboBox subcontinent;
 	private ComboBox country;
 	private ComboBox region;
+	private ComboBox district;
+	private ComboBox community;
 	private TextField contactPersonFirstName;
 	private TextField contactPersonLastName;
 	private TextField contactPersonPhone;
@@ -254,8 +258,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
 		country = addInfrastructureField(LocationDto.COUNTRY);
 		region = addInfrastructureField(LocationDto.REGION);
-		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
-		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
+		district = addInfrastructureField(LocationDto.DISTRICT);
+		community = addInfrastructureField(LocationDto.COMMUNITY);
 
 		continent.setVisible(false);
 		subcontinent.setVisible(false);
@@ -366,18 +370,22 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			if (districtDto == null) {
 				FieldHelper.removeItems(facility);
 				// Add a visual indictator reminding the user to select a district
-				facility.setComponentError(new ErrorMessage() {
 
-					@Override
-					public ErrorLevel getErrorLevel() {
-						return ErrorLevel.INFO;
-					}
+				if (!FacadeProvider.getFeatureConfigurationFacade()
+					.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+					facility.setComponentError(new ErrorMessage() {
 
-					@Override
-					public String getFormattedHtmlMessage() {
-						return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
-					}
-				});
+						@Override
+						public ErrorLevel getErrorLevel() {
+							return ErrorLevel.INFO;
+						}
+
+						@Override
+						public String getFormattedHtmlMessage() {
+							return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
+						}
+					});
+				}
 			} else if (facilityType.getValue() != null) {
 				facility.setComponentError(null);
 				facility.markAsDirty();
@@ -567,6 +575,22 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
 	}
 
+	private void hideAndFillJurisdictionFields() {
+
+		region.setVisible(false);
+		district.setVisible(false);
+		community.setVisible(false);
+		if (region.getValue() == null) {
+			region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		}
+		if (district.getValue() == null) {
+			district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		}
+		if (community.getValue() == null) {
+			community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+		}
+	}
+
 	@Override
 	public void setValue(LocationDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
@@ -574,6 +598,16 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		discard();
+	}
+
+	@Override
+	protected void setInternalValue(LocationDto newValue) {
+		super.setInternalValue(newValue);
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 
 	@Override
@@ -590,6 +624,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			facility.setValue(locationDto.getFacility());
 			facility.setComponentError(null);
 			facilityDetails.setValue(locationDto.getFacilityDetails());
+
+			if (FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+				hideAndFillJurisdictionFields();
+			}
 		}
 	}
 
@@ -714,6 +753,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	public void setDistrictRequired() {
 		setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 	}
+
 	public void setDistrictRequiredOnDefaultCountry(boolean required) {
 		this.districtRequiredOnDefaultCountry = required;
 		if (required) {

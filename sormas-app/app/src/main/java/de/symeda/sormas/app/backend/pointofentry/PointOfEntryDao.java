@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.infrastructure;
+package de.symeda.sormas.app.backend.pointofentry;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -26,9 +26,9 @@ import android.util.Log;
 
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
-import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.infrastructure.AbstractInfrastructureAdoDao;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.District;
 
 public class PointOfEntryDao extends AbstractInfrastructureAdoDao<PointOfEntry> {

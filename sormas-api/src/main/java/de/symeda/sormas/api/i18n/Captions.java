@@ -202,6 +202,7 @@ public interface Captions {
 	String all = "all";
 	String area = "area";
 	String Area_archived = "Area.archived";
+	String Area_defaultInfrastructure = "Area.defaultInfrastructure";
 	String Area_externalId = "Area.externalId";
 	String areaActiveAreas = "areaActiveAreas";
 	String areaAllAreas = "areaAllAreas";
@@ -607,6 +608,7 @@ public interface Captions {
 	String columnVaccineName = "columnVaccineName";
 	String Community = "Community";
 	String Community_archived = "Community.archived";
+	String Community_defaultInfrastructure = "Community.defaultInfrastructure";
 	String Community_district = "Community.district";
 	String Community_externalID = "Community.externalID";
 	String Community_region = "Community.region";
@@ -791,6 +793,7 @@ public interface Captions {
 	String contactSourceCase = "contactSourceCase";
 	String Continent = "Continent";
 	String Continent_archived = "Continent.archived";
+	String Continent_defaultInfrastructure = "Continent.defaultInfrastructure";
 	String Continent_defaultName = "Continent.defaultName";
 	String Continent_displayName = "Continent.displayName";
 	String Continent_externalId = "Continent.externalId";
@@ -801,6 +804,7 @@ public interface Captions {
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String Country = "Country";
 	String Country_archived = "Country.archived";
+	String Country_defaultInfrastructure = "Country.defaultInfrastructure";
 	String Country_defaultName = "Country.defaultName";
 	String Country_displayName = "Country.displayName";
 	String Country_externalId = "Country.externalId";
@@ -1009,6 +1013,7 @@ public interface Captions {
 	String diseaseVariantDetails = "diseaseVariantDetails";
 	String District = "District";
 	String District_archived = "District.archived";
+	String District_defaultInfrastructure = "District.defaultInfrastructure";
 	String District_epidCode = "District.epidCode";
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
@@ -1146,7 +1151,6 @@ public interface Captions {
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventManagementStatus = "Event.eventManagementStatus";
 	String Event_eventParticipants = "Event.eventParticipants";
-	String Event_eventPersons = "Event.eventPersons";
 	String Event_eventStatus = "Event.eventStatus";
 	String Event_eventTitle = "Event.eventTitle";
 	String Event_eventType = "Event.eventType";
@@ -1459,6 +1463,7 @@ public interface Captions {
 	String Facility_contactPersonFirstName = "Facility.contactPersonFirstName";
 	String Facility_contactPersonLastName = "Facility.contactPersonLastName";
 	String Facility_contactPersonPhone = "Facility.contactPersonPhone";
+	String Facility_defaultInfrastructure = "Facility.defaultInfrastructure";
 	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_houseNumber = "Facility.houseNumber";
@@ -1877,6 +1882,7 @@ public interface Captions {
 	String PointOfEntry = "PointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_archived = "PointOfEntry.archived";
+	String PointOfEntry_defaultInfrastructure = "PointOfEntry.defaultInfrastructure";
 	String PointOfEntry_district = "PointOfEntry.district";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
@@ -1942,6 +1948,7 @@ public interface Captions {
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";
+	String Region_defaultInfrastructure = "Region.defaultInfrastructure";
 	String Region_epidCode = "Region.epidCode";
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
@@ -2198,6 +2205,7 @@ public interface Captions {
 	String Subcontinent = "Subcontinent";
 	String Subcontinent_archived = "Subcontinent.archived";
 	String Subcontinent_continent = "Subcontinent.continent";
+	String Subcontinent_defaultInfrastructure = "Subcontinent.defaultInfrastructure";
 	String Subcontinent_defaultName = "Subcontinent.defaultName";
 	String Subcontinent_displayName = "Subcontinent.displayName";
 	String Subcontinent_externalId = "Subcontinent.externalId";

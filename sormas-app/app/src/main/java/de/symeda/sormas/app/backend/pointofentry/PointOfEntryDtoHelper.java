@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.infrastructure;
+package de.symeda.sormas.app.backend.pointofentry;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 	}
 
 	@Override
-	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<PointOfEntryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getPointOfEntryFacade().pullAllSince(since);
 	}
 
@@ -94,12 +94,12 @@ public class PointOfEntryDtoHelper extends AdoDtoHelper<PointOfEntry, PointOfEnt
 		}
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 
-    public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry ado) {
+	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry ado) {
 		if (ado == null) {
 			return null;
 		}

@@ -18,53 +18,17 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
 public enum RegionsValues {
-  VoreingestellteBundeslander(
-      "Voreingestellte Bundesl\u00E4nder",
-      "RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY",
-      "UXYTS3-SYILLD-2YI5UM-BZD62B6I");
+  VoreingestellteBundeslander("Voreingestellte Bundesl\u00E4nder"),
+  Berlin("Berlin");
 
   private final String name;
-  private final String uuidMain;
-  private final String uuidDE;
 
-  RegionsValues(String name, String uuidMain, String uuidDE) {
+  RegionsValues(String name) {
     this.name = name;
-    this.uuidMain = uuidMain;
-    this.uuidDE = uuidDE;
-  }
-
-  @SneakyThrows
-  public static String getNameValueForUuid(String option) {
-    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
-    RegionsValues[] regionValuesOptions = RegionsValues.values();
-    for (RegionsValues value : regionValuesOptions) {
-      if (value.uuidMain.equalsIgnoreCase(option) || value.uuidDE.equalsIgnoreCase(option))
-        return value.name;
-    }
-    throw new Exception("Unable to find " + option + " value in Region Enum");
-  }
-
-  @SneakyThrows
-  public static String getUuidValueForLocale(String regionName, String locale) {
-    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
-    RegionsValues[] regionValuesOptions = RegionsValues.values();
-    for (RegionsValues value : regionValuesOptions) {
-      if (value.name.equalsIgnoreCase(regionName)) {
-        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
-          return value.getUuidMain();
-        }
-        if (locale.equalsIgnoreCase("DE")) {
-          return value.getUuidDE();
-        }
-      }
-    }
-    throw new Exception(
-        String.format("Unable to find uuid for region: %s and locale: %s", regionName, locale));
   }
 }

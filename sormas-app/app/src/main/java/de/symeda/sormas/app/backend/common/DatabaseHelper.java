@@ -115,8 +115,6 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalizationDao;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationDao;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDao;
 import de.symeda.sormas.app.backend.lbds.LbdsSync;
 import de.symeda.sormas.app.backend.lbds.LbdsSyncDao;
 import de.symeda.sormas.app.backend.location.Location;
@@ -127,6 +125,8 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.backend.person.PersonContactDetailDao;
 import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntryDao;
 import de.symeda.sormas.app.backend.region.Area;
 import de.symeda.sormas.app.backend.region.AreaDao;
 import de.symeda.sormas.app.backend.region.Community;
@@ -190,7 +190,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 354;
+	public static final int DATABASE_VERSION = 355;
 
 	private static DatabaseHelper instance = null;
 
@@ -3136,10 +3136,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 352;
 				getDao(PathogenTest.class)
 					.executeRaw("ALTER TABLE pathogentest ADD COLUMN environmentSample_id BIGINT REFERENCES environmentSamples(id);");
+
 			case 353:
 				currentVersion = 353;
-				getDao(PathogenTest.class)
-					.executeRaw("ALTER TABLE pathogentest ADD COLUMN testedPathogen varchar(255);");
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN testedPathogen varchar(255);");
+
+			case 354:
+				currentVersion = 354;
+				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN defaultInfrastructure boolean default false;");
+				getDao(Community.class).executeRaw("ALTER TABLE community ADD COLUMN defaultInfrastructure boolean default false;");
 
 				// ATTENTION: break should only be done after last version
 				break;

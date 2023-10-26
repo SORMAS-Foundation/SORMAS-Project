@@ -29,7 +29,7 @@
         <import type="de.symeda.sormas.api.infrastructure.InfrastructureHelper" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo" />
-        <variable name="pointOfEntry" type="de.symeda.sormas.app.backend.infrastructure.PointOfEntry" />
+        <variable name="pointOfEntry" type="de.symeda.sormas.app.backend.pointofentry.PointOfEntry" />
         <variable name="pointOfEntryDetails" type="java.lang.String" />
     </data>
 

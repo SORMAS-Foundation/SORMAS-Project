@@ -23,8 +23,8 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
