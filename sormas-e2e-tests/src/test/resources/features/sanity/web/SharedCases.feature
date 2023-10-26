@@ -1351,17 +1351,34 @@ Feature: Sharing cases between environments tests
     Then I filter by last created person via API in Messages Directory
     And I click on Verarbeiten button in Messages Directory
     Then I create a new person and a new case from received message
+    And I verify that status for result 1 is set to processed in Message Directory page
+    And I click on the eye icon next for the first fetched message
+    And I collect message uuid
+    And I close HTML message
     Then I click on the Cases button from navbar
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
-    And I click on edit surveillance report
-    Then I collect data from surveillance report
-    And I fill comment in surveillance report notification details with random string
-    And I click on Save popup button
-    Then I click on share button
+    And I collect uuid of the case
+    And I click on share button
     And I select organization to share with "s2s_1"
-    Then I click to exclude personal data in Share popup
-    And I click to share report data in Share popup
-    And I fill comment in share popup for case with random string
+    And I click to share reports of the case in Share popup
+    And I fill comment in share popup with "shared to be deleted after"
     Then I click on share button in s2s share popup and wait for share to finish
     Then I navigate to "s2s_1" environment in new driver tab
+    Given I log in as a S2S
+    And I click on the Shares button from navbar
+    And I click on "accept" shared case button with copied case description
+    And I open the last created case with collected UUID by url on "s2s_2" instance
+    And Total number of read only fields should be 9
+    Then I check that the case has no samples on side card for DE
+    And I check that that surveillance report has no connected with lab message
+    And I click on view surveillance report
+    And Total number of read only fields should be 13
+    Then I check that data present in target are match to data from source in surveillance report
+    And I click on the Messages button from navbar
+    And I filter messages by collected uuid
+    And I check that number of displayed messages results is 0
+    Then I back to tab number 1
+    And I click on the Messages button from navbar
+    And I filter messages by collected uuid
+    And I verify that status for result 1 is set to processed in Message Directory page
