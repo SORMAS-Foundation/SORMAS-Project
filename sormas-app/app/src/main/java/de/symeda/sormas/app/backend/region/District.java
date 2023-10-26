@@ -15,20 +15,20 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.app.backend.common.InfrastructureAdo;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureAdoWithDefault;
 
 @Entity(name = District.TABLE_NAME)
 @DatabaseTable(tableName = District.TABLE_NAME)
-public class District extends InfrastructureAdo {
+public class District extends InfrastructureAdoWithDefault {
 
 	private static final long serialVersionUID = -6057113756091470463L;
 

@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.backend.region;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import java.sql.SQLException;
-import java.util.List;
+import android.util.Log;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
-import de.symeda.sormas.app.backend.common.InfrastructureAdo;
+import de.symeda.sormas.app.backend.infrastructure.AbstractInfrastructureAdoDao;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureAdo;
 
 public class SubcontinentDao extends AbstractInfrastructureAdoDao<Subcontinent> {
 
@@ -49,9 +49,9 @@ public class SubcontinentDao extends AbstractInfrastructureAdoDao<Subcontinent> 
 			QueryBuilder<Subcontinent, Long> builder = queryBuilder();
 			Where<Subcontinent, Long> where = builder.where();
 			where.and(
-					where.eq(AbstractDomainObject.SNAPSHOT, false),
-					where.eq(InfrastructureAdo.ARCHIVED, false),
-					where.eq(Subcontinent.CONTINENT + "_id", continent));
+				where.eq(AbstractDomainObject.SNAPSHOT, false),
+				where.eq(InfrastructureAdo.ARCHIVED, false),
+				where.eq(Subcontinent.CONTINENT + "_id", continent));
 
 			return builder.orderBy(Subcontinent.DEFAULT_NAME, true).query();
 		} catch (SQLException | IllegalArgumentException e) {

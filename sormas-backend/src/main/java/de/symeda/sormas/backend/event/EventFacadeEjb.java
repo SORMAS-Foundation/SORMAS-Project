@@ -1548,6 +1548,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 		return processedEvents;
 	}
+
 	@Override
 	protected DeletableEntityType getDeletableEntityType() {
 		return DeletableEntityType.EVENT;

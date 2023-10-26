@@ -1,4 +1,19 @@
-package de.symeda.sormas.backend.common;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.backend.infrastructure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +27,9 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo, CRITERIA extends BaseCriteria>
@@ -95,6 +113,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 	// todo remove columnName later and handle this completely here. This is not possible due to #6549 now.
 	protected List<ADO> getByExternalId(String externalId, String columnName, boolean includeArchived) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
@@ -107,7 +126,17 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
+	}
 
+	public ADO getDefaultInfrastructure() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.where(cb.and(createBasicFilter(cb, from), cb.isTrue(from.get(InfrastructureAdoWithDefault.DEFAULT_INFRASTRUCTURE))));
+
+		List<ADO> result = em.createQuery(cq).getResultList();
+		return result.size() > 0 ? result.get(0) : null;
 	}
 
 	public abstract List<ADO> getByExternalId(String externalId, boolean includeArchived);

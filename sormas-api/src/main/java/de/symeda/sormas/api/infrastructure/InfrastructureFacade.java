@@ -31,4 +31,6 @@ public interface InfrastructureFacade<DTO extends EntityDto, INDEX_DTO extends S
 	boolean isUsedInOtherInfrastructureData(Collection<String> uuids);
 
 	boolean hasArchivedParentInfrastructure(Collection<String> uuids);
+
+	REF_DTO getDefaultInfrastructureReference();
 }

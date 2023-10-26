@@ -19,10 +19,14 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -31,8 +35,10 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 	private static final long serialVersionUID = 7573666294384000190L;
 
-	private static final String HTML_LAYOUT =
-		fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE) + fluidRowLocs(DistrictDto.REGION) + fluidRowLocs(RegionDto.EXTERNAL_ID); // ,DistrictDto.GROWTH_RATE);
+	private static final String HTML_LAYOUT = fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE)
+		+ fluidRowLocs(DistrictDto.REGION)
+		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
+		+ fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE); // ,DistrictDto.GROWTH_RATE);
 
 	private final boolean create;
 
@@ -56,6 +62,12 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
+		}
+
 //		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));

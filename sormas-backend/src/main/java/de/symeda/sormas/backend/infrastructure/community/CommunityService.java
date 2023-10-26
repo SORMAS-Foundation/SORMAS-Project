@@ -49,9 +49,9 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureAdoService;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -189,6 +189,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				case Community.NAME:
 				case Community.GROWTH_RATE:
 				case Community.EXTERNAL_ID:
+				case Community.DEFAULT_INFRASTRUCTURE:
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
@@ -239,9 +240,9 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		Join<District, Region> regionJoin = districtJoin.join(District.REGION);
 
 		cq.where(
-				cb.and(
-						cb.or(cb.isTrue(districtJoin.get(InfrastructureAdo.ARCHIVED)), cb.isTrue(regionJoin.get(InfrastructureAdo.ARCHIVED))),
-						root.get(AbstractDomainObject.UUID).in(communityUuids)));
+			cb.and(
+				cb.or(cb.isTrue(districtJoin.get(InfrastructureAdo.ARCHIVED)), cb.isTrue(regionJoin.get(InfrastructureAdo.ARCHIVED))),
+				root.get(AbstractDomainObject.UUID).in(communityUuids)));
 
 		cq.select(root.get(AbstractDomainObject.ID));
 

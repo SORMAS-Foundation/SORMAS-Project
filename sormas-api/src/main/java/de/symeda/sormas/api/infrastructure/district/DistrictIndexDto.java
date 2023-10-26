@@ -36,6 +36,7 @@ public class DistrictIndexDto extends EntityDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String DEFAULT_INFRASTRUCTURE = "defaultInfrastructure";
 
 	private String name;
 	private String epidCode;
@@ -43,6 +44,7 @@ public class DistrictIndexDto extends EntityDto {
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private String externalID;
+	private boolean defaultInfrastructure;
 
 	public DistrictIndexDto() {
 		super();
@@ -104,6 +106,14 @@ public class DistrictIndexDto extends EntityDto {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	public boolean isDefaultInfrastructure() {
+		return defaultInfrastructure;
+	}
+
+	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
+		this.defaultInfrastructure = defaultInfrastructure;
 	}
 
 	public DistrictReferenceDto toReference() {

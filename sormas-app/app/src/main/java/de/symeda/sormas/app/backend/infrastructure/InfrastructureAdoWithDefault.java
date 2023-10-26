@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,25 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.region;
+package de.symeda.sormas.app.backend.infrastructure;
 
-import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.field.DatabaseField;
 
-import de.symeda.sormas.app.backend.infrastructure.AbstractInfrastructureAdoDao;
+public abstract class InfrastructureAdoWithDefault extends InfrastructureAdo {
 
-public class AreaDao extends AbstractInfrastructureAdoDao<Area> {
+	@DatabaseField
+	private boolean defaultInfrastructure = false;
 
-	public AreaDao(Dao<Area, Long> innerDao) {
-		super(innerDao);
+	public boolean isDefaultInfrastructure() {
+		return defaultInfrastructure;
 	}
 
-	@Override
-	protected Class<Area> getAdoClass() {
-		return Area.class;
+	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
+		this.defaultInfrastructure = defaultInfrastructure;
 	}
 
-	@Override
-	public String getTableName() {
-		return Area.TABLE_NAME;
-	}
 }
