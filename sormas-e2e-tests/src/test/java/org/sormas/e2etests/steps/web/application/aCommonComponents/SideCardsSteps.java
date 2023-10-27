@@ -43,8 +43,6 @@ public class SideCardsSteps implements En {
   public static String reportingUser;
   public static String typeOfReporting;
   public static String externalId;
-  public static String reporterFacility;
-  public static String reporterFacilityDetails;
   public static String facilityRegion;
   public static String facilityDistrict;
     public static String facilityCategory;
@@ -230,9 +228,6 @@ public class SideCardsSteps implements En {
           typeOfReporting = webDriverHelpers.getValueFromCombobox(TYPE_OF_REPORTING_COMBOBOX);
           externalId =
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT);
-        //  reporterFacility = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX);
-         // reporterFacilityDetails =
-           //   webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS);
             facilityRegion = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX);
             facilityDistrict = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_DISTRICT_COMBOBOX);
             facilityCategory = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_CATEGORY_COMBOBOX);
@@ -262,14 +257,6 @@ public class SideCardsSteps implements En {
               externalId,
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT),
               "External Id is not equal");
-        //  softly.assertEquals(
-          //    reporterFacility,
-            //  webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX),
-              //"Reporter facility is not equal");
-         // softly.assertEquals(
-           //   reporterFacilityDetails,
-            //  webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
-              //"Reporter facility details is not equal");
             softly.assertEquals(
                     facilityRegion,
                     webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX),
@@ -282,11 +269,9 @@ public class SideCardsSteps implements En {
                     facilityType,
                     webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_TYPE_COMBOBOX),
                     "Facility district is not equal");
-
-
           softly.assertEquals(
               dateOfReport,
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
+              webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT),
               "Date of report is not equal");
           softly.assertAll();
         });
