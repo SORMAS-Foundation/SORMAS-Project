@@ -1343,7 +1343,7 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=HSP=6343 @env_d2s @LoginKeycloak
     Scenario: S2S - Share a Case created from processed Lab message/Physician Report with option "Share reports"
-    Given API : Login to DEMIS server
+    #Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
     And I log in as a S2S
     Then I click on the Messages button from navbar
@@ -1359,6 +1359,9 @@ Feature: Sharing cases between environments tests
     And I search the case by last created person via Demis message
     Then I click on the first Case ID from Case Directory
     And I collect uuid of the case
+    And I click on edit surveillance report
+    Then I collect data from surveillance report
+    And I click on Discard popup button
     And I click on share button
     And I select organization to share with "s2s_1"
     And I click to share reports of the case in Share popup
