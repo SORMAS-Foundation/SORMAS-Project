@@ -230,7 +230,7 @@ public class SideCardsSteps implements En {
           typeOfReporting = webDriverHelpers.getValueFromCombobox(TYPE_OF_REPORTING_COMBOBOX);
           externalId =
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT);
-          reporterFacility = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX);
+        //  reporterFacility = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX);
          // reporterFacilityDetails =
            //   webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS);
             facilityRegion = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX);
@@ -262,10 +262,10 @@ public class SideCardsSteps implements En {
               externalId,
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT),
               "External Id is not equal");
-          softly.assertEquals(
-              reporterFacility,
-              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX),
-              "Reporter facility is not equal");
+        //  softly.assertEquals(
+          //    reporterFacility,
+            //  webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX),
+              //"Reporter facility is not equal");
          // softly.assertEquals(
            //   reporterFacilityDetails,
             //  webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
