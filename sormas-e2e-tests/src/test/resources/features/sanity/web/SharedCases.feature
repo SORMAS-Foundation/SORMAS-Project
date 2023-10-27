@@ -1368,7 +1368,8 @@ Feature: Sharing cases between environments tests
     Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
-    And I open the last created case with collected UUID by url on "s2s_2" instance
+    And I click on the The Eye Icon located in the Shares Page
+    And I click on the shortened case/contact ID to open the case
     And Total number of read only fields should be 9
     Then I check that the case has no samples on side card for DE
     And I check that that surveillance report has no connected with lab message
