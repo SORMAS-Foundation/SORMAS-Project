@@ -45,6 +45,10 @@ public class SideCardsSteps implements En {
   public static String externalId;
   public static String reporterFacility;
   public static String reporterFacilityDetails;
+  public static String facilityRegion;
+  public static String facilityDistrict;
+    public static String facilityCategory;
+    public static String facilityType;
   public static LocalDate dateOfReport;
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
@@ -227,8 +231,12 @@ public class SideCardsSteps implements En {
           externalId =
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT);
           reporterFacility = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX);
-          reporterFacilityDetails =
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS);
+         // reporterFacilityDetails =
+           //   webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS);
+            facilityRegion = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX);
+            facilityDistrict = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_DISTRICT_COMBOBOX);
+            facilityCategory = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_CATEGORY_COMBOBOX);
+            facilityType = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_TYPE_COMBOBOX);
           dateOfReport =
               LocalDate.parse(
                   webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT),
@@ -258,10 +266,24 @@ public class SideCardsSteps implements En {
               reporterFacility,
               webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX),
               "Reporter facility is not equal");
-          softly.assertEquals(
-              reporterFacilityDetails,
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
-              "Reporter facility details is not equal");
+         // softly.assertEquals(
+           //   reporterFacilityDetails,
+            //  webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
+              //"Reporter facility details is not equal");
+            softly.assertEquals(
+                    facilityRegion,
+                    webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX),
+                    "Facility region is not equal");
+            softly.assertEquals(
+                    facilityDistrict,
+                    webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_DISTRICT_COMBOBOX),
+                    "Facility district is not equal");
+            softly.assertEquals(
+                    facilityType,
+                    webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_TYPE_COMBOBOX),
+                    "Facility district is not equal");
+
+
           softly.assertEquals(
               dateOfReport,
               webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
