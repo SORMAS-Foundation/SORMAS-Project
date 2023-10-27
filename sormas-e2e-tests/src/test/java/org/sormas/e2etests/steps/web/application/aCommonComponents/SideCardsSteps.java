@@ -135,6 +135,9 @@ public class SideCardsSteps implements En {
     When(
         "I click on Save popup button",
         () -> webDriverHelpers.clickOnWebElementBySelector(POPUP_EDIT_REPORT_WINDOW_SAVE_BUTTON));
+      When(
+              "I click on Discard popup button",
+              () -> webDriverHelpers.clickOnWebElementBySelector(POPUP_EDIT_REPORT_WINDOW_DISCARD_BUTTON));
     When(
         "I check if sample card has {string} information",
         (String information) -> {
