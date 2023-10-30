@@ -273,11 +273,13 @@ public class SideCardsSteps implements En {
               facilityType,
               webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_TYPE_COMBOBOX),
               "Facility district is not equal");
-          LocalDate expectedDate = convertStringToChosenFormatDate("yyyy-MM-dd","dd.MM.yyyy", webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT));
-          softly.assertEquals(
-              dateOfReport,
-              expectedDate,
-              "Date of report is not equal");
+          LocalDate expectedDate =
+              convertStringToChosenFormatDate(
+                  "dd.MM.yyyy",
+                  "yyyy-MM-dd",
+                  webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT));
+
+          softly.assertEquals(dateOfReport, expectedDate, "Date of report is not equal");
           softly.assertAll();
         });
 
