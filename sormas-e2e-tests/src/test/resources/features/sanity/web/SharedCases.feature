@@ -1379,7 +1379,6 @@ Feature: Sharing cases between environments tests
     And I click on view surveillance report
     And Total number of read only fields should be 13
     Then I check that data present in target are match to data from source in surveillance report
-    And I click on Discard popup button
     And I click on the Messages button from navbar
     And I filter messages by collected uuid
     And I check that number of displayed messages results is 0

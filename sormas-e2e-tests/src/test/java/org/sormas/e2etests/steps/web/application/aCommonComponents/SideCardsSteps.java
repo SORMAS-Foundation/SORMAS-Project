@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.aCommonComponents;
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
 import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.convertStringToChosenFormatDate;
 
 import com.github.javafaker.Faker;
@@ -281,6 +282,8 @@ public class SideCardsSteps implements En {
 
           softly.assertEquals(dateOfReport, expectedDate, "Date of report is not equal");
           softly.assertAll();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
         });
 
     When(
