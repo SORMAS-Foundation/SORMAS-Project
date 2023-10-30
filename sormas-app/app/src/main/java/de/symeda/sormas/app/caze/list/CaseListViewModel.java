@@ -74,11 +74,13 @@ public class CaseListViewModel extends ViewModel {
 		@Override
 		public void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Case> callback) {
 			long totalCount = DatabaseHelper.getCaseDao().countByCriteria(caseCriteria);
+
 			int offset = params.requestedStartPosition;
 			int count = params.requestedLoadSize;
 			if (offset + count > totalCount) {
 				offset = (int) Math.max(0, totalCount - count);
 			}
+
 			List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(caseCriteria, offset, count);
 			callback.onResult(cases, offset, (int) totalCount);
 		}
@@ -88,6 +90,7 @@ public class CaseListViewModel extends ViewModel {
 			List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(caseCriteria, params.startPosition, params.loadSize);
 			callback.onResult(cases);
 		}
+
 	}
 
 	public static class CaseDataFactory extends DataSource.Factory {
