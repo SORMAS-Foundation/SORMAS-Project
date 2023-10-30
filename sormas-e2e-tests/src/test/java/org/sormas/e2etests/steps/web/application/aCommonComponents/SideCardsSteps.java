@@ -21,6 +21,8 @@ package org.sormas.e2etests.steps.web.application.aCommonComponents;
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.convertStringToChosenFormatDate;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -43,8 +45,10 @@ public class SideCardsSteps implements En {
   public static String reportingUser;
   public static String typeOfReporting;
   public static String externalId;
-  public static String reporterFacility;
-  public static String reporterFacilityDetails;
+  public static String facilityRegion;
+  public static String facilityDistrict;
+  public static String facilityCategory;
+  public static String facilityType;
   public static LocalDate dateOfReport;
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
@@ -136,6 +140,10 @@ public class SideCardsSteps implements En {
         "I click on Save popup button",
         () -> webDriverHelpers.clickOnWebElementBySelector(POPUP_EDIT_REPORT_WINDOW_SAVE_BUTTON));
     When(
+        "I click on Discard popup button",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_EDIT_REPORT_WINDOW_DISCARD_BUTTON));
+    When(
         "I check if sample card has {string} information",
         (String information) -> {
           softly.assertTrue(
@@ -223,9 +231,12 @@ public class SideCardsSteps implements En {
           typeOfReporting = webDriverHelpers.getValueFromCombobox(TYPE_OF_REPORTING_COMBOBOX);
           externalId =
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT);
-          reporterFacility = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX);
-          reporterFacilityDetails =
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS);
+          facilityRegion = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX);
+          facilityDistrict =
+              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_DISTRICT_COMBOBOX);
+          facilityCategory =
+              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_CATEGORY_COMBOBOX);
+          facilityType = webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_TYPE_COMBOBOX);
           dateOfReport =
               LocalDate.parse(
                   webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT),
@@ -252,18 +263,27 @@ public class SideCardsSteps implements En {
               webDriverHelpers.getValueFromWebElement(SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT),
               "External Id is not equal");
           softly.assertEquals(
-              reporterFacility,
-              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_COMBOBOX),
-              "Reporter facility is not equal");
+              facilityRegion,
+              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_REGION_COMBOBOX),
+              "Facility region is not equal");
           softly.assertEquals(
-              reporterFacilityDetails,
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
-              "Reporter facility details is not equal");
+              facilityDistrict,
+              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_DISTRICT_COMBOBOX),
+              "Facility district is not equal");
           softly.assertEquals(
-              dateOfReport,
-              webDriverHelpers.getValueFromWebElement(REPORTER_FACILITY_DETAILS),
-              "Date of report is not equal");
+              facilityType,
+              webDriverHelpers.getValueFromCombobox(REPORTER_FACILITY_TYPE_COMBOBOX),
+              "Facility district is not equal");
+          LocalDate expectedDate =
+              convertStringToChosenFormatDate(
+                  "dd.MM.yyyy",
+                  "yyyy-MM-dd",
+                  webDriverHelpers.getValueFromWebElement(SURVEILLANCE_DATE_OF_REPORT));
+
+          softly.assertEquals(dateOfReport, expectedDate, "Date of report is not equal");
           softly.assertAll();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
         });
 
     When(
