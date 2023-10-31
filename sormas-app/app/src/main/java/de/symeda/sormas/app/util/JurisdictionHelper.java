@@ -54,7 +54,7 @@ public class JurisdictionHelper {
 			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
 		}
 
-		jurisdiction.setLimitedDisease(user.getLimitedDisease());
+		jurisdiction.setLimitedDiseases(user.getLimitedDiseases());
 
 		jurisdiction.setJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
