@@ -43,6 +43,7 @@ public class DiseaseConfigurationDaoTest {
 		cache = DiseaseConfigurationCache.getInstance();
 
 		assertFalse(cache.getAllActiveDiseases().contains(disease));
+		assertTrue(cache.getAllDiseasesWithFollowUp().contains(disease));
 
 		//Test update
 		configuration.setFollowUpEnabled(false);
@@ -52,5 +53,6 @@ public class DiseaseConfigurationDaoTest {
 		cache = DiseaseConfigurationCache.getInstance();
 
 		assertFalse(cache.getAllActiveDiseases().contains(disease));
+		assertFalse(cache.getAllDiseasesWithFollowUp().contains(disease));
 	}
 }

@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -51,8 +49,8 @@ public abstract class BooleanJurisdictionValidator extends JurisdictionValidator
 		if (getDisease() == null) {
 			return true;
 		}
-		if (userJurisdiction != null && CollectionUtils.isNotEmpty(userJurisdiction.getLimitedDiseases())) {
-			return  userJurisdiction.getLimitedDiseases().contains(getDisease());
+		if (userJurisdiction != null && userJurisdiction.getLimitedDisease() != null) {
+			return getDisease() == userJurisdiction.getLimitedDisease();
 		} else {
 			return true;
 		}
