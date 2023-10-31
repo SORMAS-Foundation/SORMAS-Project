@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -37,6 +39,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -46,7 +49,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -190,7 +198,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 354;
+	public static final int DATABASE_VERSION = 355;
 
 	private static DatabaseHelper instance = null;
 
@@ -3138,8 +3146,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					.executeRaw("ALTER TABLE pathogentest ADD COLUMN environmentSample_id BIGINT REFERENCES environmentSamples(id);");
 			case 353:
 				currentVersion = 353;
-				getDao(PathogenTest.class)
-					.executeRaw("ALTER TABLE pathogentest ADD COLUMN testedPathogen varchar(255);");
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogentest ADD COLUMN testedPathogen varchar(255);");
+
+			case 354:
+				currentVersion = 354;
+
+				getDao(Environment.class).executeRaw("ALTER TABLE users RENAME TO tmp_users;");
+				TableUtils.createTable(connectionSource, User.class);
+				getDao(Environment.class).executeRaw(
+					"INSERT INTO users (active, address_id, associatedOfficer_id, community_id, district_id, firstName, healthFacility_id, " +
+							"jurisdictionLevel, language, lastName, limitedDiseases, phone, pointOfEntry_id, region_id, userEmail, userName, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) "
+						+ "SELECT  active, address_id, associatedOfficer_id, community_id, district_id, firstName, healthFacility_id, " +
+							"jurisdictionLevel, language, lastName, limitedDisease, phone, pointOfEntry_id, region_id, userEmail, userName, " +
+							"changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_users");
+				getDao(Environment.class).executeRaw("DROP TABLE tmp_users");
 
 				// ATTENTION: break should only be done after last version
 				break;

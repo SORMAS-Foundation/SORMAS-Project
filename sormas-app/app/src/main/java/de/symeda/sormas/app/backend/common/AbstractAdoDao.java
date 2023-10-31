@@ -53,6 +53,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.util.MetaProperty;
 
@@ -681,7 +682,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					|| FeatureConfiguration.PROPERTIES_MAP.equals(property.getName())
 					|| Environment.WATER_USE.equals(property.getName())
 					|| EnvironmentSample.REQUESTED_PATHOGEN_TESTS.equals(property.getName())
-					|| EnvironmentSample.WEATHER_CONDITIONS.equals(property.getName()))
+					|| EnvironmentSample.WEATHER_CONDITIONS.equals(property.getName())
+					|| User.LIMITED_DISEASES.equals(property.getName()))
 					continue;
 
 				// we now have to write the value from source into target and base

@@ -12731,5 +12731,18 @@ UPDATE pathogentest SET testedpathogen = 'OTHER', testeddisease = NULL WHERE env
 
 INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add tested pathogen attribute to pathogen test #11582');
 
+-- 2023-10-27 Assign multiple limited diseases to users #11435
+ALTER TABLE users
+    RENAME COLUMN limiteddisease TO limiteddiseases;
+ALTER TABLE users
+    ALTER COLUMN limiteddiseases TYPE text;
+ALTER TABLE users_history
+    RENAME COLUMN limiteddisease TO limiteddiseases;
+ALTER TABLE users_history
+    ALTER COLUMN limiteddiseases TYPE text;
+
+INSERT INTO schema_version (version_number, comment)
+VALUES (529, 'Assign multiple limited diseases to users #11435');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

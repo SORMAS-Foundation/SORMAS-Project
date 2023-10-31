@@ -655,6 +655,7 @@ public interface Strings {
 	String headingLaboratoryEnvironmentSample = "headingLaboratoryEnvironmentSample";
 	String headingLaboratorySample = "headingLaboratorySample";
 	String headingLastReportedDistrict = "headingLastReportedDistrict";
+    String headingLimitedDiseases = "headingLimitedDiseases";
 	String headingLineListing = "headingLineListing";
 	String headingLineListingImport = "headingLineListingImport";
 	String headingLocation = "headingLocation";
@@ -995,6 +996,7 @@ public interface Strings {
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
+    String infoRestrictDiseasesDescription = "infoRestrictDiseasesDescription";
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	String infoSampleExport = "infoSampleExport";
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
