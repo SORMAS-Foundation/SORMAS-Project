@@ -425,7 +425,6 @@ Feature: Create events
     @tmsLink=SORDEV-10359 @env_main
     Scenario: Test Access to the event directory filtered on the events of a group
       Given API: I create a new event
-
       And API: I check that POST call status code is 200
       Given I log in as a National User
       When I am accessing the event tab using the created event via api
