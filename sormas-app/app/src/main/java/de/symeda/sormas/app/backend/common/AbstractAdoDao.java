@@ -53,6 +53,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.environment.Environment;
 import de.symeda.sormas.app.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.app.backend.infrastructure.InfrastructureAdo;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.util.MetaProperty;

@@ -14,8 +14,13 @@
  */
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Optional;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -23,6 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -46,12 +52,24 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			setCriteria(criteria);
 		}
 
-		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
+		String[] columns = new String[] {
+			CommunityDto.NAME,
+			CommunityDto.REGION,
+			CommunityDto.DISTRICT,
+			CommunityDto.EXTERNAL_ID };
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			columns = ArrayUtils.add(columns, CommunityDto.DEFAULT_INFRASTRUCTURE);
+		}
+		setColumns(columns);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid()));
 		}
+
+		Optional.ofNullable(((Column<CommunityDto, Boolean>) getColumn(CommunityDto.DEFAULT_INFRASTRUCTURE)))
+			.ifPresent(c -> c.setRenderer(new BooleanRenderer()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId(), column.getCaption()));

@@ -13281,6 +13281,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
+          },
           "district" : {
             "$ref" : "#/components/schemas/DistrictReferenceDto"
           },
@@ -15761,6 +15764,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
+          },
           "epidCode" : {
             "type" : "string",
             "maxLength" : 255,
@@ -15801,6 +15807,9 @@
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
           },
           "epidCode" : {
             "type" : "string"
@@ -21756,6 +21765,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
+          },
           "epidCode" : {
             "type" : "string",
             "maxLength" : 255,
@@ -21799,6 +21811,9 @@
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
           },
           "epidCode" : {
             "type" : "string"

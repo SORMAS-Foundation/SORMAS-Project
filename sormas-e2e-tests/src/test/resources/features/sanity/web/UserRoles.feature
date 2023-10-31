@@ -127,7 +127,8 @@ Feature: User roles checks
     And I click on User roles tab from User Management Page
     And I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page
 
-  @#10421 @env_main
+  #@#10421 @env_main
+  @tmsLink=HSP-6300mk @env_main
   Scenario: Validate newly created User Role cannot be deleted if assigned towards an user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -160,12 +161,12 @@ Feature: User roles checks
   Scenario: Check Delete Case right working without Edit rights
     Given I log in as a Admin User
     And I click on the Users from navbar
-    And I check if there is any user with the "MyNationalTestUser" role and change his role
+    And I check if there is any user with the "NewTestUser" role and change his role
     And I click on User roles tab from User Management Page
-    And I check if the "MyNationalTestUser" user role exist and delete it
+    And I check if the "NewTestUser" user role exist and delete it
     And I click on New user role button on User Roles Page
     And I choose "National User" as the user role template
-    And I fill caption input as "MyNationalTestUser" on Create New User Role form
+    And I fill caption input as "NewTestUser" on Create New User Role form
     And I click SAVE button on User Role Page
     Then I click checkbox to uncheck "Edit existing cases"
     Then I click checkbox to uncheck "Edit case investigation status"
@@ -180,7 +181,7 @@ Feature: User roles checks
     And I back to the User role list
     Then I click on User Management tab from User Roles Page
     And I click on the NEW USER button
-    And I create new "MyNationalTestUser" with english language for test
+    And I create new "NewTestUser" with english language for test
     Then I click on logout button from navbar
     And I login with new created user with chosen new role
     And I click on the Cases button from navbar
@@ -193,7 +194,7 @@ Feature: User roles checks
     And I set the Relevance Status Filter to "Deleted cases" on Case Directory page
     And I search for the last "deleted" case on Case directory page
     Then I open the first Case result in Case Directory
-    And Total number of read only fields should be 17
+    And Total number of read only fields should be 14
     Then I check that "Discard" button is readonly on Edit case page
     And I check that "Save" button is readonly on Edit case page
     Then I click on Restore button from case

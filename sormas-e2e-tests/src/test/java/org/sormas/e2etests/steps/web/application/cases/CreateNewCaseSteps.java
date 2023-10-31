@@ -1844,6 +1844,16 @@ public class CreateNewCaseSteps implements En {
         selectResponsibleDistrict("LK Saarlouis");
         selectResponsibleCommunity("Lebach");
         break;
+      case "Berlin":
+        selectResponsibleRegion("Berlin");
+        selectResponsibleDistrict("SK Berlin Charlottenburg-Wilmersdorf");
+        selectResponsibleCommunity("Charlottenburg-Nord");
+        break;
+      case "Baden-W\u00FCrttemberg":
+        selectResponsibleRegion("Baden-W\u00FCrttemberg");
+        selectResponsibleDistrict("LK Alb-Donau-Kreis");
+        selectResponsibleCommunity("Allmendingen");
+        break;
     }
     selectPlaceOfStay(caze.getPlaceOfStay());
     fillFirstName(caze.getFirstName());

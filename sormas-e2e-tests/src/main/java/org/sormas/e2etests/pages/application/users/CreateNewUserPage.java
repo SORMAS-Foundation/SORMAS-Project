@@ -32,6 +32,9 @@ public class CreateNewUserPage {
       By.xpath(
           "//div[@tabindex='-1']/div/div/div/div[@location='region']//div[@id='region']/div[@class='v-filterselect-button']");
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
+  public static final By SECOND_DISTRICT_COMBOBOX =
+      By.xpath(
+          "//div[@tabindex='-1']/div/div/div/div[@location='district']//div[@id='district']/div[@class='v-filterselect-button']\n");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");

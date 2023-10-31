@@ -20,8 +20,8 @@ import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 
-import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.infrastructure.AbstractInfrastructureAdoDao;
 
 public class CommunityDao extends AbstractInfrastructureAdoDao<Community> {
 

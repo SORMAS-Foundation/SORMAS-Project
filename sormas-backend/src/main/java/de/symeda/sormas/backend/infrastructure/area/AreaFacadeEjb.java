@@ -116,8 +116,8 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate, allowUuidOverwrite);
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());
-		target.setArchived(source.isArchived());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
+
 		return target;
 	}
 
@@ -138,8 +138,8 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 
 		dto.setName(entity.getName());
 		dto.setExternalId(entity.getExternalId());
-		dto.setArchived(entity.isArchived());
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
+
 		return dto;
 	}
 

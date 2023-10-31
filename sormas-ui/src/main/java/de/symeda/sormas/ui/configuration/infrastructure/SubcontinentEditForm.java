@@ -15,7 +15,7 @@ public class SubcontinentEditForm extends AbstractEditForm<SubcontinentDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-            fluidRowLocs(SubcontinentDto.EXTERNAL_ID, SubcontinentDto.DEFAULT_NAME)+
+            fluidRowLocs(SubcontinentDto.EXTERNAL_ID, SubcontinentDto.DEFAULT_NAME) +
             fluidRowLocs(SubcontinentDto.CONTINENT);
     //@formatter:on
 

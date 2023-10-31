@@ -7,7 +7,6 @@ import de.symeda.sormas.api.EntityDto;
 public abstract class InfrastructureDto extends EntityDto {
 
 	private boolean centrallyManaged;
-
 	private boolean archived;
 
 	protected InfrastructureDto() {

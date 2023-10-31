@@ -12731,6 +12731,16 @@ UPDATE pathogentest SET testedpathogen = 'OTHER', testeddisease = NULL WHERE env
 
 INSERT INTO schema_version (version_number, comment) VALUES (528, 'Add tested pathogen attribute to pathogen test #11582');
 
+-- 2023-10-05 Add defaultInfrastructure field to infrastructure entities #12550
+ALTER TABLE region ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE district ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE community ADD COLUMN defaultinfrastructure boolean default false;
+ALTER TABLE region_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE district_history ADD COLUMN defaultinfrastructure boolean;
+ALTER TABLE community_history ADD COLUMN defaultinfrastructure boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (529, 'Add defaultInfrastructure field to infrastructure entities #12550');
+
 -- 2023-10-27 Assign multiple limited diseases to users #11435
 ALTER TABLE users
     RENAME COLUMN limiteddisease TO limiteddiseases;
@@ -12742,7 +12752,7 @@ ALTER TABLE users_history
     ALTER COLUMN limiteddiseases TYPE text;
 
 INSERT INTO schema_version (version_number, comment)
-VALUES (529, 'Assign multiple limited diseases to users #11435');
+VALUES (530, 'Assign multiple limited diseases to users #11435');
 
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

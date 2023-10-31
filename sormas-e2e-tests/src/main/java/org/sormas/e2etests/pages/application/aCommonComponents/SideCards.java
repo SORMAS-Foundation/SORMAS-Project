@@ -48,6 +48,7 @@ public class SideCards {
   public static By HANDOVER_SIDE_CARD = By.xpath("//div[@location='sormasToSormas']");
   public static final By SURVEILLANCE_REPORT_NOTIFICATION_DETAILS = By.id("notificationDetails");
   public static final By POPUP_EDIT_REPORT_WINDOW_SAVE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By POPUP_EDIT_REPORT_WINDOW_DISCARD_BUTTON = By.cssSelector(".v-window #discard");
   public static final By SURVEILLANCE_REPORT_UUID_TEXT = By.cssSelector(".popupContent #uuid");
   public static final By SURVEILLANCE_REPORT_EXTERNAL_ID_TEXT =
       By.cssSelector(".popupContent #externalId");
@@ -57,6 +58,11 @@ public class SideCards {
       By.cssSelector("#reportingUser > input");
   public static final By TYPE_OF_REPORTING_COMBOBOX = By.cssSelector("#reportingType > div");
   public static final By REPORTER_FACILITY_COMBOBOX = By.cssSelector("#facility > div");
+  public static final By REPORTER_FACILITY_REGION_COMBOBOX = By.cssSelector("#facilityRegion > div");
+  public static final By REPORTER_FACILITY_DISTRICT_COMBOBOX = By.cssSelector("#facilityDistrict > div");
+  public static final By REPORTER_FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#facilityTypeGroup > div");
+  public static final By REPORTER_FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType > div");
+
 
   public static final By SURVEILLANCE_DATE_OF_REPORT =
       By.cssSelector(".v-window #reportDate input");
