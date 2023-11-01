@@ -39,9 +39,7 @@ import android.location.Location;
 import android.os.Build;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -77,8 +75,8 @@ import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.facility.Facility;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -761,8 +759,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 		Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
-		//List<Where<Case, Long>> whereStatements = new ArrayList<>();
-
 		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
 		if (criteria != null) {
 			where.and();
@@ -770,65 +766,48 @@ public class CaseDao extends AbstractAdoDao<Case> {
 				caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(criteria.getIncludeCasesFromOtherJurisdictions());
 				createUserFilter(where, caseUserFilterCriteria);
 			}
-
-			Where<Case, Long> criteriaFilter = createCriteriaFilter(where, criteria);
-
+			createCriteriaFilter(where, criteria);
 			queryBuilder.setWhere(where);
 		}
-
-		/*
-		 * if (!whereStatements.isEmpty()) {
-		 * Where<Case, Long> whereStatement = where.and(whereStatements.size());
-		 * queryBuilder.setWhere(whereStatement);
-		 * }
-		 */
 
 		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 		return queryBuilder;
 	}
 
 	public Where<Case, Long> createCriteriaFilter(Where<Case, Long> where, CaseCriteria criteria) throws SQLException {
-		List<Where<Case, Long>> whereCriteriaStatements = new ArrayList<>();
 
 		if (criteria.getInvestigationStatus() != null) {
-			//whereCriteriaStatements.add(where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus()));
 			where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus());
 		}
 
 		if (criteria.getDisease() != null) {
 			where.and();
 			where.eq(Case.DISEASE, criteria.getDisease());
-			//whereCriteriaStatements.add(where.eq(Case.DISEASE, criteria.getDisease()));
 		}
 
 		if (criteria.getCaseClassification() != null) {
 			where.and();
-			//whereCriteriaStatements.add(where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification()));
 			where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification());
 		}
 
 		if (criteria.getOutcome() != null) {
 			where.and();
 			where.eq(Case.OUTCOME, criteria.getOutcome());
-			//whereCriteriaStatements.add(where.eq(Case.OUTCOME, criteria.getOutcome()));
 		}
 
 		if (criteria.getEpiWeekFrom() != null) {
 			where.and();
-			//whereCriteriaStatements.add(where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom())));
 			where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom()));
 		}
 
 		if (criteria.getEpiWeekTo() != null) {
 			where.and();
 			where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo()));
-			//whereCriteriaStatements.add(where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo())));
 		}
 
 		if (criteria.getCaseOrigin() != null) {
 			where.and();
 			where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin());
-			//whereCriteriaStatements.add(where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin()));
 		}
 
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
@@ -844,22 +823,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						where.raw(Case.TABLE_NAME + "." + Case.EXTERNAL_ID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
 						where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
 						where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"));
-//					whereCriteriaStatements.add(
-//						where.or(
-//							where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-//							where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-//							where.raw(Case.TABLE_NAME + "." + Case.EXTERNAL_ID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-//							where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-//							where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
 				}
 			}
 		}
 
-		/*
-		 * if (!whereCriteriaStatements.isEmpty()) {
-		 * where.and(whereCriteriaStatements.size());
-		 * }
-		 */
 		return where;
 	}
 
@@ -922,8 +889,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 				//TODO: add Laboratory Case
 			}
 		}
-		// combine responsibleFilter and jurisdictionLevelFilter with OR(=> roleFilter OR jurisdictionFilter)
-		//where.or(2);
 
 		if (!whereUserFilterStatements.isEmpty()) {
 			where.or(whereUserFilterStatements.size());

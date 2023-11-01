@@ -99,7 +99,6 @@
     <!-- /Toolbar styles -->
 
 
-
     <!-- CONTROL STYLES -->
 
     <style name="ControlSingleColumnStyle">
@@ -146,6 +145,18 @@
         <item name="android:textColor">@color/listActivityRowPrimaryText</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
+
+    <style name="FilterCheckBoxLabelStyle">
+        <!-- create instead of gray a variable for the next 2 rows-->
+        <item name="android:textColor">@color/lightBlue60</item>
+        <item name="android:textSize">@dimen/textSizeLarge</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+    </style>
+
 
     <style name="CheckBoxLabelStyle">
         <item name="android:textColor">@color/controlLabelColor</item>
@@ -262,9 +273,11 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:maxLines">5</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:background">@drawable/control_link_edittextview_background_selector</item>
+        <item name="android:background">@drawable/control_link_edittextview_background_selector
+        </item>
         <item name="android:textColor">@color/control_link_edittextview_color_selector</item>
-        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector</item>
+        <item name="android:textColorHint">@color/control_link_edittextview_hint_color_selector
+        </item>
         <item name="android:drawablePadding">@dimen/contentHorizontalSpacing</item>
         <item name="android:layout_marginBottom">@dimen/controlMarginBottom</item>
     </style>
@@ -346,16 +359,20 @@
         <item name="android:background">?android:attr/listChoiceIndicatorMultiple</item>
     </style>
 
-    <style name="FilterCheckboxFieldStyle">
+    <style name="FilterCheckboxStyle">
         <item name="android:layout_width">@dimen/filterCheckBoxWidth</item>
         <item name="android:layout_height">@dimen/filterCheckBoxHeight</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:paddingTop">@dimen/slimTextViewTopPadding</item>
-        <item name="android:paddingBottom">@dimen/slimTextViewBottomPadding</item>
-        <item name="android:layout_marginBottom">0dp</item>
         <item name="android:textSize">@dimen/slimControlTextSize</item>
         <item name="android:button">@null</item>
+        <item name="android:background">?android:attr/listChoiceIndicatorMultiple</item>
+    </style>
+
+    <style name="FilterCheckboxFieldStyle">
+        <!-- create a variable with maxSpinnerHeight-->
+        <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
+        <item name="android:layout_width">match_parent</item>
     </style>
 
     <!-- /CONTROL STYLES -->

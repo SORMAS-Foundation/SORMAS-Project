@@ -94,7 +94,7 @@
 
             <de.symeda.sormas.app.component.controls.FilterCheckBoxField
                 android:id="@+id/cases_from_other_jurisdictions_filter"
-                style="@style/ControlSingleColumnStyle"
+                style="@style/FilterCheckboxFieldStyle"
                 app:caption="@{I18nProperties.getCaption(Captions.caseFilterIncludeCasesFromOtherJurisdictions)}"
                 app:value="@={criteria.includeCasesFromOtherJurisdictions}" />
 
