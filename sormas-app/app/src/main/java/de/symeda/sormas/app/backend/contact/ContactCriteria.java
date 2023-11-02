@@ -33,6 +33,8 @@ public class ContactCriteria implements Serializable {
 	private Date reportDateTo;
 	private Case caze;
 
+	private Boolean includeContactsFromOtherJurisdictions = Boolean.FALSE;
+
 	public String getTextFilter() {
 		return textFilter;
 	}
@@ -85,6 +87,14 @@ public class ContactCriteria implements Serializable {
 	public ContactCriteria setReportDateTo(Date reportDateTo) {
 		this.reportDateTo = reportDateTo;
 		return this;
+	}
+
+	public Boolean getIncludeContactsFromOtherJurisdictions() {
+		return includeContactsFromOtherJurisdictions;
+	}
+
+	public void setIncludeContactsFromOtherJurisdictions(Boolean includeContactsFromOtherJurisdictions) {
+		this.includeContactsFromOtherJurisdictions = includeContactsFromOtherJurisdictions;
 	}
 
 	public Case getCaze() {

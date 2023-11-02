@@ -765,7 +765,7 @@ public interface Captions {
 	String contactFilterWithDifferentRegion = "contactFilterWithDifferentRegion";
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
-	String contactInludeContactsFromOtherJurisdictions = "contactInludeContactsFromOtherJurisdictions";
+	String contactIncludeContactsFromOtherJurisdictions = "contactIncludeContactsFromOtherJurisdictions";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMergeDuplicates = "contactMergeDuplicates";
 	String contactMinusDays = "contactMinusDays";

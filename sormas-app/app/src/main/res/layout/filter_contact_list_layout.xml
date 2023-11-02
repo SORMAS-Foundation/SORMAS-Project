@@ -76,6 +76,12 @@
                 app:value="@={criteria.reportDateTo}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.FilterCheckBoxField
+                    android:id="@+id/contacts_from_other_jurisdictions_filter"
+                    style="@style/FilterCheckboxFieldStyle"
+                    app:caption="@{I18nProperties.getCaption(Captions.contactIncludeContactsFromOtherJurisdictions)}"
+                    app:value="@={criteria.includeContactsFromOtherJurisdictions}" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

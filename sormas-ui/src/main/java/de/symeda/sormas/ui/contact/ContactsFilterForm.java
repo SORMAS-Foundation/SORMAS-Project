@@ -338,7 +338,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
 					ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS,
-					I18nProperties.getCaption(Captions.contactInludeContactsFromOtherJurisdictions),
+					I18nProperties.getCaption(Captions.contactIncludeContactsFromOtherJurisdictions),
 					I18nProperties.getDescription(Descriptions.descContactIncludeContactsFromOtherJurisdictions),
 					CHECKBOX_STYLE));
 		}
