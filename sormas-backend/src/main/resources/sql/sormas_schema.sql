@@ -12754,5 +12754,4 @@ ALTER TABLE users_history
 INSERT INTO schema_version (version_number, comment)
 VALUES (530, 'Assign multiple limited diseases to users #11435');
 
-
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

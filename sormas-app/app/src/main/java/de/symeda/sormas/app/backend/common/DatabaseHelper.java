@@ -3158,16 +3158,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             case 355:
                 currentVersion = 355;
 
-                getDao(Environment.class).executeRaw("ALTER TABLE users RENAME TO tmp_users;");
-                TableUtils.createTable(connectionSource, User.class);
-                getDao(Environment.class).executeRaw(
+                getDao(User.class).executeRaw("ALTER TABLE users RENAME TO tmp_users;");
+                getDao(User.class).executeRaw("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, active BOOLEAN, address_id BIGINT REFERENCES location(id), associatedOfficer_id BIGINT REFERENCES users(id), community_id BIGINT REFERENCES community(id), district_id BIGINT REFERENCES district(id), firstName TEXT, healthFacility_id BIGINT REFERENCES facility(id), " +
+						"jurisdictionLevel VARCHAR(255), language VARCHAR(255), lastName TEXT, limitedDiseases TEXT, phone TEXT, pointOfEntry_id BIGINT REFERENCES pointOfEntry(id), region_id BIGINT REFERENCES region(id), userEmail TEXT, userName TEXT, " +
+						"changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified BOOLEAN, snapshot BOOLEAN, uuid VARCHAR(36) NOT NULL, UNIQUE(snapshot, uuid));");
+                getDao(User.class).executeRaw(
                         "INSERT INTO users (active, address_id, associatedOfficer_id, community_id, district_id, firstName, healthFacility_id, " +
                                 "jurisdictionLevel, language, lastName, limitedDiseases, phone, pointOfEntry_id, region_id, userEmail, userName, " +
                                 "changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) "
                                 + "SELECT  active, address_id, associatedOfficer_id, community_id, district_id, firstName, healthFacility_id, " +
                                 "jurisdictionLevel, language, lastName, limitedDisease, phone, pointOfEntry_id, region_id, userEmail, userName, " +
-                                "changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_users");
-                getDao(Environment.class).executeRaw("DROP TABLE tmp_users");
+                                "changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_users;");
+				getDao(User.class).executeRaw("UPDATE users set limitedDiseases = '[' || limitedDiseases || ']' where limitedDiseases IS NOT NULL and limitedDiseases <> '';");
+                getDao(Environment.class).executeRaw("DROP TABLE tmp_users;");
 
 				// ATTENTION: break should only be done after last version
 				break;

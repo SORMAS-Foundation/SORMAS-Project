@@ -76,7 +76,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
-    private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseaseHeadingLoc";
+    private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseasesHeadingLoc";
     private static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
     private static final String RESTRICT_DISEASES_DESCRIPTION_LOC = "restrictDiseasesDescriptionLoc";
 
