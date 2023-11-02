@@ -32,8 +32,11 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
@@ -57,6 +60,9 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 		EventParticipantFacadeEjbLocal eventParticipantFacade,
 		SampleFacadeEjbLocal sampleFacade,
 		PathogenTestFacadeEjbLocal pathogenTestFacade,
+		RegionFacadeEjbLocal regionFacade,
+		DistrictFacadeEjbLocal districtFacade,
+		CommunityFacadeEjbLocal communityFacade,
 		FacilityFacadeEjbLocal facilityFacade,
 		CustomizableEnumFacadeEjbLocal customizableEnumFacade,
 		CountryFacadeEjbLocal countryFacade,
@@ -73,6 +79,9 @@ public class ExternalMessageProcessingFacadeEjbLocal extends ExternalMessageProc
 			eventParticipantFacade,
 			sampleFacade,
 			pathogenTestFacade,
+				regionFacade,
+				districtFacade,
+				communityFacade,
 			facilityFacade,
 			customizableEnumFacade,
 			countryFacade,

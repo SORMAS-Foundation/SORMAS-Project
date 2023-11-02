@@ -32,6 +32,7 @@ import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -155,6 +156,12 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setReportingUser(user.toReference());
 		caseDto.setReportDate(
 			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
+
+		if (processingFacade.isFeaturePropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			caseDto.setResponsibleRegion(processingFacade.getDefaultRegionReference());
+			caseDto.setResponsibleDistrict(processingFacade.getDefaultDistrictReference());
+			caseDto.setResponsibleCommunity(processingFacade.getDefaultCommunityReference());
+		}
 
 		FacilityReferenceDto personFacility = externalMessageDto.getPersonFacility();
 		if (personFacility != null) {

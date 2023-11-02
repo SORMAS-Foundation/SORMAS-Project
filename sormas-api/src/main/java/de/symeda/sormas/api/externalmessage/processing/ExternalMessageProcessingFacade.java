@@ -48,12 +48,19 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionFacade;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -73,6 +80,9 @@ public abstract class ExternalMessageProcessingFacade {
 	protected final FeatureConfigurationFacade featureConfigurationFacade;
 	protected final PersonFacade personFacade;
 	protected final CaseFacade caseFacade;
+	protected final RegionFacade regionFacade;
+	protected final DistrictFacade districtFacade;
+	protected final CommunityFacade communityFacade;
 	protected final FacilityFacade facilityFacade;
 	private final ContactFacade contactFacade;
 	private final EventFacade eventFacade;
@@ -94,6 +104,9 @@ public abstract class ExternalMessageProcessingFacade {
 		EventParticipantFacade eventParticipantFacade,
 		SampleFacade sampleFacade,
 		PathogenTestFacade pathogenTestFacade,
+		RegionFacade regionFacade,
+		DistrictFacade districtFacade,
+		CommunityFacade communityFacade,
 		FacilityFacade facilityFacade,
 		CustomizableEnumFacade customizableEnumFacade,
 		CountryFacade countryFacade,
@@ -103,6 +116,9 @@ public abstract class ExternalMessageProcessingFacade {
 		this.featureConfigurationFacade = featureConfigurationFacade;
 		this.personFacade = personFacade;
 		this.caseFacade = caseFacade;
+		this.regionFacade = regionFacade;
+		this.districtFacade = districtFacade;
+		this.communityFacade = communityFacade;
 		this.facilityFacade = facilityFacade;
 		this.contactFacade = contactFacade;
 		this.eventFacade = eventFacade;
@@ -235,5 +251,21 @@ public abstract class ExternalMessageProcessingFacade {
 	public PersonDto getPersonByContext(PersonContext personContext, String personUuid) {
 		return personFacade.getByContext(personContext, personUuid);
 
+	}
+
+	public boolean isFeaturePropertyValueTrue(FeatureType featureType, FeatureTypeProperty featureTypeProperty) {
+		return featureConfigurationFacade.isPropertyValueTrue(featureType, featureTypeProperty);
+	}
+
+	public RegionReferenceDto getDefaultRegionReference() {
+		return regionFacade.getDefaultInfrastructureReference();
+	}
+
+	public DistrictReferenceDto getDefaultDistrictReference() {
+		return districtFacade.getDefaultInfrastructureReference();
+	}
+
+	public CommunityReferenceDto getDefaultCommunityReference() {
+		return communityFacade.getDefaultInfrastructureReference();
 	}
 }

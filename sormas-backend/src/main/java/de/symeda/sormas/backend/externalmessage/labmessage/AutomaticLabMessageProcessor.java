@@ -52,9 +52,7 @@ import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPatho
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -200,15 +198,12 @@ public class AutomaticLabMessageProcessor {
 			HandlerCallback<SampleAndPathogenTests> callback) {
 
 			sample.setSamplePurpose(SamplePurpose.EXTERNAL);
-			sample.setSampleMaterial(SampleMaterial.OTHER);
-			sample.setSampleMaterialText("Automatically processed");
 
 			sampleFacade.saveSample(sample);
 
 			for (PathogenTestDto pathogenTest : pathogenTests) {
 				pathogenTest.setTestResultVerified(true);
-				pathogenTest.setTestType(PathogenTestType.OTHER);
-				pathogenTest.setTestTypeText("Automatically processed");
+				pathogenTest.setViaLims(true);
 
 				pathogenTestFacade.savePathogenTest(pathogenTest);
 			}
