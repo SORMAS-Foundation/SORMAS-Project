@@ -10908,6 +10908,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
     ClassificationPathogenTestNegativeResultCriteriaDto:
       type: object
@@ -10948,6 +10949,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
           sampleTestTypes:
             type: array
@@ -10974,6 +10976,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
             writeOnly: true
     ClassificationPersonAgeBetweenYearsCriteriaDto:
@@ -19821,6 +19824,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         testTypeText:
           type: string
@@ -21367,6 +21371,7 @@ components:
             - CQ_VALUE_DETECTION
             - SEQUENCING
             - DNA_MICROARRAY
+            - TMA
             - OTHER
           uniqueItems: true
         sampleDateTime:
@@ -21677,6 +21682,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         uuid:
           type: string
@@ -24431,6 +24437,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         testedDiseaseVariant:
           type: string
