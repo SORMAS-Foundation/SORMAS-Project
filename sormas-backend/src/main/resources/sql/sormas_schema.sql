@@ -12741,6 +12741,13 @@ ALTER TABLE community_history ADD COLUMN defaultinfrastructure boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (529, 'Add defaultInfrastructure field to infrastructure entities #12550');
 
+-- 2023-10-10 Add an automatic processing logic to external messages #12573
+ALTER TABLE diseaseconfiguration ADD COLUMN automaticsampleassignmentthreshold integer;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN automaticsampleassignmentthreshold integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (530, 'Add an automatic processing logic to external messages #12573');
+
+
 -- 2023-10-27 Assign multiple limited diseases to users #11435
 ALTER TABLE users
     RENAME COLUMN limiteddisease TO limiteddiseases;

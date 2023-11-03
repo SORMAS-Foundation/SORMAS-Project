@@ -207,4 +207,11 @@ public class CriteriaBuilderHelper {
 
 		return or(cb, diseaseExpression.in(currentUser.getLimitedDiseases()), orElse);
 	}
+
+	public static Expression<Double> dateDiff(CriteriaBuilder cb, Expression<?> date1, Expression<?> date2) {
+		return cb.abs(
+			cb.diff(
+				cb.function("date_part", Double.class, cb.literal("epoch"), date1),
+				cb.function("date_part", Double.class, cb.literal("epoch"), date2)));
+	}
 }

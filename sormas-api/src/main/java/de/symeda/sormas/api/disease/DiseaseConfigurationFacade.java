@@ -45,6 +45,8 @@ public interface DiseaseConfigurationFacade {
 
 	int getEventParticipantFollowUpDuration(Disease disease);
 
+	Integer getAutomaticSampleAssignmentThreshold(Disease disease);
+
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 
 	Disease getDefaultDisease();

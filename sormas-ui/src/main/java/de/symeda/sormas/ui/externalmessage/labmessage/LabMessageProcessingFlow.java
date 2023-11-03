@@ -53,6 +53,15 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -68,14 +77,8 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
 import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
 import de.symeda.sormas.ui.samples.humansample.SampleEditPathogenTestListHandler;
@@ -88,8 +91,17 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
-	public LabMessageProcessingFlow() {
-		super(UserProvider.getCurrent().getUser(), FacadeProvider.getCountryFacade().getServerCountry());
+	public LabMessageProcessingFlow(
+		ExternalMessageDto labMessage,
+		ExternalMessageMapper mapper,
+		ExternalMessageProcessingFacade processingFacade,
+		RelatedLabMessageHandler relatedLabMessageHandler) {
+		super(
+			labMessage,
+			UserProvider.getCurrent().getUser(),
+			mapper,
+			processingFacade,
+			relatedLabMessageHandler);
 	}
 
 	@Override
@@ -103,7 +115,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	@Override
-	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
 		showPickOrCreatePersonWindow(person, callback);
 	}
 
@@ -139,7 +151,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		showCreateCaseWindow(caze, person, labMessage, callback);
+		showCreateCaseWindow(caze, person, labMessage, mapper, callback);
 	}
 
 	@Override
@@ -159,7 +171,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			getSampleCreateComponent(sample, lastSample, pathogenTests, labMessage, disease, pathogenTestHandler::addPathogenTest);
+			getSampleCreateComponent(sample, lastSample, pathogenTests, disease, pathogenTestHandler::addPathogenTest);
 
 		sampleCreateComponent.setPostCommitListener(() -> {
 			pathogenTestHandler.saveAll(sample.toReference());
@@ -180,9 +192,9 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			LabMessageProcessingHelper.updateAddressAndSavePerson(
+			ExternalMessageProcessingUIHelper.updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				labMessage);
+				mapper);
 
 			callback.done(contactCreateComponent.getWrappedComponent().getValue());
 		});
@@ -382,17 +394,18 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		SampleDto sample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto labMessage,
+		ExternalMessageMapper mapper,
 		boolean lastSample,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, callback::done, callback::cancel);
+		ExternalMessageProcessingUIHelper
+			.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, mapper, callback::done, callback::cancel);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
 		SampleDto sample,
 		boolean lastSample,
 		List<PathogenTestDto> pathogenTests,
-		ExternalMessageDto externalMessageDto,
 		Disease disease,
 		Consumer<PathogenTestDto> pathogenTestSaveHandler) {
 		SampleController sampleController = ControllerProvider.getSampleController();
@@ -402,7 +415,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
 		// always build at least one PathogenTestDto
 		if (pathogenTestsToAdd.isEmpty()) {
-			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, user));
+			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, mapper, sample, user));
 		}
 
 		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, pathogenTestSaveHandler, null);
@@ -415,11 +428,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		return sampleCreateComponent;
 	}
 
-	private void addPathogenTests(
-		List<PathogenTestDto> pathogenTests,
-		ExternalMessageDto labMessage,
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent,
-		Consumer<PathogenTestDto> saveHandler) {
-
+	@Override
+	protected CompletionStage<Void> notifyCorrectionsSaved() {
+		return null;
 	}
 }

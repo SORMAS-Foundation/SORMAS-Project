@@ -40,6 +40,7 @@ import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;

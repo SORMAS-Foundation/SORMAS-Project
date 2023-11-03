@@ -114,4 +114,8 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 	public Boolean getInJurisdiction() {
 		return isInJurisdiction;
 	}
+
+	public EventParticipantReferenceDto toReference() {
+		return new EventParticipantReferenceDto(getUuid(), getFirstName(), getLastName());
+	}
 }

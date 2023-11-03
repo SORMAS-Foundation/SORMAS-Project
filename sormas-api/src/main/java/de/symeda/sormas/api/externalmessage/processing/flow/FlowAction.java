@@ -13,29 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing.flow;
 
-import de.symeda.sormas.api.event.EventIndexDto;
+import java.util.concurrent.CompletionStage;
 
-public class PickOrCreateEventResult {
+public interface FlowAction<T, R> {
 
-	private EventIndexDto event;
-
-	private boolean newEvent;
-
-	public EventIndexDto getEvent() {
-		return event;
-	}
-
-	public void setEvent(EventIndexDto event) {
-		this.event = event;
-	}
-
-	public boolean isNewEvent() {
-		return newEvent;
-	}
-
-	public void setNewEvent(boolean newEvent) {
-		this.newEvent = newEvent;
-	}
+	CompletionStage<ProcessingResult<R>> apply(ProcessingResult<T> currentResult);
 }
