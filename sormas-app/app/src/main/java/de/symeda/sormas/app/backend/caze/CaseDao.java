@@ -832,8 +832,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			}
 		}
 
-		//TODO: check if we need the part from CaseServices line 1466
-
 		if (!whereUserFilterStatements.isEmpty()) {
 			where.or(whereUserFilterStatements.size());
 		}
