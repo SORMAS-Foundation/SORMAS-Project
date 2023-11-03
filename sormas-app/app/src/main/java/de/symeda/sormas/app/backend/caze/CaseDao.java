@@ -758,7 +758,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 		if (criteria != null) {
 			where.and();
-			if (criteria.getIncludeCasesFromOtherJurisdictions() != null) {
+			if (criteria.getIncludeCasesFromOtherJurisdictions().equals(false)) {
 				createJurisdictionFilter(where, criteria);
 			}
 			createCriteriaFilter(where, criteria);
@@ -780,13 +780,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
 		//whoever created the case or is assigned to it is allowed to access it
-		if (caseCriteria.getIncludeCasesFromOtherJurisdictions().equals(true)) {
-			whereUserFilterStatements.add(
-				where.or(
-					where.eq(Case.REPORTING_USER, currentUser.getId()),
-					where.eq(Case.SURVEILLANCE_OFFICER, currentUser.getId()),
-					where.eq(Case.CASE_OFFICER, currentUser.getId())));
-		}
 
 		switch (jurisdictionLevel) {
 		case DISTRICT:
@@ -821,6 +814,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		if (!whereUserFilterStatements.isEmpty()) {
 			where.or(whereUserFilterStatements.size());
 		}
+
 		return where;
 	}
 

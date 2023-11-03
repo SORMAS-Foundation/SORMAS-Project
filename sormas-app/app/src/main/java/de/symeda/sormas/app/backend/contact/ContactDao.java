@@ -205,16 +205,11 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
 		// Only use user filter if no restricting case is specified
-		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(true)) {
-				where.and();
-				createJurisdictionFilterForCase(where, contactCriteria);
-				where.or();
-				createJurisdictionFilter(where, contactCriteria);
-			} else {
-				where.and();
-				createJurisdictionFilter(where, contactCriteria);
-			}
+		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(false)) {
+			where.and();
+			createJurisdictionFilterForCase(where);
+			where.or();
+			createJurisdictionFilter(where);
 		}
 
 		if (contactCriteria != null) {
@@ -225,7 +220,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		return queryBuilder;
 	}
 
-	public Where<Contact, Long> createJurisdictionFilterForCase(Where<Contact, Long> where, ContactCriteria contactCriteria) {
+	public Where<Contact, Long> createJurisdictionFilterForCase(Where<Contact, Long> where) {
 		List<Where<Contact, Long>> whereJurisdictionFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
@@ -234,15 +229,6 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		}
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-
-		//whoever created the case or is assigned to it is allowed to access it
-		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(true)) {
-			whereJurisdictionFilterStatements.add(
-				where.or(
-					where.raw(Case.TABLE_NAME + "." + Case.REPORTING_USER + "= '" + currentUser.getId() + "'"),
-					where.raw(Case.TABLE_NAME + "." + Case.SURVEILLANCE_OFFICER + "= '" + currentUser.getId() + "'"),
-					where.raw(Case.TABLE_NAME + "." + Case.CASE_OFFICER + "= '" + currentUser.getId() + "'")));
-		}
 
 		switch (jurisdictionLevel) {
 		case DISTRICT:
@@ -287,7 +273,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		return where;
 	}
 
-	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where, ContactCriteria contactCriteria) throws SQLException {
+	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where) throws SQLException {
 		List<Where<Contact, Long>> whereUserFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
@@ -296,12 +282,6 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		}
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-
-		// whoever created it or is assigned to it is allowed to access it
-		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			whereUserFilterStatements
-				.add(where.or(where.eq(Contact.REPORTING_USER, currentUser.getId()), where.eq(Contact.CONTACT_OFFICER, currentUser.getId())));
-		}
 
 		switch (jurisdictionLevel) {
 		case DISTRICT:

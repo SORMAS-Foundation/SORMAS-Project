@@ -103,9 +103,7 @@ public class Case extends PseudonymizableAdo {
 	public static final String COMPLETENESS = "completeness";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
-	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
-	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer_id";
-	public static final String CASE_OFFICER = "caseOfficer_id";
+
 	public static final String DISTRICT = "district_id";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict_id";
 	public static final String COMMUNITY = "community_id";

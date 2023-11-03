@@ -68,7 +68,7 @@ public class Contact extends PseudonymizableAdo {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_COLUMN = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
-	public static final String REPORTING_USER = "reportingUser_id";
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String FIRST_CONTACT_DATE = "firstContactDate";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -81,7 +81,7 @@ public class Contact extends PseudonymizableAdo {
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
-	public static final String CONTACT_OFFICER = "contactOfficer_id";
+	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String DESCRIPTION = "description";
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String RELATION_DESCRIPTION = "relationDescription";
@@ -98,7 +98,6 @@ public class Contact extends PseudonymizableAdo {
 
 	public static final String COMMUNITY = "community_id";
 
-	public static final String CASE = "case_id";
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
