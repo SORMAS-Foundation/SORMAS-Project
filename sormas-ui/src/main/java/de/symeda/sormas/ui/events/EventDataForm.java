@@ -91,6 +91,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
+import de.symeda.sormas.ui.utils.UserField;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 
 @SuppressWarnings("deprecation")
@@ -361,7 +362,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		});
 
 		DateField reportDate = addField(EventDto.REPORT_DATE_TIME, DateField.class);
-		addField(EventDto.REPORTING_USER, ComboBox.class);
+		addField(EventDto.REPORTING_USER, UserField.class);
 		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
 		ComboBox srcType = addField(EventDto.SRC_TYPE);
@@ -402,8 +403,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		locationForm.setDistrictRequiredOnDefaultCountry(true);
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
-		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
-		responsibleUserField.setNullSelectionAllowed(true);
+
+		UserField responsibleUserField = addField(EventDto.RESPONSIBLE_USER, UserField.class);
+		responsibleUserField.setEnabled(true);
 
 		addField(EventDto.DELETION_REASON);
 		addField(EventDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
@@ -642,7 +644,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		});
 	}
 
-	private void addRegionAndDistrict(ComboBox responsibleUserField) {
+	private void addRegionAndDistrict(UserField responsibleUserField) {
 		List<UserReferenceDto> responsibleUsers = new ArrayList<>();
 		responsibleUsers.addAll(regionEventResponsibles);
 		responsibleUsers.addAll(districtEventResponsibles);

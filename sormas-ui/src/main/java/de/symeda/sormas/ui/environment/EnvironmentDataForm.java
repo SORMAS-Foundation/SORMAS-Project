@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
+import de.symeda.sormas.ui.utils.UserField;
 
 public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
@@ -94,7 +95,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addField(EnvironmentDto.REPORTING_USER).setReadOnly(true);
+		addField(EnvironmentDto.REPORTING_USER, UserField.class);
 
 		addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
 		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
@@ -149,8 +150,8 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		ComboBox regionField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.REGION);
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
-		ComboBox responsibleUserField = addField(EnvironmentDto.RESPONSIBLE_USER, ComboBox.class);
-		responsibleUserField.setNullSelectionAllowed(true);
+		UserField responsibleUserField = addField(EnvironmentDto.RESPONSIBLE_USER, UserField.class);
+		responsibleUserField.setEnabled(true);
 
 		addField(EnvironmentDto.DELETION_REASON);
 		addField(EnvironmentDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);

@@ -82,6 +82,7 @@ import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
+import de.symeda.sormas.ui.utils.UserField;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
@@ -156,7 +157,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		addField(ImmunizationDto.REPORT_DATE, DateField.class);
-		addField(ImmunizationDto.REPORTING_USER, ComboBox.class);
+		addField(ImmunizationDto.REPORTING_USER, UserField.class);
 
 		ComboBox cbDisease = addDiseaseField(ImmunizationDto.DISEASE, false);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);

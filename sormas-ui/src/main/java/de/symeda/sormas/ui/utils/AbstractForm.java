@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -36,7 +37,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public abstract class AbstractForm<T> extends CustomField<T> {
+public abstract class AbstractForm<T> extends CustomField<T> implements WithChildComponents {
 
 	private static final long serialVersionUID = -3816438104870246080L;
 
@@ -86,6 +87,11 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		layout.setHeightUndefined();
 
 		return layout;
+	}
+
+	@Override
+	public void forEachComponent(Consumer<Component> componentConsumer) {
+		getContent().iterator().forEachRemaining(componentConsumer);
 	}
 
 	public BeanFieldGroup<T> getFieldGroup() {

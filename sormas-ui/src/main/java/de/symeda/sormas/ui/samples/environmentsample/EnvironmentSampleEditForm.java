@@ -65,6 +65,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.UserField;
 
 public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampleDto> {
 
@@ -75,7 +76,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	private static final String SAMPLE_MANAGEMENT_HEADING_LOC = "sampleManagementHeadingLoc";
 	private static final String REQUESTED_PATHOGENS_SUBHEADING_LOC = "requestedPathogensSubheadingLoc";
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC)
-		+ fluidRowLocs(3, EnvironmentSampleDto.UUID, 3, EnvironmentSampleDto.ENVIRONMENT, 6, REPORT_INFO_LOC)
+		+ fluidRowLocs(3, EnvironmentSampleDto.UUID, 2, EnvironmentSampleDto.ENVIRONMENT, 3, REPORT_INFO_LOC, 4, EnvironmentSampleDto.REPORTING_USER)
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_DATE_TIME, "")
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_MATERIAL, EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL)
 		+ fluidRowLocs(EnvironmentSampleDto.FIELD_SAMPLE_ID, "")
@@ -249,6 +250,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			true,
 			true);
 
+		addField(EnvironmentSampleDto.REPORTING_USER, UserField.class);
+
 		addField(EnvironmentSampleDto.SPECIMEN_CONDITION);
 
 		addField(EnvironmentSampleDto.GENERAL_COMMENT, TextArea.class).setRows(3);
@@ -320,7 +323,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			.append(DateFormatHelper.formatLocalDateTime(sample.getReportDate()));
 		UserReferenceDto reportingUser = sample.getReportingUser();
 		if (reportingUser != null) {
-			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ").append(reportingUser.buildCaption());
+			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ");
 		}
 
 		Label reportInfoLabel = new Label(reportInfoText.toString());

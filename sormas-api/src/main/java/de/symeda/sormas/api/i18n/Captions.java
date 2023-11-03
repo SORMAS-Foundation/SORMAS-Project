@@ -1713,6 +1713,7 @@ public interface Captions {
 	String notificationType_group = "notificationType.group";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
+	String noUserSelected = "noUserSelected";
 	String numberOfCharacters = "numberOfCharacters";
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";

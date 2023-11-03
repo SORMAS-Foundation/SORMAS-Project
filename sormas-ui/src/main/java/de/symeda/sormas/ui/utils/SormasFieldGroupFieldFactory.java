@@ -37,6 +37,7 @@ import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
+import org.hl7.fhir.r4.model.Claim;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
@@ -166,6 +167,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new CheckboxSet();
 		} else if (UserRoleNotificationCheckboxSet.class.isAssignableFrom(fieldType)) {
 			return (T) new UserRoleNotificationCheckboxSet();
+		} else if (UserField.class.isAssignableFrom(fieldType)){
+			return (T) new UserField();
 		}
 		return super.createField(type, fieldType);
 	}
