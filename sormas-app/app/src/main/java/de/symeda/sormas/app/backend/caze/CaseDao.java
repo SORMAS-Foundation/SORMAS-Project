@@ -757,9 +757,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
 		if (criteria != null) {
-			where.and();
 			if (criteria.getIncludeCasesFromOtherJurisdictions().equals(false)) {
-				createJurisdictionFilter(where, criteria);
+				where.and();
+				createJurisdictionFilter(where);
 			}
 			createCriteriaFilter(where, criteria);
 			queryBuilder.setWhere(where);
@@ -769,7 +769,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		return queryBuilder;
 	}
 
-	public Where createJurisdictionFilter(Where<Case, Long> where, CaseCriteria caseCriteria) throws SQLException {
+	public Where createJurisdictionFilter(Where<Case, Long> where) throws SQLException {
 		List<Where> whereUserFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
@@ -821,6 +821,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 	public Where<Case, Long> createCriteriaFilter(Where<Case, Long> where, CaseCriteria criteria) throws SQLException {
 
 		if (criteria.getInvestigationStatus() != null) {
+			where.and();
 			where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus());
 		}
 
