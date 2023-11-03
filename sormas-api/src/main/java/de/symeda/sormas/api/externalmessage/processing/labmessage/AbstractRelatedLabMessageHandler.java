@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing.labmessage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,23 +28,25 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
 
 /**
  * Abstract class for having a clear flow for handling lab messages the contain only corrections to prevoius ones
@@ -55,24 +57,7 @@ import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
  */
 public abstract class AbstractRelatedLabMessageHandler {
 
-	public static class HandlerResult {
-
-		private final HandlerResultStatus status;
-		private final SampleDto sample;
-
-		public HandlerResult(HandlerResultStatus status, SampleDto sample) {
-			this.status = status;
-			this.sample = sample;
-		}
-
-		public HandlerResultStatus getStatus() {
-			return status;
-		}
-
-		public SampleDto getSample() {
-			return sample;
-		}
-	}
+	protected final UserDto user;
 
 	public enum HandlerResultStatus {
 		NOT_HANDLED,
@@ -82,17 +67,25 @@ public abstract class AbstractRelatedLabMessageHandler {
 		CONTINUE
 	}
 
-	public AbstractRelatedLabMessageHandler() {
+	protected final ExternalMessageProcessingFacade processingFacade;
+	protected final ExternalMessageMapper mapper;
+
+	public AbstractRelatedLabMessageHandler(UserDto user, ExternalMessageProcessingFacade processingFacade, ExternalMessageMapper mapper) {
+		this.user = user;
+		this.processingFacade = processingFacade;
+		this.mapper = mapper;
+	}
+
+	private static SampleReportDto getFirstSampleReport(ExternalMessageDto labMessage) {
+		return labMessage.getSampleReportsNullSafe().get(0);
 	}
 
 	public CompletionStage<HandlerResult> handle(ExternalMessageDto labMessage) {
 		RelatedEntities relatedEntities = getRelatedEntities(labMessage);
 
 		if (relatedEntities == null) {
-			return CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.NOT_HANDLED, null));
+			return CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.NOT_HANDLED, null, null));
 		}
-
-		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 
 		ChainHandler chainHandler = new ChainHandler();
 		Supplier<CompletionStage<Boolean>> correctionFlowConfirmationSupplier = createCachedCorrectionFlowConfirmationSupplier();
@@ -156,25 +149,95 @@ public abstract class AbstractRelatedLabMessageHandler {
 						if (Boolean.TRUE.equals(confirmed)) {
 							return chainHandler.run(chain -> handleShortcut(labMessage, relatedEntities.sample, chain))
 								.thenCompose(
-									handled -> CompletableFuture
-										.completedFuture(new HandlerResult(HandlerResultStatus.HANDLED, relatedEntities.sample)));
+									handled -> CompletableFuture.completedFuture(
+										new HandlerResult(HandlerResultStatus.HANDLED, relatedEntities.sample, relatedEntities.person)));
 						}
 
-						return CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.CONTINUE, relatedEntities.sample));
+						return CompletableFuture
+							.completedFuture(new HandlerResult(HandlerResultStatus.CONTINUE, relatedEntities.sample, relatedEntities.person));
 					});
 				}
 
-				return CompletableFuture.completedFuture(new HandlerResult(correctionResult.result, relatedEntities.sample));
+				return CompletableFuture.completedFuture(new HandlerResult(correctionResult.result, relatedEntities.sample, relatedEntities.person));
 			})
 			.exceptionally(e -> {
 				if (e.getCause() instanceof CancellationException) {
 					return new HandlerResult(
 						chainHandler.savePerformed ? HandlerResultStatus.CANCELED_WITH_UPDATES : HandlerResultStatus.CANCELED,
-						null);
+						relatedEntities.sample,
+						relatedEntities.person);
 				}
 
 				throw (RuntimeException) e;
 			});
+	}
+
+	// related entities
+	public RelatedEntities getRelatedEntities(ExternalMessageDto labMessage) {
+		// TODO It may be possible to use related entities for multiple sample reports, but this is not yet thought through
+		if (labMessage.getSampleReportsNullSafe().size() > 1) {
+			return null;
+		}
+
+		String reportId = labMessage.getReportId();
+		String labSampleId = labMessage.getSampleReportsNullSafe().get(0).getLabSampleId();
+
+		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId)) {
+			return null;
+		}
+
+		List<SampleDto> relatedSamples = processingFacade.getSamplesByLabSampleId(labSampleId);
+		if (relatedSamples.size() != 1) {
+			return null;
+		}
+
+		SampleDto relatedSample = relatedSamples.get(0);
+		List<ExternalMessageDto> relatedLabMessages = processingFacade.getExternalMessagesForSample(relatedSample.toReference())
+			.stream()
+			.filter(
+				otherLabMessage -> reportId.equals(otherLabMessage.getReportId())
+					&& ExternalMessageStatus.PROCESSED.equals(otherLabMessage.getStatus()))
+			.collect(Collectors.toList());
+
+		PersonDto relatedPerson;
+		if (relatedSample.getAssociatedCase() != null) {
+			relatedPerson = processingFacade.getPersonByContext(PersonContext.CASE, relatedSample.getAssociatedCase().getUuid());
+		} else if (relatedSample.getAssociatedContact() != null) {
+			relatedPerson = processingFacade.getPersonByContext(PersonContext.CONTACT, relatedSample.getAssociatedContact().getUuid());
+		} else {
+			relatedPerson =
+				processingFacade.getPersonByContext(PersonContext.EVENT_PARTICIPANT, relatedSample.getAssociatedEventParticipant().getUuid());
+		}
+
+		List<PathogenTestDto> relatedPathogenTests = new ArrayList<>();
+		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
+		boolean pathogenTestMisMatch = false;
+
+		List<TestReportDto> testReports = getFirstSampleReport(labMessage).getTestReports();
+		List<PathogenTestDto> samplePathogenTests = processingFacade.getPathogenTestsBySample(relatedSample.toReference());
+
+		for (TestReportDto testReport : testReports) {
+			List<PathogenTestDto> matchedPathogenTests = StringUtils.isBlank(testReport.getExternalId())
+				? Collections.emptyList()
+				: samplePathogenTests.stream().filter(pt -> matchPathogenTest(testReport, pt)).collect(Collectors.toList());
+
+			if (matchedPathogenTests.isEmpty()) {
+				unmatchedTestReports.add(testReport);
+			} else if (matchedPathogenTests.size() == 1) {
+				relatedPathogenTests.add(matchedPathogenTests.get(0));
+			} else {
+				unmatchedTestReports.add(testReport);
+				pathogenTestMisMatch = true;
+			}
+		}
+
+		return new RelatedEntities(
+			relatedSample,
+			relatedPerson,
+			relatedPathogenTests,
+			unmatchedTestReports,
+			pathogenTestMisMatch,
+			CollectionUtils.isNotEmpty(relatedLabMessages));
 	}
 
 	protected abstract CompletionStage<Boolean> confirmShortcut(boolean hasRelatedLabMessages);
@@ -334,75 +397,29 @@ public abstract class AbstractRelatedLabMessageHandler {
 		SampleDto sample,
 		RelatedLabMessageHandlerChain chain);
 
-	// related entities
-	public RelatedEntities getRelatedEntities(ExternalMessageDto labMessage) {
-		// TODO It may be possible to use related entities for multiple sample reports, but this is not yet thought through
-		if (labMessage.getSampleReportsNullSafe().size() > 1) {
-			return null;
+	public static class HandlerResult {
+
+		private final HandlerResultStatus status;
+		private final SampleDto sample;
+		private final PersonDto person;
+
+		public HandlerResult(HandlerResultStatus status, SampleDto sample, PersonDto person) {
+			this.status = status;
+			this.sample = sample;
+			this.person = person;
 		}
 
-		String reportId = labMessage.getReportId();
-		String labSampleId = labMessage.getSampleReportsNullSafe().get(0).getLabSampleId();
-
-		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId))
-
-		{
-			return null;
+		public HandlerResultStatus getStatus() {
+			return status;
 		}
 
-		List<SampleDto> relatedSamples = FacadeProvider.getSampleFacade().getByLabSampleId(labSampleId);
-		if (relatedSamples.size() != 1) {
-			return null;
+		public SampleDto getSample() {
+			return sample;
 		}
 
-		SampleDto relatedSample = relatedSamples.get(0);
-		List<ExternalMessageDto> relatedLabMessages = FacadeProvider.getExternalMessageFacade()
-			.getForSample(relatedSample.toReference())
-			.stream()
-			.filter(
-				otherLabMessage -> reportId.equals(otherLabMessage.getReportId())
-					&& ExternalMessageStatus.PROCESSED.equals(otherLabMessage.getStatus()))
-			.collect(Collectors.toList());
-
-		PersonDto relatedPerson;
-		if (relatedSample.getAssociatedCase() != null) {
-			relatedPerson = FacadeProvider.getPersonFacade().getByContext(PersonContext.CASE, relatedSample.getAssociatedCase().getUuid());
-		} else if (relatedSample.getAssociatedContact() != null) {
-			relatedPerson = FacadeProvider.getPersonFacade().getByContext(PersonContext.CONTACT, relatedSample.getAssociatedContact().getUuid());
-		} else {
-			relatedPerson = FacadeProvider.getPersonFacade()
-				.getByContext(PersonContext.EVENT_PARTICIPANT, relatedSample.getAssociatedEventParticipant().getUuid());
+		public PersonDto getPerson() {
+			return person;
 		}
-
-		List<PathogenTestDto> relatedPathogenTests = new ArrayList<>();
-		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
-		boolean pathogenTestMisMatch = false;
-
-		List<TestReportDto> testReports = labMessage.getSampleReportsNullSafe().get(0).getTestReports();
-		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
-
-		for (TestReportDto testReport : testReports) {
-			List<PathogenTestDto> matchedPathogenTests = StringUtils.isBlank(testReport.getExternalId())
-				? Collections.emptyList()
-				: samplePathogenTests.stream().filter(pt -> matchPathogenTest(testReport, pt)).collect(Collectors.toList());
-
-			if (matchedPathogenTests.isEmpty()) {
-				unmatchedTestReports.add(testReport);
-			} else if (matchedPathogenTests.size() == 1) {
-				relatedPathogenTests.add(matchedPathogenTests.get(0));
-			} else {
-				unmatchedTestReports.add(testReport);
-				pathogenTestMisMatch = true;
-			}
-		}
-
-		return new RelatedEntities(
-			relatedSample,
-			relatedPerson,
-			relatedPathogenTests,
-			unmatchedTestReports,
-			pathogenTestMisMatch,
-			CollectionUtils.isNotEmpty(relatedLabMessages));
 	}
 
 	private boolean matchPathogenTest(TestReportDto tr, PathogenTestDto pt) {

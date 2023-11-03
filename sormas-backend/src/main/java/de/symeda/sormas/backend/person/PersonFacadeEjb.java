@@ -2053,6 +2053,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		return isEditAllowed(uuid) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
 	}
 
+	public List<PersonDto> getByNationalHealthId(String nationalHealthId) {
+		return service.getByPredicate((cb, root, cq) -> cb.equal(root.get(Person.NATIONAL_HEALTH_ID), nationalHealthId))
+			.stream()
+			.map(this::toPseudonymizedDto)
+			.collect(Collectors.toList());
+	}
+
 	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {

@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.processing.flow;
+package de.symeda.sormas.api.externalmessage.processing.flow;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -25,8 +25,8 @@ public class ProcessingResult<T> {
 
 	private final T data;
 
-	public static <T> ProcessingResult<T> withStatus(ProcessingResultStatus status) {
-		return new ProcessingResult<>(status, null);
+	public static <T> ProcessingResult<T> withStatus(ProcessingResultStatus status, T data) {
+		return new ProcessingResult<>(status, data);
 	}
 
 	public static <T> ProcessingResult<T> continueWith(T data) {
