@@ -147,7 +147,6 @@
     </style>
 
     <style name="FilterCheckBoxLabelStyle">
-        <!-- create instead of gray a variable for the next 2 rows-->
         <item name="android:textColor">@color/lightBlue60</item>
         <item name="android:textSize">@dimen/textSizeLarge</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -370,7 +369,6 @@
     </style>
 
     <style name="FilterCheckboxFieldStyle">
-        <!-- create a variable with maxSpinnerHeight-->
         <item name="android:layout_height">@dimen/maxSpinnerHeight</item>
         <item name="android:layout_width">match_parent</item>
     </style>
