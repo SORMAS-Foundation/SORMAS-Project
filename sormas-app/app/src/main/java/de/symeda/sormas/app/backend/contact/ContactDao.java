@@ -201,7 +201,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		QueryBuilder<Case, Long> caseQueryBuilder = DatabaseHelper.getCaseDao().queryBuilder();
 		queryBuilder.join(Contact.CASE_UUID, Case.UUID, caseQueryBuilder, QueryBuilder.JoinType.LEFT, QueryBuilder.JoinWhereOperation.AND);
 
-		Where where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+		Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
@@ -209,10 +209,10 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 				where.and();
 				createJurisdictionFilter(where, contactCriteria);
 				where.or();
-				createJurisdictionFilterWithoutCase(queryBuilder, where, contactCriteria);
+				createJurisdictionFilterWithoutCase(where, contactCriteria);
 			} else {
 				where.and();
-				createJurisdictionFilterWithoutCase(queryBuilder, where, contactCriteria);
+				createJurisdictionFilterWithoutCase(where, contactCriteria);
 			}
 		}
 
@@ -224,9 +224,8 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		return queryBuilder;
 	}
 
-	//TODO: add back the generics for Where
-	public Where createJurisdictionFilter(Where where, ContactCriteria contactCriteria) {
-		List<Where> whereUserFilterStatements = new ArrayList<>();
+	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where, ContactCriteria contactCriteria) {
+		List<Where<Contact, Long>> whereJurisdictionFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
 		if (currentUser == null) {
@@ -238,7 +237,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			//whoever created the case or is assigned to it is allowed to access it
 			if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(true)) {
-				whereUserFilterStatements.add(
+				whereJurisdictionFilterStatements.add(
 					where.or(
 						where.raw(Case.TABLE_NAME + "." + Case.REPORTING_USER + "= '" + currentUser.getId() + "'"),
 						where.raw(Case.TABLE_NAME + "." + Case.SURVEILLANCE_OFFICER + "= '" + currentUser.getId() + "'"),
@@ -249,7 +248,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			case REGION:
 				Region region = currentUser.getRegion();
 				if (region != null) {
-					whereUserFilterStatements.add(
+					whereJurisdictionFilterStatements.add(
 						where.or(
 							where.raw(Case.TABLE_NAME + "." + Case.REGION + "= '" + region + "'"),
 							where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_REGION + "= '" + region.getId() + "'")));
@@ -259,7 +258,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			case DISTRICT:
 				District district = currentUser.getDistrict();
 				if (district != null) {
-					whereUserFilterStatements.add(
+					whereJurisdictionFilterStatements.add(
 						where.or(
 							where.raw(Case.TABLE_NAME + "." + Case.DISTRICT + "= '" + district + "'"),
 							where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_DISTRICT + "= '" + district.getId() + "'")));
@@ -269,14 +268,14 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			case HEALTH_FACILITY:
 				Facility healthFacility = currentUser.getHealthFacility();
 				if (healthFacility != null) {
-					whereUserFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.HEALTH_FACILITY + "= '" + healthFacility + "'"));
+					whereJurisdictionFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.HEALTH_FACILITY + "= '" + healthFacility + "'"));
 				}
 				break;
 
 			case COMMUNITY:
 				Community community = currentUser.getCommunity();
 				if (community != null) {
-					whereUserFilterStatements.add(
+					whereJurisdictionFilterStatements.add(
 						where.or(
 							where.raw(Case.TABLE_NAME + "." + Case.COMMUNITY + "= '" + community + "'"),
 							where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_COMMUNITY + "= '" + community.getId() + "'")));
@@ -286,21 +285,22 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			case POINT_OF_ENTRY:
 				PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
 				if (pointOfEntry != null) {
-					whereUserFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.POINT_OF_ENTRY + "= '" + pointOfEntry.getId() + "'"));
+					whereJurisdictionFilterStatements
+						.add(where.raw(Case.TABLE_NAME + "." + Case.POINT_OF_ENTRY + "= '" + pointOfEntry.getId() + "'"));
 				}
 				break;
 			default:
 			}
 		}
 
-		if (!whereUserFilterStatements.isEmpty()) {
-			where.or(whereUserFilterStatements.size());
+		if (!whereJurisdictionFilterStatements.isEmpty()) {
+			where.or(whereJurisdictionFilterStatements.size());
 		}
 		return where;
 	}
 
-	public Where createJurisdictionFilterWithoutCase(QueryBuilder querybuilder, Where where, ContactCriteria contactCriteria) throws SQLException {
-		List<Where> whereUserFilterStatements = new ArrayList<>();
+	public Where<Contact, Long> createJurisdictionFilterWithoutCase(Where<Contact, Long> where, ContactCriteria contactCriteria) throws SQLException {
+		List<Where<Contact, Long>> whereUserFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
 		if (currentUser == null) {
@@ -343,7 +343,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			where.or(whereUserFilterStatements.size());
 		}
 
-		return where;l
+		return where;
 	}
 
 	public Where<Contact, Long> createCriteriaFilter(Where<Contact, Long> where, ContactCriteria criteria) throws SQLException {

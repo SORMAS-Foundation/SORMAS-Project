@@ -707,15 +707,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
 			Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
-
 			CaseCriteria caseCriteria = criteria.getCaseCriteria();
 			where.and().eq(Case.DISEASE, caseCriteria.getDisease());
-
 			Where<Case, Long> regionFilter = where.and()
 				.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getResponsibleRegion())
 				.or()
 				.eq(Case.REGION + "_id", caseCriteria.getResponsibleRegion());
-
 			if (caseCriteria.getRegion() != null) {
 				regionFilter.or()
 					.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getRegion())
@@ -772,8 +769,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		return queryBuilder;
 	}
 
-	//TODO: add back the generics for Where
-	public Where createJurisdictionFilter(Where where, CaseCriteria caseCriteria) throws SQLException {
+	public Where createJurisdictionFilter(Where<Case, Long> where, CaseCriteria caseCriteria) throws SQLException {
 		List<Where> whereUserFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
@@ -879,7 +875,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			for (String filter : textFilters) {
 				String textFilter = "%" + filter.toLowerCase() + "%";
 				if (!StringUtils.isEmpty(textFilter)) {
-
 					where.and();
 					where.or(
 						where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
