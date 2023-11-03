@@ -55,10 +55,21 @@ public class FlowSwitch<T, X, O> {
 		if (this.switchOperationMemo == null) {
 			// cache the result so not the operation is called only once
 			AtomicReference<CompletionStage<ProcessingResult<O>>> switchOperationResult = new AtomicReference<>(null);
+			AtomicReference<Exception> switchOperationError = new AtomicReference<>(null);
 			this.switchOperationMemo = cr -> {
-				if (switchOperationResult.get() == null) {
-					switchOperationResult.set(switchOperation.apply(cr));
+				if (switchOperationError.get() != null) {
+					throw new IllegalStateException("Switch operation failed", switchOperationError.get());
 				}
+
+				if (switchOperationResult.get() == null) {
+					try {
+						switchOperationResult.set(switchOperation.apply(cr));
+					} catch (Exception e) {
+						switchOperationError.set(e);
+						throw new IllegalStateException("Switch operation failed", switchOperationError.get());
+					}
+				}
+
 				return switchOperationResult.get();
 			};
 		}

@@ -2339,8 +2339,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			cb.lessThanOrEqualTo(
 				CriteriaBuilderHelper.dateDiff(
 					cb,
-					CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE)),
-					cb.literal(new Date()).as(Date.class)),
+						cb.function(
+								ExtendedPostgreSQL94Dialect.DATE,
+								Date.class,
+								CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
 				Long.valueOf(TimeUnit.DAYS.toSeconds(automaticSampleAssignmentThreshold)).doubleValue()));
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();

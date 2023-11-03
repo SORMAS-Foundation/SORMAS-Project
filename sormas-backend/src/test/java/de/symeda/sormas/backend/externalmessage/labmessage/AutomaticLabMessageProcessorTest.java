@@ -121,16 +121,14 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(samples.get(0).getSamplePurpose(), is(SamplePurpose.EXTERNAL));
 		assertThat(samples.get(0).getSampleDateTime().getTime(), is(sampleReport.getSampleDateTime().getTime()));
 		assertThat(samples.get(0).getLab(), is(lab.toReference()));
-		assertThat(samples.get(0).getSampleMaterial(), is(SampleMaterial.OTHER));
-		assertThat(samples.get(0).getSampleMaterialText(), is("Automatically processed"));
+		assertThat(samples.get(0).getSampleMaterial(), is(SampleMaterial.CRUST));
 
 		List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(samples.get(0).toReference());
 		assertThat(pathogenTests, hasSize(1));
 		TestReportDto testReport = sampleReport.getTestReports().get(0);
 		assertThat(pathogenTests.get(0).getTestResult(), is(testReport.getTestResult()));
 		assertThat(pathogenTests.get(0).getTestDateTime().getTime(), is(testReport.getTestDateTime().getTime()));
-		assertThat(pathogenTests.get(0).getTestType(), is(PathogenTestType.OTHER));
-		assertThat(pathogenTests.get(0).getTestTypeText(), is("Automatically processed"));
+		assertThat(pathogenTests.get(0).getTestType(), is(PathogenTestType.PCR_RT_PCR));
 	}
 
 	@Test
@@ -363,10 +361,12 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 			SampleReportDto sampleReport = new SampleReportDto();
 			sampleReport.setSampleDateTime(new Date());
 			sampleReport.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+			sampleReport.setSampleMaterial(SampleMaterial.CRUST);
 
 			TestReportDto testReport = new TestReportDto();
 			testReport.setTestResult(PathogenTestResultType.PENDING);
 			testReport.setTestDateTime(new Date());
+			testReport.setTestType(PathogenTestType.PCR_RT_PCR);
 
 			sampleReport.setTestReports(Collections.singletonList(testReport));
 			externalMessage.setSampleReports(Collections.singletonList(sampleReport));
