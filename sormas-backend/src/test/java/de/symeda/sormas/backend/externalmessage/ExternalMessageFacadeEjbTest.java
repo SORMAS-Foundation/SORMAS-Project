@@ -54,7 +54,9 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -459,10 +461,12 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		SampleReportDto sampleReport = SampleReportDto.build();
 		sampleReport.setSampleDateTime(new Date());
 		sampleReport.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+        sampleReport.setSampleMaterial(SampleMaterial.CRUST);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setTestResult(PathogenTestResultType.PENDING);
 		testReport.setTestDateTime(new Date());
+        testReport.setTestType(PathogenTestType.PCR_RT_PCR);
 
 		sampleReport.setTestReports(Collections.singletonList(testReport));
 		labMessage.setSampleReports(Collections.singletonList(sampleReport));
