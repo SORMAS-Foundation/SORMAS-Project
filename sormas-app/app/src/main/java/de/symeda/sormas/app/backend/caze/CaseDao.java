@@ -779,53 +779,43 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
-			//whoever created the case or is assigned to it is allowed to access it
-			if (caseCriteria.getIncludeCasesFromOtherJurisdictions().equals(true)) {
-				whereUserFilterStatements.add(
-					where.or(
-						where.eq(Case.REPORTING_USER, currentUser.getId()),
-						where.eq(Case.SURVEILLANCE_OFFICER, currentUser.getId()),
-						where.eq(Case.CASE_OFFICER, currentUser.getId())));
+		//whoever created the case or is assigned to it is allowed to access it
+		if (caseCriteria.getIncludeCasesFromOtherJurisdictions().equals(true)) {
+			whereUserFilterStatements.add(
+				where.or(
+					where.eq(Case.REPORTING_USER, currentUser.getId()),
+					where.eq(Case.SURVEILLANCE_OFFICER, currentUser.getId()),
+					where.eq(Case.CASE_OFFICER, currentUser.getId())));
+		}
+
+		switch (jurisdictionLevel) {
+		case DISTRICT:
+			District district = currentUser.getDistrict();
+			if (district != null) {
+				whereUserFilterStatements.add(where.or(where.eq((Case.DISTRICT), district), where.eq(Case.RESPONSIBLE_DISTRICT, district.getId())));
 			}
+			break;
 
-			switch (jurisdictionLevel) {
-			case REGION:
-				Region region = currentUser.getRegion();
-				if (region != null) {
-					whereUserFilterStatements.add(where.or(where.eq((Case.REGION), region), where.eq(Case.RESPONSIBLE_REGION, region.getId())));
-				}
-				break;
-
-			case DISTRICT:
-				District district = currentUser.getDistrict();
-				if (district != null) {
-					whereUserFilterStatements
-						.add(where.or(where.eq((Case.DISTRICT), district), where.eq(Case.RESPONSIBLE_DISTRICT, district.getId())));
-				}
-				break;
-
-			case HEALTH_FACILITY:
-				Facility healthFacility = currentUser.getHealthFacility();
-				if (healthFacility != null) {
-					whereUserFilterStatements.add(where.eq(Case.HEALTH_FACILITY, healthFacility.getId()));
-				}
-				break;
-			case COMMUNITY:
-				Community community = currentUser.getCommunity();
-				if (community != null) {
-					whereUserFilterStatements
-						.add(where.or(where.eq((Case.COMMUNITY), community), where.eq(Case.RESPONSIBLE_COMMUNITY, community.getId())));
-				}
-				break;
-			case POINT_OF_ENTRY:
-				PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
-				if (pointOfEntry != null) {
-					whereUserFilterStatements.add(where.eq(Case.POINT_OF_ENTRY, pointOfEntry.getId()));
-				}
-				break;
-			default:
+		case HEALTH_FACILITY:
+			Facility healthFacility = currentUser.getHealthFacility();
+			if (healthFacility != null) {
+				whereUserFilterStatements.add(where.eq(Case.HEALTH_FACILITY, healthFacility.getId()));
 			}
+			break;
+		case COMMUNITY:
+			Community community = currentUser.getCommunity();
+			if (community != null) {
+				whereUserFilterStatements
+					.add(where.or(where.eq((Case.COMMUNITY), community), where.eq(Case.RESPONSIBLE_COMMUNITY, community.getId())));
+			}
+			break;
+		case POINT_OF_ENTRY:
+			PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+			if (pointOfEntry != null) {
+				whereUserFilterStatements.add(where.eq(Case.POINT_OF_ENTRY, pointOfEntry.getId()));
+			}
+			break;
+		default:
 		}
 
 		if (!whereUserFilterStatements.isEmpty()) {

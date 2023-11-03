@@ -28,7 +28,9 @@ import com.j256.ormlite.stmt.Where;
 
 import android.location.Location;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -48,7 +50,6 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
-import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -207,12 +208,12 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
 			if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(true)) {
 				where.and();
-				createJurisdictionFilter(where, contactCriteria);
+				createJurisdictionFilterForCase(where, contactCriteria);
 				where.or();
-				createJurisdictionFilterWithoutCase(where, contactCriteria);
+				createJurisdictionFilter(where, contactCriteria);
 			} else {
 				where.and();
-				createJurisdictionFilterWithoutCase(where, contactCriteria);
+				createJurisdictionFilter(where, contactCriteria);
 			}
 		}
 
@@ -224,7 +225,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		return queryBuilder;
 	}
 
-	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where, ContactCriteria contactCriteria) {
+	public Where<Contact, Long> createJurisdictionFilterForCase(Where<Contact, Long> where, ContactCriteria contactCriteria) {
 		List<Where<Contact, Long>> whereJurisdictionFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
@@ -234,63 +235,50 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
-			//whoever created the case or is assigned to it is allowed to access it
-			if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(true)) {
+		//whoever created the case or is assigned to it is allowed to access it
+		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(true)) {
+			whereJurisdictionFilterStatements.add(
+				where.or(
+					where.raw(Case.TABLE_NAME + "." + Case.REPORTING_USER + "= '" + currentUser.getId() + "'"),
+					where.raw(Case.TABLE_NAME + "." + Case.SURVEILLANCE_OFFICER + "= '" + currentUser.getId() + "'"),
+					where.raw(Case.TABLE_NAME + "." + Case.CASE_OFFICER + "= '" + currentUser.getId() + "'")));
+		}
+
+		switch (jurisdictionLevel) {
+		case DISTRICT:
+			District district = currentUser.getDistrict();
+			if (district != null) {
 				whereJurisdictionFilterStatements.add(
 					where.or(
-						where.raw(Case.TABLE_NAME + "." + Case.REPORTING_USER + "= '" + currentUser.getId() + "'"),
-						where.raw(Case.TABLE_NAME + "." + Case.SURVEILLANCE_OFFICER + "= '" + currentUser.getId() + "'"),
-						where.raw(Case.TABLE_NAME + "." + Case.CASE_OFFICER + "= '" + currentUser.getId() + "'")));
+						where.raw(Case.TABLE_NAME + "." + Case.DISTRICT + "= '" + district + "'"),
+						where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_DISTRICT + "= '" + district.getId() + "'")));
 			}
+			break;
 
-			switch (jurisdictionLevel) {
-			case REGION:
-				Region region = currentUser.getRegion();
-				if (region != null) {
-					whereJurisdictionFilterStatements.add(
-						where.or(
-							where.raw(Case.TABLE_NAME + "." + Case.REGION + "= '" + region + "'"),
-							where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_REGION + "= '" + region.getId() + "'")));
-				}
-				break;
-
-			case DISTRICT:
-				District district = currentUser.getDistrict();
-				if (district != null) {
-					whereJurisdictionFilterStatements.add(
-						where.or(
-							where.raw(Case.TABLE_NAME + "." + Case.DISTRICT + "= '" + district + "'"),
-							where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_DISTRICT + "= '" + district.getId() + "'")));
-				}
-				break;
-
-			case HEALTH_FACILITY:
-				Facility healthFacility = currentUser.getHealthFacility();
-				if (healthFacility != null) {
-					whereJurisdictionFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.HEALTH_FACILITY + "= '" + healthFacility + "'"));
-				}
-				break;
-
-			case COMMUNITY:
-				Community community = currentUser.getCommunity();
-				if (community != null) {
-					whereJurisdictionFilterStatements.add(
-						where.or(
-							where.raw(Case.TABLE_NAME + "." + Case.COMMUNITY + "= '" + community + "'"),
-							where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_COMMUNITY + "= '" + community.getId() + "'")));
-				}
-				break;
-
-			case POINT_OF_ENTRY:
-				PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
-				if (pointOfEntry != null) {
-					whereJurisdictionFilterStatements
-						.add(where.raw(Case.TABLE_NAME + "." + Case.POINT_OF_ENTRY + "= '" + pointOfEntry.getId() + "'"));
-				}
-				break;
-			default:
+		case HEALTH_FACILITY:
+			Facility healthFacility = currentUser.getHealthFacility();
+			if (healthFacility != null) {
+				whereJurisdictionFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.HEALTH_FACILITY + "= '" + healthFacility + "'"));
 			}
+			break;
+
+		case COMMUNITY:
+			Community community = currentUser.getCommunity();
+			if (community != null) {
+				whereJurisdictionFilterStatements.add(
+					where.or(
+						where.raw(Case.TABLE_NAME + "." + Case.COMMUNITY + "= '" + community + "'"),
+						where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_COMMUNITY + "= '" + community.getId() + "'")));
+			}
+			break;
+
+		case POINT_OF_ENTRY:
+			PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+			if (pointOfEntry != null) {
+				whereJurisdictionFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.POINT_OF_ENTRY + "= '" + pointOfEntry.getId() + "'"));
+			}
+			break;
+		default:
 		}
 
 		if (!whereJurisdictionFilterStatements.isEmpty()) {
@@ -299,7 +287,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		return where;
 	}
 
-	public Where<Contact, Long> createJurisdictionFilterWithoutCase(Where<Contact, Long> where, ContactCriteria contactCriteria) throws SQLException {
+	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where, ContactCriteria contactCriteria) throws SQLException {
 		List<Where<Contact, Long>> whereUserFilterStatements = new ArrayList<>();
 
 		User currentUser = ConfigProvider.getUser();
@@ -316,13 +304,6 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		}
 
 		switch (jurisdictionLevel) {
-		case REGION:
-			Region region = currentUser.getRegion();
-			if (region != null) {
-				whereUserFilterStatements.add(where.eq(Contact.REGION, currentUser.getRegion().getId()));
-			}
-			break;
-
 		case DISTRICT:
 			District district = currentUser.getDistrict();
 			if (district != null) {
