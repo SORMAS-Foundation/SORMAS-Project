@@ -24,6 +24,7 @@
     <data>
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.i18n.Captions" />
         <import type="de.symeda.sormas.api.contact.ContactDto" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
 

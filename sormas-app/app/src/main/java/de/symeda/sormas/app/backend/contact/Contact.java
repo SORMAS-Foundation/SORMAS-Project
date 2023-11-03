@@ -18,16 +18,16 @@ package de.symeda.sormas.app.backend.contact;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -92,6 +92,13 @@ public class Contact extends PseudonymizableAdo {
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
+	public static final String REGION = "region_id";
+
+	public static final String DISTRICT = "district_id";
+
+	public static final String COMMUNITY = "community_id";
+
+	public static final String CASE = "case_id";
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)

@@ -762,7 +762,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		if (criteria != null) {
 			where.and();
 			if (criteria.getIncludeCasesFromOtherJurisdictions() != null) {
-				//CaseDaoHelper.createJurisdictionFilter(where, criteria);
 				createJurisdictionFilter(where, criteria);
 			}
 			createCriteriaFilter(where, criteria);
@@ -773,6 +772,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		return queryBuilder;
 	}
 
+	//TODO: add back the generics for Where
 	public Where createJurisdictionFilter(Where where, CaseCriteria caseCriteria) throws SQLException {
 		List<Where> whereUserFilterStatements = new ArrayList<>();
 
@@ -785,8 +785,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			//whoever created the case or is assigned to it is allowed to access it
-			//TODO: check this one instead of caseCriteria userFilterCriteria was checked if is null or not
-			if (caseCriteria == null || caseCriteria.getIncludeCasesFromOtherJurisdictions().equals(true)) {
+			if (caseCriteria.getIncludeCasesFromOtherJurisdictions().equals(true)) {
 				whereUserFilterStatements.add(
 					where.or(
 						where.eq(Case.REPORTING_USER, currentUser.getId()),
@@ -832,6 +831,8 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			default:
 			}
 		}
+
+		//TODO: check if we need the part from CaseServices line 1466
 
 		if (!whereUserFilterStatements.isEmpty()) {
 			where.or(whereUserFilterStatements.size());
