@@ -15661,6 +15661,10 @@
           "aggregateReportingEnabled" : {
             "type" : "boolean"
           },
+          "automaticSampleAssignmentThreshold" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "caseFollowUpDuration" : {
             "type" : "integer",
             "format" : "int32"
