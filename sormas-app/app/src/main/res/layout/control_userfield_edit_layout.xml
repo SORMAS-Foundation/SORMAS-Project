@@ -32,13 +32,13 @@
             android:orientation="horizontal"
             android:gravity="end">
 
-            <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/user_contact_info_button"
-                android:layout_width="@dimen/primaryButtonHeight"
-                android:layout_height="wrap_content"
-                app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
-                app:rounded="true"
-                app:iconStart="@drawable/ic_visibility_black_24dp" />
+            <ImageView android:id="@+id/user_contact_info_button"
+                android:layout_width="@dimen/primaryButtonMarginTop"
+                android:layout_height="@dimen/primaryButtonMarginTop"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/ic_visibility_black_24dp"
+                android:tint="@color/primaryButton"
+                android:layout_alignParentRight="true"/>
 
         </LinearLayout>
 

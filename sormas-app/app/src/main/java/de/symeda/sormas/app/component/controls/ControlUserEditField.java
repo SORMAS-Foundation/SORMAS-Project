@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.ViewHelper;
 
 public class ControlUserEditField extends ControlSpinnerField {
-
-	private ControlButton userContactButton;
 
 	public ControlUserEditField(Context context) {
 		super(context);
@@ -36,14 +35,12 @@ public class ControlUserEditField extends ControlSpinnerField {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
-		userContactButton = this.findViewById(R.id.user_contact_info_button);
-
-		userContactButton.setButtonType(ControlButtonType.LINE_PRIMARY);
+		ImageView userContactButton = this.findViewById(R.id.user_contact_info_button);
 
 		userContactButton.setOnClickListener(click -> {
 			User user = (User) getValue();
 			Resources resources = getResources();
-			ViewHelper.showUserContactInfo(user, resources);
+			ViewHelper.showUserContactInfo(user, resources, getContext());
 		});
 	}
 

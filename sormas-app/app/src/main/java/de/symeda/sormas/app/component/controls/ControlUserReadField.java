@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
@@ -15,8 +16,6 @@ import de.symeda.sormas.app.util.ViewHelper;
 @BindingMethods({
 	@BindingMethod(type = ControlUserReadField.class, attribute = "valueFormat", method = "setValueFormat") })
 public class ControlUserReadField extends ControlTextReadField {
-
-	private ControlButton userContactButton;
 
 	public ControlUserReadField(Context context) {
 		super(context);
@@ -41,14 +40,11 @@ public class ControlUserReadField extends ControlTextReadField {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
-		userContactButton = this.findViewById(R.id.user_contact_info_button);
-
-		userContactButton.setButtonType(ControlButtonType.LINE_PRIMARY);
-
+		ImageView userContactButton = this.findViewById(R.id.user_contact_info_button);
 		userContactButton.setOnClickListener(click -> {
 			User user = (User) getValue();
 			Resources resources = getResources();
-			ViewHelper.showUserContactInfo(user, resources);
+			ViewHelper.showUserContactInfo(user, resources, getContext());
 		});
 	}
 
