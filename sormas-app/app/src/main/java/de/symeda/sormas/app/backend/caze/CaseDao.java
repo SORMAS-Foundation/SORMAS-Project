@@ -779,8 +779,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
-		//whoever created the case or is assigned to it is allowed to access it
-
 		switch (jurisdictionLevel) {
 		case DISTRICT:
 			District district = currentUser.getDistrict();
