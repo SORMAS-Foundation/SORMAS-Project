@@ -245,7 +245,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LABEL_LOC);
-		addField(SampleDto.REPORTING_USER, UserField.class);
+		addField(SampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
 
 	}
 

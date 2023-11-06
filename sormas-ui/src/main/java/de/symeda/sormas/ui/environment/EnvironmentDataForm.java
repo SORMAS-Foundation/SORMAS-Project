@@ -95,7 +95,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addField(EnvironmentDto.REPORTING_USER, UserField.class);
+		addField(EnvironmentDto.REPORTING_USER, UserField.class).setReadOnly(true);
 
 		addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
 		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);

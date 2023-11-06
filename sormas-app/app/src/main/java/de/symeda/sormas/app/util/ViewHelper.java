@@ -19,6 +19,7 @@ import static de.symeda.sormas.app.backend.common.DatabaseHelper.getContext;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -33,7 +34,8 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.databinding.DialogUserfieldReadLayoutBindingImpl;
+import de.symeda.sormas.app.databinding.DialogUserContactInfoLayoutBinding;
+
 
 /**
  * Created by Orson on 30/12/2017.
@@ -83,7 +85,7 @@ public class ViewHelper {
 		}
 	}
 
-	public static void showUserContactInfo(User user, Resources resource) {
+	public static void showUserContactInfo(User user, Resources resource, Context context) {
 		StringBuilder sb = new StringBuilder();
 		String userPhone = null;
 		String userEmail = null;
@@ -112,8 +114,8 @@ public class ViewHelper {
 			}
 		}
 
-		InfoDialog userContactDialog = new InfoDialog(getContext(), R.layout.dialog_user_contact_info_layout, Html.fromHtml(sb.toString()));
-		WebView userContactView = ((DialogUserfieldReadLayoutBindingImpl) userContactDialog.getBinding()).content;
+		InfoDialog userContactDialog = new InfoDialog(context, R.layout.dialog_user_contact_info_layout, Html.fromHtml(sb.toString()));
+		WebView userContactView = ((DialogUserContactInfoLayoutBinding) userContactDialog.getBinding()).content;
 		userContactView.loadData(sb.toString(), "text/html", "utf-8");
 		userContactDialog.show();
 	}

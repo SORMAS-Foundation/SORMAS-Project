@@ -53,7 +53,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -251,7 +250,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			true,
 			true);
 
-		addField(EnvironmentSampleDto.REPORTING_USER, UserField.class);
+		addField(EnvironmentSampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
 
 		addField(EnvironmentSampleDto.SPECIMEN_CONDITION);
 
@@ -271,7 +270,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
 		boolean canEditDispatchField =
-				isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() >= JurisdictionLevel.REGION.getOrder()));
+			isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() >= JurisdictionLevel.REGION.getOrder()));
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {
@@ -321,15 +320,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	}
 
 	protected void defaultValueChangeListener(EnvironmentSampleDto sample) {
-		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))
-			.append(" ")
-			.append(DateFormatHelper.formatLocalDateTime(sample.getReportDate()));
-		UserReferenceDto reportingUser = sample.getReportingUser();
-		if (reportingUser != null) {
-			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ");
-		}
-
-		Label reportInfoLabel = new Label(reportInfoText.toString());
+		String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " " + DateFormatHelper.formatLocalDateTime(sample.getReportDate());
+		Label reportInfoLabel = new Label(reportInfoText);
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
 	}
