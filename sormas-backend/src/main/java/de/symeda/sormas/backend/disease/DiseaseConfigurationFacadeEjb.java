@@ -67,6 +67,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
+	private Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
 
 	@Override
 	@PermitAll
@@ -216,6 +217,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
+		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 
 		return target;
 	}
@@ -228,6 +230,11 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public int getEventParticipantFollowUpDuration(Disease disease) {
 		return eventParticipantFollowUpDurations.get(disease);
+	}
+
+	@Override
+	public Integer getAutomaticSampleAssignmentThreshold(Disease disease) {
+		return automaticSampleAssignmentThresholds.get(disease);
 	}
 
 	@Override
@@ -278,6 +285,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
+		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 
 		return target;
 	}
@@ -296,6 +304,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		extendedClassificationMultiDiseases.clear();
 		caseFollowUpDurations.clear();
 		eventParticipantFollowUpDurations.clear();
+		automaticSampleAssignmentThresholds.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
 			Disease disease = configuration.getDisease();
@@ -347,6 +356,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				eventParticipantFollowUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {
 				eventParticipantFollowUpDurations.put(disease, followUpDurations.get(disease));
+			}
+			if (configuration.getAutomaticSampleAssignmentThreshold() != null) {
+				automaticSampleAssignmentThresholds.put(disease, configuration.getAutomaticSampleAssignmentThreshold());
 			}
 		}
 	}

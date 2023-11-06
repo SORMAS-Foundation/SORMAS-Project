@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,9 +49,17 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -341,6 +352,131 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		return labMessage;
 	}
 
+	@Test
+	public void testSaveAndProcess() {
+
+		ExternalMessageDto labMessage = createLabMessage(m -> m.setAutomaticProcessingPossible(true));
+		ExternalMessageDto savedLabMessage = getExternalMessageFacade().saveAndProcessLabmessage(labMessage);
+
+		assertThat(savedLabMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		ExternalMessageDto externMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		assertThat(externMessage, is(notNullValue()));
+		assertThat(externMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+
+		// assert that a case has been created
+		List<String> caseUuids = getCaseFacade().getAllUuids();
+		assertThat(caseUuids, hasSize(1));
+		// a sample has been created for the sample report
+		SampleReferenceDto sample = getSampleReportFacade().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample();
+		assertThat(sample, is(notNullValue()));
+		// the associated case of sample is the sample resulted by processing the sample report
+		assertThat(getSampleFacade().getByCaseUuids(caseUuids).get(0).toReference(), is(sample));
+	}
+
+	@Test
+	public void testOnlyLabMessageSavedOnExceptionWhileProcessing() {
+		ExternalMessageDto labMessageWithNoLab = createLabMessage(m -> {
+			m.setAutomaticProcessingPossible(true);
+			m.setReporterExternalIds(null);
+		});
+
+		// error when saving sample
+		getExternalMessageFacade().saveAndProcessLabmessage(labMessageWithNoLab);
+		assertThat(labMessageWithNoLab.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+		assertThat(getPersonFacade().getAllUuids(), hasSize(0));
+		assertThat(getCaseFacade().getAllUuids(), hasSize(0));
+		assertThat(getSampleFacade().getAllActiveUuids(), hasSize(0));
+		// the lab message has been saved as unprocessed
+		ExternalMessageDto savedLabMessageWithNoLab = getExternalMessageFacade().getByUuid(labMessageWithNoLab.getUuid());
+		assertThat(savedLabMessageWithNoLab, is(notNullValue()));
+		assertThat(savedLabMessageWithNoLab.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+
+		ExternalMessageDto labMessageWithIncompleteTest = createLabMessage(m -> {
+			m.setAutomaticProcessingPossible(true);
+
+			TestReportDto testReport = TestReportDto.build();
+			testReport.setTestResult(null);
+			testReport.setTestDateTime(new Date());
+
+			m.getSampleReports().get(0).getTestReports().add(testReport);
+		});
+		labMessageWithIncompleteTest.getSampleReports().get(0).getTestReports().get(0).setTestType(null);
+
+		// error when saving last pathogen test
+		getExternalMessageFacade().saveAndProcessLabmessage(labMessageWithIncompleteTest);
+
+		assertThat(labMessageWithIncompleteTest.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+		assertThat(getPersonFacade().getAllUuids(), hasSize(0));
+		assertThat(getCaseFacade().getAllUuids(), hasSize(0));
+		assertThat(getSampleFacade().getAllActiveUuids(), hasSize(0));
+		assertThat(getPathogenTestFacade().getAllActiveUuids(), hasSize(0));
+
+		// the lab message has been saved as unprocessed
+		ExternalMessageDto savedLabMessageWithIncompleteTest = getExternalMessageFacade().getByUuid(labMessageWithIncompleteTest.getUuid());
+		assertThat(savedLabMessageWithNoLab, is(notNullValue()));
+		assertThat(savedLabMessageWithIncompleteTest.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+	}
+
+	@Test
+	public void testOnlyLabMessageSavedOnCanceledProcessing() {
+		ExternalMessageDto labMessage = createLabMessage((m) -> m.setAutomaticProcessingPossible(true));
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, DefaultUserRole.SURVEILLANCE_OFFICER);
+		PersonDto person = creator.createPerson(labMessage.getPersonFirstName(), labMessage.getPersonLastName(), labMessage.getPersonSex(), p -> {
+			p.setNationalHealthId(labMessage.getPersonNationalHealthId());
+		});
+		creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDisease(labMessage.getDisease()));
+
+		// cancelled processing
+		getExternalMessageFacade().saveAndProcessLabmessage(labMessage);
+		assertThat(labMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+		assertThat(getPersonFacade().getAllUuids(), hasSize(1));
+		assertThat(getCaseFacade().getAllUuids(), hasSize(1));
+		assertThat(getSampleFacade().getAllActiveUuids(), hasSize(0));
+		// the lab message has been saved as unprocessed
+		ExternalMessageDto savedLabMessageWithNoLab = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		assertThat(savedLabMessageWithNoLab, is(notNullValue()));
+		assertThat(savedLabMessageWithNoLab.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+	}
+
+	private ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> customConfig) {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		FacilityDto lab = creator.createFacility("Lab", rdcf.region, rdcf.district, f -> {
+			f.setType(FacilityType.LABORATORY);
+			f.setExternalID("test-facility-ext-id-1");
+		});
+
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
+		labMessage.setType(ExternalMessageType.LAB_MESSAGE);
+		labMessage.setMessageDateTime(new Date());
+		labMessage.setDisease(Disease.CORONAVIRUS);
+		labMessage.setPersonFirstName("John");
+		labMessage.setPersonLastName("Doe");
+		labMessage.setPersonSex(Sex.MALE);
+		labMessage.setPersonNationalHealthId("1234567890");
+		labMessage.setPersonFacility(rdcf.facility);
+		labMessage.setReporterExternalIds(Collections.singletonList(lab.getExternalID()));
+
+		SampleReportDto sampleReport = SampleReportDto.build();
+		sampleReport.setSampleDateTime(new Date());
+		sampleReport.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+        sampleReport.setSampleMaterial(SampleMaterial.CRUST);
+
+		TestReportDto testReport = TestReportDto.build();
+		testReport.setTestResult(PathogenTestResultType.PENDING);
+		testReport.setTestDateTime(new Date());
+        testReport.setTestType(PathogenTestType.PCR_RT_PCR);
+
+		sampleReport.setTestReports(Collections.singletonList(testReport));
+		labMessage.setSampleReports(Collections.singletonList(sampleReport));
+
+		if (customConfig != null) {
+			customConfig.accept(labMessage);
+		}
+
+		return labMessage;
+	}
 	//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
 //	This test should be enabled once there is a new test framework in use.
 //	@Test

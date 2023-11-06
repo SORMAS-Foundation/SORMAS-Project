@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.processing.flow;
+package de.symeda.sormas.api.externalmessage.processing.flow;
 
 import java.util.concurrent.CompletionStage;
 
@@ -34,13 +34,20 @@ public class FlowThen<T> {
 		this.currentResult = currentResult;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <R> FlowThen<R> then(FlowAction<T, R> action) {
+		return then(action, null);
+	}
+
+	public <R> FlowThen<R> then(FlowAction<T, R> action, FlowAction<T, R> cancelAction) {
+		//noinspection unchecked
+		FlowAction<T, R> cancelActionNullSafe =
+			cancelAction != null ? cancelAction : r -> ProcessingResult.of(r.getStatus(), (R) r.getData()).asCompletedFuture();
 
 		return new FlowThen<>(currentResult.thenCompose(r -> {
 			ProcessingResultStatus status = r.getStatus();
-			if (status.isCanceled() || status.isDone()) {
-				//noinspection unchecked
+			if (status.isCanceled()) {
+				return cancelActionNullSafe.apply(r);
+			} else if (status.isDone()) {
 				return ProcessingResult.of(status, (R) r.getData()).asCompletedFuture();
 			}
 
@@ -48,8 +55,8 @@ public class FlowThen<T> {
 		}));
 	}
 
-	public <R> FlowSwitch<T, R> thenSwitch() {
-		return new FlowSwitch<>(currentResult);
+	public <R, O> FlowSwitch<T, R, O> thenSwitch(FlowAction<T, O> operation) {
+		return new FlowSwitch<>(currentResult, operation);
 	}
 
 	public CompletionStage<ProcessingResult<T>> getResult() {

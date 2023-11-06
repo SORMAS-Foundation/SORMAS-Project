@@ -52,6 +52,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -265,10 +266,12 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 
 	private void disableFieldsBasedOnRights(EnvironmentSampleDto sample) {
 		UserProvider currentUserProvider = UserProvider.getCurrent();
+		JurisdictionLevel jurisdictionLevel = currentUserProvider.getJurisdictionLevel();
 		boolean hasEditReceivalRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
-		boolean canEditDispatchField = isCreate || (isOwner && hasEditDispatchRight);
+		boolean canEditDispatchField =
+				isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() >= JurisdictionLevel.REGION.getOrder()));
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {
