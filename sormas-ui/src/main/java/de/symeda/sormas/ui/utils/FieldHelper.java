@@ -628,14 +628,14 @@ public final class FieldHelper {
 	}
 
 	public static void updateItems(UserField select, List<UserReferenceDto> items) {
-		UserReferenceDto value = select.getValue();
+		UserReferenceDto userReference = select.getValue();
 		boolean readOnly = select.isReadOnly();
 		select.setReadOnly(false);
 		select.removeAllItems();
 		if (items != null) {
 			select.addItems(items);
 		}
-		select.setValue(value);
+		select.setValue(userReference);
 		select.setReadOnly(readOnly);
 	}
 

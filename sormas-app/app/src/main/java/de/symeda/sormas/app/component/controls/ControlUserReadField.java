@@ -1,18 +1,16 @@
 package de.symeda.sormas.app.component.controls;
 
 import android.content.Context;
-import android.text.Html;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.webkit.WebView;
 
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.databinding.DialogUserfieldReadLayoutBindingImpl;
+import de.symeda.sormas.app.util.ViewHelper;
 
 @BindingMethods({
 	@BindingMethod(type = ControlUserReadField.class, attribute = "valueFormat", method = "setValueFormat") })
@@ -48,39 +46,9 @@ public class ControlUserReadField extends ControlTextReadField {
 		userContactButton.setButtonType(ControlButtonType.LINE_PRIMARY);
 
 		userContactButton.setOnClickListener(click -> {
-			User value = (User) getValue();
-			StringBuilder sb = new StringBuilder();
-			String userPhone = null;
-			String userEmail = null;
-			if (value != null) {
-				userPhone = value.getPhone();
-				userEmail = value.getUserEmail();
-			}
-
-			sb.append("<b><h2>" + getResources().getString(R.string.heading_contact_information) + "</h2></b>");
-
-			if (value == null) {
-				sb.append(getResources().getString(R.string.message_no_user_selected));
-			} else {
-				sb.append("<b>").append(getResources().getString(R.string.caption_phone_number)).append("</b>");
-				if (userPhone == null || userPhone.isEmpty()) {
-					sb.append(getResources().getString(R.string.message_not_specified));
-				} else {
-					sb.append(userPhone);
-				}
-				sb.append("<br>");
-				sb.append("<b>").append(getResources().getString(R.string.caption_email)).append("</b>");
-				if (userEmail == null || userEmail.isEmpty()) {
-					sb.append(getResources().getString(R.string.message_not_specified));
-				} else {
-					sb.append(userEmail);
-				}
-			}
-
-			InfoDialog userContactDialog = new InfoDialog(getContext(), R.layout.dialog_userfield_read_layout, Html.fromHtml(sb.toString()));
-			WebView userContactView = ((DialogUserfieldReadLayoutBindingImpl) userContactDialog.getBinding()).content;
-			userContactView.loadData(sb.toString(), "text/html", "utf-8");
-			userContactDialog.show();
+			User user = (User) getValue();
+			Resources resources = getResources();
+			ViewHelper.showUserContactInfo(user, resources);
 		});
 	}
 
