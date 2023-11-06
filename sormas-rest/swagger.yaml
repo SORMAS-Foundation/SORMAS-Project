@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.90.0-SNAPSHOT
+  version: 1.91.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -10908,6 +10908,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
     ClassificationPathogenTestNegativeResultCriteriaDto:
       type: object
@@ -10948,6 +10949,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
           sampleTestTypes:
             type: array
@@ -10974,6 +10976,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
             writeOnly: true
     ClassificationPersonAgeBetweenYearsCriteriaDto:
@@ -11206,6 +11209,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         district:
           $ref: '#/components/schemas/DistrictReferenceDto'
         externalID:
@@ -13709,6 +13714,9 @@ components:
             type: string
         aggregateReportingEnabled:
           type: boolean
+        automaticSampleAssignmentThreshold:
+          type: integer
+          format: int32
         caseFollowUpDuration:
           type: integer
           format: int32
@@ -13846,6 +13854,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
           maxLength: 255
@@ -13877,6 +13887,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
         externalID:
@@ -19815,6 +19827,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         testTypeText:
           type: string
@@ -20998,6 +21011,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
           maxLength: 255
@@ -21031,6 +21046,8 @@ components:
         creationDate:
           type: string
           format: date-time
+        defaultInfrastructure:
+          type: boolean
         epidCode:
           type: string
         externalID:
@@ -21357,6 +21374,7 @@ components:
             - CQ_VALUE_DETECTION
             - SEQUENCING
             - DNA_MICROARRAY
+            - TMA
             - OTHER
           uniqueItems: true
         sampleDateTime:
@@ -21667,6 +21685,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         uuid:
           type: string
@@ -24421,6 +24440,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         testedDiseaseVariant:
           type: string

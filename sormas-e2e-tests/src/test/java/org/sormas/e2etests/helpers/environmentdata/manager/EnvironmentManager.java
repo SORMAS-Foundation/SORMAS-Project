@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +90,36 @@ public class EnvironmentManager {
                         + "\n"
                         + "Available regions: "
                         + regions))
+        .getUuid();
+  }
+
+  @SneakyThrows
+  public String getDistrictUUIDOfSpecificRegion(String regionName, String districtName) {
+    response =
+        restAssuredClient.sendRequestAndGetResponse(
+            Request.builder().method(Method.GET).path(DISTRICTS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
+    objectMapper = getNewObjMapper();
+    List<AllDistrictsData> allDistrictsData =
+        List.of(
+            objectMapper.readValue(response.getBody().asInputStream(), AllDistrictsData[].class));
+
+    List<AllDistrictsData> filteredRegionList =
+        allDistrictsData.stream()
+            .filter(district -> district.getRegion().getCaption().equalsIgnoreCase(regionName))
+            .collect(Collectors.toList());
+
+    return filteredRegionList.stream()
+        .filter(district -> district.getName().equalsIgnoreCase(districtName))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new Exception(
+                    "Unable to find region: "
+                        + regionName
+                        + "\n"
+                        + "Available regions: "
+                        + allDistrictsData))
         .getUuid();
   }
 

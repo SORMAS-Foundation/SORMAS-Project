@@ -76,6 +76,7 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 		}
 		target.setDistrict(lastDistrict);
 		target.setArchived(source.isArchived());
+		target.setDefaultInfrastructure(source.isDefaultInfrastructure());
 	}
 
 	@Override

@@ -2704,32 +2704,29 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (casesToBeDeleted != null) {
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
 
-					try {
+				try {
 					if (!caseToBeDeleted.isDeleted()) {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SUCCESS));
 					} else {
 						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
 					}
-					} catch (ExternalSurveillanceToolRuntimeException e) {
-						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
-						logger.error(
-							"The case with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
-							caseToBeDeleted.getUuid(),
-							e);
-					} catch (SormasToSormasRuntimeException e) {
-						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
-						logger.error(
-							"The case with uuid {} could not be deleted due to a SormasToSormasRuntimeException",
-							caseToBeDeleted.getUuid(),
-							e);
-					} catch (AccessDeniedException e) {
-						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
-						logger.error("The case with uuid {} could not be deleted due to a AccessDeniedException", caseToBeDeleted.getUuid(), e);
-					} catch (Exception e) {
-						processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
-						logger.error("The case with uuid {} could not be deleted due to an Exception", caseToBeDeleted.getUuid(), e);
-					}
+				} catch (ExternalSurveillanceToolRuntimeException e) {
+					processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.EXTERNAL_SURVEILLANCE_FAILURE));
+					logger.error(
+						"The case with uuid {} could not be deleted due to a ExternalSurveillanceToolRuntimeException",
+						caseToBeDeleted.getUuid(),
+						e);
+				} catch (SormasToSormasRuntimeException e) {
+					processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.SORMAS_TO_SORMAS_FAILURE));
+					logger.error("The case with uuid {} could not be deleted due to a SormasToSormasRuntimeException", caseToBeDeleted.getUuid(), e);
+				} catch (AccessDeniedException e) {
+					processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.ACCESS_DENIED_FAILURE));
+					logger.error("The case with uuid {} could not be deleted due to a AccessDeniedException", caseToBeDeleted.getUuid(), e);
+				} catch (Exception e) {
+					processedCases.add(new ProcessedEntity(caseToBeDeleted.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+					logger.error("The case with uuid {} could not be deleted due to an Exception", caseToBeDeleted.getUuid(), e);
+				}
 			});
 		}
 

@@ -89,7 +89,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	}
 
 	private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {
-		contentBinding.createCase.setOnClickListener(v -> CaseNewActivity.startActivityFromContact(getContext(), record.getUuid()));
+		contentBinding.createCase.setOnClickListener(v -> CaseNewActivity.startActivityFromContact(getContext(), record));
 
 		contentBinding.openSourceCase.setOnClickListener(v -> CaseReadActivity.startActivity(getActivity(), sourceCase.getUuid(), true));
 
@@ -115,7 +115,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
 		}
 
-		if (record.getContactClassification() != ContactClassification.CONFIRMED) {
+		if (record.getContactClassification() == ContactClassification.NO_CONTACT) {
 			contentBinding.createCase.setVisibility(GONE);
 		}
 

@@ -165,6 +165,43 @@ public class CreateNewUserSteps implements En {
         });
 
     When(
+        "I create new Surveillance Officer with region set to ([^\"]*)",
+        (String region) -> {
+          user = userService.buildGeneratedUserWithRole("Surveillance Officer");
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage("English");
+          selectCountry(user.getCountry());
+          fillUserFieldsWithSpecificRegion(region);
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole("Surveillance Officer");
+          selectSecondRegion(region);
+          selectSecondDistrict("SK Berlin Charlottenburg-Wilmersdorf");
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
+          closeNewPasswordPopUp();
+        });
+
+    When(
         "As a new created user with limited disease view I log in",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
@@ -617,6 +654,10 @@ public class CreateNewUserSteps implements En {
     webDriverHelpers.selectFromCombobox(SECOND_REGION_COMBOBOX, region);
   }
 
+  private void selectSecondDistrict(String region) {
+    webDriverHelpers.selectFromCombobox(SECOND_DISTRICT_COMBOBOX, region);
+  }
+
   private void selectSurveillanceRegion(String surveillanceRegion) {
     webDriverHelpers.selectFromCombobox(SURVEILLANCE_REGION, surveillanceRegion);
   }
@@ -777,5 +818,30 @@ public class CreateNewUserSteps implements En {
   private void selectFirstElementFromList() {
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
     webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
+  }
+
+  private void fillUserFieldsWithSpecificRegion(String region) {
+    switch (region) {
+      case "Bayern":
+        selectRegion("Bayern");
+        selectDistrict("LK Ansbach");
+        selectCommunity("Aurach");
+        break;
+      case "Saarland":
+        selectRegion("Saarland");
+        selectDistrict("LK Saarlouis");
+        selectCommunity("Lebach");
+        break;
+      case "Berlin":
+        selectRegion("Berlin");
+        selectDistrict("SK Berlin Charlottenburg-Wilmersdorf");
+        selectCommunity("Charlottenburg-Nord");
+        break;
+      case "Baden-W\u00FCrttemberg":
+        selectRegion("Baden-W\u00FCrttemberg");
+        selectDistrict("LK Alb-Donau-Kreis");
+        selectCommunity("Allmendingen");
+        break;
+    }
   }
 }

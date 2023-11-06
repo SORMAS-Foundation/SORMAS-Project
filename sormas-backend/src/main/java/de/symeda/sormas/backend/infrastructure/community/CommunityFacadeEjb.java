@@ -37,7 +37,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.DefaultInfrastructureCache;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
@@ -51,7 +53,11 @@ public class CommunityFacadeEjb
 	implements CommunityFacade {
 
 	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
 	private DistrictService districtService;
+	@EJB
+	private DefaultInfrastructureCache defaultInfrastructureCache;
 
 	public CommunityFacadeEjb() {
 	}
@@ -145,9 +151,8 @@ public class CommunityFacadeEjb
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
-		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -172,10 +177,25 @@ public class CommunityFacadeEjb
 		target.setName(source.getName());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
+
 		return target;
+	}
+
+	@Override
+	protected boolean checkDefaultEligible(CommunityDto dto) {
+		return dto.getDistrict().equals(districtFacade.getDefaultInfrastructureReference());
+	}
+
+	@Override
+	protected Community getDefaultInfrastructure() {
+		return defaultInfrastructureCache.getDefaultCommunity();
+	}
+
+	@Override
+	protected void resetDefaultInfrastructure() {
+		defaultInfrastructureCache.resetDefaultCommunity();
 	}
 
 	@LocalBean

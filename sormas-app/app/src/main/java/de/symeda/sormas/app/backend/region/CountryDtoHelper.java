@@ -24,7 +24,7 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 	}
 
 	@Override
-	protected Call<List<CountryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<CountryDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getCountryFacade().pullAllSince(since);
 	}
 
@@ -51,12 +51,12 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 		throw new UnsupportedOperationException("Entity is infrastructure");
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 
-    public static CountryReferenceDto toReferenceDto(Country ado) {
+	public static CountryReferenceDto toReferenceDto(Country ado) {
 		if (ado == null) {
 			return null;
 		}

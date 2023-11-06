@@ -1645,7 +1645,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public PersonReferenceDto toRefDto(Person person) {
+	protected PersonReferenceDto toRefDto(Person person) {
 		return toReferenceDto(person);
 	}
 
@@ -2051,6 +2051,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Override
 	public EditPermissionType getEditPermissionType(String uuid) {
 		return isEditAllowed(uuid) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
+	}
+
+	public List<PersonDto> getByNationalHealthId(String nationalHealthId) {
+		return service.getByPredicate((cb, root, cq) -> cb.equal(root.get(Person.NATIONAL_HEALTH_ID), nationalHealthId))
+			.stream()
+			.map(this::toPseudonymizedDto)
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean

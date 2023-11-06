@@ -14,10 +14,13 @@
  */
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
 import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
@@ -25,6 +28,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -60,6 +64,10 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			RegionIndexDto.EXTERNAL_ID,
 			RegionIndexDto.POPULATION,
 			RegionIndexDto.GROWTH_RATE);
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			columns = ArrayUtils.add(columns, RegionIndexDto.DEFAULT_INFRASTRUCTURE);
+		}
 		setColumns(columns);
 
 		getColumn(RegionIndexDto.POPULATION).setSortable(false);
@@ -72,6 +80,9 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid()));
 		}
+
+		Optional.ofNullable(((Column<RegionIndexDto, Boolean>) getColumn(RegionIndexDto.DEFAULT_INFRASTRUCTURE)))
+			.ifPresent(c -> c.setRenderer(new BooleanRenderer()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(RegionIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));

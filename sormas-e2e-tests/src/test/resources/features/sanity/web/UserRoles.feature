@@ -127,7 +127,8 @@ Feature: User roles checks
     And I click on User roles tab from User Management Page
     And I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page
 
-  @#10421 @env_main
+  #@#10421 @env_main
+  @tmsLink=HSP-6300mk @env_main
   Scenario: Validate newly created User Role cannot be deleted if assigned towards an user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -155,3 +156,48 @@ Feature: User roles checks
     And I click on the Users from navbar
     And I click on User roles tab from User Management Page
     And Validate user can see User roles tab from User Management Page
+
+  @tmsLink=HSP-6300 @env_main
+  Scenario: Check Delete Case right working without Edit rights
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "NewTestUser" role and change his role
+    And I click on User roles tab from User Management Page
+    And I check if the "NewTestUser" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "NewTestUser" on Create New User Role form
+    And I click SAVE button on User Role Page
+    Then I click checkbox to uncheck "Edit existing cases"
+    Then I click checkbox to uncheck "Edit case investigation status"
+    Then I click checkbox to uncheck "Edit case disease"
+    Then I click checkbox to uncheck "Transfer cases to another region/district/facility"
+    Then I click checkbox to uncheck "Edit case classification and outcome"
+    Then I click checkbox to uncheck "Edit case epid number"
+    Then I click checkbox to uncheck "Refer case from point of entry"
+    Then I click checkbox to uncheck "Can be responsible for a case"
+    Then I click checkbox to uncheck "Work with message"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    Then I click on User Management tab from User Roles Page
+    And I click on the NEW USER button
+    And I create new "NewTestUser" with english language for test
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    And I click on the Cases button from navbar
+    And I open the first Case result in Case Directory
+    Then I get the case person UUID displayed on Edit case page
+    Then I click on Delete button from case
+    And I click on Yes option in Confirm deletion popup
+    When I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    And I set the Relevance Status Filter to "Deleted cases" on Case Directory page
+    And I search for the last "deleted" case on Case directory page
+    Then I open the first Case result in Case Directory
+    And Total number of read only fields should be 14
+    Then I check that "Discard" button is readonly on Edit case page
+    And I check that "Save" button is readonly on Edit case page
+    Then I click on Restore button from case
+    And I set the Relevance Status Filter to "Active cases" on Case Directory page
+    And I search for the last "restored" case on Case directory page
+    And I check that number of displayed cases results is 1

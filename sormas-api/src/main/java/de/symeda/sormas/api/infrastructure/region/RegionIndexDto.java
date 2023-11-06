@@ -36,6 +36,7 @@ public class RegionIndexDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
+	public static final String DEFAULT_INFRASTRUCTURE = "defaultInfrastructure";
 
 	private String name;
 	private String epidCode;
@@ -44,6 +45,7 @@ public class RegionIndexDto extends EntityDto {
 	private String externalID;
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
+	private boolean defaultInfrastructure;
 
 	public String getName() {
 		return name;
@@ -99,6 +101,14 @@ public class RegionIndexDto extends EntityDto {
 
 	public void setCountry(CountryReferenceDto country) {
 		this.country = country;
+	}
+
+	public boolean isDefaultInfrastructure() {
+		return defaultInfrastructure;
+	}
+
+	public void setDefaultInfrastructure(boolean defaultInfrastructure) {
+		this.defaultInfrastructure = defaultInfrastructure;
 	}
 
 	public RegionReferenceDto toReference() {

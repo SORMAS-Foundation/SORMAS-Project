@@ -34,6 +34,40 @@ public class UserRolesPage {
   public static By SAVE_BUTTON = By.cssSelector("#commit");
   public static By DISCARD_BUTTON = By.cssSelector("#discard");
   public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");
+  public static By EDIT_EXISTING_CASES_CHECKBOX = By.xpath("//label[text()='Edit existing cases']");
+  public static By EDIT_EXISTING_CASES_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Edit existing cases']/preceding-sibling::input");
+  public static By EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX =
+      By.xpath("//label[text()='Edit case investigation status']");
+  public static By EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Edit case investigation status']/preceding-sibling::input");
+  public static By EDIT_CASE_DISEASE_CHECKBOX = By.xpath("//label[text()='Edit case disease']");
+  public static By EDIT_CASE_DISEASE_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Edit case disease']/preceding-sibling::input");
+  public static By TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX =
+      By.xpath("//label[text()='Transfer cases to another region/district/facility']");
+  public static By TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX_VALUE =
+      By.xpath(
+          "//label[text()='Transfer cases to another region/district/facility']/preceding-sibling::input");
+  public static By EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX =
+      By.xpath("//label[text()='Edit case classification and outcome']");
+  public static By EDIT_CASE_CLASSIFICATION_AND_OUTCOME_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Edit case classification and outcome']/preceding-sibling::input");
+  public static By EDIT_CASE_EPID_NUMBER_CHECKBOX =
+      By.xpath("//label[text()='Edit case epid number']");
+  public static By EDIT_CASE_EPID_NUMBER_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Edit case epid number']/preceding-sibling::input");
+  public static By REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX =
+      By.xpath("//label[text()='Refer case from point of entry']");
+  public static By REFER_CASE_FROM_POINT_OF_ENTRY_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Refer case from point of entry']/preceding-sibling::input");
+  public static By CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX =
+      By.xpath("//label[text()='Can be responsible for a case']");
+  public static By CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Can be responsible for a case']/preceding-sibling::input");
+  public static By WORK_WITH_MESSAGE_CHECKBOX = By.xpath("//label[text()='Work with messages']");
+  public static By WORK_WITH_MESSAGE_CHECKBOX_VALUE =
+      By.xpath("//label[text()='Work with messages']/preceding-sibling::input");
 
   public static By getUserRoleCaptionByText(String caption) {
     return By.xpath(String.format("//td[contains(text(), '%s')]", caption));

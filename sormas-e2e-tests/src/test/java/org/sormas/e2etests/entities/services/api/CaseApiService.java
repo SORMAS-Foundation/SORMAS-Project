@@ -166,6 +166,122 @@ public class CaseApiService {
   }
 
   @SneakyThrows
+  public Case buildGeneratedCaseForBerlinRegion(Person person) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+    return Case.builder()
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .pseudonymized(false)
+        .uuid(generateShortUUID())
+        .reportDate(new Date())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
+        .district(
+            District.builder()
+                .caption(DistrictsValues.SKBerlinCharlottenburgWilmersdorf.getName())
+                .uuid(
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.SKBerlinCharlottenburgWilmersdorf.getName()))
+                .build())
+        .region(
+            Region.builder()
+                .caption(RegionsValues.Berlin.getName())
+                .uuid(environmentManager.getRegionUUID(RegionsValues.Berlin.getName()))
+                .build())
+        .responsibleDistrict(
+            District.builder()
+                .uuid(
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.SKBerlinCharlottenburgWilmersdorf.getName()))
+                .build())
+        .responsibleRegion(
+            Region.builder()
+                .uuid(environmentManager.getRegionUUID(RegionsValues.Berlin.getName()))
+                .build())
+        .community(
+            Community.builder()
+                .uuid(
+                    environmentManager.getCommunityUUID(
+                        CommunityValues.CharlottenburgNord.getName()))
+                .build())
+        .followUpStatus("FOLLOW_UP")
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
+        .caseClassification("NOT_CLASSIFIED")
+        .investigationStatus("PENDING")
+        .outcome("NO_OUTCOME")
+        .epiData(EpiData.builder().uuid(generateShortUUID()).build())
+        .hospitalization(Hospitalization.builder().uuid(generateShortUUID()).build())
+        .symptoms(
+            Symptoms.builder()
+                .uuid(generateShortUUID())
+                .pseudonymized(true)
+                .symptomatic(false)
+                .build())
+        .therapy(Therapy.builder().uuid(generateShortUUID()).build())
+        .healthFacility(
+            HealthFacility.builder()
+                .uuid(
+                    environmentManager.getHealthFacilityUUID(
+                        RegionsValues.Berlin.getName(),
+                        HealthFacilityValues.OtherFacility.getName()))
+                .build())
+        .maternalHistory(
+            MaternalHistory.builder().uuid(generateShortUUID()).pseudonymized(true).build())
+        .portHealthInfo(PortHealthInfo.builder().uuid(generateShortUUID()).build())
+        .clinicalCourse(ClinicalCourse.builder().uuid(generateShortUUID()).build())
+        .healthConditions(HealthConditions.builder().uuid(generateShortUUID()).build())
+        .surveillanceOfficer(
+            SurveillanceOfficer.builder()
+                .uuid(
+                    runningConfiguration
+                        .getUserByRole(locale, UserRoles.SurveillanceOfficer.getRole())
+                        .getUuid())
+                .build())
+        .healthFacilityDetails("Details")
+        .caseOrigin("IN_COUNTRY")
+        .facilityType("HOSPITAL")
+        .pointOfEntry(null)
+        .sharedToCountry(false)
+        .nosocomialOutbreak(false)
+        .quarantineOrderedVerbally(false)
+        .quarantineOrderedOfficialDocument(false)
+        .quarantineExtended(false)
+        .quarantineReduced(false)
+        .quarantineOfficialOrderSent(false)
+        .followUpUntil(new Date())
+        .overwriteFollowUpUntil(false)
+        .ownershipHandedOver(false)
+        .notACaseReasonNegativeTest(false)
+        .notACaseReasonPhysicianInformation(false)
+        .notACaseReasonDifferentPathogen(false)
+        .notACaseReasonOther(false)
+        .dontShareWithReportingTool(false)
+        .caseReferenceDefinition("NOT_FULFILLED")
+        .vaccinationStatus("VACCINATED")
+        .quarantine("HOME")
+        .reInfection("YES")
+        .reinfectionStatus("CONFIRMED")
+        .reinfectionDetails(
+            new LinkedHashMap<String, Boolean>() {
+              {
+                put("GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN", true);
+                put("GENOME_SEQUENCES_NOT_MATCHING", true);
+                put("GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN", true);
+              }
+            })
+        .build();
+  }
+
+  @SneakyThrows
   public Case buildGeneratedCaseWithCreationDate(Person person, Integer days) {
     EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Case.builder()

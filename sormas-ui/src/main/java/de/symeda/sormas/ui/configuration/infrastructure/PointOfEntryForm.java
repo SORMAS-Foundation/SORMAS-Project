@@ -25,7 +25,7 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 		+ fluidRowLocs(PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT)
 		+ fluidRowLocs(PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID)
-		+ fluidRowLocs(PointOfEntryDto.ACTIVE, "");
+		+ fluidRowLocs(PointOfEntryDto.ACTIVE);
 
 	private boolean create;
 
@@ -56,10 +56,10 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
 		tfLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLatitude.getCaption()));
-        tfLongitude.setConverter(new StringToAngularLocationConverter());
+		tfLongitude.setConverter(new StringToAngularLocationConverter());
 		tfLongitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLongitude.getCaption()));
 
-        cbRegion.addValueChangeListener(e -> {
+		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
 				.updateItems(cbDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);

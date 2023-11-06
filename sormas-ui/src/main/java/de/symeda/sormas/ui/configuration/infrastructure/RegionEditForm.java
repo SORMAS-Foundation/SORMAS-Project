@@ -23,10 +23,14 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -39,10 +43,11 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) +
-					fluidRowLocs(RegionDto.COUNTRY) +
+			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) + 
+					fluidRowLocs(RegionDto.COUNTRY) + 
 					fluidRowLocs(RegionDto.AREA) +
-					fluidRowLocs(RegionDto.EXTERNAL_ID);
+					fluidRowLocs(RegionDto.EXTERNAL_ID) +
+					fluidRowLocs(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 	//@formatter:on
 
@@ -78,6 +83,12 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
 		ComboBox area = addInfrastructureField(RegionDto.AREA);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
+		}
+
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));

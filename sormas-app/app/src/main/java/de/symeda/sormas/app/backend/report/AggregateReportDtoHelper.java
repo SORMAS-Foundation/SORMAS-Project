@@ -8,8 +8,8 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
@@ -33,7 +33,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 	}
 
 	@Override
-	protected Call<List<AggregateReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<AggregateReportDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		return RetroProvider.getAggregateReportFacade().pullAllSince(since);
 	}
 
@@ -109,8 +109,8 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 		target.setAgeGroup(source.getAgeGroup());
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return AggregateReportDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return AggregateReportDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+	}
 }
