@@ -383,3 +383,24 @@ Feature: Sharing contacts between environments tests
     Then I back to tab number 2
     Then I click on "accept" shared contact button with copied contact description
     Then I check that entity not found error popup is displayed in Share Directory page
+
+  @tmsLink=HSP-6346 @env_s2s_1
+  Scenario: S2S - Share with Handover a resulting Case that was created from Contact with Positive Pathogen test
+    Then I log in as a S2S
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
+    And I save the created sample with pathogen test
+    And I confirm when a pop-up appears asking user about creating a Case from it in DE
+    Then I fill a new case form for DE version with mandatory data forced by positive sample with "Berlin" as a region and "SK Berlin Mitte" as a district
+    And I save a new case
+    And I collect uuid of the case
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
