@@ -169,6 +169,7 @@
     <string name="caption_dropped">Scartato</string>
     <string name="caption_epi_week">Settimana Epi</string>
     <string name="caption_report">Report</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">Fine periodo</string>
     <string name="caption_period_start">Inizio periodo</string>
     <string name="caption_person_information">Dati personali</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positivo</string>
     <string name="caption_possible_events">Eventi possibili</string>
     <string name="caption_prescribed_by">Prescritto da</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">Conferma il PIN</string>
     <string name="heading_confirmation_dialog">Conferma</string>
     <string name="heading_contact_edit">Modifica contatto</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">Nuovo contatto</string>
     <string name="heading_contact_read">Leggere contatto</string>
     <string name="heading_contact_summary">Riepilogo contatto</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Non sei connesso a internet.</string>
     <string name="message_no_matching_persons">Nessuna persona corrispondente trovata.</string>
     <string name="message_no_more_entries">Non ci sono altre voci da visualizzare.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">PIN modificato con successo.</string>
     <string name="message_pin_correct_loading">PIN corretto. Avvio di SORMAS ...</string>
     <string name="message_pin_no_consecutive">Il PIN non deve avere numeri consecutivi.</string>
