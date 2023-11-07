@@ -48,6 +48,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -626,6 +627,18 @@ public final class FieldHelper {
 		select.setReadOnly(readOnly);
 	}
 
+	public static void updateItems(UserField select, List<UserReferenceDto> items) {
+		UserReferenceDto userReference = select.getValue();
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		select.removeAllItems();
+		if (items != null) {
+			select.addItems(items);
+		}
+		select.setValue(userReference);
+		select.setReadOnly(readOnly);
+	}
+
 	public static void updateItems(
 		AbstractSelect select,
 		List<?> items,
@@ -821,7 +834,7 @@ public final class FieldHelper {
 		}
 	}
 
-	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRight right) {
+	public static void updateOfficersField(UserField officerField, CaseDataDto caze, UserRight right) {
 		List<DistrictReferenceDto> officerDistricts =
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
 		FieldHelper.updateItems(

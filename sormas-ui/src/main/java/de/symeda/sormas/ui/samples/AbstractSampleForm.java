@@ -58,6 +58,7 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.UserField;
 
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
@@ -74,7 +75,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	//@formatter:off
     protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-            fluidRowLocs(SampleDto.UUID, REPORT_INFO_LABEL_LOC) +
+            fluidRowLocs(SampleDto.UUID, REPORT_INFO_LABEL_LOC, SampleDto.REPORTING_USER) +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
@@ -123,7 +124,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		final NullableOptionGroup samplePurpose = addField(SampleDto.SAMPLE_PURPOSE, NullableOptionGroup.class);
 		addField(SampleDto.UUID).setReadOnly(true);
-		addField(SampleDto.REPORTING_USER).setReadOnly(true);
 		samplePurpose.addValueChangeListener(e -> updateRequestedTestFields());
 		addField(SampleDto.LAB_SAMPLE_ID, TextField.class);
 		final DateTimeField sampleDateField = addField(SampleDto.SAMPLE_DATE_TIME, DateTimeField.class);
@@ -240,11 +240,12 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			.append(" ")
 			.append(DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()));
 		if (reportingUser != null) {
-			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ").append(reportingUser.buildCaption());
+			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ");
 		}
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LABEL_LOC);
+		addField(SampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
 
 	}
 
@@ -367,9 +368,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
 		requestedPathogenTestsField.addItems(
-				Arrays.stream(PathogenTestType.values())
-						.filter( c -> fieldVisibilityCheckers.isVisible(PathogenTestType.class, c.name()))
-						.collect(Collectors.toList()));
+			Arrays.stream(PathogenTestType.values())
+				.filter(c -> fieldVisibilityCheckers.isVisible(PathogenTestType.class, c.name()))
+				.collect(Collectors.toList()));
 		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 

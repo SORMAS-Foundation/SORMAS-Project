@@ -1,0 +1,174 @@
+package de.symeda.sormas.ui.utils;
+
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.VerticalLayout;
+
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+
+public class UserField extends CustomField<UserReferenceDto> {
+
+	private ComboBoxWithPlaceholder userCombo;
+	private boolean readOnly;
+	private boolean enabled;
+	private List<UserReferenceDto> items = new ArrayList<>();
+
+	public UserField() {
+	}
+
+	@Override
+	protected Component initContent() {
+		HorizontalLayout userLayout = new HorizontalLayout();
+
+		userCombo = ComboBoxHelper.createComboBoxV7();
+		userCombo.addItems(items);
+
+		userCombo.setNewItemsAllowed(true);
+
+		userCombo.setImmediate(true);
+		if (getValue() != null) {
+			userCombo.addItem(getValue());
+		}
+		userCombo.setNullSelectionAllowed(true);
+		userCombo.setValue(getValue());
+		userCombo.setEnabled(enabled);
+		userCombo.setReadOnly(readOnly);
+		userLayout.addComponent(userCombo);
+		final Button userContactButton = createUserContactButton();
+		userLayout.addComponent(userContactButton);
+		userLayout.setWidthFull();
+		userLayout.setExpandRatio(userCombo, 1);
+		userCombo.setWidthFull();
+
+		userCombo.addValueChangeListener(valueChangeEvent -> {
+			setInternalValue((UserReferenceDto) userCombo.getValue());
+		});
+
+		return userLayout;
+	}
+
+	public void addItems(List<UserReferenceDto> items) {
+		this.items.addAll(items);
+		if (userCombo == null) {
+			userCombo = ComboBoxHelper.createComboBoxV7();
+		}
+		userCombo.addItems(this.items);
+	}
+
+	public void removeAllItems() {
+		items.clear();
+		if (userCombo != null) {
+			userCombo.removeAllItems();
+		}
+	}
+
+	protected Button createUserContactButton() {
+		Button userContactButton = ButtonHelper.createIconButtonWithCaption("userContact", "testUser", VaadinIcons.EYE, e -> {
+			triggerUserContactPopUpWindow();
+		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
+		return userContactButton;
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+		if (userCombo != null) {
+			userCombo.setReadOnly(readOnly);
+		}
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		if (userCombo != null) {
+			userCombo.setEnabled(enabled);
+		}
+	}
+
+	@Override
+	public void setValue(UserReferenceDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		if (userCombo != null) {
+			userCombo.setValue(newFieldValue);
+		}
+	}
+
+	protected void triggerUserContactPopUpWindow() {
+		UserDto userDto = null;
+		if (getValue() != null) {
+			userDto = FacadeProvider.getUserFacade().getByUuid(getValue().getUuid());
+		}
+
+		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setMargin(false);
+		if (userDto != null) {
+			HorizontalLayout telephoneNumberLayout = new HorizontalLayout();
+			Label telephoneLabel = new Label(I18nProperties.getString(Strings.promptTelephoneNumber));
+			telephoneLabel.addStyleName(LABEL_BOLD);
+			telephoneNumberLayout.addComponent(telephoneLabel);
+
+			Label telephoneNumber = new Label();
+			final String phone = userDto.getPhone();
+			if (phone == null || phone.isEmpty()) {
+				telephoneNumber.setValue(I18nProperties.getString(Strings.notSpecified));
+			} else {
+				telephoneNumber.setValue(phone);
+			}
+
+			telephoneNumberLayout.addComponent(telephoneNumber);
+			verticalLayout.addComponent(telephoneNumberLayout);
+
+			HorizontalLayout emailLayout = new HorizontalLayout();
+			Label emailLabel = new Label(I18nProperties.getString(Strings.promptEmail));
+			emailLabel.addStyleName(LABEL_BOLD);
+			emailLayout.addComponent(emailLabel);
+			Label email = new Label();
+			final String userEmail = userDto.getUserEmail();
+			if (userEmail != null) {
+				email.setValue(userEmail);
+			} else {
+				email.setValue(I18nProperties.getString(Strings.notSpecified));
+			}
+
+			emailLayout.addComponent(email);
+			verticalLayout.addComponent(emailLayout);
+		} else {
+			HorizontalLayout labelLayout = new HorizontalLayout();
+			Label noUserMessageLabel = new Label();
+			final String noUSerMessage = I18nProperties.getString(Strings.messageNoUserSelected);
+			noUserMessageLabel.setValue(noUSerMessage);
+			labelLayout.addComponent(noUserMessageLabel);
+			verticalLayout.addComponent(labelLayout);
+		}
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingContactInformation),
+			verticalLayout,
+			I18nProperties.getString(Strings.close),
+			null,
+			640,
+			confirmed -> {
+				return true;
+			});
+	}
+
+	@Override
+	public Class<? extends UserReferenceDto> getType() {
+		return UserReferenceDto.class;
+	}
+}
