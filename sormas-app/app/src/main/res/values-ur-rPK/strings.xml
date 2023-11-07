@@ -169,6 +169,7 @@
     <string name="caption_dropped">چھوڑ دیا</string>
     <string name="caption_epi_week">EPI ہفتہ</string>
     <string name="caption_report">رپورٹ</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">مدت کا اختتام</string>
     <string name="caption_period_start">مدت کا آغاز</string>
     <string name="caption_person_information">ذاتی معلومات</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">مثبت</string>
     <string name="caption_possible_events">ممکنہ تقریبات</string>
     <string name="caption_prescribed_by">تجویز کندہ</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">پن کی تصدیق کریں</string>
     <string name="heading_confirmation_dialog">تصدیق</string>
     <string name="heading_contact_edit">رابطہ شدہ  شخص میں ترمیم کریں</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">نیا رابطہ شدہ شخص</string>
     <string name="heading_contact_read"> رابطہ شدہ شخص کوپڑھیں</string>
     <string name="heading_contact_summary">رابطہ شدہ شخص کا خلاصہ</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">آپ انٹرنیٹ سے منسلک نہیں ہیں۔</string>
     <string name="message_no_matching_persons">کوئی مماثل افراد نہیں ملے۔</string>
     <string name="message_no_more_entries">ظاہر کرنے کے لیے مزید اندراجات نہیں ہیں۔</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">پن کامیابی کے ساتھ تبدیل کر دیا گیا ہے۔</string>
     <string name="message_pin_correct_loading">پن درست ہے۔ سورماس شروع ہو رہا ہے...</string>
     <string name="message_pin_no_consecutive">پن میں لگاتار نمبر نہیں ہونےچاہیے۔</string>
