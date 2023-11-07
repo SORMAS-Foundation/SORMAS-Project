@@ -60,6 +60,8 @@ public class FacilitiesTabPage {
       By.cssSelector(".v-window [location='district'] [role='combobox'] div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector(".v-window #typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector(".v-window #type div");
+  public static final By NEW_CASE_FACILITY_TYPE_COMBOBOX =
+      By.cssSelector(".v-window #facilityType div");
   public static final By FACILITY_EXPOSURE_TYPE_COMBOBOX =
       By.cssSelector(".v-window #facilityType div");
   public static final By FACILITY_CONTACT_PERSON_FIRST_NAME_INPUT =
