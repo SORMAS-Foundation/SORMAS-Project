@@ -169,6 +169,7 @@
     <string name="caption_dropped">Rejeté</string>
     <string name="caption_epi_week">Semaine Epidemiologique</string>
     <string name="caption_report">Report</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">Fin de la période</string>
     <string name="caption_period_start">Début de la période</string>
     <string name="caption_person_information">Informations sur la personne</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positif</string>
     <string name="caption_possible_events">Événements possibles</string>
     <string name="caption_prescribed_by">Prescrit par</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">Confirmer le code PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Modifier le contact</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">Nouveau Contact</string>
     <string name="heading_contact_read">Lire le contact</string>
     <string name="heading_contact_summary">Résumé du contact</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Vous n\'êtes pas connecté à Internet.</string>
     <string name="message_no_matching_persons">Aucune personne correspondante trouvé.</string>
     <string name="message_no_more_entries">Il n\'y a plus d\'entrées à afficher.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">Le code PIN a été modifié avec succès.</string>
     <string name="message_pin_correct_loading">Code PIN correct. Démarrage SORMAS ...</string>
     <string name="message_pin_no_consecutive">Le code PIN ne doit pas être composé de nombres consécutifs.</string>

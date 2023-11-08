@@ -169,6 +169,7 @@
     <string name="caption_dropped">Dropped</string>
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_report">Report</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">Period End</string>
     <string name="caption_period_start">Period Start</string>
     <string name="caption_person_information">Person Information</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positive</string>
     <string name="caption_possible_events">Possible Events</string>
     <string name="caption_prescribed_by">Prescribed by</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">Confirm PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Edit Contact</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_contact_read">Read Contact</string>
     <string name="heading_contact_summary">Contact Summary</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Brak połączenia z Internetem.</string>
     <string name="message_no_matching_persons">Nie znaleziono pasujących osób.</string>
     <string name="message_no_more_entries">Nie ma więcej wpisów do wyświetlenia.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">PIN został zmieniony.</string>
     <string name="message_pin_correct_loading">Poprawny kod PIN. Uruchamianie SORMAS ...</string>
     <string name="message_pin_no_consecutive">Kod PIN musi składać się z następujących po sobie cyfr.</string>
