@@ -152,7 +152,7 @@
                 app:iconStart="@drawable/ic_edit_location_black_24dp"
                 app:locationValue="@={data.location}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlUserEditField
                 android:id="@+id/environment_responsibleUser"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.responsibleUser}" />

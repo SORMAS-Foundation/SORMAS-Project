@@ -79,6 +79,7 @@ public class EnvironmentSampleDto extends PseudonymizableDto {
 	public static final String GENERAL_COMMENT = "generalComment";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String REPORTING_USER = "reportingUser";
 
 	@NotNull
 	private EnvironmentReferenceDto environment;

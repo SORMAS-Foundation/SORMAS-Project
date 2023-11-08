@@ -36,6 +36,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UserField;
 
 public class EventParticipantEditForm extends AbstractEditForm<EventParticipantDto> {
 
@@ -93,7 +94,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		district.setRequired(shouldBeRequired);
 
 		addField(EventParticipantDto.UUID, TextField.class);
-		addField(EventParticipantDto.REPORTING_USER, ComboBox.class);
+		addField(EventParticipantDto.REPORTING_USER, UserField.class);
 		setReadOnly(true, EventParticipantDto.UUID, EventParticipantDto.REPORTING_USER);
 
 		initializeVisibilitiesAndAllowedVisibilities();
