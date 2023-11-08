@@ -270,7 +270,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
 		boolean canEditDispatchField =
-			isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() >= JurisdictionLevel.REGION.getOrder()));
+				isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {
