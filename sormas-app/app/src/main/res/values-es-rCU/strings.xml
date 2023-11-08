@@ -169,7 +169,7 @@
     <string name="caption_dropped">Descartado</string>
     <string name="caption_epi_week">Semana epi</string>
     <string name="caption_report">Informe</string>
-    <string name="caption_email">E-mail:</string>
+    <string name="caption_email">Correo electrónico:</string>
     <string name="caption_environment_information">Información del ambiente</string>
     <string name="caption_environment_samples">Muestras ambientales</string>
     <string name="caption_environment_tasks">Tareas del ambiente</string>
@@ -213,7 +213,7 @@
     <string name="caption_period_end">Final del período</string>
     <string name="caption_period_start">Inicio del período</string>
     <string name="caption_person_information">Información de la persona</string>
-    <string name="caption_phone_number">Phone number:</string>
+    <string name="caption_phone_number">Número telefónico:</string>
     <string name="caption_positive">Positivo</string>
     <string name="caption_possible_events">Eventos posibles</string>
     <string name="caption_prescribed_by">Prescrito por</string>
@@ -335,7 +335,7 @@
     <string name="heading_confirm_pin">Confirmar PIN</string>
     <string name="heading_confirmation_dialog">Confirmación</string>
     <string name="heading_contact_edit">Editar contacto</string>
-    <string name="heading_contact_information">Contact information</string>
+    <string name="heading_contact_information">Información de contacto</string>
     <string name="heading_contact_new">Nuevo contacto</string>
     <string name="heading_contact_read">Leer contacto</string>
     <string name="heading_contact_summary">Resumen del contacto</string>
@@ -557,8 +557,8 @@
     <string name="message_no_connection">No está conectado a Internet.</string>
     <string name="message_no_matching_persons">No se encontraron personas coincidentes.</string>
     <string name="message_no_more_entries">No hay más entradas que mostrar.</string>
-    <string name="message_no_user_selected">No user has been selected</string>
-    <string name="message_not_specified">Not specified</string>
+    <string name="message_no_user_selected">No se seleccionó ningún usuario</string>
+    <string name="message_not_specified">No especificado</string>
     <string name="message_pin_changed">El PIN se cambió correctamente.</string>
     <string name="message_pin_correct_loading">PIN correcto. Iniciando SORMAS ...</string>
     <string name="message_pin_no_consecutive">El PIN no debe estar compuesto de números consecutivos.</string>
