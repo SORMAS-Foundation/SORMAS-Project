@@ -93,6 +93,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.UserField;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -169,7 +170,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final Disease disease;
 	private NullableOptionGroup contactProximity;
 	private ComboBox district;
-	private ComboBox contactOfficerField;
+	private UserField contactOfficerField;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField dfQuarantineTo;
@@ -236,7 +237,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
 		addField(ContactDto.INTERNAL_TOKEN, TextField.class);
-		addField(ContactDto.REPORTING_USER, ComboBox.class);
+		addField(ContactDto.REPORTING_USER, UserField.class);
 		multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
 		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
@@ -460,8 +461,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			onQuarantineValueChange();
 		});
 
-		contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
-		contactOfficerField.setNullSelectionAllowed(true);
+		contactOfficerField = addField(ContactDto.CONTACT_OFFICER, UserField.class);
+		contactOfficerField.setEnabled(true);
 
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
