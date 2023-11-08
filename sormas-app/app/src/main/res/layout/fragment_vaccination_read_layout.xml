@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlUserReadField
                         android:id="@+id/immunization_reportingUser"
                         style="@style/ControlFirstOfTwoColumnsStyle"
                         app:value="@{data.reportingUser}" />
