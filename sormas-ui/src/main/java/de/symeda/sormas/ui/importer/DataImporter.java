@@ -33,6 +33,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,7 +260,7 @@ public abstract class DataImporter {
 			String[] entityClasses;
 			if (hasEntityClassRow) {
 				entityClasses = readNextValidLine(csvReader);
-				errorReportCsvWriter.writeNext(entityClasses);
+				errorReportCsvWriter.writeNext(ArrayUtils.insert(0, entityClasses, ""));
 			} else {
 				entityClasses = null;
 			}
