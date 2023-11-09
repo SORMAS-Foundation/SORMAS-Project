@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import static de.symeda.sormas.app.backend.common.DatabaseHelper.getContext;
-
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -35,7 +33,6 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.databinding.DialogUserContactInfoLayoutBinding;
-
 
 /**
  * Created by Orson on 30/12/2017.
@@ -103,14 +100,14 @@ public class ViewHelper {
 			if (userPhone == null || userPhone.isEmpty()) {
 				sb.append(resource.getString(R.string.message_not_specified));
 			} else {
-				sb.append(userPhone);
+				sb.append("<a href=\"tel:" + userPhone + "\">" + userPhone + "</a>");
 			}
 			sb.append("<br>");
 			sb.append("<b>").append(resource.getString(R.string.caption_email)).append("</b>");
 			if (userEmail == null || userEmail.isEmpty()) {
 				sb.append(resource.getString(R.string.message_not_specified));
 			} else {
-				sb.append(userEmail);
+				sb.append("<a href=\"mailto:" + userEmail + "\">" + userEmail + "</a>");
 			}
 		}
 
