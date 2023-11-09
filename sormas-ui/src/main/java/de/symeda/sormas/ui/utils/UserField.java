@@ -5,11 +5,15 @@ import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CustomField;
@@ -78,7 +82,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 	}
 
 	protected Button createUserContactButton() {
-		Button userContactButton = ButtonHelper.createIconButtonWithCaption("userContact", "testUser", VaadinIcons.EYE, e -> {
+		Button userContactButton = ButtonHelper.createIconButtonWithCaption("userContact", "", VaadinIcons.EYE, e -> {
 			triggerUserContactPopUpWindow();
 		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
 		return userContactButton;
@@ -122,30 +126,32 @@ public class UserField extends CustomField<UserReferenceDto> {
 			telephoneLabel.addStyleName(LABEL_BOLD);
 			telephoneNumberLayout.addComponent(telephoneLabel);
 
-			Label telephoneNumber = new Label();
 			final String phone = userDto.getPhone();
-			if (phone == null || phone.isEmpty()) {
+			if (StringUtils.isBlank(phone)) {
+				Label telephoneNumber = new Label();
 				telephoneNumber.setValue(I18nProperties.getString(Strings.notSpecified));
+				telephoneNumberLayout.addComponent(telephoneNumber);
 			} else {
-				telephoneNumber.setValue(phone);
+				Link telephoneNumber = new Link(phone, new ExternalResource("tel:" + phone));
+				telephoneNumberLayout.addComponent(telephoneNumber);
 			}
 
-			telephoneNumberLayout.addComponent(telephoneNumber);
 			verticalLayout.addComponent(telephoneNumberLayout);
 
 			HorizontalLayout emailLayout = new HorizontalLayout();
 			Label emailLabel = new Label(I18nProperties.getString(Strings.promptEmail));
 			emailLabel.addStyleName(LABEL_BOLD);
 			emailLayout.addComponent(emailLabel);
-			Label email = new Label();
 			final String userEmail = userDto.getUserEmail();
-			if (userEmail != null) {
-				email.setValue(userEmail);
-			} else {
+			if (StringUtils.isBlank(userEmail)) {
+				Label email = new Label();
 				email.setValue(I18nProperties.getString(Strings.notSpecified));
+				emailLayout.addComponent(email);
+			} else {
+				Link email = new Link(userEmail, new ExternalResource("mailto:" + userEmail));
+				emailLayout.addComponent(email);
 			}
 
-			emailLayout.addComponent(email);
 			verticalLayout.addComponent(emailLayout);
 		} else {
 			HorizontalLayout labelLayout = new HorizontalLayout();

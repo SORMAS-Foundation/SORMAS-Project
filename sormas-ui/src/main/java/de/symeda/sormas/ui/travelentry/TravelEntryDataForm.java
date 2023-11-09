@@ -54,6 +54,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.UserField;
 
 public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
@@ -142,7 +143,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		addField(TravelEntryDto.REPORT_DATE, DateField.class);
 
-		addFields(TravelEntryDto.UUID, TravelEntryDto.REPORTING_USER);
+		addFields(TravelEntryDto.UUID);
+		addField(TravelEntryDto.REPORTING_USER, UserField.class);
 
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
