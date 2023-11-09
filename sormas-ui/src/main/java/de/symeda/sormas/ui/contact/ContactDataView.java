@@ -99,7 +99,9 @@ public class ContactDataView extends AbstractContactView {
 		editComponent = ControllerProvider.getContactController()
 			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 
-		addCreateFromCaseButtonLogic();
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+			addCreateFromCaseButtonLogic();
+		}
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);

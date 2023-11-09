@@ -80,7 +80,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
 		caseIdColumn.setRenderer(new CaseUuidRenderer(uuid -> {
 			// '!=' check is ok because the converter returns the constant when no case creation is allowed
-			return NO_CASE_CREATE != uuid;
+
+			return NO_CASE_CREATE != uuid && FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 		}));
 
 		Column<EventParticipantIndexDto, String> deleteColumn = addColumn(entry -> {
@@ -130,14 +131,16 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 		getColumn(EventParticipantIndexDto.CONTACT_COUNT).setSortable(false);
 
-		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
-			if (e.getCaseUuid() != null) {
-				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
-			} else if (e.getInJurisdiction()) {
-				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
-				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
-			}
-		}));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+			addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
+				if (e.getCaseUuid() != null) {
+					ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
+				} else if (e.getInJurisdiction()) {
+					EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
+					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+				}
+			}));
+		}
 		addItemClickListener(new ShowDetailsListener<>(EventParticipantIndexDto.PERSON_UUID, e -> {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
 				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());

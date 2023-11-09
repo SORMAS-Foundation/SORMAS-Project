@@ -65,7 +65,9 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		container.addComponent(layout);
 
 		UserProvider currentUser = UserProvider.getCurrent();
-		boolean caseButtonVisible = currentUser != null && currentUser.hasUserRight(UserRight.CASE_CREATE);
+		boolean caseButtonVisible = currentUser != null
+			&& currentUser.hasUserRight(UserRight.CASE_CREATE)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 
 		CaseReferenceDto resultingCase = travelEntryDto.getResultingCase();
 		if (resultingCase == null && caseButtonVisible) {
