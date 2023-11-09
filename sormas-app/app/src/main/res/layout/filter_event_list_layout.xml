@@ -43,7 +43,7 @@
 
             <de.symeda.sormas.app.component.controls.FilterTextField
                 android:id="@+id/text_filter"
-                app:hint="@{I18nProperties.getString(Strings.promptEventsSearchField)}"
+                app:hint="@{@string/caption_event_search_field}"
                 app:showCaption="false"
                 app:value="@={criteria.textFilter}"
                 style="@style/ControlSingleColumnStyle" />
