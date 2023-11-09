@@ -15,27 +15,36 @@
 
 package de.symeda.sormas.app.event.list;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.AdapterView;
+import android.view.View;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.databinding.FilterEnvironmentSampleListLayoutBinding;
+import de.symeda.sormas.app.databinding.FilterEventListLayoutBinding;
 import de.symeda.sormas.app.event.edit.EventNewActivity;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class EventListActivity extends PagedBaseListActivity {
 
@@ -47,6 +56,8 @@ public class EventListActivity extends PagedBaseListActivity {
 		EventStatus.CLUSTER,
 		EventStatus.DROPPED };
 	private EventListViewModel model;
+
+	private FilterEventListLayoutBinding filterBinding;
 
 	public static void startActivity(Context context, EventStatus listFilter) {
 		BaseListActivity.startActivity(context, EventListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
@@ -84,6 +95,9 @@ public class EventListActivity extends PagedBaseListActivity {
 			adapter.submitList(events);
 			hidePreloader();
 		});
+
+		filterBinding.setCriteria(model.getEventCriteria());
+
 		setOpenPageCallback(p -> {
 			showPreloader();
 			model.getEventCriteria().eventStatus(statusFilters[((PageMenuItem) p).getPosition()]);
@@ -154,6 +168,37 @@ public class EventListActivity extends PagedBaseListActivity {
 
 	@Override
 	public void addFiltersToPageMenu() {
-		// Not supported yet
+		View eventListFilterView = getLayoutInflater().inflate(R.layout.filter_event_list_layout, null);
+		filterBinding = DataBindingUtil.bind(eventListFilterView);
+
+		List<Item> diseases = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+		filterBinding.diseaseFilter.initializeSpinner(diseases);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		List<Item> epiWeeks = DataUtils.toItems(DateHelper.createEpiWeekList(calendar.get(Calendar.YEAR), calendar.get(Calendar.WEEK_OF_YEAR)));
+		filterBinding.epiWeekFromFilter.initializeSpinner(epiWeeks);
+		filterBinding.epiWeekToFilter.initializeSpinner(epiWeeks);
+
+		pageMenu.addFilter(eventListFilterView);
+
+		filterBinding.applyFilters.setOnClickListener(e -> {
+			showPreloader();
+			pageMenu.hideAll();
+			model.notifyCriteriaUpdated();
+		});
+
+		filterBinding.resetFilters.setOnClickListener(e -> {
+			showPreloader();
+			pageMenu.hideAll();
+
+			model.getEventCriteria().setTextFilter(null);
+			model.getEventCriteria().setDisease(null);
+			model.getEventCriteria().setEpiWeekFrom(null);
+			model.getEventCriteria().setEpiWeekTo(null);
+
+			filterBinding.invalidateAll();
+			model.notifyCriteriaUpdated();
+		});
 	}
 }
