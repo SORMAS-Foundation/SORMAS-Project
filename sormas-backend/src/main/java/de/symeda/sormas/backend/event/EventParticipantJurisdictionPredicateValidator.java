@@ -54,7 +54,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 
 	@Override
 	protected Predicate getLimitedDiseasePredicate() {
-		return cb.equal(joins.getEventJoins().getRoot().get(Event.DISEASE), user.getLimitedDisease());
+		return CriteriaBuilderHelper.limitedDiseasePredicate(cb, user, joins.getEventJoins().getRoot().get(Event.DISEASE));
 	}
 
 	@Override

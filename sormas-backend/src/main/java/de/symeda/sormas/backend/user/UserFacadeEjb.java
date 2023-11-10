@@ -209,7 +209,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setAssociatedOfficer(toReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(FacilityFacadeEjb.toReferenceDto(source.getLaboratory()));
 		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setLimitedDisease(source.getLimitedDisease());
+		target.setLimitedDiseases(source.getLimitedDiseases());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
@@ -462,9 +462,7 @@ public class UserFacadeEjb implements UserFacade {
 					cb.and(
 						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
-						cb.or(
-							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), caseRoot.get(Case.DISEASE)))));
+						cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASES)), caseRoot.get(Case.DISEASE).in(userRoot.get(User.LIMITED_DISEASES)))));
 			return caseJurisdictionSubquery;
 		});
 	}
@@ -485,8 +483,8 @@ public class UserFacadeEjb implements UserFacade {
 						cb.equal(contactRoot.get(AbstractDomainObject.UUID), contactReferenceDto.getUuid()),
 						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
-							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), contactRoot.get(Contact.DISEASE)))));
+							cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+							contactRoot.get(Contact.DISEASE).in(userRoot.get(User.LIMITED_DISEASES)))));
 			return contactJurisdictionSubquery;
 		});
 	}
@@ -508,8 +506,8 @@ public class UserFacadeEjb implements UserFacade {
 						cb.equal(eventRoot.get(AbstractDomainObject.UUID), eventReferenceDto.getUuid()),
 						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
-							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), eventRoot.get(de.symeda.sormas.backend.event.Event.DISEASE)))));
+							cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+							eventRoot.get(de.symeda.sormas.backend.event.Event.DISEASE).in(userRoot.get(User.LIMITED_DISEASES)))));
 			return eventJurisdictionSubquery;
 		});
 	}
@@ -531,8 +529,8 @@ public class UserFacadeEjb implements UserFacade {
 						cb.equal(travelEntryRoot.get(AbstractDomainObject.UUID), travelEntryReferenceDto.getUuid()),
 						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
-							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), travelEntryRoot.get(TravelEntry.DISEASE)))));
+							cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+							travelEntryRoot.get(TravelEntry.DISEASE).in(userRoot.get(User.LIMITED_DISEASES)))));
 			return travelEntrySubquery;
 		});
 	}
@@ -789,7 +787,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setAssociatedOfficer(userService.getByReferenceDto(source.getAssociatedOfficer()));
 		target.setLaboratory(facilityService.getByReferenceDto(source.getLaboratory()));
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
-		target.setLimitedDisease(source.getLimitedDisease());
+		target.setLimitedDiseases(source.getLimitedDiseases());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 

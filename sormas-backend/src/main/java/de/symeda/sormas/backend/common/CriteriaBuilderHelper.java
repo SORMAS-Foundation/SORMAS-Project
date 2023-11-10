@@ -22,6 +22,7 @@ import org.apache.commons.collections4.ListUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 public class CriteriaBuilderHelper {
@@ -193,6 +194,18 @@ public class CriteriaBuilderHelper {
 			filter = and(cb, filter, cb.lessThanOrEqualTo(path, toDate));
 		}
 		return filter;
+	}
+
+	public static Predicate limitedDiseasePredicate(CriteriaBuilder cb, User currentUser, Expression<?> diseaseExpression) {
+		return limitedDiseasePredicate(cb, currentUser, diseaseExpression, null);
+	}
+
+	public static Predicate limitedDiseasePredicate(CriteriaBuilder cb, User currentUser, Expression<?> diseaseExpression, Predicate orElse) {
+		if (currentUser == null || CollectionUtils.isEmpty(currentUser.getLimitedDiseases())) {
+			return null;
+		}
+
+		return or(cb, diseaseExpression.in(currentUser.getLimitedDiseases()), orElse);
 	}
 
 	public static Expression<Double> dateDiff(CriteriaBuilder cb, Expression<?> date1, Expression<?> date2) {

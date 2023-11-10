@@ -15,14 +15,21 @@
 
 package de.symeda.sormas.app.backend.user;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -62,6 +69,7 @@ public class User extends AbstractDomainObject {
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String USER_ROLES_JSON = "userRole";
 	public static final String LANGUAGE = "language";
+	public static final String LIMITED_DISEASES = "limitedDiseases";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	@Column(nullable = false)
@@ -96,8 +104,10 @@ public class User extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private Language language;
 
-	@Enumerated(EnumType.STRING)
-	private Disease limitedDisease;
+	@Column(name = "limitedDiseases", length = CHARACTER_LIMIT_TEXT)
+	private String limitedDiseasesJson;
+
+	private Set<Disease> limitedDiseases;
 
 	// initialized from userRolesJson
 	private Set<UserRole> userRoles = null;
@@ -209,12 +219,34 @@ public class User extends AbstractDomainObject {
 		this.associatedOfficer = associatedOfficer;
 	}
 
-	public Disease getLimitedDisease() {
-		return limitedDisease;
+	public String getLimitedDiseasesJson() {
+		return limitedDiseasesJson;
 	}
 
-	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+	public void setLimitedDiseasesJson(String limitedDiseasesJson) {
+		this.limitedDiseasesJson = limitedDiseasesJson;
+	}
+
+	public Set<Disease> getLimitedDiseases() {
+		if (limitedDiseases == null) {
+			Gson gson = new Gson();
+			Type type = new TypeToken<Set<Disease>>() {
+			}.getType();
+			limitedDiseases = gson.fromJson(limitedDiseasesJson, type);
+		}
+
+		return limitedDiseases;
+	}
+
+	public void setLimitedDiseases(Set<Disease> limitedDiseases) {
+		if (limitedDiseases == null) {
+			this.limitedDiseases = null;
+			this.limitedDiseasesJson = null;
+		} else {
+			this.limitedDiseases = limitedDiseases;
+			Gson gson = new Gson();
+			limitedDiseasesJson = gson.toJson(limitedDiseases.stream().map(Disease::name).collect(Collectors.toSet()));
+		}
 	}
 
 	public Language getLanguage() {

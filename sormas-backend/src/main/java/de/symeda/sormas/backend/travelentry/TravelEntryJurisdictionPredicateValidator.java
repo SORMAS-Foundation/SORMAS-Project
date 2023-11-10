@@ -83,7 +83,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	@Override
 	protected Predicate getLimitedDiseasePredicate() {
-		return cb.equal(joins.getRoot().get(TravelEntry.DISEASE), user.getLimitedDisease());
+		return CriteriaBuilderHelper.limitedDiseasePredicate(cb, user, joins.getRoot().get(TravelEntry.DISEASE));
 	}
 
 	@Override

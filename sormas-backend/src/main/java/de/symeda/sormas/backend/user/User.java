@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
@@ -97,7 +98,7 @@ public class User extends AbstractDomainObject {
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
-	public static final String LIMITED_DISEASE = "limitedDisease";
+	public static final String LIMITED_DISEASES = "limitedDiseases";
 
 	private String userName;
 	@NotExposedToApi
@@ -129,7 +130,7 @@ public class User extends AbstractDomainObject {
 
 	private User associatedOfficer;
 
-	private Disease limitedDisease;
+	private Set<Disease> limitedDiseases;
 
 	private Language language;
 
@@ -321,13 +322,13 @@ public class User extends AbstractDomainObject {
 		this.pointOfEntry = pointOfEntry;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public Disease getLimitedDisease() {
-		return limitedDisease;
+	@Convert(converter = DiseaseSetConverter.class)
+	public Set<Disease> getLimitedDiseases() {
+		return limitedDiseases;
 	}
 
-	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+	public void setLimitedDiseases(Set<Disease> limitedDisease) {
+		this.limitedDiseases = limitedDisease;
 	}
 
 	@Enumerated(EnumType.STRING)
