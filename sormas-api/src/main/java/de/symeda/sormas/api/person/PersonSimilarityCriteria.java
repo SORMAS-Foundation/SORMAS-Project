@@ -20,7 +20,6 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private String passportNumber;
 	private String nationalHealthId;
 	private String nameUuidExternalIdExternalTokenLike;
-	private Boolean matchMissingInfo = Boolean.FALSE;
 	/**
 	 * If true, compare the name of the person only to the first and last name fields of the database; if false, compare the
 	 * name of the person to other fields like UUID and external ID as well.
@@ -117,14 +116,6 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 
 	public void setName(PersonDto person) {
 		this.nameUuidExternalIdExternalTokenLike = person.getFirstName() + " " + person.getLastName();
-	}
-
-	public Boolean getMatchMissingInfo() {
-		return matchMissingInfo;
-	}
-
-	public void setMatchMissingInfo(Boolean matchMissingInfo) {
-		this.matchMissingInfo = matchMissingInfo;
 	}
 
 	public Boolean getStrictNameComparison() {
