@@ -685,7 +685,7 @@ public class CreateNewCaseSteps implements En {
         (String placeOfStay, String facilityCategory, String facilityType) -> {
           selectPlaceOfStay(placeOfStay);
           selectFacilityCategory(facilityCategory);
-          selectFacilityType(facilityType);
+          selectNewCaseFacilityType(facilityType);
           selectFacility("Other facility");
           fillPlaceDescription(caze.getPlaceDescription());
         });
