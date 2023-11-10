@@ -240,8 +240,8 @@ public class StatisticsSteps implements En {
                   webDriverHelpers.isElementChecked(EVENTS_CHECKBOX),
                   "Events Checkbox is not checked in the database export page");
               softly.assertTrue(
-                  webDriverHelpers.isElementChecked(PERSONS_INVOLVED_CHECKBOX),
-                  "Persons involved Checkbox is not checked in the database export page");
+                  webDriverHelpers.isElementChecked(PERSONS_LOCATIONS_CHECKBOX),
+                  "Person locations Checkbox is not checked in the database export page");
               softly.assertTrue(
                   webDriverHelpers.isElementChecked(ACTIONS_CHECKBOX),
                   "Actions Checkbox is not checked in the database export page");
@@ -400,8 +400,8 @@ public class StatisticsSteps implements En {
                   webDriverHelpers.isElementChecked(EVENTS_CHECKBOX),
                   "Events Checkbox is not checked in the database export page");
               softly.assertFalse(
-                  webDriverHelpers.isElementChecked(PERSONS_INVOLVED_CHECKBOX),
-                  "Persons involved Checkbox is not checked in the database export page");
+                  webDriverHelpers.isElementChecked(PERSONS_LOCATIONS_CHECKBOX),
+                  "Person locations Checkbox is not checked in the database export page");
               softly.assertFalse(
                   webDriverHelpers.isElementChecked(ACTIONS_CHECKBOX),
                   "Actions Checkbox is not checked in the database export page");
