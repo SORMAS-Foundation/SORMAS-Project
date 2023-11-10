@@ -44,6 +44,11 @@ public interface Validations {
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
+	String defaultInfrastructureAlreadyExisting = "defaultInfrastructureAlreadyExisting";
+	String defaultInfrastructureInvalidParentDistrict = "defaultInfrastructureInvalidParentDistrict";
+	String defaultInfrastructureInvalidParentRegion = "defaultInfrastructureInvalidParentRegion";
+	String defaultInfrastructureNotRemovableChildCommunity = "defaultInfrastructureNotRemovableChildCommunity";
+	String defaultInfrastructureNotRemovableChildDistrict = "defaultInfrastructureNotRemovableChildDistrict";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";

@@ -25,7 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public enum CommunityValues {
   VoreingestellteGemeinde(
-      "Voreingestellte Gemeinde", "QWK33J-XYN3DE-5CSXFJ-MMFOKNKM", "UPKYUC-HD6D2W-EZVF5S-Q3PQSE5A");
+      "Voreingestellte Gemeinde", "QWK33J-XYN3DE-5CSXFJ-MMFOKNKM", "UPKYUC-HD6D2W-EZVF5S-Q3PQSE5A"),
+  CharlottenburgNord(
+      "Charlottenburg-Nord", "S3P6UC-PW3FDK-XLHWVD-DMA7NT7E", "U3T36E-L5GNAA-ULMAW6-3RMVSLAI");
 
   private final String name;
   private final String uuidMain;

@@ -30,13 +30,13 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdoWithDefault;
 import de.symeda.sormas.backend.infrastructure.district.District;
 
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Community extends InfrastructureAdo {
+public class Community extends InfrastructureAdoWithDefault {
 
 	private static final long serialVersionUID = 1971053920357795693L;
 

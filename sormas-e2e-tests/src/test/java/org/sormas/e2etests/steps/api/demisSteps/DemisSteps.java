@@ -82,7 +82,6 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_INPUT;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -101,7 +100,6 @@ import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
-import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;

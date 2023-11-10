@@ -7,7 +7,7 @@
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.90.0-SNAPSHOT"
+    "version" : "1.91.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -13003,7 +13003,7 @@
               "type" : "array",
               "items" : {
                 "type" : "string",
-                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
               }
             }
           }
@@ -13032,14 +13032,14 @@
               "type" : "array",
               "items" : {
                 "type" : "string",
-                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
               }
             },
             "sampleTestTypes" : {
               "type" : "array",
               "items" : {
                 "type" : "string",
-                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+                "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
               },
               "writeOnly" : true
             }
@@ -13280,6 +13280,9 @@
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
           },
           "district" : {
             "$ref" : "#/components/schemas/DistrictReferenceDto"
@@ -15658,6 +15661,10 @@
           "aggregateReportingEnabled" : {
             "type" : "boolean"
           },
+          "automaticSampleAssignmentThreshold" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "caseFollowUpDuration" : {
             "type" : "integer",
             "format" : "int32"
@@ -15761,6 +15768,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
+          },
           "epidCode" : {
             "type" : "string",
             "maxLength" : 255,
@@ -15801,6 +15811,9 @@
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
           },
           "epidCode" : {
             "type" : "string"
@@ -20597,7 +20610,7 @@
           },
           "testType" : {
             "type" : "string",
-            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
           },
           "testTypeText" : {
             "type" : "string",
@@ -21756,6 +21769,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
+          },
           "epidCode" : {
             "type" : "string",
             "maxLength" : 255,
@@ -21799,6 +21815,9 @@
           "creationDate" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "defaultInfrastructure" : {
+            "type" : "boolean"
           },
           "epidCode" : {
             "type" : "string"
@@ -22064,7 +22083,7 @@
             "type" : "array",
             "items" : {
               "type" : "string",
-              "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+              "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
             },
             "uniqueItems" : true
           },
@@ -22234,7 +22253,7 @@
           },
           "typeOfLastTest" : {
             "type" : "string",
-            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
           },
           "uuid" : {
             "type" : "string",
@@ -24402,7 +24421,7 @@
           },
           "testType" : {
             "type" : "string",
-            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "OTHER" ]
+            "enum" : [ "ANTIBODY_DETECTION", "ANTIGEN_DETECTION", "RAPID_TEST", "CULTURE", "HISTOPATHOLOGY", "ISOLATION", "IGM_SERUM_ANTIBODY", "IGG_SERUM_ANTIBODY", "IGA_SERUM_ANTIBODY", "INCUBATION_TIME", "INDIRECT_FLUORESCENT_ANTIBODY", "DIRECT_FLUORESCENT_ANTIBODY", "MICROSCOPY", "NEUTRALIZING_ANTIBODIES", "PCR_RT_PCR", "GRAM_STAIN", "LATEX_AGGLUTINATION", "CQ_VALUE_DETECTION", "SEQUENCING", "DNA_MICROARRAY", "TMA", "OTHER" ]
           },
           "testedDiseaseVariant" : {
             "type" : "string",

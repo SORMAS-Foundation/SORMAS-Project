@@ -415,9 +415,8 @@ public class FacilityFacadeEjb
 		dto.setContactPersonEmail(entity.getContactPersonEmail());
 		dto.setLatitude(entity.getLatitude());
 		dto.setLongitude(entity.getLongitude());
-		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
-		dto.setCentrallyManaged(entity.isCentrallyManaged());
+		applyToDtoInheritance(dto, entity);
 
 		return dto;
 	}
@@ -604,11 +603,9 @@ public class FacilityFacadeEjb
 		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate, allowUuidOverwrite);
 
 		target.setName(source.getName());
-
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-
 		target.setCity(source.getCity());
 		target.setPostalCode(source.getPostalCode());
 		target.setStreet(source.getStreet());
@@ -621,11 +618,10 @@ public class FacilityFacadeEjb
 		target.setContactPersonEmail(source.getContactPersonEmail());
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
-
 		target.setType(source.getType());
-		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-		target.setCentrallyManaged(source.isCentrallyManaged());
+		applyFillOrBuildEntityInheritance(target, source);
+
 		return target;
 	}
 

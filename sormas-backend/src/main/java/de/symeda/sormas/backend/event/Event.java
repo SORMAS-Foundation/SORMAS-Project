@@ -93,7 +93,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
-	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String NOSOCOMIAL = "nosocomial";
@@ -155,7 +155,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
-	private List<EventParticipant> eventPersons;
+	private List<EventParticipant> eventParticipants;
 	private String externalId;
 	private String externalToken;
 	private String eventTitle;
@@ -276,12 +276,12 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	}
 
 	@OneToMany(cascade = {}, mappedBy = EventParticipant.EVENT)
-	public List<EventParticipant> getEventPersons() {
-		return eventPersons;
+	public List<EventParticipant> getEventParticipants() {
+		return eventParticipants;
 	}
 
-	public void setEventPersons(List<EventParticipant> eventPersons) {
-		this.eventPersons = eventPersons;
+	public void setEventParticipants(List<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

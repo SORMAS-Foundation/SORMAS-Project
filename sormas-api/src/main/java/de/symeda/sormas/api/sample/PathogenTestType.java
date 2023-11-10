@@ -56,6 +56,7 @@ public enum PathogenTestType {
 	CQ_VALUE_DETECTION,
 	SEQUENCING,
 	DNA_MICROARRAY,
+	TMA,
 	OTHER;
 
 	@Override

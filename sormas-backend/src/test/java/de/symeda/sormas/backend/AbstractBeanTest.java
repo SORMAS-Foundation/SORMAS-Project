@@ -71,6 +71,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacad
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -162,6 +163,8 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessageProcessor;
+import de.symeda.sormas.backend.externalmessage.labmessage.ExternalMessageProcessingFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -1009,5 +1012,13 @@ public abstract class AbstractBeanTest {
 
 	public EnvironmentSampleService getEnvironmentSampleService() {
 		return getBean(EnvironmentSampleService.class);
+	}
+
+	public AutomaticLabMessageProcessor getAutomaticLabMessageProcessingFlow() {
+		return getBean(AutomaticLabMessageProcessor.class);
+	}
+
+	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
+		return getBean(ExternalMessageProcessingFacadeEjbLocal.class);
 	}
 }

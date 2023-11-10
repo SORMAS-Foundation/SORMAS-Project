@@ -129,7 +129,7 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 
 	public Predicate createCaseAndEventParticipantFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
 
-		Join<Event, EventParticipant> eventParticipantJoin = eventPath.join(Event.EVENT_PERSONS, JoinType.LEFT);
+		Join<Event, EventParticipant> eventParticipantJoin = eventPath.join(Event.EVENT_PARTICIPANTS, JoinType.LEFT);
 		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
 		Subquery<Long> caseSubquery = cq.subquery(Long.class);

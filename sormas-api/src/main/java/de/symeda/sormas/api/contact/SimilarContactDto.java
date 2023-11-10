@@ -138,4 +138,8 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 	public Boolean getCaseInJurisdiction() {
 		return contactJurisdictionFlagsDto.getCaseInJurisdiction();
 	}
+
+	public ContactReferenceDto toReference() {
+		return new ContactReferenceDto(getUuid(), getFirstName(), getLastName(), null, null);
+	}
 }

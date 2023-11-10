@@ -17,15 +17,22 @@ package de.symeda.sormas.app.util;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.databinding.DialogUserContactInfoLayoutBinding;
 
 /**
  * Created by Orson on 30/12/2017.
@@ -74,4 +81,40 @@ public class ViewHelper {
 			return "GPS: " + location.getLatLonString();
 		}
 	}
+
+	public static void showUserContactInfo(User user, Resources resource, Context context) {
+		StringBuilder sb = new StringBuilder();
+		String userPhone = null;
+		String userEmail = null;
+		if (user != null) {
+			userPhone = user.getPhone();
+			userEmail = user.getUserEmail();
+		}
+
+		sb.append("<b><h2>" + resource.getString(R.string.heading_contact_information) + "</h2></b>");
+
+		if (user == null) {
+			sb.append(resource.getString(R.string.message_no_user_selected));
+		} else {
+			sb.append("<b>").append(resource.getString(R.string.caption_phone_number)).append("</b>");
+			if (userPhone == null || userPhone.isEmpty()) {
+				sb.append(resource.getString(R.string.message_not_specified));
+			} else {
+				sb.append("<a href=\"tel:" + userPhone + "\">" + userPhone + "</a>");
+			}
+			sb.append("<br>");
+			sb.append("<b>").append(resource.getString(R.string.caption_email)).append("</b>");
+			if (userEmail == null || userEmail.isEmpty()) {
+				sb.append(resource.getString(R.string.message_not_specified));
+			} else {
+				sb.append("<a href=\"mailto:" + userEmail + "\">" + userEmail + "</a>");
+			}
+		}
+
+		InfoDialog userContactDialog = new InfoDialog(context, R.layout.dialog_user_contact_info_layout, Html.fromHtml(sb.toString()));
+		WebView userContactView = ((DialogUserContactInfoLayoutBinding) userContactDialog.getBinding()).content;
+		userContactView.loadData(sb.toString(), "text/html", "utf-8");
+		userContactDialog.show();
+	}
+
 }

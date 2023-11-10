@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.UserField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -298,6 +299,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private CheckBox differentPlaceOfStayJurisdiction;
+	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
 	private ComboBox districtCombo;
@@ -389,7 +391,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField reportDate = addField(CaseDataDto.REPORT_DATE, DateField.class);
 		addFields(
 			CaseDataDto.UUID,
-			CaseDataDto.REPORTING_USER,
 			CaseDataDto.DISTRICT_LEVEL_DATE,
 			CaseDataDto.REGION_LEVEL_DATE,
 			CaseDataDto.NATIONAL_LEVEL_DATE,
@@ -401,6 +402,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_NAME,
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
+
+		addField(CaseDataDto.REPORTING_USER, UserField.class);
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
@@ -770,8 +773,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
-		surveillanceOfficerField.setNullSelectionAllowed(true);
+		final UserField surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, UserField.class);
+		surveillanceOfficerField.setEnabled(true);
 
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
@@ -1015,7 +1018,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
+		responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
 		responsibleDistrict = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrict.setRequired(true);
@@ -1412,6 +1415,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
+
+		if (FacadeProvider.getFeatureConfigurationFacade()
+			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
+	}
+
+	private void hideJurisdictionFields() {
+
+		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
+		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
+		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
+		differentPlaceOfStayJurisdiction.setVisible(false);
+		responsibleRegion.setVisible(false);
+		responsibleDistrict.setVisible(false);
+		responsibleCommunity.setVisible(false);
 	}
 
 	private void updateFacilityOrHome() {

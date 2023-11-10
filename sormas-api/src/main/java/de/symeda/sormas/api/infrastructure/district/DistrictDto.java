@@ -21,14 +21,14 @@ import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 @FeatureIndependent
-public class DistrictDto extends InfrastructureDto {
+public class DistrictDto extends InfrastructureDtoWithDefault {
 
 	private static final long serialVersionUID = 8990957700033431836L;
 
