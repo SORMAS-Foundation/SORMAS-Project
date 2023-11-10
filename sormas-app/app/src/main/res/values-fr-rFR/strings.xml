@@ -42,7 +42,7 @@
     <string name="action_confirm">Confirmer</string>
     <string name="action_create">Créer</string>
     <string name="action_create_case_from_contact">Créer un cas pour cette personne de contact</string>
-    <string name="action_create_case_from_event_participant">Create a case for this event participant</string>
+    <string name="action_create_case_from_event_participant">Créer un cas pour ce participant à l\'évènement</string>
     <string name="action_create_treatment">Créer un traitement</string>
     <string name="action_edit_data">Modifier les données</string>
     <string name="action_delete">Effacer</string>
@@ -172,7 +172,7 @@
     <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Echantillons environementaux</string>
-    <string name="caption_environment_tasks">Environment Tasks</string>
+    <string name="caption_environment_tasks">Tâche environnementale</string>
     <string name="caption_environment_sample_information">Information sur l\'échantillon</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_information">Informations sur l\'événement</string>
