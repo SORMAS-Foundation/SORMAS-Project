@@ -46,6 +46,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
@@ -99,7 +100,7 @@ public class ContactDataView extends AbstractContactView {
 		editComponent = ControllerProvider.getContactController()
 			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE)) {
 			addCreateFromCaseButtonLogic();
 		}
 
