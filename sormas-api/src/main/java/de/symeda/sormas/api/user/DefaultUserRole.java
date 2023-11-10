@@ -447,6 +447,8 @@ public enum DefaultUserRole {
 					EXPORT_DATA_PROTECTION_DATA,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI,
 					DEV_MODE));
@@ -562,6 +564,8 @@ public enum DefaultUserRole {
 					DOCUMENT_DELETE,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -617,6 +621,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -697,6 +703,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -730,6 +738,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -801,6 +811,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -846,6 +858,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -914,6 +928,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -995,6 +1011,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1049,6 +1067,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1121,6 +1141,8 @@ public enum DefaultUserRole {
 					ENVIRONMENT_SAMPLE_EXPORT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1197,6 +1219,8 @@ public enum DefaultUserRole {
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1366,6 +1390,8 @@ public enum DefaultUserRole {
 					DOCUMENT_DELETE,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1397,6 +1423,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST));
 			break;
 		case POE_NATIONAL_USER:
@@ -1441,6 +1469,8 @@ public enum DefaultUserRole {
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1491,6 +1521,8 @@ public enum DefaultUserRole {
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1645,6 +1677,8 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					DOCUMENT_VIEW,
 					DOCUMENT_UPLOAD,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1743,6 +1777,8 @@ public enum DefaultUserRole {
 					DOCUMENT_UPLOAD,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+                        EXTERNAL_EMAIL_SEND,
+                        EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
