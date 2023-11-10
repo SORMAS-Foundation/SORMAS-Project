@@ -55,6 +55,7 @@ public class Environment extends CoreAdo {
 	public static final String WATER_USE = "waterUse";
 	public static final String OTHER_WATER_USE = "otherWaterUse";
 	public static final String LOCATION = "location";
+	public static final String ENVIRONMENT_SAMPLES = "environmentSamples";
 
 	private Date reportDate;
 	private User reportingUser;
