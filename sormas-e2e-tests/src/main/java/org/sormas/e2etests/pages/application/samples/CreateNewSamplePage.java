@@ -139,7 +139,6 @@ public class CreateNewSamplePage {
           "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase critical v-label-critical v-label-undef-w']");
   public static final By NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS =
       By.cssSelector("[id='New test result']");
-  public static final By ADD_PATHOGEN_TEST = By.xpath("//div[@class='v-button v-widget']");
   public static final By DATE_AND_TIME_OF_RESULTS =
       By.xpath("//div[contains(text(),'Date and time of result:')]");
   public static final By UPDATE_CASE_DISEASE_VARIANT =
