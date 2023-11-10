@@ -17,6 +17,8 @@
  */
 package de.symeda.sormas.app.util;
 
+import java.util.Set;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 
@@ -30,7 +32,7 @@ public class UserJurisdiction {
 	private String healthFacilityUuid;
 	private String pointOfEntryUuid;
 	private String labUuid;
-	private Disease limitedDisease;
+	private Set<Disease> limitedDiseases;
 
 	public JurisdictionLevel getJurisdictionLevel() {
 		return jurisdictionLevel;
@@ -96,11 +98,11 @@ public class UserJurisdiction {
 		this.labUuid = labUuid;
 	}
 
-	public Disease getLimitedDisease() {
-		return limitedDisease;
+	public Set<Disease> getLimitedDiseases() {
+		return limitedDiseases;
 	}
 
-	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+	public void setLimitedDiseases(Set<Disease> limitedDiseases) {
+		this.limitedDiseases = limitedDiseases;
 	}
 }

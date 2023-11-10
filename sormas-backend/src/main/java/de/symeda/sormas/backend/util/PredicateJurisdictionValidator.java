@@ -65,7 +65,7 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 	}
 
 	public Predicate hasUserLimitedDisease() {
-		if (user != null && user.getLimitedDisease() != null) {
+		if (user != null) {
 			return getLimitedDiseasePredicate();
 		} else {
 			return null;
