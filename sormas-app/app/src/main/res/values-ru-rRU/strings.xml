@@ -279,6 +279,7 @@
     <string name="caption_sync_pulled">%1$s pulled</string>
     <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
     <string name="caption_sync_deleted">%1$s deleted</string>
+    <string name="caption_event_search_field">ID, title, description</string>
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
     <string name="confirmation_pick_gps">Are you in this place right now?</string>
