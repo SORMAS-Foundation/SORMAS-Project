@@ -12754,8 +12754,8 @@ ALTER TABLE users_history RENAME COLUMN limiteddisease TO limiteddiseases;
 ALTER TABLE users_history ALTER COLUMN limiteddiseases TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (531, 'Assign multiple limited diseases to users #11435');
--- 2023-09-11 Create new user rights to manage, send and attach documents to email templates #12466
 
+-- 2023-09-11 Create new user rights to manage, send and attach documents to email templates #12466
 DO
 $$
     DECLARE
@@ -12783,6 +12783,5 @@ WHERE ur.linkeddefaultuserrole = 'ADMIN';
 
 INSERT INTO schema_version (version_number, comment)
 VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
-
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
