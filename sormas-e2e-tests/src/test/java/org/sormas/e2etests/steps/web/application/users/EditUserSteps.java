@@ -158,7 +158,7 @@ public class EditUserSteps implements En {
         .gpsAccuracy(webDriverHelpers.getValueFromWebElement(LAT_LON_ACCURACY_INPUT))
         .active(webDriverHelpers.getWebElement(ACTIVE_CHECKBOX).isSelected())
         .userName(webDriverHelpers.getValueFromWebElement(USER_NAME_INPUT))
-        .limitedDisease(webDriverHelpers.getValueFromWebElement(LIMITED_DISEASE_COMBOBOX_INPUT))
+        .limitedDisease(webDriverHelpers.getTextFromWebElement(LIMITED_DISEASE_CHECKBOX_TEXT))
         .userRole(webDriverHelpers.getTextFromWebElement(USER_ROLE_CHECKBOX_TEXT))
         .build();
   }
@@ -191,7 +191,7 @@ public class EditUserSteps implements En {
         .gpsAccuracy(webDriverHelpers.getValueFromWebElement(LAT_LON_ACCURACY_INPUT))
         .userName(webDriverHelpers.getValueFromWebElement(USER_NAME_INPUT))
         .active(webDriverHelpers.getWebElement(ACTIVE_CHECKBOX).isSelected())
-        .limitedDisease(webDriverHelpers.getValueFromWebElement(LIMITED_DISEASE_COMBOBOX_INPUT))
+        .limitedDisease(webDriverHelpers.getTextFromWebElement(LIMITED_DISEASE_CHECKBOX_TEXT))
         .userRole(webDriverHelpers.getTextFromWebElement(USER_ROLE_CHECKBOX_TEXT))
         .build();
   }

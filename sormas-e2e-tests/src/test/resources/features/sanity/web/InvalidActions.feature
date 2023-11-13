@@ -21,7 +21,7 @@ Feature: Application invalid actions end to end tests
     Given I try to log in with "Donald" and password "Duck781$"
     Then Login failed message should be displayed
 
-  @env_main
+  @tmsLink=SORDEV-7456mk @env_main
   Scenario: UI Login with inactive user
     Given I log in as a Admin User
     And I click on the Users from navbar

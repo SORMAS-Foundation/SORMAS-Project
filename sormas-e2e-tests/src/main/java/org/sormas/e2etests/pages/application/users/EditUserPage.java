@@ -55,7 +55,8 @@ public class EditUserPage {
   public static final By ACTIVE_LABEL = By.cssSelector(".v-window #active label");
   public static final By USER_NAME_INPUT = By.id("userName");
   public static final By USER_ROLE_CHECKBOX_TEXT = By.cssSelector("#userRoles [checked] + label");
-  public static final By LIMITED_DISEASE_COMBOBOX_INPUT = By.cssSelector("#limitedDisease > input");
+  public static final By LIMITED_DISEASE_CHECKBOX_TEXT =
+      By.cssSelector("#limitedDiseases [checked] + label");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By SAVE_BUTTON_EDIT_USER = By.id("commit");
   public static final By NOTIFICATION_CAPTION_EDIT_USER =
