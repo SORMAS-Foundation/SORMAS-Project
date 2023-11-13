@@ -268,7 +268,8 @@ public enum UserRight {
 	MANAGE_PUBLIC_EXPORT_CONFIGURATION(UserRightGroup.CONFIGURATION),
 	DOCUMENT_TEMPLATE_MANAGEMENT(UserRightGroup.CONFIGURATION),
 	LINE_LISTING_CONFIGURE(UserRightGroup.CONFIGURATION),
-	DEV_MODE(UserRightGroup.CONFIGURATION);
+	DEV_MODE(UserRightGroup.CONFIGURATION),
+	CUSTOMIZABLE_ENUM_MANAGEMENT(UserRightGroup.CONFIGURATION);
 
 	//@formatter:on
 
@@ -466,6 +467,7 @@ public enum UserRight {
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _EXTERNAL_VISITS = "EXTERNAL_VISITS";
 	public static final String _DEV_MODE = "DEV_MODE";
+	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 

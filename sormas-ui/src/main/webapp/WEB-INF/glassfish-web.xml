@@ -966,4 +966,9 @@
         <group-name>DEV_MODE</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>CUSTOMIZABLE_ENUM_MANAGEMENT</role-name>
+        <group-name>CUSTOMIZABLE_ENUM_MANAGEMENT</group-name>
+    </security-role-mapping>
+
 </glassfish-web-app>

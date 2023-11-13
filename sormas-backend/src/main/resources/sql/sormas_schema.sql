@@ -12755,4 +12755,12 @@ ALTER TABLE users_history ALTER COLUMN limiteddiseases TYPE text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (531, 'Assign multiple limited diseases to users #11435');
 
+-- 2023-11-13 Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'CUSTOMIZABLE_ENUM_MANAGEMENT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (532, 'Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

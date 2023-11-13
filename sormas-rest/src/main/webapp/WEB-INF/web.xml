@@ -780,4 +780,8 @@
 		<role-name>DEV_MODE</role-name>
 	</security-role>
 
+	<security-role>
+		<role-name>CUSTOMIZABLE_ENUM_MANAGEMENT</role-name>
+	</security-role>
+
 </web-app>
