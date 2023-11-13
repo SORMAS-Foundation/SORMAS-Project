@@ -75,6 +75,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
@@ -396,7 +397,14 @@ public class SampleController {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
-				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+
+				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
+				if (associatedCase != null) {
+					UI.getCurrent().getNavigator().navigateTo(CaseDataView.VIEW_NAME + "/" + associatedCase.getUuid());
+				} else {
+					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+				}
+
 			}, (deletionDetails) -> {
 				FacadeProvider.getSampleFacade().restore(dto.getUuid());
 				updateAssociationsForSample(dto);
