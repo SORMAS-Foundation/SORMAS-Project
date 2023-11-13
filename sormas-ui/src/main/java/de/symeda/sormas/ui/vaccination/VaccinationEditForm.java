@@ -34,6 +34,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UserField;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
@@ -76,7 +77,7 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 	protected void addFields() {
 		addField(VaccinationDto.REPORT_DATE).setRequired(true);
 
-		addField(VaccinationDto.REPORTING_USER).setReadOnly(true);
+		addField(VaccinationDto.REPORTING_USER, UserField.class).setReadOnly(true);
 
 		addField(VaccinationDto.VACCINATION_DATE);
 		Field vaccineName = addField(VaccinationDto.VACCINE_NAME);

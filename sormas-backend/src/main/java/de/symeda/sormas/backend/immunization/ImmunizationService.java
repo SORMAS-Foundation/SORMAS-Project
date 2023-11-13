@@ -561,9 +561,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		Predicate filter = inJurisdictionOrOwned(qc);
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
-		}
+		filter = CriteriaBuilderHelper
+			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));
 
 		return filter;
 	}

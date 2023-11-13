@@ -31,8 +31,6 @@ public interface DiseaseConfigurationFacade {
 
 	boolean isPrimaryDisease(Disease disease);
 
-	List<Disease> getAllPrimaryDiseases();
-
 	boolean hasFollowUp(Disease disease);
 
 	List<Disease> getAllDiseasesWithFollowUp();

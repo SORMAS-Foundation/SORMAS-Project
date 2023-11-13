@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.outbreak;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -31,7 +33,7 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-	private Disease disease;
+	private Set<Disease> diseases;
 	private Boolean active;
 	private Date activeLower, activeUpper;
 	private Date changeDateAfter;
@@ -56,12 +58,17 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public Disease getDisease() {
-		return disease;
+	public Set<Disease> getDiseases() {
+		return diseases;
+	}
+
+	public OutbreakCriteria diseases(Set<Disease> disease) {
+		this.diseases = disease;
+		return this;
 	}
 
 	public OutbreakCriteria disease(Disease disease) {
-		this.disease = disease;
+		this.diseases = Collections.singleton(disease);
 		return this;
 	}
 
