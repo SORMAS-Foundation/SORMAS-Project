@@ -12781,7 +12781,6 @@ SELECT ur.id, 'EMAIL_TEMPLATE_MANAGEMENT'
 FROM userroles ur
 WHERE ur.linkeddefaultuserrole = 'ADMIN';
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
+INSERT INTO schema_version (version_number, comment) VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
