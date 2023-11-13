@@ -147,9 +147,9 @@
     </style>
 
     <style name="FilterCheckBoxLabelStyle">
-        <item name="android:textColor">@color/lightBlue60</item>
+        <item name="android:textColor">@color/controlTextColor</item>
         <item name="android:textSize">@dimen/textSizeLarge</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
