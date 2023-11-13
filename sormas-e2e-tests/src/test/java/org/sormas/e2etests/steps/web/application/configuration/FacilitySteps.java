@@ -48,6 +48,7 @@ import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabP
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.FACILITY_TYPE_COMBOBOX_FACILITIES_CONFIGURATION;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.NEW_CASE_FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.REGION_COMBOBOX_FACILITIES_CONFIGURATION;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.RELEVANCE_STATUS_COMBOBOX_FACILITIES_CONFIGURATION;
@@ -170,7 +171,7 @@ public class FacilitySteps implements En {
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectPlaceOfStay(caze.getPlaceOfStay());
           selectFacilityCategory(caze.getFacilityCategory());
-          selectFacilityType(caze.getFacilityType());
+          selectNewCaseFacilityType(caze.getFacilityType());
           selectFacility(caze.getFacility());
           fillFirstName(caze.getFirstName());
           fillLastName(caze.getLastName());
@@ -392,6 +393,10 @@ public class FacilitySteps implements En {
 
   private void selectFacilityType(String facilityType) {
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
+  }
+
+  private void selectNewCaseFacilityType(String facilityType) {
+    webDriverHelpers.selectFromCombobox(NEW_CASE_FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
   private void selectFacilityTypeEvent(String facilityType) {

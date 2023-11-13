@@ -50,6 +50,7 @@ public interface Strings {
 	String classificationSymptomsAnyOf = "classificationSymptomsAnyOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
+	String close = "close";
 	String comparedTo = "comparedTo";
 	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
 	String confirmationArchiveArea = "confirmationArchiveArea";
@@ -655,6 +656,7 @@ public interface Strings {
 	String headingLaboratoryEnvironmentSample = "headingLaboratoryEnvironmentSample";
 	String headingLaboratorySample = "headingLaboratorySample";
 	String headingLastReportedDistrict = "headingLastReportedDistrict";
+	String headingLimitedDiseases = "headingLimitedDiseases";
 	String headingLineListing = "headingLineListing";
 	String headingLineListingImport = "headingLineListingImport";
 	String headingLocation = "headingLocation";
@@ -995,6 +997,7 @@ public interface Strings {
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
+	String infoRestrictDiseasesDescription = "infoRestrictDiseasesDescription";
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
 	String infoSampleExport = "infoSampleExport";
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
@@ -1355,6 +1358,7 @@ public interface Strings {
 	String messageNoTasksSelected = "messageNoTasksSelected";
 	String messageNoTravelEntriesSelected = "messageNoTravelEntriesSelected";
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
+	String messageNoUserSelected = "messageNoUserSelected";
 	String messageNoUsersSelected = "messageNoUsersSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOtherDeleteReasonNotFilled = "messageOtherDeleteReasonNotFilled";
@@ -1563,6 +1567,7 @@ public interface Strings {
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";
+	String promptEmail = "promptEmail";
 	String promptEnvironmentDateFrom = "promptEnvironmentDateFrom";
 	String promptEnvironmentDateTo = "promptEnvironmentDateTo";
 	String promptEnvironmentEpiWeekFrom = "promptEnvironmentEpiWeekFrom";
@@ -1639,6 +1644,7 @@ public interface Strings {
 	String promptTaskEpiWeekFrom = "promptTaskEpiWeekFrom";
 	String promptTaskEpiWeekTo = "promptTaskEpiWeekTo";
 	String promptTaskSearchField = "promptTaskSearchField";
+	String promptTelephoneNumber = "promptTelephoneNumber";
 	String promptTravelEntryDateFrom = "promptTravelEntryDateFrom";
 	String promptTravelEntryDateTo = "promptTravelEntryDateTo";
 	String promptTravelEntryEpiWeekFrom = "promptTravelEntryEpiWeekFrom";

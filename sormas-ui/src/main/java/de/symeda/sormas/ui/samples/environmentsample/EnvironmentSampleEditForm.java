@@ -52,7 +52,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -65,6 +65,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.UserField;
 
 public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampleDto> {
 
@@ -75,7 +76,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	private static final String SAMPLE_MANAGEMENT_HEADING_LOC = "sampleManagementHeadingLoc";
 	private static final String REQUESTED_PATHOGENS_SUBHEADING_LOC = "requestedPathogensSubheadingLoc";
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC)
-		+ fluidRowLocs(3, EnvironmentSampleDto.UUID, 3, EnvironmentSampleDto.ENVIRONMENT, 6, REPORT_INFO_LOC)
+		+ fluidRowLocs(3, EnvironmentSampleDto.UUID, 2, EnvironmentSampleDto.ENVIRONMENT, 3, REPORT_INFO_LOC, 4, EnvironmentSampleDto.REPORTING_USER)
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_DATE_TIME, "")
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_MATERIAL, EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL)
 		+ fluidRowLocs(EnvironmentSampleDto.FIELD_SAMPLE_ID, "")
@@ -249,6 +250,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			true,
 			true);
 
+		addField(EnvironmentSampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
+
 		addField(EnvironmentSampleDto.SPECIMEN_CONDITION);
 
 		addField(EnvironmentSampleDto.GENERAL_COMMENT, TextArea.class).setRows(3);
@@ -262,10 +265,12 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 
 	private void disableFieldsBasedOnRights(EnvironmentSampleDto sample) {
 		UserProvider currentUserProvider = UserProvider.getCurrent();
+		JurisdictionLevel jurisdictionLevel = currentUserProvider.getJurisdictionLevel();
 		boolean hasEditReceivalRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
-		boolean canEditDispatchField = isCreate || (isOwner && hasEditDispatchRight);
+		boolean canEditDispatchField =
+				isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {
@@ -315,15 +320,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	}
 
 	protected void defaultValueChangeListener(EnvironmentSampleDto sample) {
-		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))
-			.append(" ")
-			.append(DateFormatHelper.formatLocalDateTime(sample.getReportDate()));
-		UserReferenceDto reportingUser = sample.getReportingUser();
-		if (reportingUser != null) {
-			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ").append(reportingUser.buildCaption());
-		}
-
-		Label reportInfoLabel = new Label(reportInfoText.toString());
+		String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " " + DateFormatHelper.formatLocalDateTime(sample.getReportDate());
+		Label reportInfoLabel = new Label(reportInfoText);
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
 	}

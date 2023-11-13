@@ -1,0 +1,62 @@
+{
+    "description": "SORMAS (Surveillance Outbreak Response Management and Analysis System) is an open source eHealth system - consisting of separate web and mobile apps - that is geared towards optimizing the processes used in monitoring the spread of infectious diseases and responding to outbreak situations.",
+    "upload_type": "software",
+    "creators": [
+        {
+            "orcid": "0000-0002-4826-0042",
+            "affiliation": "Helmholtz Centre for Infection Research",
+            "name": "Bernard C., Silenou"
+        },
+        {
+            "orcid": "0000-0001-6569-0768",
+            "affiliation": "Helmholtz Centre for Infection Research",
+            "name": "Anja M Hauri"
+        },
+        {
+            "affiliation": "Netzlink Informationstechnik GmbH",
+            "name": "Frank, Hautpmann"
+        },
+        {
+            "orcid": "0000-0002-1282-2234",
+            "affiliation": "Vitasystems GmbH",
+            "name": "Maté, Strysewske"
+        },
+        {
+            "orcid": "0000-0003-0121-189X",
+            "affiliation": "Vitasystems GmbH",
+            "name": "Martin, Wahnschaffe"
+        },
+        {
+            "orcid": "0000-0002-8544-4270",
+            "affiliation": "SORMAS Foundation gGmbH",
+            "name": "Pilar Hernandez Pastor"
+        }
+    ],
+    "license": "GNU General Public License v3.0",
+    "title": "SORMAS: The digital application for real-time surveillance and outbreak management.",
+    "related_identifiers": [
+        {
+            "scheme": "url",
+            "identifier": "https://github.com/SORMAS-Foundation/SORMAS-Project",
+            "relation": "isSupplementTo"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.7643923",
+            "relation": "isVersionOf",
+            "resource_type": "publication-article"
+        }
+    ],
+    "keywords": [
+        "SORMAS",
+        "COVID-19",
+        "Disease outbreak",
+        "Contact tracing",
+        "Infectious disease",
+        "Public health",
+        "Epidemiology",
+        "Surveillance tool",
+        "One Health",
+        "Pandemic"
+    ]
+}

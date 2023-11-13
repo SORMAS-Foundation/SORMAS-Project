@@ -190,7 +190,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 @LocalBean
 public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
-	private static final Double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
+	private static final double SECONDS_30_DAYS = Long.valueOf(TimeUnit.DAYS.toSeconds(30L)).doubleValue();
 
 	@EJB
 	private CaseListCriteriaBuilder listQueryBuilder;
@@ -1483,9 +1483,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		// only show cases of a specific disease if a limited disease is set
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.DISEASE), currentUser.getLimitedDisease()));
-		}
+		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, casePath.get(Case.DISEASE)));
 
 		// port health users can only see port health cases
 		if (currentUser.getUserRoles().stream().anyMatch(userRole -> userRole.isPortHealthUser())) {
@@ -2015,12 +2013,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Predicate nameSimilarityFilter =
 			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), nameSimilarityThreshold);
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
-		Predicate reportDateFilter = cb.lessThanOrEqualTo(
-			cb.abs(
-				cb.diff(
-					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root.get(Case.REPORT_DATE)),
-					cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), root2.get(Case.REPORT_DATE)))),
-			SECONDS_30_DAYS);
+		Predicate reportDateFilter =
+			cb.lessThanOrEqualTo(CriteriaBuilderHelper.dateDiff(cb, root.get(Case.REPORT_DATE), root2.get(Case.REPORT_DATE)), SECONDS_30_DAYS);
 
 		// // todo this should use PersonService.buildSimilarityCriteriaFilter
 		// Sex filter: only when sex is filled in for both cases
@@ -2045,10 +2039,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Predicate onsetDateFilter = cb.or(
 			cb.or(cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), cb.isNull(symptoms2.get(Symptoms.ONSET_DATE))),
 			cb.lessThanOrEqualTo(
-				cb.abs(
-					cb.diff(
-						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms.get(Symptoms.ONSET_DATE)),
-						cb.function("date_part", Double.class, cb.parameter(String.class, "date_type"), symptoms2.get(Symptoms.ONSET_DATE)))),
+				CriteriaBuilderHelper.dateDiff(cb, symptoms.get(Symptoms.ONSET_DATE), symptoms2.get(Symptoms.ONSET_DATE)),
 				SECONDS_30_DAYS));
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, relevanceStatusRoot2Filter, nameSimilarityFilter, diseaseFilter);
@@ -2079,7 +2070,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		cq.multiselect(root.get(Case.ID), root2.get(Case.ID), root.get(Case.CREATION_DATE));
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 
-		TypedQuery<Object[]> typedQuery = em.createQuery(cq).setParameter("date_type", "epoch");
+		TypedQuery<Object[]> typedQuery = em.createQuery(cq);
 		if (limit != null) {
 			// Double the limit because the query result will contain each pair twice; since these duplicates will
 			// be removed, the final result list would only contain limit/2 entries otherwise
@@ -2321,5 +2312,39 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease) {
+		Integer automaticSampleAssignmentThreshold = diseaseConfigurationFacade.getAutomaticSampleAssignmentThreshold(disease);
+
+		if (automaticSampleAssignmentThreshold == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		Subquery<Date> earliestSampleSq = cq.subquery(Date.class);
+		Root<Sample> sampleRoot = earliestSampleSq.from(Sample.class);
+		earliestSampleSq.select(cb.least(sampleRoot.<Date> get(Sample.SAMPLE_DATE_TIME)));
+		earliestSampleSq.where(cb.equal(sampleRoot.get(Sample.ASSOCIATED_CASE), caseRoot));
+
+		cq.select(caseRoot.get(Case.UUID));
+		cq.where(
+			caseRoot.get(Case.UUID).in(uuids),
+			cb.equal(caseRoot.get(Case.DISEASE), disease),
+			cb.lessThanOrEqualTo(
+				CriteriaBuilderHelper.dateDiff(
+					cb,
+						cb.function(
+								ExtendedPostgreSQL94Dialect.DATE,
+								Date.class,
+								CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
+				Long.valueOf(TimeUnit.DAYS.toSeconds(automaticSampleAssignmentThreshold)).doubleValue()));
+
+		List<String> caseUuids = em.createQuery(cq).getResultList();
+		return caseUuids.size() == 1 ? caseUuids.get(0) : null;
 	}
 }

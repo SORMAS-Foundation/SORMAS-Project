@@ -51,6 +51,12 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -65,8 +71,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
@@ -110,19 +114,17 @@ public class ExternalMessageProcessingUIHelper {
 			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
-	public static void showPickOrCreatePersonWindow(PersonDto person, AbstractProcessingFlow.HandlerCallback<PersonDto> callback) {
+	public static void showPickOrCreatePersonWindow(
+		PersonDto person,
+		AbstractProcessingFlow.HandlerCallback<ExternalMessageProcessingResult.EntitySelection<PersonDto>> callback) {
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
-				PersonDto selectedPersonDto = null;
-				if (selectedPersonRef != null) {
-					if (selectedPersonRef.getUuid().equals(person.getUuid())) {
-						selectedPersonDto = person;
-					} else {
-						selectedPersonDto = FacadeProvider.getPersonFacade().getByUuid(selectedPersonRef.getUuid());
-					}
-				}
+				PersonDto selectedPersonDto = selectedPersonRef.getUuid().equals(person.getUuid())
+					? person
+					: FacadeProvider.getPersonFacade().getByUuid(selectedPersonRef.getUuid());
 
-				callback.done(selectedPersonDto);
+				callback.done(
+					new ExternalMessageProcessingResult.EntitySelection<>(selectedPersonDto, person.getUuid().equals(selectedPersonRef.getUuid())));
 			},
 				callback::cancel,
 				false,
@@ -155,15 +157,16 @@ public class ExternalMessageProcessingUIHelper {
 		CaseDataDto caze,
 		PersonDto person,
 		ExternalMessageDto labMessage,
+		ExternalMessageMapper mapper,
 		AbstractProcessingFlow.HandlerCallback<CaseDataDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
-			LabMessageProcessingHelper.updateAddressAndSavePerson(
+			updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				labMessage);
+				mapper);
 
 			callback.done(caseCreateComponent.getWrappedComponent().getValue());
 
@@ -179,11 +182,22 @@ public class ExternalMessageProcessingUIHelper {
 		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
 	}
 
+	public static void updateAddressAndSavePerson(PersonDto personDto, ExternalMessageMapper mapper) {
+		if (personDto.getAddress().getCity() == null
+			&& personDto.getAddress().getHouseNumber() == null
+			&& personDto.getAddress().getPostalCode() == null
+			&& personDto.getAddress().getStreet() == null) {
+			mapper.mapToLocation(personDto.getAddress());
+		}
+		FacadeProvider.getPersonFacade().save(personDto);
+	}
+
 	public static void showEditSampleWindow(
 		SampleDto sample,
 		boolean lastSample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto externalMessageDto,
+		ExternalMessageMapper mapper,
 		Consumer<SampleAndPathogenTests> commitHandler,
 		Runnable cancelHandler) {
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -193,7 +207,7 @@ public class ExternalMessageProcessingUIHelper {
 			nonNull(editComponentWrapper.getValue()) ? e -> editComponentWrapper.getValue().discard() : e -> editComponentWrapper.getValue());
 
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = ExternalMessageProcessingUIHelper
-			.getSampleEditComponent(sample, lastSample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
+			.getSampleEditComponent(sample, lastSample, newPathogenTests, externalMessageDto, mapper, commitHandler, cancelHandler, () -> {
 				// do not discard
 				closeListener.remove();
 				window.close();
@@ -219,6 +233,7 @@ public class ExternalMessageProcessingUIHelper {
 		boolean lastSample,
 		List<PathogenTestDto> newPathogenTests,
 		ExternalMessageDto externalMessageDto,
+		ExternalMessageMapper mapper,
 		Consumer<SampleAndPathogenTests> commitHandler,
 		Runnable cancelHandler,
 		Runnable closeOnNavigateToRefer) {
@@ -289,7 +304,7 @@ public class ExternalMessageProcessingUIHelper {
 
 		// always add at least one PathogenTest
 		if (existingTests.isEmpty() && newTestsToAdd.isEmpty()) {
-			newTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, externalMessageDto, sample, UserProvider.getCurrent().getUser()));
+			newTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, mapper, sample, UserProvider.getCurrent().getUser()));
 		}
 
 		Label newTestSeparator = new Label("<br/><hr/><br/>", ContentMode.HTML);
@@ -329,7 +344,7 @@ public class ExternalMessageProcessingUIHelper {
 			closeOnNavigateToRefer.run();
 		};
 		Consumer<SampleDto> editSample = referredTo -> {
-			showEditSampleWindow(referredTo, lastSample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler);
+			showEditSampleWindow(referredTo, lastSample, newPathogenTests, externalMessageDto, mapper, commitHandler, cancelHandler);
 			closeOnNavigateToRefer.run();
 		};
 

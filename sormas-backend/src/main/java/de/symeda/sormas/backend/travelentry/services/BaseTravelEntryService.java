@@ -11,7 +11,6 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
@@ -64,9 +63,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		Predicate filter = null;
 		if (checkJurisdictionAndLimitedDisease) {
 			filter = inJurisdictionOrOwned(qc);
-			if (currentUser.getLimitedDisease() != null) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
-			}
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(TravelEntry.DISEASE)));
 		}
 		return filter;
 	}

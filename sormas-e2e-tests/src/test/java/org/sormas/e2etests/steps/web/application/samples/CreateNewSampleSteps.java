@@ -265,7 +265,7 @@ public class CreateNewSampleSteps implements En {
           selectReasonForSample(sample.getReasonForSample());
           fillSampleID(sample.getSampleID());
           fillCommentsOnSample(sample.getCommentsOnSample());
-          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
           selectTestedDisease(sample.getTestedDisease());
           selectTypeOfTest(sample.getTypeOfTest());
           selectTestResult(sample.getSampleTestResults());
@@ -313,7 +313,7 @@ public class CreateNewSampleSteps implements En {
           selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
           fillDateOfCollection(sample.getDateOfCollection());
           selectSampleType(sample.getSampleType());
-          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
           selectTestedDisease(sample.getTestedDisease());
           selectTypeOfTest(sample.getTypeOfTest());
           selectTestResult(sample.getSampleTestResults());

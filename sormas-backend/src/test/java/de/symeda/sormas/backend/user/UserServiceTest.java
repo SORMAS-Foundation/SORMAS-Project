@@ -16,6 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -244,9 +245,9 @@ public class UserServiceTest extends AbstractBeanTest {
 			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.NATION, null),
 			hasSize(2));
 
-		commOff1.setLimitedDisease(Disease.EVD);
+		commOff1.setLimitedDiseases(Collections.singleton(Disease.EVD));
 		getUserFacade().saveUser(commOff1, false);
-		survOff11.setLimitedDisease(Disease.CHOLERA);
+		survOff11.setLimitedDiseases(Collections.singleton(Disease.CHOLERA));
 		getUserFacade().saveUser(survOff11, false);
 		assertThat(
 			getUserService()

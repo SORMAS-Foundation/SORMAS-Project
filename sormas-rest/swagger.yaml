@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.91.0-SNAPSHOT
+  version: 1.92.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -10908,6 +10908,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
     ClassificationPathogenTestNegativeResultCriteriaDto:
       type: object
@@ -10948,6 +10949,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
           sampleTestTypes:
             type: array
@@ -10974,6 +10976,7 @@ components:
               - CQ_VALUE_DETECTION
               - SEQUENCING
               - DNA_MICROARRAY
+              - TMA
               - OTHER
             writeOnly: true
     ClassificationPersonAgeBetweenYearsCriteriaDto:
@@ -13711,6 +13714,9 @@ components:
             type: string
         aggregateReportingEnabled:
           type: boolean
+        automaticSampleAssignmentThreshold:
+          type: integer
+          format: int32
         caseFollowUpDuration:
           type: integer
           format: int32
@@ -18906,70 +18912,73 @@ components:
         changeDateAfter:
           type: string
           format: date-time
-        disease:
-          type: string
-          enum:
-          - AFP
-          - CHOLERA
-          - CONGENITAL_RUBELLA
-          - CSM
-          - DENGUE
-          - EVD
-          - GUINEA_WORM
-          - LASSA
-          - MEASLES
-          - MONKEYPOX
-          - NEW_INFLUENZA
-          - PLAGUE
-          - POLIO
-          - UNSPECIFIED_VHF
-          - WEST_NILE_FEVER
-          - YELLOW_FEVER
-          - RABIES
-          - ANTHRAX
-          - CORONAVIRUS
-          - PNEUMONIA
-          - MALARIA
-          - TYPHOID_FEVER
-          - ACUTE_VIRAL_HEPATITIS
-          - NON_NEONATAL_TETANUS
-          - HIV
-          - SCHISTOSOMIASIS
-          - SOIL_TRANSMITTED_HELMINTHS
-          - TRYPANOSOMIASIS
-          - DIARRHEA_DEHYDRATION
-          - DIARRHEA_BLOOD
-          - SNAKE_BITE
-          - RUBELLA
-          - TUBERCULOSIS
-          - LEPROSY
-          - LYMPHATIC_FILARIASIS
-          - BURULI_ULCER
-          - PERTUSSIS
-          - NEONATAL_TETANUS
-          - ONCHOCERCIASIS
-          - DIPHTERIA
-          - TRACHOMA
-          - YAWS_ENDEMIC_SYPHILIS
-          - MATERNAL_DEATHS
-          - PERINATAL_DEATHS
-          - INFLUENZA_A
-          - INFLUENZA_B
-          - H_METAPNEUMOVIRUS
-          - RESPIRATORY_SYNCYTIAL_VIRUS
-          - PARAINFLUENZA_1_4
-          - ADENOVIRUS
-          - RHINOVIRUS
-          - ENTEROVIRUS
-          - M_PNEUMONIAE
-          - C_PNEUMONIAE
-          - ARI
-          - CHIKUNGUNYA
-          - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
-          - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
-          - FHA
-          - OTHER
-          - UNDEFINED
+        diseases:
+          type: array
+          items:
+            type: string
+            enum:
+            - AFP
+            - CHOLERA
+            - CONGENITAL_RUBELLA
+            - CSM
+            - DENGUE
+            - EVD
+            - GUINEA_WORM
+            - LASSA
+            - MEASLES
+            - MONKEYPOX
+            - NEW_INFLUENZA
+            - PLAGUE
+            - POLIO
+            - UNSPECIFIED_VHF
+            - WEST_NILE_FEVER
+            - YELLOW_FEVER
+            - RABIES
+            - ANTHRAX
+            - CORONAVIRUS
+            - PNEUMONIA
+            - MALARIA
+            - TYPHOID_FEVER
+            - ACUTE_VIRAL_HEPATITIS
+            - NON_NEONATAL_TETANUS
+            - HIV
+            - SCHISTOSOMIASIS
+            - SOIL_TRANSMITTED_HELMINTHS
+            - TRYPANOSOMIASIS
+            - DIARRHEA_DEHYDRATION
+            - DIARRHEA_BLOOD
+            - SNAKE_BITE
+            - RUBELLA
+            - TUBERCULOSIS
+            - LEPROSY
+            - LYMPHATIC_FILARIASIS
+            - BURULI_ULCER
+            - PERTUSSIS
+            - NEONATAL_TETANUS
+            - ONCHOCERCIASIS
+            - DIPHTERIA
+            - TRACHOMA
+            - YAWS_ENDEMIC_SYPHILIS
+            - MATERNAL_DEATHS
+            - PERINATAL_DEATHS
+            - INFLUENZA_A
+            - INFLUENZA_B
+            - H_METAPNEUMOVIRUS
+            - RESPIRATORY_SYNCYTIAL_VIRUS
+            - PARAINFLUENZA_1_4
+            - ADENOVIRUS
+            - RHINOVIRUS
+            - ENTEROVIRUS
+            - M_PNEUMONIAE
+            - C_PNEUMONIAE
+            - ARI
+            - CHIKUNGUNYA
+            - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
+            - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
+            - FHA
+            - OTHER
+            - UNDEFINED
+          uniqueItems: true
         district:
           $ref: '#/components/schemas/DistrictReferenceDto'
         region:
@@ -19821,6 +19830,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         testTypeText:
           type: string
@@ -21367,6 +21377,7 @@ components:
             - CQ_VALUE_DETECTION
             - SEQUENCING
             - DNA_MICROARRAY
+            - TMA
             - OTHER
           uniqueItems: true
         sampleDateTime:
@@ -21677,6 +21688,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         uuid:
           type: string
@@ -24431,6 +24443,7 @@ components:
           - CQ_VALUE_DETECTION
           - SEQUENCING
           - DNA_MICROARRAY
+          - TMA
           - OTHER
         testedDiseaseVariant:
           type: string
@@ -25012,70 +25025,73 @@ components:
           type: string
           maxLength: 512
           minLength: 0
-        limitedDisease:
-          type: string
-          enum:
-          - AFP
-          - CHOLERA
-          - CONGENITAL_RUBELLA
-          - CSM
-          - DENGUE
-          - EVD
-          - GUINEA_WORM
-          - LASSA
-          - MEASLES
-          - MONKEYPOX
-          - NEW_INFLUENZA
-          - PLAGUE
-          - POLIO
-          - UNSPECIFIED_VHF
-          - WEST_NILE_FEVER
-          - YELLOW_FEVER
-          - RABIES
-          - ANTHRAX
-          - CORONAVIRUS
-          - PNEUMONIA
-          - MALARIA
-          - TYPHOID_FEVER
-          - ACUTE_VIRAL_HEPATITIS
-          - NON_NEONATAL_TETANUS
-          - HIV
-          - SCHISTOSOMIASIS
-          - SOIL_TRANSMITTED_HELMINTHS
-          - TRYPANOSOMIASIS
-          - DIARRHEA_DEHYDRATION
-          - DIARRHEA_BLOOD
-          - SNAKE_BITE
-          - RUBELLA
-          - TUBERCULOSIS
-          - LEPROSY
-          - LYMPHATIC_FILARIASIS
-          - BURULI_ULCER
-          - PERTUSSIS
-          - NEONATAL_TETANUS
-          - ONCHOCERCIASIS
-          - DIPHTERIA
-          - TRACHOMA
-          - YAWS_ENDEMIC_SYPHILIS
-          - MATERNAL_DEATHS
-          - PERINATAL_DEATHS
-          - INFLUENZA_A
-          - INFLUENZA_B
-          - H_METAPNEUMOVIRUS
-          - RESPIRATORY_SYNCYTIAL_VIRUS
-          - PARAINFLUENZA_1_4
-          - ADENOVIRUS
-          - RHINOVIRUS
-          - ENTEROVIRUS
-          - M_PNEUMONIAE
-          - C_PNEUMONIAE
-          - ARI
-          - CHIKUNGUNYA
-          - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
-          - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
-          - FHA
-          - OTHER
-          - UNDEFINED
+        limitedDiseases:
+          type: array
+          items:
+            type: string
+            enum:
+            - AFP
+            - CHOLERA
+            - CONGENITAL_RUBELLA
+            - CSM
+            - DENGUE
+            - EVD
+            - GUINEA_WORM
+            - LASSA
+            - MEASLES
+            - MONKEYPOX
+            - NEW_INFLUENZA
+            - PLAGUE
+            - POLIO
+            - UNSPECIFIED_VHF
+            - WEST_NILE_FEVER
+            - YELLOW_FEVER
+            - RABIES
+            - ANTHRAX
+            - CORONAVIRUS
+            - PNEUMONIA
+            - MALARIA
+            - TYPHOID_FEVER
+            - ACUTE_VIRAL_HEPATITIS
+            - NON_NEONATAL_TETANUS
+            - HIV
+            - SCHISTOSOMIASIS
+            - SOIL_TRANSMITTED_HELMINTHS
+            - TRYPANOSOMIASIS
+            - DIARRHEA_DEHYDRATION
+            - DIARRHEA_BLOOD
+            - SNAKE_BITE
+            - RUBELLA
+            - TUBERCULOSIS
+            - LEPROSY
+            - LYMPHATIC_FILARIASIS
+            - BURULI_ULCER
+            - PERTUSSIS
+            - NEONATAL_TETANUS
+            - ONCHOCERCIASIS
+            - DIPHTERIA
+            - TRACHOMA
+            - YAWS_ENDEMIC_SYPHILIS
+            - MATERNAL_DEATHS
+            - PERINATAL_DEATHS
+            - INFLUENZA_A
+            - INFLUENZA_B
+            - H_METAPNEUMOVIRUS
+            - RESPIRATORY_SYNCYTIAL_VIRUS
+            - PARAINFLUENZA_1_4
+            - ADENOVIRUS
+            - RHINOVIRUS
+            - ENTEROVIRUS
+            - M_PNEUMONIAE
+            - C_PNEUMONIAE
+            - ARI
+            - CHIKUNGUNYA
+            - POST_IMMUNIZATION_ADVERSE_EVENTS_MILD
+            - POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE
+            - FHA
+            - OTHER
+            - UNDEFINED
+          uniqueItems: true
         name:
           type: string
         phone:

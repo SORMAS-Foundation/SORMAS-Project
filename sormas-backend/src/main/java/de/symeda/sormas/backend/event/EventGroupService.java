@@ -101,9 +101,12 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 		default:
 		}
 
-		if (filter != null && currentUser.getLimitedDisease() != null) {
-			filter = cb
-				.and(filter, cb.or(cb.equal(eventPath.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventPath.get(Event.DISEASE))));
+		if (filter != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper
+					.limitedDiseasePredicate(cb, currentUser, eventPath.get(Event.DISEASE), cb.isNull(eventPath.get(Event.DISEASE))));
 		}
 
 		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);

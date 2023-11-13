@@ -149,7 +149,7 @@
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@{data.reportDateTime}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlUserReadField
                     android:id="@+id/event_reportingUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.reportingUser}" />
@@ -229,7 +229,7 @@
                 app:customizableEnumValue="@{Boolean.TRUE}"
                 style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
+            <de.symeda.sormas.app.component.controls.ControlUserReadField
                 android:id="@+id/event_responsibleUser"
                 app:value="@{data.responsibleUser}"
                 style="@style/ControlSingleColumnStyle" />

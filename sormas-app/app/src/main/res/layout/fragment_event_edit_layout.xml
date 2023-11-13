@@ -64,7 +64,7 @@
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:shortUuidValue="@{data.uuid}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlUserReadField
                     android:id="@+id/event_responsibleUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.responsibleUser}" />
@@ -83,7 +83,7 @@
                     app:allowedDaysInFuture="0"
                     app:value="@={data.reportDateTime}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlUserReadField
                     android:id="@+id/event_reportingUser"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@{data.reportingUser}" />

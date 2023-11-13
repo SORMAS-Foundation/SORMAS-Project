@@ -1713,6 +1713,7 @@ public interface Captions {
 	String notificationType_group = "notificationType.group";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
+	String noUserSelected = "noUserSelected";
 	String numberOfCharacters = "numberOfCharacters";
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
@@ -2598,6 +2599,7 @@ public interface Captions {
 	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
+	String userRestrictDiseases = "userRestrictDiseases";
 	String userRight = "userRight";
 	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";

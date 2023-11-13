@@ -32,6 +32,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	private Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
 	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
+	private Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
 
 	@Override
 	@PermitAll
@@ -103,9 +105,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		Set<Disease> diseases = EnumSet.noneOf(Disease.class);
 
 		if (caseSurveillance) {
-			if (currentUser.getLimitedDisease() != null) {
-				Disease limitedDisease = currentUser.getLimitedDisease();
-				diseases.add(limitedDisease);
+			if (CollectionUtils.isNotEmpty(currentUser.getLimitedDiseases())) {
+				diseases.addAll(currentUser.getLimitedDiseases());
 			} else {
 				diseases.addAll(caseSurveillanceDiseases);
 			}
@@ -164,17 +165,6 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
-	public List<Disease> getAllPrimaryDiseases() {
-
-		User currentUser = userService.getCurrentUser();
-		if (currentUser.getLimitedDisease() != null) {
-			return primaryDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
-		} else {
-			return primaryDiseases;
-		}
-	}
-
-	@Override
 	public boolean hasFollowUp(Disease disease) {
 		return followUpEnabledDiseases.contains(disease);
 	}
@@ -183,8 +173,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	public List<Disease> getAllDiseasesWithFollowUp() {
 
 		User currentUser = userService.getCurrentUser();
-		if (currentUser.getLimitedDisease() != null) {
-			return followUpEnabledDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(currentUser.getLimitedDiseases())) {
+			return followUpEnabledDiseases.stream().filter(currentUser.getLimitedDiseases()::contains).collect(Collectors.toList());
 		} else {
 			return followUpEnabledDiseases;
 		}
@@ -216,6 +206,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
+		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 
 		return target;
 	}
@@ -228,6 +219,11 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@Override
 	public int getEventParticipantFollowUpDuration(Disease disease) {
 		return eventParticipantFollowUpDurations.get(disease);
+	}
+
+	@Override
+	public Integer getAutomaticSampleAssignmentThreshold(Disease disease) {
+		return automaticSampleAssignmentThresholds.get(disease);
 	}
 
 	@Override
@@ -278,6 +274,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
 		target.setAgeGroups(source.getAgeGroups());
+		target.setAutomaticSampleAssignmentThreshold(source.getAutomaticSampleAssignmentThreshold());
 
 		return target;
 	}
@@ -296,6 +293,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		extendedClassificationMultiDiseases.clear();
 		caseFollowUpDurations.clear();
 		eventParticipantFollowUpDurations.clear();
+		automaticSampleAssignmentThresholds.clear();
 
 		for (DiseaseConfiguration configuration : service.getAll()) {
 			Disease disease = configuration.getDisease();
@@ -347,6 +345,9 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 				eventParticipantFollowUpDurations.put(disease, configuration.getFollowUpDuration());
 			} else {
 				eventParticipantFollowUpDurations.put(disease, followUpDurations.get(disease));
+			}
+			if (configuration.getAutomaticSampleAssignmentThreshold() != null) {
+				automaticSampleAssignmentThresholds.put(disease, configuration.getAutomaticSampleAssignmentThreshold());
 			}
 		}
 	}

@@ -248,6 +248,11 @@ public final class LayoutUtil {
 		return LayoutUtil.fluidRow(fluidColumnLoc(spanA, 0, locA), fluidColumnLoc(spanB, 0, locB), fluidColumnLoc(spanC, 0, locC));
 	}
 
+	public static String fluidRowLocs(int spanA, String locA, int spanB, String locB, int spanC, String locC, int spanD, String locD) {
+		return LayoutUtil
+			.fluidRow(fluidColumnLoc(spanA, 0, locA), fluidColumnLoc(spanB, 0, locB), fluidColumnLoc(spanC, 0, locC), fluidColumnLoc(spanD, 0, locD));
+	}
+
 	public static String fluidRow(String... columns) {
 		return fluidRowCss(null, columns);
 	}

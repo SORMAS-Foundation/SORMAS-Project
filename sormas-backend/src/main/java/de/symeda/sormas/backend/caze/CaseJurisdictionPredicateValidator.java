@@ -91,7 +91,7 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 	@Override
 	protected Predicate getLimitedDiseasePredicate() {
-		return cb.equal(joins.getRoot().get(Case.DISEASE), user.getLimitedDisease());
+		return CriteriaBuilderHelper.limitedDiseasePredicate(cb, user, joins.getRoot().get(Case.DISEASE));
 	}
 
 	@Override

@@ -31,8 +31,6 @@ public interface DiseaseConfigurationFacade {
 
 	boolean isPrimaryDisease(Disease disease);
 
-	List<Disease> getAllPrimaryDiseases();
-
 	boolean hasFollowUp(Disease disease);
 
 	List<Disease> getAllDiseasesWithFollowUp();
@@ -46,6 +44,8 @@ public interface DiseaseConfigurationFacade {
 	int getCaseFollowUpDuration(Disease disease);
 
 	int getEventParticipantFollowUpDuration(Disease disease);
+
+	Integer getAutomaticSampleAssignmentThreshold(Disease disease);
 
 	void saveDiseaseConfiguration(DiseaseConfigurationDto configuration);
 

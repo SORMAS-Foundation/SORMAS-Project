@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_REPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
@@ -180,6 +181,8 @@ public class SideCardsSteps implements En {
         "I check if report side component in Edit Case has today date",
         () -> {
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.scrollToElement(EDIT_REPORT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EDIT_REPORT_BUTTON);
           softly.assertTrue(
               webDriverHelpers.isElementPresent(
                   checkTextInReportSideComponent(formatter.format(LocalDate.now()))));

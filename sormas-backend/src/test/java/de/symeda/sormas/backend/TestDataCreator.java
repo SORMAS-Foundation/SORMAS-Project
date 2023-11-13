@@ -343,7 +343,9 @@ public class TestDataCreator {
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
 		user.setUserRoles(new HashSet<>(Arrays.asList(roles)));
-		user.setLimitedDisease(limitedDisease);
+		if (limitedDisease != null) {
+			user.setLimitedDiseases(Collections.singleton(limitedDisease));
+		}
 		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));
@@ -2003,6 +2005,17 @@ public class TestDataCreator {
 		Boolean caseSurveillance,
 		Boolean aggregateReporting,
 		List<String> ageGroups) {
+		updateDiseaseConfiguration(disease, active, primary, caseSurveillance, aggregateReporting, ageGroups, null);
+	}
+
+	public void updateDiseaseConfiguration(
+		Disease disease,
+		Boolean active,
+		Boolean primary,
+		Boolean caseSurveillance,
+		Boolean aggregateReporting,
+		List<String> ageGroups,
+		Integer automaticSampleAssignmentThreshold) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);
@@ -2010,6 +2023,7 @@ public class TestDataCreator {
 		config.setCaseSurveillanceEnabled(caseSurveillance);
 		config.setAggregateReportingEnabled(aggregateReporting);
 		config.setAgeGroups(ageGroups);
+		config.setAutomaticSampleAssignmentThreshold(automaticSampleAssignmentThreshold);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
 	}
 

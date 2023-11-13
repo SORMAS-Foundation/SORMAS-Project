@@ -42,7 +42,7 @@
     <string name="action_confirm">Confirmer</string>
     <string name="action_create">Créer</string>
     <string name="action_create_case_from_contact">Créer un cas pour cette personne de contact</string>
-    <string name="action_create_case_from_event_person">Créer un cas pour cette personne de l\'événement</string>
+    <string name="action_create_case_from_event_participant">Create a case for this event participant</string>
     <string name="action_create_treatment">Créer un traitement</string>
     <string name="action_edit_data">Modifier les données</string>
     <string name="action_delete">Effacer</string>
@@ -80,7 +80,7 @@
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_person_case">Ouvrez le cas associé à cette personne de l\'événement</string>
+    <string name="action_open_event_participant_case">Open Case of Event Participant</string>
     <string name="action_open_prescription">Ouvrir l\'ordonnance</string>
     <string name="action_open_resulting_case">Ouvrir le cas de résultat</string>
     <string name="action_open_source_case">Ouvrez le cas de source</string>
@@ -169,17 +169,19 @@
     <string name="caption_dropped">Abandonné</string>
     <string name="caption_epi_week">Semaine Epidemiologique</string>
     <string name="caption_report">Rapport</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
     <string name="caption_environment_sample_information">Environment Sample Information</string>
     <string name="caption_event_description">Description</string>
-    <string name="caption_event_location">Lieu</string>
-    <string name="caption_event_period">Date de l\'événement</string>
     <string name="caption_event_information">Informations sur l\'événement</string>
-    <string name="caption_event_participants">Personnes impliquées</string>
+    <string name="caption_event_location">Lieu</string>
+    <string name="caption_event_participant">Event Participant</string>
     <string name="caption_event_participant_immunizations">Immunité du participant à l\'événement</string>
     <string name="caption_event_participant_vaccinations">Vaccinations du participant à l\'événement</string>
+    <string name="caption_event_participants">Event Participants</string>
+    <string name="caption_event_period">Date de l\'événement</string>
     <string name="caption_event_tasks">Tâches d\'événement</string>
     <string name="caption_executed_by">Exécuté par</string>
     <string name="caption_facility_or_home">Lieu du séjour</string>
@@ -198,7 +200,7 @@
     <string name="caption_negative">Negatif</string>
     <string name="caption_new_case">Nouveau Cas</string>
     <string name="caption_new_contact">Nouveau Contact</string>
-    <string name="caption_new_event_participant">Nouvelle personne impliquée</string>
+    <string name="caption_new_event_participant">New Event Participant</string>
     <string name="caption_new_sample">Nouvel échantillon</string>
     <string name="caption_new_pathogen_test">Nouveau test de pathogène</string>
     <string name="caption_new_task">Nouvelle tâche</string>
@@ -211,7 +213,7 @@
     <string name="caption_period_end">Fin de la période</string>
     <string name="caption_period_start">Début de la période</string>
     <string name="caption_person_information">Informations sur la personne</string>
-    <string name="caption_person_involved">Personne impliquée</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positif</string>
     <string name="caption_possible_events">Événements possibles</string>
     <string name="caption_prescribed_by">Prescrit par</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">Confirmer le code PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Modifier le contact</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">Nouveau Contact</string>
     <string name="heading_contact_read">Lire le contact</string>
     <string name="heading_contact_summary">Résumé du contact</string>
@@ -349,6 +352,8 @@
     <string name="heading_error_notification_dialog">Oups, une erreur s\'est produite.</string>
     <string name="heading_event_edit">Modifier l\'événement</string>
     <string name="heading_event_new">Nouvel évènement</string>
+    <string name="heading_event_participant">Event Participant</string>
+    <string name="heading_event_participant_new">New Event Participant</string>
     <string name="heading_event_read">Lire l\'événement</string>
     <string name="heading_event_summary">Résumé de l\'événement</string>
     <string name="heading_events_list">Liste des événements</string>
@@ -371,8 +376,6 @@
     <string name="heading_most_recent_test">Most Recent Test</string>
     <string name="heading_new_sormas_version">Nouvelle version SORMAS</string>
     <string name="heading_outbreak_response">Réponse à l\'épidémie</string>
-    <string name="heading_person_involved">Personne impliquée</string>
-    <string name="heading_person_involved_new">Nouvelle personne impliquée</string>
     <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Choisir ou créer une personne</string>
     <string name="heading_pick_or_create_case">Choisir ou créer un Cas</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Vous n\'êtes pas connecté à Internet.</string>
     <string name="message_no_matching_persons">Aucune personne correspondante trouvé.</string>
     <string name="message_no_more_entries">Il n\'y a plus d\'entrées à afficher.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">Le code PIN a été modifié avec succès.</string>
     <string name="message_pin_correct_loading">Code PIN correct. Démarrage SORMAS ...</string>
     <string name="message_pin_no_consecutive">Le code PIN ne doit pas être composé de nombres consécutifs.</string>

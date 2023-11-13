@@ -5,6 +5,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.common.QueryJoins;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -18,7 +20,9 @@ public class EnvironmentJoins extends QueryJoins<Environment> {
 	private Join<Environment, Location> location;
 	private Join<Environment, User> reportingUser;
 	private Join<Environment, User> responsibleUser;
+	private From<?, EnvironmentSample> environmentSamples;
 	private LocationJoins locationJoins;
+	private EnvironmentSampleJoins environmentSampleJoins;
 
 	public EnvironmentJoins(From<?, Environment> root) {
 		super(root);
@@ -70,5 +74,24 @@ public class EnvironmentJoins extends QueryJoins<Environment> {
 
 	private void setResponsibleUser(Join<Environment, User> responsibleUser) {
 		this.responsibleUser = responsibleUser;
+	}
+
+	public EnvironmentSampleJoins getEnvironmentSampleJoins() {
+		return getOrCreate(environmentSampleJoins, () -> new EnvironmentSampleJoins(getEnvironmentSamples()), this::setEnvironmentSampleJoins);
+	}
+
+	private void setEnvironmentSampleJoins(EnvironmentSampleJoins environmentSampleJoins) {
+		this.environmentSampleJoins = environmentSampleJoins;
+	}
+
+	public From<?, EnvironmentSample> getEnvironmentSamples() {
+		if (environmentSamples == null) {
+			setEnvironmentSamples(getRoot().join(Environment.ENVIRONMENT_SAMPLES, JoinType.LEFT));
+		}
+		return environmentSamples;
+	}
+
+	private void setEnvironmentSamples(From<?, EnvironmentSample> environmentSamples) {
+		this.environmentSamples = environmentSamples;
 	}
 }

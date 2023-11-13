@@ -13,22 +13,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.processing;
+package de.symeda.sormas.api.externalmessage.processing;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
+import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -36,67 +40,88 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 public abstract class AbstractProcessingFlow {
 
 	protected final UserDto user;
 
-	public AbstractProcessingFlow(UserDto user) {
+	protected final ExternalMessageMapper mapper;
+	protected final ExternalMessageProcessingFacade processingFacade;
+
+	public AbstractProcessingFlow(UserDto user, ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
 		this.user = user;
+		this.mapper = mapper;
+		this.processingFacade = processingFacade;
 	}
 
-	protected FlowThen<Void> doInitialChecks(ExternalMessageDto externalMessageDto) {
-		return new FlowThen<Void>().then(ignored -> checkDisease(externalMessageDto))
-			.then(ignored -> checkRelatedForwardedMessages(externalMessageDto));
+	protected FlowThen<ExternalMessageProcessingResult> doInitialChecks(
+		ExternalMessageDto externalMessage,
+		ExternalMessageProcessingResult defaultResult) {
+		return new FlowThen<ExternalMessageProcessingResult>().then(ignored -> checkDisease(externalMessage, defaultResult))
+			.then(ignored -> checkRelatedForwardedMessages(externalMessage, defaultResult));
 	}
 
-	private CompletionStage<ProcessingResult<Void>> checkDisease(ExternalMessageDto externalMessageDto) {
+	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> checkDisease(
+		ExternalMessageDto externalMessageDto,
+		ExternalMessageProcessingResult defaultResult) {
 
 		if (externalMessageDto.getDisease() == null) {
 			return handleMissingDisease().thenCompose(
 				next -> ProcessingResult
-					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+					.withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED, defaultResult)
 					.asCompletedFuture());
 		} else {
-			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
+			return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
 		}
 	}
 
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
 
-	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(ExternalMessageDto externalMessageDto) {
+	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> checkRelatedForwardedMessages(
+		ExternalMessageDto externalMessageDto,
+		ExternalMessageProcessingResult defaultResult) {
 
-		if (FacadeProvider.getExternalMessageFacade().existsForwardedExternalMessageWith(externalMessageDto.getReportId())) {
+		if (processingFacade.existsForwardedExternalMessageWith(externalMessageDto.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
 				next -> ProcessingResult
-					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+					.withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED, defaultResult)
 					.asCompletedFuture());
 		} else {
-			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
+			return ProcessingResult.continueWith(defaultResult).asCompletedFuture();
 		}
 	}
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageDto externalMessageDto) {
+	protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult) {
 
-		final PersonDto person = buildPerson(ExternalMessageMapper.forLabMessage(externalMessageDto));
+		final PersonDto person = buildPerson();
 
-		AbstractLabMessageProcessingFlow.HandlerCallback<PersonDto> callback = new HandlerCallback<>();
+		HandlerCallback<EntitySelection<PersonDto>> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
 
-		return callback.futureResult;
+		return mapHandlerResult(
+			callback,
+			previousResult,
+			personSelection -> previousResult.withPerson(personSelection.getEntity(), personSelection.isNew()));
 	}
 
-	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback);
+	protected <T> CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> mapHandlerResult(
+		HandlerCallback<T> callback,
+		ExternalMessageProcessingResult previousResult,
+		Function<T, ExternalMessageProcessingResult> resultMapper) {
+		return callback.futureResult.thenCompose(p -> {
+			if (p.getStatus().isCanceled()) {
+				return ProcessingResult.withStatus(p.getStatus(), previousResult).asCompletedFuture();
+			}
 
-	private PersonDto buildPerson(ExternalMessageMapper mapper) {
+			return ProcessingResult.of(p.getStatus(), resultMapper.apply(p.getData())).asCompletedFuture();
+		});
+	}
+
+	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback);
+
+	private PersonDto buildPerson() {
 
 		final PersonDto personDto = PersonDto.build();
 
@@ -108,8 +133,8 @@ public abstract class AbstractProcessingFlow {
 
 	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessageDto) {
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
-			|| !Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
+		if (processingFacade.isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
+			|| !processingFacade.hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
 			return Collections.emptyList();
 		}
 
@@ -120,7 +145,7 @@ public abstract class AbstractProcessingFlow {
 		caseSimilarityCriteria.caseCriteria(caseCriteria);
 		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
 
-		return FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
+		return processingFacade.getSimilarCases(caseSimilarityCriteria);
 	}
 
 	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto externalMessageDto) {
@@ -132,9 +157,15 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setReportDate(
 			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
 
+		if (processingFacade.isFeaturePropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			caseDto.setResponsibleRegion(processingFacade.getDefaultRegionReference());
+			caseDto.setResponsibleDistrict(processingFacade.getDefaultDistrictReference());
+			caseDto.setResponsibleCommunity(processingFacade.getDefaultCommunityReference());
+		}
+
 		FacilityReferenceDto personFacility = externalMessageDto.getPersonFacility();
 		if (personFacility != null) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(personFacility.getUuid());
+			FacilityDto facility = processingFacade.getFacilityByUuid(personFacility.getUuid());
 			FacilityType facilityType = facility.getType();
 
 			caseDto.setResponsibleRegion(facility.getRegion());
@@ -144,10 +175,10 @@ public abstract class AbstractProcessingFlow {
 				caseDto.setFacilityType(facilityType);
 				caseDto.setHealthFacility(personFacility);
 			} else {
-				caseDto.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
+				caseDto.setHealthFacility(processingFacade.getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
 			}
-		} else if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			caseDto.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
+		} else if (!processingFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			caseDto.setHealthFacility(processingFacade.getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 
 		return caseDto;
@@ -166,7 +197,7 @@ public abstract class AbstractProcessingFlow {
 		}
 
 		public void cancel() {
-			futureResult.complete(ProcessingResult.withStatus(ProcessingResultStatus.CANCELED));
+			futureResult.complete(ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, null));
 		}
 	}
 
