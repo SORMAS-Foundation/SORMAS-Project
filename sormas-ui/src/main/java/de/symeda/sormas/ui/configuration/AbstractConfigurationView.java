@@ -29,6 +29,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.configuration.customizableenums.CustomizableEnumsView;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -102,6 +103,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
+			navigator.addView(CustomizableEnumsView.VIEW_NAME, CustomizableEnumsView.class);
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
@@ -205,6 +210,13 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				DocumentTemplatesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
+			menu.addView(
+				CustomizableEnumsView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CustomizableEnumsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
 		}

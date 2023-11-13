@@ -35,6 +35,8 @@ public class CustomizableEnumValueDto extends EntityDto {
 
 	private static final long serialVersionUID = 4360662500289404985L;
 
+	public static final String I18N_PREFIX = "CustomizableEnumValue";
+
 	private CustomizableEnumType dataType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String value;

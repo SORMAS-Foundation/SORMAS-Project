@@ -47,6 +47,11 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "customizableenumvalue";
 
+	public static final String DATA_TYPE = "dataType";
+	public static final String VALUE = "value";
+	public static final String CAPTION = "caption";
+	public static final String DISEASES = "diseases";
+
 	private CustomizableEnumType dataType;
 	private String value;
 	private String caption;

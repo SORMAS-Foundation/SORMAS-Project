@@ -15,13 +15,13 @@
 
 package de.symeda.sormas.api.customizableenum;
 
-import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.event.SpecificRisk;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.OccupationType;
 
 /**
@@ -58,7 +58,7 @@ public enum CustomizableEnumType {
 
 	@Override
 	public String toString() {
-		return WordUtils.capitalize(name().toLowerCase(), '_').replace("_", "");
+		return I18nProperties.getEnumCaption(this);
 	}
 
 }
