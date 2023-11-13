@@ -20487,8 +20487,6 @@ components:
           type: string
         lastName:
           type: string
-        matchMissingInfo:
-          type: boolean
         name:
           $ref: '#/components/schemas/PersonDto'
         nameUuidExternalIdExternalTokenLike:
