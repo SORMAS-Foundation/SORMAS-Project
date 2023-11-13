@@ -279,6 +279,7 @@
     <string name="caption_sync_pulled">%1$s taženo</string>
     <string name="caption_sync_pushed">%1$s/%2$s nahráno</string>
     <string name="caption_sync_deleted">%1$s smazáno</string>
+    <string name="caption_event_search_field">ID, title, description</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
