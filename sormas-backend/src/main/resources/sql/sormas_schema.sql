@@ -12769,6 +12769,11 @@ $$
     END;
 $$ LANGUAGE plpgsql;
 
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT ur.id, 'EMAIL_TEMPLATE_MANAGEMENT'
+FROM userroles ur
+WHERE ur.linkeddefaultuserrole = 'ADMIN';
+
 INSERT INTO schema_version (version_number, comment)
 VALUES (531, 'Create new user rights to manage, send and attach documents to email templates #12466');
 
