@@ -638,7 +638,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 					filter,
 					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 			}
-		} else if (currentUser.getLimitedDisease() != null) {
+		} else if (CollectionUtils.isNotEmpty(currentUser.getLimitedDiseases())) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
@@ -685,19 +685,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 
 		// Only show samples of a specific disease if a limited disease is set
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			CriteriaBuilderHelper.limitedDiseasePredicate(
 				cb,
-				filter,
-				cb.or(
-					cb.and(cb.isNotNull(joins.getEvent()), cb.isNull(joins.getEvent().get(Event.DISEASE))),
-					cb.equal(
-						cb.selectCase()
-							.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
-							.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
-							.otherwise(joins.getEvent().get(Event.DISEASE)),
-						currentUser.getLimitedDisease())));
-		}
+				currentUser,
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
+					.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
+					.otherwise(joins.getEvent().get(Event.DISEASE)),
+				cb.and(cb.isNotNull(joins.getEvent()), cb.isNull(joins.getEvent().get(Event.DISEASE)))));
 
 		return filter;
 	}

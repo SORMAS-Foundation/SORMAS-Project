@@ -35,6 +35,8 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -166,8 +168,8 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		if (criteria.getChangeDateAfter() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, criteria.getChangeDateAfter()));
 		}
-		if (criteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Outbreak.DISEASE), criteria.getDisease()));
+		if (CollectionUtils.isNotEmpty(criteria.getDiseases())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, from.get(Outbreak.DISEASE).in(criteria.getDiseases()));
 		}
 		if (criteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper

@@ -92,8 +92,8 @@ public class StatisticsPage {
   public static final By EVENTS_CHECKBOX =
       By.xpath("//label[text()='Events']/preceding-sibling::input");
   public static final By EVENT_GROUPS_CHECKBOX = By.xpath("//label[text()='Event groups']");
-  public static final By PERSONS_INVOLVED_CHECKBOX =
-      By.xpath("//label[text()='Persons involved']/preceding-sibling::input");
+  public static final By PERSONS_LOCATIONS_CHECKBOX =
+      By.xpath("//label[text()='Person locations']/preceding-sibling::input");
   public static final By ACTIONS_CHECKBOX =
       By.xpath("//label[text()='Actions']/preceding-sibling::input");
   public static final By IMMUNIZATIONS_CHECKBOX =

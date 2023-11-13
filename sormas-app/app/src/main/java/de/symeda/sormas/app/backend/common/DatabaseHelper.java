@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -37,6 +39,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -46,7 +49,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -190,7 +198,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 355;
+	public static final int DATABASE_VERSION = 356;
 
 	private static DatabaseHelper instance = null;
 
@@ -3146,6 +3154,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Region.class).executeRaw("ALTER TABLE region ADD COLUMN defaultInfrastructure boolean default false;");
 				getDao(District.class).executeRaw("ALTER TABLE district ADD COLUMN defaultInfrastructure boolean default false;");
 				getDao(Community.class).executeRaw("ALTER TABLE community ADD COLUMN defaultInfrastructure boolean default false;");
+
+            case 355:
+                currentVersion = 355;
+
+                getDao(User.class).executeRaw("ALTER TABLE users RENAME TO tmp_users;");
+                getDao(User.class).executeRaw("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, active BOOLEAN, address_id BIGINT REFERENCES location(id), associatedOfficer_id BIGINT REFERENCES users(id), community_id BIGINT REFERENCES community(id), district_id BIGINT REFERENCES district(id), firstName TEXT, healthFacility_id BIGINT REFERENCES facility(id), " +
+						"jurisdictionLevel VARCHAR(255), language VARCHAR(255), lastName TEXT, limitedDiseases TEXT, phone TEXT, pointOfEntry_id BIGINT REFERENCES pointOfEntry(id), region_id BIGINT REFERENCES region(id), userEmail TEXT, userName TEXT, " +
+						"changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified BOOLEAN, snapshot BOOLEAN, uuid VARCHAR(36) NOT NULL, UNIQUE(snapshot, uuid));");
+                getDao(User.class).executeRaw(
+                        "INSERT INTO users (active, address_id, associatedOfficer_id, community_id, district_id, firstName, healthFacility_id, " +
+                                "jurisdictionLevel, language, lastName, limitedDiseases, phone, pointOfEntry_id, region_id, userEmail, userName, " +
+                                "changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid) "
+                                + "SELECT  active, address_id, associatedOfficer_id, community_id, district_id, firstName, healthFacility_id, " +
+                                "jurisdictionLevel, language, lastName, limitedDisease, phone, pointOfEntry_id, region_id, userEmail, userName, " +
+                                "changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_users;");
+				getDao(User.class).executeRaw("UPDATE users set limitedDiseases = '[' || limitedDiseases || ']' where limitedDiseases IS NOT NULL and limitedDiseases <> '';");
+                getDao(Environment.class).executeRaw("DROP TABLE tmp_users;");
 
 				// ATTENTION: break should only be done after last version
 				break;

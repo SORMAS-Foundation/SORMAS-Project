@@ -38,7 +38,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -100,30 +99,30 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 			final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
-		cq.multiselect(
-			immunization.get(Immunization.UUID),
-			person.get(Person.UUID),
-			person.get(Person.FIRST_NAME),
-			person.get(Person.LAST_NAME),
-			immunization.get(Immunization.DISEASE),
-			person.get(Person.APPROXIMATE_AGE),
-			person.get(Person.APPROXIMATE_AGE_TYPE),
-			person.get(Person.BIRTHDATE_DD),
-			person.get(Person.BIRTHDATE_MM),
-			person.get(Person.BIRTHDATE_YYYY),
-			person.get(Person.SEX),
-			district.get(District.NAME),
-			immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
-			immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
-			immunization.get(Immunization.IMMUNIZATION_STATUS),
-			immunization.get(Immunization.START_DATE),
-			immunization.get(Immunization.END_DATE),
-			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
-			immunization.get(Immunization.RECOVERY_DATE),
-			immunization.get(Immunization.DELETION_REASON),
-			immunization.get(Immunization.OTHER_DELETION_REASON),
-			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
-			immunization.get(Immunization.CHANGE_DATE));
+			cq.multiselect(
+				immunization.get(Immunization.UUID),
+				person.get(Person.UUID),
+				person.get(Person.FIRST_NAME),
+				person.get(Person.LAST_NAME),
+				immunization.get(Immunization.DISEASE),
+				person.get(Person.APPROXIMATE_AGE),
+				person.get(Person.APPROXIMATE_AGE_TYPE),
+				person.get(Person.BIRTHDATE_DD),
+				person.get(Person.BIRTHDATE_MM),
+				person.get(Person.BIRTHDATE_YYYY),
+				person.get(Person.SEX),
+				district.get(District.NAME),
+				immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
+				immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
+				immunization.get(Immunization.IMMUNIZATION_STATUS),
+				immunization.get(Immunization.START_DATE),
+				immunization.get(Immunization.END_DATE),
+				lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
+				immunization.get(Immunization.RECOVERY_DATE),
+				immunization.get(Immunization.DELETION_REASON),
+				immunization.get(Immunization.OTHER_DELETION_REASON),
+				JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
+				immunization.get(Immunization.CHANGE_DATE));
 
 			Predicate filter = immunization.get(Immunization.ID).in(batchedIds);
 			buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext, filter);
@@ -399,9 +398,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 		Predicate filter = isInJurisdictionOrOwned(qc);
 
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
-		}
+		filter = CriteriaBuilderHelper
+			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));
 
 		return filter;
 	}

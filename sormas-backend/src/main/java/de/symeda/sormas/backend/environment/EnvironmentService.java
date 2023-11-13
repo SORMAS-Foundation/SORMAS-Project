@@ -32,6 +32,7 @@ import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -116,7 +117,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			filterResponsible = cb.or(filterResponsible, cb.equal(environmentJoins.getRoot().get(Environment.RESPONSIBLE_USER), currentUser));
 
 			if (filter != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
+				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible, createEnvironmentSampleFilter(queryContext));
 			} else {
 				filter = filterResponsible;
 			}
@@ -130,6 +131,27 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		}
 
 		return filter;
+	}
+
+	private Predicate createEnvironmentSampleFilter(EnvironmentQueryContext context) {
+
+		From<EnvironmentSample, Location> environmentSampleLocations = context.getJoins().getEnvironmentSampleJoins().getLocation();
+
+		CriteriaBuilder cb = context.getCriteriaBuilder();
+
+		final User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		switch (jurisdictionLevel) {
+		case REGION:
+			return cb.equal(environmentSampleLocations.get(Location.REGION).get(Region.ID), currentUser.getRegion().getId());
+		case DISTRICT:
+			return cb.equal(environmentSampleLocations.get(Location.DISTRICT).get(District.ID), currentUser.getDistrict().getId());
+		case COMMUNITY:
+			return cb.equal(environmentSampleLocations.get(Location.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
+		default:
+			return null;
+		}
 	}
 
 	@Override

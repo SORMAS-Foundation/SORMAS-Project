@@ -1081,11 +1081,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		// National users can access all contacts in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
-			if (currentUser.getLimitedDisease() != null) {
-				return cb.equal(contactRoot.get(Contact.DISEASE), currentUser.getLimitedDisease());
-			} else {
-				return null;
-			}
+			return CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, contactRoot.get(Contact.DISEASE));
 		}
 
 		Predicate filter = null;
@@ -1127,12 +1123,11 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		default:
 		}
 
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(cb.equal(contactRoot.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactRoot.get(Contact.DISEASE))));
-		}
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			CriteriaBuilderHelper
+				.limitedDiseasePredicate(cb, currentUser, contactRoot.get(Contact.DISEASE), cb.isNull(contactRoot.get(Contact.DISEASE))));
 
 		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
