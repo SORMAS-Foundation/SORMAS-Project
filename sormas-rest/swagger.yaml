@@ -7209,6 +7209,9 @@ paths:
                   - DOCUMENT_TEMPLATE_MANAGEMENT
                   - LINE_LISTING_CONFIGURE
                   - DEV_MODE
+                  - EMAIL_TEMPLATE_MANAGEMENT
+                  - EXTERNAL_EMAIL_SEND
+                  - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
           description: default response
       tags:
       - User Controller
@@ -7422,6 +7425,9 @@ paths:
                   - DOCUMENT_TEMPLATE_MANAGEMENT
                   - LINE_LISTING_CONFIGURE
                   - DEV_MODE
+                  - EMAIL_TEMPLATE_MANAGEMENT
+                  - EXTERNAL_EMAIL_SEND
+                  - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
           description: default response
       tags:
       - User Controller
@@ -25459,6 +25465,9 @@ components:
             - DOCUMENT_TEMPLATE_MANAGEMENT
             - LINE_LISTING_CONFIGURE
             - DEV_MODE
+            - EMAIL_TEMPLATE_MANAGEMENT
+            - EXTERNAL_EMAIL_SEND
+            - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
           uniqueItems: true
         uuid:
           type: string
