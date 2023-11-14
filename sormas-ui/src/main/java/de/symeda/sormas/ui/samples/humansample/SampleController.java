@@ -399,18 +399,7 @@ public class SampleController {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
-
-				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
-				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
-				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
-
-				if (associatedCase != null) {
-					UI.getCurrent().getNavigator().navigateTo(CaseDataView.VIEW_NAME + "/" + associatedCase.getUuid());
-				} else if (associatedContact != null) {
-					UI.getCurrent().getNavigator().navigateTo(ContactDataView.VIEW_NAME + "/" + associatedContact.getUuid());
-				} else {
-					UI.getCurrent().getNavigator().navigateTo(EventParticipantDataView.VIEW_NAME + "/" + associatedEventParticipant.getUuid());
-				}
+				UI.getCurrent().getNavigator().navigateTo(getNavigationStateBasedOnAssociatedParent(dto));
 
 			}, (deletionDetails) -> {
 				FacadeProvider.getSampleFacade().restore(dto.getUuid());
@@ -433,6 +422,23 @@ public class SampleController {
 		editView.restrictEditableComponentsOnEditView(UserRight.SAMPLE_EDIT, null, UserRight.SAMPLE_DELETE, null, dto.isInJurisdiction());
 
 		return editView;
+	}
+
+	public String getNavigationStateBasedOnAssociatedParent(SampleDto dto) {
+		CaseReferenceDto associatedCase = dto.getAssociatedCase();
+		ContactReferenceDto associatedContact = dto.getAssociatedContact();
+		EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
+
+		String navigationState;
+		if (associatedCase != null) {
+			navigationState = CaseDataView.VIEW_NAME + "/" + associatedCase.getUuid();
+		} else if (associatedContact != null) {
+			navigationState = ContactDataView.VIEW_NAME + "/" + associatedContact.getUuid();
+		} else {
+			navigationState = EventParticipantDataView.VIEW_NAME + "/" + associatedEventParticipant.getUuid();
+		}
+
+		return navigationState;
 	}
 
 	private void updateAssociationsForSample(SampleDto sampleDto) {
