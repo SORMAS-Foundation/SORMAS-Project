@@ -76,6 +76,8 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.contact.ContactDataView;
+import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
@@ -399,10 +401,15 @@ public class SampleController {
 				updateAssociationsForSample(dto);
 
 				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
+				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
+
 				if (associatedCase != null) {
 					UI.getCurrent().getNavigator().navigateTo(CaseDataView.VIEW_NAME + "/" + associatedCase.getUuid());
+				} else if (associatedContact != null) {
+					UI.getCurrent().getNavigator().navigateTo(ContactDataView.VIEW_NAME + "/" + associatedContact.getUuid());
 				} else {
-					UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+					UI.getCurrent().getNavigator().navigateTo(EventParticipantDataView.VIEW_NAME + "/" + associatedEventParticipant.getUuid());
 				}
 
 			}, (deletionDetails) -> {
