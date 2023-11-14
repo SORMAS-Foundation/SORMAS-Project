@@ -1214,6 +1214,7 @@ public interface Strings {
 	String messageCountVisitsNotSetToLost = "messageCountVisitsNotSetToLost";
 	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCustomizableEnumValueSaved = "messageCustomizableEnumValueSaved";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";

@@ -13,38 +13,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.configuration.customizableenums;
+package de.symeda.sormas.ui.configuration.customizableenum;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import com.vaadin.ui.renderers.TextRenderer;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import elemental.json.JsonValue;
 
-public class CustomizableEnumsDiseasesRenderer extends TextRenderer {
+public class CustomizableEnumPropertiesRenderer extends TextRenderer {
 
-	@Override
 	public JsonValue encode(Object value) {
 
-		if (!(value instanceof List)) {
-			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueAllDiseases));
+		if (!(value instanceof Map)) {
+			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueNoProperties));
 		}
 
-		List<Disease> diseases = (List<Disease>) value;
+		Map<String, Object> properties = (Map<String, Object>) value;
 
-		if (diseases.size() == 0) {
-			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueAllDiseases));
+		if (properties.size() == 0) {
+			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueNoProperties));
 		}
 
-		if (diseases.size() > 10) {
-			return super.encode(String.format(I18nProperties.getCaption(Captions.customizableEnumValueDiseaseCount), diseases.size()));
-		}
-
-		return super.encode(diseases.stream().map(Disease::toString).collect(Collectors.joining(", ")));
+		return super.encode(String.join(", ", properties.keySet()));
 	}
 
 }

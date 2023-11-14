@@ -13,20 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.configuration.customizableenums;
+package de.symeda.sormas.ui.configuration.customizableenum;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
-public class CustomizableEnumsGrid extends FilteredGrid<CustomizableEnumValueIndexDto, CustomizableEnumCriteria> {
+public class CustomizableEnumValuesGrid extends FilteredGrid<CustomizableEnumValueIndexDto, CustomizableEnumCriteria> {
 
 	private static final long serialVersionUID = 8528080770989069026L;
 
-	public CustomizableEnumsGrid(CustomizableEnumCriteria criteria) {
+	public CustomizableEnumValuesGrid(CustomizableEnumCriteria criteria) {
 
 		super(CustomizableEnumValueIndexDto.class);
 		setSizeFull();
@@ -42,13 +43,15 @@ public class CustomizableEnumsGrid extends FilteredGrid<CustomizableEnumValueInd
 			CustomizableEnumValueIndexDto.PROPERTIES);
 
 		Column<CustomizableEnumValueIndexDto, ?> diseaseColumn = getColumn(CustomizableEnumValueIndexDto.DISEASES);
-		diseaseColumn.setRenderer(new CustomizableEnumsDiseasesRenderer());
+		diseaseColumn.setRenderer(new CustomizableEnumDiseasesRenderer());
 		diseaseColumn.setSortable(false);
 		diseaseColumn.setExpandRatio(1);
 		Column<CustomizableEnumValueIndexDto, ?> propertiesColumn = getColumn(CustomizableEnumValueIndexDto.PROPERTIES);
-		propertiesColumn.setRenderer(new CustomizableEnumsPropertiesRenderer());
+		propertiesColumn.setRenderer(new CustomizableEnumPropertiesRenderer());
 		propertiesColumn.setSortable(false);
 		propertiesColumn.setWidth(300);
+
+		addEditColumn(e -> ControllerProvider.getCustomizableEnumController().editCustomizableEnumValue(e.getUuid()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, column.getId(), column.getCaption()));

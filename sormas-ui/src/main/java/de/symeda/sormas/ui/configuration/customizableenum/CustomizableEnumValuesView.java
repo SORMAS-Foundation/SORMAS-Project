@@ -13,15 +13,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.configuration.customizableenums;
+package de.symeda.sormas.ui.configuration.customizableenum;
 
 import java.util.Arrays;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -30,13 +31,14 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class CustomizableEnumsView extends AbstractConfigurationView {
+public class CustomizableEnumValuesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = 6496373389997511056L;
 
@@ -46,17 +48,16 @@ public class CustomizableEnumsView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox<CustomizableEnumType> dataTypeFilter;
 	private ComboBox<Disease> diseaseFilter;
-	private Button resetButton;
 
 	private final CustomizableEnumCriteria criteria;
-	private final CustomizableEnumsGrid grid;
+	private final CustomizableEnumValuesGrid grid;
 
-	public CustomizableEnumsView() {
+	public CustomizableEnumValuesView() {
 
 		super(VIEW_NAME);
 
-		criteria = ViewModelProviders.of(CustomizableEnumsView.class).get(CustomizableEnumCriteria.class, new CustomizableEnumCriteria());
-		grid = new CustomizableEnumsGrid(criteria);
+		criteria = ViewModelProviders.of(CustomizableEnumValuesView.class).get(CustomizableEnumCriteria.class, new CustomizableEnumCriteria());
+		grid = new CustomizableEnumValuesGrid(criteria);
 		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(grid);
@@ -65,6 +66,13 @@ public class CustomizableEnumsView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+
+		addHeaderComponent(
+			ButtonHelper.createIconButton(
+				Captions.actionNewEntry,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getCustomizableEnumController().createCustomizableEnumValue(),
+				ValoTheme.BUTTON_PRIMARY));
 
 		addComponent(gridLayout);
 	}
@@ -100,11 +108,10 @@ public class CustomizableEnumsView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(diseaseFilter);
 
-		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
-			ViewModelProviders.of(CustomizableEnumsView.class).remove(CustomizableEnumCriteria.class);
+		filterLayout.addComponent(ButtonHelper.createButton(Captions.actionResetFilters, event -> {
+			ViewModelProviders.of(CustomizableEnumValuesView.class).remove(CustomizableEnumCriteria.class);
 			navigateTo(null);
-		}, CssStyles.FORCE_CAPTION);
-		filterLayout.addComponent(resetButton);
+		}, CssStyles.FORCE_CAPTION));
 
 		return filterLayout;
 	}

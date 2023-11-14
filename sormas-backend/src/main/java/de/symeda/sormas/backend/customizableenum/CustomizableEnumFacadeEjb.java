@@ -37,6 +37,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -53,12 +54,15 @@ import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumHelper;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -66,6 +70,7 @@ import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Singleton(name = "CustomizableEnumFacade")
 public class CustomizableEnumFacadeEjb
@@ -102,6 +107,15 @@ public class CustomizableEnumFacadeEjb
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
+	public CustomizableEnumFacadeEjb() {
+
+	}
+
+	@Inject
+	public CustomizableEnumFacadeEjb(CustomizableEnumValueService service) {
+		super(CustomizableEnumValue.class, CustomizableEnumValueDto.class, service);
+	}
+
 	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
@@ -110,18 +124,46 @@ public class CustomizableEnumFacadeEjb
 
 	@Override
 	protected CustomizableEnumValue fillOrBuildEntity(CustomizableEnumValueDto source, CustomizableEnumValue target, boolean checkChangeDate) {
-		return null;
+
+		target = DtoHelper.fillOrBuildEntity(source, target, CustomizableEnumValue::new, checkChangeDate);
+
+		target.setDataType(source.getDataType());
+		target.setValue(source.getValue());
+		target.setCaption(source.getCaption());
+		target.setTranslations(source.getTranslations());
+		target.setDiseases(source.getDiseases());
+		target.setDescription(source.getDescription());
+		target.setDescriptionTranslations(source.getDescriptionTranslations());
+		target.setProperties(source.getProperties());
+		target.setDefaultValue(source.isDefaultValue());
+
+		return target;
 	}
 
 	@Override
 	public void validate(CustomizableEnumValueDto dto) throws ValidationRuntimeException {
 
+		if (!CustomizableEnumHelper.isValidEnumValue(dto.getValue())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.customizableEnumValueAllowedCharacters));
+		}
 	}
 
 	@Lock(LockType.READ)
+	@RightsAllowed(UserRight._CUSTOMIZABLE_ENUM_MANAGEMENT)
 	@Override
 	public CustomizableEnumValueDto save(CustomizableEnumValueDto dto) {
-		return null;
+
+		if (dto == null) {
+			return null;
+		}
+
+		validate(dto);
+
+		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
+		CustomizableEnumValue enumValue = fillOrBuildEntity(dto, existingEntity, true);
+		service.ensurePersisted(enumValue);
+
+		return toDto(enumValue);
 	}
 
 	@Lock(LockType.READ)
@@ -143,6 +185,7 @@ public class CustomizableEnumFacadeEjb
 	}
 
 	@Lock(LockType.READ)
+	@RightsAllowed(UserRight._CUSTOMIZABLE_ENUM_MANAGEMENT)
 	@Override
 	public List<CustomizableEnumValueIndexDto> getIndexList(
 		CustomizableEnumCriteria criteria,
@@ -440,11 +483,19 @@ public class CustomizableEnumFacadeEjb
 		CustomizableEnumValueDto existingDto,
 		CustomizableEnumValue entity,
 		Pseudonymizer pseudonymizer) {
-
+		// Customizable enum values don't need to be pseudonymized
 	}
 
 	@LocalBean
 	@Stateless
 	public static class CustomizableEnumFacadeEjbLocal extends CustomizableEnumFacadeEjb {
+
+		public CustomizableEnumFacadeEjbLocal() {
+		}
+
+		@Inject
+		public CustomizableEnumFacadeEjbLocal(CustomizableEnumValueService service) {
+			super(service);
+		}
 	}
 }
