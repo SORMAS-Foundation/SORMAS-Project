@@ -758,6 +758,18 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EMAIL_TEMPLATE_MANAGEMENT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_EMAIL_SEND</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_EMAIL_ATTACH_DOCUMENTS</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>SORMAS_UI</role-name>
 	</security-role>
 

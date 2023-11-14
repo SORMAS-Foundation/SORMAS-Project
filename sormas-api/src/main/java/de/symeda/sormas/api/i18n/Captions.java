@@ -514,7 +514,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
-	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterIncludeCasesFromOtherJurisdictions = "caseFilterIncludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
@@ -765,7 +765,7 @@ public interface Captions {
 	String contactFilterWithDifferentRegion = "contactFilterWithDifferentRegion";
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
-	String contactInludeContactsFromOtherJurisdictions = "contactInludeContactsFromOtherJurisdictions";
+	String contactIncludeContactsFromOtherJurisdictions = "contactIncludeContactsFromOtherJurisdictions";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMergeDuplicates = "contactMergeDuplicates";
 	String contactMinusDays = "contactMinusDays";

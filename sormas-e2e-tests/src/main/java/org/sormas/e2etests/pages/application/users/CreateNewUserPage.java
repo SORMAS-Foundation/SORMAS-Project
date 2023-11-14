@@ -53,7 +53,10 @@ public class CreateNewUserPage {
   public static final By ACTIVE_CHECKBOX = By.cssSelector(".v-window #active label");
   public static final By USER_NAME_INPUT = By.id("userName");
   public static final By USER_ROLE_CHECKBOX = By.cssSelector("#userRoles label");
-  public static final By LIMITED_DISEASE_COMBOBOX = By.cssSelector("#limitedDisease > div");
+  public static final By RESTRICT_DISEASES_CHECKBOX =
+      By.cssSelector("#restrictDiseasesCheckboxLoc label");
+  public static final By LIMITED_DISEASE_CHECKBOX = By.cssSelector("#limitedDiseases label");
+
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By PASSWORD_FIELD =

@@ -40,6 +40,8 @@ public class CaseCriteria implements Serializable {
 	private Region region;
 	private Person person;
 
+	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
+
 	public CaseCriteria setTextFilter(String textFilter) {
 		this.textFilter = textFilter;
 		return this;
@@ -136,5 +138,13 @@ public class CaseCriteria implements Serializable {
 
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+
+	public Boolean getIncludeCasesFromOtherJurisdictions() {
+		return includeCasesFromOtherJurisdictions;
+	}
+
+	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
+		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
 	}
 }

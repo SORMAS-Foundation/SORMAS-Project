@@ -401,6 +401,8 @@
 
     <dimen name="checkBoxWidth">54dp</dimen>
     <dimen name="checkBoxHeight">54dp</dimen>
+    <dimen name="filterCheckBoxWidth">30dp</dimen>
+    <dimen name="filterCheckBoxHeight">30dp</dimen>
     <dimen name="dropdownListSlimItemHeight">@dimen/slimControlHeight</dimen>
 
 

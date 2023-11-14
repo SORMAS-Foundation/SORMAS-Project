@@ -16,13 +16,11 @@
 package de.symeda.sormas.app.contact.list;
 
 import java.util.List;
-import java.util.Random;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
@@ -195,6 +193,7 @@ public class ContactListActivity extends PagedBaseListActivity {
 			model.getContactCriteria().setDisease(null);
 			model.getContactCriteria().setReportDateFrom(null);
 			model.getContactCriteria().setReportDateTo(null);
+			model.getContactCriteria().setIncludeContactsFromOtherJurisdictions(false);
 			filterBinding.invalidateAll();
 			filterBinding.executePendingBindings();
 			model.notifyCriteriaUpdated();

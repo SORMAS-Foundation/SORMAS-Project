@@ -269,6 +269,9 @@ public enum UserRight {
 	DOCUMENT_TEMPLATE_MANAGEMENT(UserRightGroup.CONFIGURATION),
 	LINE_LISTING_CONFIGURE(UserRightGroup.CONFIGURATION),
 	DEV_MODE(UserRightGroup.CONFIGURATION),
+	EMAIL_TEMPLATE_MANAGEMENT(UserRightGroup.EXTERNAL_EMAILS),
+	EXTERNAL_EMAIL_SEND(UserRightGroup.EXTERNAL_EMAILS),
+	EXTERNAL_EMAIL_ATTACH_DOCUMENTS(UserRightGroup.EXTERNAL_EMAILS, UserRight._EXTERNAL_EMAIL_SEND),
 	CUSTOMIZABLE_ENUM_MANAGEMENT(UserRightGroup.CONFIGURATION);
 
 	//@formatter:on
@@ -467,6 +470,9 @@ public enum UserRight {
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _EXTERNAL_VISITS = "EXTERNAL_VISITS";
 	public static final String _DEV_MODE = "DEV_MODE";
+	public static final String _EMAIL_TEMPLATE_MANAGEMENT = "EMAIL_TEMPLATE_MANAGEMENT";
+	public static final String _EXTERNAL_EMAIL_SEND = "EXTERNAL_EMAIL_SEND";
+	public static final String _EXTERNAL_EMAIL_ATTACH_DOCUMENTS = "EXTERNAL_EMAIL_ATTACH_DOCUMENTS";
 	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();

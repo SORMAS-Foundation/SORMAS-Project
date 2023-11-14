@@ -22,14 +22,12 @@
     android:id="@+id/case_list_filters">
 
     <data>
-        <import type="de.symeda.sormas.api.task.TaskAssignee" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
-        <import type="de.symeda.sormas.api.i18n.Captions" />
-        <import type="de.symeda.sormas.api.caze.CaseDataDto" />
+        <import type="de.symeda.sormas.api.event.EventDto" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
 
-        <variable name="criteria" type="de.symeda.sormas.app.backend.caze.CaseCriteria"/>
+        <variable name="criteria" type="de.symeda.sormas.app.backend.event.EventCriteria"/>
     </data>
 
     <ScrollView
@@ -45,58 +43,32 @@
 
             <de.symeda.sormas.app.component.controls.FilterTextField
                 android:id="@+id/text_filter"
-                app:hint="@{I18nProperties.getString(Strings.promptCasesSearchField)}"
+                app:hint="@{@string/caption_event_search_field}"
                 app:showCaption="false"
                 app:value="@={criteria.textFilter}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
-                android:id="@+id/origin_filter"
-                app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_ORIGIN)}"
-                app:showCaption="false"
-                app:value="@={criteria.caseOrigin}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/disease_filter"
-                app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE)}"
+                app:hint="@{I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.DISEASE)}"
                 app:showCaption="false"
                 app:value="@={criteria.disease}"
                 style="@style/ControlSingleColumnStyle" />
 
-            <de.symeda.sormas.app.component.controls.FilterSpinnerField
-                android:id="@+id/classification_filter"
-                app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)}"
-                app:showCaption="false"
-                app:value="@={criteria.caseClassification}"
-                style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.FilterSpinnerField
-                android:id="@+id/outcome_filter"
-                app:hint="@{I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)}"
-                app:showCaption="false"
-                app:value="@={criteria.outcome}"
-                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/epi_week_from_filter"
-                app:hint="@{I18nProperties.getString(Strings.promptCasesEpiWeekFrom)}"
+                app:hint="@{I18nProperties.getString(Strings.promptEventEpiWeekFrom)}"
                 app:showCaption="false"
                 app:value="@={criteria.epiWeekFrom}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterSpinnerField
                 android:id="@+id/epi_week_to_filter"
-                app:hint="@{I18nProperties.getString(Strings.promptCasesEpiWeekTo)}"
+                app:hint="@{I18nProperties.getString(Strings.promptEventEpiWeekTo)}"
                 app:showCaption="false"
                 app:value="@={criteria.epiWeekTo}"
                 style="@style/ControlSingleColumnStyle" />
-
-            <de.symeda.sormas.app.component.controls.FilterCheckBoxField
-                android:id="@+id/cases_from_other_jurisdictions_filter"
-                style="@style/FilterCheckboxFieldStyle"
-                app:caption="@{I18nProperties.getCaption(Captions.caseFilterIncludeCasesFromOtherJurisdictions)}"
-                app:value="@={criteria.includeCasesFromOtherJurisdictions}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
