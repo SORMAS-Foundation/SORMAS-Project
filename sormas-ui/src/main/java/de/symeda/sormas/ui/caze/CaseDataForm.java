@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.UserField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -390,7 +391,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField reportDate = addField(CaseDataDto.REPORT_DATE, DateField.class);
 		addFields(
 			CaseDataDto.UUID,
-			CaseDataDto.REPORTING_USER,
 			CaseDataDto.DISTRICT_LEVEL_DATE,
 			CaseDataDto.REGION_LEVEL_DATE,
 			CaseDataDto.NATIONAL_LEVEL_DATE,
@@ -402,6 +402,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_NAME,
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
+
+		addField(CaseDataDto.REPORTING_USER, UserField.class);
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
@@ -771,8 +773,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
-		surveillanceOfficerField.setNullSelectionAllowed(true);
+		final UserField surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, UserField.class);
+		surveillanceOfficerField.setEnabled(true);
 
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);

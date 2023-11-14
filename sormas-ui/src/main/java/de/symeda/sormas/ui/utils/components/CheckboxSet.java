@@ -58,6 +58,8 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	private Function<T, String> groupingFunction;
 	private Function<T, String> itemDescriptionProvider;
 
+	private int columnCount = 2;
+
 	@Override
 	protected Component initContent() {
 		layout = new VerticalLayout();
@@ -65,21 +67,32 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		layout.setMargin(new MarginInfo(true, false));
 
 		if (items != null) {
-			rows = buildCheckboxRows(items);
+			resetLayout();
 		}
 
 		return layout;
 	}
 
 	public void setItems(List<T> items, Function<T, String> groupingFunction, Function<T, String> itemDescriptionProvider) {
-			this.items = items;
+		this.items = items;
 		this.groupingFunction = groupingFunction;
 		this.itemDescriptionProvider = itemDescriptionProvider;
 
-		if (layout != null) {
-			layout.removeAllComponents();
-			rows = buildCheckboxRows(items);
+		resetLayout();
+	}
+
+	public void setColumnCount(int columnCount) {
+		this.columnCount = columnCount;
+		resetLayout();
+	}
+
+	private void resetLayout() {
+		if (layout == null) {
+			return;
 		}
+
+		layout.removeAllComponents();
+		rows = buildCheckboxRows(items);
 	}
 
 	private List<CheckboxRow> buildCheckboxRows(List<T> items) {
@@ -106,11 +119,10 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 	private List<CheckboxRow> createRows(List<T> groupItems) {
 		List<CheckboxRow> rows = new ArrayList<>();
-		for (int i = 0, size = groupItems.size(); i < size; i += 2) {
-			T item1 = groupItems.get(i);
-			T item2 = i < size - 1 ? groupItems.get(i + 1) : null;
+		for (int i = 0, size = groupItems.size(); i < size; i += columnCount) {
+			List<T> rowItems = groupItems.subList(i, Math.min(i + columnCount, groupItems.size()));
 
-			CheckboxRow checkboxRow = new CheckboxRow(item1, item2);
+			CheckboxRow checkboxRow = new CheckboxRow(rowItems, columnCount);
 
 			checkboxRow.checkBoxes.forEach(cb -> cb.addValueChangeListener(e -> {
 				fireEvent(new CheckboxValueChangeEvent(cb));
@@ -166,13 +178,15 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	}
 
 	private CheckboxSetItemDataSource<T> createDataSource(T item) {
-		return new CheckboxSetItemDataSource<>(item, v -> getInternalValue().contains(v), (c, v) -> {
-			Set<T> internalValue = getInternalValue();
+		return new CheckboxSetItemDataSource<>(item, v -> getSafeInternalValue().contains(v), (c, v) -> {
+			Set<T> internalValue = getSafeInternalValue();
 			if (c) {
 				internalValue.add(v);
 			} else {
 				internalValue.remove(v);
 			}
+
+			setInternalValue(internalValue);
 		});
 	}
 
@@ -190,6 +204,11 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		} else {
 			super.setInternalValue(newValue);
 		}
+	}
+
+	protected Set<T> getSafeInternalValue() {
+		Set<T> internalValue = getInternalValue();
+		return internalValue != null ? new HashSet<>(internalValue) : new HashSet<>();
 	}
 
 	public Registration addCheckboxValueChangeListener(CheckboxValueChangeListener listener) {
@@ -228,19 +247,21 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 		private final List<CheckBox> checkBoxes;
 
-		public CheckboxRow(T leftItem, T rightItem) {
-			checkBoxes = new ArrayList<>(2);
+		public CheckboxRow(List<T> items, int columnCount) {
+			int itemCount = items.size();
+			checkBoxes = new ArrayList<>(itemCount);
 			setWidthFull();
 			setMargin(false);
 
-			CheckBox cb1 = createCheckbox(leftItem);
-			checkBoxes.add(cb1);
-			addComponent(cb1);
+			items.forEach(i -> {
+				CheckBox cb = createCheckbox(i);
+				addComponent(cb);
+				checkBoxes.add(cb);
+			});
 
-			if (rightItem != null) {
-				CheckBox cb2 = createCheckbox(rightItem);
-				addComponent(cb2);
-				checkBoxes.add(cb2);
+			if (columnCount > itemCount) {
+				// add empty columns to fill the row
+				addComponent(new HorizontalLayout());
 			}
 		}
 

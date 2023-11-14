@@ -343,7 +343,9 @@ public class TestDataCreator {
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
 		user.setUserRoles(new HashSet<>(Arrays.asList(roles)));
-		user.setLimitedDisease(limitedDisease);
+		if (limitedDisease != null) {
+			user.setLimitedDiseases(Collections.singleton(limitedDisease));
+		}
 		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));

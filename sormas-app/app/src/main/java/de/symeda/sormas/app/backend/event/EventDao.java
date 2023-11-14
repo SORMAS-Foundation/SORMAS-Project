@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
@@ -29,6 +31,8 @@ import android.util.Log;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -173,8 +177,7 @@ public class EventDao extends AbstractAdoDao<Event> {
 		Where<Event, Long> where = queryBuilder.where();
 		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
-		if (criteria.getDisease() != null) {
-
+		if (criteria.getDisease() != null && criteria.getCaze() != null) {
 			queryBuilder.distinct();
 			QueryBuilder<EventParticipant, Long> eventParticipantQueryBuilder = DatabaseHelper.getEventParticipantDao().queryBuilder();
 
@@ -195,6 +198,10 @@ public class EventDao extends AbstractAdoDao<Event> {
 					where.and(where.raw(Case.TABLE_NAME + "." + Case.UUID + " IS NULL"), where.eq(Event.DISEASE, criteria.getDisease()))));
 
 		} else {
+			if (criteria.getDisease() != null) {
+				whereStatements.add(where.eq(Event.DISEASE, criteria.getDisease()));
+			}
+
 			if (criteria.getCaze() != null) {
 				QueryBuilder<EventParticipant, Long> eventParticipantQueryBuilder = DatabaseHelper.getEventParticipantDao().queryBuilder();
 
@@ -205,18 +212,52 @@ public class EventDao extends AbstractAdoDao<Event> {
 
 				whereStatements.add(where.raw(Case.TABLE_NAME + "." + Case.UUID + "= '" + criteria.getCaze().getUuid() + "'"));
 
-			} else {
+			}
+		}
 
-				if (criteria.getEventStatus() != null) {
-					whereStatements.add(where.eq(Event.EVENT_STATUS, criteria.getEventStatus()));
+		if (criteria.getEventStatus() != null) {
+			whereStatements.add(where.eq(Event.EVENT_STATUS, criteria.getEventStatus()));
+		}
+
+		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
+			String[] textFilters = criteria.getTextFilter().split("\\s+");
+			for (String filter : textFilters) {
+				String textFilter = "%" + filter.toLowerCase() + "%";
+				if (!StringUtils.isEmpty(textFilter)) {
+					whereStatements.add(
+						where.or(
+							where.raw(Event.TABLE_NAME + "." + Event.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+							where.raw(Event.TABLE_NAME + "." + Event.EVENT_TITLE + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+							where.raw(Event.TABLE_NAME + "." + Event.EVENT_DESC + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
 				}
 			}
+		}
+
+		Date eventDateFrom = DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom());
+		Date eventDateTo = DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo());
+		if (eventDateFrom != null && eventDateTo != null) {
+			whereStatements.add(
+				where.or(
+					where.and(where.isNull(Event.END_DATE), where.between(Event.START_DATE, eventDateFrom, eventDateTo)),
+					where.and(where.isNull(Event.START_DATE), where.between(Event.END_DATE, eventDateFrom, eventDateTo)),
+					where.and(where.ge(Event.END_DATE, eventDateFrom), where.le(Event.START_DATE, eventDateTo))));
+		} else if (eventDateFrom != null) {
+			whereStatements.add(
+				where.or(
+					where.and(where.isNull(Event.END_DATE), where.ge(Event.START_DATE, eventDateFrom)),
+					where.and(where.isNull(Event.START_DATE), where.ge(Event.END_DATE, eventDateFrom))));
+		} else if (eventDateTo != null) {
+			whereStatements.add(
+				where.or(
+					where.and(where.isNull(Event.START_DATE), where.le(Event.END_DATE, eventDateTo)),
+					where.and(where.isNull(Event.END_DATE), where.le(Event.START_DATE, eventDateTo))));
 		}
 
 		if (!whereStatements.isEmpty()) {
 			Where<Event, Long> whereStatement = where.and(whereStatements.size());
 			queryBuilder.setWhere(whereStatement);
 		}
+
 		return queryBuilder;
 	}
 }

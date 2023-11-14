@@ -70,6 +70,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NAME_UUID_EXTERNAL_ID_TOKEN_LIKE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_CASE_FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_ATTRIBUTE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PASSPORT_NUMBER_ATTRIBUTE;
@@ -684,7 +685,7 @@ public class CreateNewCaseSteps implements En {
         (String placeOfStay, String facilityCategory, String facilityType) -> {
           selectPlaceOfStay(placeOfStay);
           selectFacilityCategory(facilityCategory);
-          selectFacilityType(facilityType);
+          selectNewCaseFacilityType(facilityType);
           selectFacility("Other facility");
           fillPlaceDescription(caze.getPlaceDescription());
         });
@@ -1594,7 +1595,7 @@ public class CreateNewCaseSteps implements En {
           selectResponsibleDistrict(survnetCase.getResponsibleDistrict());
           selectPlaceOfStay(survnetCase.getPlaceOfStay());
           selectFacilityCategory(survnetCase.getFacilityCategory());
-          selectFacilityType(survnetCase.getFacilityType());
+          selectNewCaseFacilityType(survnetCase.getFacilityType());
           selectFacility(survnetCase.getFacility());
           fillFirstName(survnetCase.getFirstName());
           fillLastName(survnetCase.getLastName());
@@ -1748,6 +1749,10 @@ public class CreateNewCaseSteps implements En {
 
   private void selectFacilityType(String selectFacilityType) {
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, selectFacilityType);
+  }
+
+  private void selectNewCaseFacilityType(String facilityType) {
+    webDriverHelpers.selectFromCombobox(NEW_CASE_FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
   private void selectFacility(String selectFacility) {

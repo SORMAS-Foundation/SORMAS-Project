@@ -1058,7 +1058,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
 	// exclude from applying a new editable status
 	public void setEditable(boolean editable, String... excludedButtons) {
-		wrappedComponent.setEnabled(editable);
+		if (WithChildComponents.class.isAssignableFrom(wrappedComponent.getClass())) {
+			((WithChildComponents) wrappedComponent).forEachComponent(component -> {
+				component.setEnabled(editable);
+			});
+		} else {
+			wrappedComponent.setEnabled(editable);
+		}
 
 		for (int i = 0; i < buttonsPanel.getComponentCount(); i++) {
 			Component button = buttonsPanel.getComponent(i);

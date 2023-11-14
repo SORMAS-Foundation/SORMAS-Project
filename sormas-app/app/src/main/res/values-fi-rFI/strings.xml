@@ -169,6 +169,7 @@
     <string name="caption_dropped">Poistettu</string>
     <string name="caption_epi_week">Epidemiaviikko</string>
     <string name="caption_report">Report</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">Jakson päättymispäivä</string>
     <string name="caption_period_start">Jakson alkamispäivä</string>
     <string name="caption_person_information">Henkilötiedot</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positiivinen</string>
     <string name="caption_possible_events">Mahdolliset tapahtumat</string>
     <string name="caption_prescribed_by">Lääkkeen määrääjä</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">Vahvista PIN</string>
     <string name="heading_confirmation_dialog">Vahvistus</string>
     <string name="heading_contact_edit">Muokkaa kontaktia</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">Uusi kontakti</string>
     <string name="heading_contact_read">Lue kontakti</string>
     <string name="heading_contact_summary">Kontaktin yhteenveto</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Et ole yhdistettynä internetiin.</string>
     <string name="message_no_matching_persons">Yhteensopivia henkilöitä ei löydetty.</string>
     <string name="message_no_more_entries">Ei ole enempää merkintöjä näytettäväksi.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">PIN-koodin vaihtaminen onnistui.</string>
     <string name="message_pin_correct_loading">PIN-koodi oikein. Käynnistetään SORMAS...</string>
     <string name="message_pin_no_consecutive">PIN-koodi ei voi koostua perättäisistä numeroista.</string>

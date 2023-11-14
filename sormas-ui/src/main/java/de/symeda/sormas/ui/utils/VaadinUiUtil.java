@@ -312,7 +312,11 @@ public final class VaadinUiUtil {
 			};
 
 			confirmationComponent.getConfirmButton().setCaption(confirmCaption);
-			confirmationComponent.getCancelButton().setCaption(cancelCaption);
+			if (cancelCaption != null) {
+				confirmationComponent.getCancelButton().setCaption(cancelCaption);
+			} else {
+				confirmationComponent.getCancelButton().setVisible(false);
+			}
 
 			return confirmationComponent;
 		}, width);
@@ -357,12 +361,12 @@ public final class VaadinUiUtil {
 	 *            TRUE: Option A, FALSE: Option B
 	 */
 	public static Window showChooseOptionPopup(
-			String caption,
-			Component content,
-			String optionACaption,
-			String optionBCaption,
-			Integer width,
-			Consumer<Boolean> resultConsumer) {
+		String caption,
+		Component content,
+		String optionACaption,
+		String optionBCaption,
+		Integer width,
+		Consumer<Boolean> resultConsumer) {
 		return showChooseOptionPopup(caption, content, optionACaption, optionBCaption, width, resultConsumer, false);
 	}
 
@@ -436,7 +440,7 @@ public final class VaadinUiUtil {
 
 		return showThreeOptionsPopup(caption, content, null, optionACaption, optionBCaption, optionCCaption, width, resultConsumer);
 	}
-	
+
 	public static Window showThreeOptionsPopup(
 		String caption,
 		Component content,
@@ -462,7 +466,7 @@ public final class VaadinUiUtil {
 		if (description != null) {
 			layout.addComponent(VaadinUiUtil.createInfoComponent(description));
 		}
-		
+
 		layout.addComponent(content);
 
 		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {

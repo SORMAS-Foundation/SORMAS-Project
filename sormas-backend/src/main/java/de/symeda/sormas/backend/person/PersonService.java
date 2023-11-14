@@ -844,8 +844,6 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 		Predicate filter = null;
 
-		Boolean matchMissingInfo = criteria.getMatchMissingInfo();
-
 		if (!StringUtils.isBlank(criteria.getFirstName()) && !StringUtils.isBlank(criteria.getLastName())) {
 			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
 			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
@@ -876,19 +874,19 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		}
 		if (criteria.getBirthdateYYYY() != null) {
 			final Predicate yearEquals = cb.equal(personFrom.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY());
-			filter = and(cb, filter, matchMissingInfo ? yearEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)), yearEquals));
+			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_YYYY)), yearEquals));
 		}
 		if (criteria.getBirthdateMM() != null) {
 			final Predicate monthEquals = cb.equal(personFrom.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM());
-			filter = and(cb, filter, matchMissingInfo ? monthEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_MM)), monthEquals));
+			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_MM)), monthEquals));
 		}
 		if (criteria.getBirthdateDD() != null) {
 			final Predicate dayEquals = cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD());
-			filter = and(cb, filter, matchMissingInfo ? dayEquals : cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), dayEquals));
+			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), dayEquals));
 		}
 		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
 			final Predicate nationalEqual = cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId());
-			filter = and(cb, filter, matchMissingInfo ? nationalEqual : cb.or(cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)), nationalEqual));
+			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)), nationalEqual));
 		}
 		if (!StringUtils.isBlank(criteria.getPassportNumber())) {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));

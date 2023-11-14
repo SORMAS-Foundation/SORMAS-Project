@@ -169,6 +169,7 @@
     <string name="caption_dropped">Gelöscht</string>
     <string name="caption_epi_week">Epi Woche</string>
     <string name="caption_report">Bericht</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">Zeitraum Ende</string>
     <string name="caption_period_start">Zeitraum Beginn</string>
     <string name="caption_person_information">Personeninformationen</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positiv</string>
     <string name="caption_possible_events">Mögliche Ereignisse</string>
     <string name="caption_prescribed_by">Verschrieben von</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">PIN bestätigen</string>
     <string name="heading_confirmation_dialog">Bestätigung</string>
     <string name="heading_contact_edit">Kontakt bearbeiten</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">Neuer Kontakt</string>
     <string name="heading_contact_read">Kontakt anzeigen</string>
     <string name="heading_contact_summary">Kontakt-Zusammenfassung</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Keine Internetverbindung</string>
     <string name="message_no_matching_persons">Keine passenden Personen gefunden.</string>
     <string name="message_no_more_entries">Es gibt keine weiteren Einträge zum Anzeigen.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">PIN wurde erfolgreich geändert.</string>
     <string name="message_pin_correct_loading">PIN korrekt. SORMAS wird gestartet ...</string>
     <string name="message_pin_no_consecutive">Die PIN darf nicht aus aufeinander folgenden Nummern gebildet werden.</string>

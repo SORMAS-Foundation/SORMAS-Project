@@ -55,6 +55,7 @@
     <color name="lightBlue">#ff6691c4</color>
     <color name="lightBlue10">#1A6691c4</color>
     <color name="lightBlue50">#806691c4</color>
+    <color name="lightBlue60">#CDD8EC</color>
     <color name="lighterBlue">#ffcdd8ec</color>
     <color name="lighterBlue40">#66cdd8ec</color>
     <color name="normalText">#FF374b5a</color>

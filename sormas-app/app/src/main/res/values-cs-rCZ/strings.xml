@@ -169,6 +169,7 @@
     <string name="caption_dropped">Zahozeno</string>
     <string name="caption_epi_week">Epi týden</string>
     <string name="caption_report">Zpráva</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Vzorky prostředí</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -212,6 +213,7 @@
     <string name="caption_period_end">Konec období</string>
     <string name="caption_period_start">Začátek období</string>
     <string name="caption_person_information">Informace o osobě</string>
+    <string name="caption_phone_number">Telefonní číslo:</string>
     <string name="caption_positive">Pozitivní</string>
     <string name="caption_possible_events">Možné události</string>
     <string name="caption_prescribed_by">Předepsáno</string>
@@ -333,6 +335,7 @@
     <string name="heading_confirm_pin">Potvrdit PIN</string>
     <string name="heading_confirmation_dialog">Potvrzení</string>
     <string name="heading_contact_edit">Upravit kontakt</string>
+    <string name="heading_contact_information">Kontaktní informace</string>
     <string name="heading_contact_new">Nový kontakt</string>
     <string name="heading_contact_read">Číst kontakt</string>
     <string name="heading_contact_summary">Shrnutí kontaktu</string>
@@ -554,6 +557,8 @@
     <string name="message_no_connection">Nejste připojeni k internetu.</string>
     <string name="message_no_matching_persons">Nenalezeny žádné odpovídající osoby.</string>
     <string name="message_no_more_entries">Žádné další položky k zobrazení.</string>
+    <string name="message_no_user_selected">Nebyl vybrán žádný uživatel</string>
+    <string name="message_not_specified">Neuvedeno</string>
     <string name="message_pin_changed">PIN byl úspěšně změněn.</string>
     <string name="message_pin_correct_loading">PIN je správně. Spouští se SORMAS ...</string>
     <string name="message_pin_no_consecutive">PIN nesmí být tvořen po sobě jdoucími čísly.</string>

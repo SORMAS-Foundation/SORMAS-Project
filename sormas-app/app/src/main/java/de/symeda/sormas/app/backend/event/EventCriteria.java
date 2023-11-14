@@ -19,6 +19,7 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.caze.Case;
 
 public class EventCriteria implements Serializable {
@@ -26,6 +27,12 @@ public class EventCriteria implements Serializable {
 	private EventStatus eventStatus;
 	private Case caze;
 	private Disease disease;
+
+	private String textFilter;
+
+	private EpiWeek epiWeekFrom;
+
+	private EpiWeek epiWeekTo;
 
 	public EventCriteria eventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
@@ -51,5 +58,29 @@ public class EventCriteria implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public String getTextFilter() {
+		return textFilter;
+	}
+
+	public void setTextFilter(String textFilter) {
+		this.textFilter = textFilter;
+	}
+
+	public EpiWeek getEpiWeekFrom() {
+		return epiWeekFrom;
+	}
+
+	public void setEpiWeekFrom(EpiWeek epiWeekFrom) {
+		this.epiWeekFrom = epiWeekFrom;
+	}
+
+	public EpiWeek getEpiWeekTo() {
+		return epiWeekTo;
+	}
+
+	public void setEpiWeekTo(EpiWeek epiWeekTo) {
+		this.epiWeekTo = epiWeekTo;
 	}
 }

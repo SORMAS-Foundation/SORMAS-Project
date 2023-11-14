@@ -88,6 +88,7 @@ public class CaseListViewModel extends ViewModel {
 			List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(caseCriteria, params.startPosition, params.loadSize);
 			callback.onResult(cases);
 		}
+
 	}
 
 	public static class CaseDataFactory extends DataSource.Factory {

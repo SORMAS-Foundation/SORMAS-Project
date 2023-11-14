@@ -25,6 +25,7 @@
         <import type="de.symeda.sormas.api.task.TaskAssignee" />
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
+        <import type="de.symeda.sormas.api.i18n.Captions" />
         <import type="de.symeda.sormas.api.caze.CaseDataDto" />
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
 
@@ -90,6 +91,12 @@
                 app:showCaption="false"
                 app:value="@={criteria.epiWeekTo}"
                 style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterCheckBoxField
+                android:id="@+id/cases_from_other_jurisdictions_filter"
+                style="@style/FilterCheckboxFieldStyle"
+                app:caption="@{I18nProperties.getCaption(Captions.caseFilterIncludeCasesFromOtherJurisdictions)}"
+                app:value="@={criteria.includeCasesFromOtherJurisdictions}" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/control_label_layout" />
+
+            <Spinner
+                android:id="@+id/spinner_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/ControlSpinnerStyle" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <ImageView android:id="@+id/user_contact_info_button"
+                android:layout_width="@dimen/primaryButtonMarginTop"
+                android:layout_height="@dimen/primaryButtonMarginTop"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/ic_visibility_black_24dp"
+                android:tint="@color/primaryButton"
+                android:layout_alignParentRight="true"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

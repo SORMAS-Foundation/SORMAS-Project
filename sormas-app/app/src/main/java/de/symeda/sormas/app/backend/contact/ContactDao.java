@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
@@ -44,7 +45,11 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.exposure.Exposure;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -191,53 +196,159 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		}
 	}
 
-	private QueryBuilder<Contact, Long> buildQueryBuilder(ContactCriteria criteria) throws SQLException {
+	private QueryBuilder<Contact, Long> buildQueryBuilder(ContactCriteria contactCriteria) throws SQLException {
 		QueryBuilder<Contact, Long> queryBuilder = queryBuilder();
-		QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
-		List<Where<Contact, Long>> whereStatements = new ArrayList<>();
-		Where<Contact, Long> where = queryBuilder.where();
-		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
+		QueryBuilder<Case, Long> caseQueryBuilder = DatabaseHelper.getCaseDao().queryBuilder();
+		queryBuilder.join(Contact.CASE_UUID, Case.UUID, caseQueryBuilder, QueryBuilder.JoinType.LEFT, QueryBuilder.JoinWhereOperation.AND);
+
+		Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+		// Only use user filter if no restricting case is specified
+		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(false)) {
+			where.and();
+			createJurisdictionFilterForCase(where);
+			where.or();
+			createJurisdictionFilter(where);
+		}
+
+		if (contactCriteria != null) {
+			createCriteriaFilter(where, contactCriteria);
+		}
+
+		queryBuilder.setWhere(where);
+		return queryBuilder;
+	}
+
+	public Where<Contact, Long> createJurisdictionFilterForCase(Where<Contact, Long> where) {
+		List<Where<Contact, Long>> whereJurisdictionFilterStatements = new ArrayList<>();
+
+		User currentUser = ConfigProvider.getUser();
+		if (currentUser == null) {
+			return null;
+		}
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		switch (jurisdictionLevel) {
+		case DISTRICT:
+			District district = currentUser.getDistrict();
+			if (district != null) {
+				whereJurisdictionFilterStatements.add(
+					where.or(
+						where.raw(Case.TABLE_NAME + "." + Case.DISTRICT + "= '" + district + "'"),
+						where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_DISTRICT + "= '" + district.getId() + "'")));
+			}
+			break;
+
+		case HEALTH_FACILITY:
+			Facility healthFacility = currentUser.getHealthFacility();
+			if (healthFacility != null) {
+				whereJurisdictionFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.HEALTH_FACILITY + "= '" + healthFacility + "'"));
+			}
+			break;
+
+		case COMMUNITY:
+			Community community = currentUser.getCommunity();
+			if (community != null) {
+				whereJurisdictionFilterStatements.add(
+					where.or(
+						where.raw(Case.TABLE_NAME + "." + Case.COMMUNITY + "= '" + community + "'"),
+						where.raw(Case.TABLE_NAME + "." + Case.RESPONSIBLE_COMMUNITY + "= '" + community.getId() + "'")));
+			}
+			break;
+
+		case POINT_OF_ENTRY:
+			PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+			if (pointOfEntry != null) {
+				whereJurisdictionFilterStatements.add(where.raw(Case.TABLE_NAME + "." + Case.POINT_OF_ENTRY + "= '" + pointOfEntry.getId() + "'"));
+			}
+			break;
+		default:
+		}
+
+		if (!whereJurisdictionFilterStatements.isEmpty()) {
+			where.or(whereJurisdictionFilterStatements.size());
+		}
+		return where;
+	}
+
+	public Where<Contact, Long> createJurisdictionFilter(Where<Contact, Long> where) throws SQLException {
+		List<Where<Contact, Long>> whereUserFilterStatements = new ArrayList<>();
+
+		User currentUser = ConfigProvider.getUser();
+		if (currentUser == null) {
+			return null;
+		}
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		switch (jurisdictionLevel) {
+		case DISTRICT:
+			District district = currentUser.getDistrict();
+			if (district != null) {
+				whereUserFilterStatements.add(where.eq(Contact.DISTRICT, currentUser.getDistrict().getId()));
+			}
+			break;
+
+		case COMMUNITY:
+			Community community = currentUser.getCommunity();
+			if (community != null) {
+				whereUserFilterStatements.add(where.eq(Contact.COMMUNITY, currentUser.getCommunity().getId()));
+			}
+			break;
+		default:
+		}
+
+		if (!whereUserFilterStatements.isEmpty()) {
+			where.or(whereUserFilterStatements.size());
+		}
+
+		return where;
+	}
+
+	public Where<Contact, Long> createCriteriaFilter(Where<Contact, Long> where, ContactCriteria criteria) throws SQLException {
 
 		if (criteria.getCaze() != null) {
-			whereStatements.add(where.eq(Contact.CASE_UUID, criteria.getCaze().getUuid()));
+			where.and();
+			where.eq(Contact.CASE_UUID, criteria.getCaze().getUuid());
 		} else {
 			if (criteria.getFollowUpStatus() != null) {
-				whereStatements.add(where.eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus()));
+				where.and();
+				where.eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus());
 			}
 			if (criteria.getContactClassification() != null) {
-				whereStatements.add(where.eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification()));
+				where.and();
+				where.eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification());
 			}
 			if (criteria.getDisease() != null) {
-				whereStatements.add(where.eq("caseDisease", criteria.getDisease()));
+				where.and();
+				where.eq("caseDisease", criteria.getDisease());
 			}
 			if (criteria.getReportDateFrom() != null) {
-				whereStatements.add(where.ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom())));
+				where.and();
+				where.ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom()));
 			}
 			if (criteria.getReportDateTo() != null) {
-				whereStatements.add(where.le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo())));
+				where.and();
+				where.le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo()));
 			}
 			if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 				String[] textFilters = criteria.getTextFilter().split("\\s+");
 				for (String filter : textFilters) {
 					String textFilter = "%" + filter.toLowerCase() + "%";
 					if (!StringUtils.isEmpty(textFilter)) {
-						whereStatements.add(
-							where.or(
-								where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-								where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-								where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
+						where.and();
+						where.or(
+							where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+							where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+							where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"));
 					}
 				}
 			}
 		}
 
-		if (!whereStatements.isEmpty()) {
-			Where<Contact, Long> whereStatement = where.and(whereStatements.size());
-			queryBuilder.setWhere(whereStatement);
-		}
-		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
-		return queryBuilder;
+		return where;
 	}
 
 	public void deleteContactAndAllDependingEntities(String contactUuid) throws SQLException {

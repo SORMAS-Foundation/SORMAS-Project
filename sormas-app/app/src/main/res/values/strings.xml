@@ -174,6 +174,7 @@
     <string name="caption_dropped">Dropped</string>
     <string name="caption_epi_week">Epi Week</string>
     <string name="caption_report">Report</string>
+    <string name="caption_email">E-mail:</string>
     <string name="caption_environment_information">Environment Information</string>
     <string name="caption_environment_samples">Environment Samples</string>
     <string name="caption_environment_tasks">Environment Tasks</string>
@@ -217,6 +218,7 @@
     <string name="caption_period_end">Period End</string>
     <string name="caption_period_start">Period Start</string>
     <string name="caption_person_information">Person Information</string>
+    <string name="caption_phone_number">Phone number:</string>
     <string name="caption_positive">Positive</string>
     <string name="caption_possible_events">Possible Events</string>
     <string name="caption_prescribed_by">Prescribed by</string>
@@ -282,6 +284,7 @@
     <string name="caption_sync_pulled">%1$s pulled</string>
     <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
     <string name="caption_sync_deleted">%1$s deleted</string>
+    <string name="caption_event_search_field">ID, title, description</string>
 `
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
@@ -343,6 +346,7 @@
     <string name="heading_confirm_pin">Confirm PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Edit Contact</string>
+    <string name="heading_contact_information">Contact information</string>
     <string name="heading_contact_new">New Contact</string>
     <string name="heading_contact_read">Read Contact</string>
     <string name="heading_contact_summary">Contact Summary</string>
@@ -569,6 +573,8 @@
     <string name="message_no_connection">You are not connected to the internet.</string>
     <string name="message_no_matching_persons">No matching persons found.</string>
     <string name="message_no_more_entries">There are no more entries to display.</string>
+    <string name="message_no_user_selected">No user has been selected</string>
+    <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">PIN has been successfully changed.</string>
     <string name="message_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
     <string name="message_pin_no_consecutive">PIN must not be made of consecutive numbers.</string>
