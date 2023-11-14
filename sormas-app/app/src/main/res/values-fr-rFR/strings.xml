@@ -213,7 +213,7 @@
     <string name="caption_period_end">Fin de la période</string>
     <string name="caption_period_start">Début de la période</string>
     <string name="caption_person_information">Informations sur la personne</string>
-    <string name="caption_phone_number">Phone number:</string>
+    <string name="caption_phone_number">Numéro de téléphone:</string>
     <string name="caption_positive">Positif</string>
     <string name="caption_possible_events">Événements possibles</string>
     <string name="caption_prescribed_by">Prescrit par</string>
@@ -279,7 +279,7 @@
     <string name="caption_sync_pulled">%1$s pulled</string>
     <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
     <string name="caption_sync_deleted">%1$s deleted</string>
-    <string name="caption_event_search_field">ID, title, description</string>
+    <string name="caption_event_search_field">ID, titre, description</string>
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
@@ -336,7 +336,7 @@
     <string name="heading_confirm_pin">Confirmer le code PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Modifier le contact</string>
-    <string name="heading_contact_information">Contact information</string>
+    <string name="heading_contact_information">Coordonnées du contact</string>
     <string name="heading_contact_new">Nouveau Contact</string>
     <string name="heading_contact_read">Lire le contact</string>
     <string name="heading_contact_summary">Résumé du contact</string>
@@ -558,8 +558,8 @@
     <string name="message_no_connection">Vous n\'êtes pas connecté à Internet.</string>
     <string name="message_no_matching_persons">Aucune personne correspondante trouvé.</string>
     <string name="message_no_more_entries">Il n\'y a plus d\'entrées à afficher.</string>
-    <string name="message_no_user_selected">No user has been selected</string>
-    <string name="message_not_specified">Not specified</string>
+    <string name="message_no_user_selected">Aucun utilisateur n\'a été sélectionné</string>
+    <string name="message_not_specified">Non spécifié</string>
     <string name="message_pin_changed">Le code PIN a été modifié avec succès.</string>
     <string name="message_pin_correct_loading">Code PIN correct. Démarrage SORMAS ...</string>
     <string name="message_pin_no_consecutive">Le code PIN ne doit pas être composé de nombres consécutifs.</string>
