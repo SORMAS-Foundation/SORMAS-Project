@@ -39,9 +39,7 @@ import android.location.Location;
 import android.os.Build;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -76,7 +74,9 @@ import de.symeda.sormas.app.backend.event.EventCriteria;
 import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -754,54 +754,122 @@ public class CaseDao extends AbstractAdoDao<Case> {
 	private QueryBuilder<Case, Long> buildQueryBuilder(CaseCriteria criteria) throws SQLException {
 		QueryBuilder<Case, Long> queryBuilder = queryBuilder();
 		QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
+		Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
-		List<Where<Case, Long>> whereStatements = new ArrayList<>();
-		Where<Case, Long> where = queryBuilder.where();
-		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
+		if (criteria != null) {
+			if (criteria.getIncludeCasesFromOtherJurisdictions().equals(false)) {
+				where.and();
+				createJurisdictionFilter(where);
+			}
+			createCriteriaFilter(where, criteria);
+			queryBuilder.setWhere(where);
+		}
+
+		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
+		return queryBuilder;
+	}
+
+	public Where createJurisdictionFilter(Where<Case, Long> where) throws SQLException {
+		List<Where> whereUserFilterStatements = new ArrayList<>();
+
+		User currentUser = ConfigProvider.getUser();
+		if (currentUser == null) {
+			return null;
+		}
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		switch (jurisdictionLevel) {
+		case DISTRICT:
+			District district = currentUser.getDistrict();
+			if (district != null) {
+				whereUserFilterStatements.add(where.or(where.eq((Case.DISTRICT), district), where.eq(Case.RESPONSIBLE_DISTRICT, district.getId())));
+			}
+			break;
+
+		case HEALTH_FACILITY:
+			Facility healthFacility = currentUser.getHealthFacility();
+			if (healthFacility != null) {
+				whereUserFilterStatements.add(where.eq(Case.HEALTH_FACILITY, healthFacility.getId()));
+			}
+			break;
+		case COMMUNITY:
+			Community community = currentUser.getCommunity();
+			if (community != null) {
+				whereUserFilterStatements
+					.add(where.or(where.eq((Case.COMMUNITY), community), where.eq(Case.RESPONSIBLE_COMMUNITY, community.getId())));
+			}
+			break;
+		case POINT_OF_ENTRY:
+			PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+			if (pointOfEntry != null) {
+				whereUserFilterStatements.add(where.eq(Case.POINT_OF_ENTRY, pointOfEntry.getId()));
+			}
+			break;
+		default:
+		}
+
+		if (!whereUserFilterStatements.isEmpty()) {
+			where.or(whereUserFilterStatements.size());
+		}
+
+		return where;
+	}
+
+	public Where<Case, Long> createCriteriaFilter(Where<Case, Long> where, CaseCriteria criteria) throws SQLException {
 
 		if (criteria.getInvestigationStatus() != null) {
-			whereStatements.add(where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus()));
+			where.and();
+			where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus());
 		}
+
 		if (criteria.getDisease() != null) {
-			whereStatements.add(where.eq(Case.DISEASE, criteria.getDisease()));
+			where.and();
+			where.eq(Case.DISEASE, criteria.getDisease());
 		}
+
 		if (criteria.getCaseClassification() != null) {
-			whereStatements.add(where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification()));
+			where.and();
+			where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification());
 		}
+
 		if (criteria.getOutcome() != null) {
-			whereStatements.add(where.eq(Case.OUTCOME, criteria.getOutcome()));
+			where.and();
+			where.eq(Case.OUTCOME, criteria.getOutcome());
 		}
+
 		if (criteria.getEpiWeekFrom() != null) {
-			whereStatements.add(where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom())));
+			where.and();
+			where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom()));
 		}
+
 		if (criteria.getEpiWeekTo() != null) {
-			whereStatements.add(where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo())));
+			where.and();
+			where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo()));
 		}
+
 		if (criteria.getCaseOrigin() != null) {
-			whereStatements.add(where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin()));
+			where.and();
+			where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin());
 		}
+
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
 			for (String filter : textFilters) {
 				String textFilter = "%" + filter.toLowerCase() + "%";
 				if (!StringUtils.isEmpty(textFilter)) {
-					whereStatements.add(
-						where.or(
-							where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-							where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-							where.raw(Case.TABLE_NAME + "." + Case.EXTERNAL_ID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-							where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-							where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
+					where.and();
+					where.or(
+						where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+						where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+						where.raw(Case.TABLE_NAME + "." + Case.EXTERNAL_ID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+						where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+						where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"));
 				}
 			}
 		}
 
-		if (!whereStatements.isEmpty()) {
-			Where<Case, Long> whereStatement = where.and(whereStatements.size());
-			queryBuilder.setWhere(whereStatement);
-		}
-		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
-		return queryBuilder;
+		return where;
 	}
 
 	public static Region getRegionWithFallback(Case caze) {
