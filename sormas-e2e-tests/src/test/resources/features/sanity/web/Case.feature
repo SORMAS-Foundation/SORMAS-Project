@@ -21,7 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @env_main
+  @tmsLink=SORDEV-7868mk @env_main
   Scenario: Edit, save and check all fields of a new case
     Given I log in as a National User
     And I click on the Cases button from navbar
