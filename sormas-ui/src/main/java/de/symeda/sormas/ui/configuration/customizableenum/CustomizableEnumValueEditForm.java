@@ -19,16 +19,25 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
+import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
 
 public class CustomizableEnumValueEditForm extends AbstractEditForm<CustomizableEnumValueDto> {
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CustomizableEnumValueDto.DATA_TYPE)
+	private CustomizableEnumTranslationComponent translationsComponent;
+
+	private static final String HTML_LAYOUT = fluidRowLocs(CustomizableEnumValueDto.DATA_TYPE, CustomizableEnumValueDto.UUID)
 		+ fluidRowLocs(CustomizableEnumValueDto.VALUE, CustomizableEnumValueDto.CAPTION)
-		+ fluidRowLocs(CustomizableEnumValueDto.DESCRIPTION);
+		+ fluidRowLocs(CustomizableEnumValueDto.DESCRIPTION)
+		+ fluidRowLocs(CustomizableEnumValueDto.TRANSLATIONS)
+		+ fluidRowLocs(CustomizableEnumValueDto.DISEASES);
 
 	public CustomizableEnumValueEditForm() {
 
@@ -46,16 +55,30 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 	protected void addFields() {
 
 		addField(CustomizableEnumValueDto.DATA_TYPE, ComboBox.class);
-		addFields(CustomizableEnumValueDto.VALUE, CustomizableEnumValueDto.CAPTION, CustomizableEnumValueDto.DESCRIPTION);
+		addFields(
+			CustomizableEnumValueDto.UUID,
+			CustomizableEnumValueDto.VALUE,
+			CustomizableEnumValueDto.CAPTION,
+			CustomizableEnumValueDto.DESCRIPTION);
 
 		setRequired(true, CustomizableEnumValueDto.CAPTION);
-		setReadOnly(true, CustomizableEnumValueDto.DATA_TYPE);
+		setReadOnly(true, CustomizableEnumValueDto.DATA_TYPE, CustomizableEnumValueDto.UUID);
 		setEnabled(false, CustomizableEnumValueDto.VALUE);
+
+		translationsComponent = addField(CustomizableEnumValueDto.TRANSLATIONS, CustomizableEnumTranslationComponent.class);
+		translationsComponent
+			.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, CustomizableEnumValueDto.TRANSLATIONS));
+
+		CheckboxSet<Disease> cbsDiseases = addField(CustomizableEnumValueDto.DISEASES, CheckboxSet.class);
+		cbsDiseases.setColumnCount(3);
+		cbsDiseases.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, CustomizableEnumValueDto.DISEASES));
+		cbsDiseases.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true), null, null);
 	}
 
 	@Override
 	public void setValue(CustomizableEnumValueDto newFieldValue) {
 		super.setValue(newFieldValue);
+		translationsComponent.setValue(newFieldValue.getTranslations());
 	}
 
 	@Override

@@ -17,6 +17,7 @@ package de.symeda.sormas.api.customizableenum;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -43,6 +44,8 @@ public class CustomizableEnumValueDto extends EntityDto {
 	public static final String VALUE = "value";
 	public static final String CAPTION = "caption";
 	public static final String DESCRIPTION = "description";
+	public static final String TRANSLATIONS = "translations";
+	public static final String DISEASES = "diseases";
 
 	@NotNull(message = Validations.required)
 	private CustomizableEnumType dataType;
@@ -54,7 +57,7 @@ public class CustomizableEnumValueDto extends EntityDto {
 	private String caption;
 	@Valid
 	private List<CustomizableEnumTranslation> translations;
-	private List<Disease> diseases;
+	private Set<Disease> diseases;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Valid
@@ -104,11 +107,11 @@ public class CustomizableEnumValueDto extends EntityDto {
 		this.translations = translations;
 	}
 
-	public List<Disease> getDiseases() {
+	public Set<Disease> getDiseases() {
 		return diseases;
 	}
 
-	public void setDiseases(List<Disease> diseases) {
+	public void setDiseases(Set<Disease> diseases) {
 		this.diseases = diseases;
 	}
 

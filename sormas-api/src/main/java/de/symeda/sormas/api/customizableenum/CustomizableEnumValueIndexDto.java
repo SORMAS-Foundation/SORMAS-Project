@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.api.customizableenum;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -36,7 +36,7 @@ public class CustomizableEnumValueIndexDto extends EntityDto {
 	private CustomizableEnumType dataType;
 	private String value;
 	private String caption;
-	private List<Disease> diseases;
+	private Set<Disease> diseases;
 	private Map<String, Object> properties;
 
 	public CustomizableEnumType getDataType() {
@@ -63,11 +63,11 @@ public class CustomizableEnumValueIndexDto extends EntityDto {
 		this.caption = caption;
 	}
 
-	public List<Disease> getDiseases() {
+	public Set<Disease> getDiseases() {
 		return diseases;
 	}
 
-	public void setDiseases(List<Disease> diseases) {
+	public void setDiseases(Set<Disease> diseases) {
 		this.diseases = diseases;
 	}
 

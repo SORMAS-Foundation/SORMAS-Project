@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.ui.configuration.customizableenum;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.renderers.TextRenderer;
@@ -30,11 +30,11 @@ public class CustomizableEnumDiseasesRenderer extends TextRenderer {
 	@Override
 	public JsonValue encode(Object value) {
 
-		if (!(value instanceof List)) {
+		if (!(value instanceof Set)) {
 			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueAllDiseases));
 		}
 
-		List<Disease> diseases = (List<Disease>) value;
+		Set<Disease> diseases = (Set<Disease>) value;
 
 		if (diseases.size() == 0) {
 			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueAllDiseases));
