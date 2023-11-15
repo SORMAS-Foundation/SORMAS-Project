@@ -32,7 +32,6 @@ Feature: User actions based on their rights
       | Surveillance Supervisor       |
       | Laboratory Officer            |
       | Point of Entry Supervisor     |
-      | Rest AUTOMATION               |
       | Admin Surveillance Supervisor |
       | Contact Officer               |
       | Community Officer             |
