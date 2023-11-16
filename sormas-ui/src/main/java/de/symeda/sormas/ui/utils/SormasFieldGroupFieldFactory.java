@@ -34,6 +34,7 @@ import de.symeda.sormas.ui.person.LocationsField;
 import de.symeda.sormas.ui.person.PersonContactDetailsField;
 import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
+import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
@@ -169,6 +170,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new UserRoleNotificationCheckboxSet();
 		} else if (CustomizableEnumTranslationComponent.class.isAssignableFrom(fieldType)) {
 			return (T) new CustomizableEnumTranslationComponent();
+		} else if (CustomizableEnumPropertiesComponent.class.isAssignableFrom(fieldType)) {
+			return (T) new CustomizableEnumPropertiesComponent();
 		} else if (UserField.class.isAssignableFrom(fieldType)) {
 			return (T) new UserField();
 		}

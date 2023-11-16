@@ -816,6 +816,8 @@ public interface Captions {
 	String countryArchivedCountries = "countryArchivedCountries";
 	String createSymptomJournalAccountButton = "createSymptomJournalAccountButton";
 	String creationDate = "creationDate";
+	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
+	String CustomizableEnum_hasDetails_short = "CustomizableEnum.hasDetails.short";
 	String CustomizableEnumValue_caption = "CustomizableEnumValue.caption";
 	String CustomizableEnumValue_dataType = "CustomizableEnumValue.dataType";
 	String CustomizableEnumValue_diseases = "CustomizableEnumValue.diseases";

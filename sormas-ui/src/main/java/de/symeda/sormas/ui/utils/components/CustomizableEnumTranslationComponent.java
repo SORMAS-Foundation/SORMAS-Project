@@ -46,19 +46,18 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CustomizableEnumTranslationComponent extends CustomField<List<CustomizableEnumTranslation>> {
 
-	private VerticalLayout layout;
 	private VerticalLayout rowsLayout;
 	private List<TranslationRow> rows;
 	private List<CustomizableEnumTranslation> translations;
-	private Button btnAdd;
 
 	@Override
 	protected Component initContent() {
 
-		layout = new VerticalLayout();
+		VerticalLayout layout = new VerticalLayout();
 		layout.setWidthFull();
 		layout.setMargin(new MarginInfo(false, false, true, false));
 		layout.setSpacing(false);
+		CssStyles.style(layout, CssStyles.VSPACE_TOP_4);
 
 		rowsLayout = new VerticalLayout();
 		rowsLayout.setWidthFull();
@@ -70,7 +69,7 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 			buildRowsLayout();
 		}
 
-		btnAdd = ButtonHelper
+		Button btnAdd = ButtonHelper
 			.createIconButtonWithCaption(null, null, VaadinIcons.PLUS, e -> buildTranslationRow(null, null, true), CssStyles.VSPACE_TOP_5);
 		btnAdd.setHeight(25, Unit.PIXELS);
 		btnAdd.setWidthFull();
@@ -125,7 +124,6 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 	public void setValue(List<CustomizableEnumTranslation> newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 
 		super.setValue(newFieldValue);
-
 		this.translations = newFieldValue;
 		buildTranslationRows();
 		buildRowsLayout();
@@ -153,18 +151,12 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 			: null;
 	}
 
-	@Override
-	public List<CustomizableEnumTranslation> getValue() {
-		return rows.stream().map(r -> new CustomizableEnumTranslation(r.getLanguage().toString(), r.getCaption())).collect(Collectors.toList());
-	}
-
 	private static final class TranslationRow extends HorizontalLayout {
 
 		private static final long serialVersionUID = 6883911907756570894L;
 
 		private final ComboBox cbLanguage;
 		private final TextField tfCaption;
-		private final Button btnDelete;
 
 		private Runnable deleteCallback;
 
@@ -184,7 +176,7 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 			if (language != null) {
 				cbLanguage.setValue(language);
 			}
-			btnDelete = ButtonHelper.createIconButtonWithCaption(null, null, VaadinIcons.TRASH, e -> deleteCallback.run());
+			Button btnDelete = ButtonHelper.createIconButtonWithCaption(null, null, VaadinIcons.TRASH, e -> deleteCallback.run());
 			addComponent(cbLanguage);
 			addComponent(tfCaption);
 			addComponent(btnDelete);

@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.configuration.customizableenum;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
@@ -27,15 +29,18 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
+import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
 
 public class CustomizableEnumValueEditForm extends AbstractEditForm<CustomizableEnumValueDto> {
 
+	private CustomizableEnumPropertiesComponent propertiesComponent;
 	private CustomizableEnumTranslationComponent translationsComponent;
 
 	private static final String HTML_LAYOUT = fluidRowLocs(CustomizableEnumValueDto.DATA_TYPE, CustomizableEnumValueDto.UUID)
 		+ fluidRowLocs(CustomizableEnumValueDto.VALUE, CustomizableEnumValueDto.CAPTION)
 		+ fluidRowLocs(CustomizableEnumValueDto.DESCRIPTION)
+		+ fluidRowLocs(CustomizableEnumValueDto.PROPERTIES)
 		+ fluidRowLocs(CustomizableEnumValueDto.TRANSLATIONS)
 		+ fluidRowLocs(CustomizableEnumValueDto.DISEASES);
 
@@ -65,6 +70,9 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 		setReadOnly(true, CustomizableEnumValueDto.DATA_TYPE, CustomizableEnumValueDto.UUID);
 		setEnabled(false, CustomizableEnumValueDto.VALUE);
 
+		propertiesComponent = addField(CustomizableEnumValueDto.PROPERTIES, CustomizableEnumPropertiesComponent.class);
+		propertiesComponent.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, CustomizableEnumValueDto.PROPERTIES));
+
 		translationsComponent = addField(CustomizableEnumValueDto.TRANSLATIONS, CustomizableEnumTranslationComponent.class);
 		translationsComponent
 			.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, CustomizableEnumValueDto.TRANSLATIONS));
@@ -78,6 +86,12 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 	@Override
 	public void setValue(CustomizableEnumValueDto newFieldValue) {
 		super.setValue(newFieldValue);
+		propertiesComponent.setValue(newFieldValue.getProperties());
+		try {
+			propertiesComponent.setAllProperties(newFieldValue.getDataType().getEnumClass().getConstructor().newInstance().getAllProperties());
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
 		translationsComponent.setValue(newFieldValue.getTranslations());
 	}
 

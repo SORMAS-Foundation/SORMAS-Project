@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.api.customizableenum;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.event.SpecificRisk;
@@ -33,8 +30,6 @@ public enum CustomizableEnumType {
 	SPECIFIC_EVENT_RISK(SpecificRisk.class),
 	OCCUPATION_TYPE(OccupationType.class),
 	PATHOGEN(Pathogen.class);
-
-	private static final Logger logger = LoggerFactory.getLogger(CustomizableEnumType.class);
 
 	private final Class<? extends CustomizableEnum> enumClass;
 

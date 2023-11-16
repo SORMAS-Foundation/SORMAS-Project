@@ -46,6 +46,7 @@ public class CustomizableEnumValueDto extends EntityDto {
 	public static final String DESCRIPTION = "description";
 	public static final String TRANSLATIONS = "translations";
 	public static final String DISEASES = "diseases";
+	public static final String PROPERTIES = "properties";
 
 	@NotNull(message = Validations.required)
 	private CustomizableEnumType dataType;

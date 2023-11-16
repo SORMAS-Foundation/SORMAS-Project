@@ -16,9 +16,11 @@
 package de.symeda.sormas.ui.configuration.customizableenum;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.renderers.TextRenderer;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import elemental.json.JsonValue;
@@ -37,7 +39,11 @@ public class CustomizableEnumPropertiesRenderer extends TextRenderer {
 			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueNoProperties));
 		}
 
-		return super.encode(String.join(", ", properties.keySet()));
+		return super.encode(
+			properties.keySet()
+				.stream()
+				.map(k -> I18nProperties.getPrefixCaptionShort(CustomizableEnum.I18N_PREFIX, k))
+				.collect(Collectors.joining(", ")));
 	}
 
 }
