@@ -1030,11 +1030,15 @@ public interface Captions {
 	String DocumentTemplate_documentUploadWarning = "DocumentTemplate.documentUploadWarning";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
 	String DocumentTemplate_EventHandout_create = "DocumentTemplate.EventHandout.create";
+	String DocumentTemplate_exampleTemplateCaseEmail = "DocumentTemplate.exampleTemplateCaseEmail";
 	String DocumentTemplate_exampleTemplateCases = "DocumentTemplate.exampleTemplateCases";
+	String DocumentTemplate_exampleTemplateContactEmail = "DocumentTemplate.exampleTemplateContactEmail";
 	String DocumentTemplate_exampleTemplateContacts = "DocumentTemplate.exampleTemplateContacts";
 	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
+	String DocumentTemplate_exampleTemplateEventParticipantEmail = "DocumentTemplate.exampleTemplateEventParticipantEmail";
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
+	String DocumentTemplate_exampleTemplateTravelEntryEmail = "DocumentTemplate.exampleTemplateTravelEntryEmail";
 	String DocumentTemplate_fileTooBig = "DocumentTemplate.fileTooBig";
 	String DocumentTemplate_notUploaded = "DocumentTemplate.notUploaded";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
@@ -2694,6 +2698,8 @@ public interface Captions {
 	String View_configuration_districts_short = "View.configuration.districts.short";
 	String View_configuration_documentTemplates = "View.configuration.documentTemplates";
 	String View_configuration_documentTemplates_short = "View.configuration.documentTemplates.short";
+	String View_configuration_emailTemplates = "View.configuration.emailTemplates";
+	String View_configuration_emailTemplates_short = "View.configuration.emailTemplates.short";
 	String View_configuration_facilities = "View.configuration.facilities";
 	String View_configuration_facilities_short = "View.configuration.facilities.short";
 	String View_configuration_laboratories = "View.configuration.laboratories";

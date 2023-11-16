@@ -1,0 +1,35 @@
+Case Person:
+Debord, Guy
+
+Born:
+28.12.28
+
+Address:
+Nauwieserstraße 7
+66111 Saarbrücken
+
+Phone:
++49 681 1234
+
+Quarantine:
+from 9/10/2020 to 9/24/2020
+officially ordered:
+9/9/2020
+
+Empty Properties:
+./.
+./.
+
+
+
+User:
+Surv Sup
+
+Extra remarks:
+the first remark
+./.
+the third remark
+
+Errors:
+*** In CaseData: No property errorProperty in class CaseData ***
+*** In CaseData.person: No property errorProperty in class Person ***

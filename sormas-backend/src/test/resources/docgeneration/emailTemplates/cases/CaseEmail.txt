@@ -1,0 +1,35 @@
+Case Person:
+$case_person_lastName, $case_person_firstName
+
+Born:
+$case_person_birthdateDD.$case_person_birthdateMM.$case_person_birthdateDD
+
+Address:
+$case_person_address_street $case_person_address_houseNumber
+$person_address_postalCode $person_address_city
+
+Phone:
+$case_person_phone
+
+Quarantine:
+from $case_quarantineFrom to $case_quarantineTo
+officially ordered:
+$case_quarantineOrderedOfficialDocumentDate
+
+Empty Properties:
+$case_sequelaeDetails
+$case_person_address_additionalInformation
+$!case_person_address_addressTypeDetails
+$!case_additionalDetails
+
+User:
+$user_firstName $user_lastName
+
+Extra remarks:
+$extraremark1
+$extra_remark2
+$extra_remark_no3
+
+Errors:
+$case_errorProperty
+$case_person_errorProperty
