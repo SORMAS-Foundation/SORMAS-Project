@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -31,12 +32,14 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CustomizableEnumValuesView extends AbstractConfigurationView {
 
@@ -66,6 +69,14 @@ public class CustomizableEnumValuesView extends AbstractConfigurationView {
 		gridLayout.setExpandRatio(grid, 1);
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
+
+		addHeaderComponent(ButtonHelper.createIconButton(null, VaadinIcons.INFO_CIRCLE, e -> {
+			VaadinUiUtil.showSimplePopupWindow(
+				I18nProperties.getString(Strings.headingCustomizableEnumConfigurationInfo),
+				I18nProperties.getString(Strings.infoCustomizableEnumConfigurationInfo),
+				ContentMode.HTML,
+				640);
+		}));
 
 		addHeaderComponent(
 			ButtonHelper.createIconButton(

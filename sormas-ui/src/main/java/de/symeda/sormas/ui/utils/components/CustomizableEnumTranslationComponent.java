@@ -40,7 +40,6 @@ import com.vaadin.v7.ui.CustomField;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
-import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -187,10 +186,10 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 			if (caption != null) {
 				tfCaption.setValue(caption);
 			}
-			tfCaption.setPlaceholder(I18nProperties.getDescription(Descriptions.customizableEnumTranslationCaption));
+			tfCaption.setPlaceholder(I18nProperties.getString(Strings.promptCustomizableEnumTranslationLanguage));
 			cbLanguage = new ComboBox(null, Arrays.asList(Language.values()));
 			cbLanguage.setWidth(250, Unit.PIXELS);
-			cbLanguage.setInputPrompt(I18nProperties.getDescription(Descriptions.customizableEnumTranslationLanguage));
+			cbLanguage.setInputPrompt(I18nProperties.getString(Strings.promptCustomizableEnumTranslationCaption));
 			CssStyles.style(CssStyles.VSPACE_NONE, cbLanguage, tfCaption);
 			CssStyles.style(cbLanguage, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
 			ControllerProvider.getUserController().setFlagIcons(cbLanguage);
