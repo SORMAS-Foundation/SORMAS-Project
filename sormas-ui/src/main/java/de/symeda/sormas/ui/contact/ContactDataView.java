@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -66,7 +67,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
-public class ContactDataView extends AbstractContactView {
+public class ContactDataView extends AbstractContactView implements HasName {
 
 	private static final long serialVersionUID = -1L;
 
@@ -360,5 +361,10 @@ public class ContactDataView extends AbstractContactView {
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 
 		return caseInfoLayout;
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

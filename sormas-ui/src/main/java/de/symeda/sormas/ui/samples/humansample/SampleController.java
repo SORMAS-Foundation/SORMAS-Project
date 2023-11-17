@@ -367,7 +367,8 @@ public class SampleController {
 		boolean isPseudonymized,
 		boolean inJurisdiction,
 		Disease disease,
-		boolean showDeleteButton) {
+		boolean showDeleteButton,
+		String oldViewName) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized, inJurisdiction, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -399,8 +400,7 @@ public class SampleController {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
-				UI.getCurrent().getNavigator().navigateTo(getNavigationStateBasedOnAssociatedParent(dto));
-
+				redirectToOldNavigationState(dto, oldViewName);
 			}, (deletionDetails) -> {
 				FacadeProvider.getSampleFacade().restore(dto.getUuid());
 				updateAssociationsForSample(dto);
@@ -424,21 +424,30 @@ public class SampleController {
 		return editView;
 	}
 
-	public String getNavigationStateBasedOnAssociatedParent(SampleDto dto) {
+	public void redirectToOldNavigationState(SampleDto dto, String oldViewName) {
 		CaseReferenceDto associatedCase = dto.getAssociatedCase();
 		ContactReferenceDto associatedContact = dto.getAssociatedContact();
 		EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
 
-		String navigationState;
-		if (associatedCase != null) {
-			navigationState = CaseDataView.VIEW_NAME + "/" + associatedCase.getUuid();
-		} else if (associatedContact != null) {
-			navigationState = ContactDataView.VIEW_NAME + "/" + associatedContact.getUuid();
-		} else {
-			navigationState = EventParticipantDataView.VIEW_NAME + "/" + associatedEventParticipant.getUuid();
-		}
+		//TODO: check what happens if there is no oldView - we are accessing the link directly
+		if (oldViewName != null) {
+			String navigationState = "";
+			if (oldViewName.equals(CaseDataView.VIEW_NAME) && associatedCase != null) {
+				navigationState = oldViewName + "/" + associatedCase.getUuid();
+			} else if (oldViewName.equals(ContactDataView.VIEW_NAME) && associatedContact != null) {
+				navigationState = oldViewName + "/" + associatedContact.getUuid();
+			} else if (oldViewName.equals(EventParticipantDataView.VIEW_NAME) && associatedEventParticipant != null) {
+				navigationState = oldViewName + "/" + associatedEventParticipant.getUuid();
+			} else if (oldViewName.equals(SamplesView.VIEW_NAME)) {
+				navigationState = oldViewName;
+			}
 
-		return navigationState;
+			//TODO: check what happens if navigationState is empty
+			UI.getCurrent().getNavigator().navigateTo(navigationState);
+		} else {
+			//if the sample is accessed by URL from any other view
+			UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+		}
 	}
 
 	private void updateAssociationsForSample(SampleDto sampleDto) {

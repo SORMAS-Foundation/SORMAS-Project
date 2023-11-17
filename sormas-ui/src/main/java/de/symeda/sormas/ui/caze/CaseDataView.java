@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -56,7 +57,7 @@ import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
  * CaseDataView for reading and editing the case data fields. Contains the
  * {@link CaseDataForm}.
  */
-public class CaseDataView extends AbstractCaseView {
+public class CaseDataView extends AbstractCaseView implements HasName {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 	public static final String CASE_LOC = "case";
@@ -219,5 +220,10 @@ public class CaseDataView extends AbstractCaseView {
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, caseEditAllowed);
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }
