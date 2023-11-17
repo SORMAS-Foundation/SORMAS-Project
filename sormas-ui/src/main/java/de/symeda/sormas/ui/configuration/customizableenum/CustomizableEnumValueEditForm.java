@@ -89,6 +89,9 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 		propertiesComponent.setValue(newFieldValue.getProperties());
 		try {
 			propertiesComponent.setAllProperties(newFieldValue.getDataType().getEnumClass().getConstructor().newInstance().getAllProperties());
+			if (!propertiesComponent.hasContent()) {
+				propertiesComponent.setVisible(false);
+			}
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}

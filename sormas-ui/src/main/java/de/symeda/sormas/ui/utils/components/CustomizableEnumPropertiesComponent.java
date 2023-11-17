@@ -94,4 +94,8 @@ public class CustomizableEnumPropertiesComponent extends CustomField<Map<String,
 		this.allProperties = allProperties;
 		buildPropertyFields();
 	}
+
+	public boolean hasContent() {
+		return !allProperties.isEmpty();
+	}
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -29,6 +30,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
@@ -38,7 +40,9 @@ import com.vaadin.v7.ui.CustomField;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -48,6 +52,7 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 
 	private VerticalLayout rowsLayout;
 	private List<TranslationRow> rows;
+	private Label lblNoTranslations;
 	private List<CustomizableEnumTranslation> translations;
 
 	@Override
@@ -59,6 +64,9 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 		layout.setSpacing(false);
 		CssStyles.style(layout, CssStyles.VSPACE_TOP_4);
 
+		lblNoTranslations = new Label(I18nProperties.getString(Strings.infoNoCustomizableEnumTranslations));
+		layout.addComponent(lblNoTranslations);
+
 		rowsLayout = new VerticalLayout();
 		rowsLayout.setWidthFull();
 		rowsLayout.setMargin(false);
@@ -67,6 +75,7 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 
 		if (rows != null) {
 			buildRowsLayout();
+			updateNoTranslationsLabelVisibility();
 		}
 
 		Button btnAdd = ButtonHelper
@@ -112,8 +121,10 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 		row.setDeleteCallback(() -> {
 			rows.remove(row);
 			rowsLayout.removeComponent(row);
+			updateNoTranslationsLabelVisibility();
 		});
 		rows.add(row);
+		updateNoTranslationsLabelVisibility();
 
 		if (render) {
 			rowsLayout.addComponent(row);
@@ -151,6 +162,15 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 			: null;
 	}
 
+	private void updateNoTranslationsLabelVisibility() {
+
+		if (lblNoTranslations == null) {
+			return;
+		}
+
+		lblNoTranslations.setVisible(CollectionUtils.isEmpty(rows));
+	}
+
 	private static final class TranslationRow extends HorizontalLayout {
 
 		private static final long serialVersionUID = 6883911907756570894L;
@@ -167,8 +187,10 @@ public class CustomizableEnumTranslationComponent extends CustomField<List<Custo
 			if (caption != null) {
 				tfCaption.setValue(caption);
 			}
+			tfCaption.setPlaceholder(I18nProperties.getDescription(Descriptions.customizableEnumTranslationCaption));
 			cbLanguage = new ComboBox(null, Arrays.asList(Language.values()));
 			cbLanguage.setWidth(250, Unit.PIXELS);
+			cbLanguage.setInputPrompt(I18nProperties.getDescription(Descriptions.customizableEnumTranslationLanguage));
 			CssStyles.style(CssStyles.VSPACE_NONE, cbLanguage, tfCaption);
 			CssStyles.style(cbLanguage, CssStyles.COMBO_BOX_WITH_FLAG_ICON);
 			ControllerProvider.getUserController().setFlagIcons(cbLanguage);

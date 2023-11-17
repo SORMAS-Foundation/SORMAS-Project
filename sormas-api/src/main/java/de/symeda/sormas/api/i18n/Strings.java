@@ -962,6 +962,7 @@ public interface Strings {
 	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoCustomizableEnumTranslations = "infoNoCustomizableEnumTranslations";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";

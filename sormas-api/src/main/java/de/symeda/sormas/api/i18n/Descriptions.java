@@ -32,6 +32,8 @@ public interface Descriptions {
 	String Contact_followUpStatus = "Contact.followUpStatus";
 	String Contact_region = "Contact.region";
 	String Contact_relationToCase = "Contact.relationToCase";
+	String customizableEnumTranslationCaption = "customizableEnumTranslationCaption";
+	String customizableEnumTranslationLanguage = "customizableEnumTranslationLanguage";
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
 	String descCaseFilterCasesWithReinfection = "descCaseFilterCasesWithReinfection";
 	String descCaseFilterExcludeSharedCases = "descCaseFilterExcludeSharedCases";
