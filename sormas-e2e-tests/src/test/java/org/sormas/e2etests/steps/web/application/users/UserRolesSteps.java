@@ -268,7 +268,7 @@ public class UserRolesSteps implements En {
         });
 
     Then(
-        "I Verify User Management tab is present from User Roles Page",
+        "I Verify User Management tab is present from Users directory page",
         () -> {
           assertHelpers.assertWithPoll(
               () ->

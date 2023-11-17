@@ -57,7 +57,7 @@ Feature: User actions based on their rights
     Given I log in as a Admin User
     And I click on the Users from navbar
     And I check if there is any user with the "RightsChecker" role and change his role
-    And I click on User roles tab from User Management Page
+    And I click on User roles tab from Users Page
     And I check if the "RightsChecker" user role exist and delete it
     And I click on New user role button on User Roles Page
     And I choose "National User" as the user role template
@@ -74,5 +74,5 @@ Feature: User actions based on their rights
     Then I click on logout button from navbar
     And I login with new created user with chosen new role
     Then I click on the Users from navbar
-    And I Verify User Management tab is present from User Roles Page
+    And I Verify User Management tab is present from Users directory page
     And I Verify that User Roles is not present in the tab
