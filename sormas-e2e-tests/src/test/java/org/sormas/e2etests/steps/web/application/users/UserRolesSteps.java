@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.CANNOT_D
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.CREATE_NEW_USERS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DISCARD_BUTTON;
@@ -39,6 +40,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CAS
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_CASES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_CASES_CHECKBOX_VALUE;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_USERS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EXPORT_USER_ROLES_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
@@ -56,6 +58,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROL
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_ENABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.VIEW_EXISTING_USERS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserRoleCaptionByText;
@@ -65,8 +68,10 @@ import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class UserRolesSteps implements En {
@@ -75,7 +80,8 @@ public class UserRolesSteps implements En {
   protected WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public UserRolesSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+  public UserRolesSteps(
+      WebDriverHelpers webDriverHelpers, SoftAssert softly, AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -120,7 +126,33 @@ public class UserRolesSteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACTS_CHECKBOX);
               webDriverHelpers.scrollToElement(ARCHIVE_CONTACTS_CHECKBOX);
               break;
+            case "View existing users":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(VIEW_EXISTING_USERS_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(VIEW_EXISTING_USERS_CHECKBOX);
+              webDriverHelpers.scrollToElement(VIEW_EXISTING_USERS_CHECKBOX);
+              break;
+            case "Edit existing users":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_EXISTING_USERS_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(EDIT_EXISTING_USERS_CHECKBOX);
+              webDriverHelpers.scrollToElement(EDIT_EXISTING_USERS_CHECKBOX);
+              break;
+            case "Create new users":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_NEW_USERS_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_USERS_CHECKBOX);
+              webDriverHelpers.scrollToElement(CREATE_NEW_USERS_CHECKBOX);
+              break;
           }
+        });
+
+    Then(
+        "I Verify that User Roles is not present in the tab",
+        () -> {
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertFalse(
+                      webDriverHelpers.isElementPresent(USER_ROLE_LIST),
+                      "User Roles tab is displayed for wrong User type"),
+              3);
         });
 
     And(
@@ -233,6 +265,17 @@ public class UserRolesSteps implements En {
           webDriverHelpers.scrollToElement(USER_MANAGEMENT_TAB);
           webDriverHelpers.clickOnWebElementBySelector(USER_MANAGEMENT_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SEARCH_USER_INPUT);
+        });
+
+    Then(
+        "I Verify User Management tab is present from User Roles Page",
+        () -> {
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      webDriverHelpers.isElementPresent(USER_MANAGEMENT_TAB),
+                      "User Management tab is not displayed"),
+              3);
         });
 
     And(
