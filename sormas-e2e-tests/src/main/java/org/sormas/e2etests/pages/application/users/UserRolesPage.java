@@ -31,6 +31,9 @@ public class UserRolesPage {
   public static By POPUP_DISCARD_BUTTON = By.cssSelector(".popupContent #discard");
   public static By ARCHIVE_CASES_CHECKBOX = By.xpath("//label[text()='Archive cases']");
   public static By ARCHIVE_CONTACTS_CHECKBOX = By.xpath("//label[text()='Archive contacts']");
+  public static By VIEW_EXISTING_USERS_CHECKBOX = By.xpath("//label[text()='View existing users']");
+  public static By EDIT_EXISTING_USERS_CHECKBOX = By.xpath("//label[text()='Edit existing users']");
+  public static By CREATE_NEW_USERS_CHECKBOX = By.xpath("//label[text()='Create new users']");
   public static By SAVE_BUTTON = By.cssSelector("#commit");
   public static By DISCARD_BUTTON = By.cssSelector("#discard");
   public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");

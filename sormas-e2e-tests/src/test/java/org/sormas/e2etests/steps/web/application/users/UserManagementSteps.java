@@ -209,7 +209,7 @@ public class UserManagementSteps implements En {
         });
 
     And(
-        "^I click on User roles tab from User Management Page$",
+        "^I click on User roles tab from Users Page$",
         () -> {
           webDriverHelpers.scrollToElement(USER_ROLES_TAB);
           webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB);
