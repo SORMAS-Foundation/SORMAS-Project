@@ -207,6 +207,7 @@ public enum FeatureType {
 		Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
 		ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
 	EDIT_ARCHIVED_ENTITIES(true, true, null, null, null),
+	EXTERNAL_EMAILS(true, false, null, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,

@@ -18,7 +18,12 @@ package de.symeda.sormas.backend.docgeneration;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_CASE;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_CONTACT;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT_PARTICIPANT;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_PATHOGEN_TEST;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_PERSON;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_SAMPLE;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_TRAVEL_ENTRY;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_USER;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_VACCINATION;
 
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -33,11 +38,15 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import com.google.common.base.Functions;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -55,7 +64,9 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
-import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -63,11 +74,12 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless
@@ -83,70 +95,140 @@ public class DocumentTemplateEntitiesBuilder {
 	@EJB
 	private TravelEntryFacadeEjbLocal travelEntryFacade;
 	@EJB
-	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
+	private PersonFacadeEjbLocal personFacade;
 	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacadeEjb;
+	private UserFacadeEjbLocal userFacade;
 	@EJB
-	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
+	private SampleFacadeEjbLocal sampleFacadeEjb;
+	@EJB
+	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
+	private final Map<RootEntityType, Function<HasUuid, RootEntityResolver>> resolverFactories;
+
+	public DocumentTemplateEntitiesBuilder() {
+		resolverFactories = buildResolverFactories();
+	}
+
 	public DocumentTemplateEntities getQuarantineOrderEntities(
-		DocumentWorkflow workflow,
+		RootEntityType rootEntityType,
 		ReferenceDto rootEntityRef,
 		SampleReferenceDto sampleRef,
 		PathogenTestReferenceDto pathogenTestRef,
-		VaccinationReferenceDto vaccinationRef)
-		throws DocumentTemplateException {
+		VaccinationReferenceDto vaccinationRef) {
 
-		SampleDto sample = null;
-		if (sampleRef != null) {
-			sample = sampleFacadeEjb.getSampleByUuid(sampleRef.getUuid());
-		}
+		return resolveEntities(
+			new RootEntities().addReference(rootEntityType, rootEntityRef)
+				.addReference(ROOT_SAMPLE, sampleRef)
+				.addReference(ROOT_PATHOGEN_TEST, pathogenTestRef)
+				.addReference(ROOT_VACCINATION, vaccinationRef)
+				.addEntity(RootEntityType.ROOT_USER, userFacade.getCurrentUser()));
+	}
 
-		PathogenTestDto pathogenTest = null;
-		if (pathogenTestRef != null) {
-			pathogenTest = pathogenTestFacade.getByUuid(pathogenTestRef.getUuid());
-		}
+	public DocumentTemplateEntities resolveEntities(RootEntities entities) {
+		Map<RootEntityType, RootEntityResolver> resolvers = entities.getEntities().entrySet().stream().map(ref -> {
+			RootEntities.Entity entity = ref.getValue();
+			RootEntityResolver resolver =
+				entity.isReference() ? resolverFactories.get(ref.getKey()).apply(entity.getValue()) : createNoopResolver(entity.getValue());
+			return new DataHelper.Pair<>(ref.getKey(), resolver);
+		}).collect(Collectors.toMap(DataHelper.Pair::getElement0, DataHelper.Pair::getElement1));
 
-		VaccinationDto vaccination = null;
-		if (vaccinationRef != null) {
-			vaccination = vaccinationFacade.getByUuid(vaccinationRef.getUuid());
-		}
+		DocumentTemplateEntities resolved = new DocumentTemplateEntities();
+		resolvers.forEach((entityType, resolver) -> {
+			Object entity = resolver.resolve();
+			if (entity != null && RootEntityAndPersonRef.class.isAssignableFrom(entity.getClass()) && !entities.hasReference(ROOT_PERSON)) {
+				RootEntityAndPersonRef<?> entityAndPersonRef = (RootEntityAndPersonRef<?>) entity;
+				resolved.addEntity(entityType, entityAndPersonRef.rootEntity);
+				resolved.addEntity(ROOT_PERSON, entityAndPersonRef.personRef);
+			} else {
+				resolved.addEntity(entityType, entity);
+			}
+		});
 
-		String rootEntityUuid = rootEntityRef.getUuid();
+		return resolved;
+	}
 
-		switch (workflow) {
-		case QUARANTINE_ORDER_CASE:
-			CaseDataDto caseDataDto = caseFacade.getCaseDataByUuid(rootEntityUuid);
+	private Map<RootEntityType, Function<HasUuid, RootEntityResolver>> buildResolverFactories() {
+		return Map.ofEntries(
+			Map.entry(ROOT_CASE, this::createCaseResolver),
+			Map.entry(ROOT_CONTACT, this::createContactResolver),
+			Map.entry(ROOT_EVENT_PARTICIPANT, this::createEventParticipantResolver),
+			Map.entry(ROOT_TRAVEL_ENTRY, this::createTravelEntryResolver),
+			Map.entry(ROOT_PERSON, this::createPersonResolver),
+			Map.entry(ROOT_SAMPLE, this::createSampleResolver),
+			Map.entry(ROOT_PATHOGEN_TEST, this::createPathogenTestResolver),
+			Map.entry(ROOT_VACCINATION, this::createVaccinationResolver));
+	}
 
-			return buildEntities(RootEntityType.ROOT_CASE, caseDataDto, caseDataDto.getPerson(), sample, pathogenTest, vaccination);
+	private static RootEntityResolver createNoopResolver(HasUuid entity) {
+		return RootEntityResolver.createResolver(entity, Functions.identity());
+	}
 
-		case QUARANTINE_ORDER_CONTACT:
-			ContactDto contactDto = contactFacade.getByUuid(rootEntityUuid);
+	public RootEntityResolver createCaseResolver(HasUuid caseRef) {
+		validateReference(caseRef, CaseReferenceDto.class);
+		return RootEntityResolver.createResolver(caseRef, r -> {
+			CaseDataDto caze = caseFacade.getByUuid(r.getUuid());
+			return new RootEntityAndPersonRef<>(caze, caze.getPerson());
+		});
+	}
 
-			return buildEntities(ROOT_CONTACT, contactDto, contactDto.getPerson(), sample, pathogenTest, vaccination);
+	public RootEntityResolver createContactResolver(HasUuid contactRef) {
+		validateReference(contactRef, ContactReferenceDto.class);
 
-		case QUARANTINE_ORDER_EVENT_PARTICIPANT:
-			EventParticipantDto eventParticipantDto = eventParticipantFacade.getByUuid(rootEntityUuid);
+		return RootEntityResolver.createResolver(contactRef, r -> {
+			ContactDto contact = contactFacade.getByUuid(r.getUuid());
+			return new RootEntityAndPersonRef<>(contact, contact.getPerson());
+		});
+	}
 
-			return buildEntities(
-				ROOT_EVENT_PARTICIPANT,
-				eventParticipantDto,
-				eventParticipantDto.getPerson().toReference(),
-				sample,
-				pathogenTest,
-				vaccination);
+	public RootEntityResolver createEventParticipantResolver(HasUuid eventParticipantRef) {
+		validateReference(eventParticipantRef, EventParticipantReferenceDto.class);
 
-		case QUARANTINE_ORDER_TRAVEL_ENTRY:
-			TravelEntryDto travelEntryDto = travelEntryFacade.getByUuid(rootEntityUuid);
+		return RootEntityResolver.createResolver(eventParticipantRef, r -> {
+			EventParticipantDto eventParticipant = eventParticipantFacade.getByUuid(r.getUuid());
+			return new RootEntityAndPersonRef<>(eventParticipant, eventParticipant.getPerson().toReference());
+		});
+	}
 
-			return buildEntities(ROOT_TRAVEL_ENTRY, travelEntryDto, travelEntryDto.getPerson(), null, null, null);
+	public RootEntityResolver createTravelEntryResolver(HasUuid travelEntryRef) {
+		validateReference(travelEntryRef, TravelEntryReferenceDto.class);
 
-		default:
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlySupportedEntities));
+		return RootEntityResolver.createResolver(travelEntryRef, r -> {
+			TravelEntryDto travelEntry = travelEntryFacade.getByUuid(r.getUuid());
+			return new RootEntityAndPersonRef<>(travelEntry, travelEntry.getPerson());
+		});
+	}
+
+	public RootEntityResolver createPersonResolver(HasUuid personRef) {
+		validateReference(personRef, PersonReferenceDto.class);
+
+		return RootEntityResolver.createResolver(personRef, r -> personFacade.getByUuid(personRef.getUuid()));
+	}
+
+	public RootEntityResolver createSampleResolver(HasUuid sampleRef) {
+		validateReference(sampleRef, SampleReferenceDto.class);
+
+		return RootEntityResolver.createResolver(sampleRef, r -> sampleFacadeEjb.getSampleByUuid(r.getUuid()));
+	}
+
+	public RootEntityResolver createPathogenTestResolver(HasUuid pathogenTestRef) {
+		validateReference(pathogenTestRef, PathogenTestReferenceDto.class);
+
+		return RootEntityResolver.createResolver(pathogenTestRef, r -> pathogenTestFacade.getByUuid(r.getUuid()));
+	}
+
+	public RootEntityResolver createVaccinationResolver(HasUuid vaccinationTestRef) {
+		validateReference(vaccinationTestRef, VaccinationReferenceDto.class);
+
+		return RootEntityResolver.createResolver(vaccinationTestRef, r -> vaccinationFacade.getByUuid(r.getUuid()));
+	}
+
+	private static <R> void validateReference(HasUuid referenceDto, Class<R> referenceType) {
+		if (referenceDto != null && !referenceType.isAssignableFrom(referenceDto.getClass())) {
+			throw new IllegalArgumentException("reference must be of type " + referenceType.getSimpleName());
 		}
 	}
 
@@ -257,7 +339,7 @@ public class DocumentTemplateEntitiesBuilder {
 				.stream()
 				.collect(Collectors.toMap(s -> sampleDtoAssociatedObjectFn.apply(s).getUuid(), s -> s));
 
-			Map<String, PathogenTestDto> pathogenTests = samples.size() > 0
+			Map<String, PathogenTestDto> pathogenTests = !samples.isEmpty()
 				? pathogenTestFacade.getPositiveOrLatest(samples.values().stream().map(SampleDto::getUuid).collect(Collectors.toList()))
 					.stream()
 					.collect(Collectors.toMap(t -> t.getSample().getUuid(), s -> s))
@@ -269,9 +351,8 @@ public class DocumentTemplateEntitiesBuilder {
 				if (diseases.size() > 1) {
 					throw new DocumentTemplateException(I18nProperties.getString(Strings.errorDocumentGenerationMultipleDiseasses));
 				} else if (!diseases.isEmpty()) {
-					vaccinations = vaccinationFacade.getLatestByPersons(
-						mainRootEntities.stream().map(getEntityPerson).collect(Collectors.toList()),
-						diseases.iterator().next());
+					vaccinations = vaccinationFacade
+						.getLatestByPersons(mainRootEntities.stream().map(getEntityPerson).collect(Collectors.toList()), diseases.iterator().next());
 				} else {
 					vaccinations = Collections.emptyMap();
 				}
@@ -279,46 +360,42 @@ public class DocumentTemplateEntitiesBuilder {
 				vaccinations = Collections.emptyMap();
 			}
 
-			return mainRootEntities.stream().map(e -> {
-				SampleDto sample = samples.get(e.getUuid());
+			return mainRootEntities.stream().map(entity -> {
+				SampleDto sample = samples.get(entity.getUuid());
 				PathogenTestDto pathogenTest = sample != null ? pathogenTests.get(sample.getUuid()) : null;
-				VaccinationDto vaccination = vaccinations.get(getEntityPerson.apply(e).getUuid());
+				PersonReferenceDto person = getEntityPerson.apply(entity);
+				VaccinationDto vaccination = vaccinations.get(person.getUuid());
 
 				return new AbstractMap.SimpleEntry<>(
-					createReference.apply(e),
-					buildEntities(mainRootEntityType, e, getEntityPerson.apply(e), sample, pathogenTest, vaccination));
+					createReference.apply(entity),
+					resolveEntities(
+						new RootEntities().addEntity(mainRootEntityType, entity)
+							.addEntity(ROOT_PERSON, person)
+							.addEntity(ROOT_SAMPLE, sample)
+							.addEntity(ROOT_PATHOGEN_TEST, pathogenTest)
+							.addEntity(ROOT_VACCINATION, vaccination)
+							.addEntity(ROOT_USER, userFacade.getCurrentUser())));
 			}).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 		}
-
 	}
 
-	private DocumentTemplateEntities buildEntities(
-		RootEntityType mainRootEntityType,
-		EntityDto mainRootEntity,
-		PersonReferenceDto person,
-		SampleDto sample,
-		PathogenTestDto pathogenTest,
-		VaccinationDto vaccination) {
-		DocumentTemplateEntities entities = new DocumentTemplateEntities();
+	public interface RootEntityResolver {
 
-		entities.addEntity(mainRootEntityType, mainRootEntity);
-		entities.addEntity(RootEntityType.ROOT_PERSON, person);
+		Object resolve();
 
-		if (sample != null) {
-			entities.addEntity(RootEntityType.ROOT_SAMPLE, sample);
+		static <T extends HasUuid, R> RootEntityResolver createResolver(T reference, Function<T, R> resolve) {
+			return () -> reference != null ? resolve.apply(reference) : null;
 		}
+	}
 
-		if (pathogenTest != null) {
-			entities.addEntity(RootEntityType.ROOT_PATHOGEN_TEST, pathogenTest);
+	private class RootEntityAndPersonRef<T> {
+
+		private final T rootEntity;
+		private PersonReferenceDto personRef;
+
+		public RootEntityAndPersonRef(T rootEntity, PersonReferenceDto personRef) {
+			this.rootEntity = rootEntity;
+			this.personRef = personRef;
 		}
-
-		if (vaccination != null) {
-			entities.addEntity(RootEntityType.ROOT_VACCINATION, vaccination);
-		}
-
-		final UserDto currentUser = userFacade.getCurrentUser();
-		entities.addEntity(RootEntityType.ROOT_USER, currentUser);
-
-		return entities;
 	}
 }

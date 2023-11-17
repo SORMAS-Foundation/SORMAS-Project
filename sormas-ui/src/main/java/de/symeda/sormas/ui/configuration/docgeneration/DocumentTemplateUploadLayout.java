@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.configuration.docgeneration;
 
+import java.util.Map;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileDownloader;
@@ -41,6 +43,42 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	private ImportLayoutComponent importGuideComponent;
 	private final DocumentWorkflow documentWorkflow;
 
+	private static final Map<DocumentWorkflow, DocumentTemplateInfoData> templateInfoData = Map.ofEntries(
+		Map.entry(
+			DocumentWorkflow.QUARANTINE_ORDER_CASE,
+			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateCases, "ExampleDocumentTemplateCases.docx")),
+		Map.entry(
+			DocumentWorkflow.QUARANTINE_ORDER_CONTACT,
+			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateContacts, "ExampleDocumentTemplateContacts.docx")),
+		Map.entry(
+			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
+			DocumentTemplateInfoData
+				.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateEventParticipants, "ExampleDocumentTemplateEventParticipant.docx")),
+		Map.entry(
+			DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY,
+			DocumentTemplateInfoData
+				.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateTravelEntries, "ExampleDocumentTemplateTravelEntry.docx")),
+		Map.entry(
+			DocumentWorkflow.EVENT_HANDOUT,
+			DocumentTemplateInfoData
+				.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateEventHandout, "ExampleDocumentTemplateEventHandout.html")),
+		Map.entry(
+			DocumentWorkflow.CASE_EMAIL,
+			DocumentTemplateInfoData.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateCaseEmail, "ExampleDocumentTemplateCaseEmail.txt")),
+		Map.entry(
+			DocumentWorkflow.CONTACT_EMAIL,
+			DocumentTemplateInfoData
+				.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateContactEmail, "ExampleDocumentTemplateContactEmail.txt")),
+		Map.entry(
+			DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
+			DocumentTemplateInfoData.forEmailTemplate(
+				Captions.DocumentTemplate_exampleTemplateEventParticipantEmail,
+				"ExampleDocumentTemplateEventParticipantEmail.txt")),
+		Map.entry(
+			DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
+			DocumentTemplateInfoData
+				.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateTravelEntryEmail, "ExampleDocumentTemplateTravelEntryEmail.txt")));
+
 	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow) {
 		super();
 		this.documentWorkflow = documentWorkflow;
@@ -57,7 +95,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 			I18nProperties.getCaption(Captions.DocumentTemplate_documentTemplateGuide));
 
 		Button button = importGuideComponent.getButton();
-		addFileDownloader(button, new ClassResource("/SORMAS_Document_Template_Guide.pdf"));
+		addFileDownloader(button, new ClassResource("/" + templateInfoData.get(documentWorkflow).guideFileName));
 
 		addExampleTemplatesQuarantineOrder();
 
@@ -67,35 +105,8 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	}
 
 	private void addExampleTemplatesQuarantineOrder() {
-		String caption = null;
-		ClassResource exampleTemplate = null;
-
-		switch (documentWorkflow) {
-		case QUARANTINE_ORDER_CASE:
-			caption = Captions.DocumentTemplate_exampleTemplateCases;
-			exampleTemplate = new ClassResource("/ExampleDocumentTemplateCases.docx");
-			break;
-		case QUARANTINE_ORDER_CONTACT:
-			caption = Captions.DocumentTemplate_exampleTemplateContacts;
-			exampleTemplate = new ClassResource("/ExampleDocumentTemplateContacts.docx");
-			break;
-		case QUARANTINE_ORDER_EVENT_PARTICIPANT:
-			caption = Captions.DocumentTemplate_exampleTemplateEventParticipants;
-			exampleTemplate = new ClassResource("/ExampleDocumentTemplateEventParticipant.docx");
-			break;
-		case QUARANTINE_ORDER_TRAVEL_ENTRY:
-			caption = Captions.DocumentTemplate_exampleTemplateTravelEntries;
-			exampleTemplate = new ClassResource("/ExampleDocumentTemplateTravelEntry.docx");
-			break;
-		case EVENT_HANDOUT:
-			caption = Captions.DocumentTemplate_exampleTemplateEventHandout;
-			exampleTemplate = new ClassResource("/ExampleDocumentTemplateEventHandout.html");
-			break;
-		default:
-			return;
-		}
-
-		addDownloadResource(caption, VaadinIcons.FILE_TEXT, exampleTemplate);
+		DocumentTemplateInfoData templateInfo = DocumentTemplateUploadLayout.templateInfoData.get(documentWorkflow);
+		addDownloadResource(templateInfo.captionKey, VaadinIcons.FILE_TEXT, new ClassResource("/" + templateInfo.fileName));
 	}
 
 	private void addUploadResourceComponent() {
@@ -123,5 +134,40 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	private void addFileDownloader(Button button, ClassResource importGuideResource) {
 		FileDownloader importGuideDownloader = new FileDownloader(importGuideResource);
 		importGuideDownloader.extend(button);
+	}
+
+	private static final class DocumentTemplateInfoData {
+
+		private final String captionKey;
+		private final String fileName;
+		private final String guideFileName;
+		private final String headingTextKey;
+		private final String infoTextKey;
+
+		public static DocumentTemplateInfoData forDocumentTemplate(String caption, String fileName) {
+			return new DocumentTemplateInfoData(caption, fileName, "SORMAS_Document_Template_Guide.pdf",
+					Strings.headingDownloadDocumentTemplateGuide,
+					Strings.infoDownloadDocumentTemplateImportGuide
+					);
+		}
+
+		public static DocumentTemplateInfoData forEmailTemplate(String caption, String fileName) {
+			return new DocumentTemplateInfoData(caption, fileName, "SORMAS_Email_Template_Guide.pdf",
+					Strings.headingDownloadEmailTemplateGuide,
+					Strings.infoDownloadEmailTemplateImportGuide
+			);
+		}
+
+		public static DocumentTemplateInfoData of(String caption, String fileName, String guideFileName, String headingTextKey, String infoTextKey) {
+			return new DocumentTemplateInfoData(caption, fileName, guideFileName, headingTextKey, infoTextKey);
+		}
+
+		private DocumentTemplateInfoData(String captionKey, String fileName, String guideFileName, String headingTextKey, String infoTextKey) {
+			this.captionKey = captionKey;
+			this.fileName = fileName;
+			this.guideFileName = guideFileName;
+			this.headingTextKey = headingTextKey;
+			this.infoTextKey = infoTextKey;
+		}
 	}
 }

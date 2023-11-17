@@ -96,7 +96,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getTravelEntryRef(), documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, travelEntryDto, documentList);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
