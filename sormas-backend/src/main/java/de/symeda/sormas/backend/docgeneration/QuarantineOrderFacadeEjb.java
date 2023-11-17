@@ -30,6 +30,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -59,6 +60,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	public byte[] getGeneratedDocument(
 		String templateName,
 		DocumentWorkflow workflow,
+		RootEntityType rootEntityType,
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTestReference,
@@ -68,7 +70,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		throws DocumentTemplateException {
 
 		DocumentTemplateEntities entities =
-			entitiesBuilder.getQuarantineOrderEntities(workflow, rootEntityReference, sampleReference, pathogenTestReference, vaccinationReference);
+			entitiesBuilder.getQuarantineOrderEntities(rootEntityType, rootEntityReference, sampleReference, pathogenTestReference, vaccinationReference);
 		byte[] documentToSave = documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities, extraProperties);
 		if (shouldUploadGeneratedDoc) {
 			uploadDocument(templateName, rootEntityReference, documentToSave);

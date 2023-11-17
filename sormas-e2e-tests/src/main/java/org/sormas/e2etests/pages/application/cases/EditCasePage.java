@@ -153,7 +153,7 @@ public class EditCasePage {
   public static final By VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX =
       By.cssSelector("#vaccinationStatus div");
   public static final By RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX =
-      By.cssSelector("#surveillanceOfficer div");
+      By.xpath("//div[@id='surveillanceOfficer']//div[@class='v-filterselect-button']");
   public static final By DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT =
       By.cssSelector("#districtLevelDate input");
   public static final By DATE_RECEIVED_AT_REGION_LEVEL_INPUT =

@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.events;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -32,6 +34,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -80,7 +83,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
 		caseIdColumn.setRenderer(new CaseUuidRenderer(uuid -> {
 			// '!=' check is ok because the converter returns the constant when no case creation is allowed
-			return NO_CASE_CREATE != uuid;
+
+			return NO_CASE_CREATE != uuid && UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
 		}));
 
 		Column<EventParticipantIndexDto, String> deleteColumn = addColumn(entry -> {
@@ -95,20 +99,31 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
 
 		Language userLanguage = I18nProperties.getUserLanguage();
-		setColumns(
+		String[] columns = new String[] {};
+		columns = ArrayUtils.addAll(
+			columns,
 			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
 			EventParticipantIndexDto.FIRST_NAME,
 			EventParticipantIndexDto.LAST_NAME,
 			EventParticipantIndexDto.SEX,
 			EventParticipantIndexDto.APPROXIMATE_AGE,
-			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
-			CASE_ID,
+			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION);
+
+		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
+			columns = ArrayUtils.add(columns, CASE_ID);
+		}
+
+		columns = ArrayUtils.addAll(
+			columns,
 			EventParticipantIndexDto.CONTACT_COUNT,
 			SampleIndexDto.PATHOGEN_TEST_RESULT,
 			SampleIndexDto.SAMPLE_DATE_TIME,
 			EventParticipantIndexDto.VACCINATION_STATUS,
 			DELETE_REASON_COLUMN);
+
+		setColumns(columns);
+
 		((Column<EventParticipantIndexDto, Date>) getColumn(SampleIndexDto.SAMPLE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -130,14 +145,16 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 		getColumn(EventParticipantIndexDto.CONTACT_COUNT).setSortable(false);
 
-		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
-			if (e.getCaseUuid() != null) {
-				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
-			} else if (e.getInJurisdiction()) {
-				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
-				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
-			}
-		}));
+		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
+			addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
+				if (e.getCaseUuid() != null) {
+					ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
+				} else if (e.getInJurisdiction()) {
+					EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
+					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+				}
+			}));
+		}
 		addItemClickListener(new ShowDetailsListener<>(EventParticipantIndexDto.PERSON_UUID, e -> {
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
 				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());

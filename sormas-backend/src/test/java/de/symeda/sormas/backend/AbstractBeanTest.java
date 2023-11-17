@@ -64,6 +64,7 @@ import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.docgeneneration.EmailTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
@@ -148,6 +149,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.EmailTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
@@ -871,6 +873,10 @@ public abstract class AbstractBeanTest {
 
 	public EventDocumentFacade getEventDocumentFacade() {
 		return getBean(EventDocumentFacadeEjb.class);
+	}
+
+	public EmailTemplateFacade getEmailTemplateFacade() {
+		return getBean(EmailTemplateFacadeEjb.EmailTemplateFacadeEjbLocal.class);
 	}
 
 	public BAGExportFacade getBAGExportFacade() {

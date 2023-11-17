@@ -29,11 +29,12 @@ import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_USER;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_VACCINATION;
 import static de.symeda.sormas.api.docgeneneration.TemplateFileType.DOCX;
 import static de.symeda.sormas.api.docgeneneration.TemplateFileType.HTML;
+import static de.symeda.sormas.api.docgeneneration.TemplateFileType.TXT;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 
 public enum DocumentWorkflow {
 
@@ -44,30 +45,69 @@ public enum DocumentWorkflow {
 	// to either a CaseDataDto or a ContactDto, depending on from where
 	// it is called. So "${case.person.firstName}" in the template refers
 	// to the case's or contact's person's first name in either case.
-	QUARANTINE_ORDER_CASE("quarantine", DOCX, ROOT_CASE, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST, ROOT_VACCINATION),
-	QUARANTINE_ORDER_CONTACT("quarantineContact", DOCX, ROOT_CONTACT, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST, ROOT_VACCINATION),
+	QUARANTINE_ORDER_CASE("quarantine",
+		DOCX,
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
+		ROOT_CASE,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST,
+		ROOT_VACCINATION),
+	QUARANTINE_ORDER_CONTACT("quarantineContact",
+		DOCX,
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
+		ROOT_CONTACT,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST,
+		ROOT_VACCINATION),
 	QUARANTINE_ORDER_EVENT_PARTICIPANT("quarantineEventParticipant",
 		DOCX,
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
 		ROOT_EVENT_PARTICIPANT,
 		ROOT_PERSON,
 		ROOT_USER,
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
 		ROOT_VACCINATION),
-	QUARANTINE_ORDER_TRAVEL_ENTRY("quarantineTravelEntry", DOCX, ROOT_TRAVEL_ENTRY, ROOT_PERSON, ROOT_USER),
-	EVENT_HANDOUT("eventHandout", HTML, ROOT_EVENT, ROOT_USER, ROOT_EVENT_ACTIONS, ROOT_EVENT_PARTICIPANTS);
+	QUARANTINE_ORDER_TRAVEL_ENTRY("quarantineTravelEntry", DOCX, UserRight.DOCUMENT_TEMPLATE_MANAGEMENT, ROOT_TRAVEL_ENTRY, ROOT_PERSON, ROOT_USER),
+	EVENT_HANDOUT("eventHandout", HTML, UserRight.DOCUMENT_TEMPLATE_MANAGEMENT, ROOT_EVENT, ROOT_USER, ROOT_EVENT_ACTIONS, ROOT_EVENT_PARTICIPANTS),
+	CASE_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER
+		+ "/cases", TXT, UserRight.EMAIL_TEMPLATE_MANAGEMENT, ROOT_CASE, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST, ROOT_VACCINATION),
+	CONTACT_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER + "/contacts",
+		TXT,
+		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
+		ROOT_CONTACT,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST,
+		ROOT_VACCINATION),
+	EVENT_PARTICIPANT_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER + "/eventParticipants",
+		TXT,
+		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
+		ROOT_EVENT_PARTICIPANT,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST,
+		ROOT_VACCINATION),
+	TRAVEL_ENTRY_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER
+		+ "/travelEntries", TXT, UserRight.EMAIL_TEMPLATE_MANAGEMENT, ROOT_TRAVEL_ENTRY, ROOT_PERSON, ROOT_USER);
 
-	private String templateDirectory;
-	private TemplateFileType fileType;
-	private List<String> rootEntityNames;
+	private final String templateDirectory;
+	private final TemplateFileType fileType;
 
-	DocumentWorkflow(String templateDirectory, TemplateFileType fileType, RootEntityType... rootEntityTypes) {
+	private final UserRight managementUserRight;
+	private final Set<RootEntityType> rootEntityTypes;
+
+	DocumentWorkflow(String templateDirectory, TemplateFileType fileType, UserRight managementUserRight, RootEntityType... rootEntityTypes) {
 		this.templateDirectory = templateDirectory;
 		this.fileType = fileType;
-		this.rootEntityNames = new ArrayList<>();
-		for (RootEntityType rootEntityName : rootEntityTypes) {
-			this.rootEntityNames.add(rootEntityName.getEntityName().toLowerCase());
-		}
+		this.managementUserRight = managementUserRight;
+		this.rootEntityTypes = Set.of(rootEntityTypes);
 	}
 
 	public String getTemplateDirectory() {
@@ -78,8 +118,8 @@ public enum DocumentWorkflow {
 		return fileType;
 	}
 
-	public List<String> getRootEntityNames() {
-		return rootEntityNames;
+	public Set<RootEntityType> getRootEntityTypes() {
+		return rootEntityTypes;
 	}
 
 	public String getFileExtension() {
@@ -90,8 +130,17 @@ public enum DocumentWorkflow {
 		return fileType == DOCX;
 	}
 
+	public UserRight getManagementUserRight() {
+		return managementUserRight;
+	}
+
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	private static class Constants {
+
+		public static final String EMAIL_TEMPLATES_FOLDER = "emailTemplates";
 	}
 }

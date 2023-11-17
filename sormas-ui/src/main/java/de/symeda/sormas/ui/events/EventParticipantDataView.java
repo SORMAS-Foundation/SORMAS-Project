@@ -21,6 +21,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -145,6 +146,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 			new VaccinationCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
 			layout,
+			RootEntityType.ROOT_EVENT_PARTICIPANT,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
 			sampleCriteria,

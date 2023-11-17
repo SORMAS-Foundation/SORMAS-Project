@@ -533,6 +533,7 @@ public interface Strings {
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	String headingDocumentCreated = "headingDocumentCreated";
 	String headingDownloadDocumentTemplateGuide = "headingDownloadDocumentTemplateGuide";
+	String headingDownloadEmailTemplateGuide = "headingDownloadEmailTemplateGuide";
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
 	String headingDownloadImportTemplate = "headingDownloadImportTemplate";
@@ -914,6 +915,7 @@ public interface Strings {
 	String infoDontShareCheckboxAlreadyShared = "infoDontShareCheckboxAlreadyShared";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
 	String infoDownloadDocumentTemplateImportGuide = "infoDownloadDocumentTemplateImportGuide";
+	String infoDownloadEmailTemplateImportGuide = "infoDownloadEmailTemplateImportGuide";
 	String infoDownloadErrorReport = "infoDownloadErrorReport";
 	String infoDownloadExport = "infoDownloadExport";
 	String infoDownloadImportGuide = "infoDownloadImportGuide";
