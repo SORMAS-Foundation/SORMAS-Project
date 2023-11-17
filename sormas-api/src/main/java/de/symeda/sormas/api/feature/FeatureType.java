@@ -207,6 +207,7 @@ public enum FeatureType {
 		Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
 		ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
 	EDIT_ARCHIVED_ENTITIES(true, true, null, null, null),
+	EXTERNAL_EMAILS(true, false, null, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,
@@ -331,8 +332,7 @@ public enum FeatureType {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING },
 		null,
-		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE)),
-	EXTERNAL_EMAILS(true, false, null, null, null);
+		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE));
 
 	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
 		FeatureType.CASE_SURVEILANCE,
