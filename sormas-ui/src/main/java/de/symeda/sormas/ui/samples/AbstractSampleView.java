@@ -37,28 +37,13 @@ import de.symeda.sormas.ui.samples.humansample.SampleDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 
 @SuppressWarnings("serial")
-//public abstract class AbstractSampleView extends AbstractDetailView<SampleReferenceDto> implements HasName {
 public abstract class AbstractSampleView extends AbstractDetailView<SampleReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = SamplesView.VIEW_NAME;
 
-	//public String oldViewName;
-
 	protected AbstractSampleView(String viewName) {
 		super(viewName);
 	}
-
-	/*
-	 * @Override
-	 * public void enter(ViewChangeListener.ViewChangeEvent event) {
-	 * super.enter(event);
-	 * View oldView = event.getOldView();
-	 * if (oldView != null) {
-	 * oldViewName = ((HasName) oldView).getName();
-	 * }
-	 * initOrRedirect(event);
-	 * }
-	 */
 
 	@Override
 	public void refreshMenu(SubMenu menu, String params) {
@@ -121,9 +106,4 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 		return getReference();
 	}
 
-	/*
-	 * public String getOldViewName() {
-	 * return oldViewName;
-	 * }
-	 */
 }

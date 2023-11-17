@@ -429,7 +429,6 @@ public class SampleController {
 		ContactReferenceDto associatedContact = dto.getAssociatedContact();
 		EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
 
-		//TODO: check what happens if there is no oldView - we are accessing the link directly
 		if (oldViewName != null) {
 			String navigationState = "";
 			if (oldViewName.equals(CaseDataView.VIEW_NAME) && associatedCase != null) {
@@ -438,14 +437,13 @@ public class SampleController {
 				navigationState = oldViewName + "/" + associatedContact.getUuid();
 			} else if (oldViewName.equals(EventParticipantDataView.VIEW_NAME) && associatedEventParticipant != null) {
 				navigationState = oldViewName + "/" + associatedEventParticipant.getUuid();
-			} else if (oldViewName.equals(SamplesView.VIEW_NAME)) {
+			} else {
+				//sample accessed from Samples directory
 				navigationState = oldViewName;
 			}
-
-			//TODO: check what happens if navigationState is empty
 			UI.getCurrent().getNavigator().navigateTo(navigationState);
 		} else {
-			//if the sample is accessed by URL from any other view
+			//the sample is accessed by URL from any other view
 			UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 		}
 	}
