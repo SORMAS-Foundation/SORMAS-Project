@@ -160,6 +160,13 @@ public class CustomizableEnumFacadeEjb
 		validate(dto);
 
 		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
+
+		List<String> dataTypeValues = enumValues.get(dto.getDataType());
+		if (existingEntity == null && dataTypeValues != null && dataTypeValues.contains(dto.getValue())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(Validations.customizableEnumValueDuplicateValue, dto.getDataType().toString(), dto.getValue()));
+		}
+
 		CustomizableEnumValue enumValue = fillOrBuildEntity(dto, existingEntity, true);
 		service.ensurePersisted(enumValue);
 

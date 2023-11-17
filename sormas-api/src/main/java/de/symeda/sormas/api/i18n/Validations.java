@@ -46,6 +46,7 @@ public interface Validations {
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String customizableEnumValueAllowedCharacters = "customizableEnumValueAllowedCharacters";
 	String customizableEnumValueDuplicateLanguage = "customizableEnumValueDuplicateLanguage";
+	String customizableEnumValueDuplicateValue = "customizableEnumValueDuplicateValue";
 	String customizableEnumValueEmptyTranslations = "customizableEnumValueEmptyTranslations";
 	String defaultInfrastructureAlreadyExisting = "defaultInfrastructureAlreadyExisting";
 	String defaultInfrastructureInvalidParentDistrict = "defaultInfrastructureInvalidParentDistrict";
