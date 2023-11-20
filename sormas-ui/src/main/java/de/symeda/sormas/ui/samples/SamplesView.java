@@ -65,7 +65,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
-public class SamplesView extends AbstractView {
+public class SamplesView extends AbstractView implements HasName {
 
 	public static final String VIEW_NAME = "samples";
 
@@ -254,5 +254,10 @@ public class SamplesView extends AbstractView {
 		return this.viewConfiguration.isInEagerMode()
 			? ((EnvironmentSampleGridComponent) sampleListComponent).getGrid().asMultiSelect().getSelectedItems()
 			: Collections.emptySet();
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

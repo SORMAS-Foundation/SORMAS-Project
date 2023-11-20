@@ -68,6 +68,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -79,7 +80,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class EventParticipantsView extends AbstractEventView {
+public class EventParticipantsView extends AbstractEventView implements HasName {
 
 	private static final long serialVersionUID = -1L;
 
@@ -468,5 +469,10 @@ public class EventParticipantsView extends AbstractEventView {
 			activeStatusButton
 				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }
