@@ -82,5 +82,5 @@ Log in as any user (e.g. the default user on the play server), open the *About* 
 If there are still things that are necessary in order to properly implement the new disease in SORMAS (you might require us to create a whole new area for cases or there might be very complex mechanics that need a lot more specification), please give us as many details about them as possible. Just put all this information into your email.
 
 ### Step 11: Send Your Disease Definition to the SORMAS Team
-Send your email containing the updated Data Dictionary file, the case classification criteria and your additional notes to sormas@helmholtz-hzi.de. Congratulations, your work is done! We should now have all the information we need in order to integrate your disease into SORMAS.
+Send your email containing the updated Data Dictionary file, the case classification criteria and your additional notes to info@sormas.org. Congratulations, your work is done! We should now have all the information we need in order to integrate your disease into SORMAS.
 If there is anything that is unclear or if we need additional details, we will get in touch with you as soon as possible. Thank you so much for contributing to SORMAS and helping us to fight the spread of as many diseases as possible!
