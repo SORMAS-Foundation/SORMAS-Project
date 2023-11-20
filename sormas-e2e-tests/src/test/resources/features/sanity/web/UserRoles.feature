@@ -25,7 +25,7 @@ Feature: User roles checks
     And I click on New user role button on User Roles Page
     And I choose "TestNatUser" as the user role template
     And I click DISCARD button on Create New User Role form
-    And I click on User Management tab from User Roles Page
+    And I click on User Management tab from Users directory Page
     And I set user role to "TestNatUser"
     And I click on the NEW USER button
     And I create new "TestNatUser" with english language for test
@@ -66,7 +66,7 @@ Feature: User roles checks
     And I click on New user role button on User Roles Page
     And I check that "TestNatUser" is not available in the user role template dropdown menu
     And I click DISCARD button on Create New User Role form
-    And I click on User Management tab from User Roles Page
+    And I click on User Management tab from Users directory Page
     And I check that "TestNatUser" is not available in the user role filter
     And I click on the NEW USER button
     And I check that "TestNatUser" user role checkbox is not available in Create New User form
@@ -89,7 +89,7 @@ Feature: User roles checks
     And I click on the user role "Enable" button
     And I click SAVE button on User Role Page
     And I back to the User role list
-    And I click on User Management tab from User Roles Page
+    And I click on User Management tab from Users directory Page
     And I filter users by "TestNatUser" user role
     And I double click on "TestNatUser" from user role list
     And I click checkbox to choose "TestNatUser" as a user role in Edit user form
@@ -101,7 +101,7 @@ Feature: User roles checks
     And I double click on "TestNatUser" from user role list
     And I click on delete user role button
     And I confirm user role deletion
-    And I click on User Management tab from User Roles Page
+    And I click on User Management tab from Users directory Page
 
   @#10422 @env_main
   Scenario: Validate newly created user role is present in filtering options
@@ -115,7 +115,7 @@ Feature: User roles checks
     And I fill caption input as "TestNatUser10422" on Create New User Role form
     And I click SAVE button on User Role Page
     And I back to the User role list
-    And I click on User Management tab from User Roles Page
+    And I click on User Management tab from Users directory Page
     And I check that "TestNatUser10422" is available in the user role filter in User management Page
     And I click on User roles tab from Users Page
     And I check if the "TestNatUser10422" user role exist and delete it
@@ -127,8 +127,7 @@ Feature: User roles checks
     And I click on User roles tab from Users Page
     And I click on the Export User Roles Button and verify User role file is downloaded and contains data in the User Role Page
 
-  #@#10421 @env_main
-  @tmsLink=HSP-6300mk @env_main
+  @#10421 @env_main
   Scenario: Validate newly created User Role cannot be deleted if assigned towards an user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -140,7 +139,7 @@ Feature: User roles checks
     And I fill caption input as "NationalTestUser" on Create New User Role form
     And I click SAVE button on User Role Page
     And I back to the User role list
-    And I click on User Management tab from User Roles Page
+    And I click on User Management tab from Users directory Page
     And I click on the NEW USER button
     And I create new "NationalTestUser" with english language for test
     And I click on User roles tab from Users Page
@@ -155,7 +154,7 @@ Feature: User roles checks
     Given I log in as a Admin User
     And I click on the Users from navbar
     And I click on User roles tab from Users Page
-    And Validate user can see User roles tab from User Management Page
+    And Validate user can see User roles tab from Users directory Page
 
   @tmsLink=HSP-6300 @env_main
   Scenario: Check Delete Case right working without Edit rights
@@ -179,7 +178,7 @@ Feature: User roles checks
     Then I click checkbox to uncheck "Work with message"
     And I click SAVE button on User Role Page
     And I back to the User role list
-    Then I click on User Management tab from User Roles Page
+    Then I click on User Management tab from Users directory Page
     And I click on the NEW USER button
     And I create new "NewTestUser" with english language for test
     Then I click on logout button from navbar
