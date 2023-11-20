@@ -217,6 +217,19 @@ public class UserManagementSteps implements En {
         });
 
     And(
+        "I check that {string} error popup message is appear in Management Page",
+        (String errorMessage) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ERROR_USER_MANAGEMENT_POPUP);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(ERROR_USER_MANAGEMENT_POPUP),
+              errorMessage,
+              "Error popup message not appear!");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ERROR_USER_MANAGEMENT_POPUP);
+        });
+
+    And(
         "Validate user can see User roles tab from User Management Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_ROLES_TAB);
