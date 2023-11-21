@@ -79,6 +79,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class EventParticipantsView extends AbstractEventView implements HasName {
 
@@ -298,6 +299,12 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 				navigateTo(criteria);
 			});
 
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
+				.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
+			addHeaderComponent(lineListingButton);
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
