@@ -1,3 +1,5 @@
+# Example Eamil Template for Cases
+
 Example Eamil Template for Cases
 (excerpt, for full list see SORMAS Data Dictionary)
 Case:
@@ -20,9 +22,3 @@ $!case_quarantineOfficialOrderSentDate
 Current User:
 $user_firstName $user_lastName
 $user_phone
-Sample:
-$sample_sampleDateTime - $sample_sampleMaterial: $sample_pathogenTestResult
-Pathogen Test:
-$pathogenTest_testDateTime - $pathogenTest_testType: $pathogenTest_testResult
-Extra Comments:
-$extraComment

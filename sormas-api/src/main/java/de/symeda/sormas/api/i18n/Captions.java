@@ -1698,10 +1698,12 @@ public interface Captions {
 	String menu = "menu";
 	String messagesCharacters = "messagesCharacters";
 	String messagesEmail = "messagesEmail";
+	String messagesEmails = "messagesEmails";
 	String messagesNoPhoneNumberForCasePerson = "messagesNoPhoneNumberForCasePerson";
 	String messagesNoSmsSentForCase = "messagesNoSmsSentForCase";
 	String messagesNumberOfMessages = "messagesNumberOfMessages";
 	String messagesNumberOfMissingPhoneNumbers = "messagesNumberOfMissingPhoneNumbers";
+	String messagesSendEmail = "messagesSendEmail";
 	String messagesSendingSms = "messagesSendingSms";
 	String messagesSendSMS = "messagesSendSMS";
 	String messagesSentBy = "messagesSentBy";
@@ -1949,6 +1951,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
+	String primarySuffix = "primarySuffix";
 	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
 	String Region = "Region";
 	String Region_archived = "Region.archived";

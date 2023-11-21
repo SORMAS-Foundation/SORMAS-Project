@@ -15,15 +15,18 @@
 
 package de.symeda.sormas.backend.docgeneration;
 
+import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.CASE_EMAIL;
 import static de.symeda.sormas.api.docgeneneration.DocumentWorkflow.QUARANTINE_ORDER_CASE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -32,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
@@ -91,6 +95,27 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 		} catch (DocumentTemplateException e) {
 			assertEquals("Error processing template.", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testEmailTemplateValidation() throws DocumentTemplateException {
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> documentTemplateFacade
+				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "Email template without subject".getBytes(StandardCharsets.UTF_8)));
+
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> documentTemplateFacade
+				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "Email template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> documentTemplateFacade
+				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "#\nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> documentTemplateFacade
+				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "*Subject\nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
 	}
 
 	@Test
