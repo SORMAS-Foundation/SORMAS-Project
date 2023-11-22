@@ -24,11 +24,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.i18n.Validations;
 
+@AuditedClass
 public class ExternalEmailOptionsDto implements Serializable {
+	private static final long serialVersionUID = 1005305870535265027L;
 
 	public static final String I18N_PREFIX = "externalEmailOptions";
 
