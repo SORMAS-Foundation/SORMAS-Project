@@ -431,33 +431,44 @@ public class EventParticipantsController {
 			return;
 		}
 
-		while (!eventParticipants.isEmpty()) {
-			LineDto<EventParticipantDto> eventParticipantLineDto = eventParticipants.pop();
-			EventParticipantDto newEventParticipant = eventParticipantLineDto.getEntity();
-			PersonDto newPerson = eventParticipantLineDto.getPerson();
+		RegionReferenceDto region = lineListingForm.getRegion();
+		DistrictReferenceDto district = lineListingForm.getDistrict();
 
-			ControllerProvider.getPersonController()
-				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
-					if (selectedPerson != null) {
-						if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), lineListingForm.getEventDto().getUuid())) {
-							throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
-						} else {
-							newEventParticipant.setPerson(FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
-							EventParticipantDto savedDto = eventParticipantFacade.save(newEventParticipant);
+		saveEventParticipantsList(lineListingForm, eventParticipants, region, district);
+		lineListingForm.closeWindow();
+	}
 
-							Notification notification =
-								new Notification(I18nProperties.getString(Strings.messagePersonAddedAsEventParticipant), "", Type.HUMANIZED_MESSAGE);
-							notification.show(Page.getCurrent());
+	private void saveEventParticipantsList(
+		LineListingLayout lineListingForm,
+		LinkedList<LineDto<EventParticipantDto>> eventParticipants,
+		RegionReferenceDto region,
+		DistrictReferenceDto district) {
+		LineDto<EventParticipantDto> eventParticipantLineDto = eventParticipants.pop();
+		EventParticipantDto newEventParticipant = eventParticipantLineDto.getEntity();
+		PersonDto newPerson = eventParticipantLineDto.getPerson();
 
-							Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-						}
-						if (eventParticipants.isEmpty()) {
-							lineListingForm.closeWindow();
-							ControllerProvider.getEventParticipantController().navigateToIndex(lineListingForm.getEventDto().getUuid());
-						}
+		newEventParticipant.setRegion(region);
+		newEventParticipant.setDistrict(district);
+
+		ControllerProvider.getPersonController()
+			.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
+				if (selectedPerson != null) {
+					if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), lineListingForm.getEventDto().getUuid())) {
+						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+					} else {
+						newEventParticipant.setPerson(FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
+						eventParticipantFacade.save(newEventParticipant);
 					}
-				}, true);
-
-		}
+				}
+				if (!eventParticipants.isEmpty()) {
+					saveEventParticipantsList(lineListingForm, eventParticipants, region, district);
+				} else {
+					Notification notification =
+						new Notification(I18nProperties.getString(Strings.messagePersonListAddedAsEventPerticipants), "", Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(1000);
+					notification.show(Page.getCurrent());
+					ControllerProvider.getEventParticipantController().navigateToIndex(lineListingForm.getEventDto().getUuid());
+				}
+			}, true);
 	}
 }

@@ -53,12 +53,11 @@ public class LineListingLayout extends VerticalLayout {
 
 	public LineListingLayout(Window window, EventDto eventDto) {
 		this.window = window;
+		this.eventDto = eventDto;
 
 		setSpacing(false);
 
 		LineListingSection sharedInformationComponent = new LineListingSection(Captions.lineListingSharedInformation);
-
-		this.eventDto = eventDto;
 
 		HorizontalLayout sharedInformationBar = new HorizontalLayout();
 		sharedInformationBar.addStyleName(CssStyles.SPACING_SMALL);
@@ -69,21 +68,12 @@ public class LineListingLayout extends VerticalLayout {
 		sharedInformationBar.addComponent(region);
 
 		region.addValueChangeListener(e -> {
-			RegionReferenceDto regionDto = e.getValue();
-			updateDistricts(regionDto);
-			getEventParticipantLineDtos().forEach(eventParticipantDto -> {
-				eventParticipantDto.getEntity().setRegion(regionDto);
-			});
+			updateDistricts(e.getValue());
 		});
 
 		district = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
 		district.setItemCaptionGenerator(item -> item.buildCaption());
 		district.setId("lineListingDistrict");
-		district.addValueChangeListener(e -> {
-			getEventParticipantLineDtos().forEach(eventParticipantDto -> {
-				eventParticipantDto.getEntity().setDistrict(e.getValue());
-			});
-		});
 		sharedInformationBar.addComponent(district);
 
 		sharedInformationComponent.addComponent(sharedInformationBar);
@@ -157,7 +147,6 @@ public class LineListingLayout extends VerticalLayout {
 				EventParticipantDto.build(eventDto.toReference(), UserProvider.getCurrent().getUserReference());
 			eventParticipant.setInvolvementDescription(eventParticipantLineDto.getInvolvementDescription());
 
-			EventDto eventDto = FacadeProvider.getEventFacade().getByUuid(this.eventDto.getUuid());
 			if (eventDto.getEventLocation() == null
 				|| eventDto.getEventLocation().getDistrict() == null
 				|| (district.getValue() != null && !eventDto.getEventLocation().getDistrict().getUuid().equals(district.getValue().getUuid()))) {
@@ -356,5 +345,13 @@ public class LineListingLayout extends VerticalLayout {
 
 	public EventDto getEventDto() {
 		return eventDto;
+	}
+
+	public RegionReferenceDto getRegion() {
+		return region.getValue();
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district.getValue();
 	}
 }

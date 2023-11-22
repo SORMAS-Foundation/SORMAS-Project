@@ -1376,6 +1376,7 @@ public interface Strings {
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
 	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
+	String messagePersonListAddedAsEventPerticipants = "messagePersonListAddedAsEventPerticipants";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
 	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
 	String messagePersonSaved = "messagePersonSaved";
