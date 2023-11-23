@@ -1943,3 +1943,22 @@ Feature: Case end to end tests
     Then I back to Case Directory using case list button
     And I apply "Archived cases" to combobox on Case Directory Page
     And I open the first Case result in Case Directory
+
+  @tmsLink=HSP-6417 @env_main
+  Scenario: User can view and edit Sample card from Person view
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data and new person
+    And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
+    And I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    And I check if Sample card has empty and no buttons are available on Edit Case
+    Then I click on See Cases for this Person button from Edit Person page
+    And I open the first Case result in Case Directory
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    Then I set PCR RT PCR Test specification to "Variant specific" option
+    Then I set PCR RT PCR Test specification to "N501Y mutation detection" option
+    And I save the created sample

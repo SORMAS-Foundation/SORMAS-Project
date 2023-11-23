@@ -47,6 +47,7 @@ public class EditCasePage {
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit0']");
   public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
+  public static final By SEE_SAMPLE_BUTTON = By.cssSelector("[id='See samples for this person']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
 
   public static final By SHOW_SAMPLE_BUTTON =
@@ -260,6 +261,9 @@ public class EditCasePage {
   public static final By INFRASTRUCTURE_DATA_POPUP =
       By.xpath("//*[contains(text(),'Infrastructure data has changed')]");
   public static final By ACTION_CONFIRM = By.cssSelector("[id='actionConfirm']");
+  public static final By SAMPLES_CARD_EMPTY_MESSAGE =
+      By.xpath(
+          "//div[contains(@location,'sample')]//div[contains(text(), 'There are no samples for this person')]");
   public static final By SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[1]");
   public static final By SAMPLES_CARD_LABORATORY =

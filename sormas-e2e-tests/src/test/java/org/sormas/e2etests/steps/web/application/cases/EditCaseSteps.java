@@ -2276,6 +2276,23 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I check if Sample card has empty and no buttons are available on Edit Case",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
+          softly.assertTrue(
+              webDriverHelpers.isElementPresent(SAMPLES_CARD_EMPTY_MESSAGE),
+              "Element is not present");
+          softly.assertAll();
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(NEW_SAMPLE_BUTTON, 2),
+              "The new sample button is present");
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(SEE_SAMPLE_BUTTON, 2),
+              "The see sample for this person button is present");
+          softly.assertAll();
+        });
+
+    When(
         "I click on the NEW IMMUNIZATION button in Edit case",
         () -> {
           webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);

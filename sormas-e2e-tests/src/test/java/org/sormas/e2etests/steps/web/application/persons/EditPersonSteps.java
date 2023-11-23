@@ -130,6 +130,7 @@ public class EditPersonSteps implements En {
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
   private static String personFirstName;
+  public static String personUuid;
   public static List<String> externalPersonUUID = new ArrayList<>();
   public static List<String> personSex = new ArrayList<>();
 
@@ -267,8 +268,6 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
-          //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I check if data of created immunization is in Immunization tab on Edit Person Page",
@@ -608,6 +607,14 @@ public class EditPersonSteps implements En {
               CreateNewCaseSteps.oneCaseDe.getFirstName(),
               "Names are not equal!!");
           softly.assertAll();
+        });
+
+    And(
+        "^I collect person UUID from Edit Case Person page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_NAME_INPUT);
+          personUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          System.out.print(personUuid);
         });
 
     And(
