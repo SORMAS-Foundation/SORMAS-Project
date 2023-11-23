@@ -127,7 +127,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		}).when(emailService).sendEmail(any(), any(), any());
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("ContactEmail.txt");
+		options.setTemplateName("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		getExternalEmailFacade().sendEmail(options);
 	}
