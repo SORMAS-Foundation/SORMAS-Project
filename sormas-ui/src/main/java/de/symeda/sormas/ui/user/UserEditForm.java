@@ -22,6 +22,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static java.util.function.Predicate.not;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -76,9 +77,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
-    private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseasesHeadingLoc";
-    private static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
-    private static final String RESTRICT_DISEASES_DESCRIPTION_LOC = "restrictDiseasesDescriptionLoc";
+	private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseasesHeadingLoc";
+	private static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
+	private static final String RESTRICT_DISEASES_DESCRIPTION_LOC = "restrictDiseasesDescriptionLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -106,6 +107,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     private Map<UserRoleReferenceDto, UserRoleDto> userRoleMap;
 
     private CheckBox restrictDiseasesCheckbox;
+
+    private CheckboxSet<Disease> diseasesCheckboxSet;
     
     public UserEditForm(boolean create) {
 
@@ -150,12 +153,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             restrictDiseasesDescriptionLabel.setVisible(false);
             getContent().addComponent(restrictDiseasesDescriptionLabel, RESTRICT_DISEASES_DESCRIPTION_LOC);
 
-            CheckboxSet<Disease> diseasesCheckboxSet = addField(UserDto.LIMITED_DISEASES, CheckboxSet.class);
+            diseasesCheckboxSet = addField(UserDto.LIMITED_DISEASES, CheckboxSet.class);
             diseasesCheckboxSet.setColumnCount(3);
             diseasesCheckboxSet.setCaption(null);
             diseasesCheckboxSet.setVisible(false);
-            List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-            diseasesCheckboxSet.setItems(diseases, null, null);
 
             restrictDiseasesCheckbox = addCustomField(RESTRICT_DISEASES_CHECKBOX_LOC, I18nProperties.getCaption(Captions.userRestrictDiseases), Boolean.class, CheckBox.class);
             restrictDiseasesCheckbox.addValueChangeListener(e -> {
@@ -246,8 +247,12 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	public void setValue(UserDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
 		FieldHelper.updateItems(userRolesField, getFilteredUserRoles(newFieldValue.getUserRoles()));
-
-        restrictDiseasesCheckbox.setValue(CollectionUtils.isNotEmpty(newFieldValue.getLimitedDiseases()));
+        
+        if(diseasesCheckboxSet != null){
+            Set<Disease> limitedDiseases = newFieldValue.getLimitedDiseases();
+            restrictDiseasesCheckbox.setValue(CollectionUtils.isNotEmpty(limitedDiseases));
+            diseasesCheckboxSet.setItems(getSelectableDiseases(limitedDiseases), null, null);
+        }
 
 		super.setValue(newFieldValue);
 	}
@@ -259,7 +264,18 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 				.sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList());
 	}
 
-	@SuppressWarnings("unchecked")
+    private static List<Disease> getSelectableDiseases(Set<Disease> limitedDiseases) {
+        List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+        if(CollectionUtils.isNotEmpty(limitedDiseases)){
+            List<Disease> inactiveSelectedDiseases = limitedDiseases.stream().filter(not(diseases::contains)).collect(Collectors.toList());
+            diseases.addAll(inactiveSelectedDiseases);
+        }
+
+        return diseases;
+    }
+
+
+    @SuppressWarnings("unchecked")
     private void updateFieldsByUserRole() {
 
 		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
