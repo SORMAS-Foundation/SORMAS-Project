@@ -33,7 +33,7 @@ import de.symeda.sormas.api.i18n.Validations;
 public class ExternalEmailOptionsDto implements Serializable {
 	private static final long serialVersionUID = 1005305870535265027L;
 
-	public static final String I18N_PREFIX = "externalEmailOptions";
+	public static final String I18N_PREFIX = "ExternalEmailOptions";
 
 	public static final String TEMPLATE_NAME = "templateName";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";

@@ -54,7 +54,7 @@ public class ExternalEmailController {
 		CommitDiscardWrapperComponent<ExternalEmailOptionsForm> optionsCommitDiscard =
 			new CommitDiscardWrapperComponent<>(optionsForm, optionsForm.getFieldGroup());
 		optionsCommitDiscard.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionSend));
-		Window optionsPopup = VaadinUiUtil.showPopupWindow(optionsCommitDiscard, I18nProperties.getCaption(Captions.sormasToSormasShare));
+		Window optionsPopup = VaadinUiUtil.showPopupWindow(optionsCommitDiscard, I18nProperties.getString(Strings.headingExternalEmailSend));
 		optionsForm.setWidth(600, Sizeable.Unit.PIXELS);
 
 		optionsCommitDiscard.addCommitListener(() -> {
