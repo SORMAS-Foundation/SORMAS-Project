@@ -170,6 +170,9 @@ public class CustomizableEnumFacadeEjb
 		CustomizableEnumValue enumValue = fillOrBuildEntity(dto, existingEntity, true);
 		service.ensurePersisted(enumValue);
 
+		// Reset cache since values have been changed
+		loadData();
+
 		return toDto(enumValue);
 	}
 
