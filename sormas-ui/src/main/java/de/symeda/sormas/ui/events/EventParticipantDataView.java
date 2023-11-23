@@ -38,9 +38,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
+import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
@@ -65,6 +67,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 	public static final String IMMUNIZATION_LOC = "immunizations";
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 
 	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
 
@@ -95,7 +98,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			IMMUNIZATION_LOC,
 			VACCINATIONS_LOC,
 			QUARANTINE_LOC,
-			SORMAS_TO_SORMAS_LOC);
+			SORMAS_TO_SORMAS_LOC,
+			EXTERNAL_EMAILS_LOC);
 
 		container.addComponent(layout);
 
@@ -182,6 +186,17 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 						.district(district);
 				}, null, this::showUnsavedChangesPopup, editAllowed)), VACCINATIONS_LOC);
 			}
+		}
+
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
+			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
+				DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
+				RootEntityType.ROOT_EVENT_PARTICIPANT,
+				eventParticipantRef,
+				eventParticipant.getPerson().toReference(),
+				Strings.messageEventParticipantPersonHasNoEmail,
+				this::showUnsavedChangesPopup);
+			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 
 		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);

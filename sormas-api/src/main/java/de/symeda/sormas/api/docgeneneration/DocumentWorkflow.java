@@ -45,7 +45,8 @@ public enum DocumentWorkflow {
 	// to either a CaseDataDto or a ContactDto, depending on from where
 	// it is called. So "${case.person.firstName}" in the template refers
 	// to the case's or contact's person's first name in either case.
-	QUARANTINE_ORDER_CASE("quarantine",
+	QUARANTINE_ORDER_CASE(DocumentWorkflowType.DOCUMENT,
+		"quarantine",
 		DOCX,
 		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
 		ROOT_CASE,
@@ -54,7 +55,8 @@ public enum DocumentWorkflow {
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
 		ROOT_VACCINATION),
-	QUARANTINE_ORDER_CONTACT("quarantineContact",
+	QUARANTINE_ORDER_CONTACT(DocumentWorkflowType.DOCUMENT,
+		"quarantineContact",
 		DOCX,
 		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
 		ROOT_CONTACT,
@@ -63,7 +65,8 @@ public enum DocumentWorkflow {
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
 		ROOT_VACCINATION),
-	QUARANTINE_ORDER_EVENT_PARTICIPANT("quarantineEventParticipant",
+	QUARANTINE_ORDER_EVENT_PARTICIPANT(DocumentWorkflowType.DOCUMENT,
+		"quarantineEventParticipant",
 		DOCX,
 		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
 		ROOT_EVENT_PARTICIPANT,
@@ -72,11 +75,33 @@ public enum DocumentWorkflow {
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
 		ROOT_VACCINATION),
-	QUARANTINE_ORDER_TRAVEL_ENTRY("quarantineTravelEntry", DOCX, UserRight.DOCUMENT_TEMPLATE_MANAGEMENT, ROOT_TRAVEL_ENTRY, ROOT_PERSON, ROOT_USER),
-	EVENT_HANDOUT("eventHandout", HTML, UserRight.DOCUMENT_TEMPLATE_MANAGEMENT, ROOT_EVENT, ROOT_USER, ROOT_EVENT_ACTIONS, ROOT_EVENT_PARTICIPANTS),
-	CASE_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER
-		+ "/cases", TXT, UserRight.EMAIL_TEMPLATE_MANAGEMENT, ROOT_CASE, ROOT_PERSON, ROOT_USER, ROOT_SAMPLE, ROOT_PATHOGEN_TEST, ROOT_VACCINATION),
-	CONTACT_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER + "/contacts",
+	QUARANTINE_ORDER_TRAVEL_ENTRY(DocumentWorkflowType.DOCUMENT,
+		"quarantineTravelEntry",
+		DOCX,
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
+		ROOT_TRAVEL_ENTRY,
+		ROOT_PERSON,
+		ROOT_USER),
+	EVENT_HANDOUT(DocumentWorkflowType.DOCUMENT,
+		"eventHandout",
+		HTML,
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
+		ROOT_EVENT,
+		ROOT_USER,
+		ROOT_EVENT_ACTIONS,
+		ROOT_EVENT_PARTICIPANTS),
+	CASE_EMAIL(DocumentWorkflowType.EMAIL,
+		Constants.EMAIL_TEMPLATES_FOLDER + "/cases",
+		TXT,
+		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
+		ROOT_CASE,
+		ROOT_PERSON,
+		ROOT_USER,
+		ROOT_SAMPLE,
+		ROOT_PATHOGEN_TEST,
+		ROOT_VACCINATION),
+	CONTACT_EMAIL(DocumentWorkflowType.EMAIL,
+		Constants.EMAIL_TEMPLATES_FOLDER + "/contacts",
 		TXT,
 		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
 		ROOT_CONTACT,
@@ -85,7 +110,8 @@ public enum DocumentWorkflow {
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
 		ROOT_VACCINATION),
-	EVENT_PARTICIPANT_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER + "/eventParticipants",
+	EVENT_PARTICIPANT_EMAIL(DocumentWorkflowType.EMAIL,
+		Constants.EMAIL_TEMPLATES_FOLDER + "/eventParticipants",
 		TXT,
 		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
 		ROOT_EVENT_PARTICIPANT,
@@ -94,20 +120,36 @@ public enum DocumentWorkflow {
 		ROOT_SAMPLE,
 		ROOT_PATHOGEN_TEST,
 		ROOT_VACCINATION),
-	TRAVEL_ENTRY_EMAIL(Constants.EMAIL_TEMPLATES_FOLDER
-		+ "/travelEntries", TXT, UserRight.EMAIL_TEMPLATE_MANAGEMENT, ROOT_TRAVEL_ENTRY, ROOT_PERSON, ROOT_USER);
+	TRAVEL_ENTRY_EMAIL(DocumentWorkflowType.EMAIL,
+		Constants.EMAIL_TEMPLATES_FOLDER + "/travelEntries",
+		TXT,
+		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
+		ROOT_TRAVEL_ENTRY,
+		ROOT_PERSON,
+		ROOT_USER);
 
+	private final DocumentWorkflowType type;
 	private final String templateDirectory;
 	private final TemplateFileType fileType;
 
 	private final UserRight managementUserRight;
 	private final Set<RootEntityType> rootEntityTypes;
 
-	DocumentWorkflow(String templateDirectory, TemplateFileType fileType, UserRight managementUserRight, RootEntityType... rootEntityTypes) {
+	DocumentWorkflow(
+		DocumentWorkflowType type,
+		String templateDirectory,
+		TemplateFileType fileType,
+		UserRight managementUserRight,
+		RootEntityType... rootEntityTypes) {
+		this.type = type;
 		this.templateDirectory = templateDirectory;
 		this.fileType = fileType;
 		this.managementUserRight = managementUserRight;
 		this.rootEntityTypes = Set.of(rootEntityTypes);
+	}
+
+	public DocumentWorkflowType getType() {
+		return type;
 	}
 
 	public String getTemplateDirectory() {

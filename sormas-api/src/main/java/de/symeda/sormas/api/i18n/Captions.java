@@ -1397,6 +1397,8 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
+	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
 	String ExternalMessage = "ExternalMessage";
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
@@ -1698,10 +1700,12 @@ public interface Captions {
 	String menu = "menu";
 	String messagesCharacters = "messagesCharacters";
 	String messagesEmail = "messagesEmail";
+	String messagesEmails = "messagesEmails";
 	String messagesNoPhoneNumberForCasePerson = "messagesNoPhoneNumberForCasePerson";
 	String messagesNoSmsSentForCase = "messagesNoSmsSentForCase";
 	String messagesNumberOfMessages = "messagesNumberOfMessages";
 	String messagesNumberOfMissingPhoneNumbers = "messagesNumberOfMissingPhoneNumbers";
+	String messagesSendEmail = "messagesSendEmail";
 	String messagesSendingSms = "messagesSendingSms";
 	String messagesSendSMS = "messagesSendSMS";
 	String messagesSentBy = "messagesSentBy";
@@ -1949,6 +1953,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
+	String primarySuffix = "primarySuffix";
 	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
