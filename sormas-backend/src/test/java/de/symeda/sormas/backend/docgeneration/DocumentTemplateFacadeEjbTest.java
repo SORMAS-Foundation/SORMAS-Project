@@ -106,16 +106,28 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 
 		assertThrows(
 			ValidationRuntimeException.class,
-			() -> documentTemplateFacade
-				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "Email template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
+			() -> documentTemplateFacade.writeDocumentTemplate(
+				CASE_EMAIL,
+				"CaseEmailTemplate.txt",
+				"Email template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
 		assertThrows(
 			ValidationRuntimeException.class,
-			() -> documentTemplateFacade
-				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "#\nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
+			() -> documentTemplateFacade.writeDocumentTemplate(
+				CASE_EMAIL,
+				"CaseEmailTemplate.txt",
+				"#\nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
 		assertThrows(
 			ValidationRuntimeException.class,
-			() -> documentTemplateFacade
-				.writeDocumentTemplate(CASE_EMAIL, "CaseEmailTemplate.txt", "*Subject\nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
+			() -> documentTemplateFacade.writeDocumentTemplate(
+				CASE_EMAIL,
+				"CaseEmailTemplate.txt",
+				"# \nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
+		assertThrows(
+			ValidationRuntimeException.class,
+			() -> documentTemplateFacade.writeDocumentTemplate(
+				CASE_EMAIL,
+				"CaseEmailTemplate.txt",
+				"*Subject\nEmail template without subject\nSecond line".getBytes(StandardCharsets.UTF_8)));
 	}
 
 	@Test
