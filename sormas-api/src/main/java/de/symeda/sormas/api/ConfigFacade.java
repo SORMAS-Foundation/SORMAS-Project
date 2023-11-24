@@ -84,6 +84,8 @@ public interface ConfigFacade {
 
 	boolean isDuplicateChecksExcludePersonsOfArchivedEntries();
 
+	boolean isDuplicateChecksNationalHealthIdOverridesCriteria();
+
 	double getNameSimilarityThreshold();
 
 	int getInfrastructureSyncThreshold();
