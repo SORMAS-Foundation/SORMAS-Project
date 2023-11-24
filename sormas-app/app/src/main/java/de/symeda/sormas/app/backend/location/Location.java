@@ -418,6 +418,42 @@ public class Location extends PseudonymizableAdo {
 		return sb.toString();
 	}
 
+	public String buildShortCaption() {
+		StringBuilder sb = new StringBuilder();
+
+		if (region != null) {
+			sb.append(region.buildCaption());
+		}
+
+		if (district != null) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(district.buildCaption());
+		}
+
+		if (sb.length() == 0) {
+			if (getStreet() != null && !getStreet().isEmpty()) {
+				sb.append(getStreet());
+			}
+			if (StringUtils.isNotEmpty(city)) {
+				if (sb.length() > 0) {
+					sb.append(", ");
+				}
+				sb.append(getCity());
+			}
+
+			if (country != null) {
+				if (sb.length() > 0) {
+					sb.append(", ");
+				}
+				sb.append(country.buildCaption());
+			}
+		}
+
+		return sb.toString();
+	}
+
 	public String getLatLonString() {
 		return getLatLonString(getLatitude(), getLongitude(), getLatLonAccuracy());
 	}
@@ -496,5 +532,4 @@ public class Location extends PseudonymizableAdo {
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
-
 }

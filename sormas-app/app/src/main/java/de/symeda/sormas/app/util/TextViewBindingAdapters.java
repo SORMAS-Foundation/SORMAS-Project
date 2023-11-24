@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -964,7 +967,7 @@ public class TextViewBindingAdapters {
 		if (location == null || location.buildCaption().isEmpty()) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(location.getRegion().buildCaption() + ", " + location.getDistrict().buildCaption());
+			textField.setText(location.buildShortCaption());
 		}
 	}
 
@@ -1230,7 +1233,7 @@ public class TextViewBindingAdapters {
 	}
 
 	@BindingAdapter(value = {
-			"value"})
+		"value" })
 	public static void setPathogenValue(TextView textField, Pathogen pathogen) {
 		if (pathogen == null) {
 			textField.setText("");
