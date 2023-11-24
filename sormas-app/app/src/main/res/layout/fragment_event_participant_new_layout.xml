@@ -41,6 +41,11 @@
 
             <requestFocus/>
 
+            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                android:id="@+id/eventParticipant_rapidEntry"
+                app:caption="@string/rapidEntry"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/eventParticipant_involvementDescription"
                 android:nextFocusForward="@id/eventParticipant_firstName"

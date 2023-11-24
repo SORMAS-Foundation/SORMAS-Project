@@ -20,8 +20,6 @@ import java.util.List;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -38,8 +36,12 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
 	private List<Item> initialRegions;
 	private List<Item> initialDistricts;
 
-	public static EventParticipantNewFragment newInstance(EventParticipant activityRootData) {
-		return newInstance(EventParticipantNewFragment.class, null, activityRootData);
+	private boolean rapidEntry;
+
+	public static EventParticipantNewFragment newInstance(EventParticipant activityRootData, boolean rapidEntry) {
+		EventParticipantNewFragment eventParticipantNewFragment = newInstance(EventParticipantNewFragment.class, null, activityRootData);
+		eventParticipantNewFragment.rapidEntry = rapidEntry;
+		return eventParticipantNewFragment;
 	}
 
 	// Overrides
@@ -79,6 +81,11 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
 		Location eventLocation = record.getEvent().getEventLocation();
 		contentBinding.eventParticipantResponsibleRegion.setRequired(eventLocation.getRegion() == null || eventLocation.getDistrict() == null);
 		contentBinding.eventParticipantResponsibleDistrict.setRequired(eventLocation.getRegion() == null || eventLocation.getDistrict() == null);
+
+		contentBinding.eventParticipantRapidEntry.setValue(rapidEntry);
+		contentBinding.eventParticipantRapidEntry.addValueChangedListener(field -> {
+			rapidEntry = (Boolean) contentBinding.eventParticipantRapidEntry.getValue();
+		});
 	}
 
 	@Override
@@ -100,5 +107,9 @@ public class EventParticipantNewFragment extends BaseEditFragment<FragmentEventP
 	@Override
 	public boolean isShowNewAction() {
 		return false;
+	}
+
+	public boolean isRapidEntry() {
+		return rapidEntry;
 	}
 }

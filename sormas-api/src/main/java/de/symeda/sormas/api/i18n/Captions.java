@@ -1613,6 +1613,7 @@ public interface Captions {
 	String lineListingInfrastructureData = "lineListingInfrastructureData";
 	String lineListingNewCasesList = "lineListingNewCasesList";
 	String lineListingNewContactsList = "lineListingNewContactsList";
+	String lineListingNewEventParticipantsList = "lineListingNewEventParticipantsList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
