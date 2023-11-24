@@ -43,6 +43,8 @@ import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSecti
 
 public class LineListingLayout extends VerticalLayout {
 
+	public static final float DEFAULT_WIDTH = 1024;
+
 	private final ComboBox<RegionReferenceDto> region;
 	private final ComboBox<DistrictReferenceDto> district;
 

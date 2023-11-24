@@ -411,6 +411,8 @@ public class EventParticipantsController {
 
 		LineListingLayout lineListingForm = new LineListingLayout(window, eventDto);
 
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
 		lineListingForm.setSaveCallback(eventParticipants -> saveEventParticipantsFromLineListing(lineListingForm, eventParticipants));
 
 		window.setContent(lineListingForm);
@@ -433,42 +435,43 @@ public class EventParticipantsController {
 
 		RegionReferenceDto region = lineListingForm.getRegion();
 		DistrictReferenceDto district = lineListingForm.getDistrict();
+		String eventUuid = lineListingForm.getEventDto().getUuid();
 
-		saveEventParticipantsList(lineListingForm, eventParticipants, region, district);
+		saveEventParticipantsList(eventUuid, eventParticipants, region, district);
 		lineListingForm.closeWindow();
 	}
 
 	private void saveEventParticipantsList(
-		LineListingLayout lineListingForm,
-		LinkedList<LineDto<EventParticipantDto>> eventParticipants,
+		String eventUuid,
+		List<LineDto<EventParticipantDto>> eventParticipants,
 		RegionReferenceDto region,
 		DistrictReferenceDto district) {
-		LineDto<EventParticipantDto> eventParticipantLineDto = eventParticipants.pop();
-		EventParticipantDto newEventParticipant = eventParticipantLineDto.getEntity();
-		PersonDto newPerson = eventParticipantLineDto.getPerson();
 
-		newEventParticipant.setRegion(region);
-		newEventParticipant.setDistrict(district);
+		if (!eventParticipants.isEmpty()) {
+			LineDto<EventParticipantDto> eventParticipantLineDto = eventParticipants.get(0);
+			EventParticipantDto newEventParticipant = eventParticipantLineDto.getEntity();
+			PersonDto newPerson = eventParticipantLineDto.getPerson();
 
-		ControllerProvider.getPersonController()
-			.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
-				if (selectedPerson != null) {
-					if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), lineListingForm.getEventDto().getUuid())) {
-						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
-					} else {
+			newEventParticipant.setRegion(region);
+			newEventParticipant.setDistrict(district);
+
+			ControllerProvider.getPersonController()
+				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
+					if (selectedPerson != null) {
+						if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), eventUuid)) {
+							throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+						}
 						newEventParticipant.setPerson(FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
 						eventParticipantFacade.save(newEventParticipant);
 					}
-				}
-				if (!eventParticipants.isEmpty()) {
-					saveEventParticipantsList(lineListingForm, eventParticipants, region, district);
-				} else {
-					Notification notification =
-						new Notification(I18nProperties.getString(Strings.messagePersonListAddedAsEventPerticipants), "", Type.HUMANIZED_MESSAGE);
-					notification.setDelayMsec(1000);
-					notification.show(Page.getCurrent());
-					ControllerProvider.getEventParticipantController().navigateToIndex(lineListingForm.getEventDto().getUuid());
-				}
-			}, true);
+					saveEventParticipantsList(eventUuid, eventParticipants.subList(1, eventParticipants.size()), region, district);
+				}, true);
+		} else {
+			Notification notification =
+				new Notification(I18nProperties.getString(Strings.messagePersonListAddedAsEventPerticipants), "", Type.HUMANIZED_MESSAGE);
+			notification.setDelayMsec(1000);
+			notification.show(Page.getCurrent());
+			ControllerProvider.getEventParticipantController().navigateToIndex(eventUuid);
+		}
 	}
 }
