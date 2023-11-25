@@ -21,7 +21,7 @@ The SORMAS CI is using JDK 17 to build all modules. The only known difference th
 
 ## Step 3: Install Maven
 The scripts in `sormas-base/dev` expect `mvn` as command-line tool.
-Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.6.3/binaries/).
+Download and install Maven for your operating system, see [binaries](https://dlcdn.apache.org/maven/maven-3/3.8.8/binaries/).
 
 ## Step 4: Install a Local SORMAS Server
 Please follow the [Server Installation Instructions](../docs/SERVER_SETUP.md#sormas-installation) to set up a local SORMAS instance that you will use to test your code. Alternatively, you can also use [Maven Cargo](../sormas-cargoserver/README.md), or a [Docker installation](SERVER_DOCKER_SETUP.md) (not recommended at this time).
