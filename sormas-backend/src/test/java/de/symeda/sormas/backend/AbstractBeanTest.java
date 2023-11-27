@@ -64,11 +64,11 @@ import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
-import de.symeda.sormas.api.docgeneneration.EmailTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
+import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
@@ -149,7 +149,6 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
-import de.symeda.sormas.backend.docgeneration.EmailTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
@@ -162,6 +161,7 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
@@ -875,10 +875,6 @@ public abstract class AbstractBeanTest {
 		return getBean(EventDocumentFacadeEjb.class);
 	}
 
-	public EmailTemplateFacade getEmailTemplateFacade() {
-		return getBean(EmailTemplateFacadeEjb.EmailTemplateFacadeEjbLocal.class);
-	}
-
 	public BAGExportFacade getBAGExportFacade() {
 		return getBean(BAGExportFacadeEjb.BAGExportFacadeEjbLocal.class);
 	}
@@ -1026,5 +1022,9 @@ public abstract class AbstractBeanTest {
 
 	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
 		return getBean(ExternalMessageProcessingFacadeEjbLocal.class);
+	}
+
+	public ExternalEmailFacade getExternalEmailFacade() {
+		return getBean(ExternalEmailFacadeEjbLocal.class);
 	}
 }

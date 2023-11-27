@@ -525,7 +525,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			}
 		}
 
-		CriteriaBuilderHelper.and(
+		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
 			CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, eventJoin.get(Event.DISEASE), cb.isNull(eventJoin.get(Event.DISEASE))));

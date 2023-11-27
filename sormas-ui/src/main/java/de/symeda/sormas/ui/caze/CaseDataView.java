@@ -19,6 +19,8 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -32,11 +34,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
@@ -71,6 +75,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String SMS_LOC = "sms";
 	public static final String SURVEILLANCE_REPORTS_LOC = "surveillanceReports";
 	public static final String DOCUMENTS_LOC = "documents";
+	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -105,7 +110,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC,
 			SURVEILLANCE_REPORTS_LOC,
 			DOCUMENTS_LOC,
-			QuarantineOrderDocumentsComponent.QUARANTINE_LOC);
+			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
+			EXTERNAL_EMAILS_LOC);
 
 		container.addComponent(layout);
 
@@ -217,6 +223,17 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
+
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
+			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
+				DocumentWorkflow.CASE_EMAIL,
+				RootEntityType.ROOT_CASE,
+				caze.toReference(),
+				caze.getPerson(),
+				Strings.messageCasePersonHasNoEmail,
+				this::showUnsavedChangesPopup);
+			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
+		}
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, caseEditAllowed);

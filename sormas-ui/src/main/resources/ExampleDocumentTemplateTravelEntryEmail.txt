@@ -1,3 +1,5 @@
+# Example Email Template for Travel Entries
+
 Example Email Template for Travel Entries
 (excerpt, for full list see SORMAS Data Dictionary)
 Travel Entry:
@@ -15,5 +17,3 @@ $person_birthDateDD.$person_birthDateMM.$person_birthDateYYYY
 Current User:
 $user_firstName $user_lastName
 $user_phone
-Extra Comments:
-$extraComment

@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,6 +32,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Validator;
 
@@ -52,9 +54,11 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.events.eventParticipantsLineListing.layout.LineListingLayout;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -62,6 +66,7 @@ import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
+import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -172,6 +177,11 @@ public class EventParticipantsController {
 
 	public void navigateToData(String eventParticipantUuid) {
 		final String navigationState = EventParticipantDataView.VIEW_NAME + "/" + eventParticipantUuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToIndex(String eventUuid) {
+		String navigationState = EventParticipantsView.VIEW_NAME + "/" + eventUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
@@ -391,5 +401,77 @@ public class EventParticipantsController {
 				noEntriesRemainingCallback.run();
 			}
 		};
+	}
+
+	public void openLineListingWindow(EventReferenceDto eventReferenceDto) {
+
+		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+		EventDto eventDto = FacadeProvider.getEventFacade().getByUuid(eventReferenceDto.getUuid());
+
+		LineListingLayout lineListingForm = new LineListingLayout(window, eventDto);
+
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+		lineListingForm.setSaveCallback(eventParticipants -> saveEventParticipantsFromLineListing(lineListingForm, eventParticipants));
+
+		window.setContent(lineListingForm);
+		window.setModal(true);
+		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+		window.setPositionY(70);
+		window.setResizable(false);
+
+		UI.getCurrent().addWindow(window);
+
+	}
+
+	private void saveEventParticipantsFromLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<EventParticipantDto>> eventParticipants) {
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		RegionReferenceDto region = lineListingForm.getRegion();
+		DistrictReferenceDto district = lineListingForm.getDistrict();
+		String eventUuid = lineListingForm.getEventDto().getUuid();
+
+		saveEventParticipantsList(eventUuid, eventParticipants, region, district);
+		lineListingForm.closeWindow();
+	}
+
+	private void saveEventParticipantsList(
+		String eventUuid,
+		List<LineDto<EventParticipantDto>> eventParticipants,
+		RegionReferenceDto region,
+		DistrictReferenceDto district) {
+
+		if (!eventParticipants.isEmpty()) {
+			LineDto<EventParticipantDto> eventParticipantLineDto = eventParticipants.get(0);
+			EventParticipantDto newEventParticipant = eventParticipantLineDto.getEntity();
+			PersonDto newPerson = eventParticipantLineDto.getPerson();
+
+			newEventParticipant.setRegion(region);
+			newEventParticipant.setDistrict(district);
+
+			ControllerProvider.getPersonController()
+				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
+					if (selectedPerson != null) {
+						if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), eventUuid)) {
+							throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+						}
+						newEventParticipant.setPerson(FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
+						eventParticipantFacade.save(newEventParticipant);
+					}
+					saveEventParticipantsList(eventUuid, eventParticipants.subList(1, eventParticipants.size()), region, district);
+				}, true);
+		} else {
+			Notification notification =
+				new Notification(I18nProperties.getString(Strings.messagePersonListAddedAsEventPerticipants), "", Type.HUMANIZED_MESSAGE);
+			notification.setDelayMsec(1000);
+			notification.show(Page.getCurrent());
+			ControllerProvider.getEventParticipantController().navigateToIndex(eventUuid);
+		}
 	}
 }

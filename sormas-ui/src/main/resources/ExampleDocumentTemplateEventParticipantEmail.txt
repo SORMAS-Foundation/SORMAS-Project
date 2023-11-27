@@ -1,3 +1,5 @@
+# Example Event Template for Event Participants
+
 Example Event Template for Event Participants
 (excerpt, for full list see SORMAS Data Dictionary)
 Event Participant:
@@ -19,9 +21,3 @@ $eventParticipant_event_startDate - $eventParticipant_event_endDate
 Current User:
 $user_firstName $user_lastName
 $user_phone
-Sample:
-$sample_sampleDateTime - $sample_sampleMaterial: $sample_pathogenTestResult
-Pathogen Test:
-$pathogenTest_testDateTime - $pathogenTest_testType: $pathogenTest_testResult
-Extra Comments:
-$extraComment

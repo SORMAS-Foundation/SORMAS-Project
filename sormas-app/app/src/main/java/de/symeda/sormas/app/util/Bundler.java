@@ -37,6 +37,7 @@ public class Bundler {
 	private static final String EPI_WEEK = "epiWeek";
 	private static final String EMPTY_REPORT_DATE = "emptyReportDate";
 	private static final String PRESCRIPTION_UUID = "prescriptionUuid";
+	private static final String RAPID_ENTRY = "rapidEntry";
 
 	private final Bundle bundle;
 
@@ -247,6 +248,18 @@ public class Bundler {
 	public boolean isFinishInsteadOfUpNav() {
 		if (bundle.containsKey(FINISH_INSTEAD_OF_UP_NAV)) {
 			return bundle.getBoolean(FINISH_INSTEAD_OF_UP_NAV);
+		}
+		return false;
+	}
+
+	public Bundler setRapidEntry(boolean rapidEntry) {
+		bundle.putBoolean(RAPID_ENTRY, rapidEntry);
+		return this;
+	}
+
+	public boolean isRapidEntry() {
+		if (bundle.containsKey(RAPID_ENTRY)) {
+			return bundle.getBoolean(RAPID_ENTRY);
 		}
 		return false;
 	}
