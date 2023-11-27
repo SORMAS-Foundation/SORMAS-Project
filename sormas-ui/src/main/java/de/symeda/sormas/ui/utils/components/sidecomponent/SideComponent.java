@@ -22,6 +22,8 @@ public class SideComponent extends VerticalLayout {
 	private final HorizontalLayout componentHeader;
 	private final Consumer<Runnable> actionCallback;
 
+	protected Button createButton;
+
 	public SideComponent(String heading) {
 		this(heading, null);
 	}
@@ -53,7 +55,7 @@ public class SideComponent extends VerticalLayout {
 
 	protected void addCreateButton(String caption, Runnable callback, UserRight... userRights) {
 		if (userRights.length == 0 || userHasRight(userRights)) {
-			Button createButton = ButtonHelper.createButton(caption);
+			createButton = ButtonHelper.createButton(caption);
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(e -> actionCallback.accept(callback));

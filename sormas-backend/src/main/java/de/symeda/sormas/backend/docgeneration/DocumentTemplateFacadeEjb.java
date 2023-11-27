@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,11 +50,13 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflowType;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -65,6 +68,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -87,6 +91,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
+	public static final int EMAIL_SUBJECT_MAX_LENGTH = 50;
+	public static final String EMAIL_TEMPLATE_SUBJECT_PREFIX = "#";
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -339,6 +345,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			templateEngine.validateTemplateTxt(templateInputStream);
 		}
 
+		if (documentWorkflow.getType() == DocumentWorkflowType.EMAIL) {
+			validateEmailTemplate(document);
+		}
+
 		Path workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
 		try {
 			Files.createDirectories(workflowTemplateDirPath);
@@ -459,6 +469,52 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	private void assertRequredUserRight(DocumentWorkflow documentWorkflow) {
 		if (!userService.hasRight(documentWorkflow.getManagementUserRight())) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+	}
+
+	private static void validateEmailTemplate(byte[] document) {
+		EmailTemplateTexts emailTemplateTexts = splitTemplateContent(new String(document, StandardCharsets.UTF_8), false);
+		if (StringUtils.isEmpty(emailTemplateTexts.subject)
+			|| !emailTemplateTexts.subject.startsWith(EMAIL_TEMPLATE_SUBJECT_PREFIX)
+			|| emailTemplateTexts.subject.length() <= EMAIL_TEMPLATE_SUBJECT_PREFIX.length()
+			|| emailTemplateTexts.subject.length() > EMAIL_SUBJECT_MAX_LENGTH + EMAIL_TEMPLATE_SUBJECT_PREFIX.length()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.emailTemplateSubjectInvalid));
+		}
+	}
+
+	public static EmailTemplateTexts splitTemplateContent(String content) {
+		return splitTemplateContent(content, true);
+	}
+
+	private static EmailTemplateTexts splitTemplateContent(String templateString, boolean cleanupSubject) {
+		String[] split = templateString.split("\n", 2);
+
+		if (split.length != 2) {
+			return new EmailTemplateTexts(null, templateString);
+		}
+
+		String subjectLine = split[0].trim();
+		String content = split[1].trim();
+
+		return new EmailTemplateTexts(cleanupSubject ? subjectLine.substring(1).trim() : subjectLine, content);
+	}
+
+	public static final class EmailTemplateTexts {
+
+		private final String subject;
+		private final String content;
+
+		private EmailTemplateTexts(String subject, String content) {
+			this.subject = subject;
+			this.content = content;
+		}
+
+		public String getSubject() {
+			return subject;
+		}
+
+		public String getContent() {
+			return content;
 		}
 	}
 

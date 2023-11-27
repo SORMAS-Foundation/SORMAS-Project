@@ -88,6 +88,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CaseDownloadUtil;
@@ -111,7 +112,7 @@ import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
  * See also {@link CaseController} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
-public class CasesView extends AbstractView {
+public class CasesView extends AbstractView implements HasName {
 
 	private static final long serialVersionUID = -3533557348144005469L;
 
@@ -1037,4 +1038,8 @@ public class CasesView extends AbstractView {
 		return scrollLayout;
 	}
 
+	@Override
+	public String getName() {
+		return VIEW_NAME;
+	}
 }

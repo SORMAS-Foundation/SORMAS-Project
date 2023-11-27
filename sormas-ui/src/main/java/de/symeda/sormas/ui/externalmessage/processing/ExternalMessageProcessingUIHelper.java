@@ -243,7 +243,8 @@ public class ExternalMessageProcessingUIHelper {
 			sample.isPseudonymized(),
 			sample.isInJurisdiction(),
 			sampleController.getDiseaseOf(sample),
-			false);
+			false,
+			null);
 		sampleEditComponent.getWrappedComponent().setHeading(I18nProperties.getString(Strings.headingExternalMessageSampleInformation));
 
 		// add existing tests to edit component

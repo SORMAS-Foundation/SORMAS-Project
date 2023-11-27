@@ -31,6 +31,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -51,8 +53,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -67,7 +71,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
-public class ContactDataView extends AbstractContactView {
+public class ContactDataView extends AbstractContactView implements HasName {
 
 	private static final long serialVersionUID = -1L;
 
@@ -83,6 +87,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String DOCUMENTS_LOC = "documents";
+	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -121,7 +126,8 @@ public class ContactDataView extends AbstractContactView {
 			VACCINATIONS_LOC,
 			SORMAS_TO_SORMAS_LOC,
 			DOCUMENTS_LOC,
-			QuarantineOrderDocumentsComponent.QUARANTINE_LOC);
+			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
+			EXTERNAL_EMAILS_LOC);
 
 		container.addComponent(layout);
 
@@ -287,6 +293,17 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
+			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
+				DocumentWorkflow.CONTACT_EMAIL,
+				RootEntityType.ROOT_CONTACT,
+				contactDto.toReference(),
+				contactDto.getPerson(),
+				Strings.messageContactPersonHasNoEmail,
+				this::showUnsavedChangesPopup);
+			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
+		}
+
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, contactEditAllowed);
 	}
@@ -363,5 +380,10 @@ public class ContactDataView extends AbstractContactView {
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 
 		return caseInfoLayout;
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

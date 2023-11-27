@@ -55,6 +55,7 @@ public interface Validations {
 	String defaultInfrastructureNotRemovableChildDistrict = "defaultInfrastructureNotRemovableChildDistrict";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
+	String emailTemplateSubjectInvalid = "emailTemplateSubjectInvalid";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String environmentMedia = "environmentMedia";
 	String environmentName = "environmentName";

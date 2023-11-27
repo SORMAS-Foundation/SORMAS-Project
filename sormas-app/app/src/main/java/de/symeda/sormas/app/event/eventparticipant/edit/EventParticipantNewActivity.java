@@ -52,18 +52,22 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
 	private String eventUuid = null;
 
-	public static void startActivity(Context context, String eventUuid) {
-		BaseEditActivity.startActivity(context, EventParticipantNewActivity.class, buildBundle(eventUuid));
+	private boolean rapidEntry;
+
+	public static void startActivity(Context context, String eventUuid, boolean rapidEntry) {
+		BaseEditActivity.startActivity(context, EventParticipantNewActivity.class, buildBundle(eventUuid, rapidEntry));
 	}
 
-	public static Bundler buildBundle(String eventUuid) {
-		return buildBundle(null, 0).setEventUuid(eventUuid);
+	public static Bundler buildBundle(String eventUuid, boolean rapidEntry) {
+		return buildBundle(null, 0).setEventUuid(eventUuid).setRapidEntry(rapidEntry);
 	}
 
 	@Override
 	protected void onCreateInner(Bundle savedInstanceState) {
 		super.onCreateInner(savedInstanceState);
-		eventUuid = new Bundler(savedInstanceState).getEventUuid();
+		Bundler bundler = new Bundler(savedInstanceState);
+		eventUuid = bundler.getEventUuid();
+		rapidEntry = bundler.isRapidEntry();
 	}
 
 	@Override
@@ -96,7 +100,7 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 
 	@Override
 	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-		BaseEditFragment fragment = EventParticipantNewFragment.newInstance(activityRootData);
+		BaseEditFragment fragment = EventParticipantNewFragment.newInstance(activityRootData, rapidEntry);
 		fragment.setLiveValidationDisabled(true);
 		return fragment;
 	}
@@ -157,8 +161,13 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 						hidePreloader();
 						super.onPostExecute(taskResult);
 						if (taskResult.getResultStatus().isSuccess()) {
-							EventParticipantEditActivity
-								.startActivity(getContext(), getRootUuid(), eventUuid, EventParticipantSection.EVENT_PARTICIPANT_INFO);
+							if (((EventParticipantNewFragment) getActiveFragment()).isRapidEntry()) {
+								rapidEntry = true;
+								startActivity(getContext(), EventParticipantNewActivity.class, buildBundle(eventUuid, true));
+							} else {
+								EventParticipantEditActivity
+									.startActivity(getContext(), getRootUuid(), eventUuid, EventParticipantSection.EVENT_PARTICIPANT_INFO);
+							}
 						}
 						saveTask = null;
 					}

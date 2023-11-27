@@ -28,7 +28,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -50,7 +49,7 @@ public class EmailService {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
-	public void sendEmail(String recipient, String subject, String content) throws AddressException, MessagingException {
+	public void sendEmail(String recipient, String subject, String content) throws MessagingException {
 
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 

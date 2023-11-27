@@ -346,6 +346,7 @@ public interface Strings {
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSampleNotEditable = "errorSampleNotEditable";
+	String errorSendingExternalEmail = "errorSendingExternalEmail";
 	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
 	String errorSormasToSormasAcceptContactsBeforeAcceptSourceCase = "errorSormasToSormasAcceptContactsBeforeAcceptSourceCase";
 	String errorSormasToSormasAcceptContactsWithoutCaseShared = "errorSormasToSormasAcceptContactsWithoutCaseShared";
@@ -601,6 +602,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingExternalEmailSend = "headingExternalEmailSend";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
 	String headingExternalMessageExistingPathogenTests = "headingExternalMessageExistingPathogenTests";
@@ -1105,6 +1107,7 @@ public interface Strings {
 	String messageCaseFoundNoValidPathogenTest = "messageCaseFoundNoValidPathogenTest";
 	String messageCaseIncidenceUnsupportedAgeGroup = "messageCaseIncidenceUnsupportedAgeGroup";
 	String messageCaseOutsideJurisdictionDeletionDenied = "messageCaseOutsideJurisdictionDeletionDenied";
+	String messageCasePersonHasNoEmail = "messageCasePersonHasNoEmail";
 	String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	String messageCaseRelationToEventWithoutDisease = "messageCaseRelationToEventWithoutDisease";
 	String messageCaseSaved = "messageCaseSaved";
@@ -1139,6 +1142,7 @@ public interface Strings {
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactOutsideJurisdictionDeletionDenied = "messageContactOutsideJurisdictionDeletionDenied";
+	String messageContactPersonHasNoEmail = "messageContactPersonHasNoEmail";
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsMerged = "messageContactsMerged";
@@ -1268,6 +1272,7 @@ public interface Strings {
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
 	String messageEventParticipantDearchived = "messageEventParticipantDearchived";
 	String messageEventParticipantOutsideJurisdictionDeletionDenied = "messageEventParticipantOutsideJurisdictionDeletionDenied";
+	String messageEventParticipantPersonHasNoEmail = "messageEventParticipantPersonHasNoEmail";
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";
@@ -1380,6 +1385,7 @@ public interface Strings {
 	String messagePersonAlreadyEventParticipant = "messagePersonAlreadyEventParticipant";
 	String messagePersonContactDetailsPrimaryDuplicate = "messagePersonContactDetailsPrimaryDuplicate";
 	String messagePersonExternalTokenWarning = "messagePersonExternalTokenWarning";
+	String messagePersonListAddedAsEventPerticipants = "messagePersonListAddedAsEventPerticipants";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
 	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
 	String messagePersonSaved = "messagePersonSaved";
@@ -1441,6 +1447,7 @@ public interface Strings {
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
 	String messageTravelEntryOutsideJurisdictionDeletionDenied = "messageTravelEntryOutsideJurisdictionDeletionDenied";
+	String messageTravelEntryPersonHasNoEmail = "messageTravelEntryPersonHasNoEmail";
 	String messageTravelEntryPOEFilledBySystem = "messageTravelEntryPOEFilledBySystem";
 	String messageTravelEntrySaved = "messageTravelEntrySaved";
 	String messageTreatmentCreated = "messageTreatmentCreated";
@@ -1494,6 +1501,7 @@ public interface Strings {
 	String notificationEventParticipantRelatedToOtherEvents = "notificationEventParticipantRelatedToOtherEvents";
 	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
 	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
+	String notificationExternalEmailSent = "notificationExternalEmailSent";
 	String notificationLabResultArrived = "notificationLabResultArrived";
 	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedEventParticipant = "notificationLabResultArrivedEventParticipant";

@@ -229,12 +229,14 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._CASE_VIEW)
 	public PointOfEntryDto getByCaseUuid(String caseUuid) {
 
 		return toPseudonymizedDto(service.getByCaseUuid(caseUuid));
 	}
 
 	@Override
+	@RightsAllowed(UserRight._CASE_VIEW)
 	public boolean existsForCase(String caseUuid) {
 
 		return service.existsForCase(caseUuid);
