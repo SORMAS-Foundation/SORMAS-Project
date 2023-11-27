@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.configuration.customizableenum;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.renderers.TextRenderer;
@@ -34,6 +35,13 @@ public class CustomizableEnumPropertiesRenderer extends TextRenderer {
 		}
 
 		Map<String, Object> properties = (Map<String, Object>) value;
+
+		// Remove boolean properties that are set to false
+		Set<String> propertiesToRemove = properties.keySet().stream().filter(k -> {
+			Object propertyValue = properties.get(k);
+			return propertyValue instanceof Boolean && !((Boolean) propertyValue);
+		}).collect(Collectors.toSet());
+		propertiesToRemove.forEach(properties::remove);
 
 		if (properties.size() == 0) {
 			return super.encode(I18nProperties.getCaption(Captions.customizableEnumValueNoProperties));
