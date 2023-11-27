@@ -81,7 +81,7 @@ public class LineListingLayout extends VerticalLayout {
 		sharedInformationComponent.addComponent(sharedInformationBar);
 		addComponent(sharedInformationComponent);
 
-		LineListingSection lineComponent = new LineListingSection(Captions.lineListingNewCasesList);
+		LineListingSection lineComponent = new LineListingSection(Captions.lineListingNewEventParticipantsList);
 
 		eventParticipantLines = new ArrayList<>();
 
