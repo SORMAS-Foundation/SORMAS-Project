@@ -202,21 +202,24 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		QueryBuilder<Case, Long> caseQueryBuilder = DatabaseHelper.getCaseDao().queryBuilder();
 		queryBuilder.join(Contact.CASE_UUID, Case.UUID, caseQueryBuilder, QueryBuilder.JoinType.LEFT, QueryBuilder.JoinWhereOperation.AND);
 
-		Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+		List<Where<Contact, Long>> whereStatements = new ArrayList<>();
+		Where<Contact, Long> where = queryBuilder.where();
+		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria.getIncludeContactsFromOtherJurisdictions().equals(false)) {
-			where.and();
-			createJurisdictionFilterForCase(where);
-			where.or();
-			createJurisdictionFilter(where);
+			whereStatements.add(where.or(createJurisdictionFilterForCase(where), createJurisdictionFilter(where)));
 		}
 
 		if (contactCriteria != null) {
-			createCriteriaFilter(where, contactCriteria);
+			createCriteriaFilter(whereStatements, where, contactCriteria);
 		}
 
-		queryBuilder.setWhere(where);
+		if (!whereStatements.isEmpty()) {
+			Where<Contact, Long> whereStatement = where.and(whereStatements.size());
+			queryBuilder.setWhere(whereStatement);
+		}
+
 		return queryBuilder;
 	}
 
@@ -307,45 +310,46 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		return where;
 	}
 
-	public Where<Contact, Long> createCriteriaFilter(Where<Contact, Long> where, ContactCriteria criteria) throws SQLException {
+	public Where<Contact, Long> createCriteriaFilter(List<Where<Contact, Long>> whereStatements, Where<Contact, Long> where, ContactCriteria criteria)
+		throws SQLException {
+		List<Where> whereCriteriaFilterStatements = new ArrayList<>();
 
 		if (criteria.getCaze() != null) {
-			where.and();
-			where.eq(Contact.CASE_UUID, criteria.getCaze().getUuid());
+			whereCriteriaFilterStatements.add(where.eq(Contact.CASE_UUID, criteria.getCaze().getUuid()));
 		} else {
 			if (criteria.getFollowUpStatus() != null) {
-				where.and();
-				where.eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus());
+				whereCriteriaFilterStatements.add(where.eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus()));
 			}
 			if (criteria.getContactClassification() != null) {
-				where.and();
-				where.eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification());
+				whereCriteriaFilterStatements.add(where.eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification()));
 			}
 			if (criteria.getDisease() != null) {
-				where.and();
-				where.eq("caseDisease", criteria.getDisease());
+				whereCriteriaFilterStatements.add(where.eq("caseDisease", criteria.getDisease()));
 			}
 			if (criteria.getReportDateFrom() != null) {
-				where.and();
-				where.ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom()));
+				whereCriteriaFilterStatements.add(where.ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom())));
 			}
 			if (criteria.getReportDateTo() != null) {
-				where.and();
-				where.le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo()));
+				whereCriteriaFilterStatements.add(where.le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo())));
 			}
 			if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 				String[] textFilters = criteria.getTextFilter().split("\\s+");
 				for (String filter : textFilters) {
 					String textFilter = "%" + filter.toLowerCase() + "%";
 					if (!StringUtils.isEmpty(textFilter)) {
-						where.and();
-						where.or(
-							where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-							where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
-							where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"));
+						whereCriteriaFilterStatements.add(
+							where.or(
+								where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+								where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+								where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
 					}
 				}
 			}
+		}
+
+		if (!whereCriteriaFilterStatements.isEmpty()) {
+			where.and(whereCriteriaFilterStatements.size());
+			whereStatements.add(where);
 		}
 
 		return where;
