@@ -279,6 +279,7 @@
     <string name="caption_sync_pulled">%1$s pulled</string>
     <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
     <string name="caption_sync_deleted">%1$s deleted</string>
+    <string name="caption_event_search_field">ID, title, description</string>
     <string name="confirmation_action">Haluatko varmasti tehdä tämän?</string>
     <string name="confirmation_delete">Oletko varma, että haluat poistaa tämän tietueen?</string>
     <string name="confirmation_pick_gps">Oletteko tässä paikassa juuri nyt?</string>
@@ -698,4 +699,5 @@
     <string name="value_vaccine_name_unknown">Vaccine N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
     <string name="value_environment_name_unknown">Environment Name N/A</string>
+    <string name="rapidEntry">Use rapid event participant entry</string>
 </resources>
