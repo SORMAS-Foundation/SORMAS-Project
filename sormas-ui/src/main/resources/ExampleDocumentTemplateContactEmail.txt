@@ -1,4 +1,4 @@
-# Example Email Template for Contacts
+# Subject for contact email template
 
 Example Email Template for Contacts
 (excerpt, for full list see SORMAS Data Dictionary)

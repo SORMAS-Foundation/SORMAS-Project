@@ -1,4 +1,4 @@
-# Example Email Template for Travel Entries
+# Subject for travel entry email template
 
 Example Email Template for Travel Entries
 (excerpt, for full list see SORMAS Data Dictionary)

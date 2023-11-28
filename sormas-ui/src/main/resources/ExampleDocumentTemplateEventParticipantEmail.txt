@@ -1,6 +1,6 @@
-# Example Event Template for Event Participants
+# Subject for event participants email template
 
-Example Event Template for Event Participants
+Example Email Template for Event Participants
 (excerpt, for full list see SORMAS Data Dictionary)
 Event Participant:
 $eventParticipant_uuid
