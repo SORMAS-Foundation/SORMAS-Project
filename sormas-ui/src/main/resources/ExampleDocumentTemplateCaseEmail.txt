@@ -1,6 +1,6 @@
-# Example Eamil Template for Cases
+# Subject for case email template
 
-Example Eamil Template for Cases
+Example Email Template for Cases
 (excerpt, for full list see SORMAS Data Dictionary)
 Case:
 $case_disease
