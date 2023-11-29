@@ -46,6 +46,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXI
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EXPORT_USER_ROLES_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.GRID_RESULTS_FIRST_UUID;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.JURISDICTION_LEVEL_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.NEW_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.POPUP_SAVE_BUTTON;
@@ -59,6 +60,7 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIG
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_DISABLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_ENABLE_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_LIST;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.VIEW_EXISTING_USERS_CHECKBOX;
@@ -380,7 +382,9 @@ public class UserRolesSteps implements En {
         "^I check if the \"([^\"]*)\" user role exist and delete it$",
         (String userRole) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(USER_RIGHTS_INPUT);
-          webDriverHelpers.scrollInTable(12);
+          webDriverHelpers.selectFromCombobox(JURISDICTION_LEVEL_COMBOBOX, "Nation");
+          int numberOfElements = webDriverHelpers.getNumberOfElements(USER_ROLE_GRID_RESULTS_ROWS);
+          webDriverHelpers.scrollInTable(numberOfElements);
 
           if (webDriverHelpers.isElementVisibleWithTimeout(getUserRoleCaptionByText(userRole), 5)) {
             webDriverHelpers.doubleClickOnWebElementBySelector(getUserRoleCaptionByText(userRole));
