@@ -30,6 +30,7 @@ public class StartupShutdownServiceTest {
 		"14.7",
 		"14.8",
 		"14.9",
+		"14.10",
 		"15.1",
 		"15.2",
 		"15.3",
