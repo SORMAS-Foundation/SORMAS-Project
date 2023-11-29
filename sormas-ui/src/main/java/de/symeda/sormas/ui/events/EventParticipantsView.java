@@ -305,6 +305,8 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
 				.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
 			addHeaderComponent(lineListingButton);
+			lineListingButton
+				.setEnabled(!isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
