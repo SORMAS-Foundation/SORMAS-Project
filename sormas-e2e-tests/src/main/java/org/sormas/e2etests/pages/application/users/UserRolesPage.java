@@ -23,6 +23,8 @@ import org.openqa.selenium.By;
 public class UserRolesPage {
   public static By USER_RIGHTS_INPUT = By.cssSelector("#userRights input");
   public static By USER_RIGHTS_COMBOBOX = By.cssSelector("#userRights div");
+  public static By JURISDICTION_LEVEL_COMBOBOX = By.cssSelector("#jurisdictionLevel div");
+  public static final By USER_ROLE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static By NEW_USER_ROLE_BUTTON = By.cssSelector("div #userRoleNewUserRole");
   public static By USER_ROLE_TEMPLATE_COMBOBOX =
       By.cssSelector(".popupContent #templateUserRole div");
