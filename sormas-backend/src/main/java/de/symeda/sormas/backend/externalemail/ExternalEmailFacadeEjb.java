@@ -45,6 +45,7 @@ import de.symeda.sormas.backend.docgeneration.DocumentTemplateEntitiesBuilder;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.EmailTemplateTexts;
 import de.symeda.sormas.backend.docgeneration.RootEntities;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "ExternalEmailFacade")
@@ -59,6 +60,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private EmailService emailService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ManualMessageLogService manualMessageLogService;
 
 	@Override
 	public List<String> getTemplateNames(DocumentWorkflow documentWorkflow) {
@@ -79,6 +82,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 
 		try {
 			emailService.sendEmail(options.getRecipientEmail(), emailTexts.getSubject(), emailTexts.getContent());
+
+			manualMessageLogService.create();
 		} catch (MessagingException e) {
 			logger.error("Error sending email", e);
 			throw new ExternalEmailException(I18nProperties.getString(Strings.errorSendingExternalEmail));

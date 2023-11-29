@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.messaging;
+package de.symeda.sormas.api.manualmessagelog;
 
 public enum MessageType {
 

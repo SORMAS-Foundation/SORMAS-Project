@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common.messaging;
 
-import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.manualmessagelog.MessageType;
 
 @SuppressWarnings("serial")
 public class NotificationDeliveryFailedException extends Exception {
