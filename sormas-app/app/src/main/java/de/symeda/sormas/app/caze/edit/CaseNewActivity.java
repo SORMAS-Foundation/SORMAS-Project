@@ -82,7 +82,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 	}
 
 	public static void startActivityFromContact(Context fromActivity, Contact contact) {
-		if (contact.getContactClassification() != ContactClassification.CONFIRMED) {
+
+		Contact savedContact = DatabaseHelper.getContactDao().queryUuid(contact.getUuid());
+
+		if (savedContact.getContactClassification() != ContactClassification.CONFIRMED) {
 			NotificationHelper.showNotification(
 				getActiveActivity(),
 				NotificationType.WARNING,
