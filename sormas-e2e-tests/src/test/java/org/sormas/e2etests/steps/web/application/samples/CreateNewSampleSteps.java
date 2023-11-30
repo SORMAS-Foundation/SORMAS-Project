@@ -27,7 +27,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_C
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_COMBOBOX;
