@@ -22,9 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -964,7 +961,7 @@ public class TextViewBindingAdapters {
 		"shortLocationValue",
 		"defaultValue" }, requireAll = false)
 	public static void setShortLocationValue(TextView textField, Location location, String defaultValue) {
-		if (location == null || location.buildCaption().isEmpty()) {
+		if (location == null || (location.buildCaption().isEmpty() && location.getCountry() == null)) {
 			textField.setText(defaultValue);
 		} else {
 			textField.setText(location.buildShortCaption());
