@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.api.docgeneneration;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 
 @Remote
 public interface QuarantineOrderFacade {
@@ -34,6 +34,7 @@ public interface QuarantineOrderFacade {
 	byte[] getGeneratedDocument(
 		String templateName,
 		DocumentWorkflow workflow,
+		RootEntityType rootEntityType,
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
 		PathogenTestReferenceDto pathogenTestReference,

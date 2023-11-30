@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -124,9 +126,8 @@ public final class DiseaseConfigurationCache {
 		Set<Disease> diseases = EnumSet.noneOf(Disease.class);
 
 		if (caseSurveillance) {
-			if (currentUser.getLimitedDisease() != null) {
-				Disease limitedDisease = currentUser.getLimitedDisease();
-				diseases.add(limitedDisease);
+			if (CollectionUtils.isNotEmpty(currentUser.getLimitedDiseases())) {
+				diseases.addAll(currentUser.getLimitedDiseases());
 			} else {
 				diseases.addAll(caseBasedDiseases);
 			}
@@ -182,19 +183,6 @@ public final class DiseaseConfigurationCache {
 		return primaryDiseases.contains(disease);
 	}
 
-	public List<Disease> getAllPrimaryDiseases() {
-		User currentUser = ConfigProvider.getUser();
-		if (currentUser.getLimitedDisease() != null) {
-			ArrayList<Disease> list = new ArrayList<>();
-			if (isPrimaryDisease(currentUser.getLimitedDisease())) {
-				list.add(currentUser.getLimitedDisease());
-			}
-			return list;
-		} else {
-			return primaryDiseases;
-		}
-	}
-
 	public boolean usesExtendedClassification(Disease disease) {
 		return extendedClassificationDiseases.get(disease);
 	}
@@ -205,19 +193,6 @@ public final class DiseaseConfigurationCache {
 
 	public boolean hasFollowUp(Disease disease) {
 		return followUpEnabledDiseases.contains(disease);
-	}
-
-	public List<Disease> getAllDiseasesWithFollowUp() {
-		User currentUser = ConfigProvider.getUser();
-		if (currentUser.getLimitedDisease() != null) {
-			ArrayList<Disease> list = new ArrayList<>();
-			if (hasFollowUp(currentUser.getLimitedDisease())) {
-				list.add(currentUser.getLimitedDisease());
-			}
-			return list;
-		} else {
-			return followUpEnabledDiseases;
-		}
 	}
 
 	public int getFollowUpDuration(Disease disease) {

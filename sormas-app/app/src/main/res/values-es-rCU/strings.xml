@@ -279,6 +279,7 @@
     <string name="caption_sync_pulled">%1$s descargado</string>
     <string name="caption_sync_pushed">%1$s/%2$s enviado</string>
     <string name="caption_sync_deleted">%1$s eliminado</string>
+    <string name="caption_event_search_field">ID, título, descripción</string>
     <string name="confirmation_action">¿Está seguro de que quiere hacer esto?</string>
     <string name="confirmation_delete">¿Está seguro de que desea eliminar este registro?</string>
     <string name="confirmation_pick_gps">¿Se encuentra en este lugar ahora?</string>
@@ -698,4 +699,5 @@
     <string name="value_vaccine_name_unknown">Vacuna N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Fabricante N/A</string>
     <string name="value_environment_name_unknown">Nombre de ambiente N/A</string>
+    <string name="rapidEntry">Usar entrada rápida de participante de evento</string>
 </resources>

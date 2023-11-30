@@ -39,9 +39,7 @@ import android.location.Location;
 import android.os.Build;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -76,7 +74,9 @@ import de.symeda.sormas.app.backend.event.EventCriteria;
 import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.pointofentry.PointOfEntry;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -759,33 +759,109 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		Where<Case, Long> where = queryBuilder.where();
 		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
+		if (criteria != null) {
+			if (criteria.getIncludeCasesFromOtherJurisdictions().equals(false)) {
+				createJurisdictionFilter(whereStatements, where);
+			}
+			createCriteriaFilter(whereStatements, where, criteria);
+		}
+
+		if (!whereStatements.isEmpty()) {
+			Where<Case, Long> whereStatement = where.and(whereStatements.size());
+			queryBuilder.setWhere(whereStatement);
+		}
+
+		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
+		return queryBuilder;
+	}
+
+	public Where createJurisdictionFilter(List<Where<Case, Long>> whereStatements, Where<Case, Long> where) throws SQLException {
+		List<Where> whereJurisdictionFilterStatements = new ArrayList<>();
+
+		User currentUser = ConfigProvider.getUser();
+		if (currentUser == null) {
+			return null;
+		}
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		switch (jurisdictionLevel) {
+		case DISTRICT:
+			District district = currentUser.getDistrict();
+			if (district != null) {
+				whereJurisdictionFilterStatements
+					.add(where.or(where.eq((Case.DISTRICT), district), where.eq(Case.RESPONSIBLE_DISTRICT, district.getId())));
+			}
+			break;
+
+		case HEALTH_FACILITY:
+			Facility healthFacility = currentUser.getHealthFacility();
+			if (healthFacility != null) {
+				whereJurisdictionFilterStatements.add(where.eq(Case.HEALTH_FACILITY, healthFacility.getId()));
+			}
+			break;
+		case COMMUNITY:
+			Community community = currentUser.getCommunity();
+			if (community != null) {
+				whereJurisdictionFilterStatements
+					.add(where.or(where.eq((Case.COMMUNITY), community), where.eq(Case.RESPONSIBLE_COMMUNITY, community.getId())));
+			}
+			break;
+		case POINT_OF_ENTRY:
+			PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+			if (pointOfEntry != null) {
+				whereJurisdictionFilterStatements.add(where.eq(Case.POINT_OF_ENTRY, pointOfEntry.getId()));
+			}
+			break;
+		default:
+		}
+
+		if (!whereJurisdictionFilterStatements.isEmpty()) {
+			where.or(whereJurisdictionFilterStatements.size());
+			whereStatements.add(where);
+		}
+
+		return where;
+	}
+
+	public Where<Case, Long> createCriteriaFilter(List<Where<Case, Long>> whereStatements, Where<Case, Long> where, CaseCriteria criteria)
+		throws SQLException {
+		List<Where> whereCriteriaFilterStatements = new ArrayList<>();
+
 		if (criteria.getInvestigationStatus() != null) {
-			whereStatements.add(where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus()));
+			whereCriteriaFilterStatements.add(where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus()));
 		}
+
 		if (criteria.getDisease() != null) {
-			whereStatements.add(where.eq(Case.DISEASE, criteria.getDisease()));
+			whereCriteriaFilterStatements.add(where.eq(Case.DISEASE, criteria.getDisease()));
 		}
+
 		if (criteria.getCaseClassification() != null) {
-			whereStatements.add(where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification()));
+			whereCriteriaFilterStatements.add(where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification()));
 		}
+
 		if (criteria.getOutcome() != null) {
-			whereStatements.add(where.eq(Case.OUTCOME, criteria.getOutcome()));
+			whereCriteriaFilterStatements.add(where.eq(Case.OUTCOME, criteria.getOutcome()));
 		}
+
 		if (criteria.getEpiWeekFrom() != null) {
-			whereStatements.add(where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom())));
+			whereCriteriaFilterStatements.add(where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom())));
 		}
+
 		if (criteria.getEpiWeekTo() != null) {
-			whereStatements.add(where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo())));
+			whereCriteriaFilterStatements.add(where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo())));
 		}
+
 		if (criteria.getCaseOrigin() != null) {
-			whereStatements.add(where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin()));
+			whereCriteriaFilterStatements.add(where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin()));
 		}
+
 		if (!StringUtils.isEmpty(criteria.getTextFilter())) {
 			String[] textFilters = criteria.getTextFilter().split("\\s+");
 			for (String filter : textFilters) {
 				String textFilter = "%" + filter.toLowerCase() + "%";
 				if (!StringUtils.isEmpty(textFilter)) {
-					whereStatements.add(
+					whereCriteriaFilterStatements.add(
 						where.or(
 							where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
 							where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
@@ -796,12 +872,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			}
 		}
 
-		if (!whereStatements.isEmpty()) {
-			Where<Case, Long> whereStatement = where.and(whereStatements.size());
-			queryBuilder.setWhere(whereStatement);
+		if (!whereCriteriaFilterStatements.isEmpty()) {
+			where.and(whereCriteriaFilterStatements.size());
+			whereStatements.add(where);
 		}
-		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
-		return queryBuilder;
+
+		return where;
 	}
 
 	public static Region getRegionWithFallback(Case caze) {

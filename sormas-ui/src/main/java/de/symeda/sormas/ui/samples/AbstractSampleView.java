@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -45,13 +43,6 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 
 	protected AbstractSampleView(String viewName) {
 		super(viewName);
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-
-		super.enter(event);
-		initOrRedirect(event);
 	}
 
 	@Override
@@ -114,4 +105,5 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 	public SampleReferenceDto getSampleRef() {
 		return getReference();
 	}
+
 }

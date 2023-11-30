@@ -32,7 +32,6 @@ Feature: User actions based on their rights
       | Surveillance Supervisor       |
       | Laboratory Officer            |
       | Point of Entry Supervisor     |
-      | Rest AUTOMATION               |
       | Admin Surveillance Supervisor |
       | Contact Officer               |
       | Community Officer             |
@@ -52,3 +51,57 @@ Feature: User actions based on their rights
       | user                    |
       | Contact Supervisor      |
       | Surveillance Supervisor |
+
+  @tmsLink=HSP-6402 @env_main
+  Scenario: User with rights only for Users cannot see the User Role tab
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "RightsChecker" role and change his role
+    And I click on User roles tab from Users Page
+    And I check if the "RightsChecker" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "RightsChecker" on Create New User Role form
+    And I click SAVE button on User Role Page
+    And I click checkbox to choose "View existing users"
+    And I click checkbox to choose "Edit existing users"
+    And I click checkbox to choose "Create new users"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    Then I click on User Management tab from Users directory Page
+    And I click on the NEW USER button
+    And I create new "RightsChecker" with english language for test
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    Then I click on the Users from navbar
+    And I Verify User Management tab is present from Users directory page
+    And I Verify that User Roles is not present in the tab
+
+  @tmsLink=HSP-6405 @env_main
+  Scenario: User with rights only for User Role cannot see the User Management tab
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "RolesChecker" role and change his role
+    And I click on User roles tab from Users Page
+    And I check if the "RolesChecker" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "RolesChecker" on Create New User Role form
+    And I click SAVE button on User Role Page
+    And I click checkbox to choose "View existing user roles"
+    And I click checkbox to choose "Edit existing user roles"
+    And I click checkbox to choose "Delete user roles from the system"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    Then I click on User Management tab from Users directory Page
+    And I click on the NEW USER button
+    And I create new "RolesChecker" with english language for test
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    Then I click on the Users from navbar
+    And I check that "A problem has occurred" error popup message is appear in Management Page
+    And I check that number of displayed users results is 0 in User Management tab
+    Then I click on User roles tab from Users Page
+    And I check that "Export" button is enable in the User Role Page
+    And I check that "New user role" button is enable in the User Role Page
+    And I check that list of user role table hasn't empty in User Role Page

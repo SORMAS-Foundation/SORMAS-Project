@@ -34,6 +34,8 @@ public class CreateNewCasePage {
       By.cssSelector(".v-window #responsibleCommunity div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#type div");
+  public static final By NEW_CASE_FACILITY_TYPE_COMBOBOX =
+      By.cssSelector(".v-window #facilityType div");
   public static final By FACILITY_COMBOBOX = By.cssSelector("#healthFacility div");
   public static final By FACILITY_NAME_COMBOBOX = By.cssSelector("#facility div");
   public static final By PLACE_OF_STAY_HOME =

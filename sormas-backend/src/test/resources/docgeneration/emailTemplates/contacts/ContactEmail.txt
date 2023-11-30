@@ -1,0 +1,32 @@
+# Email subject in template
+
+Contact Person:
+$contact_person_lastName, $contact_person_firstName
+
+Born:
+$contact_person_birthdateDD.$contact_person_birthdateMM.$contact_person_birthdateDD
+
+Address:
+$contact_person_address_street $contact_person_address_houseNumber
+$person_address_postalCode $person_address_city
+
+Phone:
+$contact_person_phone
+
+Contact:
+$contact_contactStatus
+$contact_returningTraveler
+
+
+Empty Properties:
+$contact_contactProximity
+$contact_person_address_additionalInformation
+$!contact_person_address_addressTypeDetails
+$!contact_additionalDetails
+
+User:
+$user_firstName $user_lastName
+
+Errors:
+$contact_errorProperty
+$contact_person_errorProperty

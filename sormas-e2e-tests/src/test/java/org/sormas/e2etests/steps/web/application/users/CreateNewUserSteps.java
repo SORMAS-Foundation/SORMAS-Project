@@ -155,7 +155,7 @@ public class CreateNewUserSteps implements En {
           selectActive(user.getActive());
           fillUserName(user.getUserName());
           selectUserRole(role);
-          selectLimitedDisease(user.getLimitedDisease());
+          selectRestrictDiseases(user.getLimitedDisease());
           userName = user.getUserName();
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -256,7 +256,7 @@ public class CreateNewUserSteps implements En {
           selectActive(user.getActive());
           fillUserName(user.getUserName());
           selectUserRole(role);
-          selectLimitedDisease(user.getLimitedDisease());
+          selectRestrictDiseases(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
@@ -297,7 +297,7 @@ public class CreateNewUserSteps implements En {
             selectActive(user.getActive());
             fillUserName(user.getUserName());
             selectUserRole("National User");
-            selectLimitedDisease(user.getLimitedDisease());
+            selectRestrictDiseases(user.getLimitedDisease());
             webDriverHelpers.scrollToElement(SAVE_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
@@ -335,7 +335,7 @@ public class CreateNewUserSteps implements En {
           fillGpsAccuracy(user.getGpsAccuracy());
           fillUserName(user.getUserName());
           selectUserRole("National User");
-          selectLimitedDisease(user.getLimitedDisease());
+          selectRestrictDiseases(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
@@ -372,7 +372,7 @@ public class CreateNewUserSteps implements En {
           selectActive(user.getActive());
           selectActiveUserRole();
           selectUserRole(editUser.getUserRole());
-          selectLimitedDisease(editUser.getLimitedDisease());
+          changeRestrictDiseases(user.getLimitedDisease(), editUser.getLimitedDisease());
           webDriverHelpers.scrollToElement(CreateNewUserPage.SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CreateNewUserPage.SAVE_BUTTON);
         });
@@ -762,9 +762,17 @@ public class CreateNewUserSteps implements En {
     TimeUnit.SECONDS.sleep(1);
   }
 
-  private void selectLimitedDisease(String limitedDisease) {
-    webDriverHelpers.scrollToElement(LIMITED_DISEASE_COMBOBOX);
-    webDriverHelpers.selectFromCombobox(LIMITED_DISEASE_COMBOBOX, limitedDisease);
+  private void selectRestrictDiseases(String limitedDisease) {
+    webDriverHelpers.scrollToElement(RESTRICT_DISEASES_CHECKBOX);
+    webDriverHelpers.clickOnWebElementBySelector(RESTRICT_DISEASES_CHECKBOX);
+    webDriverHelpers.clickWebElementByText(LIMITED_DISEASE_CHECKBOX, limitedDisease);
+  }
+
+  private void changeRestrictDiseases(String previousLimitedDisease, String limitedDisease) {
+    webDriverHelpers.scrollToElement(RESTRICT_DISEASES_CHECKBOX);
+    webDriverHelpers.doubleClickOnWebElementBySelector(RESTRICT_DISEASES_CHECKBOX);
+    webDriverHelpers.clickWebElementByText(LIMITED_DISEASE_CHECKBOX, previousLimitedDisease);
+    webDriverHelpers.clickWebElementByText(LIMITED_DISEASE_CHECKBOX, limitedDisease);
   }
 
   private List<Map<String, String>> getTableRowsData() {

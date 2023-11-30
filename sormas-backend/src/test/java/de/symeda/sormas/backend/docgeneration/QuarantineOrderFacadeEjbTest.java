@@ -48,6 +48,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -178,9 +179,9 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void generateQuarantineOrderCaseTest() throws IOException, DocumentTemplateException {
-		ReferenceDto rootEntityReference = caseDataDto.toReference();
 		generateQuarantineOrderTest(
-			rootEntityReference,
+			RootEntityType.ROOT_CASE,
+			caseDataDto.toReference(),
 			DocumentWorkflow.QUARANTINE_ORDER_CASE,
 			sampleDto.toReference(),
 			pathogenTestDto.toReference(),
@@ -189,12 +190,19 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void generateQuarantineOrderContactTest() throws IOException, DocumentTemplateException {
-		generateQuarantineOrderTest(contactDto.toReference(), DocumentWorkflow.QUARANTINE_ORDER_CONTACT, null, null, "QuarantineContact.cmp");
+		generateQuarantineOrderTest(
+			RootEntityType.ROOT_CONTACT,
+			contactDto.toReference(),
+			DocumentWorkflow.QUARANTINE_ORDER_CONTACT,
+			null,
+			null,
+			"QuarantineContact.cmp");
 	}
 
 	@Test
 	public void generateQuarantineOrderEventParticipantTest() throws IOException, DocumentTemplateException {
 		generateQuarantineOrderTest(
+			RootEntityType.ROOT_EVENT_PARTICIPANT,
 			eventParticipantDto.toReference(),
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
 			null,
@@ -205,6 +213,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void generateQuarantineOrderTravelEntryTest() throws IOException, DocumentTemplateException {
 		generateQuarantineOrderTest(
+			RootEntityType.ROOT_TRAVEL_ENTRY,
 			travelEntryDto.toReference(),
 			DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY,
 			null,
@@ -218,6 +227,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		setNullReplacement("");
 		generateQuarantineOrderTest(
+			RootEntityType.ROOT_CASE,
 			rootEntityReference,
 			DocumentWorkflow.QUARANTINE_ORDER_CASE,
 			null,
@@ -226,6 +236,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		setNullReplacement("xxx");
 		generateQuarantineOrderTest(
+			RootEntityType.ROOT_CASE,
 			rootEntityReference,
 			DocumentWorkflow.QUARANTINE_ORDER_CASE,
 			null,
@@ -282,6 +293,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	private void generateQuarantineOrderTest(
+		RootEntityType rootEntityType,
 		ReferenceDto rootEntityReference,
 		DocumentWorkflow documentWorkflow,
 		SampleReferenceDto sampleReference,
@@ -301,6 +313,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 			quarantineOrderFacadeEjb.getGeneratedDocument(
 				"Quarantine.docx",
 				documentWorkflow,
+				rootEntityType,
 				rootEntityReference,
 				sampleReference,
 				pathogenTest,

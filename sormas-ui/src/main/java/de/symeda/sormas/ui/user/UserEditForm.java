@@ -22,6 +22,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static java.util.function.Predicate.not;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
@@ -38,8 +41,10 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -61,6 +66,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UserPhoneNumberValidator;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
 public class UserEditForm extends AbstractEditForm<UserDto> {
 
@@ -71,6 +77,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_DATA_HEADING_LOC = "userDataHeadingLoc";
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
+	private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseasesHeadingLoc";
+	private static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
+	private static final String RESTRICT_DISEASES_DESCRIPTION_LOC = "restrictDiseasesDescriptionLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -89,10 +98,17 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
                     fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
                     fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
-                    fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
+                    fluidRowLocs(LIMITED_DISEASES_HEADING_LOC) +
+                    fluidRowLocs(RESTRICT_DISEASES_CHECKBOX_LOC) +
+                    fluidRowLocs(RESTRICT_DISEASES_DESCRIPTION_LOC) +
+                    fluidRowLocs(UserDto.LIMITED_DISEASES);
     //@formatter:off
 
-    Map<UserRoleReferenceDto, UserRoleDto> userRoleMap;
+    private Map<UserRoleReferenceDto, UserRoleDto> userRoleMap;
+
+    private CheckBox restrictDiseasesCheckbox;
+
+    private CheckboxSet<Disease> diseasesCheckboxSet;
     
     public UserEditForm(boolean create) {
 
@@ -126,8 +142,34 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.USER_EMAIL, TextField.class);
         TextField phone = addField(UserDto.PHONE, TextField.class);
         phone.addValidator(new UserPhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
+        
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.WEEKLY_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
-            addDiseaseField(UserDto.LIMITED_DISEASE, false);
+            Label limitedDiseasesHeadingLabel = new Label(I18nProperties.getString(Strings.headingLimitedDiseases));
+            limitedDiseasesHeadingLabel.addStyleName(H3);
+            getContent().addComponent(limitedDiseasesHeadingLabel, LIMITED_DISEASES_HEADING_LOC);
+
+            Label restrictDiseasesDescriptionLabel = new Label(I18nProperties.getString(Strings.infoRestrictDiseasesDescription));
+            restrictDiseasesDescriptionLabel.addStyleNames(CssStyles.LABEL_ITALIC, CssStyles.VSPACE_TOP_3);
+            restrictDiseasesDescriptionLabel.setVisible(false);
+            getContent().addComponent(restrictDiseasesDescriptionLabel, RESTRICT_DISEASES_DESCRIPTION_LOC);
+
+            diseasesCheckboxSet = addField(UserDto.LIMITED_DISEASES, CheckboxSet.class);
+            diseasesCheckboxSet.setColumnCount(3);
+            diseasesCheckboxSet.setCaption(null);
+            diseasesCheckboxSet.setVisible(false);
+
+            restrictDiseasesCheckbox = addCustomField(RESTRICT_DISEASES_CHECKBOX_LOC, I18nProperties.getCaption(Captions.userRestrictDiseases), Boolean.class, CheckBox.class);
+            restrictDiseasesCheckbox.addValueChangeListener(e -> {
+                boolean restrictDiseases = (boolean) e.getProperty().getValue();
+                if (restrictDiseases) {
+                    restrictDiseasesDescriptionLabel.setVisible(true);
+                    diseasesCheckboxSet.setVisible(true);
+                } else {
+                    restrictDiseasesDescriptionLabel.setVisible(false);
+                    diseasesCheckboxSet.setVisible(false);
+                    diseasesCheckboxSet.clear();
+                }
+            });
         }
 
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
@@ -205,6 +247,12 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	public void setValue(UserDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
 		FieldHelper.updateItems(userRolesField, getFilteredUserRoles(newFieldValue.getUserRoles()));
+        
+        if(diseasesCheckboxSet != null){
+            Set<Disease> limitedDiseases = newFieldValue.getLimitedDiseases();
+            restrictDiseasesCheckbox.setValue(CollectionUtils.isNotEmpty(limitedDiseases));
+            diseasesCheckboxSet.setItems(getSelectableDiseases(limitedDiseases), null, null);
+        }
 
 		super.setValue(newFieldValue);
 	}
@@ -216,7 +264,18 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 				.sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList());
 	}
 
-	@SuppressWarnings("unchecked")
+    private static List<Disease> getSelectableDiseases(Set<Disease> limitedDiseases) {
+        List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+        if(CollectionUtils.isNotEmpty(limitedDiseases)){
+            List<Disease> inactiveSelectedDiseases = limitedDiseases.stream().filter(not(diseases::contains)).collect(Collectors.toList());
+            diseases.addAll(inactiveSelectedDiseases);
+        }
+
+        return diseases;
+    }
+
+
+    @SuppressWarnings("unchecked")
     private void updateFieldsByUserRole() {
 
 		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);

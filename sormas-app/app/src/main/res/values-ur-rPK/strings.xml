@@ -279,6 +279,7 @@
     <string name="caption_sync_pulled">%1$s کھینچا گیا</string>
     <string name="caption_sync_pushed">%1$s/%2$s کو آگے بڑھایا گیا</string>
     <string name="caption_sync_deleted">%1$s کو مٹا دیا گیا</string>
+    <string name="caption_event_search_field">ID, title, description</string>
     <string name="confirmation_action">کیا آپ واقعی یہ کرنا چاہتے ہیں؟</string>
     <string name="confirmation_delete">کیا آپ واقعی اس ریکارڈ کو مٹا دین اچاہتے ہیں؟</string>
     <string name="confirmation_pick_gps">کیا آپ ابھی اس جگہ پر ہیں؟</string>
@@ -698,4 +699,5 @@
     <string name="value_vaccine_name_unknown">ویکسین دستیاب نہیں</string>
     <string name="value_vaccine_manufacturer_unknown">مینوفیکچرر دستیاب نہیں ہے</string>
     <string name="value_environment_name_unknown">Environment Name N/A</string>
+    <string name="rapidEntry">Use rapid event participant entry</string>
 </resources>

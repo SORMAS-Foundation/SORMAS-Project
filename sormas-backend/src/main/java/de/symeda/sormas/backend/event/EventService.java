@@ -525,12 +525,10 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			}
 		}
 
-		if (currentUser.getLimitedDisease() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(cb.equal(eventJoin.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventJoin.get(Event.DISEASE))));
-		}
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, eventJoin.get(Event.DISEASE), cb.isNull(eventJoin.get(Event.DISEASE))));
 
 		if (RequestContextHolder.isMobileSync()) {
 			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, eventJoin));

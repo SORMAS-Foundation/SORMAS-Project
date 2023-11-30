@@ -1397,7 +1397,6 @@ public class EditCaseSteps implements En {
         "I get the case person UUID displayed on Edit case page",
         () -> {
           caseUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
-          System.out.print(caseUuid);
         });
 
     When(

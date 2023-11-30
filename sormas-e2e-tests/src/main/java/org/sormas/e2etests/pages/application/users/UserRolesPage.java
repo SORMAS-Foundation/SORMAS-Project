@@ -23,6 +23,8 @@ import org.openqa.selenium.By;
 public class UserRolesPage {
   public static By USER_RIGHTS_INPUT = By.cssSelector("#userRights input");
   public static By USER_RIGHTS_COMBOBOX = By.cssSelector("#userRights div");
+  public static By JURISDICTION_LEVEL_COMBOBOX = By.cssSelector("#jurisdictionLevel div");
+  public static final By USER_ROLE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static By NEW_USER_ROLE_BUTTON = By.cssSelector("div #userRoleNewUserRole");
   public static By USER_ROLE_TEMPLATE_COMBOBOX =
       By.cssSelector(".popupContent #templateUserRole div");
@@ -31,6 +33,15 @@ public class UserRolesPage {
   public static By POPUP_DISCARD_BUTTON = By.cssSelector(".popupContent #discard");
   public static By ARCHIVE_CASES_CHECKBOX = By.xpath("//label[text()='Archive cases']");
   public static By ARCHIVE_CONTACTS_CHECKBOX = By.xpath("//label[text()='Archive contacts']");
+  public static By VIEW_EXISTING_USERS_CHECKBOX = By.xpath("//label[text()='View existing users']");
+  public static By EDIT_EXISTING_USERS_CHECKBOX = By.xpath("//label[text()='Edit existing users']");
+  public static By CREATE_NEW_USERS_CHECKBOX = By.xpath("//label[text()='Create new users']");
+  public static By VIEW_EXISTING_USER_ROLES_CHECKBOX =
+      By.xpath("//label[text()='View existing user roles']");
+  public static By EDIT_EXISTING_USER_ROLES_CHECKBOX =
+      By.xpath("//label[text()='Edit existing user roles']");
+  public static By DELETE_USER_ROLES_FROM_THE_SYSTEM_CHECKBOX =
+      By.xpath("//label[text()='Delete user roles from the system']");
   public static By SAVE_BUTTON = By.cssSelector("#commit");
   public static By DISCARD_BUTTON = By.cssSelector("#discard");
   public static By USER_ROLE_LIST = By.cssSelector("#tab-user-userroles");
@@ -68,6 +79,8 @@ public class UserRolesPage {
   public static By WORK_WITH_MESSAGE_CHECKBOX = By.xpath("//label[text()='Work with messages']");
   public static By WORK_WITH_MESSAGE_CHECKBOX_VALUE =
       By.xpath("//label[text()='Work with messages']/preceding-sibling::input");
+  public static final By GRID_RESULTS_FIRST_UUID =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(1)");
 
   public static By getUserRoleCaptionByText(String caption) {
     return By.xpath(String.format("//td[contains(text(), '%s')]", caption));

@@ -14,8 +14,12 @@
  */
 package de.symeda.sormas.ui.samples.humansample;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -41,6 +45,7 @@ import de.symeda.sormas.ui.contact.ContactInfoLayout;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.samples.AbstractSampleView;
 import de.symeda.sormas.ui.samples.AdditionalTestListComponent;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.pathogentestlink.PathogenTestListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -49,7 +54,7 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
-public class SampleDataView extends AbstractSampleView {
+public class SampleDataView extends AbstractSampleView implements HasName {
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,11 +68,26 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormsToSormas";
 
+	String oldViewName = null;
+
 	private CommitDiscardWrapperComponent<SampleEditForm> editComponent;
 	private Disease disease;
 
 	public SampleDataView() {
 		super(VIEW_NAME);
+	}
+
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		super.enter(event);
+		View oldView = event.getOldView();
+		if (oldView != null) {
+			List<Class<?>> interfaces = Arrays.asList(oldView.getClass().getInterfaces());
+			if (interfaces.contains(HasName.class)) {
+				oldViewName = ((HasName) oldView).getName();
+			}
+		}
+		initOrRedirect(event);
 	}
 
 	@Override
@@ -86,8 +106,13 @@ public class SampleDataView extends AbstractSampleView {
 		AbstractInfoLayout<EntityDto> dependentComponent = getDependentSideComponent(sampleDto);
 
 		SampleController sampleController = ControllerProvider.getSampleController();
-		editComponent = sampleController
-			.getSampleEditComponent(getSampleRef().getUuid(), sampleDto.isPseudonymized(), sampleDto.isInJurisdiction(), disease, true);
+		editComponent = sampleController.getSampleEditComponent(
+			getSampleRef().getUuid(),
+			sampleDto.isPseudonymized(),
+			sampleDto.isInJurisdiction(),
+			disease,
+			true,
+			getOldViewName());
 
 		Consumer<Disease> createReferral = (relatedDisease) -> {
 			// save changes before referral creation
@@ -204,5 +229,14 @@ public class SampleDataView extends AbstractSampleView {
 			return (AbstractInfoLayout) eventParticipantInfoLayout;
 		}
 		return null;
+	}
+
+	public String getOldViewName() {
+		return oldViewName;
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

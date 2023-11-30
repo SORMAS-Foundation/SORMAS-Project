@@ -209,7 +209,7 @@ public class UserManagementSteps implements En {
         });
 
     And(
-        "^I click on User roles tab from User Management Page$",
+        "^I click on User roles tab from Users Page$",
         () -> {
           webDriverHelpers.scrollToElement(USER_ROLES_TAB);
           webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB);
@@ -217,7 +217,20 @@ public class UserManagementSteps implements En {
         });
 
     And(
-        "Validate user can see User roles tab from User Management Page",
+        "I check that {string} error popup message is appear in Management Page",
+        (String errorMessage) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ERROR_USER_MANAGEMENT_POPUP);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(ERROR_USER_MANAGEMENT_POPUP),
+              errorMessage,
+              "Error popup message not appear!");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ERROR_USER_MANAGEMENT_POPUP);
+        });
+
+    And(
+        "Validate user can see User roles tab from Users directory Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_ROLES_TAB);
         });
@@ -245,6 +258,19 @@ public class UserManagementSteps implements En {
         (String userRole) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_ROLES_COMBOBOX);
           webDriverHelpers.selectFromCombobox(USER_ROLES_COMBOBOX, userRole);
+        });
+
+    And(
+        "I check that number of displayed users results is {int} in User Management tab",
+        (Integer number) -> {
+          System.out.print(webDriverHelpers.getTextFromPresentWebElement(TOTAL_USERS_COUNTER));
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      Integer.parseInt(
+                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_USERS_COUNTER)),
+                      number.intValue(),
+                      "Number of displayed users is not correct"));
         });
 
     And(

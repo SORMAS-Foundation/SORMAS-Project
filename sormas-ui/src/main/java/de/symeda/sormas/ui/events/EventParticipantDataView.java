@@ -21,6 +21,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -37,10 +38,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
+import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -51,7 +55,7 @@ import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
-public class EventParticipantDataView extends AbstractEventParticipantView {
+public class EventParticipantDataView extends AbstractEventParticipantView implements HasName {
 
 	private static final long serialVersionUID = -1L;
 
@@ -63,6 +67,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 	public static final String IMMUNIZATION_LOC = "immunizations";
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
+	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 
 	private CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent;
 
@@ -93,7 +98,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 			IMMUNIZATION_LOC,
 			VACCINATIONS_LOC,
 			QUARANTINE_LOC,
-			SORMAS_TO_SORMAS_LOC);
+			SORMAS_TO_SORMAS_LOC,
+			EXTERNAL_EMAILS_LOC);
 
 		container.addComponent(layout);
 
@@ -145,6 +151,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 			new VaccinationCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
 			layout,
+			RootEntityType.ROOT_EVENT_PARTICIPANT,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
 			sampleCriteria,
@@ -181,8 +188,24 @@ public class EventParticipantDataView extends AbstractEventParticipantView {
 			}
 		}
 
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
+			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
+				DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
+				RootEntityType.ROOT_EVENT_PARTICIPANT,
+				eventParticipantRef,
+				eventParticipant.getPerson().toReference(),
+				Strings.messageEventParticipantPersonHasNoEmail,
+					editAllowed,
+				this::showUnsavedChangesPopup);
+			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
+		}
+
 		final boolean deleted = FacadeProvider.getEventParticipantFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, eventParticipantEditAllowed);
 	}
 
+	@Override
+	public String getName() {
+		return VIEW_NAME;
+	}
 }

@@ -1,0 +1,30 @@
+Contact Person:
+Debord, Guy
+
+Born:
+28.12.28
+
+Address:
+Nauwieserstraße 7
+66111 Saarbrücken
+
+Phone:
++49 681 1234
+
+Contact:
+Active contact
+Yes
+
+
+Empty Properties:
+./.
+./.
+
+
+
+User:
+Surv Sup
+
+Errors:
+*** In Contact: No property errorProperty in class Contact ***
+*** In Contact.person: No property errorProperty in class Person ***

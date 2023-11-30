@@ -18,6 +18,8 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +81,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 	}
 
 	@Test
-	public void testEventOutsideJurisdiction() {
+	public void testEventParticipantOutsideJurisdiction() {
 		EventParticipantDto eventParticipant = createEventParticipant(user1, rdcf1);
 
 		assertPseudonymized(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
@@ -125,7 +127,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(savedPerson.getAddress().getCity(), is("Test City"));
 
 		loginWith(user2);
-		// saving of invent participant should not be possible
+		// saving of event participant should not be possible
 		assertThrowsWithMessage(
 			AccessDeniedException.class,
 			"This event participant is not editable any more",
@@ -137,6 +139,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		EventParticipantDto participant = createEventParticipant(user2, rdcf2);
 
 		participant.setPseudonymized(true);
+		participant.setReportingUser(null);
 		participant.setInvolvementDescription(null);
 		participant.getPerson().setFirstName(null);
 		participant.getPerson().setLastName(null);
@@ -149,6 +152,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 		EventParticipant saved = getEventParticipantService().getByUuid(participant.getUuid());
 
+		assertThat(saved.getReportingUser(), is(notNullValue()));
 		assertThat(saved.getInvolvementDescription(), is("Test involvement descr"));
 		assertThat(saved.getPerson().getFirstName(), is("John"));
 		assertThat(saved.getPerson().getLastName(), is("Smith"));
@@ -187,6 +191,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 
 	private void assertPseudonymized(EventParticipantDto eventParticipant) {
 		assertThat(eventParticipant.getInvolvementDescription(), isEmptyString());
+		assertThat(eventParticipant.getReportingUser(), is(nullValue()));
 		assertThat(eventParticipant.getPerson().getFirstName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
 		assertThat(eventParticipant.getPerson().getLastName(), is(I18nProperties.getCaption(Captions.inaccessibleValue)));
 		assertThat(eventParticipant.getPerson().getAddress().getStreet(), isEmptyString());

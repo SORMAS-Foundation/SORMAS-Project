@@ -31,6 +31,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -46,12 +48,15 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -66,7 +71,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
-public class ContactDataView extends AbstractContactView {
+public class ContactDataView extends AbstractContactView implements HasName {
 
 	private static final long serialVersionUID = -1L;
 
@@ -82,6 +87,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String VACCINATIONS_LOC = "vaccinations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String DOCUMENTS_LOC = "documents";
+	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -99,7 +105,9 @@ public class ContactDataView extends AbstractContactView {
 		editComponent = ControllerProvider.getContactController()
 			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 
-		addCreateFromCaseButtonLogic();
+		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE)) {
+			addCreateFromCaseButtonLogic();
+		}
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -118,7 +126,8 @@ public class ContactDataView extends AbstractContactView {
 			VACCINATIONS_LOC,
 			SORMAS_TO_SORMAS_LOC,
 			DOCUMENTS_LOC,
-			QuarantineOrderDocumentsComponent.QUARANTINE_LOC);
+			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
+			EXTERNAL_EMAILS_LOC);
 
 		container.addComponent(layout);
 
@@ -129,7 +138,8 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		final String uuid = contactDto.getUuid();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE) && isEditAllowed()) {
+		boolean editAllowed = isEditAllowed();
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE) && editAllowed) {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
 
@@ -199,7 +209,7 @@ public class ContactDataView extends AbstractContactView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
-				new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease(), this::showUnsavedChangesPopup, isEditAllowed());
+					new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease(), this::showUnsavedChangesPopup, editAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
@@ -208,7 +218,7 @@ public class ContactDataView extends AbstractContactView {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
 				this::showUnsavedChangesPopup,
-				isEditAllowed());
+					editAllowed);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -220,7 +230,7 @@ public class ContactDataView extends AbstractContactView {
 			eventsLayout.setMargin(false);
 			eventsLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(getContactRef(), this::showUnsavedChangesPopup, isEditAllowed());
+			EventListComponent eventList = new EventListComponent(getContactRef(), this::showUnsavedChangesPopup, editAllowed);
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventsLayout.addComponent(eventList);
 
@@ -234,7 +244,7 @@ public class ContactDataView extends AbstractContactView {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
-				}, null, this::showUnsavedChangesPopup, isEditAllowed())), IMMUNIZATION_LOC);
+				}, null, this::showUnsavedChangesPopup, editAllowed)), IMMUNIZATION_LOC);
 			} else {
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
@@ -248,7 +258,7 @@ public class ContactDataView extends AbstractContactView {
 						.contactReference(getContactRef())
 						.region(refreshedContact.getRegion() != null ? refreshedContact.getRegion() : refreshedCase.getResponsibleRegion())
 						.district(refreshedContact.getDistrict() != null ? refreshedContact.getDistrict() : refreshedCase.getResponsibleDistrict());
-				}, null, this::showUnsavedChangesPopup, isEditAllowed())), VACCINATIONS_LOC);
+				}, null, this::showUnsavedChangesPopup, editAllowed)), VACCINATIONS_LOC);
 			}
 		}
 
@@ -259,7 +269,7 @@ public class ContactDataView extends AbstractContactView {
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, isEditAllowed());
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto, editAllowed);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
@@ -277,12 +287,24 @@ public class ContactDataView extends AbstractContactView {
 				getContactRef(),
 				UserRight.CONTACT_EDIT,
 				contactDto.isPseudonymized(),
-				isEditAllowed(),
+					editAllowed,
 				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
+
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
+			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
+				DocumentWorkflow.CONTACT_EMAIL,
+				RootEntityType.ROOT_CONTACT,
+				contactDto.toReference(),
+				contactDto.getPerson(),
+				Strings.messageContactPersonHasNoEmail,
+					editAllowed,
+				this::showUnsavedChangesPopup);
+			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
+		}
 
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, contactEditAllowed);
@@ -360,5 +382,10 @@ public class ContactDataView extends AbstractContactView {
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 
 		return caseInfoLayout;
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

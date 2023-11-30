@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -95,7 +96,7 @@ import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
  * See also {@link CaseController} for fetching the data, the actual CRUD
  * operations and controlling the view based on events from outside.
  */
-public class ContactsView extends AbstractView {
+public class ContactsView extends AbstractView implements HasName {
 
 	private static final long serialVersionUID = -3533557348144005469L;
 
@@ -832,5 +833,10 @@ public class ContactsView extends AbstractView {
 		}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 		scrollLayout.addComponent(plusDaysButton);
 		return scrollLayout;
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

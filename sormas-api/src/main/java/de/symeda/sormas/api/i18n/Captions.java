@@ -514,7 +514,7 @@ public interface Captions {
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterCasesWithReinfection = "caseFilterCasesWithReinfection";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
-	String caseFilterInludeCasesFromOtherJurisdictions = "caseFilterInludeCasesFromOtherJurisdictions";
+	String caseFilterIncludeCasesFromOtherJurisdictions = "caseFilterIncludeCasesFromOtherJurisdictions";
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
@@ -765,7 +765,7 @@ public interface Captions {
 	String contactFilterWithDifferentRegion = "contactFilterWithDifferentRegion";
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
-	String contactInludeContactsFromOtherJurisdictions = "contactInludeContactsFromOtherJurisdictions";
+	String contactIncludeContactsFromOtherJurisdictions = "contactIncludeContactsFromOtherJurisdictions";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMergeDuplicates = "contactMergeDuplicates";
 	String contactMinusDays = "contactMinusDays";
@@ -1030,11 +1030,15 @@ public interface Captions {
 	String DocumentTemplate_documentUploadWarning = "DocumentTemplate.documentUploadWarning";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
 	String DocumentTemplate_EventHandout_create = "DocumentTemplate.EventHandout.create";
+	String DocumentTemplate_exampleTemplateCaseEmail = "DocumentTemplate.exampleTemplateCaseEmail";
 	String DocumentTemplate_exampleTemplateCases = "DocumentTemplate.exampleTemplateCases";
+	String DocumentTemplate_exampleTemplateContactEmail = "DocumentTemplate.exampleTemplateContactEmail";
 	String DocumentTemplate_exampleTemplateContacts = "DocumentTemplate.exampleTemplateContacts";
 	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
+	String DocumentTemplate_exampleTemplateEventParticipantEmail = "DocumentTemplate.exampleTemplateEventParticipantEmail";
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
+	String DocumentTemplate_exampleTemplateTravelEntryEmail = "DocumentTemplate.exampleTemplateTravelEntryEmail";
 	String DocumentTemplate_fileTooBig = "DocumentTemplate.fileTooBig";
 	String DocumentTemplate_notUploaded = "DocumentTemplate.notUploaded";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
@@ -1393,6 +1397,8 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
+	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
 	String ExternalMessage = "ExternalMessage";
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
@@ -1607,6 +1613,7 @@ public interface Captions {
 	String lineListingInfrastructureData = "lineListingInfrastructureData";
 	String lineListingNewCasesList = "lineListingNewCasesList";
 	String lineListingNewContactsList = "lineListingNewContactsList";
+	String lineListingNewEventParticipantsList = "lineListingNewEventParticipantsList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
@@ -1694,10 +1701,12 @@ public interface Captions {
 	String menu = "menu";
 	String messagesCharacters = "messagesCharacters";
 	String messagesEmail = "messagesEmail";
+	String messagesEmails = "messagesEmails";
 	String messagesNoPhoneNumberForCasePerson = "messagesNoPhoneNumberForCasePerson";
 	String messagesNoSmsSentForCase = "messagesNoSmsSentForCase";
 	String messagesNumberOfMessages = "messagesNumberOfMessages";
 	String messagesNumberOfMissingPhoneNumbers = "messagesNumberOfMissingPhoneNumbers";
+	String messagesSendEmail = "messagesSendEmail";
 	String messagesSendingSms = "messagesSendingSms";
 	String messagesSendSMS = "messagesSendSMS";
 	String messagesSentBy = "messagesSentBy";
@@ -1945,6 +1954,7 @@ public interface Captions {
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
+	String primarySuffix = "primarySuffix";
 	String QueryDetails_resultLimit = "QueryDetails.resultLimit";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
@@ -2599,6 +2609,7 @@ public interface Captions {
 	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
+	String userRestrictDiseases = "userRestrictDiseases";
 	String userRight = "userRight";
 	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
@@ -2693,6 +2704,8 @@ public interface Captions {
 	String View_configuration_districts_short = "View.configuration.districts.short";
 	String View_configuration_documentTemplates = "View.configuration.documentTemplates";
 	String View_configuration_documentTemplates_short = "View.configuration.documentTemplates.short";
+	String View_configuration_emailTemplates = "View.configuration.emailTemplates";
+	String View_configuration_emailTemplates_short = "View.configuration.emailTemplates.short";
 	String View_configuration_facilities = "View.configuration.facilities";
 	String View_configuration_facilities_short = "View.configuration.facilities.short";
 	String View_configuration_laboratories = "View.configuration.laboratories";

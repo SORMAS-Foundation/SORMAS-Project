@@ -1,0 +1,24 @@
+# Subject for case email template
+
+Example Email Template for Cases
+(excerpt, for full list see SORMAS Data Dictionary)
+Case:
+$case_disease
+$case_uuid
+$case_externalID
+$case_reportDate
+Case Person:
+$person_firstName $person_lastName
+$person_address_street $person_address_houseNumber
+$person_address_postalCode $person_address_city
+$!person_address_additionalInformation
+$person_phone
+$person_emailAddress
+$person_birthDateDD.$person_birthDateMM.$person_birthDateYYYY
+Case Quarantine:
+$case_quarantineFrom - $case_quarantineTo
+$!case_quarantineOrderedVerballyDate
+$!case_quarantineOfficialOrderSentDate
+Current User:
+$user_firstName $user_lastName
+$user_phone

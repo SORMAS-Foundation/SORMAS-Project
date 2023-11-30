@@ -291,14 +291,15 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 		// eliminate users that are limited to others diseases
 		if (limitedDisease != null) {
-			Predicate restrictOtherLimitedDiseaseUsers =
-				cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASE)), cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
+            Predicate restrictOtherLimitedDiseaseUsers = cb.or(
+                    cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+                    cb.like(userRoot.get(User.LIMITED_DISEASES).as(String.class), "%" + limitedDisease.name() + '%'));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
 
 		//exlude users with limited diseases
 		if (excludeLimitedDiseaseUsers) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(userRoot.get(User.LIMITED_DISEASE)));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(userRoot.get(User.LIMITED_DISEASES)));
 		}
 
 		if (CollectionUtils.isNotEmpty(communityUuids)) {
@@ -387,8 +388,9 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		filter = CriteriaBuilderHelper.and(cb, filter, jurisdictionFilter);
 
 		if (limitedDisease != null) {
-			Predicate restrictOtherLimitedDiseaseUsers =
-				cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASE)), cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
+            Predicate restrictOtherLimitedDiseaseUsers = cb.or(
+                    cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+                    cb.like(userRoot.get(User.LIMITED_DISEASES).as(String.class), "%" + limitedDisease.name() + "%"));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
 

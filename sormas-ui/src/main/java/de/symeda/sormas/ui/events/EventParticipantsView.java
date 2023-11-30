@@ -68,6 +68,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -78,8 +79,9 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
-public class EventParticipantsView extends AbstractEventView {
+public class EventParticipantsView extends AbstractEventView implements HasName {
 
 	private static final long serialVersionUID = -1L;
 
@@ -299,8 +301,19 @@ public class EventParticipantsView extends AbstractEventView {
 
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
+				.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
+			addHeaderComponent(lineListingButton);
+			lineListingButton.setEnabled(isGridEnabled());
+		}
+
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
+	}
+
+	private boolean isGridEnabled() {
+		return !isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT);
 	}
 
 	private boolean shouldDisableButton() {
@@ -339,7 +352,7 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.setStyleName("crud-main-layout");
 			grid.addDataSizeChangeListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout.setEnabled(!isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
+			gridLayout.setEnabled(isGridEnabled());
 		}
 
 		if (params.startsWith("?")) {
@@ -468,5 +481,10 @@ public class EventParticipantsView extends AbstractEventView {
 			activeStatusButton
 				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

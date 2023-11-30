@@ -28,6 +28,7 @@ import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.docgeneration.DocGenerationController;
+import de.symeda.sormas.ui.email.ExternalEmailController;
 import de.symeda.sormas.ui.environment.EnvironmentController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
@@ -91,6 +92,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final EnvironmentController environmentController;
 	private final PermanentDeleteController permanentDeleteController;
 	private final EnvironmentSampleController environmentSampleController;
+	private final ExternalEmailController externalEmailController;
 
 	public ControllerProvider() {
 		super();
@@ -130,6 +132,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		environmentController = new EnvironmentController();
 		permanentDeleteController = new PermanentDeleteController();
 		environmentSampleController = new EnvironmentSampleController();
+		externalEmailController = new ExternalEmailController();
 	}
 
 	protected static ControllerProvider get() {
@@ -274,5 +277,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static EnvironmentSampleController getEnvironmentSampleController() {
 		return get().environmentSampleController;
+	}
+
+	public static ExternalEmailController getExternalEmailController() {
+		return get().externalEmailController;
 	}
 }

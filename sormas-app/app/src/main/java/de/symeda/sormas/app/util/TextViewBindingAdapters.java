@@ -961,10 +961,10 @@ public class TextViewBindingAdapters {
 		"shortLocationValue",
 		"defaultValue" }, requireAll = false)
 	public static void setShortLocationValue(TextView textField, Location location, String defaultValue) {
-		if (location == null || location.buildCaption().isEmpty()) {
+		if (location == null || (location.buildCaption().isEmpty() && location.getCountry() == null)) {
 			textField.setText(defaultValue);
 		} else {
-			textField.setText(location.getRegion().buildCaption() + ", " + location.getDistrict().buildCaption());
+			textField.setText(location.buildShortCaption());
 		}
 	}
 
@@ -1230,7 +1230,7 @@ public class TextViewBindingAdapters {
 	}
 
 	@BindingAdapter(value = {
-			"value"})
+		"value" })
 	public static void setPathogenValue(TextView textField, Pathogen pathogen) {
 		if (pathogen == null) {
 			textField.setText("");

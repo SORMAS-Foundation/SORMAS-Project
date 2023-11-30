@@ -1150,7 +1150,9 @@ public class EventParticipantFacadeEjb
 		if (source != null) {
 			validate(dto);
 
-			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, (ep) -> {
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), ep::setReportingUser);
+			});
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
 		}
 	}
@@ -1164,6 +1166,7 @@ public class EventParticipantFacadeEjb
 		if (originalDto != null) {
 			pseudonymizer
 				.restorePseudonymizedValues(EventParticipantDto.class, dto, originalDto, service.inJurisdictionOrOwned(originalEventParticipant));
+			pseudonymizer.restoreUser(originalEventParticipant.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
 		}
 	}
 
