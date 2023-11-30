@@ -338,6 +338,7 @@ public class CreateNewCaseSteps implements En {
         "I select ([^\"]*) created case for person from Cases list",
         (String option) -> {
           if (option.equals("first")) {
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
             webDriverHelpers.fillInWebElement(
                 CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
             TimeUnit.SECONDS.sleep(3);
@@ -345,6 +346,7 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           if (option.equals("second")) {
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
             webDriverHelpers.fillInWebElement(
                 CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(1));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
