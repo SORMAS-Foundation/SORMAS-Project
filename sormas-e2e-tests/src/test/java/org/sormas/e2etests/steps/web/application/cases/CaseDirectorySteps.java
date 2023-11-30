@@ -1575,6 +1575,7 @@ public class CaseDirectorySteps implements En {
     And(
         "^I check that Relevance Status Filter is set to \"([^\"]*)\" on Case Directory page$",
         (String relevanceStatus) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(300);
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(RELEVANT_STATUS_INPUT),
               relevanceStatus,
@@ -1594,7 +1595,7 @@ public class CaseDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(CANCEL_POPUP);
               break;
           }
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(
@@ -1741,7 +1742,6 @@ public class CaseDirectorySteps implements En {
         "^I set the Relevance Status Filter to \"([^\"]*)\" on Case Directory page$",
         (String status) -> {
           webDriverHelpers.selectFromCombobox(RELEVANT_STATUS_COMBOBOX, status);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
   }
 
