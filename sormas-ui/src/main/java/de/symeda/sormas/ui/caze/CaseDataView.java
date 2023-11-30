@@ -231,6 +231,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 				caze.toReference(),
 				caze.getPerson(),
 				Strings.messageCasePersonHasNoEmail,
+					isEditAllowed,
 				this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}

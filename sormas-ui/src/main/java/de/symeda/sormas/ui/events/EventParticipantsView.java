@@ -305,10 +305,15 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
 				.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
 			addHeaderComponent(lineListingButton);
+			lineListingButton.setEnabled(isGridEnabled());
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
+	}
+
+	private boolean isGridEnabled() {
+		return !isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT);
 	}
 
 	private boolean shouldDisableButton() {
@@ -347,7 +352,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			gridLayout.setStyleName("crud-main-layout");
 			grid.addDataSizeChangeListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout.setEnabled(!isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
+			gridLayout.setEnabled(isGridEnabled());
 		}
 
 		if (params.startsWith("?")) {
