@@ -1386,3 +1386,35 @@ Feature: Sharing cases between environments tests
     And I click on the Messages button from navbar
     And I filter messages by collected uuid
     And I verify that status for result 1 is set to processed in Message Directory page
+
+  @tmsLink=HSP-6346 @env_s2s_1
+  Scenario: S2S - Share with Handover a resulting Case that was created from Contact with Positive Pathogen test
+    Then I log in as a S2S
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version with mandatory data with "Baden-Württemberg" as a region and "LK Alb-Donau-Kreis" as a disctrict
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on New Sample in German
+    And I create a new Sample with positive test result for DE version with "Voreingestelltes Labor" as a labor
+    And I save the created sample with pathogen test
+    And I confirm when a pop-up appears asking user about creating a Case from it in DE
+    Then I fill a new case form for DE version with mandatory data forced by positive sample with "Berlin" as a region and "SK Berlin Mitte" as a district
+    And I save a new case
+    Then I get the case person UUID displayed on Edit case page
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish
+    And I back to contact by url
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    Then I search for the last case uuid created via UI in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window for DE version
+    Then I click SAVE button on Edit Contact Page
+    And I navigate to the last created case by ui via the url
+    Then I click on share button
+    And I click to hand over the ownership in Share popup
+    And I select organization to share with "s2s_2"
+    And I fill comment in share popup with "shared with automated test"
+    Then I click on share button in s2s share popup and wait for share to finish

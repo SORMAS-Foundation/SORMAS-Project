@@ -75,6 +75,9 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.contact.ContactDataView;
+import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.samples.CollapsiblePathogenTestForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
@@ -364,7 +367,8 @@ public class SampleController {
 		boolean isPseudonymized,
 		boolean inJurisdiction,
 		Disease disease,
-		boolean showDeleteButton) {
+		boolean showDeleteButton,
+		String oldViewName) {
 
 		SampleEditForm form = new SampleEditForm(isPseudonymized, inJurisdiction, disease);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -396,7 +400,7 @@ public class SampleController {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
-				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+				redirectToOldNavigationState(dto, oldViewName);
 			}, (deletionDetails) -> {
 				FacadeProvider.getSampleFacade().restore(dto.getUuid());
 				updateAssociationsForSample(dto);
@@ -418,6 +422,30 @@ public class SampleController {
 		editView.restrictEditableComponentsOnEditView(UserRight.SAMPLE_EDIT, null, UserRight.SAMPLE_DELETE, null, dto.isInJurisdiction());
 
 		return editView;
+	}
+
+	public void redirectToOldNavigationState(SampleDto dto, String oldViewName) {
+		CaseReferenceDto associatedCase = dto.getAssociatedCase();
+		ContactReferenceDto associatedContact = dto.getAssociatedContact();
+		EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
+
+		if (oldViewName != null) {
+			String navigationState = "";
+			if (oldViewName.equals(CaseDataView.VIEW_NAME) && associatedCase != null) {
+				navigationState = oldViewName + "/" + associatedCase.getUuid();
+			} else if (oldViewName.equals(ContactDataView.VIEW_NAME) && associatedContact != null) {
+				navigationState = oldViewName + "/" + associatedContact.getUuid();
+			} else if (oldViewName.equals(EventParticipantDataView.VIEW_NAME) && associatedEventParticipant != null) {
+				navigationState = oldViewName + "/" + associatedEventParticipant.getUuid();
+			} else {
+				//sample accessed from Samples directory
+				navigationState = oldViewName;
+			}
+			UI.getCurrent().getNavigator().navigateTo(navigationState);
+		} else {
+			//the sample is accessed by URL from any other view
+			UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+		}
 	}
 
 	private void updateAssociationsForSample(SampleDto sampleDto) {

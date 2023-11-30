@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +42,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
-import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -50,11 +50,13 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflowType;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -65,6 +67,9 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -79,12 +84,15 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "DocumentTemplateFacade")
 public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	private static final Pattern BASENAME_PATTERN = Pattern.compile("^([^_.]+)([_.].*)?");
+	public static final int EMAIL_SUBJECT_MAX_LENGTH = 50;
+	public static final String EMAIL_TEMPLATE_SUBJECT_PREFIX = "#";
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -97,6 +105,9 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
+
+	@EJB
+	private UserService userService;
 
 	@EJB
 	private UserFacadeEjbLocal userFacade;
@@ -286,8 +297,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
+	@RightsAllowed({
+		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
+		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
 	public boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName) {
+		assertRequredUserRight(documentWorkflow);
+
 		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(templateName).toUri());
 		return templateFile.exists();
 	}
@@ -308,11 +323,16 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
+	@RightsAllowed({
+		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
+		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
 	public void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws DocumentTemplateException {
+		assertRequredUserRight(documentWorkflow);
+
 		if (!documentWorkflow.getFileExtension().equalsIgnoreCase(FilenameUtils.getExtension(templateName))) {
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
+
 		String path = FilenameUtils.getPath(templateName);
 		if (StringUtils.isNotBlank(path)) {
 			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), templateName));
@@ -323,6 +343,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			templateEngine.validateTemplateDocx(templateInputStream);
 		} else {
 			templateEngine.validateTemplateTxt(templateInputStream);
+		}
+
+		if (documentWorkflow.getType() == DocumentWorkflowType.EMAIL) {
+			validateEmailTemplate(document);
 		}
 
 		Path workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow);
@@ -340,8 +364,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
+	@RightsAllowed({
+		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
+		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
 	public boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String fileName) throws DocumentTemplateException {
+		assertRequredUserRight(documentWorkflow);
+
 		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow).resolve(fileName).toUri());
 		if (templateFile.exists() && templateFile.isFile()) {
 			return templateFile.delete();
@@ -351,8 +379,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._DOCUMENT_TEMPLATE_MANAGEMENT)
+	@RightsAllowed({
+		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
+		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
 	public byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
+		assertRequredUserRight(documentWorkflow);
+
 		try {
 			return FileUtils.readFileToByteArray(getTemplateFile(documentWorkflow, templateName));
 		} catch (IOException e) {
@@ -382,7 +414,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			return false;
 		}
 		String basename = getVariableBaseName(propertyKey);
-		return documentWorkflow.getRootEntityNames().contains(basename);
+		return documentWorkflow.getRootEntityTypes().stream().map(RootEntityType::getEntityName).anyMatch(basename::equalsIgnoreCase);
 	}
 
 	private String getVariableBaseName(String propertyKey) {
@@ -432,6 +464,58 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			return null;
 		};
 		return new EntityDtoAccessHelper.CachedReferenceDtoResolver(referenceDtoResolver);
+	}
+
+	private void assertRequredUserRight(DocumentWorkflow documentWorkflow) {
+		if (!userService.hasRight(documentWorkflow.getManagementUserRight())) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+	}
+
+	private static void validateEmailTemplate(byte[] document) {
+		EmailTemplateTexts emailTemplateTexts = splitTemplateContent(new String(document, StandardCharsets.UTF_8), false);
+		if (StringUtils.isEmpty(emailTemplateTexts.subject)
+			|| !emailTemplateTexts.subject.startsWith(EMAIL_TEMPLATE_SUBJECT_PREFIX)
+			|| emailTemplateTexts.subject.length() <= EMAIL_TEMPLATE_SUBJECT_PREFIX.length()
+			|| emailTemplateTexts.subject.length() > EMAIL_SUBJECT_MAX_LENGTH + EMAIL_TEMPLATE_SUBJECT_PREFIX.length()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.emailTemplateSubjectInvalid));
+		}
+	}
+
+	public static EmailTemplateTexts splitTemplateContent(String content) {
+		return splitTemplateContent(content, true);
+	}
+
+	private static EmailTemplateTexts splitTemplateContent(String templateString, boolean cleanupSubject) {
+		String[] split = templateString.split("\n", 2);
+
+		if (split.length != 2) {
+			return new EmailTemplateTexts(null, templateString);
+		}
+
+		String subjectLine = split[0].trim();
+		String content = split[1].trim();
+
+		return new EmailTemplateTexts(cleanupSubject ? subjectLine.substring(1).trim() : subjectLine, content);
+	}
+
+	public static final class EmailTemplateTexts {
+
+		private final String subject;
+		private final String content;
+
+		private EmailTemplateTexts(String subject, String content) {
+			this.subject = subject;
+			this.content = content;
+		}
+
+		public String getSubject() {
+			return subject;
+		}
+
+		public String getContent() {
+			return content;
+		}
 	}
 
 	public class ObjectFormatter {

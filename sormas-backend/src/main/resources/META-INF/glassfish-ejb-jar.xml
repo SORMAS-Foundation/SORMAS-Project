@@ -938,6 +938,21 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EMAIL_TEMPLATE_MANAGEMENT</role-name>
+        <group-name>EMAIL_TEMPLATE_MANAGEMENT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_EMAIL_SEND</role-name>
+        <group-name>EXTERNAL_EMAIL_SEND</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_EMAIL_ATTACH_DOCUMENTS</role-name>
+        <group-name>EXTERNAL_EMAIL_ATTACH_DOCUMENTS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SORMAS_REST</role-name>
         <group-name>SORMAS_REST</group-name>
     </security-role-mapping>

@@ -122,7 +122,7 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
 		switch (section) {
 		case EVENT_PARTICIPANTS:
-			EventParticipantNewActivity.startActivity(getContext(), getRootUuid());
+			EventParticipantNewActivity.startActivity(getContext(), getRootUuid(), false);
 			break;
 		case TASKS:
 			TaskNewActivity.startActivityFromEvent(getContext(), getRootUuid());

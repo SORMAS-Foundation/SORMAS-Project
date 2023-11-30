@@ -68,6 +68,7 @@ import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacade;
+import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportFacade;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
@@ -160,6 +161,7 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
@@ -1020,5 +1022,9 @@ public abstract class AbstractBeanTest {
 
 	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
 		return getBean(ExternalMessageProcessingFacadeEjbLocal.class);
+	}
+
+	public ExternalEmailFacade getExternalEmailFacade() {
+		return getBean(ExternalEmailFacadeEjbLocal.class);
 	}
 }

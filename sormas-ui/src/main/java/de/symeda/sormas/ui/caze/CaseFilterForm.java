@@ -383,7 +383,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(
 					CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
-					I18nProperties.getCaption(Captions.caseFilterInludeCasesFromOtherJurisdictions),
+					I18nProperties.getCaption(Captions.caseFilterIncludeCasesFromOtherJurisdictions),
 					I18nProperties.getDescription(Descriptions.descCaseFilterIncludeCasesFromOtherJurisdictions),
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}

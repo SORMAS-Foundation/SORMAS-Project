@@ -20,18 +20,14 @@ import static android.view.View.GONE;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
-
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
-
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -213,6 +209,7 @@ public class CaseListActivity extends PagedBaseListActivity {
 			model.getCaseCriteria().setEpiWeekFrom(null);
 			model.getCaseCriteria().setEpiWeekTo(null);
 			model.getCaseCriteria().setCaseOrigin(null);
+			model.getCaseCriteria().setIncludeCasesFromOtherJurisdictions(false);
 			filterBinding.invalidateAll();
 			filterBinding.executePendingBindings();
 			model.notifyCriteriaUpdated();

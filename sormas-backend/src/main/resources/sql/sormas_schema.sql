@@ -12747,5 +12747,40 @@ ALTER TABLE diseaseconfiguration_history ADD COLUMN automaticsampleassignmentthr
 
 INSERT INTO schema_version (version_number, comment) VALUES (530, 'Add an automatic processing logic to external messages #12573');
 
+-- 2023-10-27 Assign multiple limited diseases to users #11435
+ALTER TABLE users RENAME COLUMN limiteddisease TO limiteddiseases;
+ALTER TABLE users ALTER COLUMN limiteddiseases TYPE text;
+ALTER TABLE users_history RENAME COLUMN limiteddisease TO limiteddiseases;
+ALTER TABLE users_history ALTER COLUMN limiteddiseases TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (531, 'Assign multiple limited diseases to users #11435');
+
+-- 2023-09-11 Create new user rights to manage, send and attach documents to email templates #12466
+DO
+$$
+    DECLARE
+        user_role_id BIGINT;
+    BEGIN
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE ur.linkeddefaultuserrole IS NOT NULL
+                              AND urur.userright = 'DOCUMENT_UPLOAD'
+            LOOP
+                INSERT INTO userroles_userrights (userrole_id, userright)
+                VALUES (user_role_id, 'EXTERNAL_EMAIL_SEND'),
+                       (user_role_id, 'EXTERNAL_EMAIL_ATTACH_DOCUMENTS');
+
+                UPDATE userroles set changedate = now() WHERE id = user_role_id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT ur.id, 'EMAIL_TEMPLATE_MANAGEMENT'
+FROM userroles ur
+WHERE ur.linkeddefaultuserrole = 'ADMIN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

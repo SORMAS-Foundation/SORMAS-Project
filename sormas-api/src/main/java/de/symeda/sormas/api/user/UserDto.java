@@ -64,7 +64,7 @@ public class UserDto extends EntityDto {
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
-	public static final String LIMITED_DISEASE = "limitedDisease";
+    public static final String LIMITED_DISEASES = "limitedDiseases";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
@@ -101,7 +101,7 @@ public class UserDto extends EntityDto {
 
 	private UserReferenceDto associatedOfficer;
 
-	private Disease limitedDisease;
+	private Set<Disease> limitedDiseases;
 
 	private Language language;
 
@@ -254,12 +254,12 @@ public class UserDto extends EntityDto {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
-	public Disease getLimitedDisease() {
-		return limitedDisease;
+	public Set<Disease> getLimitedDiseases() {
+		return limitedDiseases;
 	}
 
-	public void setLimitedDisease(Disease limitedDisease) {
-		this.limitedDisease = limitedDisease;
+	public void setLimitedDiseases(Set<Disease> limitedDiseases) {
+		this.limitedDiseases = limitedDiseases;
 	}
 
 	public Language getLanguage() {

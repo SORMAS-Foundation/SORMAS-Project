@@ -353,14 +353,29 @@ public class SideCardsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               REPORTS_DISPLAY_ASSOCIATED_EXTERNAL_MESSAGES_BUTTON);
         });
+
     When(
         "I click on share button in s2s share popup and wait for share to finish",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SHARE_SORMAS_2_SORMAS_POPUP_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+          Boolean warningMessage =
+              webDriverHelpers.isElementVisibleWithTimeout(CLOSE_POPUP_SHARING_MESSAGE, 20);
+          if (warningMessage) {
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                CLOSE_POPUP_SHARING_MESSAGE);
+            softly.assertTrue(
+                webDriverHelpers.isElementPresent(CLOSE_POPUP_SHARING_MESSAGE),
+                "The popup warning message has not been present");
+            softly.assertAll();
+            webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_SHARING_MESSAGE);
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_EDIT_REPORT_WINDOW_DISCARD_BUTTON);
+          } else {
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                LINKED_SHARED_ORGANIZATION_SELECTED_VALUE, 60);
+          }
         });
+
     When(
         "I click on share button in s2s share popup",
         () -> {

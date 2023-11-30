@@ -28,8 +28,10 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
+import de.symeda.sormas.ui.configuration.docgeneration.emailtemplate.EmailTemplatesView;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.ContinentsView;
@@ -102,6 +104,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
+		}
+
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EMAIL_TEMPLATE_MANAGEMENT)) {
+			navigator.addView(EmailTemplatesView.VIEW_NAME, EmailTemplatesView.class);
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
@@ -208,6 +214,15 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				null,
 				false);
 		}
+
+		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EMAIL_TEMPLATE_MANAGEMENT)) {
+			menu.addView(
+				EmailTemplatesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", EmailTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
 			menu.addView(
 				DevModeView.VIEW_NAME,

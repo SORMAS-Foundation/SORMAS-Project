@@ -53,6 +53,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
+import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
@@ -512,6 +513,10 @@ public class FacadeProvider {
 
 	public static EnvironmentImportFacade getEnvironmentImportFacade() {
 		return get().lookupEjbRemote(EnvironmentImportFacade.class);
+	}
+
+	public static ExternalEmailFacade getExternalEmailFacade() {
+		return get().lookupEjbRemote(ExternalEmailFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

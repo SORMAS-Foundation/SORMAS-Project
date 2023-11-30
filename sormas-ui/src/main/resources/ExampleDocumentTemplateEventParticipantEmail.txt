@@ -1,0 +1,23 @@
+# Subject for event participants email template
+
+Example Email Template for Event Participants
+(excerpt, for full list see SORMAS Data Dictionary)
+Event Participant:
+$eventParticipant_uuid
+$eventParticipant_involvementDescription
+Event Participant Person:
+$person_firstName $person_lastName
+$person_address_street $person_address_houseNumber
+$person_address_postalCode $person_address_city
+$!person_address_additionalInformation
+$person_phone
+$person_emailAddress
+$person_birthDateDD.$person_birthDateMM.$person_birthDateYYYY
+
+Event:
+$eventParticipant_event_eventTitle
+$eventParticipant_event_eventDesc
+$eventParticipant_event_startDate - $eventParticipant_event_endDate
+Current User:
+$user_firstName $user_lastName
+$user_phone

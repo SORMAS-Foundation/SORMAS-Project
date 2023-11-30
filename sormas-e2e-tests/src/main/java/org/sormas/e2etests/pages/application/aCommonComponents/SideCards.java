@@ -62,7 +62,8 @@ public class SideCards {
   public static final By REPORTER_FACILITY_DISTRICT_COMBOBOX = By.cssSelector("#facilityDistrict > div");
   public static final By REPORTER_FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#facilityTypeGroup > div");
   public static final By REPORTER_FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType > div");
-
+  public static final By CLOSE_POPUP_SHARING_MESSAGE =
+      By.xpath("//div[@class='v-window v-widget v-has-width']//div[@class='v-window-closebox']");
 
   public static final By SURVEILLANCE_DATE_OF_REPORT =
       By.cssSelector(".v-window #reportDate input");

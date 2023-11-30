@@ -1,0 +1,23 @@
+# Subject for contact email template
+
+Example Email Template for Contacts
+(excerpt, for full list see SORMAS Data Dictionary)
+Contact:
+$contact_uuid
+$contact_externalID
+$contact_reportDateTime
+Contact Person:
+$person_firstName $person_lastName
+$person_address_street $person_address_houseNumber
+$person_address_postalCode $person_address_city
+$!person_address_additionalInformation
+$person_phone
+$person_emailAddress
+$person_birthDateDD.$person_birthDateMM.$person_birthDateYYYY
+Contact Quarantine:
+$contact_quarantineFrom - $contact_quarantineTo
+$!contact_quarantineOrderedVerballyDate
+$!contact_quarantineOfficialOrderSentDat
+Current User:
+$user_firstName $user_lastName
+$user_phone

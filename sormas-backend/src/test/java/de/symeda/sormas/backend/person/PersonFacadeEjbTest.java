@@ -263,7 +263,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexListByName() {
 		final UserDto user = creator.createSurveillanceSupervisor(rdcf);
-		user.setLimitedDisease(Disease.EVD);
+		user.setLimitedDiseases(Collections.singleton(Disease.EVD));
 		getUserFacade().saveUser(user, false);
 		loginWith(user);
 

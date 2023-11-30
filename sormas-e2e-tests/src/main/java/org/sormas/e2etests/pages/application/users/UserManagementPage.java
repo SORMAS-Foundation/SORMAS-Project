@@ -42,6 +42,10 @@ public class UserManagementPage {
       By.cssSelector("[class*='v-label-align-right v-label-undef-w']");
   public static final By LOADING_INDICATOR = By.cssSelector("[class='v-loading-indicator first']");
   public static final By USER_ROLES_TAB = By.cssSelector("div#tab-user-userroles");
+  public static final By ERROR_USER_MANAGEMENT_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By TOTAL_USERS_COUNTER =
+      By.xpath(
+          "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
 
   public static By getUserRoleLabelByCaption(String caption) {
     return By.xpath(String.format("//label[text()='%s']", caption));
