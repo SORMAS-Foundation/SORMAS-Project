@@ -43,52 +43,59 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ExternalEmailSideComponent extends SideComponent {
 
-	public static ExternalEmailSideComponent forCase(CaseDataDto caze, Consumer<Runnable> actionCallback) {
+	public static ExternalEmailSideComponent forCase(CaseDataDto caze, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		return new ExternalEmailSideComponent(
-				DocumentWorkflow.CASE_EMAIL,
-				RootEntityType.ROOT_CASE,
-				caze.toReference(),
-				caze.getPerson(),
-				Strings.messageCasePersonHasNoEmail,
-				Strings.messageNoExternalEmailToCaseSent,
-				new ManualMessageLogCriteria().caze(caze.toReference()),
-				actionCallback);
+			DocumentWorkflow.CASE_EMAIL,
+			RootEntityType.ROOT_CASE,
+			caze.toReference(),
+			caze.getPerson(),
+			Strings.messageCasePersonHasNoEmail,
+			Strings.messageNoExternalEmailToCaseSent,
+			new ManualMessageLogCriteria().caze(caze.toReference()),
+			actionCallback,
+			isEditAllowed);
 	}
 
-	public static ExternalEmailSideComponent forContact(ContactDto contact, Consumer<Runnable> actionCallback) {
+	public static ExternalEmailSideComponent forContact(ContactDto contact, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		return new ExternalEmailSideComponent(
-				DocumentWorkflow.CONTACT_EMAIL,
-				RootEntityType.ROOT_CONTACT,
-				contact.toReference(),
-				contact.getPerson(),
-				Strings.messageContactPersonHasNoEmail,
-				Strings.messageNoExternalEmailToContactSent,
-				new ManualMessageLogCriteria().contact(contact.toReference()),
-				actionCallback);
+			DocumentWorkflow.CONTACT_EMAIL,
+			RootEntityType.ROOT_CONTACT,
+			contact.toReference(),
+			contact.getPerson(),
+			Strings.messageContactPersonHasNoEmail,
+			Strings.messageNoExternalEmailToContactSent,
+			new ManualMessageLogCriteria().contact(contact.toReference()),
+			actionCallback,
+			isEditAllowed);
 	}
 
-	public static ExternalEmailSideComponent forEventParticipant(EventParticipantDto eventParticipant, Consumer<Runnable> actionCallback) {
+	public static ExternalEmailSideComponent forEventParticipant(
+		EventParticipantDto eventParticipant,
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
 		return new ExternalEmailSideComponent(
-				DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
-				RootEntityType.ROOT_EVENT_PARTICIPANT,
-				eventParticipant.toReference(),
-				eventParticipant.getPerson().toReference(),
-				Strings.messageEventParticipantPersonHasNoEmail,
-				Strings.messageNoExternalEmailToEventParticipantSent,
-				new ManualMessageLogCriteria().eventParticipant(eventParticipant.toReference()),
-				actionCallback);
+			DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
+			RootEntityType.ROOT_EVENT_PARTICIPANT,
+			eventParticipant.toReference(),
+			eventParticipant.getPerson().toReference(),
+			Strings.messageEventParticipantPersonHasNoEmail,
+			Strings.messageNoExternalEmailToEventParticipantSent,
+			new ManualMessageLogCriteria().eventParticipant(eventParticipant.toReference()),
+			actionCallback,
+			isEditAllowed);
 	}
 
-	public static ExternalEmailSideComponent forTravelEntry(TravelEntryDto travelEntry, Consumer<Runnable> actionCallback) {
+	public static ExternalEmailSideComponent forTravelEntry(TravelEntryDto travelEntry, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		return new ExternalEmailSideComponent(
-				DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
-				RootEntityType.ROOT_TRAVEL_ENTRY,
-				travelEntry.toReference(),
-				travelEntry.getPerson(),
-				Strings.messageTravelEntryPersonHasNoEmail,
-				Strings.messageNoExternalEmailToTravelEntrySent,
-				new ManualMessageLogCriteria().travelEntry(travelEntry.toReference()),
-				actionCallback);
+			DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
+			RootEntityType.ROOT_TRAVEL_ENTRY,
+			travelEntry.toReference(),
+			travelEntry.getPerson(),
+			Strings.messageTravelEntryPersonHasNoEmail,
+			Strings.messageNoExternalEmailToTravelEntrySent,
+			new ManualMessageLogCriteria().travelEntry(travelEntry.toReference()),
+			actionCallback,
+			isEditAllowed);
 	}
 
 	private ExternalEmailSideComponent(
@@ -99,13 +106,16 @@ public class ExternalEmailSideComponent extends SideComponent {
 		String noRecipientStringKey,
 		String noEmailsStringKey,
 		ManualMessageLogCriteria emailListCriteria,
-		Consumer<Runnable> actionCallback) {
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed) {
 		super(I18nProperties.getCaption(Captions.messagesEmails), actionCallback);
 
-		addCreateButton(
-			I18nProperties.getCaption(Captions.messagesSendEmail),
-			() -> ControllerProvider.getExternalEmailController().sendEmail(documentWorkflow, rootEntityType, rootEntityReference, personRef),
-			UserRight.EXTERNAL_EMAIL_SEND);
+		if (isEditAllowed) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.messagesSendEmail),
+				() -> ControllerProvider.getExternalEmailController().sendEmail(documentWorkflow, rootEntityType, rootEntityReference, personRef),
+				UserRight.EXTERNAL_EMAIL_SEND);
+		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
 		if (CollectionUtils.isEmpty(person.getAllEmailAddresses())) {

@@ -223,7 +223,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent = ExternalEmailSideComponent.forCase(caze, this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent = ExternalEmailSideComponent.forCase(caze, this::showUnsavedChangesPopup, isEditAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

@@ -513,6 +513,7 @@ public interface Strings {
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingCurrentHospitalization = "headingCurrentHospitalization";
+	String headingCustomizableEnumConfigurationInfo = "headingCustomizableEnumConfigurationInfo";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
@@ -904,6 +905,7 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomExport = "infoCustomExport";
+	String infoCustomizableEnumConfigurationInfo = "infoCustomizableEnumConfigurationInfo";
 	String infoDashboardFinalLaboratoryResult = "infoDashboardFinalLaboratoryResult";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -965,6 +967,7 @@ public interface Strings {
 	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoCustomizableEnumTranslations = "infoNoCustomizableEnumTranslations";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
@@ -1221,6 +1224,7 @@ public interface Strings {
 	String messageCountVisitsNotSetToLost = "messageCountVisitsNotSetToLost";
 	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCustomizableEnumValueSaved = "messageCustomizableEnumValueSaved";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
@@ -1579,6 +1583,8 @@ public interface Strings {
 	String promptContactEpiWeekTo = "promptContactEpiWeekTo";
 	String promptContactsSearchField = "promptContactsSearchField";
 	String promptCreationDateFrom = "promptCreationDateFrom";
+	String promptCustomizableEnumTranslationCaption = "promptCustomizableEnumTranslationCaption";
+	String promptCustomizableEnumTranslationLanguage = "promptCustomizableEnumTranslationLanguage";
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";

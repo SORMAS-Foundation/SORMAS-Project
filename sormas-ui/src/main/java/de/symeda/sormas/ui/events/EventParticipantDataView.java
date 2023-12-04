@@ -190,7 +190,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forEventParticipant(eventParticipant, this::showUnsavedChangesPopup);
+					ExternalEmailSideComponent.forEventParticipant(eventParticipant, this::showUnsavedChangesPopup, editAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

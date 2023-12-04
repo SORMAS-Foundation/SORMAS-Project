@@ -12783,4 +12783,12 @@ WHERE ur.linkeddefaultuserrole = 'ADMIN';
 
 INSERT INTO schema_version (version_number, comment) VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
 
+-- 2023-11-13 Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'CUSTOMIZABLE_ENUM_MANAGEMENT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (533, 'Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
