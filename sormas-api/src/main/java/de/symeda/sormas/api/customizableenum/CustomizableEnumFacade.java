@@ -20,10 +20,12 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.Disease;
 
 @Remote
-public interface CustomizableEnumFacade {
+public interface CustomizableEnumFacade
+	extends BaseFacade<CustomizableEnumValueDto, CustomizableEnumValueIndexDto, CustomizableEnumValueReferenceDto, CustomizableEnumCriteria> {
 
 	List<CustomizableEnumValueDto> getAllAfter(Date date);
 

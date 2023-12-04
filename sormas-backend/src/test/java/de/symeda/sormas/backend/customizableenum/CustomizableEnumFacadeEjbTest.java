@@ -3,8 +3,9 @@ package de.symeda.sormas.backend.customizableenum;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,9 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 			CustomizableEnumValue entry = new CustomizableEnumValue();
 			entry.setDataType(CustomizableEnumType.DISEASE_VARIANT);
 			entry.setValue("BF.1.2");
-			entry.setDiseases(Arrays.asList(Disease.CORONAVIRUS));
+			Set<Disease> diseases = new HashSet<>();
+			diseases.add(Disease.CORONAVIRUS);
+			entry.setDiseases(diseases);
 			entry.setCaption("BF.1.2 variant");
 			getCustomizableEnumValueService().ensurePersisted(entry);
 

@@ -816,6 +816,16 @@ public interface Captions {
 	String countryArchivedCountries = "countryArchivedCountries";
 	String createSymptomJournalAccountButton = "createSymptomJournalAccountButton";
 	String creationDate = "creationDate";
+	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
+	String CustomizableEnum_hasDetails_short = "CustomizableEnum.hasDetails.short";
+	String CustomizableEnumValue_caption = "CustomizableEnumValue.caption";
+	String CustomizableEnumValue_dataType = "CustomizableEnumValue.dataType";
+	String CustomizableEnumValue_diseases = "CustomizableEnumValue.diseases";
+	String CustomizableEnumValue_properties = "CustomizableEnumValue.properties";
+	String CustomizableEnumValue_value = "CustomizableEnumValue.value";
+	String customizableEnumValueAllDiseases = "customizableEnumValueAllDiseases";
+	String customizableEnumValueDiseaseCount = "customizableEnumValueDiseaseCount";
+	String customizableEnumValueNoProperties = "customizableEnumValueNoProperties";
 	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
@@ -2698,6 +2708,8 @@ public interface Captions {
 	String View_configuration_continents_short = "View.configuration.continents.short";
 	String View_configuration_countries = "View.configuration.countries";
 	String View_configuration_countries_short = "View.configuration.countries.short";
+	String View_configuration_customizableEnums = "View.configuration.customizableEnums";
+	String View_configuration_customizableEnums_short = "View.configuration.customizableEnums.short";
 	String View_configuration_devMode = "View.configuration.devMode";
 	String View_configuration_devMode_short = "View.configuration.devMode.short";
 	String View_configuration_districts = "View.configuration.districts";
