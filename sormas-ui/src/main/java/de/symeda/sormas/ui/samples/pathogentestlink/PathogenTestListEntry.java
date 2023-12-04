@@ -121,8 +121,7 @@ public class PathogenTestListEntry extends SideComponentField {
 		if (pathogenTest.getTestedDisease() != null) {
 			diseaseOrPathogen = DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails());
 		} else if (pathogenTest.getTestedPathogen() != null) {
-			diseaseOrPathogen = pathogenTest.getTestedPathogen().getCaption()
-				+ (StringUtils.isNotBlank(pathogenTest.getTestedPathogenDetails()) ? " (" + pathogenTest.getTestedPathogenDetails() + ")" : "");
+			diseaseOrPathogen = DataHelper.getPathogenString(pathogenTest.getTestedPathogen(), pathogenTest.getTestedPathogenDetails());
 		} else {
 			diseaseOrPathogen = null;
 		}

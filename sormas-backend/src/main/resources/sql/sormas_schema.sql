@@ -12795,6 +12795,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (533, 'Add CUSTOMIZA
 ALTER TABLE pathogentest ADD COLUMN testedpathogendetails varchar(512);
 ALTER TABLE pathogentest_history ADD COLUMN testedpathogendetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (534, 'Add tested pathogen name #12663');
+INSERT INTO schema_version (version_number, comment) VALUES (534, 'Add tested pathogen details #12663');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

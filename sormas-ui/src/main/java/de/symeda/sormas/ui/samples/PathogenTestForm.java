@@ -269,7 +269,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		FieldHelper.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
 		testedPathogenField.addValueChangeListener(e -> {
 			Pathogen pathogen = (Pathogen) e.getProperty().getValue();
-			if (pathogen.isHasDetails()) {
+			if (pathogen != null && pathogen.isHasDetails()) {
 				testedPathogenDetailsField.setVisible(true);
 			} else {
 				testedPathogenDetailsField.clear();
