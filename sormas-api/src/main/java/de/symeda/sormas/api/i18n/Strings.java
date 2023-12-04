@@ -603,6 +603,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+    String headingExteranlEmailDetails = "headingExteranlEmailDetails";
 	String headingExternalEmailSend = "headingExternalEmailSend";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
@@ -1295,6 +1296,7 @@ public interface Strings {
 	String messageExportFailed = "messageExportFailed";
 	String messageExternalEmailAttachmentNotAvailableInfo = "messageExternalEmailAttachmentNotAvailableInfo";
 	String messageExternalEmailAttachmentPassword = "messageExternalEmailAttachmentPassword";
+    String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";
 	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
@@ -1363,6 +1365,10 @@ public interface Strings {
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
+    String messageNoExternalEmailToCaseSent = "messageNoExternalEmailToCaseSent";
+    String messageNoExternalEmailToContactSent = "messageNoExternalEmailToContactSent";
+    String messageNoExternalEmailToEventParticipantSent = "messageNoExternalEmailToEventParticipantSent";
+    String messageNoExternalEmailToTravelEntrySent = "messageNoExternalEmailToTravelEntrySent";
 	String messageNoExternalMessagesSelected = "messageNoExternalMessagesSelected";
 	String messageNoImmunizationsSelected = "messageNoImmunizationsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";

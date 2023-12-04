@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.externalemail;
@@ -45,7 +42,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.jetbrains.annotations.NotNull;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -86,7 +82,6 @@ public class AttachmentService {
         return Set.of((PDF_FILE_EXTENSION + "," + DOCX_FILE_EXTENSION + "," + IMAGE_FILE_EXTENSTIONS).split(","));
     }
 
-    @NotNull
     public Map<File, String> createEncryptedPdfs(List<de.symeda.sormas.backend.document.Document> sormasDocuments, String passowrd) {
         return sormasDocuments.stream().map(d -> {
             String fileName = d.getName();

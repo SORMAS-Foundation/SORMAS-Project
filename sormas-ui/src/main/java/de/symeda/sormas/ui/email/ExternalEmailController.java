@@ -44,7 +44,8 @@ public class ExternalEmailController {
 		RootEntityType rootEntityType,
         DocumentRelatedEntityType documentRelatedEntityType,
 		ReferenceDto rootEntityReference,
-		PersonReferenceDto personReference) {
+        PersonReferenceDto personReference,
+        Runnable callback) {
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
         ExternalEmailOptionsForm optionsForm = new ExternalEmailOptionsForm(
                 documentWorkflow,
@@ -74,6 +75,7 @@ public class ExternalEmailController {
 
 				optionsPopup.close();
 				Notification.show(null, I18nProperties.getString(Strings.notificationExternalEmailSent), Notification.Type.TRAY_NOTIFICATION);
+                callback.run();
 			} catch (DocumentTemplateException | ExternalEmailException e) {
 				Notification.show(I18nProperties.getString(Strings.errorOccurred), e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			}

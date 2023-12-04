@@ -23,10 +23,10 @@ import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
-import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;

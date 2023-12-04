@@ -18,7 +18,9 @@ package de.symeda.sormas.backend.externalemail;
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
 import static de.symeda.sormas.backend.externalemail.luxembourg.NationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.is;
@@ -66,6 +68,9 @@ import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogCriteria;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -282,6 +287,14 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getExternalEmailFacade().sendEmail(options);
 
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(0));
 	}
 
 	@Test
@@ -312,6 +325,14 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getExternalEmailFacade().sendEmail(options);
 
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).contact(contact.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("ContactEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(0));
 	}
 
 	@Test
@@ -329,13 +350,14 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 		List<String> supportedFileTypes = Arrays.asList("pdf", "docx", "jpg", "png", "gif");
 		List<DocumentDto> documents = new ArrayList<>(supportedFileTypes.size());
-		for (String type : supportedFileTypes) {
+		List<String> documentNames = supportedFileTypes.stream().map(type -> type.toUpperCase() + " Attachment." + type).collect(Collectors.toList());
+		for (String documentName : documentNames) {
 			documents.add(
 					createDocument(
-							type.toUpperCase() + " Document." + type,
+							documentName,
 							DocumentRelatedEntityType.CASE,
 							caze.getUuid(),
-							IOUtils.toByteArray(getClass().getResourceAsStream("/externalemail/" + type.toUpperCase() + " Attachment." + type))));
+							IOUtils.toByteArray(getClass().getResourceAsStream("/externalemail/" + documentName))));
 		}
 
 		Mockito.doAnswer(invocation -> {
@@ -343,7 +365,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 			assertThat(filesAttached.size(), is(supportedFileTypes.size()));
 			for (String type : supportedFileTypes) {
-				assertThat(filesAttached, hasValue(type.toUpperCase() + " Document.pdf"));
+				assertThat(filesAttached, hasValue(type.toUpperCase() + " Attachment.pdf"));
 			}
 
 			for (Map.Entry<File, String> entry : filesAttached.entrySet()) {
@@ -368,6 +390,15 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 		getExternalEmailFacade().sendEmail(options);
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(supportedFileTypes.size()));
+		documentNames.forEach(name -> assertThat(messageLogs.get(0).getAttachedDocuments(), hasItem(name)));
 	}
 
 	@Test
