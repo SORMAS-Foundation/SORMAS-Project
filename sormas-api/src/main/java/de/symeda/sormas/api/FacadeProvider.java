@@ -79,6 +79,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
@@ -518,6 +519,10 @@ public class FacadeProvider {
 	public static ExternalEmailFacade getExternalEmailFacade() {
 		return get().lookupEjbRemote(ExternalEmailFacade.class);
 	}
+
+    public static ManualMessageLogFacade getManualMessageLogFacade() {
+        return get().lookupEjbRemote(ManualMessageLogFacade.class);
+    }
 
 	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {

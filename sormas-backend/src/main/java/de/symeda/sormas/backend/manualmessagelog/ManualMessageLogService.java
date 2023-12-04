@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.manualmessagelog;
@@ -29,11 +26,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogCriteria;
 import de.symeda.sormas.api.manualmessagelog.MessageType;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -88,5 +90,33 @@ public class ManualMessageLogService extends BaseAdoService<ManualMessageLog> {
                 currentUser,
                 new PersonJoins(root.join(ManualMessageLog.RECIPIENT_PERSON)),
                 personService.getPermittedAssociations()).inJurisdictionOrOwned();
+    }
+
+    public Predicate buildCriteriaFilter(ManualMessageLogCriteria criteria, Root<ManualMessageLog> root, CriteriaBuilder cb) {
+        Predicate filter = null;
+
+        if (criteria.getMessageType() != null) {
+            filter = cb.equal(root.get(ManualMessageLog.MESSAGE_TYPE), criteria.getMessageType());
+        }
+
+        if (criteria.getCaze() != null) {
+            filter = cb.and(filter, cb.equal(root.get(ManualMessageLog.CASE).get(Case.UUID), criteria.getCaze().getUuid()));
+        }
+
+        if (criteria.getContact() != null) {
+            filter = cb.and(filter, cb.equal(root.get(ManualMessageLog.CONTACT).get(Contact.UUID), criteria.getContact().getUuid()));
+        }
+
+        if (criteria.getEventParticipant() != null) {
+            filter = cb.and(
+                    filter,
+                    cb.equal(root.get(ManualMessageLog.EVENT_PARTICIPANT).get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
+        }
+
+        if (criteria.getTravelEntry() != null) {
+            filter = cb.and(filter, cb.equal(root.get(ManualMessageLog.TRAVEL_ENTRY).get(TravelEntry.UUID), criteria.getTravelEntry().getUuid()));
+        }
+
+        return filter;
     }
 }

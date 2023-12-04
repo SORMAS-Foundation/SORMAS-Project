@@ -601,6 +601,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingExteranlEmailDetails = "headingExteranlEmailDetails";
 	String headingExternalEmailSend = "headingExternalEmailSend";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
@@ -1356,6 +1357,10 @@ public interface Strings {
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
+	String messageNoExternalEmailToCaseSent = "messageNoExternalEmailToCaseSent";
+	String messageNoExternalEmailToContactSent = "messageNoExternalEmailToContactSent";
+	String messageNoExternalEmailToEventParticipantSent = "messageNoExternalEmailToEventParticipantSent";
+	String messageNoExternalEmailToTravelEntrySent = "messageNoExternalEmailToTravelEntrySent";
 	String messageNoExternalMessagesSelected = "messageNoExternalMessagesSelected";
 	String messageNoImmunizationsSelected = "messageNoImmunizationsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
