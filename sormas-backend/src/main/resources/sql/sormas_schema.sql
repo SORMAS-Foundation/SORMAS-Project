@@ -12791,4 +12791,10 @@ WHERE userroles.linkeddefaultuserrole = 'ADMIN';
 
 INSERT INTO schema_version (version_number, comment) VALUES (533, 'Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340');
 
+-- 2023-12-04 Add tested pathogen name #12663
+ALTER TABLE pathogentest ADD COLUMN testedpathogendetails varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN testedpathogendetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (534, 'Add tested pathogen name #12663');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

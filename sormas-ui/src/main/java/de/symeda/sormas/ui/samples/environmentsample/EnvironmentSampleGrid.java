@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
@@ -84,7 +86,9 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 
 		Column<EnvironmentSampleIndexDto, String> latestPathogenTestColumn = addColumn(entry -> {
 			if (entry.getLatestTestedPathogen() != null) {
-				return entry.getLatestTestedPathogen() + ": " + entry.getLatestPathogenTestResult();
+				return entry.getLatestTestedPathogen()
+					+ (StringUtils.isNotBlank(entry.getLatestTestedPathogenDetails()) ? " (" + entry.getLatestTestedPathogenDetails() + ")" : "")
+					+ ": " + entry.getLatestPathogenTestResult();
 			} else {
 				return "";
 			}

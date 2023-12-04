@@ -252,25 +252,31 @@ public class EnvironmentSampleFacadeEjb
 	}
 
 	private void loadAndSetLatestTest(CriteriaBuilder cb, List<EnvironmentSampleIndexDto> samples) {
+
 		List<Long> sampleIds = samples.stream().map(EnvironmentSampleIndexDto::getId).collect(Collectors.toList());
 
-		CriteriaQuery<Tuple> testCq = cb.createTupleQuery();
+		CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
 		Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
 		Expression<String> sampleIdExpr = testRoot.get(PathogenTest.ENVIRONMENT_SAMPLE).get(Sample.ID);
 
-		testCq.multiselect(testRoot.get(PathogenTest.TESTED_PATHOGEN), testRoot.get(PathogenTest.TEST_RESULT), sampleIdExpr);
+		testCq.multiselect(
+			testRoot.get(PathogenTest.TESTED_PATHOGEN),
+			testRoot.get(PathogenTest.TESTED_PATHOGEN_DETAILS),
+			testRoot.get(PathogenTest.TEST_RESULT),
+			sampleIdExpr);
 
 		testCq.where(cb.isFalse(testRoot.get(PathogenTest.DELETED)), sampleIdExpr.in(sampleIds));
 		testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
 
-		List<Tuple> testList = em.createQuery(testCq).getResultList();
+		List<Object[]> testList = em.createQuery(testCq).getResultList();
 
 		testList.stream()
 			// collecting to map keyed by sample id, keeping the first result that is the latest test for each sample
-			.collect(Collectors.toMap(pathogenTest -> (Long) pathogenTest.get(2), Function.identity(), (t1, t2) -> t1))
+			.collect(Collectors.toMap(pathogenTest -> (Long) pathogenTest[3], Function.identity(), (t1, t2) -> t1))
 			.forEach((sampleId, t) -> samples.stream().filter(s -> s.getId().equals(sampleId)).findFirst().ifPresent(s -> {
-				s.setLatestTestedPathogen((Pathogen) t.get(0));
-				s.setLatestPathogenTestResult((PathogenTestResultType) t.get(1));
+				s.setLatestTestedPathogen((Pathogen) t[0]);
+				s.setLatestTestedPathogenDetails((String) t[1]);
+				s.setLatestPathogenTestResult((PathogenTestResultType) t[2]);
 			}));
 	}
 
