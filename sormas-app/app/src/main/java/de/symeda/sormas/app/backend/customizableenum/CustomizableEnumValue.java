@@ -3,8 +3,10 @@ package de.symeda.sormas.app.backend.customizableenum;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,7 +52,7 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	@Column(name = "diseases")
 	private String diseasesString;
-	private List<Disease> diseases;
+	private Set<Disease> diseases;
 
 	@Column
 	private String description;
@@ -131,19 +133,19 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	}
 
 	@Transient
-	public List<Disease> getDiseases() {
+	public Set<Disease> getDiseases() {
 		if (diseases == null) {
 			if (StringUtils.isBlank(diseasesString)) {
-				diseases = new ArrayList<>();
+				diseases = new HashSet<>();
 			} else {
-				diseases = Stream.of(diseasesString.split(",")).map(Disease::valueOf).collect(Collectors.toList());
+				diseases = Stream.of(diseasesString.split(",")).map(Disease::valueOf).collect(Collectors.toSet());
 			}
 		}
 
 		return diseases;
 	}
 
-	public void setDiseases(List<Disease> diseases) {
+	public void setDiseases(Set<Disease> diseases) {
 		this.diseases = diseases;
 		if (CollectionUtils.isNotEmpty(diseases)) {
 			diseasesString = diseases.stream().map(Disease::getName).collect(Collectors.joining(","));

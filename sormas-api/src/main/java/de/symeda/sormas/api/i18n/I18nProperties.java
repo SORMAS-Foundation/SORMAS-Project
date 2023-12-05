@@ -194,6 +194,10 @@ public final class I18nProperties {
 		return getInstance(userLanguage.get()).captionProperties.getString(key, defaultValue);
 	}
 
+	public static String getCaption(String key, String defaultValue, String addition) {
+		return getInstance(userLanguage.get()).captionProperties.getString(key + (addition != null ? "." + addition : ""), defaultValue);
+	}
+
 	/**
 	 * Uses <param>key</param> as default value
 	 */
@@ -202,15 +206,23 @@ public final class I18nProperties {
 	}
 
 	public static String getPrefixCaption(String prefix, String key, String defaultValue) {
+		return getPrefixCaption(prefix, key, defaultValue, null);
+	}
+
+	public static String getPrefixCaption(String prefix, String key, String defaultValue, String addition) {
 
 		String result = null;
 		if (prefix != null) {
-			result = getInstance(userLanguage.get()).captionProperties.getString(prefix + "." + key);
+			result = getInstance(userLanguage.get()).captionProperties.getString(prefix + "." + key + (addition != null ? "." + addition : ""));
 		}
 		if (result == null) {
-			result = getCaption(key, defaultValue);
+			result = getCaption(key, defaultValue, addition);
 		}
 		return result;
+	}
+
+	public static String getPrefixCaptionShort(String prefix, String key) {
+		return getPrefixCaption(prefix, key, null, "short");
 	}
 
 	/**

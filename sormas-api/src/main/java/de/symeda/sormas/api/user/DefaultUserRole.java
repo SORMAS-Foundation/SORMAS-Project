@@ -452,7 +452,8 @@ public enum DefaultUserRole {
 					EXTERNAL_EMAIL_ATTACH_DOCUMENTS,
 					SORMAS_REST,
 					SORMAS_UI,
-					DEV_MODE));
+					DEV_MODE,
+					CUSTOMIZABLE_ENUM_MANAGEMENT));
 			break;
 		case ADMIN_SUPERVISOR:
 			userRights.addAll(

@@ -29,6 +29,8 @@ public abstract class CustomizableEnum implements Serializable {
 
 	private static final long serialVersionUID = 8698428745095686559L;
 
+	public static final String I18N_PREFIX = "CustomizableEnum";
+
 	/**
 	 * The enum value, identical {@link CustomizableEnumValueDto#getValue()}.
 	 */
@@ -93,4 +95,6 @@ public abstract class CustomizableEnum implements Serializable {
 	public int hashCode() {
 		return Objects.hash(value);
 	}
+
+	public abstract Map<String, Class<?>> getAllProperties();
 }

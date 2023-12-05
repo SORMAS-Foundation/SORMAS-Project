@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.customizableenum;
 
+import static de.symeda.sormas.backend.util.QueryHelper.getResultList;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,6 +37,13 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,17 +52,31 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumHelper;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumValueReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.InvalidCustomizationException;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Singleton(name = "CustomizableEnumFacade")
-public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
+public class CustomizableEnumFacadeEjb
+	extends
+	AbstractBaseEjb<CustomizableEnumValue, CustomizableEnumValueDto, CustomizableEnumValueIndexDto, CustomizableEnumValueReferenceDto, CustomizableEnumValueService, CustomizableEnumCriteria>
+	implements CustomizableEnumFacade {
 
 	/**
 	 * Maps a customizable enum type to all enum value entities of that type in the database.
@@ -84,10 +107,79 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
+	public CustomizableEnumFacadeEjb() {
+
+	}
+
+	@Inject
+	public CustomizableEnumFacadeEjb(CustomizableEnumValueService service) {
+		super(CustomizableEnumValue.class, CustomizableEnumValueDto.class, service);
+	}
+
 	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
 		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	protected CustomizableEnumValue fillOrBuildEntity(CustomizableEnumValueDto source, CustomizableEnumValue target, boolean checkChangeDate) {
+
+		target = DtoHelper.fillOrBuildEntity(source, target, CustomizableEnumValue::new, checkChangeDate);
+
+		target.setDataType(source.getDataType());
+		target.setValue(source.getValue());
+		target.setCaption(source.getCaption());
+		target.setTranslations(source.getTranslations());
+		target.setDiseases(source.getDiseases());
+		target.setDescription(source.getDescription());
+		target.setDescriptionTranslations(source.getDescriptionTranslations());
+		target.setProperties(source.getProperties());
+		target.setDefaultValue(source.isDefaultValue());
+
+		return target;
+	}
+
+	@Override
+	public void validate(CustomizableEnumValueDto dto) throws ValidationRuntimeException {
+
+		if (!CustomizableEnumHelper.isValidEnumValue(dto.getValue())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.customizableEnumValueAllowedCharacters));
+		}
+	}
+
+	@Lock(LockType.READ)
+	@RightsAllowed(UserRight._CUSTOMIZABLE_ENUM_MANAGEMENT)
+	@Override
+	public CustomizableEnumValueDto save(CustomizableEnumValueDto dto) {
+
+		if (dto == null) {
+			return null;
+		}
+
+		validate(dto);
+
+		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
+
+		List<String> dataTypeValues = enumValues.get(dto.getDataType());
+		if (existingEntity == null && dataTypeValues != null && dataTypeValues.contains(dto.getValue())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(Validations.customizableEnumValueDuplicateValue, dto.getDataType().toString(), dto.getValue()));
+		}
+
+		CustomizableEnumValue enumValue = fillOrBuildEntity(dto, existingEntity, true);
+		service.ensurePersisted(enumValue);
+
+		// Reset cache since values have been changed
+		loadData();
+
+		return toDto(enumValue);
+	}
+
+	@Lock(LockType.READ)
+	@Override
+	public long count(CustomizableEnumCriteria criteria) {
+		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
 	@Lock(LockType.READ)
@@ -100,6 +192,70 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@Override
 	public List<String> getAllUuids() {
 		return service.getAllUuids();
+	}
+
+	@Lock(LockType.READ)
+	@RightsAllowed(UserRight._CUSTOMIZABLE_ENUM_MANAGEMENT)
+	@Override
+	public List<CustomizableEnumValueIndexDto> getIndexList(
+		CustomizableEnumCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CustomizableEnumValue> cq = cb.createQuery(CustomizableEnumValue.class);
+		Root<CustomizableEnumValue> root = cq.from(CustomizableEnumValue.class);
+
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = service.buildCriteriaFilter(criteria, cb, root);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case CustomizableEnumValue.DATA_TYPE:
+				case CustomizableEnumValue.VALUE:
+				case CustomizableEnumValue.CAPTION:
+					expression = root.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.asc(root.get(CustomizableEnumValue.DATA_TYPE)), cb.asc(root.get(CustomizableEnumValue.VALUE)));
+		}
+
+		cq.select(root);
+
+		return getResultList(em, cq, first, max, this::toIndexDto);
+	}
+
+	private CustomizableEnumValueIndexDto toIndexDto(CustomizableEnumValue entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		CustomizableEnumValueIndexDto dto = new CustomizableEnumValueIndexDto();
+		DtoHelper.fillDto(dto, entity);
+
+		dto.setDataType(entity.getDataType());
+		dto.setValue(entity.getValue());
+		dto.setCaption(entity.getCaption());
+		dto.setDiseases(entity.getDiseases());
+		dto.setProperties(entity.getProperties());
+
+		return dto;
 	}
 
 	/**
@@ -294,7 +450,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		}
 	}
 
-	private CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
+	public CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
 
 		if (source == null) {
 			return null;
@@ -316,8 +472,40 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		return target;
 	}
 
+	@Override
+	protected CustomizableEnumValueReferenceDto toRefDto(CustomizableEnumValue customizableEnumValue) {
+
+		if (customizableEnumValue == null) {
+			return null;
+		}
+
+		return new CustomizableEnumValueReferenceDto(customizableEnumValue.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(CustomizableEnumValue source, CustomizableEnumValueDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+		// Customizable enum values don't need to be pseudonymized
+	}
+
+	@Override
+	protected void restorePseudonymizedDto(
+		CustomizableEnumValueDto dto,
+		CustomizableEnumValueDto existingDto,
+		CustomizableEnumValue entity,
+		Pseudonymizer pseudonymizer) {
+		// Customizable enum values don't need to be pseudonymized
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CustomizableEnumFacadeEjbLocal extends CustomizableEnumFacadeEjb {
+
+		public CustomizableEnumFacadeEjbLocal() {
+		}
+
+		@Inject
+		public CustomizableEnumFacadeEjbLocal(CustomizableEnumValueService service) {
+			super(service);
+		}
 	}
 }
