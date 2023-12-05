@@ -59,6 +59,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
 	public static final String TESTED_PATHOGEN = "testedPathogen";
+	public static final String TESTED_PATHOGEN_DETAILS = "testedPathogenDetails";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
@@ -106,6 +107,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String testedDiseaseVariantDetails;
 	private Pathogen testedPathogen;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String testedPathogenDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String typingId;
 	@NotNull(message = Validations.requiredField)
@@ -297,6 +300,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setTestedPathogen(Pathogen testedPathogen) {
 		this.testedPathogen = testedPathogen;
+	}
+
+	public String getTestedPathogenDetails() {
+		return testedPathogenDetails;
+	}
+
+	public void setTestedPathogenDetails(String testedPathogenDetails) {
+		this.testedPathogenDetails = testedPathogenDetails;
 	}
 
 	public String getTypingId() {

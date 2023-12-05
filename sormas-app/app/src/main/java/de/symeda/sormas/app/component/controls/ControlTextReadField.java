@@ -38,6 +38,7 @@ import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
 import androidx.databinding.InverseBindingListener;
 
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -530,6 +531,18 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 			textField.setValue(defaultValue);
 		} else {
 			textField.setValue(map.keySet().stream().filter(map::get).map(WeatherCondition::toString).collect(Collectors.joining(", ")));
+		}
+	}
+
+	@BindingAdapter(value = {
+		"pathogenValue",
+		"pathogenDetailsValue",
+		"defaultValue" }, requireAll = false)
+	public static void setPathogenValue(ControlTextReadField textField, Pathogen pathogen, String pathogenDetails, String defaultValue) {
+		if (pathogen == null) {
+			textField.setValue(defaultValue);
+		} else {
+			textField.setValue(pathogen.getCaption() + (StringUtils.isNotBlank(pathogenDetails) ? " (" + pathogenDetails + ")" : ""));
 		}
 	}
 }
