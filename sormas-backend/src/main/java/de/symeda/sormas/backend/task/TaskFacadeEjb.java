@@ -658,7 +658,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						emptyValuePseudonymizer.pseudonymizeDto(
 							EnvironmentReferenceDto.class,
 							t.getEnvironment(),
-							taskJurisdictionFlagsDto.getEventInJurisdiction(),
+							taskJurisdictionFlagsDto.getEnvironmentInJurisdiction(),
 							null);
 					}
 				}, true);
