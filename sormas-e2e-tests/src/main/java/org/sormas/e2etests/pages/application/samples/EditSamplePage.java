@@ -50,6 +50,10 @@ public class EditSamplePage {
   public static final By LAB_SAMPLE_ID_INPUT = By.cssSelector("[id='labSampleID']");
   public static final By REASON_FOR_SAMPLING_TESTING_COMBOBOX =
       By.cssSelector("[id='samplingReason'] [class='v-filterselect-button']");
+  public static final By EXTERNAL_LAB_TESTING_RADIOBUTTON =
+      By.xpath("//label[contains(text(), 'External lab testing')]");
+  public static final By INTERNAL_LAB_TESTING_RADIOBUTTON =
+      By.xpath("//label[contains(text(), 'Internal/in-house testing')]");
   public static final By SAMPLE_TYPE_COMBOBOX =
       By.cssSelector("[id='sampleMaterial'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_COMBOBOX =
@@ -66,6 +70,7 @@ public class EditSamplePage {
       By.cssSelector("[class='popupContent'] [id='testTypeText']");
   public static final By TYPING_ID_INPUT = By.cssSelector("[class='popupContent'] [id='typingId']");
   public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#deleteRestore");
+  public static final By DISCARD_SAMPLE_BUTTON = By.cssSelector("#discard");
   public static final By DELETE_PATHOGEN_TEST_RESULT =
       By.cssSelector("[class='popupContent'] [id='deleteRestore']");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");

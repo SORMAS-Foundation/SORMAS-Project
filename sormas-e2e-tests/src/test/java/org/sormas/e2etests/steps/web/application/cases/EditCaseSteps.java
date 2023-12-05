@@ -2276,9 +2276,9 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I check if Sample card has empty and no buttons are available on Edit Case",
+        "I check if Sample card has empty and no buttons are available on Edit Case Page",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           softly.assertTrue(
               webDriverHelpers.isElementPresent(SAMPLES_CARD_EMPTY_MESSAGE),
               "Element is not present");
@@ -2289,6 +2289,40 @@ public class EditCaseSteps implements En {
           softly.assertFalse(
               webDriverHelpers.isElementVisibleWithTimeout(SEE_SAMPLE_BUTTON, 2),
               "The see sample for this person button is present");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Sample card has available {string} button on Edit Case Page",
+        (String button) -> {
+          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
+          switch (button) {
+            case "see sample for this person":
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(SEE_SAMPLE_BUTTON), "Element is not present");
+              break;
+            case "see samples for this person":
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(SEE_SAMPLE_BUTTON), "Element is not present");
+              break;
+          }
+          softly.assertAll();
+        });
+
+    When(
+        "I click on the See samples for this person button from Edit Case Page Directory",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SEE_SAMPLE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I check that number of displayed samples with pencil icon is {int} on Edit Case Page",
+        (Integer number) -> {
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_PENCIL_BUTTON),
+              number.intValue(),
+              "Number of displayed samples is not valid");
           softly.assertAll();
         });
 

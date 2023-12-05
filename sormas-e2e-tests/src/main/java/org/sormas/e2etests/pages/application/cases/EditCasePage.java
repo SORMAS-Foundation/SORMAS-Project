@@ -49,6 +49,7 @@ public class EditCasePage {
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By SEE_SAMPLE_BUTTON = By.cssSelector("[id='See samples for this person']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
+  public static final By EDIT_SAMPLE_PENCIL_BUTTON = By.cssSelector("div[id^='edit-sample']");
 
   public static final By SHOW_SAMPLE_BUTTON =
       By.xpath(
@@ -198,6 +199,8 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Pick or create person')]");
   public static final By PICK_OR_CREATE_CASE_POPUP_HEADER =
       By.xpath("//*[contains(text(),'Pick or create case')]");
+  public static final By PICK_AN_EXISTING_CASE_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Pick an existing case')]");
   public static final By CREATE_NEW_PERSON_CHECKBOX =
       By.xpath("//label[text()='Create a new person']");
   public static final By SELECT_MATCHING_PERSON_CHECKBOX =

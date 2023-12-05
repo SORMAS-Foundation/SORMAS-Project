@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FINAL_LABORATORY_RESULT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.ADDIITONAL_NEW_TEST_RESULT_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.BACK_TO_CASE_DE_BUTTON;
@@ -30,8 +31,11 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DATE_
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_PATHOGEN_TEST_RESULT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DISCARD_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EXTERNAL_LAB_TESTING_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.FIELD_SAMPLE_ID_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.FOUR_FOLD_INCREASE_ANTIBODY_TITER;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.INTERNAL_LAB_TESTING_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABORATORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABORATORY_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABORATORY_NAME_INPUT;
@@ -262,6 +266,60 @@ public class EditSampleSteps implements En {
         "I check if type of sample is set to {string}",
         (String option) -> {
           softly.assertEquals(webDriverHelpers.getValueFromCombobox(SAMPLE_TYPE_COMBOBOX), option);
+          softly.assertAll();
+        });
+
+    And(
+        "I check that all editable fields are enabled for a sample",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EXTERNAL_LAB_TESTING_RADIOBUTTON),
+              true,
+              "External lab testing radiobutton is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(INTERNAL_LAB_TESTING_RADIOBUTTON),
+              true,
+              "Internal lab testing radiobutton is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DATE_SAMPLE_COLLECTED),
+              true,
+              "Date sample of collected field is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(COLLECTED_DATE_TIME_COMBOBOX),
+              true,
+              "Sample Date time field is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAMPLE_TYPE_COMBOBOX),
+              true,
+              "Type of sample combobox is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REASON_FOR_SAMPLING_TESTING_COMBOBOX),
+              true,
+              "Reason for sampling testing combobox field is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(FIELD_SAMPLE_ID_INPUT),
+              true,
+              "Field Sample id input is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(COMMENT_AREA_INPUT),
+              true,
+              "Comment area input is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(FINAL_LABORATORY_RESULT_COMBOBOX),
+              true,
+              "Final laboratory result combobox is not editable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_SAMPLE_BUTTON),
+              true,
+              "Delete sample button is not enable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_SAMPLE_BUTTON),
+              true,
+              "Discard sample button is not enable");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAVE_SAMPLE_BUTTON),
+              true,
+              "Save sample button is not enable");
           softly.assertAll();
         });
 
