@@ -75,6 +75,7 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 	private long numberOfTests;
 	private List<Pathogen> positivePathogenTests;
 	private Pathogen latestTestedPathogen;
+	private String latestTestedPathogenDetails;
 	private PathogenTestResultType latestPathogenTestResult;
 
 	public EnvironmentSampleIndexDto(
@@ -205,6 +206,14 @@ public class EnvironmentSampleIndexDto extends PseudonymizableIndexDto implement
 
 	public void setLatestTestedPathogen(Pathogen latestTestedPathogen) {
 		this.latestTestedPathogen = latestTestedPathogen;
+	}
+
+	public String getLatestTestedPathogenDetails() {
+		return latestTestedPathogenDetails;
+	}
+
+	public void setLatestTestedPathogenDetails(String latestTestedPathogenDetails) {
+		this.latestTestedPathogenDetails = latestTestedPathogenDetails;
 	}
 
 	public PathogenTestResultType getLatestPathogenTestResult() {

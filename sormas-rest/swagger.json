@@ -20655,6 +20655,11 @@
           "testedPathogen" : {
             "$ref" : "#/components/schemas/Pathogen"
           },
+          "testedPathogenDetails" : {
+            "type" : "string",
+            "maxLength" : 512,
+            "minLength" : 0
+          },
           "typingId" : {
             "type" : "string",
             "maxLength" : 1000000,

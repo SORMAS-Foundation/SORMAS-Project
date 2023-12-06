@@ -107,8 +107,8 @@ public class EnvironmentEditSampleListFragment extends BaseEditFragment<Fragment
 
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
-		EnvironmentSample sample = (EnvironmentSample) item;
-		EnvironmentSampleEditActivity.startActivity(getActivity(), sample.getUuid());
+		EnvironmentSampleListViewModel.SampleWithTestedPathogens sample = (EnvironmentSampleListViewModel.SampleWithTestedPathogens) item;
+		EnvironmentSampleEditActivity.startActivity(getActivity(), sample.getSample().getUuid());
 	}
 
 	@Override

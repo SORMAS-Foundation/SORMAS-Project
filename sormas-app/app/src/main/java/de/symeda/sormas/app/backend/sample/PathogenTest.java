@@ -94,6 +94,9 @@ public class PathogenTest extends PseudonymizableAdo {
 
 	private Pathogen testedPathogen;
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	private String testedPathogenDetails;
+
 	@Column
 	private String typingId;
 
@@ -240,6 +243,14 @@ public class PathogenTest extends PseudonymizableAdo {
 		} else {
 			testedPathogenString = testedPathogen.getValue();
 		}
+	}
+
+	public String getTestedPathogenDetails() {
+		return testedPathogenDetails;
+	}
+
+	public void setTestedPathogenDetails(String testedPathogenDetails) {
+		this.testedPathogenDetails = testedPathogenDetails;
 	}
 
 	public String getTypingId() {
