@@ -16,8 +16,14 @@
 package de.symeda.sormas.ui.configuration.customizableenum;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static java.util.function.Predicate.not;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.v7.ui.ComboBox;
 
@@ -36,6 +42,7 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 
 	private CustomizableEnumPropertiesComponent propertiesComponent;
 	private CustomizableEnumTranslationComponent translationsComponent;
+	private CheckboxSet<Disease> cbsDiseases;
 
 	private static final String HTML_LAYOUT = fluidRowLocs(CustomizableEnumValueDto.DATA_TYPE, CustomizableEnumValueDto.UUID)
 		+ fluidRowLocs(CustomizableEnumValueDto.VALUE, CustomizableEnumValueDto.CAPTION)
@@ -77,14 +84,25 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 		translationsComponent
 			.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, CustomizableEnumValueDto.TRANSLATIONS));
 
-		CheckboxSet<Disease> cbsDiseases = addField(CustomizableEnumValueDto.DISEASES, CheckboxSet.class);
+		cbsDiseases = addField(CustomizableEnumValueDto.DISEASES, CheckboxSet.class);
 		cbsDiseases.setColumnCount(3);
 		cbsDiseases.setCaption(I18nProperties.getPrefixCaption(CustomizableEnumValueDto.I18N_PREFIX, CustomizableEnumValueDto.DISEASES));
-		cbsDiseases.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true), null, null);
+	}
+
+	private static List<Disease> getSelectableDiseases(Set<Disease> selectedDiseases) {
+
+		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
+		if (CollectionUtils.isNotEmpty(selectedDiseases)) {
+			List<Disease> inactiveSelectedDiseases = selectedDiseases.stream().filter(not(diseases::contains)).collect(Collectors.toList());
+			diseases.addAll(inactiveSelectedDiseases);
+		}
+
+		return diseases;
 	}
 
 	@Override
 	public void setValue(CustomizableEnumValueDto newFieldValue) {
+
 		super.setValue(newFieldValue);
 		propertiesComponent.setValue(newFieldValue.getProperties());
 		try {
@@ -95,7 +113,13 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
+
 		translationsComponent.setValue(newFieldValue.getTranslations());
+
+		if (cbsDiseases != null) {
+			Set<Disease> selectedDiseases = newFieldValue.getDiseases();
+			cbsDiseases.setItems(getSelectableDiseases(selectedDiseases), null, null);
+		}
 	}
 
 	@Override

@@ -1578,6 +1578,7 @@ public interface Strings {
 	String promptContactEpiWeekTo = "promptContactEpiWeekTo";
 	String promptContactsSearchField = "promptContactsSearchField";
 	String promptCreationDateFrom = "promptCreationDateFrom";
+	String promptCustomizableEnumSearchField = "promptCustomizableEnumSearchField";
 	String promptCustomizableEnumTranslationCaption = "promptCustomizableEnumTranslationCaption";
 	String promptCustomizableEnumTranslationLanguage = "promptCustomizableEnumTranslationLanguage";
 	String promptDateTo = "promptDateTo";
