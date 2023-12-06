@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.TravelEntryUuid;
 import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aCase;
+import static org.sormas.e2etests.steps.web.application.persons.EditPersonSteps.personUuid;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -429,6 +430,17 @@ public class PersonDirectorySteps implements En {
               SEARCH_PERSON_BY_FREE_TEXT, 30);
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_PERSON_BY_FREE_TEXT, personUuid);
+        });
+
+    When(
+        "I open the last new created person by UI in person directory",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEARCH_PERSON_BY_FREE_TEXT, 30);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_PERSON_BY_FREE_TEXT, personUuid);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_PERSON_DIRECTORY_TABLE);
         });
 
     When(

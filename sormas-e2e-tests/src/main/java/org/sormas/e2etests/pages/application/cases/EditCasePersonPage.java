@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class EditCasePersonPage {
   public static final By FIRST_NAME_INPUT = By.cssSelector("#firstName");
   public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
+  public static final By NEW_CONTACT_BUTTON = By.xpath("//div[@id='New contact']");
   public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
   public static final By SEX_INPUT = By.cssSelector("#sex input");
   public static final By SEX_COMBOBOX =

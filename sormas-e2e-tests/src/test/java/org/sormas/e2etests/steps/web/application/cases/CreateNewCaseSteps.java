@@ -108,6 +108,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_AN_EXISTING_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
@@ -346,7 +347,7 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           if (option.equals("second")) {
-              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
             webDriverHelpers.fillInWebElement(
                 CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(1));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
@@ -857,6 +858,15 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
+    When(
+        "^I click on pick an existing case popup button option",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              PICK_AN_EXISTING_CASE_POPUP_HEADER);
+          webDriverHelpers.clickOnWebElementBySelector(PICK_AN_EXISTING_CASE_POPUP_HEADER);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+        });
     When(
         "^I create a new case with specific data using line listing feature$",
         () -> {
