@@ -127,7 +127,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 				travelEntryDto.toReference(),
 				travelEntryDto.getPerson(),
 				Strings.messageTravelEntryPersonHasNoEmail,
-					editAllowed,
+				editAllowed,
+				travelEntryDto.isInJurisdiction(),
 				this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}

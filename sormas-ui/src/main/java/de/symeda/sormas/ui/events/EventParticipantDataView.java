@@ -195,7 +195,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 				eventParticipantRef,
 				eventParticipant.getPerson().toReference(),
 				Strings.messageEventParticipantPersonHasNoEmail,
-					editAllowed,
+				editAllowed,
+				eventParticipant.isInJurisdiction(),
 				this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}

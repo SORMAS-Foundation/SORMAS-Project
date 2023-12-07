@@ -31,6 +31,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
@@ -43,14 +44,17 @@ public class ExternalEmailSideComponent extends SideComponent {
 		PersonReferenceDto personRef,
 		String noRecipientStringKey,
 		boolean isEditAllowed,
+		boolean isInJurisdiction,
 		Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getCaption(Captions.messagesEmails), actionCallback);
 
-		if (isEditAllowed) {
+		if (isEditAllowed
+			&& (isInJurisdiction && UserProvider.getCurrent().hasUserRight(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION)
+				|| !isInJurisdiction && UserProvider.getCurrent().hasUserRight(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION))) {
 			addCreateButton(
-					I18nProperties.getCaption(Captions.messagesSendEmail),
-					() -> ControllerProvider.getExternalEmailController().sendEmail(documentWorkflow, rootEntityType, rootEntityReference, personRef),
-					UserRight.EXTERNAL_EMAIL_SEND);
+				I18nProperties.getCaption(Captions.messagesSendEmail),
+				() -> ControllerProvider.getExternalEmailController().sendEmail(documentWorkflow, rootEntityType, rootEntityReference, personRef),
+				UserRight.EXTERNAL_EMAIL_SEND);
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
