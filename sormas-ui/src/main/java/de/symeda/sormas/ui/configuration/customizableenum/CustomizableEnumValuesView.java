@@ -95,6 +95,7 @@ public class CustomizableEnumValuesView extends AbstractConfigurationView {
 		filterLayout.setSpacing(true);
 
 		searchField = new SearchField();
+		searchField.setInputPrompt(I18nProperties.getString(Strings.promptCustomizableEnumSearchField));
 		searchField.addTextChangeListener(e -> {
 			criteria.freeTextFilter(e.getText());
 			grid.reload();
