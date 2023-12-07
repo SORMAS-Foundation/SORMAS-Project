@@ -313,7 +313,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 	}
 
 	private boolean isGridEnabled() {
-		return !isEventDeleted() && isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT);
+		return !isEventDeleted() && isEditAllowed();
 	}
 
 	private boolean shouldDisableButton() {
