@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.event;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
@@ -35,5 +36,10 @@ public class SpecificRisk extends CustomizableEnum implements Serializable {
 	@Override
 	public boolean matchPropertyValue(String property, Object value) {
 		return false;
+	}
+
+	@Override
+	public Map<String, Class<?>> getAllProperties() {
+		return Collections.emptyMap();
 	}
 }

@@ -1943,3 +1943,51 @@ Feature: Case end to end tests
     Then I back to Case Directory using case list button
     And I apply "Archived cases" to combobox on Case Directory Page
     And I open the first Case result in Case Directory
+
+  @tmsLink=HSP-6417 @env_main
+  Scenario: User can view and edit Sample card from Person view
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data and new person
+    Then I get the case person UUID displayed on Edit case page
+    And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
+    And I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    And I check if Sample card has empty and no buttons are available on Edit Case Page
+    Then I click on See Cases for this Person button from Edit Person page
+    And I open the first Case result in Case Directory
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample with pathogen test
+    And I confirm update case result
+    Then I click on the Persons button from navbar
+    And I click on first person in person directory
+    And I check if Sample card has available "see sample for this person" button on Edit Case Page
+    And I click on edit sample icon of the 1 displayed sample on Edit Case page
+    And I check that all editable fields are enabled for a sample
+    Then I navigate to case tab
+    And I check that number of displayed samples with pencil icon is 1 on Edit Case Page
+    And I navigate to case person tab
+    Then I click on New Contact button in Case Person Tab
+    And I click CHOOSE CASE button
+    Then I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample with pathogen test
+    And I confirm update case result
+    And I click on pick an existing case popup button option
+    Then I click on the Persons button from navbar
+    And I click on first person in person directory
+    And I check that number of displayed samples with pencil icon is 2 on Edit Case Page
+    And I check if Sample card has available "see samples for this person" button on Edit Case Page
+    And I click on edit sample icon of the 2 displayed sample on Edit Case page
+    And I check that all editable fields are enabled for a sample
+    And I navigate to case tab
+    Then I click on the See samples for this person button from Edit Case Page Directory
+    And I check that number of displayed sample results is 2

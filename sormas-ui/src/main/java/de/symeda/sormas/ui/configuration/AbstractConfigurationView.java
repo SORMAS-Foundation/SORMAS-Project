@@ -30,6 +30,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumValuesView;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.docgeneration.emailtemplate.EmailTemplatesView;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
@@ -108,6 +109,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EMAIL_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(EmailTemplatesView.VIEW_NAME, EmailTemplatesView.class);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
+			navigator.addView(CustomizableEnumValuesView.VIEW_NAME, CustomizableEnumValuesView.class);
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
@@ -219,6 +224,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				EmailTemplatesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", EmailTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
+			menu.addView(
+				CustomizableEnumValuesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CustomizableEnumValuesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
 		}

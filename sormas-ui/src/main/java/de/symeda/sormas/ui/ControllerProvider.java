@@ -22,6 +22,7 @@ import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
+import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
@@ -93,6 +94,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final PermanentDeleteController permanentDeleteController;
 	private final EnvironmentSampleController environmentSampleController;
 	private final ExternalEmailController externalEmailController;
+	private final CustomizableEnumController customizableEnumController;
 
 	public ControllerProvider() {
 		super();
@@ -133,6 +135,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		permanentDeleteController = new PermanentDeleteController();
 		environmentSampleController = new EnvironmentSampleController();
 		externalEmailController = new ExternalEmailController();
+		customizableEnumController = new CustomizableEnumController();
 	}
 
 	protected static ControllerProvider get() {
@@ -281,5 +284,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static ExternalEmailController getExternalEmailController() {
 		return get().externalEmailController;
+	}
+
+	public static CustomizableEnumController getCustomizableEnumController() {
+		return get().customizableEnumController;
 	}
 }

@@ -25,6 +25,7 @@
     <data>
         <import type="android.view.View" />
         <import type="de.symeda.sormas.api.DiseaseHelper" />
+        <import type="de.symeda.sormas.api.utils.DataHelper" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.sample.PathogenTest" />
     </data>
@@ -78,7 +79,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:visibility="@{data.testedPathogen != null ? View.VISIBLE : View.GONE}"
-                app:value="@{data.testedPathogen}" />
+                app:value="@{DataHelper.getPathogenString(data.testedPathogen, data.testedPathogenDetails)}" />
 
         </LinearLayout>
 

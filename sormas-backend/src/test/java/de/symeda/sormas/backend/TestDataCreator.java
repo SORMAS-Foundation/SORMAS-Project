@@ -2163,7 +2163,9 @@ public class TestDataCreator {
 		CustomizableEnumValue diseaseVariant = new CustomizableEnumValue();
 		diseaseVariant.setDataType(CustomizableEnumType.DISEASE_VARIANT);
 		diseaseVariant.setValue("BF.1.2");
-		diseaseVariant.setDiseases(Collections.singletonList(disease));
+		Set<Disease> diseases = new HashSet<>();
+		diseases.add(disease);
+		diseaseVariant.setDiseases(diseases);
 		diseaseVariant.setCaption(name + " variant");
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(diseaseVariant);

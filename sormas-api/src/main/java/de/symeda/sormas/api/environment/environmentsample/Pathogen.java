@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.environment.environmentsample;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,5 +61,12 @@ public class Pathogen extends CustomizableEnum implements Serializable {
 
 	public boolean isHasDetails() {
 		return hasDetails;
+	}
+
+	@Override
+	public Map<String, Class<?>> getAllProperties() {
+		Map<String, Class<?>> allProperties = new HashMap<>();
+		allProperties.put(HAS_DETAILS, boolean.class);
+		return allProperties;
 	}
 }

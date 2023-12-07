@@ -12783,4 +12783,18 @@ WHERE ur.linkeddefaultuserrole = 'ADMIN';
 
 INSERT INTO schema_version (version_number, comment) VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
 
+-- 2023-11-13 Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'CUSTOMIZABLE_ENUM_MANAGEMENT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (533, 'Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340');
+
+-- 2023-12-04 Add tested pathogen name #12663
+ALTER TABLE pathogentest ADD COLUMN testedpathogendetails varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN testedpathogendetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (534, 'Add tested pathogen details #12663');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

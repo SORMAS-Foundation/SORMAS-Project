@@ -131,7 +131,7 @@ public class SampleService {
         .laboratory("Voreingestelltes Labor")
         .typeOfTest(testType)
         .testedDisease(disease)
-        .dateOfResult(LocalDate.now().minusDays(1))
+        .dateOfResult(LocalDate.now())
         .timeOfResult(LocalTime.of(11, 30))
         .resultVerifiedByLabSupervisor("YES")
         .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")

@@ -28,7 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -279,7 +281,9 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		CustomizableEnumValue diseaseVariantEnumValue = new CustomizableEnumValue();
 		diseaseVariantEnumValue.setDataType(CustomizableEnumType.DISEASE_VARIANT);
 		diseaseVariantEnumValue.setValue("BF.1.2");
-		diseaseVariantEnumValue.setDiseases(Collections.singletonList(Disease.CORONAVIRUS));
+		Set<Disease> diseases = new HashSet<>();
+		diseases.add(Disease.CORONAVIRUS);
+		diseaseVariantEnumValue.setDiseases(diseases);
 		diseaseVariantEnumValue.setCaption("BF.1.2 variant");
 		getCustomizableEnumValueService().ensurePersisted(diseaseVariantEnumValue);
 
@@ -289,7 +293,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		CustomizableEnumValue diseaseVariantEnumValue2 = new CustomizableEnumValue();
 		diseaseVariantEnumValue2.setDataType(CustomizableEnumType.DISEASE_VARIANT);
 		diseaseVariantEnumValue2.setValue("BF.1.3");
-		diseaseVariantEnumValue2.setDiseases(Collections.singletonList(Disease.CORONAVIRUS));
+		diseaseVariantEnumValue2.setDiseases(diseases);
 		diseaseVariantEnumValue2.setCaption("BF.1.3 variant");
 		getCustomizableEnumValueService().ensurePersisted(diseaseVariantEnumValue2);
 
@@ -461,12 +465,12 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		SampleReportDto sampleReport = SampleReportDto.build();
 		sampleReport.setSampleDateTime(new Date());
 		sampleReport.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-        sampleReport.setSampleMaterial(SampleMaterial.CRUST);
+		sampleReport.setSampleMaterial(SampleMaterial.CRUST);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setTestResult(PathogenTestResultType.PENDING);
 		testReport.setTestDateTime(new Date());
-        testReport.setTestType(PathogenTestType.PCR_RT_PCR);
+		testReport.setTestType(PathogenTestType.PCR_RT_PCR);
 
 		sampleReport.setTestReports(Collections.singletonList(testReport));
 		labMessage.setSampleReports(Collections.singletonList(sampleReport));
