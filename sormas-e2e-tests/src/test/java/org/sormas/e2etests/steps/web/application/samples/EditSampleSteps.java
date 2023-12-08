@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.COMME
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.CQ_CT_VALUE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DATE_SAMPLE_COLLECTED;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DATE_SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DATE_SAMPLE_WAS_SENT_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_PATHOGEN_TEST_RESULT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
@@ -42,6 +43,7 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LABOR
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.LAB_SAMPLE_ID_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.NEW_TEST_RESULT_DE;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PATHOGEN_NEW_TEST_RESULT_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PATHOGEN_TEST_RESULT_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.REASON_FOR_SAMPLING_TESTING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.REASON_FOR_SAMPLING_TESTING_INPUT;
@@ -66,6 +68,7 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -320,6 +323,37 @@ public class EditSampleSteps implements En {
               webDriverHelpers.isElementEnabled(SAVE_SAMPLE_BUTTON),
               true,
               "Save sample button is not enable");
+          softly.assertAll();
+        });
+
+    And(
+        "I check if editable fields are read only for a sample",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // waiting for page sample loaded
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DATE_SAMPLE_COLLECTED),
+              false,
+              "Date sample of collected field is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(COLLECTED_DATE_TIME_INPUT),
+              false,
+              "Sample Date time field is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAMPLE_TYPE_INPUT),
+              false,
+              "Type of sample combobox is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REASON_FOR_SAMPLING_TESTING_INPUT),
+              false,
+              "Reason for sampling testing combobox field is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DATE_SAMPLE_WAS_SENT_INPUT),
+              false,
+              "Date sample was sent field is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(PATHOGEN_TEST_RESULT_INPUT),
+              false,
+              "Pathogen test result field is not editable state but it should be!");
           softly.assertAll();
         });
 

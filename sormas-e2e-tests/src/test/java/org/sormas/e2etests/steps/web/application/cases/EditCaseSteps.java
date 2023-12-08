@@ -2310,7 +2310,7 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I click on the See samples for this person button from Edit Case Page Directory",
+        "I click on the See samples for this person button on Edit Case Page",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SEE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLE_BUTTON);
@@ -2319,6 +2319,7 @@ public class EditCaseSteps implements En {
     When(
         "I check that number of displayed samples with pencil icon is {int} on Edit Case Page",
         (Integer number) -> {
+          TimeUnit.SECONDS.sleep(3);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_PENCIL_BUTTON),
               number.intValue(),

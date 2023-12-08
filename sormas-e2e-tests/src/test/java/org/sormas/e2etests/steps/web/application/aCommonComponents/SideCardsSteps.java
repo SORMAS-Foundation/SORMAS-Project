@@ -389,5 +389,12 @@ public class SideCardsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(getEditSampleButtonByNumber(sampleNumber));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+
+    When(
+        "I click on eye sample icon of the (\\d+) displayed sample on Edit Case Page",
+        (Integer sampleNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(getEyeSampleIconByNumber(sampleNumber));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
   }
 }
