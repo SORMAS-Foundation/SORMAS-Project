@@ -85,6 +85,10 @@ public class PersonContactDetailEditForm extends AbstractEditForm<PersonContactD
 			PersonContactDetailType.PHONE,
 			false);
 
+		// Set initial visibilities & accesses
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
+
 		addFieldListeners(PersonContactDetailDto.PERSON_CONTACT_DETAILS_TYPE, e -> {
 			final Field<?> contactInformationField = getFieldGroup().getField(PersonContactDetailDto.CONTACT_INFORMATION);
 			final PersonContactDetailType value = (PersonContactDetailType) e.getProperty().getValue();
