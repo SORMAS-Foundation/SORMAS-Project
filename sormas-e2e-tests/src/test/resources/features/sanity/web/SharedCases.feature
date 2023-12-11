@@ -1305,7 +1305,7 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 10
     Then Total number of read only fields in Survnet details section should be 3
 
-  @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
+  @tmsLink=HSP=6265 @env_s2s_3 @LoginKeycloak
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
   Given API : Login to DEMIS server
    Then I create and send Laboratory Notification
@@ -1341,7 +1341,7 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 13
     Then I check that data present in target are match to data from source in surveillance report
 
-  @tmsLink=HSP=6343 @env_d2s @LoginKeycloak
+  @tmsLink=HSP=6343 @env_s2s_3 @LoginKeycloak
     Scenario: S2S - Share a Case created from processed Lab message/Physician Report with option "Share reports"
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
