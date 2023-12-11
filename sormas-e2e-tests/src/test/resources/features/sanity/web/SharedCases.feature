@@ -1367,7 +1367,7 @@ Feature: Sharing cases between environments tests
     And I click to share reports of the case in Share popup
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_1" environment in new driver tab
+    Then I navigate to "s2s_3" environment in new driver tab
     Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description
