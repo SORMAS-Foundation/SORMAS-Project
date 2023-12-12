@@ -132,7 +132,7 @@ public class MessagingService {
 			logger.info(String.format("Tried to send an email to a %s without an email address (UUID: %s).", recipientType, recipientUuid));
 		} else {
 			try {
-				emailService.sendEmail(emailAddress, subject, messageContent);
+				emailService.sendEmailAsync(emailAddress, subject, messageContent);
 			} catch (MessagingException e) {
 				logError(recipientUuid, recipientType, MessageType.EMAIL);
 				throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);

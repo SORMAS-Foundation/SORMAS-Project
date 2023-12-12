@@ -124,10 +124,11 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
 				DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
 				RootEntityType.ROOT_TRAVEL_ENTRY,
+                    DocumentRelatedEntityType.TRAVEL_ENTRY,
 				travelEntryDto.toReference(),
 				travelEntryDto.getPerson(),
 				Strings.messageTravelEntryPersonHasNoEmail,
-					editAllowed,
+                    editAllowed,
 				this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}

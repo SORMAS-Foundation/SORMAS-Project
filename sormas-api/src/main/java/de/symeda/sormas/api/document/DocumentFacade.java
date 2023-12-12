@@ -17,6 +17,7 @@ package de.symeda.sormas.api.document;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -33,6 +34,8 @@ public interface DocumentFacade {
 	void deleteDocument(String uuid);
 
 	List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid);
+
+    List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions);
 
 	Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties);
 

@@ -16,6 +16,7 @@ package de.symeda.sormas.backend.document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -28,9 +29,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
@@ -100,12 +103,7 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		Root<Document> from = cq.from(getElementClass());
 		from.fetch(Document.UPLOADING_USER);
 
-		Predicate filter = cb.and(
-			cb.isFalse(from.get(Document.DELETED)),
-			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
-			cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid));
-
-		cq.where(filter);
+        cq.where(buildRelatedEntityFilter(type, uuid, cb, from));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
@@ -130,6 +128,38 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		cq.distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
+
+    public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<DocumentReferenceDto> cq = cb.createQuery(DocumentReferenceDto.class);
+        Root<Document> from = cq.from(getElementClass());
+
+        cq.multiselect(from.get(Document.UUID), from.get(Document.NAME));
+
+        cq.where(CriteriaBuilderHelper.and(cb, buildRelatedEntityFilter(type, uuid, cb, from), buildExtensionFilter(fileExtensions, cb, from)));
+
+        cq.orderBy(cb.asc(cb.lower(from.get(DocumentDto.NAME))));
+
+        return em.createQuery(cq).getResultList();
+    }
+
+    private static Predicate buildRelatedEntityFilter(DocumentRelatedEntityType type, String uuid, CriteriaBuilder cb, Root<Document> from) {
+        return cb.and(
+                cb.isFalse(from.get(Document.DELETED)),
+                cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
+                cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid));
+    }
+
+    private static Predicate buildExtensionFilter(Set<String> fileExtensions, CriteriaBuilder cb, Root<Document> from) {
+        if (fileExtensions == null) {
+            return null;
+        }
+
+        Predicate[] predicates =
+                fileExtensions.stream().map(extension -> cb.like(from.get(Document.NAME), "%" + extension)).toArray(Predicate[]::new);
+
+        return cb.or(predicates);
+    }
 
 	public String isExisting(DocumentRelatedEntityType type, String uuid, String name) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

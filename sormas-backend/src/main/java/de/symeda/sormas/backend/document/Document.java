@@ -37,7 +37,7 @@ public class Document extends AbstractDomainObject {
 	public static final String DELETED = "deleted";
 	public static final String UPLOADING_USER = "uploadingUser";
 	public static final String NAME = "name";
-	public static final String CONTENT_TYPE = "contentType";
+    public static final String MIME_TYPE = "mimeType";
 	public static final String SIZE = "size";
 	public static final String RELATED_ENTITY_UUID = "relatedEntityUuid";
 	public static final String RELATED_ENTITY_TYPE = "relatedEntityType";
