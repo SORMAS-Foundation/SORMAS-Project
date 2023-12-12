@@ -1969,7 +1969,7 @@ Feature: Case end to end tests
     And I click on edit sample icon of the 1 displayed sample on Edit Case page
     And I check that all editable fields are enabled for a sample
     Then I navigate to case tab
-    And I check that number of displayed samples with "pencil" icon is 1 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
     And I navigate to case person tab
     Then I click on New Contact button in Case Person Tab
     And I click CHOOSE CASE button
@@ -1984,7 +1984,7 @@ Feature: Case end to end tests
     And I click on pick an existing case popup button option
     Then I click on the Persons button from navbar
     And I click on first person in person directory
-    And I check that number of displayed samples with "pencil" icon is 2 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 2 for sample on Side Card
     And I check if Sample card has available "see samples for this person" button on Edit Case Page
     And I click on edit sample icon of the 2 displayed sample on Edit Case page
     And I check that all editable fields are enabled for a sample
@@ -2019,7 +2019,7 @@ Feature: Case end to end tests
     And I click on New Sample
     And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test and default test result
     And I save the created sample with pathogen test
-    And I check that number of displayed samples with "pencil" icon is 1 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
     And I navigate to case person tab
     Then I collect person UUID from Edit Case Person page
     Then I click on New Contact button in Case Person Tab
@@ -2031,7 +2031,7 @@ Feature: Case end to end tests
     And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test and default test result
     And I set Final Laboratory Result to "Positive" on Create new Sample page
     And I save the created sample with pathogen test
-    And I check that number of displayed samples with "pencil" icon is 1 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
     Then I click on logout button from navbar
     And I login with new created user with chosen new role
     And I click on the Cases button from navbar
@@ -2041,7 +2041,7 @@ Feature: Case end to end tests
     And I check if editable fields are read only for a sample
     Then I click on the Persons button from navbar
     And I open the last new created person by UI in person directory
-    And I check that number of displayed samples with "eye" icon is 2 on Edit Case Page
+    And I check that number of displayed samples with "eye" icon is 2 for sample on Side Card
     And I check if Sample card has available "see samples for this person" button on Edit Case Page
     Then I click on eye sample icon of the 2 displayed sample on Edit Case Page
     And I check if editable fields are read only for a sample

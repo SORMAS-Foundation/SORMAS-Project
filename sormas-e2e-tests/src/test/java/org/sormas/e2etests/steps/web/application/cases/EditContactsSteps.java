@@ -498,7 +498,7 @@ public class EditContactsSteps implements En {
         "I check that all editable fields are active for an contact",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          TimeUnit.SECONDS.sleep(3); //waiting for page loaded
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACTS_LIST);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(CONTACT_CLASSIFICATION_OPTIONS),

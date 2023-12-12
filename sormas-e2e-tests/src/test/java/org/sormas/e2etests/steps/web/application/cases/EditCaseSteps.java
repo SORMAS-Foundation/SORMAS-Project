@@ -2336,30 +2336,6 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I check that number of displayed samples with {string} icon is {int} on Edit Case Page",
-        (String icon, Integer number) -> {
-          switch (icon) {
-            case "pencil":
-              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                  EDIT_SAMPLE_PENCIL_BUTTON, 5);
-              softly.assertEquals(
-                  webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_PENCIL_BUTTON),
-                  number.intValue(),
-                  "Number of displayed samples is not valid");
-              break;
-            case "eye":
-              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                  EYE_SAMPLE_BUTTON, 5);
-              softly.assertEquals(
-                  webDriverHelpers.getNumberOfElements(EYE_SAMPLE_BUTTON),
-                  number.intValue(),
-                  "Number of displayed samples is not valid");
-              break;
-          }
-          softly.assertAll();
-        });
-
-    When(
         "I click on the NEW IMMUNIZATION button in Edit case",
         () -> {
           webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
