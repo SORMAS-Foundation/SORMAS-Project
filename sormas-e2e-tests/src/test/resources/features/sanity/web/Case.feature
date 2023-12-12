@@ -1969,7 +1969,7 @@ Feature: Case end to end tests
     And I click on edit sample icon of the 1 displayed sample on Edit Case page
     And I check that all editable fields are enabled for a sample
     Then I navigate to case tab
-    And I check that number of displayed samples with pencil icon is 1 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 1 on Edit Case Page
     And I navigate to case person tab
     Then I click on New Contact button in Case Person Tab
     And I click CHOOSE CASE button
@@ -1984,12 +1984,12 @@ Feature: Case end to end tests
     And I click on pick an existing case popup button option
     Then I click on the Persons button from navbar
     And I click on first person in person directory
-    And I check that number of displayed samples with pencil icon is 2 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 2 on Edit Case Page
     And I check if Sample card has available "see samples for this person" button on Edit Case Page
     And I click on edit sample icon of the 2 displayed sample on Edit Case page
     And I check that all editable fields are enabled for a sample
     And I navigate to case tab
-    Then I click on the See samples for this person button on Edit Case Page
+    Then I click on the "See samples for this person" button on Edit Case Page
     And I check that number of displayed sample results is 2
 
   @tmsLink=HSP-6420 @env_main
@@ -2012,20 +2012,16 @@ Feature: Case end to end tests
     Then I click on User Management tab from Users directory Page
     And I click on the NEW USER button
     And I create new "SampleMissingUserRights" with english language for test
-
-    ########################   #############
-
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I create a new case with specific data and new person
     And I collect uuid of the case
     And I click on New Sample
     And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test and default test result
-   # And I set Final Laboratory Result to "Positive" on Create new Sample page
     And I save the created sample with pathogen test
-   # And I confirm update case result
-    And I check that number of displayed samples with pencil icon is 1 on Edit Case Page
+    And I check that number of displayed samples with "pencil" icon is 1 on Edit Case Page
     And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
     Then I click on New Contact button in Case Person Tab
     And I click CHOOSE CASE button
     Then I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window
@@ -2035,16 +2031,30 @@ Feature: Case end to end tests
     And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test and default test result
     And I set Final Laboratory Result to "Positive" on Create new Sample page
     And I save the created sample with pathogen test
-    #And I confirm update case result
-   # And I click on pick an existing case popup button option
-    And I check that number of displayed samples with pencil icon is 1 on Edit Case Page
-    # USer creator section ToDO - pomyslec o zamkniecie ekci w osobnym tescie
+    And I check that number of displayed samples with "pencil" icon is 1 on Edit Case Page
     Then I click on logout button from navbar
     And I login with new created user with chosen new role
-    #the next steps of scenario
     And I click on the Cases button from navbar
     Then I filter with last created case using case UUID
     When I open last created case
     Then I click on eye sample icon of the 1 displayed sample on Edit Case Page
     And I check if editable fields are read only for a sample
-#Sprawdzenie readonlt - moze warto rozbic na pola tekstowe i buttony np po class= v-disable
+    Then I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    And I check that number of displayed samples with "eye" icon is 2 on Edit Case Page
+    And I check if Sample card has available "see samples for this person" button on Edit Case Page
+    Then I click on eye sample icon of the 2 displayed sample on Edit Case Page
+    And I check if editable fields are read only for a sample
+    Then I click on the Persons button from navbar
+    And I click on the RESET FILTERS button for Person
+    And I open the last new created person by UI in person directory
+    Then I click on the "See samples for this person" button on Edit Case Page
+    And I check that number of displayed sample results is 2
+    Then I click on the Persons button from navbar
+    And I click on the RESET FILTERS button for Person
+    And I open the last new created person by UI in person directory
+    Then I click on the "See contacts for this person" button on Edit Case Page
+    And I open the first contact from contacts list
+    Then I check that all editable fields are active for an contact
+    Then I click on eye sample icon of the 1 displayed sample on Edit Case Page
+    And I check if editable fields are read only for a sample
