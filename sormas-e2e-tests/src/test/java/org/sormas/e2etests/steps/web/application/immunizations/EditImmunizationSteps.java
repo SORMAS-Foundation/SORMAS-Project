@@ -288,9 +288,10 @@ public class EditImmunizationSteps implements En {
     When(
         "I click on Yes option in Confirm deletion popup",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACTION_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
           TimeUnit.SECONDS.sleep(1); // wait for page loaded
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(

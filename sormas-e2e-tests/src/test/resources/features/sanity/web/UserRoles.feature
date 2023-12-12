@@ -193,7 +193,7 @@ Feature: User roles checks
     And I set the Relevance Status Filter to "Deleted cases" on Case Directory page
     And I search for the last "deleted" case on Case directory page
     Then I open the first Case result in Case Directory
-    And Total number of read only fields should be 14
+    And Total number of read only fields should be 17
     Then I check that "Discard" button is readonly on Edit case page
     And I check that "Save" button is readonly on Edit case page
     Then I click on Restore button from case

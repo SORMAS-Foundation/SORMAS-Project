@@ -629,14 +629,16 @@ public class CaseDirectorySteps implements En {
 
     Then(
         "I check that number of displayed cases results is {int}",
-        (Integer number) ->
-            assertHelpers.assertWithPoll20Second(
-                () ->
-                    Assert.assertEquals(
-                        Integer.parseInt(
-                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)),
-                        number.intValue(),
-                        "Number of displayed cases is not correct")));
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      Integer.parseInt(
+                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)),
+                      number.intValue(),
+                      "Number of displayed cases is not correct"));
+        });
 
     And(
         "I filter by mocked CaseID on Case directory page",
@@ -1741,6 +1743,8 @@ public class CaseDirectorySteps implements En {
     And(
         "^I set the Relevance Status Filter to \"([^\"]*)\" on Case Directory page$",
         (String status) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              RELEVANT_STATUS_COMBOBOX);
           webDriverHelpers.selectFromCombobox(RELEVANT_STATUS_COMBOBOX, status);
         });
   }
