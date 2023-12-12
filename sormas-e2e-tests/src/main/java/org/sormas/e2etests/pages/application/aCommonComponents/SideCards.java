@@ -99,4 +99,8 @@ public class SideCards {
   public static By getEditSampleButtonByNumber(Integer number) {
     return By.xpath(String.format("(//div[contains(@id, 'edit-sample')])[%x]", number));
   }
+
+  public static By getEyeSampleIconByNumber(Integer number) {
+    return By.xpath(String.format("(//div[contains(@id, 'iew-sample')])[%x]", number));
+  }
 }
