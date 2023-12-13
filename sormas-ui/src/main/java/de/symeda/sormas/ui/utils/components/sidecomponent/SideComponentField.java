@@ -45,12 +45,12 @@ public class SideComponentField extends HorizontalLayout {
 	}
 
 	public void addViewButton(String id, Button.ClickListener viewClickListener) {
-        addViewButton(id, viewClickListener, VaadinIcons.EYE);
-    }
+		addViewButton(id, viewClickListener, VaadinIcons.EYE);
+	}
 
-    public void addViewButton(String id, Button.ClickListener viewClickListener, VaadinIcons icon) {
+	public void addViewButton(String id, Button.ClickListener viewClickListener, VaadinIcons icon) {
 		Button viewButton =
-                ButtonHelper.createIconButtonWithCaption(id, null, icon, viewClickListener, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+				ButtonHelper.createIconButtonWithCaption(id, null, icon, viewClickListener, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		addComponent(viewButton);
 		setComponentAlignment(viewButton, Alignment.TOP_RIGHT);
 		setExpandRatio(viewButton, 0);

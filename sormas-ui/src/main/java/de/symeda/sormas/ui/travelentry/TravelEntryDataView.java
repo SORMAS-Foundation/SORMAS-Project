@@ -118,8 +118,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		}
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-            ExternalEmailSideComponent externalEmailSideComponent =
-                    ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent =
+					ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

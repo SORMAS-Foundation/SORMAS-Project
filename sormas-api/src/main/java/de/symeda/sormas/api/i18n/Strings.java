@@ -603,7 +603,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
-    String headingExteranlEmailDetails = "headingExteranlEmailDetails";
+	String headingExteranlEmailDetails = "headingExteranlEmailDetails";
 	String headingExternalEmailSend = "headingExternalEmailSend";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
@@ -1001,7 +1001,8 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
-	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent = "infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
+	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent =
+			"infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
 	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
@@ -1296,7 +1297,7 @@ public interface Strings {
 	String messageExportFailed = "messageExportFailed";
 	String messageExternalEmailAttachmentNotAvailableInfo = "messageExternalEmailAttachmentNotAvailableInfo";
 	String messageExternalEmailAttachmentPassword = "messageExternalEmailAttachmentPassword";
-    String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";
+	String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";
 	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
@@ -1365,10 +1366,10 @@ public interface Strings {
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
-    String messageNoExternalEmailToCaseSent = "messageNoExternalEmailToCaseSent";
-    String messageNoExternalEmailToContactSent = "messageNoExternalEmailToContactSent";
-    String messageNoExternalEmailToEventParticipantSent = "messageNoExternalEmailToEventParticipantSent";
-    String messageNoExternalEmailToTravelEntrySent = "messageNoExternalEmailToTravelEntrySent";
+	String messageNoExternalEmailToCaseSent = "messageNoExternalEmailToCaseSent";
+	String messageNoExternalEmailToContactSent = "messageNoExternalEmailToContactSent";
+	String messageNoExternalEmailToEventParticipantSent = "messageNoExternalEmailToEventParticipantSent";
+	String messageNoExternalEmailToTravelEntrySent = "messageNoExternalEmailToTravelEntrySent";
 	String messageNoExternalMessagesSelected = "messageNoExternalMessagesSelected";
 	String messageNoImmunizationsSelected = "messageNoImmunizationsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
