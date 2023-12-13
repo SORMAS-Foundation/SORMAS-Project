@@ -79,6 +79,24 @@ public class UserRolesPage {
   public static By WORK_WITH_MESSAGE_CHECKBOX = By.xpath("//label[text()='Work with messages']");
   public static By WORK_WITH_MESSAGE_CHECKBOX_VALUE =
       By.xpath("//label[text()='Work with messages']/preceding-sibling::input");
+  public static By EDIT_EXISTING_SAMPLE_CHECKBOX =
+      By.xpath("//label[contains(text(),'Edit existing samples')]");
+  public static By EDIT_EXISTING_SAMPLE_CHECKBOX_VALUE =
+      By.xpath("//label[contains(text(),'Edit existing samples')]/preceding-sibling::input\n");
+  public static By EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX =
+      By.xpath("//label[contains(text(),'Edit existing pathogen tests')]");
+  public static By EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX_VALUE =
+      By.xpath("//label[contains(text(),'Edit existing pathogen tests')]/preceding-sibling::input");
+  public static By TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX =
+      By.xpath("//label[contains(text(),'Transfer samples to another lab')]");
+  public static By TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX_VALUE =
+      By.xpath(
+          "//label[contains(text(),'Transfer samples to another lab')]/preceding-sibling::input");
+  public static By WORK_WITH_MESSAGES_CHECKBOX =
+      By.xpath("//label[contains(text(),'Work with messages')]");
+  public static By WORK_WITH_MESSAGES_CHECKBOX_VALUE =
+      By.xpath("//label[contains(text(),'Work with messages')]/preceding-sibling::input");
+
   public static final By GRID_RESULTS_FIRST_UUID =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(1)");
 

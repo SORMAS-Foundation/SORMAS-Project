@@ -435,6 +435,7 @@ public class PersonDirectorySteps implements En {
     When(
         "I open the last new created person by UI in person directory",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_PERSON_BY_FREE_TEXT, 30);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_PERSON_BY_FREE_TEXT, personUuid);
