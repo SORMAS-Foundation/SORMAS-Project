@@ -87,7 +87,7 @@ public class AttachmentService {
     }
 
     @NotNull
-    public Map<File, String> createEncryptedPdfs(List<de.symeda.sormas.backend.document.Document> sormasDocuments, String passowrd) {
+	public Map<File, String> createEncryptedPdfs(List<de.symeda.sormas.backend.document.Document> sormasDocuments, String password) {
         return sormasDocuments.stream().map(d -> {
             String fileName = d.getName();
             String fileExtension = fileName.substring(fileName.lastIndexOf("."));
@@ -96,12 +96,12 @@ public class AttachmentService {
                 final File encryptedPdf;
                 File document = documentStorageService.getFile(d.getStorageReference());
                 if (fileExtension.equals(PDF_FILE_EXTENSION)) {
-                    encryptedPdf = encryptPdf(document, passowrd);
+					encryptedPdf = encryptPdf(document, password);
                 } else {
                     PdfConverter converter = getConverter(fileExtension);
                     fileName = converter.getConvertedFileName(fileName);
                     File converted = converter.convert(document);
-                    encryptedPdf = encryptPdf(converted, passowrd);
+					encryptedPdf = encryptPdf(converted, password);
                     converted.delete();
                 }
 
