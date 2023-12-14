@@ -101,6 +101,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 
 	public static final String DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES = "duplicatechecks.excludepersonsonlylinkedtoarchivedentries";
+	public static final String DUPLICATE_CHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA = "duplicatechecks.nationalhealthidoverridescriteria";
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
@@ -434,6 +435,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
 		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
+	}
+
+	@Override
+	public boolean isDuplicateChecksNationalHealthIdOverridesCriteria() {
+		return getBoolean(DUPLICATE_CHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA, false);
 	}
 
 	@Override
