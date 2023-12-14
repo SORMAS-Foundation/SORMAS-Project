@@ -24,99 +24,74 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ManualMessageLogIndexDto implements Serializable, Pseudonymizable {
+public class ManualMessageLogIndexDto extends PseudonymizableIndexDto implements Serializable, Pseudonymizable {
 
-    private static final long serialVersionUID = -6632086079342652486L;
+	private static final long serialVersionUID = -6632086079342652486L;
 
-    private final String uuid;
-    private final MessageType messageType;
-    private final Date sentDate;
-    private UserReferenceDto sendingUser;
-    @PersonalData
-    @SensitiveData
-    private final String emailAddress;
-    private final String usedTemplate;
-    private final List<String> attachedDocuments;
-    private boolean inJurisdiction;
-    private final boolean senderInJurisdiction;
-    private boolean pseudonymized;
+	private final MessageType messageType;
+	private final Date sentDate;
+	private UserReferenceDto sendingUser;
+	@PersonalData
+	@SensitiveData
+	private final String emailAddress;
+	private final String usedTemplate;
+	private final List<String> attachedDocuments;
+	private final boolean senderInJurisdiction;
 
-    public ManualMessageLogIndexDto(
-            String uuid,
-            MessageType messageType,
-            Date sentDate,
-            String sendingUserUuid,
-            String sendingUserFirstName,
-            String sendingUserLastName,
-            String emailAddress,
-            String usedTemplate,
-            Object attachedDocuments,
-            boolean inJurisdiction,
-            boolean senderInJurisdiction) {
-        this.uuid = uuid;
-        this.messageType = messageType;
-        this.sentDate = sentDate;
-        this.sendingUser = new UserReferenceDto(sendingUserUuid, sendingUserFirstName, sendingUserLastName);
-        this.emailAddress = emailAddress;
-        this.usedTemplate = usedTemplate;
-        this.attachedDocuments = (List<String>) attachedDocuments;
-        this.inJurisdiction = inJurisdiction;
-        this.senderInJurisdiction = senderInJurisdiction;
-    }
+	public ManualMessageLogIndexDto(
+		String uuid,
+		MessageType messageType,
+		Date sentDate,
+		String sendingUserUuid,
+		String sendingUserFirstName,
+		String sendingUserLastName,
+		String emailAddress,
+		String usedTemplate,
+		Object attachedDocuments,
+		boolean inJurisdiction,
+		boolean senderInJurisdiction) {
+		super(uuid);
+		this.messageType = messageType;
+		this.sentDate = sentDate;
+		this.sendingUser = new UserReferenceDto(sendingUserUuid, sendingUserFirstName, sendingUserLastName);
+		this.emailAddress = emailAddress;
+		this.usedTemplate = usedTemplate;
+		this.attachedDocuments = (List<String>) attachedDocuments;
+		this.inJurisdiction = inJurisdiction;
+		this.senderInJurisdiction = senderInJurisdiction;
+	}
 
-    public String getUuid() {
-        return uuid;
-    }
+	public MessageType getMessageType() {
+		return messageType;
+	}
 
-    public MessageType getMessageType() {
-        return messageType;
-    }
+	public Date getSentDate() {
+		return sentDate;
+	}
 
-    public Date getSentDate() {
-        return sentDate;
-    }
+	public UserReferenceDto getSendingUser() {
+		return sendingUser;
+	}
 
-    public UserReferenceDto getSendingUser() {
-        return sendingUser;
-    }
+	public void setSendingUser(UserReferenceDto sendingUser) {
+		this.sendingUser = sendingUser;
+	}
 
-    public void setSendingUser(UserReferenceDto sendingUser) {
-        this.sendingUser = sendingUser;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public String getEmailAddress() {
-        return emailAddress;
-    }
+	public String getUsedTemplate() {
+		return usedTemplate;
+	}
 
-    public String getUsedTemplate() {
-        return usedTemplate;
-    }
+	public List<String> getAttachedDocuments() {
+		return attachedDocuments;
+	}
 
-    public List<String> getAttachedDocuments() {
-        return attachedDocuments;
-    }
-
-    public boolean isInJurisdiction() {
-        return inJurisdiction;
-    }
-
-    @Override
-    public void setInJurisdiction(boolean inJurisdiction) {
-        this.inJurisdiction = inJurisdiction;
-    }
-
-    public boolean isSenderInJurisdiction() {
-        return senderInJurisdiction;
-    }
-
-    @Override
-    public boolean isPseudonymized() {
-        return pseudonymized;
-    }
-
-    @Override
-    public void setPseudonymized(boolean pseudonymized) {
-        this.pseudonymized = pseudonymized;
-    }
+	public boolean isSenderInJurisdiction() {
+		return senderInJurisdiction;
+	}
 }
