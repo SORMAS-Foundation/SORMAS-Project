@@ -73,7 +73,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REGION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REINFECTION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REPORTING_USER_FILTER;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
@@ -96,7 +95,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRS
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_HEADERS;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_RESULTS_FIRST_NAME;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DISCARDED_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DONE_BUTTON;
@@ -651,7 +649,6 @@ public class CaseDirectorySteps implements En {
     When(
         "^I search for cases created with the API using Person's name",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CASE_RESET_FILTERS_BUTTON);
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
@@ -660,9 +657,7 @@ public class CaseDirectorySteps implements En {
               apiState.getLastCreatedPerson().getFirstName()
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(GRID_RESULTS_FIRST_NAME);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
           Assert.assertEquals(
