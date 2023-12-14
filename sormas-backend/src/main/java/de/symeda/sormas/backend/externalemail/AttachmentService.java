@@ -9,9 +9,8 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -45,7 +44,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.jetbrains.annotations.NotNull;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -86,8 +84,7 @@ public class AttachmentService {
         return Set.of((PDF_FILE_EXTENSION + "," + DOCX_FILE_EXTENSION + "," + IMAGE_FILE_EXTENSTIONS).split(","));
     }
 
-    @NotNull
-	public Map<File, String> createEncryptedPdfs(List<de.symeda.sormas.backend.document.Document> sormasDocuments, String password) {
+    public Map<File, String> createEncryptedPdfs(List<de.symeda.sormas.backend.document.Document> sormasDocuments, String password) {
         return sormasDocuments.stream().map(d -> {
             String fileName = d.getName();
             String fileExtension = fileName.substring(fileName.lastIndexOf("."));

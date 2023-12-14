@@ -31,8 +31,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
-import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
-import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -295,15 +293,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
-				DocumentWorkflow.CONTACT_EMAIL,
-				RootEntityType.ROOT_CONTACT,
-                    DocumentRelatedEntityType.CONTACT,
-				contactDto.toReference(),
-				contactDto.getPerson(),
-				Strings.messageContactPersonHasNoEmail,
-					editAllowed,
-				this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent =
+					ExternalEmailSideComponent.forContact(contactDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

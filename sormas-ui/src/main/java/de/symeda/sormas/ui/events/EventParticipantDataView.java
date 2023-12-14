@@ -189,15 +189,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 		}
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
-				DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
-				RootEntityType.ROOT_EVENT_PARTICIPANT,
-                    null,
-				eventParticipantRef,
-				eventParticipant.getPerson().toReference(),
-				Strings.messageEventParticipantPersonHasNoEmail,
-                    editAllowed,
-				this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent =
+					ExternalEmailSideComponent.forEventParticipant(eventParticipant, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

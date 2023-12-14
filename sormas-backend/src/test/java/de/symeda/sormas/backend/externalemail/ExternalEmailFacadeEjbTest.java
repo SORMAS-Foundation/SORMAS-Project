@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineS
 import static de.symeda.sormas.backend.externalemail.luxembourg.NationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasValue;
 import static org.hamcrest.Matchers.is;
@@ -66,6 +67,9 @@ import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogCriteria;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -279,6 +283,14 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getExternalEmailFacade().sendEmail(options);
 
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(0));
 	}
 
 	@Test
@@ -309,6 +321,14 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getExternalEmailFacade().sendEmail(options);
 
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).contact(contact.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("ContactEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(0));
 	}
 
 	@Test
@@ -362,6 +382,15 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 		getExternalEmailFacade().sendEmail(options);
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(supportedFileTypes.size()));
+		documents.forEach(d -> assertThat(messageLogs.get(0).getAttachedDocuments(), hasItem(d.getName())));
 	}
 
 	@Test
@@ -461,7 +490,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN);
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), personDto.toReference(), rdcf);
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		DocumentDto document =
 			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some content".getBytes(StandardCharsets.UTF_8));
