@@ -43,6 +43,7 @@ import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
@@ -371,6 +372,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		setFieldVisibilitiesAndAccesses(LocationDto.class, (ViewGroup) view);
 	}
 
+	private void setPersonContactDetailFieldVisibilitiesAndAccesses(View view) {
+		setFieldVisibilitiesAndAccesses(PersonContactDetailDto.class, (ViewGroup) view);
+	}
+
 	private void setBurialFieldVisibilities(final FragmentPersonEditLayoutBinding contentBinding) {
 		if (PresentCondition.BURIED.equals(contentBinding.personPresentCondition.getValue())) {
 			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialDate)) {
@@ -416,8 +421,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		onPersonContactDetailItemClickListener = (v, item) -> {
 			final PersonContactDetail personContactDetail = (PersonContactDetail) item;
 			final PersonContactDetail personContactDetailClone = (PersonContactDetail) personContactDetail.clone();
-			final PersonContactDetailDialog dialog =
-				new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetailClone, record, getActivityRootData(), false);
+			final PersonContactDetailDialog dialog = new PersonContactDetailDialog(
+				BaseActivity.getActiveActivity(),
+				personContactDetailClone,
+				record,
+				getActivityRootData(),
+				getFieldAccessCheckers(),
+				false);
 
 			dialog.setPositiveCallback(() -> checkExistingPrimaryContactDetails(personContactDetailClone, dialog, () -> {
 				record.getPersonContactDetails().set(record.getPersonContactDetails().indexOf(personContactDetail), personContactDetailClone);
@@ -445,8 +455,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		getContentBinding().btnAddPersonContactDetail.setOnClickListener(v -> {
 			final PersonContactDetail personContactDetail = DatabaseHelper.getPersonContactDetailDao().build();
-			final PersonContactDetailDialog dialog =
-				new PersonContactDetailDialog(BaseActivity.getActiveActivity(), personContactDetail, record, getActivityRootData(), true);
+			final PersonContactDetailDialog dialog = new PersonContactDetailDialog(
+				BaseActivity.getActiveActivity(),
+				personContactDetail,
+				record,
+				getActivityRootData(),
+				getFieldAccessCheckers(),
+				true);
 
 			dialog.setPositiveCallback(() -> checkExistingPrimaryContactDetails(personContactDetail, dialog, () -> {
 				record.getPersonContactDetails().add(0, personContactDetail);
@@ -475,7 +490,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	private void updatePersonContactDetails() {
 		getContentBinding().setPersonContactDetailList(getPersonContactDetails());
-		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
+		getContentBinding().setPersonContactDetailBindCallback(this::setPersonContactDetailFieldVisibilitiesAndAccesses);
 	}
 
 	private void removePersonContactDetail(PersonContactDetail item) {
@@ -572,7 +587,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		contentBinding.setPersonContactDetailList(getPersonContactDetails());
 		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
-		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
+		getContentBinding().setPersonContactDetailBindCallback(this::setPersonContactDetailFieldVisibilitiesAndAccesses);
 
 		setUpLayoutBinding(this, record, contentBinding);
 	}
