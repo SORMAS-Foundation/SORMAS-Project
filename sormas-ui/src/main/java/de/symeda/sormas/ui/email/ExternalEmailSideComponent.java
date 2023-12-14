@@ -140,7 +140,7 @@ public class ExternalEmailSideComponent extends SideComponent {
 									emailList.reload();
 								}
 							}),
-					UserRight.EXTERNAL_EMAIL_SEND);
+                    UserRight.EXTERNAL_EMAIL_SEND);
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());

@@ -263,10 +263,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testSendEmailToCasePerson() throws DocumentTemplateException, ExternalEmailException, MessagingException, IOException {
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), rdcf, (c) -> {
-			c.setDisease(Disease.CORONAVIRUS);
-			c.setPerson(personDto.toReference());
-		});
+		CaseDataDto caze = creator.createCase(userDto.toReference(), personDto.toReference(), rdcf);
 
 		Mockito.doAnswer(invocation -> {
 			assertThat(invocation.getArgument(0), is("test@mail.com"));

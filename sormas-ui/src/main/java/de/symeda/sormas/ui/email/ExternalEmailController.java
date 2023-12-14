@@ -42,7 +42,7 @@ public class ExternalEmailController {
 	public void sendEmail(
 		DocumentWorkflow documentWorkflow,
 		RootEntityType rootEntityType,
-		DocumentRelatedEntityType documentRelatedEntityType,
+        DocumentRelatedEntityType documentRelatedEntityType,
 		ReferenceDto rootEntityReference,
 		PersonReferenceDto personReference,
 		Runnable callback) {

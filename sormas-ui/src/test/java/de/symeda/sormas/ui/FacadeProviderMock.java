@@ -33,6 +33,7 @@ import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
+import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -77,6 +78,7 @@ import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb.EventImportFacadeEjbLocal;
+import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
@@ -211,6 +213,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) beanTest.getBean(EnvironmentSampleFacadeEjb.EnvironmentSampleFacadeEjbLocal.class);
 		} else if (EnvironmentImportFacade.class == clazz) {
 			return (P) beanTest.getBean(EnvironmentImportFacadeEjb.EnvironmentImportFacadeEjbLocal.class);
+		} else if (ExternalEmailFacade.class == clazz) {
+			return (P) beanTest.getBean(ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal.class);
 		}
 
 		return null;

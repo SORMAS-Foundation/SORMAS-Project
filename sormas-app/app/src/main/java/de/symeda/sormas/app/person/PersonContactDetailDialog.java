@@ -25,6 +25,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -52,6 +53,7 @@ public class PersonContactDetailDialog extends FormDialog {
 		PersonContactDetail personContactDetail,
 		Person person,
 		PseudonymizableAdo activityRootData,
+		UiFieldAccessCheckers fieldAccessCheckers,
 		boolean create) {
 		super(
 			activity,
@@ -61,7 +63,7 @@ public class PersonContactDetailDialog extends FormDialog {
 			R.string.heading_person_contact_detail,
 			-1,
 			false,
-			UiFieldAccessCheckers.forSensitiveData(personContactDetail.isPseudonymized()),
+			fieldAccessCheckers,
 			FieldVisibilityCheckers.withDisease(PersonFragmentHelper.getDiseaseOfAssociatedEntity(activityRootData)));
 
 		this.data = personContactDetail;
@@ -81,6 +83,8 @@ public class PersonContactDetailDialog extends FormDialog {
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
 		contentBinding.personContactDetailPersonContactDetailType.initializeSpinner(DataUtils.getEnumItems(PersonContactDetailType.class, true));
 		contentBinding.personContactDetailPhoneNumberType.initializeSpinner(DataUtils.getEnumItems(PhoneNumberType.class, true));
+
+		setFieldVisibilitiesAndAccesses(PersonContactDetailDto.class, contentBinding.mainContent);
 
 		contentBinding.personContactDetailPersonContactDetailType.addValueChangedListener(e -> {
 			if (e.getValue() != PersonContactDetailType.OTHER
