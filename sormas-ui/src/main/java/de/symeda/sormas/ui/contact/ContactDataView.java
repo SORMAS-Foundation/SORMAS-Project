@@ -298,6 +298,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
 				DocumentWorkflow.CONTACT_EMAIL,
 				RootEntityType.ROOT_CONTACT,
+                    DocumentRelatedEntityType.CONTACT,
 				contactDto.toReference(),
 				contactDto.getPerson(),
 				Strings.messageContactPersonHasNoEmail,

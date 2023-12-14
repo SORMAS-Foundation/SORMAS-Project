@@ -124,6 +124,10 @@
 			<groupId>fr.opensagres.xdocreport</groupId>
 			<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>fr.opensagres.xdocreport</groupId>
+			<artifactId>fr.opensagres.xdocreport.converter.docx.xwpf</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
@@ -283,6 +287,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
 		</dependency>
 
 		<!-- *** Exclude Payara modules *** (with explicite scope "runtime") -->

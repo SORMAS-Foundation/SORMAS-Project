@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.document;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -25,6 +26,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +55,16 @@ public class DocumentStorageService {
 	private UserService userService;
 
 	public byte[] read(String storageReference) throws IOException {
-		return Files.readAllBytes(Paths.get(configFacade.getDocumentFilesPath(), storageReference));
+        return Files.readAllBytes(getFilePath(storageReference));
+    }
+
+    public File getFile(String storageReference) {
+        return getFilePath(storageReference).toFile();
+    }
+
+    @NotNull
+    private Path getFilePath(String storageReference) {
+        return Paths.get(configFacade.getDocumentFilesPath(), storageReference);
 	}
 
 	public String save(Document document, byte[] content) throws IOException {
@@ -66,7 +77,7 @@ public class DocumentStorageService {
 	}
 
 	public void delete(String storageReference) {
-		Path path = Paths.get(configFacade.getDocumentFilesPath(), storageReference);
+        Path path = getFilePath(storageReference);
 		try {
 			Files.deleteIfExists(path);
 		} catch (IOException e) {
