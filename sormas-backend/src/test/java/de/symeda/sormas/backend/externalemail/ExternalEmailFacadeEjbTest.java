@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.externalemail;
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.cleanLineSeparators;
 import static de.symeda.sormas.backend.externalemail.luxembourg.NationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -104,12 +103,12 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 
 		admin = creator.createUser(
-				rdcf.region.getUuid(),
-				rdcf.district.getUuid(),
-				rdcf.facility.getUuid(),
-				"Admin",
-				"Admin",
-				creator.getUserRoleReference(DefaultUserRole.ADMIN));
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Admin",
+			"Admin",
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		userDto = creator.createUser(
 			rdcf.region.getUuid(),
@@ -149,9 +148,9 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		loginWith(admin);
 
 		getDocumentTemplateFacade()
-				.writeDocumentTemplate(DocumentWorkflow.CASE_EMAIL, "CaseEmailMock.txt", "#Subject\nContent".getBytes(StandardCharsets.UTF_8));
+			.writeDocumentTemplate(DocumentWorkflow.CASE_EMAIL, "CaseEmailMock.txt", "#Subject\nContent".getBytes(StandardCharsets.UTF_8));
 		getDocumentTemplateFacade()
-				.writeDocumentTemplate(DocumentWorkflow.CONTACT_EMAIL, "ContactEmailMock.txt", "#Subject\nContent".getBytes(StandardCharsets.UTF_8));
+			.writeDocumentTemplate(DocumentWorkflow.CONTACT_EMAIL, "ContactEmailMock.txt", "#Subject\nContent".getBytes(StandardCharsets.UTF_8));
 
 		loginWith(userDto);
 
@@ -162,8 +161,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		assertThat(templateNames, containsInAnyOrder("CaseEmail.txt", "CaseEmailMock.txt"));
 
 		assertThat(
-				getExternalEmailFacade().getTemplateNames(DocumentWorkflow.CONTACT_EMAIL),
-				containsInAnyOrder("ContactEmail.txt", "ContactEmailMock.txt"));
+			getExternalEmailFacade().getTemplateNames(DocumentWorkflow.CONTACT_EMAIL),
+			containsInAnyOrder("ContactEmail.txt", "ContactEmailMock.txt"));
 	}
 
 	@Test
@@ -189,22 +188,22 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		loginWith(userDto);
 
 		List<DocumentReferenceDto> attachableCaseDocuments =
-				getExternalEmailFacade().getAttachableDocuments(DocumentWorkflow.CASE_EMAIL, caze.getUuid());
+			getExternalEmailFacade().getAttachableDocuments(DocumentWorkflow.CASE_EMAIL, caze.getUuid());
 		assertThat(attachableCaseDocuments, hasSize(6));
 		assertThat(
-				attachableCaseDocuments.stream().map(DocumentReferenceDto::getCaption).collect(Collectors.toList()),
-				containsInAnyOrder(
-						"PDF Document.pdf",
-						"DOCX Document.docx",
-						"JPG Document.jpg",
-						"JPEG Document.jpeg",
-						"PNG Document.png",
-						"GIF Document.gif"));
+			attachableCaseDocuments.stream().map(DocumentReferenceDto::getCaption).collect(Collectors.toList()),
+			containsInAnyOrder(
+				"PDF Document.pdf",
+				"DOCX Document.docx",
+				"JPG Document.jpg",
+				"JPEG Document.jpeg",
+				"PNG Document.png",
+				"GIF Document.gif"));
 		assertThat(getExternalEmailFacade().getAttachableDocuments(DocumentWorkflow.CONTACT_EMAIL, contact.getUuid()), hasSize(1));
 
 		assertThrows(
-				IllegalArgumentException.class,
-				() -> getExternalEmailFacade().getAttachableDocuments(DocumentWorkflow.EVENT_PARTICIPANT_EMAIL, "dummy-uuid"));
+			IllegalArgumentException.class,
+			() -> getExternalEmailFacade().getAttachableDocuments(DocumentWorkflow.EVENT_PARTICIPANT_EMAIL, "dummy-uuid"));
 	}
 
 	@Test
@@ -286,7 +285,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
 
 		List<ManualMessageLogIndexDto> messageLogs =
-				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
 		assertThat(messageLogs, hasSize(1));
 		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
 		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
@@ -324,7 +323,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
 
 		List<ManualMessageLogIndexDto> messageLogs =
-				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).contact(contact.toReference()));
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).contact(contact.toReference()));
 		assertThat(messageLogs, hasSize(1));
 		assertThat(messageLogs.get(0).getUsedTemplate(), is("ContactEmail.txt"));
 		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
@@ -336,25 +335,21 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	public void testSendEmailWithAttachments() throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException {
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		String personNationalHealthId = "1234567890";
-		PersonDto person = creator.createPerson("Preson", "Name", Sex.UNKNOWN, p -> {
+		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
 			p.setNationalHealthId(personNationalHealthId);
 		});
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), rdcf, (c) -> {
-			c.setDisease(Disease.CORONAVIRUS);
-			c.setPerson(person.toReference());
-		});
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		List<String> supportedFileTypes = Arrays.asList("pdf", "docx", "jpg", "png", "gif");
 		List<DocumentDto> documents = new ArrayList<>(supportedFileTypes.size());
-		List<String> documentNames = supportedFileTypes.stream().map(type -> type.toUpperCase() + " Attachment." + type).collect(Collectors.toList());
-		for (String documentName : documentNames) {
+		for (String type : supportedFileTypes) {
 			documents.add(
-					createDocument(
-							documentName,
-							DocumentRelatedEntityType.CASE,
-							caze.getUuid(),
-							IOUtils.toByteArray(getClass().getResourceAsStream("/externalemail/" + documentName))));
+				createDocument(
+					type.toUpperCase() + " Document." + type,
+					DocumentRelatedEntityType.CASE,
+					caze.getUuid(),
+					IOUtils.toByteArray(getClass().getResourceAsStream("/externalemail/" + type.toUpperCase() + " Attachment." + type))));
 		}
 
 		Mockito.doAnswer(invocation -> {
@@ -362,7 +357,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 			assertThat(filesAttached.size(), is(supportedFileTypes.size()));
 			for (String type : supportedFileTypes) {
-				assertThat(filesAttached, hasValue(type.toUpperCase() + " Attachment.pdf"));
+				assertThat(filesAttached, hasValue(type.toUpperCase() + " Document.pdf"));
 			}
 
 			for (Map.Entry<File, String> entry : filesAttached.entrySet()) {
@@ -389,39 +384,36 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		Mockito.verify(emailService, Mockito.times(1)).sendEmail(any(), any(), any(), any());
 
 		List<ManualMessageLogIndexDto> messageLogs =
-				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze.toReference()));
 		assertThat(messageLogs, hasSize(1));
 		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
 		assertThat(messageLogs.get(0).getEmailAddress(), is("test@mail.com"));
 		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
 		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(supportedFileTypes.size()));
-		documentNames.forEach(name -> assertThat(messageLogs.get(0).getAttachedDocuments(), hasItem(name)));
+		documents.forEach(d -> assertThat(messageLogs.get(0).getAttachedDocuments(), hasItem(d.getName())));
 	}
 
 	@Test
 	public void testEncryptAttachmentsWithRandomPassword()
-			throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException, InvalidPhoneNumberException {
+		throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException, InvalidPhoneNumberException {
 		setupMockSmsService();
 
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
-		PersonDto person = creator.createPerson("Preson", "Name", Sex.UNKNOWN, p -> {
+		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
 			p.setPhone("+49 681 1234");
 		});
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), rdcf, (c) -> {
-			c.setDisease(Disease.CORONAVIRUS);
-			c.setPerson(person.toReference());
-		});
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		List<String> supportedFileTypes = Arrays.asList("pdf", "docx", "jpg", "png", "gif");
 		List<DocumentDto> documents = new ArrayList<>(supportedFileTypes.size());
 		for (String type : supportedFileTypes) {
 			documents.add(
-					createDocument(
-							type.toUpperCase() + " Document." + type,
-							DocumentRelatedEntityType.CASE,
-							caze.getUuid(),
-							IOUtils.toByteArray(getClass().getResourceAsStream("/externalemail/" + type.toUpperCase() + " Attachment." + type))));
+				createDocument(
+					type.toUpperCase() + " Document." + type,
+					DocumentRelatedEntityType.CASE,
+					caze.getUuid(),
+					IOUtils.toByteArray(getClass().getResourceAsStream("/externalemail/" + type.toUpperCase() + " Attachment." + type))));
 		}
 
 		ArgumentCaptor<Map<File, String>> attachmentsCaptor = ArgumentCaptor.forClass(Map.class);
@@ -440,8 +432,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			assertThat(invocation.getArgument(0), is(person.getPhone()));
 			// get the random password out of the message
 			Matcher smsMessageMatcher =
-					Pattern.compile(String.format(I18nProperties.getString(Strings.messageExternalEmailAttachmentPassword), "([a-zA-Z0-9]{10})"))
-							.matcher(invocation.getArgument(1));
+				Pattern.compile(String.format(I18nProperties.getString(Strings.messageExternalEmailAttachmentPassword), "([a-zA-Z0-9]{10})"))
+					.matcher(invocation.getArgument(1));
 			assertThat("Sms message is not the expected one", smsMessageMatcher.matches(), is(true));
 
 			String password = smsMessageMatcher.group(1);
@@ -475,15 +467,12 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testSendEmailWithUnsupportedAttachment() throws MessagingException, IOException, InvalidPhoneNumberException {
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
-		PersonDto person = creator.createPerson("Preson", "Name", Sex.UNKNOWN, p -> p.setNationalHealthId("1234567890"));
+		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> p.setNationalHealthId("1234567890"));
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), rdcf, (c) -> {
-			c.setDisease(Disease.CORONAVIRUS);
-			c.setPerson(person.toReference());
-		});
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		DocumentDto document =
-				createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some contant".getBytes(StandardCharsets.UTF_8));
+			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some content".getBytes(StandardCharsets.UTF_8));
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
 		options.setTemplateName("CaseEmail.txt");
@@ -499,15 +488,12 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testSendAttachmentWithUnavailablePassword() throws MessagingException, IOException, InvalidPhoneNumberException {
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
-		PersonDto person = creator.createPerson("Preson", "Name", Sex.UNKNOWN);
+		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN);
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), rdcf, (c) -> {
-			c.setDisease(Disease.CORONAVIRUS);
-			c.setPerson(person.toReference());
-		});
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		DocumentDto document =
-				createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some contant".getBytes(StandardCharsets.UTF_8));
+			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some content".getBytes(StandardCharsets.UTF_8));
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
 		options.setTemplateName("CaseEmail.txt");
@@ -523,17 +509,14 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testSendAttachmentNotRelatedToEntity() throws MessagingException, IOException, InvalidPhoneNumberException {
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
-		PersonDto person = creator.createPerson("Preson", "Name", Sex.UNKNOWN, p -> {
+		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
 			p.setNationalHealthId("1234567890");
 		});
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), rdcf, (c) -> {
-			c.setDisease(Disease.CORONAVIRUS);
-			c.setPerson(person.toReference());
-		});
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		DocumentDto document =
-				createDocument("SomeDocument.txt", DocumentRelatedEntityType.CONTACT, "mock-uuid", "Some contant".getBytes(StandardCharsets.UTF_8));
+			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CONTACT, "mock-uuid", "Some content".getBytes(StandardCharsets.UTF_8));
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
 		options.setTemplateName("CaseEmail.txt");
@@ -551,7 +534,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	private DocumentDto createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid, byte[] content)
-			throws IOException {
+		throws IOException {
 		DocumentDto document = DocumentDto.build();
 		document.setName(fileName);
 		document.setUploadingUser(userDto.toReference());
