@@ -17,8 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common.messaging;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -26,10 +30,14 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +57,39 @@ public class EmailService {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
-	public void sendEmail(String recipient, String subject, String content) throws MessagingException {
+	public void sendEmailAsync(String recipient, String subject, String content) throws MessagingException {
 
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
+		sendEmailAsync(recipient, subject, content, "text/plain; charset=utf-8");
+	}
+
+	public void sendEmail(String recipient, String subject, String content, Map<File, String> attachments) throws MessagingException {
+
+		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
+		Multipart multipart = new MimeMultipart();
+		MimeBodyPart messageBodyPart = new MimeBodyPart();
+		messageBodyPart.setContent(content, "text/plain; charset=utf-8");
+
+		multipart.addBodyPart(messageBodyPart);
+
+		for (Map.Entry<File, String> attachment : attachments.entrySet()) {
+			File file = attachment.getKey();
+			String fileName = attachment.getValue();
+
+			MimeBodyPart attachPart = new MimeBodyPart();
+			attachPart.setDataHandler(new DataHandler(new FileDataSource(file)));
+			attachPart.setFileName(fileName);
+			attachPart.setDisposition(Part.ATTACHMENT);
+
+			multipart.addBodyPart(attachPart);
+		}
+
+		sendEmailAsync(recipient, subject, multipart, null);
+	}
+
+	private void sendEmailAsync(String recipient, String subject, Object content, String contentType) throws MessagingException {
 		MimeMessage message = new MimeMessage(mailSession);
 
 		String senderAddress = configFacade.getEmailSenderAddress();
@@ -66,9 +103,8 @@ public class EmailService {
 		}
 
 		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
-
 		message.setSubject(subject, "UTF-8");
-		message.setContent(content, "text/plain; charset=utf-8");
+		message.setContent(content, contentType);
 
 		Transport.send(message);
 		logger.info("Mail sent to {}.", recipient);

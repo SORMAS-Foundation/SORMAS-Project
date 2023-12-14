@@ -228,10 +228,11 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
 				DocumentWorkflow.CASE_EMAIL,
 				RootEntityType.ROOT_CASE,
+                    DocumentRelatedEntityType.CASE,
 				caze.toReference(),
 				caze.getPerson(),
 				Strings.messageCasePersonHasNoEmail,
-					isEditAllowed,
+                    isEditAllowed,
 				this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -39,6 +40,7 @@ public class ExternalEmailSideComponent extends SideComponent {
 	public ExternalEmailSideComponent(
 		DocumentWorkflow documentWorkflow,
 		RootEntityType rootEntityType,
+        DocumentRelatedEntityType documentRelatedEntityType,
 		ReferenceDto rootEntityReference,
 		PersonReferenceDto personRef,
 		String noRecipientStringKey,
@@ -48,9 +50,10 @@ public class ExternalEmailSideComponent extends SideComponent {
 
 		if (isEditAllowed) {
 			addCreateButton(
-					I18nProperties.getCaption(Captions.messagesSendEmail),
-					() -> ControllerProvider.getExternalEmailController().sendEmail(documentWorkflow, rootEntityType, rootEntityReference, personRef),
-					UserRight.EXTERNAL_EMAIL_SEND);
+                    I18nProperties.getCaption(Captions.messagesSendEmail),
+                    () -> ControllerProvider.getExternalEmailController()
+                            .sendEmail(documentWorkflow, rootEntityType, documentRelatedEntityType, rootEntityReference, personRef),
+                    UserRight.EXTERNAL_EMAIL_SEND);
 		}
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());

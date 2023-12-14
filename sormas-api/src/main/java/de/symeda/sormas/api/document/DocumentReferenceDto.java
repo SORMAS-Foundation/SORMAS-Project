@@ -16,16 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.docgeneneration;
+package de.symeda.sormas.api.document;
 
-import java.util.Properties;
+import de.symeda.sormas.api.ReferenceDto;
 
-import javax.ejb.Remote;
+public class DocumentReferenceDto extends ReferenceDto {
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+    private static final long serialVersionUID = -6376903475087381467L;
 
-@Remote
-public interface EmailTemplateFacade {
-
-	String generateCaseEmailContent(String templateName, CaseReferenceDto cazeRef, Properties extraProperties) throws DocumentTemplateException;
+    public DocumentReferenceDto(String uuid, String name) {
+        super(uuid, name);
+    }
 }

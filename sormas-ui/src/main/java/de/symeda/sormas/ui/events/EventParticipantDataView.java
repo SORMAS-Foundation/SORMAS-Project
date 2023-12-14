@@ -192,10 +192,11 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
 				DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
 				RootEntityType.ROOT_EVENT_PARTICIPANT,
+                    null,
 				eventParticipantRef,
 				eventParticipant.getPerson().toReference(),
 				Strings.messageEventParticipantPersonHasNoEmail,
-					editAllowed,
+                    editAllowed,
 				this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
