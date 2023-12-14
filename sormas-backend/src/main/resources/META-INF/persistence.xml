@@ -63,7 +63,7 @@
 		<class>de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo</class>
 		<class>de.symeda.sormas.backend.document.Document</class>
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
-        <class>de.symeda.sormas.backend.manualmessagelog.ManualMessageLog</class>
+		<class>de.symeda.sormas.backend.manualmessagelog.ManualMessageLog</class>
 		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
 		<class>de.symeda.sormas.backend.externalmessage.ExternalMessage</class>
 		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>

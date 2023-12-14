@@ -131,16 +131,16 @@ public class ExternalEmailList extends PaginationList<ManualMessageLogIndexDto> 
 		attachmentsCaptionLabel.addStyleName(LABEL_BOLD);
 		List<String> attachedDocuments = messageLog.getAttachedDocuments();
 		String attachmentsValue = CollectionUtils.isNotEmpty(attachedDocuments)
-				? String.join(", ", attachedDocuments)
-				: I18nProperties.getString(Strings.messageExternalEmailNoAttachments);
+			? String.join(", ", attachedDocuments)
+			: I18nProperties.getString(Strings.messageExternalEmailNoAttachments);
 		verticalLayout.addComponents(attachmentsCaptionLabel, new MultilineLabel(attachmentsValue));
 
 		VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingExteranlEmailDetails),
-				verticalLayout,
-				I18nProperties.getString(Strings.close),
-				null,
-				640,
-				confirmed -> true);
+			I18nProperties.getString(Strings.headingExternalEmailDetails),
+			verticalLayout,
+			I18nProperties.getString(Strings.close),
+			null,
+			640,
+			confirmed -> true);
 	}
 }

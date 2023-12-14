@@ -35,7 +35,7 @@ public interface DocumentFacade {
 
 	List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid);
 
-    List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions);
+	List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions);
 
 	Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties);
 
