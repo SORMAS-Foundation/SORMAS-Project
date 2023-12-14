@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Filters
 Feature: Case filter functionality
 
-  @env_main
+  @tmsLink=SORQA-30mk @env_main
   Scenario: Check Cases on Sample page work as expected
     Given API: I create 10 new cases
     And API: I check that POST call status code is 200

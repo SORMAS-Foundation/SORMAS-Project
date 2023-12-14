@@ -96,6 +96,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRS
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_HEADERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_RESULTS_FIRST_NAME;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DISCARDED_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DONE_BUTTON;
@@ -660,7 +661,8 @@ public class CaseDirectorySteps implements En {
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(GRID_RESULTS_FIRST_NAME);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
           Assert.assertEquals(
