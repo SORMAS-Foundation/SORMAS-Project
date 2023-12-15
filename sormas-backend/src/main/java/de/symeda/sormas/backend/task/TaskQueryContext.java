@@ -48,6 +48,7 @@ public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 			joins.getContactRegion(),
 			joins.getEventRegion(),
 			joins.getTravelEntryResponsibleRegion(),
+			joins.getEnvironmentRegion(),
 			regionProperty);
 	}
 
@@ -63,6 +64,7 @@ public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 			joins.getContactDistrict(),
 			joins.getEventDistrict(),
 			joins.getTravelEntryResponsibleDistrict(),
+			joins.getEnvironmentDistrict(),
 			districtProperty);
 	}
 
@@ -74,6 +76,7 @@ public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 			joins.getContactCommunity(),
 			joins.getEventCommunity(),
 			joins.getTravelEntryResponsibleCommunity(),
+			joins.getEnvironmentCommunity(),
 			communityProperty);
 	}
 
@@ -84,6 +87,7 @@ public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 		Join<?, ?> contactJurisdictionJoin,
 		Join<?, ?> eventJurisdictionJoin,
 		Join<?, ?> travelEntryResponsibleJurisdictionJoin,
+		Join<?, ?> environmentJurisdictionJoin,
 		String propertyName) {
 
 		return cb.<T> selectCase()
@@ -97,6 +101,11 @@ public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 							.otherwise(
 								cb.<T> selectCase()
 									.when(cb.isNotNull(eventJurisdictionJoin), eventJurisdictionJoin.get(propertyName))
-									.otherwise(travelEntryResponsibleJurisdictionJoin.get(propertyName)))));
+									.otherwise(
+										cb.<T> selectCase()
+											.when(
+												cb.isNotNull(travelEntryResponsibleJurisdictionJoin),
+												travelEntryResponsibleJurisdictionJoin.get(propertyName))
+											.otherwise(environmentJurisdictionJoin.get(propertyName))))));
 	}
 }
