@@ -81,6 +81,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -465,6 +466,39 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(5));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid(), person11.getUuid()));
+	}
+
+	@Test
+	public void testSimilarPersonByNationalHealthId() {
+		final String nationalHealthId = "1234567890";
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		PersonDto matchingNameAndHealthIdPerson = createPersonWithCase("James", "Smith", nationalHealthId, user);
+		PersonDto otherNationalHealthIdPerson = createPersonWithCase("James", "Smith", "0987654321", user);
+		PersonDto sameNameNoHealthIdPerson = createPersonWithCase("James", "Smith", null, user);
+		PersonDto otherNameSameHealthIdPerson = createPersonWithCase("Maria", "Garcia", nationalHealthId, user);
+		PersonDto otherNameNoHealthIdPerson = createPersonWithCase("Maria", "Garcia", null, user);
+
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName("James").lastName("Smith").nationalHealthId(nationalHealthId);
+		List<String> similarPersonUuids =
+				getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
+
+		assertThat(similarPersonUuids, containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid()));
+
+		MockProducer.mockProperty(ConfigFacadeEjb.DUPLICATE_CHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA, Boolean.TRUE.toString());
+		similarPersonUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
+		assertThat(
+				similarPersonUuids,
+				containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid(), otherNameSameHealthIdPerson.getUuid()));
+
+	}
+
+	private PersonDto createPersonWithCase(String firstName, String lastName, String nationalHealthId, UserDto user) {
+		PersonDto person = creator.createPerson(firstName, lastName, p -> {
+			p.setNationalHealthId(nationalHealthId);
+		});
+		creator.createCase(user.toReference(), person.toReference(), rdcf);
+		return person;
 	}
 
 	@Test

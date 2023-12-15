@@ -1407,8 +1407,12 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String externalEmailAttachedDocuments = "externalEmailAttachedDocuments";
 	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
 	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
+	String externalEmailSentBy = "externalEmailSentBy";
+	String externalEmailSentTo = "externalEmailSentTo";
+	String externalEmailUsedTemplate = "externalEmailUsedTemplate";
 	String ExternalMessage = "ExternalMessage";
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
@@ -1778,6 +1782,7 @@ public interface Captions {
 	String PathogenTest_testedDiseaseVariant = "PathogenTest.testedDiseaseVariant";
 	String PathogenTest_testedDiseaseVariantDetails = "PathogenTest.testedDiseaseVariantDetails";
 	String PathogenTest_testedPathogen = "PathogenTest.testedPathogen";
+	String PathogenTest_testedPathogenDetails = "PathogenTest.testedPathogenDetails";
 	String PathogenTest_testResult = "PathogenTest.testResult";
 	String PathogenTest_testResultText = "PathogenTest.testResultText";
 	String PathogenTest_testResultVerified = "PathogenTest.testResultVerified";

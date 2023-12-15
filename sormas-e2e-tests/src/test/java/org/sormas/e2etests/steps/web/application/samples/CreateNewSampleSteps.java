@@ -27,7 +27,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_C
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_COMBOBOX;
@@ -317,6 +316,24 @@ public class CreateNewSampleSteps implements En {
           selectTestedDisease(sample.getTestedDisease());
           selectTypeOfTest(sample.getTypeOfTest());
           selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
+        "I create new sample with pathogen test with {string} as disease and {string} as type of test and default test result",
+        (String diseaseType, String typeOfTest) -> {
+          sample =
+              sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
+                  diseaseType, typeOfTest);
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTypeOfTest(sample.getTypeOfTest());
           fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
           selectLaboratory(sample.getLaboratory());
           selectResultVerifiedByLabSupervisor(
@@ -859,7 +876,11 @@ public class CreateNewSampleSteps implements En {
 
     When(
         "I confirm update case result",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ACTION_CONFIRM_POPUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
+        });
 
     When(
         "I check if Update case disease variant popup is available",

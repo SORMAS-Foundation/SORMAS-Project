@@ -120,6 +120,11 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/pathogenTest_testedPathogenDetails"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.testedPathogenDetails}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                         android:id="@+id/pathogenTest_typingId"
                         style="@style/ControlSingleColumnStyle"
                         app:dependencyParentField="@{pathogenTestTestType}"

@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -493,5 +494,9 @@ public final class DataHelper {
 			shortDate = calendar.getTime();
 		}
 		return shortDate;
+	}
+
+	public static String getPathogenString(Pathogen pathogen, String pathogenDetails) {
+		return pathogen != null ? pathogen.getCaption() + (StringUtils.isNotBlank(pathogenDetails) ? " (" + pathogenDetails + ")" : "") : "";
 	}
 }

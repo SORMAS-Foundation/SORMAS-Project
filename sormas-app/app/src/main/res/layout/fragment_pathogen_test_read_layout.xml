@@ -101,7 +101,9 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/pathogenTest_testedPathogen"
-                    app:value="@{data.testedPathogen}"
+                    app:pathogenValue="@{data.testedPathogen}"
+                    app:pathogenDetailsValue="@{data.testedPathogenDetails}"
+                    app:valueFormat="@string/two_strings_with_hyphen_format"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

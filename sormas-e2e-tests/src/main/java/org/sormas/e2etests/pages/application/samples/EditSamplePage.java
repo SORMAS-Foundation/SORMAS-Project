@@ -31,6 +31,10 @@ public class EditSamplePage {
       By.cssSelector("[id='sampleDateTime_time'] [class='v-filterselect-button']");
   public static final By COMMENT_AREA_INPUT = By.cssSelector("[id='comment']");
   public static final By DATE_SAMPLE_COLLECTED = By.cssSelector("[id='sampleDateTime_date'] input");
+  public static final By DATE_SAMPLE_WAS_SENT_INPUT = By.cssSelector("[id='shipmentDate'] input");
+  public static final By PATHOGEN_TEST_RESULT_INPUT =
+      By.cssSelector("[id='pathogenTestResult'] input");
+
   public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
   public static final By FIELD_SAMPLE_ID_INPUT = By.cssSelector("[id='fieldSampleID']");
   public static final By LABORATORY_COMBOBOX =
@@ -50,6 +54,10 @@ public class EditSamplePage {
   public static final By LAB_SAMPLE_ID_INPUT = By.cssSelector("[id='labSampleID']");
   public static final By REASON_FOR_SAMPLING_TESTING_COMBOBOX =
       By.cssSelector("[id='samplingReason'] [class='v-filterselect-button']");
+  public static final By EXTERNAL_LAB_TESTING_RADIOBUTTON =
+      By.xpath("//label[contains(text(), 'External lab testing')]");
+  public static final By INTERNAL_LAB_TESTING_RADIOBUTTON =
+      By.xpath("//label[contains(text(), 'Internal/in-house testing')]");
   public static final By SAMPLE_TYPE_COMBOBOX =
       By.cssSelector("[id='sampleMaterial'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_COMBOBOX =
@@ -66,6 +74,7 @@ public class EditSamplePage {
       By.cssSelector("[class='popupContent'] [id='testTypeText']");
   public static final By TYPING_ID_INPUT = By.cssSelector("[class='popupContent'] [id='typingId']");
   public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#deleteRestore");
+  public static final By DISCARD_SAMPLE_BUTTON = By.cssSelector("#discard");
   public static final By DELETE_PATHOGEN_TEST_RESULT =
       By.cssSelector("[class='popupContent'] [id='deleteRestore']");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");

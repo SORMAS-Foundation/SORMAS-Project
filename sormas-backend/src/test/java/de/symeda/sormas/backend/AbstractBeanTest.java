@@ -33,6 +33,10 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb.ManualMessageLogFacadeEjbLocal;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -1027,4 +1031,12 @@ public abstract class AbstractBeanTest {
 	public ExternalEmailFacade getExternalEmailFacade() {
 		return getBean(ExternalEmailFacadeEjbLocal.class);
 	}
+
+    public ManualMessageLogFacade getManualMessageLogFacade() {
+        return getBean(ManualMessageLogFacadeEjbLocal.class);
+    }
+
+    public ManualMessageLogService getManualMessageLogService() {
+        return getBean(ManualMessageLogService.class);
+    }
 }

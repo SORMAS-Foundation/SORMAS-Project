@@ -20,6 +20,8 @@ package org.sormas.e2etests.steps.web.application.aCommonComponents;
 
 import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_REPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_PENCIL_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EYE_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
@@ -197,6 +199,30 @@ public class SideCardsSteps implements En {
               actualNumberOfSamples,
               numberOfSamples,
               "Number of samples added in sample ard is different then expected!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that number of displayed samples with {string} icon is {int} for sample on Side Card",
+        (String icon, Integer number) -> {
+          switch (icon) {
+            case "pencil":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EDIT_SAMPLE_PENCIL_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_PENCIL_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+            case "eye":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EYE_SAMPLE_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(EYE_SAMPLE_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+          }
           softly.assertAll();
         });
 
@@ -387,6 +413,13 @@ public class SideCardsSteps implements En {
         "^I click on edit sample icon of the (\\d+) displayed sample on Edit Case page$",
         (Integer sampleNumber) -> {
           webDriverHelpers.clickOnWebElementBySelector(getEditSampleButtonByNumber(sampleNumber));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "I click on eye sample icon of the (\\d+) displayed sample on Edit Case Page",
+        (Integer sampleNumber) -> {
+          webDriverHelpers.clickOnWebElementBySelector(getEyeSampleIconByNumber(sampleNumber));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }

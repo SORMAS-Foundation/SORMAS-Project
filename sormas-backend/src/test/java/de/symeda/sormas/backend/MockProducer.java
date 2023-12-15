@@ -64,7 +64,7 @@ import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProd
  */
 public class MockProducer implements InitialContextFactory {
 
-	private static final String TMP_PATH = "target/tmp";
+	public static final String TMP_PATH = "target/tmp";
 
 	private static InitialContext initialContext = mock(InitialContext.class);
 	private static SessionContext sessionContext = mock(SessionContext.class, withSettings().lenient());
@@ -135,6 +135,7 @@ public class MockProducer implements InitialContextFactory {
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
 		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
+		properties.setProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, TMP_PATH + "/documents");
 	}
 
 	public static void wireMocks() {

@@ -1943,3 +1943,118 @@ Feature: Case end to end tests
     Then I back to Case Directory using case list button
     And I apply "Archived cases" to combobox on Case Directory Page
     And I open the first Case result in Case Directory
+
+  @tmsLink=HSP-6417 @env_main
+  Scenario: User can view and edit Sample card from Person view
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data and new person
+    And I collect uuid of the case
+    And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
+    And I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    And I check if Sample card has empty and no buttons are available on Edit Case Page
+    Then I click on See Cases for this Person button from Edit Person page
+    And I open the first Case result in Case Directory
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample with pathogen test
+    And I confirm update case result
+    Then I click on the Persons button from navbar
+    And I click on first person in person directory
+    And I check if Sample card has available "see sample for this person" button on Edit Case Page
+    And I click on edit sample icon of the 1 displayed sample on Edit Case page
+    And I check that all editable fields are enabled for a sample
+    Then I navigate to case tab
+    And I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
+    And I navigate to case person tab
+    Then I click on New Contact button in Case Person Tab
+    And I click CHOOSE CASE button
+    Then I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample with pathogen test
+    And I confirm update case result
+    And I click on pick an existing case popup button option
+    Then I click on the Persons button from navbar
+    And I click on first person in person directory
+    And I check that number of displayed samples with "pencil" icon is 2 for sample on Side Card
+    And I check if Sample card has available "see samples for this person" button on Edit Case Page
+    And I click on edit sample icon of the 2 displayed sample on Edit Case page
+    And I check that all editable fields are enabled for a sample
+    And I navigate to case tab
+    Then I click on the "See samples for this person" button on Edit Case Page
+    And I check that number of displayed sample results is 2
+
+  @tmsLink=HSP-6420 @env_main
+  Scenario: User cannot edit Sample card from Person view if the edit Rights for sample are missing
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "SampleMissingUserRights" role and change his role
+    And I click on User roles tab from Users Page
+    And I check if the "SampleMissingUserRights" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "SampleMissingUserRights" on Create New User Role form
+    And I click SAVE button on User Role Page
+    Then I click checkbox to uncheck "Edit existing samples"
+    Then I click checkbox to uncheck "Edit existing pathogen tests"
+    Then I click checkbox to uncheck "Transfer samples to another lab"
+    Then I click checkbox to uncheck "Work with messages"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    Then I click on User Management tab from Users directory Page
+    And I click on the NEW USER button
+    And I create new "SampleMissingUserRights" with english language for test
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data and new person
+    And I collect uuid of the case
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test and default test result
+    And I save the created sample with pathogen test
+    And I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
+    And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
+    Then I click on New Contact button in Case Person Tab
+    And I click CHOOSE CASE button
+    Then I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test and default test result
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample with pathogen test
+    And I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    And I click on the Cases button from navbar
+    Then I filter with last created case using case UUID
+    When I open last created case
+    Then I click on eye sample icon of the 1 displayed sample on Edit Case Page
+    And I check if editable fields are read only for a sample
+    Then I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    And I check that number of displayed samples with "eye" icon is 2 for sample on Side Card
+    And I check if Sample card has available "see samples for this person" button on Edit Case Page
+    Then I click on eye sample icon of the 2 displayed sample on Edit Case Page
+    And I check if editable fields are read only for a sample
+    Then I click on the Persons button from navbar
+    And I click on the RESET FILTERS button for Person
+    And I open the last new created person by UI in person directory
+    Then I click on the "See samples for this person" button on Edit Case Page
+    And I check that number of displayed sample results is 2
+    Then I click on the Persons button from navbar
+    And I click on the RESET FILTERS button for Person
+    And I open the last new created person by UI in person directory
+    Then I click on the "See contacts for this person" button on Edit Case Page
+    And I open the first contact from contacts list
+    Then I check that all editable fields are active for an contact
+    Then I click on eye sample icon of the 1 displayed sample on Edit Case Page
+    And I check if editable fields are read only for a sample

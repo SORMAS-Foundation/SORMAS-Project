@@ -26,6 +26,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -41,10 +42,16 @@ public class ExternalEmailController {
 	public void sendEmail(
 		DocumentWorkflow documentWorkflow,
 		RootEntityType rootEntityType,
+        DocumentRelatedEntityType documentRelatedEntityType,
 		ReferenceDto rootEntityReference,
-		PersonReferenceDto personReference) {
+		PersonReferenceDto personReference,
+		Runnable callback) {
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
-		ExternalEmailOptionsForm optionsForm = new ExternalEmailOptionsForm(documentWorkflow, person);
+		ExternalEmailOptionsForm optionsForm = new ExternalEmailOptionsForm(
+				documentWorkflow,
+				documentRelatedEntityType,
+				person,
+				FacadeProvider.getExternalEmailFacade().isAttachmentAvailable(personReference));
 
 		ExternalEmailOptionsDto defaultValue = new ExternalEmailOptionsDto(documentWorkflow, rootEntityType, rootEntityReference);
 		String presonPrimaryEmail = person.getEmailAddress(true);
@@ -68,6 +75,7 @@ public class ExternalEmailController {
 
 				optionsPopup.close();
 				Notification.show(null, I18nProperties.getString(Strings.notificationExternalEmailSent), Notification.Type.TRAY_NOTIFICATION);
+				callback.run();
 			} catch (DocumentTemplateException | ExternalEmailException e) {
 				Notification.show(I18nProperties.getString(Strings.errorOccurred), e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			}

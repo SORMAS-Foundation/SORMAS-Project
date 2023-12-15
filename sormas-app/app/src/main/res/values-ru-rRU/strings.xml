@@ -700,4 +700,5 @@
     <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
     <string name="value_environment_name_unknown">Environment Name N/A</string>
     <string name="rapidEntry">Use rapid event participant entry</string>
+    <string name="value_environment_media_unknown">Environment Media N/A</string>
 </resources>

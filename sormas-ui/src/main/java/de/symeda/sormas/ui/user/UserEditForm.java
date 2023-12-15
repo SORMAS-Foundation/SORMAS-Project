@@ -248,7 +248,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
 		FieldHelper.updateItems(userRolesField, getFilteredUserRoles(newFieldValue.getUserRoles()));
         
-        if(diseasesCheckboxSet != null){
+        if (diseasesCheckboxSet != null) {
             Set<Disease> limitedDiseases = newFieldValue.getLimitedDiseases();
             restrictDiseasesCheckbox.setValue(CollectionUtils.isNotEmpty(limitedDiseases));
             diseasesCheckboxSet.setItems(getSelectableDiseases(limitedDiseases), null, null);
@@ -266,7 +266,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     private static List<Disease> getSelectableDiseases(Set<Disease> limitedDiseases) {
         List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-        if(CollectionUtils.isNotEmpty(limitedDiseases)){
+        if (CollectionUtils.isNotEmpty(limitedDiseases)) {
             List<Disease> inactiveSelectedDiseases = limitedDiseases.stream().filter(not(diseases::contains)).collect(Collectors.toList());
             diseases.addAll(inactiveSelectedDiseases);
         }
