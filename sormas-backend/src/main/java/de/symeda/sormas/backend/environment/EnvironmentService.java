@@ -93,9 +93,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		if (currentUserHasRestrictedAccessToAssignedEntities()) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(environmentJoin.get(Environment.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
-		}
-
-		if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+		} else {
 			if (jurisdictionLevel != JurisdictionLevel.NATION) {
 				switch (jurisdictionLevel) {
 				case REGION:

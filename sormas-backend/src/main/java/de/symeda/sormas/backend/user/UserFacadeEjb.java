@@ -743,6 +743,9 @@ public class UserFacadeEjb implements UserFacade {
 		cq.select(user);
 
 		final List<UserDto> resultList = QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::toDto);
+		// because the selection is based on User entity and we need userRole join (we cannot avoid it) which pulls duplicate rows,
+		// and distinct on the query does not work because of sorting (e.g. Address)
+		// we need to deduplicate the list using java code
 		return resultList.stream().distinct().collect(Collectors.toList());
 	}
 

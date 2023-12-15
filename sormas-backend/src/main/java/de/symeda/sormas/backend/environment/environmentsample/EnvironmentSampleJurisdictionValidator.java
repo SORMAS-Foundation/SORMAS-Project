@@ -49,10 +49,8 @@ public final class EnvironmentSampleJurisdictionValidator extends PredicateJuris
 	public Predicate isRootInJurisdictionOrOwned(boolean currentHasUserRestrictedAccess) {
 		if (currentHasUserRestrictedAccess) {
 			final Predicate reportedByCurrentUser = getReportedByCurrentUserPredicate();
-			final Predicate restrictedAccess = currentHasUserRestrictedAccess
-				? cb.equal(joins.getEnvironment().get(Environment.RESPONSIBLE_USER).get(User.ID), user.getChangeUser().getId())
-				: cb.conjunction();
-
+			final Predicate restrictedAccess =
+				cb.equal(joins.getEnvironment().get(Environment.RESPONSIBLE_USER).get(User.ID), user.getChangeUser().getId());
 			return cb.or(reportedByCurrentUser, restrictedAccess);
 		} else {
 			return isRootInJurisdictionOrOwned();

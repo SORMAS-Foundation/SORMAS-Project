@@ -101,14 +101,9 @@ public class CurrentUserService {
 
 	public boolean hasRestrictedAccessToAssignedEntities() {
 		if (getCurrentUser() != null && !getCurrentUser().getUserRoles().isEmpty()) {
-			if (!getCurrentUser().getUserRoles()
-				.stream()
-				.filter(userRole -> !userRole.isRestrictAccessToAssignedEntities())
-				.collect(Collectors.toList())
-				.isEmpty()) {
-				return false;
-			}
-			return true;
+			return getCurrentUser().getUserRoles()
+					.stream()
+					.allMatch(UserRole::isRestrictAccessToAssignedEntities);
 		}
 		return false;
 	}

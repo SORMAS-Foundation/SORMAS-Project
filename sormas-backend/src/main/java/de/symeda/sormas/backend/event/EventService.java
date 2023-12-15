@@ -468,9 +468,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 		if (currentUserHasRestrictedAccessToAssignedEntities()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
-		}
-
-		if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+		} else {
 			if (jurisdictionLevel != JurisdictionLevel.NATION) {
 				switch (jurisdictionLevel) {
 				case REGION:

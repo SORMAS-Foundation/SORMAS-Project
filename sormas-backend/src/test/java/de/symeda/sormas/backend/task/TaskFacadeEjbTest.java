@@ -265,6 +265,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(5, getTaskFacade().getIndexList(null, 0, 100, null).size());
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
 		assertEquals(3, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
 		loginWith(user);
 		environment.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
 		getEnvironmentFacade().save(environment);
