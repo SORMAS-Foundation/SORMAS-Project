@@ -1,24 +1,23 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.externalemail;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -27,16 +26,19 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
 
 @AuditedClass
 public class ExternalEmailOptionsDto implements Serializable {
+
 	private static final long serialVersionUID = 1005305870535265027L;
 
 	public static final String I18N_PREFIX = "ExternalEmailOptions";
 
 	public static final String TEMPLATE_NAME = "templateName";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
+    public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
 
 	@NotNull(message = Validations.requiredField)
 	private final DocumentWorkflow documentWorkflow;
@@ -50,6 +52,7 @@ public class ExternalEmailOptionsDto implements Serializable {
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
 	private String recipientEmail;
+    private Set<DocumentReferenceDto> attachedDocuments;
 
 	public ExternalEmailOptionsDto(DocumentWorkflow documentWorkflow, RootEntityType rootEntityType, ReferenceDto rootEntityReference) {
 		this.documentWorkflow = documentWorkflow;
@@ -84,4 +87,12 @@ public class ExternalEmailOptionsDto implements Serializable {
 	public void setRecipientEmail(String recipientEmail) {
 		this.recipientEmail = recipientEmail;
 	}
+
+    public Set<DocumentReferenceDto> getAttachedDocuments() {
+        return attachedDocuments;
+    }
+
+    public void setAttachedDocuments(Set<DocumentReferenceDto> attachedDocuments) {
+        this.attachedDocuments = attachedDocuments;
+    }
 }

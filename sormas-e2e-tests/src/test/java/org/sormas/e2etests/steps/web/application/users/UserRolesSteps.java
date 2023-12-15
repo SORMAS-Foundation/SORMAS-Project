@@ -41,6 +41,10 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CAS
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_CASE_INVESTIGATION_STATUS_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_CASES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_CASES_CHECKBOX_VALUE;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX_VALUE;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_SAMPLE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_SAMPLE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_USERS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.EDIT_EXISTING_USER_ROLES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_DISABLED_SEARCH_COMBOBOX;
@@ -55,6 +59,8 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.REFER_CA
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.TRANSFER_CASES_TO_ANOTHER_REGION_DISTRICT_FACILITY_CHECKBOX_VALUE;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_MANAGEMENT_TAB;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
@@ -65,6 +71,8 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROL
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TEMPLATE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.VIEW_EXISTING_USERS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.VIEW_EXISTING_USER_ROLES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGES_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.WORK_WITH_MESSAGE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.getUserRoleCaptionByText;
@@ -253,6 +261,35 @@ public class UserRolesSteps implements En {
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(WORK_WITH_MESSAGE_CHECKBOX);
               checkboxState = webDriverHelpers.isElementChecked(WORK_WITH_MESSAGE_CHECKBOX_VALUE);
               uncheckCheckbox(checkboxState, WORK_WITH_MESSAGE_CHECKBOX);
+              break;
+            case "Edit existing samples":
+              webDriverHelpers.scrollToElement(EDIT_EXISTING_SAMPLE_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_EXISTING_SAMPLE_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(EDIT_EXISTING_SAMPLE_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, EDIT_EXISTING_SAMPLE_CHECKBOX);
+              break;
+            case "Edit existing pathogen tests":
+              webDriverHelpers.scrollToElement(EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                  EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, EDIT_EXISTING_PATHOGEN_TESTS_CHECKBOX);
+              break;
+            case "Transfer samples to another lab":
+              webDriverHelpers.scrollToElement(TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                  TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, TRANSFER_SAMPLES_TO_ANOTHER_LAB_CHECKBOX);
+              break;
+            case "Work with messages":
+              webDriverHelpers.scrollToElement(WORK_WITH_MESSAGES_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(WORK_WITH_MESSAGES_CHECKBOX);
+              checkboxState = webDriverHelpers.isElementChecked(WORK_WITH_MESSAGES_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, WORK_WITH_MESSAGES_CHECKBOX);
               break;
           }
         });

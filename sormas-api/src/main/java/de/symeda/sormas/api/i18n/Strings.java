@@ -317,6 +317,7 @@ public interface Strings {
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
 	String errorEventsFromAnotherJurisdiction = "errorEventsFromAnotherJurisdiction";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
+	String errorExternalEmailAttachmentCannotEncrypt = "errorExternalEmailAttachmentCannotEncrypt";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -602,6 +603,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingExternalEmailDetails = "headingExternalEmailDetails";
 	String headingExternalEmailSend = "headingExternalEmailSend";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
@@ -1292,6 +1294,9 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExternalEmailAttachmentNotAvailableInfo = "messageExternalEmailAttachmentNotAvailableInfo";
+	String messageExternalEmailAttachmentPassword = "messageExternalEmailAttachmentPassword";
+	String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";
 	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
@@ -1360,6 +1365,10 @@ public interface Strings {
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
+	String messageNoExternalEmailToCaseSent = "messageNoExternalEmailToCaseSent";
+	String messageNoExternalEmailToContactSent = "messageNoExternalEmailToContactSent";
+	String messageNoExternalEmailToEventParticipantSent = "messageNoExternalEmailToEventParticipantSent";
+	String messageNoExternalEmailToTravelEntrySent = "messageNoExternalEmailToTravelEntrySent";
 	String messageNoExternalMessagesSelected = "messageNoExternalMessagesSelected";
 	String messageNoImmunizationsSelected = "messageNoImmunizationsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";

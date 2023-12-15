@@ -323,6 +323,24 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I create new sample with pathogen test with {string} as disease and {string} as type of test and default test result",
+        (String diseaseType, String typeOfTest) -> {
+          sample =
+              sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
+                  diseaseType, typeOfTest);
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTypeOfTest(sample.getTypeOfTest());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
         "I set PCR RT PCR Test specification to {string} option",
         (String option) -> {
           webDriverHelpers.selectFromCombobox(PCR_TEST_SPECIFICATION_COMBOBOX_DIV, option);

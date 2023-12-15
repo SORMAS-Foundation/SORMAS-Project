@@ -13,6 +13,7 @@ public interface Validations {
 	String afterDate = "afterDate";
 	String afterDateSoft = "afterDateSoft";
 	String afterDateWithDate = "afterDateWithDate";
+	String attachedDocumentNotRelatedToEntity = "attachedDocumentNotRelatedToEntity";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String birthDateInFuture = "birthDateInFuture";
