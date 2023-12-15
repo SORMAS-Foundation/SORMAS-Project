@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
@@ -45,13 +46,28 @@ public final class EnvironmentSampleJurisdictionValidator extends PredicateJuris
 		return new EnvironmentSampleJurisdictionValidator(qc.getCriteriaBuilder(), user, qc.getJoins(), null);
 	}
 
-	@Override
-	public Predicate isRootInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser = cb.and(
+	public Predicate isRootInJurisdictionOrOwned(boolean currentHasUserRestrictedAccess) {
+		if (currentHasUserRestrictedAccess) {
+			final Predicate reportedByCurrentUser = getReportedByCurrentUserPredicate();
+			final Predicate restrictedAccess =
+				cb.equal(joins.getEnvironment().get(Environment.RESPONSIBLE_USER).get(User.ID), user.getChangeUser().getId());
+			return cb.or(reportedByCurrentUser, restrictedAccess);
+		} else {
+			return isRootInJurisdictionOrOwned();
+		}
+	}
+
+	private Predicate getReportedByCurrentUserPredicate() {
+		return cb.and(
 			cb.isNotNull(joins.getRoot().get(EnvironmentSample.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(EnvironmentSample.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(EnvironmentSample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUserPredicate();
 		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
 	}
 

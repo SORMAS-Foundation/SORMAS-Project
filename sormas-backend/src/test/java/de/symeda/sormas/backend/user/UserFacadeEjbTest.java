@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -171,10 +172,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	 */
 	@Test
 	public void testGetIndexListFilteredAndOrderedByAddress() {
-		List<UserDto> result =
-			getUserFacade().getIndexList(new UserCriteria().freeText("min"), 0, 100, Collections.singletonList(new SortProperty(UserDto.ADDRESS)));
+		final UserCriteria userCriteria = new UserCriteria().freeText("min");
+		List<UserDto> result = getUserFacade().getIndexList(userCriteria, 0, 100, Collections.singletonList(new SortProperty(UserDto.ADDRESS)));
+
+		final long count = getUserFacade().count(userCriteria);
 
 		assertThat(result, hasSize(1));
+		assertThat(count, is(1L));
 		assertThat(result.get(0).getUserName(), equalTo("admin"));
 	}
 

@@ -194,6 +194,6 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 	private Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, EnvironmentSample> from) {
 		return EnvironmentSampleJurisdictionValidator
 			.of(new EnvironmentSampleQueryContext(cb, cq, from, new EnvironmentSampleJoins(from)), userService.getCurrentUser())
-			.isRootInJurisdictionOrOwned();
+			.isRootInJurisdictionOrOwned(currentUserHasRestrictedAccessToAssignedEntities());
 	}
 }

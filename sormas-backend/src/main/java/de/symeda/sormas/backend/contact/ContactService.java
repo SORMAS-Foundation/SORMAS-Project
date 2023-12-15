@@ -1078,49 +1078,56 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		CriteriaQuery<?> cq = qc.getQuery();
 		From<?, Contact> contactRoot = qc.getRoot();
 
+		Predicate filter = null;
+
+		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER).get(User.ID), getCurrentUser().getId()));
+		}
+
 		// National users can access all contacts in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
 			return CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, contactRoot.get(Contact.DISEASE));
 		}
 
-		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
 			filter = cb.equal(contactRoot.get(Contact.REPORTING_USER), currentUser);
 			filter = cb.or(filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
-		switch (jurisdictionLevel) {
-		case REGION:
-			final Region region = currentUser.getRegion();
-			if (region != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.REGION), currentUser.getRegion()));
-			}
-			break;
-		case DISTRICT:
-			final District district = currentUser.getDistrict();
-			if (district != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
-			}
-			break;
-		case COMMUNITY:
-			final Community community = currentUser.getCommunity();
-			if (community != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.COMMUNITY), currentUser.getCommunity()));
-			}
-			break;
-		case LABORATORY:
-			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
-			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-			final SampleJoins joins = new SampleJoins(sampleRoot);
-			final Join<Sample, Contact> contactJoin = joins.getContact();
+		if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+			switch (jurisdictionLevel) {
+			case REGION:
+				final Region region = currentUser.getRegion();
+				if (region != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.REGION), currentUser.getRegion()));
+				}
+				break;
+			case DISTRICT:
+				final District district = currentUser.getDistrict();
+				if (district != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
+				}
+				break;
+			case COMMUNITY:
+				final Community community = currentUser.getCommunity();
+				if (community != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.COMMUNITY), currentUser.getCommunity()));
+				}
+				break;
+			case LABORATORY:
+				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+				final SampleJoins joins = new SampleJoins(sampleRoot);
+				final Join<Sample, Contact> contactJoin = joins.getContact();
 
-			sampleSubQuery.where(cb.and(cb.equal(contactJoin, contactRoot), sampleService.createUserFilterWithoutAssociations(cb, joins)));
-			sampleSubQuery.select(sampleRoot.get(Sample.ID));
-			filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
-			break;
-		default:
+				sampleSubQuery.where(cb.and(cb.equal(contactJoin, contactRoot), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+				sampleSubQuery.select(sampleRoot.get(Sample.ID));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
+				break;
+			default:
+			}
 		}
 
 		filter = CriteriaBuilderHelper.and(
@@ -1835,6 +1842,10 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		if (!inJurisdictionOrOwned(contact)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
+		}
+
+		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(contact.getContactOfficer(), (getCurrentUser()))) {
+			return EditPermissionType.REFUSED;
 		}
 
 		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)

@@ -192,6 +192,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	private UserDto nationalUser;
 	private UserDto surveillanceSupervisor;
 	private UserDto surveillanceOfficer;
+	private UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities;
 
 	@Override
 	public void init() {
@@ -200,6 +201,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		surveillanceSupervisor = creator.createSurveillanceSupervisor(rdcf);
 		surveillanceOfficer = creator.createSurveillanceOfficer(rdcf);
+		surveillanceOfficerWithRestrictedAccessToAssignedEntities = creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
 		nationalUser = creator.createNationalUser();
 	}
 
@@ -573,6 +575,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.toReference(),
 			null,
 			null,
+			null,
 			new Date(),
 			surveillanceOfficer.toReference());
 		TaskDto doneTask = creator.createTask(
@@ -580,6 +583,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			TaskType.CASE_INVESTIGATION,
 			TaskStatus.DONE,
 			caze.toReference(),
+			null,
 			null,
 			null,
 			new Date(),
@@ -811,6 +815,71 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal"), 0, 100, null).size());
 		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
 		assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal description"), 0, 100, null).size());
+	}
+
+	@Test
+	public void testGetIndexListByARestrictedAccessToAssignedEntities() {
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+
+		String lastName = "Person";
+		PersonDto cazePerson = creator.createPerson("Case", lastName);
+		final CaseDataDto firstCase = creator.createCase(
+			surveillanceSupervisor.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		creator.createCase(
+			surveillanceSupervisor.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			c -> c.setHealthFacilityDetails("abc"));
+		creator.createCase(
+			surveillanceSupervisor.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			c -> c.setHealthFacilityDetails("xyz"));
+
+		List<CaseIndexDto> results = getCaseFacade().getIndexList(
+			null,
+			0,
+			100,
+			Arrays.asList(
+				new SortProperty(CaseIndexDto.DISEASE),
+				new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
+				new SortProperty(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME),
+				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME, false),
+				new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
+
+		assertEquals(0, results.size());
+
+		loginWith(nationalUser);
+		firstCase.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		CaseDataDto caze = getCaseFacade().save(firstCase);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		List<CaseIndexDto> results2 = getCaseFacade().getIndexList(
+			null,
+			0,
+			100,
+			Arrays.asList(
+				new SortProperty(CaseIndexDto.DISEASE),
+				new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
+				new SortProperty(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME),
+				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME, false),
+				new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
+		assertEquals(1, results2.size());
 	}
 
 	@Test
@@ -1297,6 +1366,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.toReference(),
 			null,
 			null,
+			null,
 			new Date(),
 			surveillanceSupervisor.toReference());
 		SampleDto sample = creator
@@ -1607,6 +1677,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			otherCaseReference,
 			new ContactReferenceDto(),
 			new EventReferenceDto(),
+			null,
 			new Date(),
 			otherUserReference);
 		TreatmentDto treatment = creator.createTreatment(otherCase);
@@ -2091,7 +2162,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(informant, person, rdcf);
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
-		assertEquals(surveillanceOfficer.toReference(), caseTasks.get(0).getAssigneeUser());
+		final UserReferenceDto assigneeUser = caseTasks.get(0).getAssigneeUser();
+		final UserDto assigneeUserDetail = getUserFacade().getByUuid(assigneeUser.getUuid());
+		assertTrue(assigneeUserDetail.getUserRoles().containsAll(surveillanceOfficer.getUserRoles()));
 	}
 
 	@Test
