@@ -12825,7 +12825,6 @@ ALTER TABLE manualmessagelog_history
     ADD COLUMN eventparticipant_id bigint,
     ADD COLUMN travelentry_id      bigint;
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (535, 'Display a history of sent external emails #12465');
+INSERT INTO schema_version (version_number, comment) VALUES (535, 'Display a history of sent external emails #12465');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
