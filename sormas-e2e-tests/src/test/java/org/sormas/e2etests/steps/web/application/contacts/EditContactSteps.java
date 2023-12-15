@@ -514,7 +514,10 @@ public class EditContactSteps implements En {
 
     When(
         "I click to accept potential duplicate in Shares Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACTION_CONFIRM);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
+        });
     When(
         "^I click on ([^\"]*) radio button Contact Person tab$",
         (String buttonName) ->

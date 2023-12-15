@@ -245,6 +245,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExi
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionComboboxWithValue_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getPreExistingConditionCombobox_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.SEE_CASES_FOR_THIS_PERSON_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
@@ -2310,20 +2311,28 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I click on the See samples for this person button from Edit Case Page Directory",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SEE_SAMPLE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLE_BUTTON);
-        });
-
-    When(
-        "I check that number of displayed samples with pencil icon is {int} on Edit Case Page",
-        (Integer number) -> {
-          softly.assertEquals(
-              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_PENCIL_BUTTON),
-              number.intValue(),
-              "Number of displayed samples is not valid");
-          softly.assertAll();
+        "I click on the {string} button on Edit Case Page",
+        (String button) -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded;
+          switch (button) {
+            case "See samples for this person":
+              webDriverHelpers.scrollToElement(SEE_SAMPLE_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SEE_SAMPLE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLE_BUTTON);
+              break;
+            case "See cases for this person":
+              webDriverHelpers.scrollToElement(SEE_CASES_FOR_THIS_PERSON_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SEE_CASES_FOR_THIS_PERSON_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_THIS_PERSON_BUTTON);
+              break;
+            case "See contacts for this person":
+              webDriverHelpers.scrollToElement(SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
+              break;
+          }
         });
 
     When(

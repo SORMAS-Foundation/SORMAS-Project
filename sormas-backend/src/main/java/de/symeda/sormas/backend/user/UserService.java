@@ -920,4 +920,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		Set<UserRoleDto> userRoleDtos = user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet());
 		return userRoleFacade.isPortHealthUser(userRoleDtos);
 	}
+
+    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, UserJoins joins) {
+        return new UserJurisdictionPredicateValidator(cb, getCurrentUser(), null, joins).inJurisdictionOrOwned();
+    }
 }

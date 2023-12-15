@@ -114,10 +114,11 @@ public class TaskManagementSteps implements En {
           String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
           webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+          webDriverHelpers.scrollToElement(CreateNewTaskSteps.task.getCommentsOnExecution());
           webDriverHelpers.clickOnWebElementBySelector(
               getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
     When(
         "^I filter out last created task from Tasks Directory$",

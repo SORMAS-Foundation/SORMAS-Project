@@ -7,12 +7,9 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
-import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -121,15 +118,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		}
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
-				DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
-				RootEntityType.ROOT_TRAVEL_ENTRY,
-				travelEntryDto.toReference(),
-				travelEntryDto.getPerson(),
-				Strings.messageTravelEntryPersonHasNoEmail,
-				editAllowed,
-				travelEntryDto.isInJurisdiction(),
-				this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent =
+					ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

@@ -31,6 +31,10 @@ public class EditSamplePage {
       By.cssSelector("[id='sampleDateTime_time'] [class='v-filterselect-button']");
   public static final By COMMENT_AREA_INPUT = By.cssSelector("[id='comment']");
   public static final By DATE_SAMPLE_COLLECTED = By.cssSelector("[id='sampleDateTime_date'] input");
+  public static final By DATE_SAMPLE_WAS_SENT_INPUT = By.cssSelector("[id='shipmentDate'] input");
+  public static final By PATHOGEN_TEST_RESULT_INPUT =
+      By.cssSelector("[id='pathogenTestResult'] input");
+
   public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
   public static final By FIELD_SAMPLE_ID_INPUT = By.cssSelector("[id='fieldSampleID']");
   public static final By LABORATORY_COMBOBOX =

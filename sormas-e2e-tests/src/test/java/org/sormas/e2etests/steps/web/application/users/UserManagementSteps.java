@@ -263,7 +263,6 @@ public class UserManagementSteps implements En {
     And(
         "I check that number of displayed users results is {int} in User Management tab",
         (Integer number) -> {
-          System.out.print(webDriverHelpers.getTextFromPresentWebElement(TOTAL_USERS_COUNTER));
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(

@@ -19,8 +19,6 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
-import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -34,6 +32,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
@@ -225,15 +224,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
-				DocumentWorkflow.CASE_EMAIL,
-				RootEntityType.ROOT_CASE,
-				caze.toReference(),
-				caze.getPerson(),
-				Strings.messageCasePersonHasNoEmail,
-				isEditAllowed,
-				caze.isInJurisdiction(),
-				this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent =
+					ExternalEmailSideComponent.forCase(caze, isEditAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

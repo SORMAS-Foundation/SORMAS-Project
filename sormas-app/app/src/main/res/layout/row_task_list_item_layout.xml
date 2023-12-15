@@ -21,6 +21,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
+
         <variable name="data" type="de.symeda.sormas.app.backend.task.Task"/>
     </data>
 
@@ -61,8 +63,21 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
+                    android:visibility="@{data.environment != null ? View.GONE : View.VISIBLE}"
                     app:diseaseValue="@{data}"
                     app:defaultValue='@{@string/value_disease_unknown}'
+                    />
+
+                <TextView
+                    android:id="@+id/environment_environmentMedia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:fontFamily="sans-serif-medium"
+                    android:visibility="@{data.environment != null ? View.VISIBLE : View.GONE}"
+                    app:value="@{data.environment.environmentMedia}"
+                    app:defaultValue='@{@string/value_environment_media_unknown}'
                     />
 
                 <ImageView
@@ -81,9 +96,9 @@
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
                     android:textColor="@color/listActivityRowLeastText"
                     android:fontFamily="sans-serif-medium"
-                    app:value="@{data.caze.uuid}"
+                    app:value="@{data.caze != null ? data.caze.uuid : data.contact != null ? data.contact.uuid : data.event != null ? data.event.uuid : data.environment.uuid}"
                     app:shortUuid="@{true}"
-                    app:defaultValue='@{@string/value_case_uuid_unknown}'
+                    app:defaultValue='@{@string/value_uuid_unknown}'
                     />
 
 

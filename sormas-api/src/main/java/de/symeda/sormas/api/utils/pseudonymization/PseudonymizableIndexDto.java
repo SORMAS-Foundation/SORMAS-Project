@@ -22,7 +22,7 @@ import de.symeda.sormas.api.uuid.AbstractUuidDto;
 public class PseudonymizableIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
 	private boolean pseudonymized;
-	private boolean inJurisdiction;
+	protected boolean inJurisdiction;
 
 	@Override
 	public boolean isPseudonymized() {

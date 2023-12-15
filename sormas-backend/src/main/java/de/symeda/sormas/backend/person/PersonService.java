@@ -18,6 +18,7 @@ import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OP
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andInValues;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.FilterProvider;
-import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -884,7 +885,7 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 			final Predicate dayEquals = cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD());
 			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), dayEquals));
 		}
-		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
+		if (StringUtils.isNotBlank(criteria.getNationalHealthId())) {
 			final Predicate nationalEqual = cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId());
 			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)), nationalEqual));
 		}
@@ -920,6 +921,10 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
+		}
+
+		if (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() && StringUtils.isNotBlank(criteria.getNationalHealthId())) {
+			filter = or(cb, filter, cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId()));
 		}
 
 		return filter;
