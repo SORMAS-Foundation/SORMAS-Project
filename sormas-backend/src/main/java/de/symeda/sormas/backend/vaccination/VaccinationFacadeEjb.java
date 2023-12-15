@@ -469,7 +469,9 @@ public class VaccinationFacadeEjb
 		}
 	}
 
-	@RightsAllowed(UserRight._EVENTPARTICIPANT_EDIT)
+	@RightsAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
 	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
 		if (eventParticipant.getEvent().getDisease() == null) {
 			return;
