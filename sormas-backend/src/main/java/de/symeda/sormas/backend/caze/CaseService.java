@@ -1394,6 +1394,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		Predicate filter = null;
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+
+		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
+		}
+
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
@@ -1405,61 +1410,63 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filterResponsible = cb.disjunction();
 			}
 
-			switch (jurisdictionLevel) {
-			case REGION:
-				final Region region = currentUser.getRegion();
-				if (region != null) {
-					filter = CriteriaBuilderHelper.or(
-						cb,
-						filter,
-						cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()),
-						cb.equal(casePath.get(Case.RESPONSIBLE_REGION).get(Region.ID), region.getId()));
+			if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+				switch (jurisdictionLevel) {
+				case REGION:
+					final Region region = currentUser.getRegion();
+					if (region != null) {
+						filter = CriteriaBuilderHelper.or(
+							cb,
+							filter,
+							cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()),
+							cb.equal(casePath.get(Case.RESPONSIBLE_REGION).get(Region.ID), region.getId()));
+					}
+					break;
+				case DISTRICT:
+					final District district = currentUser.getDistrict();
+					if (district != null) {
+						filter = CriteriaBuilderHelper.or(
+							cb,
+							filter,
+							cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()),
+							cb.equal(casePath.get(Case.RESPONSIBLE_DISTRICT).get(District.ID), district.getId()));
+					}
+					break;
+				case HEALTH_FACILITY:
+					final Facility healthFacility = currentUser.getHealthFacility();
+					if (healthFacility != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY).get(Facility.ID), healthFacility.getId()));
+					}
+					break;
+				case COMMUNITY:
+					final Community community = currentUser.getCommunity();
+					if (community != null) {
+						filter = CriteriaBuilderHelper.or(
+							cb,
+							filter,
+							cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()),
+							cb.equal(casePath.get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), community.getId()));
+					}
+					break;
+				case POINT_OF_ENTRY:
+					final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+					if (pointOfEntry != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), pointOfEntry.getId()));
+					}
+					break;
+				case LABORATORY:
+					final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+					final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+					final SampleJoins joins = new SampleJoins(sampleRoot);
+					final Join cazeJoin = joins.getCaze();
+					sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+					sampleSubQuery.select(sampleRoot.get(Sample.ID));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
+					break;
+				default:
 				}
-				break;
-			case DISTRICT:
-				final District district = currentUser.getDistrict();
-				if (district != null) {
-					filter = CriteriaBuilderHelper.or(
-						cb,
-						filter,
-						cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()),
-						cb.equal(casePath.get(Case.RESPONSIBLE_DISTRICT).get(District.ID), district.getId()));
-				}
-				break;
-			case HEALTH_FACILITY:
-				final Facility healthFacility = currentUser.getHealthFacility();
-				if (healthFacility != null) {
-					filter =
-						CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY).get(Facility.ID), healthFacility.getId()));
-				}
-				break;
-			case COMMUNITY:
-				final Community community = currentUser.getCommunity();
-				if (community != null) {
-					filter = CriteriaBuilderHelper.or(
-						cb,
-						filter,
-						cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()),
-						cb.equal(casePath.get(Case.RESPONSIBLE_COMMUNITY).get(Community.ID), community.getId()));
-				}
-				break;
-			case POINT_OF_ENTRY:
-				final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
-				if (pointOfEntry != null) {
-					filter =
-						CriteriaBuilderHelper.or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), pointOfEntry.getId()));
-				}
-				break;
-			case LABORATORY:
-				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
-				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-				final SampleJoins joins = new SampleJoins(sampleRoot);
-				final Join cazeJoin = joins.getCaze();
-				sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
-				sampleSubQuery.select(sampleRoot.get(Sample.ID));
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
-				break;
-			default:
 			}
 
 			// get all cases based on the user's contact association
@@ -1680,11 +1687,19 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			return EditPermissionType.REFUSED;
 		}
 
+		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(caze.getSurveillanceOfficer(), getCurrentUser())) {
+			return EditPermissionType.REFUSED;
+		}
+
 		return super.getEditPermissionType(caze);
 	}
 
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
+
+		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(caze.getSurveillanceOfficer(), getCurrentUser())) {
+			return EditPermissionType.REFUSED;
+		}
 
 		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
@@ -2337,11 +2352,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			cb.lessThanOrEqualTo(
 				CriteriaBuilderHelper.dateDiff(
 					cb,
-						cb.function(
-								ExtendedPostgreSQL94Dialect.DATE,
-								Date.class,
-								CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
-						cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
+					cb.function(
+						ExtendedPostgreSQL94Dialect.DATE,
+						Date.class,
+						CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
 				Long.valueOf(TimeUnit.DAYS.toSeconds(automaticSampleAssignmentThreshold)).doubleValue()));
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();

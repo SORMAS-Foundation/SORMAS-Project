@@ -692,6 +692,11 @@ public class UserFacadeEjb implements UserFacade {
 			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
 		}
 
+		if (userCriteria != null && Boolean.TRUE.equals(userCriteria.getShowOnlyRestrictedAccessToAssignedEntities())) {
+			Join<Object, Object> rolesJoin = user.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES), true));
+		}
+
 		if (filter != null) {
 			/*
 			 * No preemptive distinct because this does collide with
@@ -737,7 +742,8 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.select(user);
 
-		return QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::toDto);
+		final List<UserDto> resultList = QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::toDto);
+		return resultList.stream().distinct().collect(Collectors.toList());
 	}
 
 	@Override
@@ -754,11 +760,16 @@ public class UserFacadeEjb implements UserFacade {
 			filter = userService.buildCriteriaFilter(userCriteria, cb, root);
 		}
 
+		if (userCriteria != null && Boolean.TRUE.equals(userCriteria.getShowOnlyRestrictedAccessToAssignedEntities())) {
+			Join<Object, Object> rolesJoin = root.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES), true));
+		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(root));
+		cq.select(cb.countDistinct(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 

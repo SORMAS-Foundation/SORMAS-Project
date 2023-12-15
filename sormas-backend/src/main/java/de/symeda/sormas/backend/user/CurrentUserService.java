@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -96,6 +97,20 @@ public class CurrentUserService {
 		}
 
 		return getCurrentUser().hasAnyUserRight(userRights);
+	}
+
+	public boolean hasRestrictedAccessToAssignedEntities() {
+		if (getCurrentUser() != null && !getCurrentUser().getUserRoles().isEmpty()) {
+			if (!getCurrentUser().getUserRoles()
+				.stream()
+				.filter(userRole -> !userRole.isRestrictAccessToAssignedEntities())
+				.collect(Collectors.toList())
+				.isEmpty()) {
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion

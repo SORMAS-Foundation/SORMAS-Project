@@ -291,9 +291,9 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 		// eliminate users that are limited to others diseases
 		if (limitedDisease != null) {
-            Predicate restrictOtherLimitedDiseaseUsers = cb.or(
-                    cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
-                    cb.like(userRoot.get(User.LIMITED_DISEASES).as(String.class), "%" + limitedDisease.name() + '%'));
+			Predicate restrictOtherLimitedDiseaseUsers = cb.or(
+				cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+				cb.like(userRoot.get(User.LIMITED_DISEASES).as(String.class), "%" + limitedDisease.name() + '%'));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
 
@@ -388,9 +388,9 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		filter = CriteriaBuilderHelper.and(cb, filter, jurisdictionFilter);
 
 		if (limitedDisease != null) {
-            Predicate restrictOtherLimitedDiseaseUsers = cb.or(
-                    cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
-                    cb.like(userRoot.get(User.LIMITED_DISEASES).as(String.class), "%" + limitedDisease.name() + "%"));
+			Predicate restrictOtherLimitedDiseaseUsers = cb.or(
+				cb.isNull(userRoot.get(User.LIMITED_DISEASES)),
+				cb.like(userRoot.get(User.LIMITED_DISEASES).as(String.class), "%" + limitedDisease.name() + "%"));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
 
@@ -921,7 +921,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		return userRoleFacade.isPortHealthUser(userRoleDtos);
 	}
 
-    public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, UserJoins joins) {
-        return new UserJurisdictionPredicateValidator(cb, getCurrentUser(), null, joins).inJurisdictionOrOwned();
-    }
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, UserJoins joins) {
+		return new UserJurisdictionPredicateValidator(cb, getCurrentUser(), null, joins).inJurisdictionOrOwned();
+	}
 }

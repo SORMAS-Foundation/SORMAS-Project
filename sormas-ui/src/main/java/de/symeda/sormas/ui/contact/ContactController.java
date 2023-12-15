@@ -687,23 +687,26 @@ public class ContactController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteWithReasonOrRestoreListener(
-				ContactsView.VIEW_NAME,
-				getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
-				I18nProperties.getString(Strings.entityContact),
-				contactUuid,
-				FacadeProvider.getContactFacade());
-		}
+		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+			|| DataHelper.equal(contact.getContactOfficer(), UserProvider.getCurrent().getUserReference())) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+				editComponent.addDeleteWithReasonOrRestoreListener(
+					ContactsView.VIEW_NAME,
+					getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
+					I18nProperties.getString(Strings.entityContact),
+					contactUuid,
+					FacadeProvider.getContactFacade());
+			}
 
-		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
-			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					contact,
-					ArchiveHandlers.forContact(),
-					editComponent,
-					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+			// Initialize 'Archive' button
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
+				ControllerProvider.getArchiveController()
+					.addArchivingButton(
+						contact,
+						ArchiveHandlers.forContact(),
+						editComponent,
+						() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+			}
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(

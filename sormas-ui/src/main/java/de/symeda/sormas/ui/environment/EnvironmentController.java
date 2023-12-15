@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.environment;
 
+import java.util.Objects;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -160,24 +162,30 @@ public class EnvironmentController {
 			}
 		}
 
-		// Initialize 'Delete' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_DELETE)) {
-			editComponent.addDeleteWithReasonOrRestoreListener(
-				EnvironmentsView.VIEW_NAME,
-				null,
-				I18nProperties.getString(Strings.entityEnvironment),
-				environmentDto.getUuid(),
-				FacadeProvider.getEnvironmentFacade());
-		}
+		if (Objects.requireNonNull(UserProvider.getCurrent())
+			.getUserRoles()
+			.stream()
+			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+			|| DataHelper.equal(environmentDto.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
+			// Initialize 'Delete' button
+			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_DELETE)) {
+				editComponent.addDeleteWithReasonOrRestoreListener(
+					EnvironmentsView.VIEW_NAME,
+					null,
+					I18nProperties.getString(Strings.entityEnvironment),
+					environmentDto.getUuid(),
+					FacadeProvider.getEnvironmentFacade());
+			}
 
-		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
-			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					environmentDto,
-					ArchiveHandlers.forEnvironment(),
-					editComponent,
-					() -> navigateToEnvironment(environmentDto.getUuid()));
+			// Initialize 'Archive' button
+			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
+				ControllerProvider.getArchiveController()
+					.addArchivingButton(
+						environmentDto,
+						ArchiveHandlers.forEnvironment(),
+						editComponent,
+						() -> navigateToEnvironment(environmentDto.getUuid()));
+			}
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
