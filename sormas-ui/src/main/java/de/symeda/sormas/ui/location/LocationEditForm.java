@@ -54,7 +54,6 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -371,8 +370,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				FieldHelper.removeItems(facility);
 				// Add a visual indictator reminding the user to select a district
 
-				if (!FacadeProvider.getFeatureConfigurationFacade()
-					.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 					facility.setComponentError(new ErrorMessage() {
 
 						@Override
@@ -604,8 +602,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	protected void setInternalValue(LocationDto newValue) {
 		super.setInternalValue(newValue);
 
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();
 		}
 	}
@@ -625,8 +622,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			facility.setComponentError(null);
 			facilityDetails.setValue(locationDto.getFacilityDetails());
 
-			if (FacadeProvider.getFeatureConfigurationFacade()
-				.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 				hideAndFillJurisdictionFields();
 			}
 		}
