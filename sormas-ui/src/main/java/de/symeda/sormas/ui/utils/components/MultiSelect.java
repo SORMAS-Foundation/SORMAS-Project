@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.utils.components;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 public class MultiSelect<T> extends CustomField<Set<T>> {
 
     private Select selectComponent = new Select();
-    private Collection<T> items;
+    private Collection<T> items = new ArrayList<>();
     private VerticalLayout labelLayout = new VerticalLayout();
     private Map<T, String> selectedItemsWithCaption = new HashMap<>();
     private Map<T, Label> selectedItemsWithLabelComponent = new HashMap<>();
