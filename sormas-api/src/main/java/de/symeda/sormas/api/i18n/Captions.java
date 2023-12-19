@@ -1408,6 +1408,7 @@ public interface Captions {
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
 	String externalEmailAttachedDocuments = "externalEmailAttachedDocuments";
+	String ExternalEmailOptions_attachedDocuments = "ExternalEmailOptions.attachedDocuments";
 	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
 	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
 	String externalEmailSentBy = "externalEmailSentBy";
