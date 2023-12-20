@@ -153,7 +153,9 @@ public class ExternalEmailSideComponent extends SideComponent {
 
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
 		if (isEditAllowed && CollectionUtils.isEmpty(person.getAllEmailAddresses())) {
-			createButton.setEnabled(false);
+			if (createButton != null) {
+				createButton.setEnabled(false);
+			}
 
 			Label noRecipientLabel = new Label(I18nProperties.getString(noRecipientStringKey));
 			noRecipientLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
