@@ -50,6 +50,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
@@ -105,6 +107,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			caze.toReference(),
 			null,
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 
@@ -129,6 +132,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		// Database should contain the created task
@@ -147,6 +151,126 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getIndexList(null, 0, 100, null));
+	}
+
+	@Test
+	public void testGetIndexListByARestrictedAccessToAssignedEntitiesUser() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user = creator.createNationalUser();
+		UserDto surveillanceOfficer = creator.createSurveillanceOfficer(rdcf);
+		assertNotNull(getTaskFacade().getIndexList(null, 0, 100, null));
+
+		//test tasks related to cases
+		loginWith(user);
+		String lastName = "Person";
+		PersonDto cazePerson = creator.createPerson("Case", lastName);
+		final CaseDataDto firstCase = creator.createCase(
+			surveillanceOfficer.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final CaseDataDto secondCase = creator.createCase(
+			surveillanceOfficer.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			c -> c.setHealthFacilityDetails("abc"));
+		assertEquals(2, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		useNationalAdminLogin();
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertEquals(0, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		loginWith(user);
+		firstCase.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(firstCase);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(1, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		//test tasks related to contacts
+		loginWith(user);
+		PersonDto contactPerson = creator.createPerson("Contact2", "Person2");
+		final ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), null, new Date(), new Date(), Disease.EVD);
+		assertEquals(3, getTaskFacade().getIndexList(null, 0, 100, null).size());
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(1, getTaskFacade().getIndexList(null, 0, 100, null).size());
+		loginWith(user);
+		contact.setContactOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getContactFacade().save(contact);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(2, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		//test tasks related to events
+		loginWith(user);
+		final EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"TitleEv1",
+			"DescriptionEv1",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf);
+		creator.createTask(
+			TaskContext.EVENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			event.toReference(),
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		assertEquals(4, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(2, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		loginWith(user);
+		event.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getEventFacade().save(event);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(3, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		//test tasks related to environments
+		loginWith(user);
+		EnvironmentDto environment = creator.createEnvironment("Test Environment", EnvironmentMedia.WATER, user.toReference(), rdcf);
+		creator.createTask(
+			TaskContext.ENVIRONMENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			null,
+			environment.toReference(),
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		assertEquals(5, getTaskFacade().getIndexList(null, 0, 100, null).size());
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(3, getTaskFacade().getIndexList(null, 0, 100, null).size());
+
+		loginWith(user);
+		environment.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getEnvironmentFacade().save(environment);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(4, getTaskFacade().getIndexList(null, 0, 100, null).size());
 	}
 
 	@Test
@@ -189,6 +313,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		creator.createTask(
@@ -196,6 +321,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			TaskType.OTHER,
 			TaskStatus.PENDING,
 			caze.toReference(),
+			null,
 			null,
 			null,
 			DateHelper.addDays(new Date(), 1),
@@ -207,6 +333,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			contact.toReference(),
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		creator.createTask(
@@ -216,6 +343,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			event.toReference(),
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		// getAllActiveTasks and getAllUuids should return length 4+1+1 (case investigation & contact investigation)
@@ -283,6 +411,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		creator.createTask(
@@ -290,6 +419,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			TaskType.OTHER,
 			TaskStatus.PENDING,
 			caze.toReference(),
+			null,
 			null,
 			null,
 			DateHelper.addDays(new Date(), 1),
@@ -301,6 +431,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			contact.toReference(),
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		creator.createTask(
@@ -310,6 +441,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			event.toReference(),
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 
@@ -407,6 +539,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			TaskType.CASE_INVESTIGATION,
 			TaskStatus.PENDING,
 			caze.toReference(),
+			null,
 			null,
 			null,
 			new Date(),
@@ -541,6 +674,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 
@@ -549,6 +683,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			TaskType.OTHER,
 			TaskStatus.PENDING,
 			caze.toReference(),
+			null,
 			null,
 			null,
 			DateHelper.addDays(new Date(), 1),
@@ -562,6 +697,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			contactDto.toReference(),
 			null,
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 
@@ -573,6 +709,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			eventDto.toReference(),
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 
@@ -643,6 +780,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			eventDto.toReference(),
+			null,
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		TaskDto taskEvent2 = creator.createTask(
@@ -652,6 +790,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			eventDto.toReference(),
+			null,
 			DateHelper.addDays(new Date(), 1),
 			noEventNoCaseViewUser.toReference());
 
@@ -727,8 +866,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
-		TaskDto task =
-			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
+		TaskDto task = creator
+			.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, null, new Date(), user.toReference());
 		getTaskFacade().archive(Collections.singletonList(task.getUuid()));
 
 		List<TaskIndexDto> archivedTasks =
@@ -771,8 +910,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceOfficer(rdcf);
 
-		TaskDto task =
-			creator.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, new Date(), user.toReference());
+		TaskDto task = creator
+			.createTask(TaskContext.GENERAL, TaskType.ANIMAL_TESTING, TaskStatus.PENDING, null, null, null, null, new Date(), user.toReference());
 		assertThat(getTaskFacade().getEditPermissionType(task.getUuid()), is(EditPermissionType.ALLOWED));
 
 		getTaskFacade().archive(Collections.singletonList(task.getUuid()));

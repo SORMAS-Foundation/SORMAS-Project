@@ -198,6 +198,15 @@ public class TestDataCreator {
 		return userRoleDtoMap.get(userRole);
 	}
 
+	public UserRoleReferenceDto createUserRoleWithRestrictedAccessToAssignedEntitiesUsingTemplate(DefaultUserRole templateUserRole) {
+		UserRoleDto userRole = new UserRoleDto();
+		userRole.setCaption(templateUserRole.toString() + "Restricted");
+		userRole.setJurisdictionLevel(templateUserRole.getJurisdictionLevel());
+		userRole.setUserRights(Arrays.stream(templateUserRole.getDefaultUserRights().toArray(new UserRight[0])).collect(Collectors.toSet()));
+		userRole.setRestrictAccessToAssignedEntities(true);
+		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
+	}
+
 	public UserRole getUserRole(DefaultUserRole userRole) {
 		if (userRoleMap.isEmpty()) {
 			createUserRoles();
@@ -229,6 +238,22 @@ public class TestDataCreator {
 			"Surv",
 			"Off",
 			getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+	}
+
+	public UserDto createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		final UserDto user = createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"SurvOff",
+			"RestrictedAccess",
+			createUserRoleWithRestrictedAccessToAssignedEntitiesUsingTemplate(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		return user;
 	}
 
 	public UserDto createContactOfficer(RDCF rdcf) {
@@ -275,12 +300,12 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(RDCF rdcf, DefaultUserRole defaultUserRole) {
-        return createUser(rdcf, "User", defaultUserRole);
-    }
+		return createUser(rdcf, "User", defaultUserRole);
+	}
 
-    public UserDto createUser(RDCF rdcf, String lastName, DefaultUserRole defaultUserRole) {
+	public UserDto createUser(RDCF rdcf, String lastName, DefaultUserRole defaultUserRole) {
 		UserRoleReferenceDto userRole = getUserRoleReference(defaultUserRole);
-        return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), userRole.getCaption(), lastName, userRole);
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), userRole.getCaption(), lastName, userRole);
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRoleReferenceDto... roles) {
@@ -940,7 +965,7 @@ public class TestDataCreator {
 	}
 
 	public TaskDto createTask(UserReferenceDto assigneeUser) {
-		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, new Date(), assigneeUser);
+		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, null, new Date(), assigneeUser);
 	}
 
 	public TaskDto createTask(TaskContext context, ReferenceDto entityRef, Consumer<TaskDto> customConfig) {
@@ -963,6 +988,7 @@ public class TestDataCreator {
 		CaseReferenceDto caze,
 		ContactReferenceDto contact,
 		EventReferenceDto event,
+		EnvironmentReferenceDto environment,
 		Date dueDate,
 		UserReferenceDto assigneeUser) {
 
@@ -976,6 +1002,9 @@ public class TestDataCreator {
 			break;
 		case EVENT:
 			entityRef = event;
+			break;
+		case ENVIRONMENT:
+			entityRef = environment;
 			break;
 		case GENERAL:
 			entityRef = null;
