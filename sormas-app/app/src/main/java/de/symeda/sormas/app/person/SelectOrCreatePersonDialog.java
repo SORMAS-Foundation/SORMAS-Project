@@ -21,20 +21,22 @@ import java.util.stream.Collectors;
 
 import android.content.Context;
 import android.view.View;
-
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
-
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.controls.ControlButton;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
@@ -61,9 +63,11 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 	private Callback createCallback;
 	private final ObservableField<Person> selectedPerson = new ObservableField<>();
 
+	private View selectedPersonItemView;
+
 	// Static methods
 
-	public static void selectOrCreatePerson(final Person person, final Consumer<Person> resultConsumer) {
+	public static void selectOrCreatePerson(final Person person, PseudonymizableAdo ado, final Consumer<Person> resultConsumer) {
 		final SelectOrCreatePersonDialog personDialog = new SelectOrCreatePersonDialog(BaseActivity.getActiveActivity(), person);
 
 		if (!personDialog.hasSimilarPersons()) {
@@ -73,7 +77,24 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 
 		personDialog.setPositiveCallback(() -> {
 			if (personDialog.getSelectedPerson() != null) {
-				resultConsumer.accept(personDialog.getSelectedPerson());
+				if (ado instanceof Event) {
+					boolean eventParticipantAlreadyExists =
+						DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists((Event) ado, personDialog.getSelectedPerson());
+
+					if (eventParticipantAlreadyExists) {
+						personDialog.suppressNextDismiss();
+
+						personDialog.setSelectedPerson(null);
+						personDialog.setSelectedPersonItemView(null);
+
+						NotificationHelper.showDialogNotification(
+							personDialog,
+							NotificationType.WARNING,
+							I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+					} else {
+						resultConsumer.accept(personDialog.getSelectedPerson());
+					}
+				}
 			} else {
 				personDialog.suppressNextDismiss();
 				NotificationHelper.showDialogNotification(personDialog, NotificationType.ERROR, R.string.info_select_create_person);
@@ -150,8 +171,10 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 
 					if (itemViewId == vId && v.isSelected()) {
 						itemView.setSelected(false);
+						setSelectedPerson(personItem);
 					} else if (itemViewId == vId && !v.isSelected()) {
 						itemView.setSelected(true);
+						setSelectedPersonItemView(itemView);
 						setSelectedPerson(personItem);
 					} else {
 						itemView.setSelected(false);
@@ -193,6 +216,11 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 				if (getSelectedPerson() == null) {
 					btnCreate.setVisibility(View.VISIBLE);
 					btnSelect.setVisibility(View.GONE);
+
+					//TODO: View based on tag and the item will be set to false
+					if (selectedPersonItemView != null) {
+						selectedPersonItemView.setSelected(false);
+					}
 				} else {
 					btnCreate.setVisibility(View.GONE);
 					btnSelect.setVisibility(View.VISIBLE);
@@ -228,5 +256,9 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 
 	private void setSelectedPerson(Person selectedPerson) {
 		this.selectedPerson.set(selectedPerson);
+	}
+
+	public void setSelectedPersonItemView(View selectedPersonItemView) {
+		this.selectedPersonItemView = selectedPersonItemView;
 	}
 }
