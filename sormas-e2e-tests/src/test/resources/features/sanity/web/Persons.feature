@@ -295,3 +295,47 @@ Feature: Edit Persons
     And I click on first person in person directory
     Then I check that Citizenship is not visible in Contact Information section for DE version
     And I check that Country of birth is not visible in Contact Information section for DE version
+
+  @tmsLink=HSP-6460 @env_de
+  Scenario: Person view has info cards of entities enabled in the system
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with mandatory data with person name and "Baden-Württemberg" region and "LK Alb-Donau-Kreis" district for DE version
+    Then I click on save button in the case popup
+    Then I collect uuid of the case
+    And I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I click on save sample button
+    And I click NEW VACCINATION button for DE
+    And I change the report vaccination date for minus 17 day from today
+    And I fill new vaccination data in new Vaccination form for DE
+    And I remove the vaccination date in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
+    Then I click on New Contact button in Case Person Tab for DE
+    And I click on the NEW CONTACT button
+    And I click CHOOSE CASE button
+    Then I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    Then I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    Then I check that number of displayed cases with "pencil" icon is 1 for Cases Side Card
+    And I check that SEE CASES FOR THIS PERSON button appears on Edit Person page for DE
+    Then I check that number of displayed contacts with "pencil" icon is 1 for Contacts Side Card
+    And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page for DE
+    Then I check that number of displayed samples with "pencil" icon is 1 for Samples Side Card
+    And I check if Side card has available "see sample for this person" button for DE
+    Then I check that number of displayed vaccinations with "pencil" icon is 1 for Vaccinations Side Card
+    And I click Link Event button on Edit Person Page for DE
+    And I choose the first found result in Pick or create event window
+    Then I click on SAVE button in Link Event form from Edit Person page
+    And I check that number of displayed linked events with "pencil" icon is 1 for Events Side Card
+    And I check if Side card has available "new travel entry" button for DE
+    And I click on the Entries button from navbar
+    Then I apply "Aktive Einreisen" to combobox on Travel Entry Directory Page
+    And I check if the New Travel Entry button is displayed in Travel Entries directory
+    Then I apply "Abgeschlossene Einreisen" to combobox on Travel Entry Directory Page
+    And I check if the New Travel Entry button is displayed in Travel Entries directory
