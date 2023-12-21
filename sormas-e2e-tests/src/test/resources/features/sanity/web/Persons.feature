@@ -322,13 +322,20 @@ Feature: Edit Persons
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I click on the Persons button from navbar
     And I open the last new created person by UI in person directory
-    Then I check that number of displayed cases with "pencil" icon is 1 for sample on Side Card
+    Then I check that number of displayed cases with "pencil" icon is 1 for Cases Side Card
     And I check that SEE CASES FOR THIS PERSON button appears on Edit Person page for DE
-    Then  I check that number of displayed contacts with "pencil" icon is 1 for sample on Side Card
+    Then I check that number of displayed contacts with "pencil" icon is 1 for Contacts Side Card
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page for DE
-    Then I check that number of displayed samples with "pencil" icon is 1 for sample on Side Card
-    And I check if Sample card has available "see sample for this person" button on Edit Case Page for DE
-    Then I check that number of displayed vaccinations with "pencil" icon is 1 for sample on Side Card
-    And I click on the Events button from navbar
-    And I click on GROUPS Radiobutton on Event Directory Page
-
+    Then I check that number of displayed samples with "pencil" icon is 1 for Samples Side Card
+    And I check if Side card has available "see sample for this person" button for DE
+    Then I check that number of displayed vaccinations with "pencil" icon is 1 for Vaccinations Side Card
+    And I click Link Event button on Edit Person Page for DE
+    And I choose the first found result in Pick or create event window
+    Then I click on SAVE button in Link Event form from Edit Person page
+    And I check that number of displayed linked events with "pencil" icon is 1 for Events Side Card
+    And I check if Side card has available "new travel entry" button for DE
+    And I click on the Entries button from navbar
+    Then I apply "Aktive Einreisen" to combobox on Travel Entry Directory Page
+    And I check if the New Travel Entry button is displayed in Travel Entries directory
+    Then I apply "Abgeschlossene Einreisen" to combobox on Travel Entry Directory Page
+    And I check if the New Travel Entry button is displayed in Travel Entries directory

@@ -100,6 +100,7 @@ public class EditPersonPage {
   public static final By POPUP_RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#region div");
   public static final By POPUP_RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#district div");
   public static final By PERSON_DATA_SAVED = By.cssSelector(".v-Notification-caption");
+  public static final By LINK_EVENT_BUTTON = By.xpath("//div[@id='Ereignis verkn\u00FCpfen']");
   public static final By PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE =
       By.xpath("//*[contains(text(),'The new event participant was created.')]");
   public static final By SEE_EVENTS_FOR_PERSON =
@@ -120,14 +121,19 @@ public class EditPersonPage {
   public static final By GPS_LONGITUDE_INPUT_EDIT_PERSON = By.id("longitude");
   public static final By MAP_CONTAINER_EDIT_PERSON = By.cssSelector("[class*='leaflet-container']");
   public static final By EDIT_CASES_BUTTON = By.id("edit-case-0");
-  public static final By EYE_CASES_BUTTON = By.id("view-case-0");
+  public static final By EDIT_CASES_ICON_BUTTON = By.cssSelector("div[id^='edit-case']");
+  public static final By VIEW_CASES_ICON_BUTTON = By.cssSelector("div[id^='view-case']");
   public static final By EDIT_CONTACTS_BUTTON = By.id("edit-contact-0");
-  public static final By EYE_CONTACTS_BUTTON = By.id("view-contact-0");
+  public static final By EDIT_CONTACTS_ICON_BUTTON = By.cssSelector("div[id^='edit-contact']");
+  public static final By VIEW_CONTACTS_ICON_BUTTON = By.cssSelector("div[id^='view-contact']");
+  public static final By EDIT_PARTICIPANT_ICON_BUTTON =
+      By.cssSelector("div[id^='edit-participant']");
   public static final By CONFIRM_NAVIGATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By PERSON_INFORMATION_TITLE =
       By.cssSelector("[location='personInformationHeadingLoc']");
   public static final By EVENT_PARTICIPANTS_DATA_TAB =
       By.cssSelector("#tab-events-eventparticipants");
+  public static final By NEW_TRAVEL_ENTRY_BUTTON_DE = By.cssSelector("[id='Neue Einreise']");
   public static final By NO_TRAVEL_ENTRY_LABEL_DE =
       By.xpath("//div[text()=\"Es gibt keine Einreisen f\u00FCr diese Person\"]");
   public static final By IMMUNIZATION_ID_LABEL =

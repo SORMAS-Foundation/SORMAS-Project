@@ -65,6 +65,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUN
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAGEMENT_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MAP_CONTAINER_EDIT_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
@@ -426,6 +427,13 @@ public class EditPersonSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.clickOnWebElementBySelector(UUID_INPUT);
           previousCreatedPerson = collectedPerson;
+        });
+
+    When(
+        "^I click Link Event button on Edit Person Page for DE$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
         });
 
     When(

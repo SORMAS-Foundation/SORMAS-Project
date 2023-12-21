@@ -29,6 +29,9 @@ public class CreateNewEventPage {
   public static final By EVENT_IDENTIFICATION_SOURCE_COMBOBOX =
       By.xpath(".//div[@id='eventIdentificationSource']//label");
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector(".popupContent #riskLevel div");
+  public static final By SOURCE_EVENT_WINDOW_FIRST_RESULT_OPTION =
+      By.xpath("//div[contains(@class, 'v-grid-tablewrapper')]//tbody//tr[1]");
+  public static final By POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventManagementStatus .v-select-option label");
   public static final By START_DATA_INPUT = By.cssSelector(".popupContent #startDate input");

@@ -2311,21 +2311,6 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I check if Sample card has available {string} button on Edit Case Page for DE",
-        (String button) -> {
-          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
-          switch (button) {
-            case "see sample for this person":
-              softly.assertTrue(
-                  webDriverHelpers.isElementPresent(SEE_SAMPLE_BUTTON_DE),
-                  "Element is not present");
-              break;
-              // place for other options
-          }
-          softly.assertAll();
-        });
-
-    When(
         "I click on the {string} button on Edit Case Page",
         (String button) -> {
           TimeUnit.SECONDS.sleep(3); // waiting for page loaded;
