@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -2163,8 +2164,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
 		final UserReferenceDto assigneeUser = caseTasks.get(0).getAssigneeUser();
-		final UserDto assigneeUserDetail = getUserFacade().getByUuid(assigneeUser.getUuid());
-		assertTrue(assigneeUserDetail.getUserRoles().containsAll(surveillanceOfficer.getUserRoles()));
+		assertThat(assigneeUser, anyOf(is(surveillanceOfficer), is(surveillanceOfficerWithRestrictedAccessToAssignedEntities)));
 	}
 
 	@Test
