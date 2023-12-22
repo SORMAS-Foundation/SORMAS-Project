@@ -389,12 +389,20 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private TaskDto createCaseTask(CaseDataDto caze) {
 		return creator
-			.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze.toReference(), null, null, new Date(), null);
+			.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze.toReference(), null, null, null, new Date(), null);
 	}
 
 	private TaskDto createContactTask(ContactDto contact) {
-		return creator
-			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contact.toReference(), null, new Date(), null);
+		return creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.CONTACT_FOLLOW_UP,
+			TaskStatus.PENDING,
+			null,
+			contact.toReference(),
+			null,
+			null,
+			new Date(),
+			null);
 	}
 
 	private void assertNotPseudonymized(TaskDto task) {

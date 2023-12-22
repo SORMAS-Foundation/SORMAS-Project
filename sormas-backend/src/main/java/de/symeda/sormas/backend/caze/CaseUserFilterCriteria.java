@@ -8,6 +8,7 @@ public class CaseUserFilterCriteria {
 	private boolean excludeCasesFromContacts;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private boolean excludeLimitedSyncRestrictions;
+	private boolean restrictAccessToAssignedEntities;
 
 	public boolean isExcludeCasesFromContacts() {
 		return excludeCasesFromContacts;
@@ -38,5 +39,13 @@ public class CaseUserFilterCriteria {
 	public CaseUserFilterCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
 		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
 		return this;
+	}
+
+	public boolean isRestrictAccessToAssignedEntities() {
+		return restrictAccessToAssignedEntities;
+	}
+
+	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
+		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
 	}
 }

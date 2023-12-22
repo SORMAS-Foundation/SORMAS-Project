@@ -466,62 +466,67 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		final EventJoins eventJoins = queryContext.getJoins();
 		final From<?, Event> eventJoin = queryContext.getRoot();
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
-			switch (jurisdictionLevel) {
-			case REGION:
-				if (currentUser.getRegion() != null) {
+		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
+		} else {
+			if (jurisdictionLevel != JurisdictionLevel.NATION) {
+				switch (jurisdictionLevel) {
+				case REGION:
+					if (currentUser.getRegion() != null) {
+						filter =
+							CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
+					}
+					break;
+				case DISTRICT:
+					if (currentUser.getDistrict() != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+					}
+					break;
+				case COMMUNITY:
+					if (currentUser.getCommunity() != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
+					}
+					break;
+				case HEALTH_FACILITY:
+					if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
+					}
+					break;
+				case LABORATORY:
+					final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+					final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+					final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+					final Join eventParticipant = sampleJoins.getEventParticipant();
+					final From<?, EventParticipant> eventParticipantJoin = eventJoins.getEventParticipants();
+					SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
+						SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+					sampleSubQuery.where(
+						cb.and(cb.equal(eventParticipant, eventParticipantJoin), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+					sampleSubQuery.select(sampleRoot.get(Sample.ID));
+					filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
+					break;
+				default:
+				}
+
+				Predicate filterResponsible = cb.equal(eventJoins.getRoot().get(Event.REPORTING_USER), currentUser);
+				filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getRoot().get(Event.RESPONSIBLE_USER), currentUser));
+
+				if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
+					filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(queryContext));
+				}
+
+				if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
 					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
 				}
-				break;
-			case DISTRICT:
-				if (currentUser.getDistrict() != null) {
-					filter =
-						CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+
+				if (filter != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
+				} else {
+					filter = filterResponsible;
 				}
-				break;
-			case COMMUNITY:
-				if (currentUser.getCommunity() != null) {
-					filter =
-						CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
-				}
-				break;
-			case HEALTH_FACILITY:
-				if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
-					filter = CriteriaBuilderHelper
-						.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
-				}
-				break;
-			case LABORATORY:
-				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
-				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-				final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
-				final Join eventParticipant = sampleJoins.getEventParticipant();
-				final From<?, EventParticipant> eventParticipantJoin = eventJoins.getEventParticipants();
-				SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-					SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
-				sampleSubQuery
-					.where(cb.and(cb.equal(eventParticipant, eventParticipantJoin), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
-				sampleSubQuery.select(sampleRoot.get(Sample.ID));
-				filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
-				break;
-			default:
-			}
-
-			Predicate filterResponsible = cb.equal(eventJoins.getRoot().get(Event.REPORTING_USER), currentUser);
-			filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getRoot().get(Event.RESPONSIBLE_USER), currentUser));
-
-			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
-				filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(queryContext));
-			}
-
-			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
-			}
-
-			if (filter != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
-			} else {
-				filter = filterResponsible;
 			}
 		}
 
@@ -1060,6 +1065,10 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 		if (!inJurisdictionOrOwned(event)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
+		}
+
+		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(event.getResponsibleUser(), getCurrentUser())) {
+			return EditPermissionType.REFUSED;
 		}
 
 		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)

@@ -53,6 +53,7 @@ public class UserRoleDto extends EntityDto {
 	public static final String PORT_HEALTH_USER = "portHealthUser";
 	public static final String NOTIFICATION_TYPES = "notificationTypes";
 	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
+	public static final String RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES = "restrictAccessToAssignedEntities";
 
 	private Set<UserRight> userRights;
 	private boolean enabled = true;
@@ -68,6 +69,7 @@ public class UserRoleDto extends EntityDto {
 	private JurisdictionLevel jurisdictionLevel;
 	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
 	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
+	private boolean restrictAccessToAssignedEntities = false;
 
 	public static UserRoleDto build(UserRight... userRights) {
 
@@ -205,6 +207,14 @@ public class UserRoleDto extends EntityDto {
 	public void setNotificationTypes(NotificationTypes notificationTypes) {
 		this.smsNotificationTypes = notificationTypes.sms;
 		this.emailNotificationTypes = notificationTypes.email;
+	}
+
+	public boolean isRestrictAccessToAssignedEntities() {
+		return restrictAccessToAssignedEntities;
+	}
+
+	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
+		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
 	}
 
 	@Override

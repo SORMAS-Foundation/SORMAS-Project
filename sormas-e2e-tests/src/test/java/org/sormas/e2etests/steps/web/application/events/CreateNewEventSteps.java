@@ -36,9 +36,11 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.ME
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.MULTI_DAY_EVENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.NEW_EVENT_CREATED_DE_MESSAGE;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.NEW_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.RISK_LEVEL_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SOURCE_EVENT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SOURCE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_EVENT;
@@ -67,6 +69,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.web.Event;
@@ -213,6 +216,23 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LINKED_CONTACTS_TO_THE_SELECTED_EVENT_POPUP);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "^I choose the first found result in Pick or create event window$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_EVENT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_EVENT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "^I click on SAVE button in Link Event form from Edit Person page$",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(POPUP_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE_BUTTON);
         });
 
     When(

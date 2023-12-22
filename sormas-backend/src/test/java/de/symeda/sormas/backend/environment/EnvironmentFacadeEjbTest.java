@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -111,4 +112,31 @@ class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, byUserRdcf.size());
 		assertEquals(environment2.getUuid(), byUserRdcf.get(0).getUuid());
 	}
+
+	@Test
+	public void testGetIndexListByARestrictedAccessToAssignedEntities() {
+
+		UserDto user = creator.createNationalUser();
+		TestDataCreator.RDCF rdcf1 = creator.createRDCF();
+		EnvironmentDto environment1 = creator.createEnvironment("Test Environment", EnvironmentMedia.WATER, user.toReference(), rdcf1);
+		TestDataCreator.RDCF rdcf2 = creator.createRDCF();
+		EnvironmentDto environment2 = creator.createEnvironment("Test Environment 2", EnvironmentMedia.AIR, user.toReference(), rdcf2);
+
+		List<EnvironmentIndexDto> allResults = getEnvironmentFacade().getIndexList(new EnvironmentCriteria(), 0, 100, null);
+		assertEquals(2, allResults.size());
+
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertEquals(0, getEnvironmentFacade().getIndexList(new EnvironmentCriteria(), 0, 100, null).size());
+
+		loginWith(user);
+		environment1.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getEnvironmentFacade().save(environment1);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(1, getEnvironmentFacade().getIndexList(new EnvironmentCriteria(), 0, 100, null).size());
+	}
+
 }

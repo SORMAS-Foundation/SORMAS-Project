@@ -90,7 +90,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.FilterProvider;
-import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -108,6 +107,7 @@ import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
@@ -1095,7 +1095,12 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 			cb.equal(from.get(Person.UUID), personUuid),
 			cb.or(
 				cb.and(
-					cb.and(cb.isNotNull(joins.getCaze()), cb.isFalse(joins.getCaze().get(Case.DELETED))),
+					cb.and(
+						cb.isNotNull(joins.getCaze()),
+						cb.isFalse(joins.getCaze().get(Case.DELETED)),
+						currentUserHasRestrictedAccessToAssignedEntities()
+							? cb.equal(joins.getCaze().get(Case.SURVEILLANCE_OFFICER).get(User.ID), getCurrentUser().getId())
+							: cb.conjunction()),
 					caseService.createOwnershipPredicate(true, joins.getCaze(), cb, cq)),
 				cb.and(
 					cb.and(cb.isNotNull(joins.getContact()), cb.isFalse(joins.getContact().get(Contact.DELETED))),
