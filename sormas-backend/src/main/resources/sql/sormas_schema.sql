@@ -12833,5 +12833,39 @@ ALTER TABLE userroles_history ADD COLUMN restrictAccessToAssignedEntities boolea
 
 INSERT INTO schema_version (version_number, comment) VALUES (536, 'Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697');
 
+-- 2023-12-21 Introduce dedicated environment sample pathogen test rights #12836
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_CREATE'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_EDIT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+DELETE FROM userroles_userrights WHERE (userright = 'SAMPLE_VIEW' OR userright = 'SAMPLE_EDIT' OR userright = 'PATHOGEN_TEST_CREATE' OR userright = 'PATHOGEN_TEST_EDIT')
+AND userrole_id IN (SELECT id FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+UPDATE userroles set changedate = now() WHERE linkeddefaultuserrole in ('ADMIN', 'LAB_USER', 'NATIONAL_USER', 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+INSERT INTO schema_version (version_number, comment) VALUES (537, 'Introduce dedicated environment sample pathogen test rights #12836');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

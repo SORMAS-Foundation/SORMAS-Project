@@ -104,6 +104,6 @@ public class EnvironmentSampleEditPathogenTestListFragment
 
 	@Override
 	public boolean isShowNewAction() {
-		return ConfigProvider.hasUserRight(UserRight.PATHOGEN_TEST_CREATE);
+		return ConfigProvider.hasUserRight(UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE);
 	}
 }
