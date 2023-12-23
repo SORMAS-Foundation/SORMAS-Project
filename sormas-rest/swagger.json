@@ -24977,6 +24977,9 @@
           "region" : {
             "$ref" : "#/components/schemas/RegionReferenceDto"
           },
+          "showOnlyRestrictedAccessToAssignedEntities" : {
+            "type" : "boolean"
+          },
           "userRole" : {
             "$ref" : "#/components/schemas/UserRoleReferenceDto"
           }
@@ -25171,6 +25174,9 @@
             "enum" : [ "ADMIN", "NATIONAL_USER", "SURVEILLANCE_SUPERVISOR", "ADMIN_SUPERVISOR", "SURVEILLANCE_OFFICER", "HOSPITAL_INFORMANT", "COMMUNITY_OFFICER", "COMMUNITY_INFORMANT", "CASE_SUPERVISOR", "CASE_OFFICER", "CONTACT_SUPERVISOR", "CONTACT_OFFICER", "EVENT_OFFICER", "LAB_USER", "EXTERNAL_LAB_USER", "NATIONAL_OBSERVER", "STATE_OBSERVER", "DISTRICT_OBSERVER", "NATIONAL_CLINICIAN", "POE_INFORMANT", "POE_SUPERVISOR", "POE_NATIONAL_USER", "ENVIRONMENTAL_SURVEILLANCE_USER", "IMPORT_USER", "REST_EXTERNAL_VISITS_USER", "SORMAS_TO_SORMAS_CLIENT", "BAG_USER" ]
           },
           "portHealthUser" : {
+            "type" : "boolean"
+          },
+          "restrictAccessToAssignedEntities" : {
             "type" : "boolean"
           },
           "smsNotificationTypes" : {

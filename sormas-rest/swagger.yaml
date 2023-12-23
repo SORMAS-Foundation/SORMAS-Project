@@ -24984,6 +24984,8 @@ components:
           type: string
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
+        showOnlyRestrictedAccessToAssignedEntities:
+          type: boolean
         userRole:
           $ref: '#/components/schemas/UserRoleReferenceDto'
     UserDto:
@@ -25267,6 +25269,8 @@ components:
           - SORMAS_TO_SORMAS_CLIENT
           - BAG_USER
         portHealthUser:
+          type: boolean
+        restrictAccessToAssignedEntities:
           type: boolean
         smsNotificationTypes:
           type: array
