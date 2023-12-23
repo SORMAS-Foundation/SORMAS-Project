@@ -90,36 +90,41 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		final EnvironmentJoins environmentJoins = queryContext.getJoins();
 		final From<?, Environment> environmentJoin = queryContext.getRoot();
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
-			switch (jurisdictionLevel) {
-			case REGION:
-				if (currentUser.getRegion() != null) {
-					filter =
-						CriteriaBuilderHelper.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
+		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(environmentJoin.get(Environment.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
+		} else {
+			if (jurisdictionLevel != JurisdictionLevel.NATION) {
+				switch (jurisdictionLevel) {
+				case REGION:
+					if (currentUser.getRegion() != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
+					}
+					break;
+				case DISTRICT:
+					if (currentUser.getDistrict() != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
+					}
+					break;
+				case COMMUNITY:
+					if (currentUser.getCommunity() != null) {
+						filter = CriteriaBuilderHelper
+							.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
+					}
+					break;
+				default:
 				}
-				break;
-			case DISTRICT:
-				if (currentUser.getDistrict() != null) {
-					filter = CriteriaBuilderHelper
-						.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
-				}
-				break;
-			case COMMUNITY:
-				if (currentUser.getCommunity() != null) {
-					filter = CriteriaBuilderHelper
-						.or(cb, filter, cb.equal(environmentJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
-				}
-				break;
-			default:
-			}
 
-			Predicate filterResponsible = cb.equal(environmentJoins.getRoot().get(Environment.REPORTING_USER), currentUser);
-			filterResponsible = cb.or(filterResponsible, cb.equal(environmentJoins.getRoot().get(Environment.RESPONSIBLE_USER), currentUser));
+				Predicate filterResponsible = cb.equal(environmentJoins.getRoot().get(Environment.REPORTING_USER), currentUser);
+				filterResponsible = cb.or(filterResponsible, cb.equal(environmentJoins.getRoot().get(Environment.RESPONSIBLE_USER), currentUser));
 
-			if (filter != null) {
-				filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible, createEnvironmentSampleFilter(queryContext));
-			} else {
-				filter = filterResponsible;
+				if (filter != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible, createEnvironmentSampleFilter(queryContext));
+				} else {
+					filter = filterResponsible;
+				}
 			}
 		}
 
@@ -396,6 +401,10 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	public EditPermissionType getEditPermissionType(Environment environment) {
 		if (!inJurisdictionOrOwned(environment)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
+		}
+
+		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(environment.getResponsibleUser(), getCurrentUser())) {
+			return EditPermissionType.REFUSED;
 		}
 
 		return super.getEditPermissionType(environment);

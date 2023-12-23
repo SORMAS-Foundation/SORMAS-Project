@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -98,19 +99,19 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	public void testSave() {
 		EnvironmentSampleDto dto =
 			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
-			s.setSampleMaterial(EnvironmentSampleMaterial.WATER);
-			s.setLaboratory(lab.toReference());
-			s.setFieldSampleId("123");
-			s.setChlorineResiduals(1.0f);
-			s.setPhValue(8);
-			s.setHeavyRain(YesNoUnknown.YES);
-			s.setDispatched(true);
-			s.setReceived(false);
-			s.setGeneralComment("General comment");
-			s.getLocation().setAddressType(PersonAddressType.OTHER_ADDRESS);
-			s.getLocation().setCity("City");
-			s.getLocation().setStreet("Street");
-		});
+				s.setSampleMaterial(EnvironmentSampleMaterial.WATER);
+				s.setLaboratory(lab.toReference());
+				s.setFieldSampleId("123");
+				s.setChlorineResiduals(1.0f);
+				s.setPhValue(8);
+				s.setHeavyRain(YesNoUnknown.YES);
+				s.setDispatched(true);
+				s.setReceived(false);
+				s.setGeneralComment("General comment");
+				s.getLocation().setAddressType(PersonAddressType.OTHER_ADDRESS);
+				s.getLocation().setCity("City");
+				s.getLocation().setStreet("Street");
+			});
 
 		EnvironmentSampleDto createdDto = getEnvironmentSampleFacade().save(dto);
 
@@ -210,8 +211,8 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 	public void testGetReferenceByUuid() {
 		EnvironmentSampleDto dto =
 			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
-			s.setSampleMaterial(EnvironmentSampleMaterial.AIR);
-		});
+				s.setSampleMaterial(EnvironmentSampleMaterial.AIR);
+			});
 
 		EnvironmentSampleReferenceDto referenceDto = getEnvironmentSampleFacade().getReferenceByUuid(dto.getUuid());
 
@@ -264,7 +265,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(returnedSample.getLocation().getCity(), is(emptyString()));
 		assertThat(returnedSample.getLaboratory(), is(nullValue()));
 		assertThat(returnedSample.getReportingUser(), is(nullValue()));
-		assertThat(returnedSample.getEnvironment().getCaption(), is(emptyString()));
+		assertThat(returnedSample.getEnvironment().getCaption(), is(DataHelper.getShortUuid(sample.getEnvironment().getUuid())));
 	}
 
 	@Test
@@ -523,6 +524,42 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		EnvironmentSampleCriteria criteria3 = new EnvironmentSampleCriteria();
 		criteria2.setReceived(false);
 		assertThat(getEnvironmentSampleFacade().getIndexList(criteria3, null, null, null), hasSize(2));
+	}
+
+	@Test
+	public void testGetIndexListWithRestrictedAccessToAssignedEntities() {
+		EnvironmentSampleDto environmentSample =
+			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
+				s.setFieldSampleId("field_sample-1");
+				s.getLocation().setRegion(rdcf.region);
+				s.getLocation().setDistrict(rdcf.district);
+				s.getLocation().setStreet("street");
+				s.getLocation().setHouseNumber("1");
+				s.getLocation().setPostalCode("12345");
+				s.getLocation().setCity("city");
+				s.setDispatched(true);
+				s.setDispatchDate(new Date());
+				s.setReceived(false);
+				s.setSampleMaterial(EnvironmentSampleMaterial.OTHER);
+				s.setOtherSampleMaterial("Other sample material");
+			});
+		Pathogen positivePathogen = creator.createPathogen("TEST_PATHOGEN", "Test pathogen");
+		PathogenTestDto positiveTest = creator.createPathogenTest(
+			environmentSample.toReference(),
+			PathogenTestType.ISOLATION,
+			positivePathogen,
+			lab.toReference(),
+			reportingUser.toReference(),
+			PathogenTestResultType.POSITIVE,
+			null);
+		assertThat(getEnvironmentSampleFacade().getIndexList(null, null, null, null), hasSize(1));
+
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertThat(getEnvironmentSampleFacade().getIndexList(null, null, null, null), hasSize(0));
+
 	}
 
 	@Test

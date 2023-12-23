@@ -488,6 +488,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 			caze.toReference(),
 			null,
 			null,
+			null,
 			new Date(),
 			user.toReference());
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);

@@ -143,8 +143,7 @@ public class EventListComponent extends VerticalLayout {
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)
-			&& isEditAllowed) {
+		if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE) && isEditAllowed) {
 			createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);

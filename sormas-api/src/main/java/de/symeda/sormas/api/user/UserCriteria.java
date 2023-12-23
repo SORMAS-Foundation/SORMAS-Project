@@ -16,6 +16,7 @@ public class UserCriteria extends BaseCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String freeText;
+	private Boolean showOnlyRestrictedAccessToAssignedEntities;
 
 	public UserCriteria active(Boolean active) {
 		this.active = active;
@@ -61,5 +62,13 @@ public class UserCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getFreeText() {
 		return freeText;
+	}
+
+	public Boolean getShowOnlyRestrictedAccessToAssignedEntities() {
+		return showOnlyRestrictedAccessToAssignedEntities;
+	}
+
+	public void setShowOnlyRestrictedAccessToAssignedEntities(Boolean showOnlyRestrictedAccessToAssignedEntities) {
+		this.showOnlyRestrictedAccessToAssignedEntities = showOnlyRestrictedAccessToAssignedEntities;
 	}
 }

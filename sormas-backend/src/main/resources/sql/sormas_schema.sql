@@ -12825,7 +12825,13 @@ ALTER TABLE manualmessagelog_history
     ADD COLUMN eventparticipant_id bigint,
     ADD COLUMN travelentry_id      bigint;
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (535, 'Display a history of sent external emails #12465');
+INSERT INTO schema_version (version_number, comment) VALUES (535, 'Display a history of sent external emails #12465');
+
+-- 2023-12-05 Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697
+ALTER TABLE userroles ADD COLUMN restrictAccessToAssignedEntities boolean NOT NULL DEFAULT false;
+ALTER TABLE userroles_history ADD COLUMN restrictAccessToAssignedEntities boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (536, 'Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
