@@ -17,13 +17,16 @@ package de.symeda.sormas.api.customizableenum;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 /**
@@ -35,14 +38,27 @@ public class CustomizableEnumValueDto extends EntityDto {
 
 	private static final long serialVersionUID = 4360662500289404985L;
 
+	public static final String I18N_PREFIX = "CustomizableEnumValue";
+
+	public static final String DATA_TYPE = "dataType";
+	public static final String VALUE = "value";
+	public static final String CAPTION = "caption";
+	public static final String DESCRIPTION = "description";
+	public static final String TRANSLATIONS = "translations";
+	public static final String DISEASES = "diseases";
+	public static final String PROPERTIES = "properties";
+
+	@NotNull(message = Validations.required)
 	private CustomizableEnumType dataType;
+	@NotNull(message = Validations.required)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String value;
+	@NotNull(message = Validations.required)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caption;
 	@Valid
 	private List<CustomizableEnumTranslation> translations;
-	private List<Disease> diseases;
+	private Set<Disease> diseases;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Valid
@@ -53,6 +69,12 @@ public class CustomizableEnumValueDto extends EntityDto {
 	 * or translations because they can be translated via properties files.
 	 */
 	private boolean defaultValue;
+
+	public static CustomizableEnumValueDto build() {
+		CustomizableEnumValueDto dto = new CustomizableEnumValueDto();
+		dto.setUuid(DataHelper.createUuid());
+		return dto;
+	}
 
 	public CustomizableEnumType getDataType() {
 		return dataType;
@@ -86,11 +108,11 @@ public class CustomizableEnumValueDto extends EntityDto {
 		this.translations = translations;
 	}
 
-	public List<Disease> getDiseases() {
+	public Set<Disease> getDiseases() {
 		return diseases;
 	}
 
-	public void setDiseases(List<Disease> diseases) {
+	public void setDiseases(Set<Disease> diseases) {
 		this.diseases = diseases;
 	}
 

@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.customizableenum;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -30,7 +31,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.disease.DiseaseListConverter;
+import de.symeda.sormas.backend.user.DiseaseSetConverter;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 /**
@@ -47,11 +48,16 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "customizableenumvalue";
 
+	public static final String DATA_TYPE = "dataType";
+	public static final String VALUE = "value";
+	public static final String CAPTION = "caption";
+	public static final String DISEASES = "diseases";
+
 	private CustomizableEnumType dataType;
 	private String value;
 	private String caption;
 	private List<CustomizableEnumTranslation> translations;
-	private List<Disease> diseases;
+	private Set<Disease> diseases;
 	private String description;
 	private List<CustomizableEnumTranslation> descriptionTranslations;
 	private Map<String, Object> properties;
@@ -100,12 +106,12 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	}
 
 	@Column
-	@Convert(converter = DiseaseListConverter.class)
-	public List<Disease> getDiseases() {
+	@Convert(converter = DiseaseSetConverter.class)
+	public Set<Disease> getDiseases() {
 		return diseases;
 	}
 
-	public void setDiseases(List<Disease> diseases) {
+	public void setDiseases(Set<Disease> diseases) {
 		this.diseases = diseases;
 	}
 

@@ -47,6 +47,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -87,7 +88,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.PCR_TEST_SPECIFICATION, "") +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
-			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, "") +
+			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, PathogenTestDto.TESTED_PATHOGEN_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
 			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
 			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
@@ -256,14 +257,25 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		// Tested Desease or Tested Pathogen, depending on sample type
 		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create);
-		TextField diseaseDetailsField = addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
+		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 
 		ComboBox testedPathogenField = addField(PathogenTestDto.TESTED_PATHOGEN, ComboBox.class);
+		TextField testedPathogenDetailsField = addField(PathogenTestDto.TESTED_PATHOGEN_DETAILS, TextField.class);
+		testedPathogenDetailsField.setVisible(false);
 		FieldHelper.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
+		testedPathogenField.addValueChangeListener(e -> {
+			Pathogen pathogen = (Pathogen) e.getProperty().getValue();
+			if (pathogen != null && pathogen.isHasDetails()) {
+				testedPathogenDetailsField.setVisible(true);
+			} else {
+				testedPathogenDetailsField.clear();
+				testedPathogenDetailsField.setVisible(false);
+			}
+		});
 
 		if (environmentSample == null) {
 			diseaseField.setVisible(true);
@@ -356,6 +368,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			PathogenTestDto.TEST_TYPE,
 			Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.DNA_MICROARRAY, PathogenTestType.SEQUENCING),
 			true);
+
 		Map<Object, List<Object>> serotypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
 
 			private static final long serialVersionUID = 1967952323596082247L;

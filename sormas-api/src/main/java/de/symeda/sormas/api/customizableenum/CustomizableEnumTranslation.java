@@ -34,6 +34,15 @@ public class CustomizableEnumTranslation implements Serializable {
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String value;
 
+	public CustomizableEnumTranslation() {
+
+	}
+
+	public CustomizableEnumTranslation(String languageCode, String value) {
+		this.languageCode = languageCode;
+		this.value = value;
+	}
+
 	public String getLanguageCode() {
 		return languageCode;
 	}

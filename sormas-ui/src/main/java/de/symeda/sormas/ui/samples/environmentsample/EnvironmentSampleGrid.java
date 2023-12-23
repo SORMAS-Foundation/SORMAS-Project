@@ -32,6 +32,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -84,7 +85,8 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 
 		Column<EnvironmentSampleIndexDto, String> latestPathogenTestColumn = addColumn(entry -> {
 			if (entry.getLatestTestedPathogen() != null) {
-				return entry.getLatestTestedPathogen() + ": " + entry.getLatestPathogenTestResult();
+				return DataHelper.getPathogenString(entry.getLatestTestedPathogen(), entry.getLatestTestedPathogenDetails()) + ": "
+					+ entry.getLatestPathogenTestResult();
 			} else {
 				return "";
 			}

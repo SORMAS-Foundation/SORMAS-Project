@@ -1,31 +1,36 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.docgeneneration;
+package de.symeda.sormas.api.customizableenum;
 
-import java.util.Properties;
+import de.symeda.sormas.api.ReferenceDto;
 
-import javax.ejb.Remote;
+public class CustomizableEnumValueReferenceDto extends ReferenceDto {
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+	private static final long serialVersionUID = 4360662500289404985L;
 
-@Remote
-public interface EmailTemplateFacade {
+	public CustomizableEnumValueReferenceDto() {
+	}
 
-	String generateCaseEmailContent(String templateName, CaseReferenceDto cazeRef, Properties extraProperties) throws DocumentTemplateException;
+	public CustomizableEnumValueReferenceDto(String uuid) {
+		setUuid(uuid);
+	}
+
+	public CustomizableEnumValueReferenceDto(String uuid, String caption) {
+		setUuid(uuid);
+		setCaption(caption);
+	}
+
 }

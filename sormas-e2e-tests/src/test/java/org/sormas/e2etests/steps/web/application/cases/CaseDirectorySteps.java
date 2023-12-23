@@ -73,7 +73,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REGION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REINFECTION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REPORTING_USER_FILTER;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
@@ -288,7 +287,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(80);
         });
 
     When(
@@ -650,7 +649,6 @@ public class CaseDirectorySteps implements En {
     When(
         "^I search for cases created with the API using Person's name",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CASE_RESET_FILTERS_BUTTON);
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
@@ -659,8 +657,7 @@ public class CaseDirectorySteps implements En {
               apiState.getLastCreatedPerson().getFirstName()
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
           Assert.assertEquals(
@@ -1575,6 +1572,7 @@ public class CaseDirectorySteps implements En {
     And(
         "^I check that Relevance Status Filter is set to \"([^\"]*)\" on Case Directory page$",
         (String relevanceStatus) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(300);
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(RELEVANT_STATUS_INPUT),
               relevanceStatus,
@@ -1594,7 +1592,7 @@ public class CaseDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(CANCEL_POPUP);
               break;
           }
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(
@@ -1741,7 +1739,6 @@ public class CaseDirectorySteps implements En {
         "^I set the Relevance Status Filter to \"([^\"]*)\" on Case Directory page$",
         (String status) -> {
           webDriverHelpers.selectFromCombobox(RELEVANT_STATUS_COMBOBOX, status);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
   }
 

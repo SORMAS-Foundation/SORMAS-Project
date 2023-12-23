@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.92.0</version>
+		<version>1.93.0</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -128,6 +128,10 @@
 			<groupId>fr.opensagres.xdocreport</groupId>
 			<artifactId>fr.opensagres.xdocreport.template.velocity</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>fr.opensagres.xdocreport</groupId>
+            <artifactId>fr.opensagres.xdocreport.converter.docx.xwpf</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -209,7 +213,13 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
-		<!-- *** Domain libs END *** -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+
+
+        <!-- *** Domain libs END *** -->
 
 		<!-- *** Compile dependencies *** -->
 

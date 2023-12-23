@@ -27,6 +27,7 @@ import android.view.View;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -107,8 +108,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			diseaseVariantList.add(DataUtils.toItem(record.getTestedDiseaseVariant()));
 		}
 
-		List<DiseaseVariant> pathogens =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.PATHOGEN, null);
+		List<DiseaseVariant> pathogens = DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.PATHOGEN, null);
 		pathogenList = DataUtils.toItems(pathogens);
 		if (record.getTestedPathogen() != null && !diseaseVariants.contains(record.getTestedPathogen())) {
 			pathogenList.add(DataUtils.toItem(record.getTestedPathogen()));
@@ -177,9 +177,18 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		});
 		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
 
-		contentBinding.pathogenTestTestedPathogen.initializeSpinner(pathogenList);
+		contentBinding.pathogenTestTestedPathogenDetails.setVisibility(GONE);
+		contentBinding.pathogenTestTestedPathogen.initializeSpinner(pathogenList, e -> {
+			Pathogen pathogen = (Pathogen) e.getValue();
+			if (pathogen != null && pathogen.isHasDetails()) {
+				contentBinding.pathogenTestTestedPathogenDetails.setVisibility(VISIBLE);
+			} else {
+				contentBinding.pathogenTestTestedPathogenDetails.setVisibility(GONE);
+				contentBinding.pathogenTestTestedPathogenDetails.setValue(null);
+			}
+		});
 
-		if(sample != null){
+		if (sample != null) {
 			contentBinding.pathogenTestTestedDiseaseLayout.setVisibility(VISIBLE);
 			contentBinding.pathogenTestTestedDisease.setRequired(true);
 			contentBinding.pathogenTestTestedPathogen.setVisibility(GONE);

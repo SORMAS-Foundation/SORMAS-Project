@@ -37,6 +37,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
+import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.casesUUID;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -414,6 +415,19 @@ public class CreateNewContactSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(
               SOURCE_CASE_WINDOW_CONTACT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+    When(
+        "^I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CONTACT, casesUUID.get(0));
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "^I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window for DE$",
+        () -> {
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CONTACT_DE, casesUUID.get(0));
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
     When(

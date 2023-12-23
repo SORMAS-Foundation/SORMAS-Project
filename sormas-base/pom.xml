@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.92.0</version>
+	<version>1.93.0</version>
 
 	<properties>
 		<maven.minimum.version>3.6.3</maven.minimum.version>
@@ -534,6 +534,19 @@
 				<version>${xdocreport.version}</version>
 				<scope>provided</scope>
 			</dependency>
+            <dependency>
+                <groupId>fr.opensagres.xdocreport</groupId>
+                <artifactId>fr.opensagres.xdocreport.converter.docx.xwpf</artifactId>
+                <version>${xdocreport.version}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
 
 			<dependency>
 				<groupId>io.grpc</groupId>
@@ -1158,6 +1171,13 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>3.0.0</version>
+                <scope>provided</scope>
+            </dependency>
 
 			<!-- *** Domain libs END *** -->
 

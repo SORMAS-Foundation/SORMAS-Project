@@ -265,6 +265,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setTestedPathogen(source.getTestedPathogen());
+		target.setTestedPathogenDetails(source.getTestedPathogenDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setPcrTestSpecification(source.getPcrTestSpecification());
@@ -389,22 +390,18 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	public List<PathogenTestDto> getPositiveOrLatest(List<String> sampleUuids) {
 
 		Collection<PathogenTestDto> dtos = toPseudonymizedDtos(pathogenTestService.getBySampleUuids(sampleUuids, true)).stream()
-			.collect(
-				Collectors.toMap(
-					s -> s.getSample().getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> s.getSample().getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values();
 		return new ArrayList<>(dtos);
 	}
@@ -491,7 +488,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setTestedPathogen(source.getTestedPathogen());
-		target.setTestedPathogen(source.getTestedPathogen());
+		target.setTestedPathogenDetails(source.getTestedPathogenDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
 		target.setPcrTestSpecification(source.getPcrTestSpecification());

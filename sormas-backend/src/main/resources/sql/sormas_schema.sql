@@ -12783,4 +12783,55 @@ WHERE ur.linkeddefaultuserrole = 'ADMIN';
 
 INSERT INTO schema_version (version_number, comment) VALUES (532, 'Create new user rights to manage, send and attach documents to email templates #12466');
 
+-- 2023-11-13 Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'CUSTOMIZABLE_ENUM_MANAGEMENT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (533, 'Add CUSTOMIZABLE_ENUM_MANAGEMENT user right #6340');
+
+-- 2023-12-04 Add tested pathogen name #12663
+ALTER TABLE pathogentest ADD COLUMN testedpathogendetails varchar(512);
+ALTER TABLE pathogentest_history ADD COLUMN testedpathogendetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (534, 'Add tested pathogen details #12663');
+
+-- 2023-12-13 Display a history of sent external emails #12465
+ALTER TABLE manualmessagelog
+    ADD COLUMN usedtemplate        text,
+    ADD COLUMN emailaddress        text,
+    ADD COLUMN attacheddocuments   jsonb,
+    ADD COLUMN caze_id             bigint,
+    ADD COLUMN contact_id          bigint,
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN travelentry_id      bigint;
+
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id);
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id);
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_travelentry_id FOREIGN KEY (travelentry_id) REFERENCES travelentry (id);
+
+ALTER TABLE manualmessagelog_history
+    ADD COLUMN usedtemplate        text,
+    ADD COLUMN emailaddress        text,
+    ADD COLUMN attacheddocuments   jsonb,
+    ADD COLUMN caze_id             bigint,
+    ADD COLUMN contact_id          bigint,
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN travelentry_id      bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (535, 'Display a history of sent external emails #12465');
+
+-- 2023-12-05 Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697
+ALTER TABLE userroles ADD COLUMN restrictAccessToAssignedEntities boolean NOT NULL DEFAULT false;
+ALTER TABLE userroles_history ADD COLUMN restrictAccessToAssignedEntities boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (536, 'Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

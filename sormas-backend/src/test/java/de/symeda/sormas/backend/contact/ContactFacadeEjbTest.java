@@ -548,6 +548,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			contact.toReference(),
 			null,
+			null,
 			new Date(),
 			user.toReference());
 		SampleDto sample =
@@ -989,6 +990,50 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
 			assertThat(dto.getVisitCount(), equalTo(3));
 		}
+	}
+
+	@Test
+	public void testGetIndexListByARestrictedAccessToAssignedEntities() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createNationalUser();
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		final ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+
+		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
+		final ContactDto contact2 =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson2.toReference(), null, new Date(), new Date(), Disease.EVD);
+
+		assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
+
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		final List<ContactIndexDto> indexList = getContactFacade().getIndexList(null, 0, 100, null);
+		assertEquals(0, indexList.size());
+
+		loginWith(user);
+		contact2.setContactOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getContactFacade().save(contact2);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
+
+		loginWith(user);
+		caze.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(caze);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
 	}
 
 	@Test
@@ -1891,6 +1936,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			otherContactReference,
 			new EventReferenceDto(),
+			null,
 			new Date(),
 			otherUserReference);
 		getContactFacade().save(otherContact);

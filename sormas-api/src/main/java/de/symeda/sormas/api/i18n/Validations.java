@@ -13,6 +13,7 @@ public interface Validations {
 	String afterDate = "afterDate";
 	String afterDateSoft = "afterDateSoft";
 	String afterDateWithDate = "afterDateWithDate";
+	String attachedDocumentNotRelatedToEntity = "attachedDocumentNotRelatedToEntity";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String birthDateInFuture = "birthDateInFuture";
@@ -44,6 +45,10 @@ public interface Validations {
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactFollowUpUntilDateSoftValidation = "contactFollowUpUntilDateSoftValidation";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
+	String customizableEnumValueAllowedCharacters = "customizableEnumValueAllowedCharacters";
+	String customizableEnumValueDuplicateLanguage = "customizableEnumValueDuplicateLanguage";
+	String customizableEnumValueDuplicateValue = "customizableEnumValueDuplicateValue";
+	String customizableEnumValueEmptyTranslations = "customizableEnumValueEmptyTranslations";
 	String defaultInfrastructureAlreadyExisting = "defaultInfrastructureAlreadyExisting";
 	String defaultInfrastructureInvalidParentDistrict = "defaultInfrastructureInvalidParentDistrict";
 	String defaultInfrastructureInvalidParentRegion = "defaultInfrastructureInvalidParentRegion";

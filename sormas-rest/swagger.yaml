@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.92.0-SNAPSHOT
+  version: 1.93.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -7212,6 +7212,7 @@ paths:
                   - EMAIL_TEMPLATE_MANAGEMENT
                   - EXTERNAL_EMAIL_SEND
                   - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
+                  - CUSTOMIZABLE_ENUM_MANAGEMENT
           description: default response
       tags:
       - User Controller
@@ -7428,6 +7429,7 @@ paths:
                   - EMAIL_TEMPLATE_MANAGEMENT
                   - EXTERNAL_EMAIL_SEND
                   - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
+                  - CUSTOMIZABLE_ENUM_MANAGEMENT
           description: default response
       tags:
       - User Controller
@@ -12964,6 +12966,8 @@ components:
     CustomizableEnum:
       type: object
       properties:
+        allProperties:
+          type: object
         caption:
           type: string
         properties:
@@ -13080,6 +13084,7 @@ components:
             - FHA
             - OTHER
             - UNDEFINED
+          uniqueItems: true
         properties:
           type: object
           additionalProperties:
@@ -13097,6 +13102,10 @@ components:
           type: string
           maxLength: 1000000
           minLength: 0
+      required:
+      - caption
+      - dataType
+      - value
     DashboardCaseMeasureDto:
       type: object
       properties:
@@ -13820,6 +13829,8 @@ components:
     DiseaseVariant:
       type: object
       properties:
+        allProperties:
+          type: object
         caption:
           type: string
         hasDetails:
@@ -18895,6 +18906,8 @@ components:
     OccupationType:
       type: object
       properties:
+        allProperties:
+          type: object
         caption:
           type: string
         hasDetails:
@@ -19667,6 +19680,8 @@ components:
     Pathogen:
       type: object
       properties:
+        allProperties:
+          type: object
         caption:
           type: string
         hasDetails:
@@ -19920,6 +19935,10 @@ components:
           minLength: 0
         testedPathogen:
           $ref: '#/components/schemas/Pathogen'
+        testedPathogenDetails:
+          type: string
+          maxLength: 512
+          minLength: 0
         typingId:
           type: string
           maxLength: 1000000
@@ -22519,6 +22538,8 @@ components:
     SpecificRisk:
       type: object
       properties:
+        allProperties:
+          type: object
         caption:
           type: string
         properties:
@@ -24963,6 +24984,8 @@ components:
           type: string
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
+        showOnlyRestrictedAccessToAssignedEntities:
+          type: boolean
         userRole:
           $ref: '#/components/schemas/UserRoleReferenceDto'
     UserDto:
@@ -25247,6 +25270,8 @@ components:
           - BAG_USER
         portHealthUser:
           type: boolean
+        restrictAccessToAssignedEntities:
+          type: boolean
         smsNotificationTypes:
           type: array
           items:
@@ -25470,6 +25495,7 @@ components:
             - EMAIL_TEMPLATE_MANAGEMENT
             - EXTERNAL_EMAIL_SEND
             - EXTERNAL_EMAIL_ATTACH_DOCUMENTS
+            - CUSTOMIZABLE_ENUM_MANAGEMENT
           uniqueItems: true
         uuid:
           type: string

@@ -229,6 +229,61 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetIndexListByARestrictedAccessToAssignedEntities() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		final EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"TitleEv1",
+			"DescriptionEv1",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf);
+
+		final EventDto event1 = creator.createEvent(
+			EventStatus.EVENT,
+			EventInvestigationStatus.PENDING,
+			"TitleEv2",
+			"DescriptionEv2",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.FACILITY,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf);
+
+		EventCriteria eventCriteria = new EventCriteria();
+		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(2, results.size());
+
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		List<EventIndexDto> results2 = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(0, results2.size());
+
+		loginWith(user);
+		event.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getEventFacade().save(event);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		List<EventIndexDto> results3 = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(1, results3.size());
+	}
+
+	@Test
 	public void testGetExportList() {
 
 		RDCF rdcf = creator.createRDCF();

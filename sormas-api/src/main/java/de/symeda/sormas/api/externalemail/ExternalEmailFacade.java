@@ -25,11 +25,17 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.document.DocumentReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 
 @Remote
 public interface ExternalEmailFacade {
 
 	List<String> getTemplateNames(DocumentWorkflow documentWorkflow);
 
+    List<DocumentReferenceDto> getAttachableDocuments(DocumentWorkflow documentWorkflow, String relatedEntityUuid);
+
     void sendEmail(@Valid ExternalEmailOptionsDto options) throws DocumentTemplateException, ExternalEmailException;
+
+    boolean isAttachmentAvailable(PersonReferenceDto personReferenceDto);
 }

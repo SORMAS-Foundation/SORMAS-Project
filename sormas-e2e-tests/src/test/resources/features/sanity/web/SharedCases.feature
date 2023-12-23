@@ -1307,7 +1307,7 @@ Feature: Sharing cases between environments tests
 
   @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
-  Given API : Login to DEMIS server
+   Given API : Login to DEMIS server
    Then I create and send Laboratory Notification
     And I log in as a S2S
     Then I click on the Messages button from navbar
@@ -1323,12 +1323,12 @@ Feature: Sharing cases between environments tests
     And I fill comment in surveillance report notification details with random string
     And I click on Save popup button
     Then I click on share button
-    And I select organization to share with "s2s_1"
+    And I select organization to share with "s2s_3"
     Then I click to exclude personal data in Share popup
     And I click to share report data in Share popup
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_1" environment in new driver tab
+    Then I navigate to "s2s_3" environment in new driver tab
     Given I log in as a S2S
     And I click on the Shares button from navbar
     Then I accept first entity from table in Shares Page
@@ -1363,11 +1363,11 @@ Feature: Sharing cases between environments tests
     Then I collect data from surveillance report
     And I click on Discard popup button
     And I click on share button
-    And I select organization to share with "s2s_1"
+    And I select organization to share with "s2s_3"
     And I click to share reports of the case in Share popup
     And I fill comment in share popup for case with random string
     Then I click on share button in s2s share popup and wait for share to finish
-    Then I navigate to "s2s_1" environment in new driver tab
+    Then I navigate to "s2s_3" environment in new driver tab
     Given I log in as a S2S
     And I click on the Shares button from navbar
     And I click on "accept" shared case button with copied case description

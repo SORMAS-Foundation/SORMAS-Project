@@ -61,6 +61,7 @@ public class PathogenTest extends DeletableAdo {
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
 	public static final String TESTED_PATHOGEN = "testedPathogen";
+	public static final String TESTED_PATHOGEN_DETAILS = "testedPathogenDetails";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
 	public static final String PCR_TEST_SPECIFICATION = "pcrTestSpecification";
@@ -100,6 +101,7 @@ public class PathogenTest extends DeletableAdo {
 	private String testedDiseaseVariantDetails;
 	@Convert(converter = PathogenConverter.class)
 	private Pathogen testedPathogen;
+	private String testedPathogenDetails;
 	private String typingId;
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
@@ -197,6 +199,15 @@ public class PathogenTest extends DeletableAdo {
 
 	public void setTestedPathogen(Pathogen testedPathogen) {
 		this.testedPathogen = testedPathogen;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getTestedPathogenDetails() {
+		return testedPathogenDetails;
+	}
+
+	public void setTestedPathogenDetails(String testedPathogenDetails) {
+		this.testedPathogenDetails = testedPathogenDetails;
 	}
 
 	@Column

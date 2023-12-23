@@ -165,6 +165,7 @@ public class EditContactsSteps implements En {
     When(
         "I open the Case Contacts tab",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_TAB_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_TAB_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
@@ -491,6 +492,55 @@ public class EditContactsSteps implements En {
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
               true,
               "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that all editable fields are active for an contact",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACTS_LIST);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(CONTACT_CLASSIFICATION_OPTIONS),
+              true,
+              "Contact classification option is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REPORT_DATE),
+              true,
+              "Report date is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
+              true,
+              "Responsible district input is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
+              true,
+              "Responsible region input is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
+              true,
+              "Responsible community input is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RELATIONSHIP_WITH_CASE_INPUT),
+              true,
+              "Relationship with case input is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX),
+              true,
+              "Vaccination status combobox is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAVE_EDIT_BUTTON),
+              true,
+              "Save button is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              true,
+              "Discard button is not editable state but it should be!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              true,
+              "Delete button is not editable state but it should be!");
           softly.assertAll();
         });
 

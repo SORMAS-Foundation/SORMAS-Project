@@ -69,6 +69,7 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
@@ -274,11 +275,7 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Arrays.asList(
-				"getExternalMessagesAdapterVersion",
-				"fetchAndSaveExternalMessages",
-				"bulkAssignExternalMessages",
-				"delete"),
+				Arrays.asList("getExternalMessagesAdapterVersion", "fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "delete"),
 			classes);
 	}
 
@@ -460,6 +457,11 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testEnvironmentImportFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(EnvironmentImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testManualMessageLogFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ManualMessageLogFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

@@ -317,6 +317,7 @@ public interface Strings {
 	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
 	String errorEventsFromAnotherJurisdiction = "errorEventsFromAnotherJurisdiction";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
+	String errorExternalEmailAttachmentCannotEncrypt = "errorExternalEmailAttachmentCannotEncrypt";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -513,6 +514,7 @@ public interface Strings {
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingCurrentHospitalization = "headingCurrentHospitalization";
+	String headingCustomizableEnumConfigurationInfo = "headingCustomizableEnumConfigurationInfo";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
@@ -601,6 +603,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingExternalEmailDetails = "headingExternalEmailDetails";
 	String headingExternalEmailSend = "headingExternalEmailSend";
 	String headingExternalMessageCorrection = "headingExternalMessageCorrection";
 	String headingExternalMessageDownload = "headingExternalMessageDownload";
@@ -903,6 +906,7 @@ public interface Strings {
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomExport = "infoCustomExport";
+	String infoCustomizableEnumConfigurationInfo = "infoCustomizableEnumConfigurationInfo";
 	String infoDashboardFinalLaboratoryResult = "infoDashboardFinalLaboratoryResult";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -964,6 +968,7 @@ public interface Strings {
 	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoCustomizableEnumTranslations = "infoNoCustomizableEnumTranslations";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
@@ -1220,6 +1225,7 @@ public interface Strings {
 	String messageCountVisitsNotSetToLost = "messageCountVisitsNotSetToLost";
 	String messageCountVisitsNotSetToLostAccessDeniedReason = "messageCountVisitsNotSetToLostAccessDeniedReason";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCustomizableEnumValueSaved = "messageCustomizableEnumValueSaved";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
@@ -1288,6 +1294,9 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExternalEmailAttachmentNotAvailableInfo = "messageExternalEmailAttachmentNotAvailableInfo";
+	String messageExternalEmailAttachmentPassword = "messageExternalEmailAttachmentPassword";
+	String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";
 	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
@@ -1356,6 +1365,10 @@ public interface Strings {
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
+	String messageNoExternalEmailToCaseSent = "messageNoExternalEmailToCaseSent";
+	String messageNoExternalEmailToContactSent = "messageNoExternalEmailToContactSent";
+	String messageNoExternalEmailToEventParticipantSent = "messageNoExternalEmailToEventParticipantSent";
+	String messageNoExternalEmailToTravelEntrySent = "messageNoExternalEmailToTravelEntrySent";
 	String messageNoExternalMessagesSelected = "messageNoExternalMessagesSelected";
 	String messageNoImmunizationsSelected = "messageNoImmunizationsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
@@ -1574,6 +1587,9 @@ public interface Strings {
 	String promptContactEpiWeekTo = "promptContactEpiWeekTo";
 	String promptContactsSearchField = "promptContactsSearchField";
 	String promptCreationDateFrom = "promptCreationDateFrom";
+	String promptCustomizableEnumSearchField = "promptCustomizableEnumSearchField";
+	String promptCustomizableEnumTranslationCaption = "promptCustomizableEnumTranslationCaption";
+	String promptCustomizableEnumTranslationLanguage = "promptCustomizableEnumTranslationLanguage";
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";

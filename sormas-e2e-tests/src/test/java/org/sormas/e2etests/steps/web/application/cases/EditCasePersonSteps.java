@@ -193,6 +193,22 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
+        "I click on New Contact button in Case Person Tab",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on New Contact button in Case Person Tab for DE",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON_DE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
         "I check if saved Person data is correct",
         () -> {
           collectedCase =

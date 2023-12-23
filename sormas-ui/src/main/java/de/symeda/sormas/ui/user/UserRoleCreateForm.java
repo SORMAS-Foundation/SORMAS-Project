@@ -48,6 +48,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
 		+ fluidRowLocs(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER)
 		+ fluidRowLocs(UserRoleDto.PORT_HEALTH_USER);
+//		+ fluidRowLocs(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES);
 
 	protected UserRoleCreateForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
@@ -78,7 +79,8 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 		addField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY).addStyleName(CssStyles.VSPACE_TOP_3);
 		addField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).addStyleName(CssStyles.VSPACE_TOP_3);
-		addField(UserRoleDto.PORT_HEALTH_USER).addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
+		addField(UserRoleDto.PORT_HEALTH_USER).addStyleNames(CssStyles.VSPACE_TOP_3);
+		addField(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES).addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 
 		UserRoleFormHelper.createFieldDependencies(this);
 	}
@@ -100,6 +102,8 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 			this.<Field<Boolean>> getField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY).setValue(templateRole.getHasOptionalHealthFacility());
 			this.<Field<Boolean>> getField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).setValue(templateRole.getHasAssociatedDistrictUser());
 			this.<Field<Boolean>> getField(UserRoleDto.PORT_HEALTH_USER).setValue(templateRole.isPortHealthUser());
+			this.<Field<Boolean>> getField(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES)
+				.setValue(templateRole.isRestrictAccessToAssignedEntities());
 		}
 	}
 }

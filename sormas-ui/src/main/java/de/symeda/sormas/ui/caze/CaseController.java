@@ -957,7 +957,10 @@ public class CaseController {
 			editView.getWrappedComponent().addButtonListener(CaseDataForm.CASE_REFER_POINT_OF_ENTRY_BTN_LOC, clickListener);
 		}
 
-		appendSpecialCommands(caze, editView);
+		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+			|| caze.getSurveillanceOfficer().equals(UserProvider.getCurrent().getUserReference())) {
+			appendSpecialCommands(caze, editView);
+		}
 
 		editView.restrictEditableComponentsOnEditView(
 			UserRight.CASE_EDIT,

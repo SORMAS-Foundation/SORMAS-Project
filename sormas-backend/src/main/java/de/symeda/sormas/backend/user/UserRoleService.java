@@ -165,6 +165,11 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
 		}
 
+		if (userRoleCriteria.getShowOnlyRestrictedAccessToAssignedEntities() != null
+			&& Boolean.TRUE.equals(userRoleCriteria.getShowOnlyRestrictedAccessToAssignedEntities())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES), true));
+		}
+
 		return filter;
 	}
 

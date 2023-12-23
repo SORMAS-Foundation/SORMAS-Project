@@ -627,8 +627,16 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		contactDto.setReportDateTime(beyondRelevanceDate);
 		getContactFacade().save(contactDto);
 
-		TaskDto taskDto = creator
-			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
+		TaskDto taskDto = creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.CONTACT_FOLLOW_UP,
+			TaskStatus.PENDING,
+			null,
+			contactDto.toReference(),
+			null,
+			null,
+			new Date(),
+			null);
 
 		SampleDto sample = creator.createSample(
 			contactDto.toReference(),
@@ -640,8 +648,16 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
-		TaskDto taskDto2 = creator
-			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
+		TaskDto taskDto2 = creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.CONTACT_FOLLOW_UP,
+			TaskStatus.PENDING,
+			null,
+			contactDto2.toReference(),
+			null,
+			null,
+			new Date(),
+			null);
 
 		SampleDto sample2 = creator.createSample(
 			contactDto2.toReference(),
@@ -678,8 +694,16 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		ContactDto contactDto3 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
-		TaskDto taskDto3 = creator
-			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto3.toReference(), null, new Date(), null);
+		TaskDto taskDto3 = creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.CONTACT_FOLLOW_UP,
+			TaskStatus.PENDING,
+			null,
+			contactDto3.toReference(),
+			null,
+			null,
+			new Date(),
+			null);
 
 		SampleDto sample3 = creator.createSample(
 			contactDto3.toReference(),
@@ -741,8 +765,16 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
-		TaskDto taskDto = creator
-			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
+		TaskDto taskDto = creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.CONTACT_FOLLOW_UP,
+			TaskStatus.PENDING,
+			null,
+			contactDto.toReference(),
+			null,
+			null,
+			new Date(),
+			null);
 
 		SampleDto sample = creator.createSample(
 			contactDto.toReference(),
@@ -761,8 +793,16 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		//create second contact with the same person
 		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
-		TaskDto taskDto2 = creator
-			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
+		TaskDto taskDto2 = creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.CONTACT_FOLLOW_UP,
+			TaskStatus.PENDING,
+			null,
+			contactDto2.toReference(),
+			null,
+			null,
+			new Date(),
+			null);
 		SampleDto sample2 = creator.createSample(
 			contactDto2.toReference(),
 			user.toReference(),

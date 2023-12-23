@@ -31,8 +31,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
-import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
-import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -209,7 +207,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
-					new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease(), this::showUnsavedChangesPopup, editAllowed);
+				new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease(), this::showUnsavedChangesPopup, editAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
@@ -218,7 +216,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
 				this::showUnsavedChangesPopup,
-					editAllowed);
+				editAllowed);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -287,7 +285,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				getContactRef(),
 				UserRight.CONTACT_EDIT,
 				contactDto.isPseudonymized(),
-					editAllowed,
+				editAllowed,
 				isDocumentDeleteAllowed);
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
@@ -295,14 +293,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent = new ExternalEmailSideComponent(
-				DocumentWorkflow.CONTACT_EMAIL,
-				RootEntityType.ROOT_CONTACT,
-				contactDto.toReference(),
-				contactDto.getPerson(),
-				Strings.messageContactPersonHasNoEmail,
-					editAllowed,
-				this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent =
+					ExternalEmailSideComponent.forContact(contactDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

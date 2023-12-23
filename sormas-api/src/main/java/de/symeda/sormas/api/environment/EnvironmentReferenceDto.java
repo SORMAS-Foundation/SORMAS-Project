@@ -2,6 +2,7 @@ package de.symeda.sormas.api.environment;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.SensitiveData;
 
@@ -26,7 +27,7 @@ public class EnvironmentReferenceDto extends ReferenceDto {
 
 	@Override
 	public String getCaption() {
-		return environmentName;
+		return environmentName.trim().length() > 0 ? environmentName : DataHelper.getShortUuid(getUuid());
 	}
 
 	public String getEnvironmentName() {

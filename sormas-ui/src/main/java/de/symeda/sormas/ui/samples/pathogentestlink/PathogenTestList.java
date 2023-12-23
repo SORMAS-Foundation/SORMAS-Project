@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.samples.pathogentestlink;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
@@ -69,7 +71,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		}
 
 		setEntries(pathogenTests);
-		if (!pathogenTests.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(pathogenTests)) {
 			showPage(1);
 		} else {
 			listLayout.removeAllComponents();
