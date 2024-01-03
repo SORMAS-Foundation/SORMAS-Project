@@ -265,7 +265,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(returnedSample.getLocation().getCity(), is(emptyString()));
 		assertThat(returnedSample.getLaboratory(), is(nullValue()));
 		assertThat(returnedSample.getReportingUser(), is(nullValue()));
-		assertThat(returnedSample.getEnvironment().getCaption(), is(emptyString()));
+		assertThat(returnedSample.getEnvironment().getCaption(), is(DataHelper.getShortUuid(sample.getEnvironment().getUuid())));
 	}
 
 	@Test
