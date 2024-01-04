@@ -59,7 +59,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
 		+ fluidRowLocs(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER)
 		+ fluidRowLocs(UserRoleDto.PORT_HEALTH_USER)
-		+ fluidRowLocs(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES)
+//		+ fluidRowLocs(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES)
 		+ fluidRowLocs(USER_RIGHTS_LABEL_LOC)
 		+ fluidRowLocs(UserRoleDto.USER_RIGHTS);
 
@@ -85,7 +85,7 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 
 		addField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY).addStyleName(CssStyles.VSPACE_TOP_3);
 		addField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).addStyleName(CssStyles.VSPACE_TOP_3);
-		addField(UserRoleDto.PORT_HEALTH_USER).addStyleNames(CssStyles.VSPACE_TOP_3);
+		addField(UserRoleDto.PORT_HEALTH_USER).addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 		addField(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES).addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 
 		Label userRightsLabel = new Label(I18nProperties.getCaption(Captions.UserRole_userRights), ContentMode.HTML);
