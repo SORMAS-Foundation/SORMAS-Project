@@ -104,7 +104,7 @@ The development team uses an epic as an umbrella for large change or feature str
 
 ## Contributing to the Project
 
-There are many ways in which you can contribute to this project as a non-developer. If there is something you would like to do that you don't find instructions about here - or if you want to learn how you can get involved - please contact us at sormas@helmholtz-hzi.de
+There are many ways in which you can contribute to this project as a non-developer. If there is something you would like to do that you don't find instructions about here - or if you want to learn how you can get involved - please contact us at info@sormas.org
 or through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) and let us know how we can assist you!
 
 Some possibilities to contribute to SORMAS are:
@@ -115,7 +115,7 @@ Some possibilities to contribute to SORMAS are:
 ## Contributing to the Code
 
 If you're interested in participating in the development of SORMAS, please follow the [Development Environment Setup Instructions](DEVELOPMENT_ENVIRONMENT.md) before you start developing. If you have problems setting up your development environment or need assistance in choosing the first issue to work on,
-please get in touch with us through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) or by contacting us at sormas@helmholtz-hzi.de.
+please get in touch with us through our [GitHub Discussions](https://github.com/sormas-foundation/SORMAS-Project/discussions) or by contacting us at info@sormas.org.
 
 Additionally, our [Wiki](https://github.com/sormas-foundation/SORMAS-Project/wiki) contains some specific development guides that cover common issues like adding new fields to an entity that we suggest to check out before you start implementing something related to those topics:
 
