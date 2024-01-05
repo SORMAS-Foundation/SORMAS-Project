@@ -17,11 +17,14 @@ package org.sormas.e2etests.helpers;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+import static org.sormas.e2etests.steps.BaseSteps.driver;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -45,6 +49,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -65,6 +70,7 @@ public class WebDriverHelpers {
       "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
   private static final String CLICK_ELEMENT_SCRIPT = "arguments[0].click();";
   private static final String TABLE_SCROLL_SCRIPT = "arguments[0].scrollTop+=%s";
+  private static WebDriverWait wait;
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -78,6 +84,43 @@ public class WebDriverHelpers {
     } catch (StaleElementReferenceException stale) {
       return baseSteps.getDriver().findElement(selector);
     }
+  }
+
+  public void waitExplicit(By selector) {
+    // baseSteps.getDriver().findElement(selector);
+    // driver.findElements(selector);
+    //  wait = new WebDriverWait(driver, Duration.ofSeconds(40));
+    // wait.until(ExpectedConditions.presenceOfElementLocated(selector));
+    driver.manage().timeouts().pageLoadTimeout(100, SECONDS);
+  }
+
+  public void waitImplicit(By selector, By selector2) {
+    System.out.print(" 1 ");
+    // driver.findElement(selector).click();
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+    driver.getCurrentUrl();
+    // System.out.print("  " + driver.getCurrentUrl());
+    System.out.print(" 2 ");
+    System.out.print("  " + selector);
+    driver.findElement(selector).click();
+    System.out.print(" 3 ");
+    // System.out.print("     " + selector2);
+    WebElement added = driver.findElement(selector2);
+    System.out.print(added);
+    System.out.print(" 4 ");
+    Assertions.assertEquals("v-window v-widget", added.getDomAttribute("class"));
+  }
+
+  public void waitImplicit2(By selector2) {
+    System.out.print(" 1 ");
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+    driver.getCurrentUrl();
+    // System.out.print("  " + driver.getCurrentUrl());
+    System.out.print(" 2 ");
+    WebElement added = driver.findElement(selector2);
+    System.out.print(added);
+    System.out.print(" 4 ");
+    Assertions.assertEquals(".v-window #commit", added.getDomAttribute("class"));
   }
 
   public void waitForPageLoaded() {
@@ -281,7 +324,7 @@ public class WebDriverHelpers {
     // 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
     waitUntilANumberOfElementsAreVisibleAndClickable(dropDownValueXpath, 1);
-    TimeUnit.SECONDS.sleep(1);
+    SECONDS.sleep(1);
     clickOnWebElementBySelector(dropDownValueXpath);
     await()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -1015,7 +1058,7 @@ public class WebDriverHelpers {
 
   public void refreshCurrentPage() throws InterruptedException {
     baseSteps.refreshCurrentPage();
-    TimeUnit.SECONDS.sleep(3);
+    SECONDS.sleep(3);
     waitForPageLoadingSpinnerToDisappear(10);
   }
 
