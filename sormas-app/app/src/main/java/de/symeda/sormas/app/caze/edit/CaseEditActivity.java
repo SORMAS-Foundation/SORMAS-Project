@@ -352,7 +352,10 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 				eventParticipantToSave.setResultingCaseUuid(caze.getUuid());
 				EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(this);
 
-				if (!isEventLinkedToCase(caze, event)) {
+				boolean eventParticipantAlreadyExists =
+					DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists(event, caze.getPerson());
+
+				if (!isEventLinkedToCase(caze, event) && !eventParticipantAlreadyExists) {
 					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave);
 				} else {
 					NotificationHelper
