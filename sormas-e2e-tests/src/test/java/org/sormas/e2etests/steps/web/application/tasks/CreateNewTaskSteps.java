@@ -89,7 +89,6 @@ public class CreateNewTaskSteps implements En {
           webDriverHelpers.waitForSpinnerNotVisible(30);
           TimeUnit.SECONDS.sleep(6);
           final Task actualTask = collectTaskData();
-          System.out.print("out");
           ComparisonHelper.compareEqualEntities(task, actualTask);
         });
     When(
