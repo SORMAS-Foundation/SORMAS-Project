@@ -21,6 +21,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
@@ -81,6 +82,7 @@ public class UsersView extends AbstractUserView {
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private TextField searchField;
+	private CheckBox showOnlyRestrictedAccessToAssignedEntities;
 
 	private RowCount rowsCount;
 
@@ -235,6 +237,16 @@ public class UsersView extends AbstractUserView {
 		});
 		filterLayout.addComponent(searchField);
 
+		showOnlyRestrictedAccessToAssignedEntities = new CheckBox();
+		showOnlyRestrictedAccessToAssignedEntities.setId("showOnly");
+		showOnlyRestrictedAccessToAssignedEntities.setCaption(I18nProperties.getCaption(Captions.userRoleShowOnlyRestrictedAccessToAssignCases));
+		showOnlyRestrictedAccessToAssignedEntities.addStyleName(CssStyles.CHECKBOX_FILTER_INLINE);
+		showOnlyRestrictedAccessToAssignedEntities.addValueChangeListener(e -> {
+			criteria.setShowOnlyRestrictedAccessToAssignedEntities(e.getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(showOnlyRestrictedAccessToAssignedEntities);
+
 		return filterLayout;
 	}
 
@@ -252,14 +264,12 @@ public class UsersView extends AbstractUserView {
 			actionButtonsLayout.setSpacing(true);
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
-						ControllerProvider.getUserController()
-						.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
+				Captions.bulkActions,
+				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
+					ControllerProvider.getUserController().enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
 				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
-						ControllerProvider.getUserController()
-						.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
+				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
+					ControllerProvider.getUserController().disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
 				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)));
 
 			bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
@@ -296,6 +306,8 @@ public class UsersView extends AbstractUserView {
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
 		regionFilter.setValue(criteria.getRegion());
+		showOnlyRestrictedAccessToAssignedEntities.setValue(
+			criteria.getShowOnlyRestrictedAccessToAssignedEntities() == null ? false : criteria.getShowOnlyRestrictedAccessToAssignedEntities());
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));

@@ -20,7 +20,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
 import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
@@ -64,8 +63,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			RegionIndexDto.EXTERNAL_ID,
 			RegionIndexDto.POPULATION,
 			RegionIndexDto.GROWTH_RATE);
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			columns = ArrayUtils.add(columns, RegionIndexDto.DEFAULT_INFRASTRUCTURE);
 		}
 		setColumns(columns);

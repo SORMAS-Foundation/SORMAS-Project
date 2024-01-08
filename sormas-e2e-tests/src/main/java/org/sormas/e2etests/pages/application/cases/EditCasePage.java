@@ -48,6 +48,8 @@ public class EditCasePage {
   public static final By EDIT_FIRST_TASK_BUTTON = By.cssSelector("[location='events'] #edit0");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
   public static final By SEE_SAMPLE_BUTTON = By.cssSelector("[id='See samples for this person']");
+  public static final By SEE_SAMPLE_BUTTON_DE =
+      By.cssSelector("[id='Proben f\u00FCr diese Person ansehen']");
   public static final By SEE_CONTACTS_FOR_THIS_PERSON_BUTTON =
       By.cssSelector("[id='See contacts for this person']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");

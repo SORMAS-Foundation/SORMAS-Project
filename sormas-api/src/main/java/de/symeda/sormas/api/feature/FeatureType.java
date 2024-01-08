@@ -40,12 +40,7 @@ public enum FeatureType {
 	// FEATURE MODULES
 	AGGREGATE_REPORTING(true, true, null, null, null),
 	CAMPAIGNS(true, false, null, null, null),
-	CASE_SURVEILANCE(true,
-		true,
-		null,
-		null,
-		ImmutableMap
-			.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, Boolean.TRUE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS, Boolean.FALSE)),
+	CASE_SURVEILANCE(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, Boolean.TRUE)),
 	CLINICAL_MANAGEMENT(true, true, null, null, null),
 	CONTACT_TRACING(true,
 		true,
@@ -208,6 +203,7 @@ public enum FeatureType {
 		ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
 	EDIT_ARCHIVED_ENTITIES(true, true, null, null, null),
 	EXTERNAL_EMAILS(true, false, null, null, null),
+	HIDE_JURISDICTION_FIELDS(true, false, null, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,

@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditSharesPage {
 
-  public static final By SHARE_FIRST_EYE_ICON = By.xpath("(//span[@class='v-icon v-icon-eye'])[1]");
+  public static final By SHARE_FIRST_EYE_ICON = By.cssSelector(".v-icon.v-icon-eye");
   public static final By SHARE_UUID_CASE_TITLE =
       By.cssSelector(".popupContent [class='v-grid-cell v-grid-cell-focused'] a");
   public static final By EXTRA_COMMENT_INPUT_SHARE_POPUP = By.cssSelector(".popupContent #comment");

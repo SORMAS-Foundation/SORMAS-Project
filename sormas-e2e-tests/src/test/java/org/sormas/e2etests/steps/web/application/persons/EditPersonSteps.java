@@ -65,6 +65,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUN
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAGEMENT_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MAP_CONTAINER_EDIT_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
@@ -80,7 +81,9 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGIO
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SALUTATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CASES_FOR_PERSON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CASES_FOR_PERSON_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CONTACTS_FOR_PERSON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CONTACTS_FOR_PERSON_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEX_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_COMBOBOX;
@@ -344,10 +347,24 @@ public class EditPersonSteps implements En {
         });
 
     Then(
+        "I check that SEE CASES FOR THIS PERSON button appears on Edit Person page for DE",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_PERSON_BUTTON_DE);
+        });
+
+    Then(
         "I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CONTACTS_FOR_PERSON_BUTTON);
+        });
+
+    Then(
+        "I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page for DE",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CONTACTS_FOR_PERSON_BUTTON_DE);
         });
 
     Then(
@@ -410,6 +427,13 @@ public class EditPersonSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.clickOnWebElementBySelector(UUID_INPUT);
           previousCreatedPerson = collectedPerson;
+        });
+
+    When(
+        "^I click Link Event button on Edit Person Page for DE$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
         });
 
     When(

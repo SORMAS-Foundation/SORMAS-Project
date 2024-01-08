@@ -81,6 +81,9 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 		}
 
 		cq.orderBy(cb.desc(root.get(ManualMessageLog.SENT_DATE)));
+		// distinct needed because of the jurisdiction selection,
+		// it can bring multiple results for one manual message log because the person has multiple assigned entities that can have email
+		cq.distinct(true);
 
 		List<ManualMessageLogIndexDto> resultList = em.createQuery(cq).getResultList();
 

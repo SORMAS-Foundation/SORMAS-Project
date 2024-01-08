@@ -219,7 +219,12 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 		TaskJoins joins = taskQueryContext.getJoins();
 
-		Predicate assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
+		Predicate assigneeFilter;
+		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+			assigneeFilter = cb.disjunction();
+		} else {
+			assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
+		}
 
 		Predicate relatedEntityNotDeletedFilter = cb.or(
 			cb.equal(taskPath.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
