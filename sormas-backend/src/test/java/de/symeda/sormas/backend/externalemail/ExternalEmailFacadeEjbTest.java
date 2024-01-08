@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.backend.externalemail;
 
-import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.addOSBasedLineSeparators;
+import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.updateLineSeparatorsBasedOnOS;
 import static de.symeda.sormas.backend.externalemail.luxembourg.NationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -270,7 +270,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail.cmp"), writer, "UTF-8");
-			String expectedContent = addOSBasedLineSeparators(writer.toString());
+			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
 
 			assertThat(invocation.getArgument(2), is(expectedContent));
 
@@ -307,7 +307,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/contacts/ContactEmail.cmp"), writer, "UTF-8");
-			String expectedContent = addOSBasedLineSeparators(writer.toString());
+			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
 
 			assertThat(invocation.getArgument(2), is(expectedContent));
 

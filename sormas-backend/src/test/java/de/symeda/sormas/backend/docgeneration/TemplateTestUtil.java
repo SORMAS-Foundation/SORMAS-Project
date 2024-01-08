@@ -52,7 +52,7 @@ public class TemplateTestUtil {
 		return text.replaceAll("\\r\\n?", "\n");
 	}
 
-	public static String addOSBasedLineSeparators(String text) {
+	public static String updateLineSeparatorsBasedOnOS(String text) {
 		if (System.lineSeparator().equals("\r\n")) {
 			return text;
 		} else {
