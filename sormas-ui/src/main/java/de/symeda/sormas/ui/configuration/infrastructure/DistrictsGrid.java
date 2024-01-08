@@ -20,7 +20,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
@@ -59,8 +58,7 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			DistrictIndexDto.EXTERNAL_ID,
 			DistrictIndexDto.POPULATION,
 			DistrictIndexDto.GROWTH_RATE };
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			columns = ArrayUtils.add(columns, DistrictIndexDto.DEFAULT_INFRASTRUCTURE);
 		}
 		setColumns(columns);

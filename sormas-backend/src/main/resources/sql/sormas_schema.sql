@@ -12833,5 +12833,11 @@ ALTER TABLE userroles_history ADD COLUMN restrictAccessToAssignedEntities boolea
 
 INSERT INTO schema_version (version_number, comment) VALUES (536, 'Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697');
 
+-- 2023-12-18 Move hide jurisdiction fields feature property to dedicated feature type #12806
+INSERT INTO featureconfiguration (id, uuid, creationdate, changedate, enabled, featuretype)VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), (SELECT properties::jsonb->'HIDE_JURISDICTION_FIELDS' FROM featureconfiguration WHERE featuretype = 'CASE_SURVEILANCE')::text::boolean, 'HIDE_JURISDICTION_FIELDS');
+
+UPDATE featureconfiguration SET properties = properties::jsonb - 'HIDE_JURISDICTION_FIELDS' WHERE featuretype = 'CASE_SURVEILANCE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (537, 'Move hide jurisdiction fields feature property to dedicated feature type #12806');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
