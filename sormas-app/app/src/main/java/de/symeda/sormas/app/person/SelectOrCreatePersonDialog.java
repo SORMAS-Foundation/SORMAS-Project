@@ -77,23 +77,17 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 
 		personDialog.setPositiveCallback(() -> {
 			if (personDialog.getSelectedPerson() != null) {
-				if (ado instanceof Event) {
-					boolean eventParticipantAlreadyExists =
-						DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists((Event) ado, personDialog.getSelectedPerson());
+				if (ado instanceof Event
+					&& DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists((Event) ado, personDialog.getSelectedPerson())) {
+					personDialog.suppressNextDismiss();
+					personDialog.setSelectedPerson(null);
+					personDialog.setSelectedPersonItemView(null);
 
-					if (eventParticipantAlreadyExists) {
-						personDialog.suppressNextDismiss();
+					NotificationHelper.showDialogNotification(
+						personDialog,
+						NotificationType.WARNING,
+						I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 
-						personDialog.setSelectedPerson(null);
-						personDialog.setSelectedPersonItemView(null);
-
-						NotificationHelper.showDialogNotification(
-							personDialog,
-							NotificationType.WARNING,
-							I18nProperties.getString(Strings.messageAlreadyEventParticipant));
-					} else {
-						resultConsumer.accept(personDialog.getSelectedPerson());
-					}
 				} else {
 					resultConsumer.accept(personDialog.getSelectedPerson());
 				}
@@ -219,7 +213,6 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 					btnCreate.setVisibility(View.VISIBLE);
 					btnSelect.setVisibility(View.GONE);
 
-					//TODO: View based on tag and the item will be set to false
 					if (selectedPersonItemView != null) {
 						selectedPersonItemView.setSelected(false);
 					}

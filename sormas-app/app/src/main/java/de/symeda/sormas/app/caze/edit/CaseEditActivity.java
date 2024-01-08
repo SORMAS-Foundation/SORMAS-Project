@@ -23,7 +23,6 @@ import java.util.List;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -352,10 +351,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 				eventParticipantToSave.setResultingCaseUuid(caze.getUuid());
 				EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(this);
 
-				boolean eventParticipantAlreadyExists =
-					DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists(event, caze.getPerson());
-
-				if (!isEventLinkedToCase(caze, event) && !eventParticipantAlreadyExists) {
+				if (!isEventLinkedToCase(caze, event)
+					&& !DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists(event, caze.getPerson())) {
 					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave);
 				} else {
 					NotificationHelper
