@@ -12833,6 +12833,13 @@ ALTER TABLE userroles_history ADD COLUMN restrictAccessToAssignedEntities boolea
 
 INSERT INTO schema_version (version_number, comment) VALUES (536, 'Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697');
 
+-- 2023-12-18 Move hide jurisdiction fields feature property to dedicated feature type #12806
+INSERT INTO featureconfiguration (id, uuid, creationdate, changedate, enabled, featuretype)VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), (SELECT properties::jsonb->'HIDE_JURISDICTION_FIELDS' FROM featureconfiguration WHERE featuretype = 'CASE_SURVEILANCE')::text::boolean, 'HIDE_JURISDICTION_FIELDS');
+
+UPDATE featureconfiguration SET properties = properties::jsonb - 'HIDE_JURISDICTION_FIELDS' WHERE featuretype = 'CASE_SURVEILANCE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (537, 'Move hide jurisdiction fields feature property to dedicated feature type #12806');
+
 -- 2023-12-21 Introduce dedicated environment sample pathogen test rights #12836
 INSERT INTO userroles_userrights (userrole_id, userright)
 SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_CREATE'
@@ -12843,7 +12850,6 @@ WHERE userroles.linkeddefaultuserrole in (
                                           'NATIONAL_USER',
                                           'ENVIRONMENTAL_SURVEILLANCE_USER'
     );
-
 INSERT INTO userroles_userrights (userrole_id, userright)
 SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_EDIT'
 FROM public.userroles
@@ -12866,6 +12872,6 @@ AND userrole_id IN (SELECT id FROM public.userroles WHERE userroles.linkeddefaul
 
 UPDATE userroles set changedate = now() WHERE linkeddefaultuserrole in ('ADMIN', 'LAB_USER', 'NATIONAL_USER', 'ENVIRONMENTAL_SURVEILLANCE_USER');
 
-INSERT INTO schema_version (version_number, comment) VALUES (537, 'Introduce dedicated environment sample pathogen test rights #12836');
+INSERT INTO schema_version (version_number, comment) VALUES (538, 'Introduce dedicated environment sample pathogen test rights #12836');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

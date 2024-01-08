@@ -22,8 +22,17 @@ import static org.sormas.e2etests.pages.application.aCommonComponents.SideCards.
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_REPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_PENCIL_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EYE_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEE_SAMPLE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.EDIT_VACCINATION_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.messages.MessagesDirectoryPage.ONE_TEST_IN_SAMPLES_DE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_CASES_ICON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_CONTACTS_ICON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_PARTICIPANT_ICON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NEW_TRAVEL_ENTRY_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.VIEW_CASES_ICON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.VIEW_CONTACTS_ICON_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
 import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.convertStringToChosenFormatDate;
 
@@ -203,7 +212,7 @@ public class SideCardsSteps implements En {
         });
 
     When(
-        "I check that number of displayed samples with {string} icon is {int} for sample on Side Card",
+        "I check that number of displayed samples with {string} icon is {int} for Samples Side Card",
         (String icon, Integer number) -> {
           switch (icon) {
             case "pencil":
@@ -222,6 +231,114 @@ public class SideCardsSteps implements En {
                   number.intValue(),
                   "Number of displayed samples is not valid");
               break;
+          }
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Side card has available {string} button for DE",
+        (String button) -> {
+          switch (button) {
+            case "see sample for this person":
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(SEE_SAMPLE_BUTTON_DE),
+                  "Element is not present");
+              break;
+            case "new travel entry":
+              softly.assertTrue(
+                  webDriverHelpers.isElementPresent(NEW_TRAVEL_ENTRY_BUTTON_DE),
+                  "Element is not present");
+              break;
+          }
+          softly.assertAll();
+        });
+
+    When(
+        "I check that number of displayed cases with {string} icon is {int} for Cases Side Card",
+        (String icon, Integer number) -> {
+          switch (icon) {
+            case "pencil":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EDIT_CASES_ICON_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(EDIT_CASES_ICON_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+            case "eye":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  VIEW_CASES_ICON_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(VIEW_CASES_ICON_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+          }
+          softly.assertAll();
+        });
+
+    When(
+        "I check that number of displayed contacts with {string} icon is {int} for Contacts Side Card",
+        (String icon, Integer number) -> {
+          switch (icon) {
+            case "pencil":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EDIT_CONTACTS_ICON_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(EDIT_CONTACTS_ICON_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+            case "eye":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  VIEW_CONTACTS_ICON_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(VIEW_CONTACTS_ICON_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+          }
+          softly.assertAll();
+        });
+
+    When(
+        "I check that number of displayed vaccinations with {string} icon is {int} for Vaccinations Side Card",
+        (String icon, Integer number) -> {
+          switch (icon) {
+            case "pencil":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EDIT_VACCINATION_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(EDIT_VACCINATION_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+            case "eye":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EYE_SAMPLE_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(VACCINATION_CARD_INFO_ICON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+          }
+          softly.assertAll();
+        });
+
+    When(
+        "I check that number of displayed linked events with {string} icon is {int} for Events Side Card",
+        (String icon, Integer number) -> {
+          TimeUnit.SECONDS.sleep(2); // waiting for page loaded
+          switch (icon) {
+            case "pencil":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  EDIT_PARTICIPANT_ICON_BUTTON, 5);
+              softly.assertEquals(
+                  webDriverHelpers.getNumberOfElements(EDIT_PARTICIPANT_ICON_BUTTON),
+                  number.intValue(),
+                  "Number of displayed samples is not valid");
+              break;
+              // place for eye icon option
           }
           softly.assertAll();
         });

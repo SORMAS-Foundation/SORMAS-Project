@@ -20,7 +20,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -57,8 +56,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			CommunityDto.REGION,
 			CommunityDto.DISTRICT,
 			CommunityDto.EXTERNAL_ID };
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			columns = ArrayUtils.add(columns, CommunityDto.DEFAULT_INFRASTRUCTURE);
 		}
 		setColumns(columns);

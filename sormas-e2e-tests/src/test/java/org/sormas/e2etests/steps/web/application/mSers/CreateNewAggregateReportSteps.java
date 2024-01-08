@@ -166,7 +166,7 @@ public class CreateNewAggregateReportSteps implements En {
     Then(
         "^I check if last listed week from Epi week combobox is the current week of the year$",
         () -> {
-          int currentWeek = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1;
+          int currentWeek = LocalDate.now().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
           int nextYear = LocalDate.now().getYear() + 1;
 
           if (currentWeek < 52) {
