@@ -26,7 +26,6 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -68,8 +67,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
 		}
 
