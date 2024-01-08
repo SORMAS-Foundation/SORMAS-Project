@@ -86,14 +86,8 @@ public class CreateNewTaskSteps implements En {
     When(
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
-          // TimeUnit.SECONDS.sleep(10); // waiting for page loaded
-          //  webDriverHelpers.waitForPageLoaded();
-          // webDriverHelpers.waitImplicit(By.cssSelector("v-window v-widget"), SAVE_BUTTON);
-          //    webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAVE_BUTTON);
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
-          //          webDriverHelpers.waitUntilIdentifiedElementIsPresent(By.cssSelector("v-window
-          // v-widget"));
-          System.out.print("After wait implicit");
+          webDriverHelpers.waitForSpinnerNotVisible(30);
+          TimeUnit.SECONDS.sleep(6);
           final Task actualTask = collectTaskData();
           System.out.print("out");
           ComparisonHelper.compareEqualEntities(task, actualTask);
@@ -355,8 +349,6 @@ public class CreateNewTaskSteps implements En {
   }
 
   private String getDisabledTaskContext() {
-    System.out.print(
-        webDriverHelpers.getCheckedDisabledOptionFromHorizontalOptionGroup(SELECTED_TASK_CONTEXT));
     return webDriverHelpers.getCheckedDisabledOptionFromHorizontalOptionGroup(
         SELECTED_TASK_CONTEXT);
   }

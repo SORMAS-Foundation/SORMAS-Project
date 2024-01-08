@@ -37,7 +37,6 @@ import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
-import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -49,6 +48,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -86,41 +86,19 @@ public class WebDriverHelpers {
     }
   }
 
-  public void waitExplicit(By selector) {
-    // baseSteps.getDriver().findElement(selector);
-    // driver.findElements(selector);
-    //  wait = new WebDriverWait(driver, Duration.ofSeconds(40));
-    // wait.until(ExpectedConditions.presenceOfElementLocated(selector));
-    driver.manage().timeouts().pageLoadTimeout(100, SECONDS);
-  }
-
-  public void waitImplicit(By selector, By selector2) {
-    System.out.print(" 1 ");
-    // driver.findElement(selector).click();
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+  public static String waitForSpinnerNotVisible(int timeOutInSeconds) {
     driver.getCurrentUrl();
-    // System.out.print("  " + driver.getCurrentUrl());
-    System.out.print(" 2 ");
-    System.out.print("  " + selector);
-    driver.findElement(selector).click();
-    System.out.print(" 3 ");
-    // System.out.print("     " + selector2);
-    WebElement added = driver.findElement(selector2);
-    System.out.print(added);
-    System.out.print(" 4 ");
-    Assertions.assertEquals("v-window v-widget", added.getDomAttribute("class"));
-  }
+    if ((driver == null) || (driver.getCurrentUrl() == null) || driver.getCurrentUrl().isEmpty()) {
 
-  public void waitImplicit2(By selector2) {
-    System.out.print(" 1 ");
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
-    driver.getCurrentUrl();
-    // System.out.print("  " + driver.getCurrentUrl());
-    System.out.print(" 2 ");
-    WebElement added = driver.findElement(selector2);
-    System.out.print(added);
-    System.out.print(" 4 ");
-    Assertions.assertEquals(".v-window #commit", added.getDomAttribute("class"));
+      return "Wrong usage of waitForSpinnerNotVisible()";
+    }
+    try {
+      (new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds)))
+          .until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(driver.getCurrentUrl())));
+      return null;
+    } catch (TimeoutException e) {
+      return "Too short time for waitForSpinnerNotVisible()";
+    }
   }
 
   public void waitForPageLoaded() {
