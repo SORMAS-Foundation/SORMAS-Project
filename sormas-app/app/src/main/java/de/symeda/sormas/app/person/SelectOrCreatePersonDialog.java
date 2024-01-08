@@ -94,6 +94,8 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 					} else {
 						resultConsumer.accept(personDialog.getSelectedPerson());
 					}
+				} else {
+					resultConsumer.accept(personDialog.getSelectedPerson());
 				}
 			} else {
 				personDialog.suppressNextDismiss();
