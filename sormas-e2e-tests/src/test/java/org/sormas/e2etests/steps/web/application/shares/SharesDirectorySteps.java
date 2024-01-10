@@ -175,7 +175,7 @@ public class SharesDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SHARE_UUID_CASE_TITLE);
           webDriverHelpers.clickOnWebElementBySelector(SHARE_UUID_CASE_TITLE);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     And(
