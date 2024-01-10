@@ -1,7 +1,7 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  @env_main
+  @tmsLink=SORDEV-5476mk @env_main
   Scenario: Create and check a new task data
     Given I log in as a National User
     And I click on the Tasks button from navbar
