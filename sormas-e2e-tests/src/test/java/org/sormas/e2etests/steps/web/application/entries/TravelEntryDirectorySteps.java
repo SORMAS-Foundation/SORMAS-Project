@@ -221,7 +221,7 @@ public class TravelEntryDirectorySteps implements En {
     When(
         "I open the imported person on Travel entry directory page",
         () -> {
-          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.waitForSpinnerNotVisible(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_RESULT_ID);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_ID);
         });
@@ -259,7 +259,7 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
-          webDriverHelpers.waitForSpinnerNotVisible(15);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on SHOW MORE FILTERS BUTTON Travel Entry directory page",
