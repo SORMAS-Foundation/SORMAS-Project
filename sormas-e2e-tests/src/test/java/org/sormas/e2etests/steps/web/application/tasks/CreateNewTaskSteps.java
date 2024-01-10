@@ -87,6 +87,7 @@ public class CreateNewTaskSteps implements En {
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
           TimeUnit.SECONDS.sleep(3);  //waiting for page loaded
+            webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(By.cssSelector("v-window v-widget"));
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
         });
