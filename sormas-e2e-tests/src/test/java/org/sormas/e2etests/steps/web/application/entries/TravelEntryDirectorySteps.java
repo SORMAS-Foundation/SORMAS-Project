@@ -259,7 +259,7 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // needed for table refresh
+          webDriverHelpers.waitForSpinnerNotVisible(15);
         });
     And(
         "I click on SHOW MORE FILTERS BUTTON Travel Entry directory page",
