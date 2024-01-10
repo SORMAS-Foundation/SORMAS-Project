@@ -1466,6 +1466,7 @@ public interface Captions {
 	String externalMessageProcess = "externalMessageProcess";
 	String externalMessageRelatedEntriesFound = "externalMessageRelatedEntriesFound";
 	String externalMessagesList = "externalMessagesList";
+	String externalMessageValueNotSpecified = "externalMessageValueNotSpecified";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_excludeAndSend = "ExternalSurveillanceToolGateway.excludeAndSend";
