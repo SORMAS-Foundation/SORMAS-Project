@@ -221,7 +221,7 @@ public class TravelEntryDirectorySteps implements En {
     When(
         "I open the imported person on Travel entry directory page",
         () -> {
-          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.waitForSpinnerNotVisible(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_RESULT_ID);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_ID);
         });

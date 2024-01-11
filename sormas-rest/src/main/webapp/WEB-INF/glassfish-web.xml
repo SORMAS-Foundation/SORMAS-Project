@@ -896,6 +896,21 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>ENVIRONMENT_PATHOGEN_TEST_CREATE</role-name>
+        <group-name>ENVIRONMENT_PATHOGEN_TEST_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_PATHOGEN_TEST_EDIT</role-name>
+        <group-name>ENVIRONMENT_PATHOGEN_TEST_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_PATHOGEN_TEST_DELETE</role-name>
+        <group-name>ENVIRONMENT_PATHOGEN_TEST_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>DOCUMENT_VIEW</role-name>
         <group-name>DOCUMENT_VIEW</group-name>
     </security-role-mapping>
