@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
@@ -4052,7 +4053,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
@@ -4070,11 +4071,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		cq.distinct(true);
 
-		Expression<?> caseInsensitiveSort = cb.literal("null");
+		final List<Order> orderList = new ArrayList<>();
 		if (sortProperties != null && !sortProperties.isEmpty()) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				OrderBuilder builder = createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
 
 				switch (sortProperty.propertyName) {
 				case FollowUpDto.UUID:
@@ -4083,39 +4084,43 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					order = builder.build(caze.get(sortProperty.propertyName));
 					break;
 				case FollowUpDto.FIRST_NAME:
-					caseInsensitiveSort = cb.lower(firstName);
-					order = builder.build(caseInsensitiveSort, firstName);
+					order = builder.build(cb.lower(firstName));
 					break;
 				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
 					order = builder.build(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS));
 					break;
 				case FollowUpDto.LAST_NAME:
-					caseInsensitiveSort = cb.lower(lastName);
-					order = builder.build(caseInsensitiveSort, lastName);
+					order = builder.build(cb.lower(lastName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
+
+				orderList.addAll(order);
 			}
-			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+			orderList.add(cb.desc(caze.get(Case.CHANGE_DATE)));
 		}
 
 		cq.multiselect(
-			caze.get(Case.UUID),
-			caze.get(Case.CHANGE_DATE),
-			firstName,
-			lastName,
-			caze.get(Case.REPORT_DATE),
-			joins.getSymptoms().get(Symptoms.ONSET_DATE),
-			caze.get(Case.FOLLOW_UP_UNTIL),
-			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-			caze.get(Case.DISEASE),
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)),
-			caseInsensitiveSort);
+			Stream
+				.concat(
+					Stream.of(
+						caze.get(Case.UUID),
+						firstName,
+						lastName,
+						caze.get(Case.REPORT_DATE),
+						joins.getSymptoms().get(Symptoms.ONSET_DATE),
+						caze.get(Case.FOLLOW_UP_UNTIL),
+						joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+						caze.get(Case.DISEASE),
+						JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext))),
+					orderList.stream().map(Order::getExpression))
+				.collect(Collectors.toList()));
 
-		List<CaseFollowUpDto> resultList = QueryHelper.getResultList(em, cq, first, max);
+		cq.orderBy(orderList);
+
+		List<CaseFollowUpDto> resultList = QueryHelper.getResultList(em, cq, new CaseFollowUpDtoResultTransformer(), first, max);
 		if (!resultList.isEmpty()) {
 
 			List<String> caseUuids = resultList.stream().map(FollowUpDto::getUuid).collect(Collectors.toList());

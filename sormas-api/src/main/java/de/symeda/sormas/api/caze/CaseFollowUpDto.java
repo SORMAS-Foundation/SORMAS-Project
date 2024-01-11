@@ -33,10 +33,10 @@ public class CaseFollowUpDto extends FollowUpDto {
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
-	public CaseFollowUpDto(String uuid, Date changeDate, String personFirstName, String personLastName,
+	public CaseFollowUpDto(String uuid, String personFirstName, String personLastName,
 						   Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
 						   Disease disease,
-						   boolean isInJurisdiction, Object sortPropertyIgnored
+						   boolean isInJurisdiction
 	) {
 	//formatter:on
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
