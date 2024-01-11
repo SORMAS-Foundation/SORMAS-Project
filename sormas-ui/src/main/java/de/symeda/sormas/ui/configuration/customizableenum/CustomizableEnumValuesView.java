@@ -20,6 +20,7 @@ import java.util.Arrays;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -51,6 +52,7 @@ public class CustomizableEnumValuesView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox<CustomizableEnumType> dataTypeFilter;
 	private ComboBox<Disease> diseaseFilter;
+	private ComboBox<Boolean> relevanceStatusFilter;
 
 	private final CustomizableEnumCriteria criteria;
 	private final CustomizableEnumValuesGrid grid;
@@ -63,6 +65,9 @@ public class CustomizableEnumValuesView extends AbstractConfigurationView {
 		grid = new CustomizableEnumValuesGrid(criteria);
 		VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
+		setUpRelevanceStatusFilter();
+		gridLayout.addComponent(relevanceStatusFilter);
+		gridLayout.setComponentAlignment(relevanceStatusFilter, Alignment.MIDDLE_RIGHT);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -128,6 +133,21 @@ public class CustomizableEnumValuesView extends AbstractConfigurationView {
 		return filterLayout;
 	}
 
+	private void setUpRelevanceStatusFilter() {
+
+		relevanceStatusFilter = new ComboBox<>();
+		relevanceStatusFilter.setId("relevanceStatus");
+		relevanceStatusFilter.setWidth(210, Unit.PIXELS);
+		relevanceStatusFilter.setEmptySelectionAllowed(false);
+		relevanceStatusFilter.setItems(Boolean.TRUE, Boolean.FALSE);
+		relevanceStatusFilter.setItemCaptionGenerator(
+			item -> I18nProperties.getCaption(item ? Captions.customizableEnumValueActiveValues : Captions.customizableEnumValueInactiveValues));
+		relevanceStatusFilter.addValueChangeListener(e -> {
+			criteria.active(e.getValue());
+			navigateTo(criteria);
+		});
+	}
+
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 
@@ -148,6 +168,10 @@ public class CustomizableEnumValuesView extends AbstractConfigurationView {
 		searchField.setValue(criteria.getFreeTextFilter());
 		dataTypeFilter.setValue(criteria.getDataType());
 		diseaseFilter.setValue(criteria.getDisease());
+
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getActive());
+		}
 
 		applyingCriteria = false;
 	}

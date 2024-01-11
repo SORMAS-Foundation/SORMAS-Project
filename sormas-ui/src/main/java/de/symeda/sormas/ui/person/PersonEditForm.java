@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +53,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -180,6 +182,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private boolean isPseudonymized;
 	private LocationEditForm addressForm;
 	private PresentConditionChangeListener presentConditionChangeListener;
+	private ComboBox occupationTypeField;
 	//@formatter:on
 
 	public PersonEditForm(
@@ -350,13 +353,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personContactDetailsField.setCaption(null);
 		personContactDetailsField.setPseudonymized(isPseudonymized);
 
-		ComboBox occupationTypeField = addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
+		occupationTypeField = addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
 		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
 		occupationTypeDetailsField.setVisible(false);
-		FieldHelper
-			.updateItems(occupationTypeField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
-		occupationTypeField.addValueChangeListener(e -> {
-			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
+		occupationTypeField.addValueChangeListener(o -> {
+			OccupationType occupationType = (OccupationType) o.getProperty().getValue();
 			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
 		});
 
@@ -593,6 +594,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
+
+		FieldHelper.updateItems(
+			occupationTypeField,
+			FacadeProvider.getCustomizableEnumFacade()
+				.getEnumValues(
+					CustomizableEnumType.OCCUPATION_TYPE,
+					Optional.ofNullable(getValue().getOccupationType()).map(CustomizableEnum::getValue).orElse(null),
+					null));
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

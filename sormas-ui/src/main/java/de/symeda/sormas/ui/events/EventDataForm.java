@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -51,6 +52,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -444,13 +446,19 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
 			// Disease variants
-			List<DiseaseVariant> diseaseVariants =
-				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			List<DiseaseVariant> diseaseVariants = FacadeProvider.getCustomizableEnumFacade()
+				.getEnumValues(
+					CustomizableEnumType.DISEASE_VARIANT,
+					Optional.ofNullable(getValue().getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
+					disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField.setVisible(disease != null && CollectionUtils.isNotEmpty(diseaseVariants));
 			// Specific event risks
-			List<SpecificRisk> specificRiskValues =
-				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, disease);
+			List<SpecificRisk> specificRiskValues = FacadeProvider.getCustomizableEnumFacade()
+				.getEnumValues(
+					CustomizableEnumType.SPECIFIC_EVENT_RISK,
+					Optional.ofNullable(getValue().getSpecificRisk()).map(CustomizableEnum::getValue).orElse(null),
+					disease);
 			FieldHelper.updateItems(specificRiskField, specificRiskValues);
 			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 		});
@@ -636,8 +644,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			// Initialize specific risk field if disease is null
 			if (getValue().getDisease() == null) {
-				List<SpecificRisk> specificRiskValues =
-					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+				List<SpecificRisk> specificRiskValues = FacadeProvider.getCustomizableEnumFacade()
+					.getEnumValues(
+						CustomizableEnumType.SPECIFIC_EVENT_RISK,
+						Optional.ofNullable(getValue().getSpecificRisk()).map(CustomizableEnum::getValue).orElse(null),
+						null);
 				FieldHelper.updateItems(specificRiskField, specificRiskValues);
 				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 			}

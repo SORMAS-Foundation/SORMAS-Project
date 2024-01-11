@@ -79,19 +79,26 @@ public interface CustomizableEnumFacade
 	boolean existsEnumValue(CustomizableEnumType type, String value, Disease disease);
 
 	/**
+	 * See getEnumValues(CustomizableEnumType, String, Disease);
+	 */
+	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease);
+
+	/**
 	 * Retrieves the cached contents of all enum value instances of the specified type. The results are already
 	 * internationalized based on the user's language, or the server language as a fallback. If the enum values for the
 	 * specified type and disease have not been requested yet, the cache is extended with them on demand.
-	 * 
+	 *
 	 * @param type
 	 *            The type for which to retrieve the enum values
 	 * @param disease
-	 *            The disease for which to retrieve the enum values. If null, all enum values that are disease-independent are retrieved
+	 *            The disease for which to retrieve the enum values; if null, all enum values that are disease-independent are retrieved
+	 * @param selectedValue
+	 *            An already selected value that needs to be included even if inactive
 	 * @param <T>
 	 *            The specific extension of {@link CustomizableEnum} for type safety
 	 * @return A list of all enum instances containing their values, internationalized captions, and optional properties
 	 */
-	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease);
+	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, String selectedValue, Disease disease);
 
 	/**
 	 * Indicates if the specified type has any entry in the database for a specific disease.
