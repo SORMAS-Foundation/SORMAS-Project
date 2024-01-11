@@ -160,16 +160,18 @@ public class RegionFacadeEjb
 				switch (sortProperty.propertyName) {
 				case Region.NAME:
 				case Region.EPID_CODE:
-				case Region.GROWTH_RATE:
 				case Region.EXTERNAL_ID:
+					expression = cb.lower(region.get(sortProperty.propertyName));
+					break;
+				case Region.GROWTH_RATE:
 				case Region.DEFAULT_INFRASTRUCTURE:
 					expression = region.get(sortProperty.propertyName);
 					break;
 				case Region.AREA:
-					expression = area.get(Area.NAME);
+					expression = cb.lower(area.get(Area.NAME));
 					break;
 				case RegionIndexDto.COUNTRY:
-					expression = country.get(Country.DEFAULT_NAME);
+					expression = cb.lower(country.get(Country.DEFAULT_NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -178,7 +180,7 @@ public class RegionFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)));
+			cq.orderBy(cb.asc(cb.lower(region.get(Region.NAME))));
 		}
 
 		cq.select(region);

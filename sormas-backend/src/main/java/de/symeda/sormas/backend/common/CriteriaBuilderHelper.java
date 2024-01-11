@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
@@ -213,5 +215,16 @@ public class CriteriaBuilderHelper {
 			cb.diff(
 				cb.function("date_part", Double.class, cb.literal("epoch"), date1),
 				cb.function("date_part", Double.class, cb.literal("epoch"), date2)));
+	}
+
+	public static List<Order> orders(CriteriaBuilder cb, boolean ascending, Expression<?>... expressions) {
+		return Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
+	}
+
+	public interface OrderBuilder {
+		List<Order> build(Expression<?>... expressions);
+	}
+	public static OrderBuilder createOrderBuilder(CriteriaBuilder cb, boolean ascending) {
+		return (Expression<?>... expressions) -> Stream.of(expressions).map(e -> ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList());
 	}
 }

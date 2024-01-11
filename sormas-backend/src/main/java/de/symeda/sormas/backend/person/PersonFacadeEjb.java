@@ -1335,7 +1335,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			final CriteriaBuilder cb = em.getCriteriaBuilder();
-			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+			final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			final Root<Person> person = cq.from(Person.class);
 
 			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
@@ -1350,24 +1350,30 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			// make sure to check the sorting by the multi-select order if you extend the selections here
 			cq.multiselect(
-				person.get(Person.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE),
-				person.get(Person.BIRTHDATE_DD),
-				person.get(Person.BIRTHDATE_MM),
-				person.get(Person.BIRTHDATE_YYYY),
-				person.get(Person.SEX),
-				district.get(District.NAME),
-				location.get(Location.STREET),
-				location.get(Location.HOUSE_NUMBER),
-				location.get(Location.POSTAL_CODE),
-				location.get(Location.CITY),
-				phone.get(PersonContactDetail.CONTACT_INFORMATION),
-				email.get(PersonContactDetail.CONTACT_INFORMATION),
-				person.get(Person.CHANGE_DATE),
-				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
+				Stream
+					.concat(
+						Stream.of(
+							person.get(Person.UUID),
+							person.get(Person.FIRST_NAME),
+							person.get(Person.LAST_NAME),
+							person.get(Person.APPROXIMATE_AGE),
+							person.get(Person.APPROXIMATE_AGE_TYPE),
+							person.get(Person.BIRTHDATE_DD),
+							person.get(Person.BIRTHDATE_MM),
+							person.get(Person.BIRTHDATE_YYYY),
+							person.get(Person.SEX),
+							district.get(District.NAME),
+							location.get(Location.STREET),
+							location.get(Location.HOUSE_NUMBER),
+							location.get(Location.POSTAL_CODE),
+							location.get(Location.CITY),
+							phone.get(PersonContactDetail.CONTACT_INFORMATION),
+							email.get(PersonContactDetail.CONTACT_INFORMATION),
+							person.get(Person.CHANGE_DATE),
+							JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext))),
+						// add sort properties to the selection
+						sortBy(sortProperties, personQueryContext).stream())
+					.collect(Collectors.toList()));
 
 			Predicate filter = person.get(Person.ID).in(batchedIds);
 
@@ -1379,9 +1385,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			cq.where(filter);
 			cq.distinct(true);
 
-			sortBy(sortProperties, personQueryContext);
-
-			persons.addAll(em.createQuery(cq).getResultList());
+			persons.addAll(QueryHelper.getResultList(em, cq, new PersonIndexDtoResultTransformer(), null, null));
 		});
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -1443,10 +1447,12 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case PersonIndexDto.UUID:
-				case PersonIndexDto.FIRST_NAME:
-				case PersonIndexDto.LAST_NAME:
 				case PersonIndexDto.SEX:
 					expression = personQueryContext.getRoot().get(sortProperty.propertyName);
+					break;
+				case PersonIndexDto.FIRST_NAME:
+				case PersonIndexDto.LAST_NAME:
+					expression = cb.lower(personQueryContext.getRoot().get(sortProperty.propertyName));
 					break;
 				case PersonIndexDto.PHONE:
 					Join<Person, PersonContactDetail> phone = personQueryContext.getPhoneJoin();
@@ -1454,21 +1460,21 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 					break;
 				case PersonIndexDto.EMAIL_ADDRESS:
 					Join<Person, PersonContactDetail> email = personQueryContext.getEmailAddressJoin();
-					expression = email.get(PersonContactDetail.CONTACT_INFORMATION);
+					expression = cb.lower(email.get(PersonContactDetail.CONTACT_INFORMATION));
 					break;
 				case PersonIndexDto.AGE_AND_BIRTH_DATE:
 					expression = personQueryContext.getRoot().get(Person.APPROXIMATE_AGE);
 					break;
 				case PersonIndexDto.DISTRICT:
 					Join<Location, District> district = personQueryContext.getJoins().getAddressJoins().getDistrict();
-					expression = district.get(District.NAME);
+					expression = cb.lower(district.get(District.NAME));
 					break;
 				case PersonIndexDto.STREET:
 				case PersonIndexDto.HOUSE_NUMBER:
 				case PersonIndexDto.POSTAL_CODE:
 				case PersonIndexDto.CITY:
 					Join<Person, Location> location = personQueryContext.getJoins().getAddress();
-					expression = location.get(sortProperty.propertyName);
+					expression = cb.lower(location.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

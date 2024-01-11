@@ -5,7 +5,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -64,12 +63,10 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		String lastName,
 		Sex sex,
 		Integer approximateAge,
-		ApproximateAgeType approximateAgeType,
 		String involvementDescription,
 		PathogenTestResultType pathogenTestResult,
 		Date sampleDateTime,
 		VaccinationStatus vaccinationStatus,
-		String reportingUserUuid,
 		DeletionReason deletionReason,
 		String otherDeletionReason,
 		boolean isInJurisdiction,

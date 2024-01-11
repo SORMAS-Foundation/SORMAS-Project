@@ -36,7 +36,7 @@ public class CaseFollowUpDto extends FollowUpDto {
 	public CaseFollowUpDto(String uuid, Date changeDate, String personFirstName, String personLastName,
 						   Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
 						   Disease disease,
-						   boolean isInJurisdiction
+						   boolean isInJurisdiction, Object sortPropertyIgnored
 	) {
 	//formatter:on
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);

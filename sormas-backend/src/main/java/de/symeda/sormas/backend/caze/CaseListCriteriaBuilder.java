@@ -71,43 +71,25 @@ public class CaseListCriteriaBuilder {
 	@Inject
 	private CurrentUserService currentUserService;
 
-	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties, List<Long> ids) {
-		return buildIndexCriteria(CaseIndexDto.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false, ids);
+	public CriteriaQuery<Tuple> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties, List<Long> ids) {
+		return buildIndexCriteria(this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false, ids);
 	}
 
-	public CriteriaQuery<CaseIndexDetailedDto> buildIndexDetailedCriteria(
-		CaseCriteria caseCriteria,
-		List<SortProperty> sortProperties,
-		List<Long> ids) {
+	public CriteriaQuery<Tuple> buildIndexDetailedCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties, List<Long> ids) {
 
-		return buildIndexCriteria(
-			CaseIndexDetailedDto.class,
-			this::getCaseIndexDetailedSelections,
-			caseCriteria,
-			this::getIndexDetailOrders,
-			sortProperties,
-			true,
-			ids);
+		return buildIndexCriteria(this::getCaseIndexDetailedSelections, caseCriteria, this::getIndexDetailOrders, sortProperties, true, ids);
 	}
 
 	public CriteriaQuery<Tuple> buildIndexCriteriaPrefetchIds(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
-		return buildIndexCriteria(Tuple.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false, null);
+		return buildIndexCriteria(this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false, null);
 	}
 
 	public CriteriaQuery<Tuple> buildIndexDetailedCriteriaPrefetchIds(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
 
-		return buildIndexCriteria(
-			Tuple.class,
-			this::getCaseIndexDetailedSelections,
-			caseCriteria,
-			this::getIndexDetailOrders,
-			sortProperties,
-			true,
-			null);
+		return buildIndexCriteria(this::getCaseIndexDetailedSelections, caseCriteria, this::getIndexDetailOrders, sortProperties, true, null);
 	}
 
-	private <T> CriteriaQuery<T> buildIndexCriteria(
-		Class<T> type,
+	private CriteriaQuery<Tuple> buildIndexCriteria(
 		BiFunction<Root<Case>, CaseQueryContext, List<Selection<?>>> selectionProvider,
 		CaseCriteria caseCriteria,
 		OrderExpressionProvider orderExpressionProvider,
@@ -118,7 +100,7 @@ public class CaseListCriteriaBuilder {
 		boolean prefetchIds = ids == null;
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<T> cq = cb.createQuery(type);
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins joins = caseQueryContext.getJoins();
@@ -133,23 +115,22 @@ public class CaseListCriteriaBuilder {
 		Expression<Date> latestChangedDateFunction =
 			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, caze.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
 
-		List<Selection<?>> selectionListPrefetchIds = new ArrayList<>();
+		List<Selection<?>> orderBySelections = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				List<Expression<?>> expressions = orderExpressionProvider.forProperty(sortProperty, caze, joins, cb);
-				selectionListPrefetchIds.addAll(expressions);
+				orderBySelections.addAll(expressions);
 				order.addAll(expressions.stream().map(e -> sortProperty.ascending ? cb.asc(e) : cb.desc(e)).collect(Collectors.toList()));
 			}
 			cq.orderBy(order);
 		} else {
-			selectionListPrefetchIds.add(latestChangedDateFunction);
+			orderBySelections.add(latestChangedDateFunction);
 			cq.orderBy(cb.desc(latestChangedDateFunction));
 		}
 
 		if (prefetchIds) {
 			selectionList.add(caze.get(AbstractDomainObject.ID));
-			selectionList.addAll(selectionListPrefetchIds);
 		} else {
 			selectionList.addAll(selectionProvider.apply(caze, caseQueryContext));
 			selectionList.add(visitCountSq);
@@ -191,10 +172,10 @@ public class CaseListCriteriaBuilder {
 				sampleCountSq.select(cb.countDistinct(sampleCountRoot.get(AbstractDomainObject.ID)));
 				selectionList.add(sampleCountSq);
 			}
-
-			// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
-			selectionList.add(latestChangedDateFunction);
 		}
+
+		// include order by in the select
+		selectionList.addAll(orderBySelections);
 
 		cq.multiselect(selectionList);
 		cq.distinct(true);
@@ -282,14 +263,12 @@ public class CaseListCriteriaBuilder {
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
+		case CaseIndexDto.PERSON_UUID:
+			return Collections.singletonList(joins.getPerson().get(Person.UUID));
 		case CaseIndexDto.ID:
 		case CaseIndexDto.UUID:
 		case CaseIndexDto.EPID_NUMBER:
-		case CaseIndexDto.EXTERNAL_ID:
-		case CaseIndexDto.EXTERNAL_TOKEN:
-		case CaseIndexDto.INTERNAL_TOKEN:
 		case CaseIndexDto.DISEASE:
-		case CaseIndexDto.DISEASE_DETAILS:
 		case CaseIndexDto.CASE_CLASSIFICATION:
 		case CaseIndexDto.INVESTIGATION_STATUS:
 		case CaseIndexDto.REPORT_DATE:
@@ -303,12 +282,15 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.VACCINATION_STATUS:
 		case CaseIndexDto.DISEASE_VARIANT:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
-		case CaseIndexDto.PERSON_UUID:
-			return Collections.singletonList(joins.getPerson().get(Person.UUID));
+		case CaseIndexDto.EXTERNAL_ID:
+		case CaseIndexDto.EXTERNAL_TOKEN:
+		case CaseIndexDto.INTERNAL_TOKEN:
+		case CaseIndexDto.DISEASE_DETAILS:
+			return Collections.singletonList(cb.lower(caze.get(sortProperty.propertyName)));
 		case CaseIndexDto.PERSON_FIRST_NAME:
-			return Collections.singletonList(joins.getPerson().get(Person.FIRST_NAME));
+			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.FIRST_NAME)));
 		case CaseIndexDto.PERSON_LAST_NAME:
-			return Collections.singletonList(joins.getPerson().get(Person.LAST_NAME));
+			return Collections.singletonList(cb.lower(joins.getPerson().get(Person.LAST_NAME)));
 		case CaseIndexDto.PRESENT_CONDITION:
 		case CaseIndexDto.SEX:
 		case ContactIndexDto.SYMPTOM_JOURNAL_STATUS:
@@ -320,13 +302,13 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.DISTRICT_UUID:
 			return Collections.singletonList(joins.getDistrict().get(District.UUID));
 		case CaseIndexDto.RESPONSIBLE_DISTRICT_NAME:
-			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
+			return Collections.singletonList(cb.lower(joins.getResponsibleDistrict().get(District.NAME)));
 		case CaseIndexDto.HEALTH_FACILITY_UUID:
 			return Collections.singletonList(joins.getFacility().get(Facility.UUID));
 		case CaseIndexDto.HEALTH_FACILITY_NAME:
-			return Arrays.asList(joins.getFacility(), caze.get(Case.HEALTH_FACILITY_DETAILS));
+			return Arrays.asList(joins.getFacility(), cb.lower(caze.get(Case.HEALTH_FACILITY_DETAILS)));
 		case CaseIndexDto.POINT_OF_ENTRY_NAME:
-			return Collections.singletonList(joins.getPointOfEntry().get(PointOfEntry.NAME));
+			return Collections.singletonList(cb.lower(joins.getPointOfEntry().get(PointOfEntry.NAME)));
 		case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
 			return Collections.singletonList(joins.getSurveillanceOfficer().get(User.UUID));
 		default:
@@ -373,17 +355,17 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.HOUSE_NUMBER:
 		case CaseIndexDetailedDto.ADDITIONAL_INFORMATION:
 		case CaseIndexDetailedDto.POSTAL_CODE:
-			return Collections.singletonList(joins.getPersonAddress().get(sortProperty.propertyName));
+			return Collections.singletonList(cb.lower(joins.getPersonAddress().get(sortProperty.propertyName)));
 		case CaseIndexDetailedDto.PHONE:
 			return Collections.singletonList(joins.getPersonJoins().getPhone().get(PersonContactDetail.CONTACT_INFORMATION));
 		case CaseIndexDetailedDto.REPORTING_USER:
-			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
+			return Arrays.asList(cb.lower(joins.getReportingUser().get(User.FIRST_NAME)), cb.lower(joins.getReportingUser().get(User.LAST_NAME)));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		case CaseIndexDetailedDto.RESPONSIBLE_REGION:
-			return Collections.singletonList(joins.getResponsibleRegion().get(Region.NAME));
+			return Collections.singletonList(cb.lower(joins.getResponsibleRegion().get(Region.NAME)));
 		case CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY:
-			return Collections.singletonList(joins.getResponsibleCommunity().get(Community.NAME));
+			return Collections.singletonList(cb.lower(joins.getResponsibleCommunity().get(Community.NAME)));
 		default:
 			return getIndexOrders(sortProperty, caze, joins, cb);
 		}

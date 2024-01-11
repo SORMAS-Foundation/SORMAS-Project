@@ -121,19 +121,23 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<EnvironmentSampleIndexDto, Boolean>) getColumn(EnvironmentSampleIndexDto.RECEIVED)).setRenderer(new BooleanRenderer());
 		((Column<EnvironmentSampleIndexDto, String>) getColumn(EnvironmentSampleIndexDto.LABORATORY)).setMaximumWidth(200);
-		((Column<EnvironmentSampleIndexDto, List<Pathogen>>) getColumn(EnvironmentSampleIndexDto.POSITIVE_PATHOGEN_TESTS))
-			.setRenderer(new TextRenderer() {
 
-				@Override
-				public JsonValue encode(Object value) {
-					if (value != null) {
+		Column<EnvironmentSampleIndexDto, List<Pathogen>> positivePathogenTestsColumn =
+			(Column<EnvironmentSampleIndexDto, List<Pathogen>>) getColumn(EnvironmentSampleIndexDto.POSITIVE_PATHOGEN_TESTS);
+		positivePathogenTestsColumn.setRenderer(new TextRenderer() {
 
-						return super.encode(
-							String.join(", ", ((List<Pathogen>) value).stream().map(t -> t.getCaption()).collect(Collectors.toList())));
-					}
-					return super.encode(value);
+			@Override
+			public JsonValue encode(Object value) {
+				if (value != null) {
+
+					return super.encode(String.join(", ", ((List<Pathogen>) value).stream().map(t -> t.getCaption()).collect(Collectors.toList())));
 				}
-			});
+				return super.encode(value);
+			}
+		});
+		positivePathogenTestsColumn.setSortable(false);
+
+		((Column<EnvironmentSampleIndexDto, String>) getColumn(EnvironmentSampleIndexDto.NUMBER_OF_TESTS)).setSortable(false);
 
 		for (Column<EnvironmentSampleIndexDto, ?> column : getColumns()) {
 			if (!DELETE_REASON_COLUMN.equals(column.getId())) {

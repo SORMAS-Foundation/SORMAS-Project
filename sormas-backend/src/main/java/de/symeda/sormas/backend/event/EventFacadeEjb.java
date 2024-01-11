@@ -19,6 +19,7 @@ import static java.util.Objects.isNull;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -44,7 +45,6 @@ import javax.inject.Inject;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -469,7 +469,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 
-			CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			Root<Event> event = cq.from(Event.class);
 
 			EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
@@ -483,74 +483,60 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			Join<Event, User> reportingUser = eventJoins.getReportingUser();
 			Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
-			cq.multiselect(
-				event.get(Event.ID),
-				event.get(Event.UUID),
-				event.get(Event.EXTERNAL_ID),
-				event.get(Event.EXTERNAL_TOKEN),
-				event.get(Event.INTERNAL_TOKEN),
-				event.get(Event.EVENT_STATUS),
-				event.get(Event.RISK_LEVEL),
-				event.get(Event.SPECIFIC_RISK),
-				event.get(Event.EVENT_INVESTIGATION_STATUS),
-				event.get(Event.EVENT_MANAGEMENT_STATUS),
-				event.get(Event.DISEASE),
-				event.get(Event.DISEASE_VARIANT),
-				event.get(Event.DISEASE_DETAILS),
-				event.get(Event.START_DATE),
-				event.get(Event.END_DATE),
-				event.get(Event.EVOLUTION_DATE),
-				event.get(Event.EVENT_TITLE),
-				region.get(Region.UUID),
-				region.get(Region.NAME),
-				district.get(District.UUID),
-				district.get(District.NAME),
-				community.get(Community.UUID),
-				community.get(Community.NAME),
-				location.get(Location.CITY),
-				location.get(Location.STREET),
-				location.get(Location.HOUSE_NUMBER),
-				location.get(Location.ADDITIONAL_INFORMATION),
-				event.get(Event.SRC_TYPE),
-				event.get(Event.SRC_FIRST_NAME),
-				event.get(Event.SRC_LAST_NAME),
-				event.get(Event.SRC_TEL_NO),
-				event.get(Event.SRC_MEDIA_WEBSITE),
-				event.get(Event.SRC_MEDIA_NAME),
-				event.get(Event.REPORT_DATE_TIME),
-				reportingUser.get(User.UUID),
-				reportingUser.get(User.FIRST_NAME),
-				reportingUser.get(User.LAST_NAME),
-				responsibleUser.get(User.UUID),
-				responsibleUser.get(User.FIRST_NAME),
-				responsibleUser.get(User.LAST_NAME),
-				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
-				event.get(Event.CHANGE_DATE),
-				event.get(Event.EVENT_IDENTIFICATION_SOURCE),
-				event.get(Event.DELETION_REASON),
-				event.get(Event.OTHER_DELETION_REASON));
+			List<Selection<?>> selection = new ArrayList<>(
+				Arrays.asList(
+					event.get(Event.ID),
+					event.get(Event.UUID),
+					event.get(Event.EXTERNAL_ID),
+					event.get(Event.EXTERNAL_TOKEN),
+					event.get(Event.INTERNAL_TOKEN),
+					event.get(Event.EVENT_STATUS),
+					event.get(Event.RISK_LEVEL),
+					event.get(Event.SPECIFIC_RISK),
+					event.get(Event.EVENT_INVESTIGATION_STATUS),
+					event.get(Event.EVENT_MANAGEMENT_STATUS),
+					event.get(Event.DISEASE),
+					event.get(Event.DISEASE_VARIANT),
+					event.get(Event.DISEASE_DETAILS),
+					event.get(Event.START_DATE),
+					event.get(Event.END_DATE),
+					event.get(Event.EVOLUTION_DATE),
+					event.get(Event.EVENT_TITLE),
+					region.get(Region.UUID),
+					region.get(Region.NAME),
+					district.get(District.UUID),
+					district.get(District.NAME),
+					community.get(Community.UUID),
+					community.get(Community.NAME),
+					location.get(Location.CITY),
+					location.get(Location.STREET),
+					location.get(Location.HOUSE_NUMBER),
+					location.get(Location.ADDITIONAL_INFORMATION),
+					event.get(Event.SRC_TYPE),
+					event.get(Event.SRC_FIRST_NAME),
+					event.get(Event.SRC_LAST_NAME),
+					event.get(Event.SRC_TEL_NO),
+					event.get(Event.SRC_MEDIA_WEBSITE),
+					event.get(Event.SRC_MEDIA_NAME),
+					event.get(Event.REPORT_DATE_TIME),
+					reportingUser.get(User.UUID),
+					reportingUser.get(User.FIRST_NAME),
+					reportingUser.get(User.LAST_NAME),
+					responsibleUser.get(User.UUID),
+					responsibleUser.get(User.FIRST_NAME),
+					responsibleUser.get(User.LAST_NAME),
+					JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
+					event.get(Event.EVENT_IDENTIFICATION_SOURCE),
+					event.get(Event.DELETION_REASON),
+					event.get(Event.OTHER_DELETION_REASON)));
 
-			Predicate filter = event.get(Event.ID).in(batchedIds);
+			selection.addAll(sortBy(sortProperties, eventQueryContext));
 
-			if (eventCriteria != null) {
-				if (eventCriteria.getUserFilterIncluded()) {
-					EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
-					eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-					filter = service.createUserFilter(eventQueryContext, eventUserFilterCriteria);
-				}
-
-				Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
-				filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-			}
-
-			if (filter != null) {
-				cq.where(filter);
-			}
-
-			sortBy(sortProperties, eventQueryContext);
+			cq.multiselect(selection);
+			cq.where(event.get(Event.ID).in(batchedIds));
 			cq.distinct(true);
 
-			indexList.addAll(QueryHelper.getResultList(em, cq, null, null));
+			indexList.addAll(QueryHelper.getResultList(em, cq, new EventIndexDtoResultTransformer(), null, null));
 		});
 
 		Map<String, Long> participantCounts = new HashMap<>();
@@ -746,12 +732,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> orderList;
+
 				switch (sortProperty.propertyName) {
 				case EventIndexDto.UUID:
-				case EventIndexDto.EXTERNAL_ID:
-				case EventIndexDto.EXTERNAL_TOKEN:
-				case EventIndexDto.INTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.SPECIFIC_RISK:
@@ -759,58 +744,55 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_VARIANT:
-				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVOLUTION_DATE:
+				case EventIndexDto.SRC_TYPE:
+				case EventIndexDto.REPORT_DATE_TIME:
+				case EventIndexDto.EVENT_IDENTIFICATION_SOURCE:
+					orderList = orderBuilder.build(eventQueryContext.getRoot().get(sortProperty.propertyName));
+					break;
+				case EventIndexDto.EXTERNAL_ID:
+				case EventIndexDto.EXTERNAL_TOKEN:
+				case EventIndexDto.INTERNAL_TOKEN:
+				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.EVENT_TITLE:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
 				case EventIndexDto.SRC_TEL_NO:
-				case EventIndexDto.SRC_TYPE:
-				case EventIndexDto.REPORT_DATE_TIME:
-				case EventIndexDto.EVENT_IDENTIFICATION_SOURCE:
-					expression = eventQueryContext.getRoot().get(sortProperty.propertyName);
+					orderList = orderBuilder.build(cb.lower(eventQueryContext.getRoot().get(sortProperty.propertyName)));
 					break;
 				case EventIndexDto.EVENT_LOCATION:
-					expression = region.get(Region.NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = district.get(District.NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = community.get(Community.NAME);
+					orderList = orderBuilder
+						.build(cb.lower(region.get(Region.NAME)), cb.lower(district.get(District.NAME)), cb.lower(community.get(Community.NAME)));
 					break;
 				case EventIndexDto.REGION:
-					expression = region.get(Region.NAME);
+					orderList = orderBuilder.build(cb.lower(region.get(Region.NAME)));
 					break;
 				case EventIndexDto.DISTRICT:
-					expression = district.get(District.NAME);
+					orderList = orderBuilder.build(cb.lower(district.get(District.NAME)));
 					break;
 				case EventIndexDto.COMMUNITY:
-					expression = community.get(Community.NAME);
+					orderList = orderBuilder.build(cb.lower(community.get(Community.NAME)));
 					break;
 				case EventIndexDto.ADDRESS:
-					expression = location.get(Location.CITY);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = location.get(Location.STREET);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = location.get(Location.HOUSE_NUMBER);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = location.get(Location.ADDITIONAL_INFORMATION);
+					orderList = orderBuilder.build(
+						cb.lower(location.get(Location.CITY)),
+						cb.lower(location.get(Location.STREET)),
+						cb.lower(location.get(Location.HOUSE_NUMBER)),
+						cb.lower(location.get(Location.ADDITIONAL_INFORMATION)));
 					break;
 				case EventIndexDto.REPORTING_USER:
-					expression = reportingUser.get(User.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = reportingUser.get(User.LAST_NAME);
+					orderList = orderBuilder.build(cb.lower(reportingUser.get(User.FIRST_NAME)), cb.lower(reportingUser.get(User.LAST_NAME)));
 					break;
 				case EventIndexDto.RESPONSIBLE_USER:
-					expression = responsibleUser.get(User.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = responsibleUser.get(User.LAST_NAME);
+					orderList = orderBuilder.build(cb.lower(responsibleUser.get(User.FIRST_NAME)), cb.lower(responsibleUser.get(User.LAST_NAME)));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-				selections.add(expression);
+
+				order.addAll(orderList);
+				selections.addAll(orderList.stream().map(Order::getExpression).collect(Collectors.toList()));
 			}
 			cq.orderBy(order);
 		} else {

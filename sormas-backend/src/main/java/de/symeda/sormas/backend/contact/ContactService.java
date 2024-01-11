@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -140,6 +141,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -1942,7 +1944,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<Contact> contact = cq.from(Contact.class);
 
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
@@ -1966,9 +1968,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		cq.distinct(true);
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new ContactListEntryDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new ContactListEntryDtoResultTransformer(), first, max);
 	}
 
 	public long getContactCount(CaseReferenceDto caze) {

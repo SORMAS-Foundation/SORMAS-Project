@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -179,7 +180,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		List<EventGroupIndexDto> eventGroups = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<EventGroupIndexDto> cq = cb.createQuery(EventGroupIndexDto.class);
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			Root<EventGroup> eventGroup = cq.from(EventGroup.class);
 			EventGroupQueryContext queryContext = new EventGroupQueryContext(cb, cq, eventGroup);
 
@@ -193,17 +194,19 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 					eventService.createDefaultFilter(cb, eventSubQueryJoin)));
 			eventCountSubquery.groupBy(eventGroupSubQuery.get(EventGroup.ID));
 
-			cq.multiselect(
-				eventGroup.get(EventGroup.UUID),
-				eventGroup.get(EventGroup.NAME),
-				eventGroup.get(EventGroup.CHANGE_DATE),
-				eventCountSubquery.getSelection());
+			List<Order> orderList = getOrderList(sortProperties, queryContext);
 
+			cq.multiselect(
+				Stream
+					.concat(
+						Stream.of(eventGroup.get(EventGroup.UUID), eventGroup.get(EventGroup.NAME), eventCountSubquery.getSelection()),
+						orderList.stream().map(Order::getExpression))
+					.collect(Collectors.toList()));
 			cq.where(eventGroup.get(EventGroup.ID).in(batchedIds));
-			cq.orderBy(getOrderList(sortProperties, queryContext));
+			cq.orderBy(orderList);
 			cq.distinct(true);
 
-			eventGroups.addAll(QueryHelper.getResultList(em, cq, first, max));
+			eventGroups.addAll(QueryHelper.getResultList(em, cq, new EventGroupDtoResultTransformer(), null, null));
 		});
 
 		return eventGroups;
@@ -258,8 +261,10 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EventGroupIndexDto.UUID:
-				case EventGroupIndexDto.NAME:
 					expression = eventGroupRoot.get(sortProperty.propertyName);
+					break;
+				case EventGroupIndexDto.NAME:
+					expression = cb.lower(eventGroupRoot.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
