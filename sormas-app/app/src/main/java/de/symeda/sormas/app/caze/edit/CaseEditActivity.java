@@ -23,12 +23,15 @@ import java.util.List;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -351,9 +354,15 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 				eventParticipantToSave.setResultingCaseUuid(caze.getUuid());
 				EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(this);
 
-				if (!isEventLinkedToCase(caze, event)
-					&& !DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists(event, caze.getPerson())) {
-					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave);
+				if (!isEventLinkedToCase(caze, event)) {
+					boolean eventParticipantAlreadyExists =
+						DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists(event, caze.getPerson());
+					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave, eventParticipantAlreadyExists);
+
+					if (eventParticipantAlreadyExists) {
+						NotificationHelper.showNotification(this, WARNING, I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant));
+					}
+
 				} else {
 					NotificationHelper
 						.showNotification(this, WARNING, getString(R.string.message_Event_already_linked_to_Case) + " " + caze.getUuid());
