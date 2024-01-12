@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
@@ -1148,26 +1149,33 @@ public class ContactFacadeEjb
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ContactFollowUpDto> cq = cb.createQuery(ContactFollowUpDto.class);
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<Contact> contact = cq.from(Contact.class);
 
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
 		final ContactJoins joins = contactQueryContext.getJoins();
 
+		List<Order> orderList = getFollowupOrderList(sortProperties, contact, joins, cb);
+
 		cq.multiselect(
-			contact.get(Contact.UUID),
-			contact.get(Contact.CHANGE_DATE),
-			joins.getPerson().get(Person.FIRST_NAME),
-			joins.getPerson().get(Person.LAST_NAME),
-			joins.getContactOfficer().get(User.UUID),
-			joins.getContactOfficer().get(User.FIRST_NAME),
-			joins.getContactOfficer().get(User.LAST_NAME),
-			contact.get(Contact.LAST_CONTACT_DATE),
-			contact.get(Contact.REPORT_DATE_TIME),
-			contact.get(Contact.FOLLOW_UP_UNTIL),
-			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-			contact.get(Contact.DISEASE),
-			jurisdictionSelector(contactQueryContext));
+			Stream
+				.concat(
+					Stream.of(
+						contact.get(Contact.UUID),
+						contact.get(Contact.CHANGE_DATE),
+						joins.getPerson().get(Person.FIRST_NAME),
+						joins.getPerson().get(Person.LAST_NAME),
+						joins.getContactOfficer().get(User.UUID),
+						joins.getContactOfficer().get(User.FIRST_NAME),
+						joins.getContactOfficer().get(User.LAST_NAME),
+						contact.get(Contact.LAST_CONTACT_DATE),
+						contact.get(Contact.REPORT_DATE_TIME),
+						contact.get(Contact.FOLLOW_UP_UNTIL),
+						joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+						contact.get(Contact.DISEASE),
+						jurisdictionSelector(contactQueryContext)),
+					orderList.stream().map(Order::getExpression))
+				.collect(Collectors.toList()));
 
 		// Only use user filter if no restricting case is specified
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
@@ -1177,45 +1185,9 @@ public class ContactFacadeEjb
 		}
 
 		cq.distinct(true);
+		cq.orderBy(orderList);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case FollowUpDto.UUID:
-				case ContactFollowUpDto.LAST_CONTACT_DATE:
-				case FollowUpDto.FOLLOW_UP_UNTIL:
-					expression = contact.get(sortProperty.propertyName);
-					break;
-				case FollowUpDto.REPORT_DATE:
-					expression = contact.get(Contact.REPORT_DATE_TIME);
-					break;
-				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
-					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
-					break;
-				case FollowUpDto.FIRST_NAME:
-					expression = joins.getPerson().get(Person.FIRST_NAME);
-					break;
-				case FollowUpDto.LAST_NAME:
-					expression = joins.getPerson().get(Person.LAST_NAME);
-					break;
-				case ContactFollowUpDto.CONTACT_OFFICER:
-					expression = joins.getContactOfficer().get(User.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getContactOfficer().get(User.LAST_NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
-		}
-
-		List<ContactFollowUpDto> resultList = QueryHelper.getResultList(em, cq, first, max);
+		List<ContactFollowUpDto> resultList = QueryHelper.getResultList(em, cq, new ContactFollowUpDtoResultTransformer(), first, max);
 
 		if (!resultList.isEmpty()) {
 
@@ -1264,6 +1236,51 @@ public class ContactFacadeEjb
 		return resultList;
 	}
 
+	private static List<Order> getFollowupOrderList(
+		List<SortProperty> sortProperties,
+		Root<Contact> contact,
+		ContactJoins joins,
+		CriteriaBuilder cb) {
+		List<Order> orderList = new ArrayList<>();
+
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			for (SortProperty sortProperty : sortProperties) {
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
+				switch (sortProperty.propertyName) {
+				case FollowUpDto.UUID:
+				case ContactFollowUpDto.LAST_CONTACT_DATE:
+				case FollowUpDto.FOLLOW_UP_UNTIL:
+					order = orderBuilder.build(contact.get(sortProperty.propertyName));
+					break;
+				case FollowUpDto.REPORT_DATE:
+					order = orderBuilder.build(contact.get(Contact.REPORT_DATE_TIME));
+					break;
+				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
+					order = orderBuilder.build(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS));
+					break;
+				case FollowUpDto.FIRST_NAME:
+					order = orderBuilder.build(cb.lower(joins.getPerson().get(Person.FIRST_NAME)));
+					break;
+				case FollowUpDto.LAST_NAME:
+					order = orderBuilder.build(cb.lower(joins.getPerson().get(Person.LAST_NAME)));
+					break;
+				case ContactFollowUpDto.CONTACT_OFFICER:
+					order = orderBuilder
+						.build(cb.lower(joins.getContactOfficer().get(User.FIRST_NAME)), cb.lower(joins.getContactOfficer().get(User.LAST_NAME)));
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				orderList.addAll(order);
+			}
+		} else {
+			orderList.add(cb.desc(contact.get(Contact.CHANGE_DATE)));
+		}
+
+		return orderList;
+	}
+
 	private Expression<Object> jurisdictionSelector(ContactQueryContext qc) {
 		return JurisdictionHelper.booleanSelector(qc.getCriteriaBuilder(), service.inJurisdictionOrOwned(qc));
 	}
@@ -1288,8 +1305,8 @@ public class ContactFacadeEjb
 
 		List<ContactIndexDto> dtos = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
-			CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties, batchedIds);
-			dtos.addAll(QueryHelper.getResultList(em, query, null, null));
+			CriteriaQuery<Tuple> cq = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties, batchedIds);
+			dtos.addAll(QueryHelper.getResultList(em, cq, new ContactIndexDtoResultTransformer(), null, null));
 		});
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -1337,9 +1354,8 @@ public class ContactFacadeEjb
 
 		List<ContactIndexDetailedDto> dtos = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
-			CriteriaQuery<ContactIndexDetailedDto> query =
-				listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties, batchedIds);
-			dtos.addAll(QueryHelper.getResultList(em, query, null, null));
+			CriteriaQuery<Tuple> cq = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties, batchedIds);
+			dtos.addAll(QueryHelper.getResultList(em, cq, new ContactIndexDetailedDtoResultTransformer(), null, null));
 		});
 
 		if (userService.hasRight(UserRight.EVENT_VIEW)) {

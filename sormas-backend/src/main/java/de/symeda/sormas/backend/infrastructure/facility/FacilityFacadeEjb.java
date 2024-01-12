@@ -453,20 +453,22 @@ public class FacilityFacadeEjb
 				case Facility.STREET:
 				case Facility.HOUSE_NUMBER:
 				case Facility.ADDITIONAL_INFORMATION:
+				case Facility.EXTERNAL_ID:
+					expression = cb.lower(facility.get(sortProperty.propertyName));
+					break;
 				case Facility.LATITUDE:
 				case Facility.LONGITUDE:
-				case Facility.EXTERNAL_ID:
 				case Facility.TYPE:
 					expression = facility.get(sortProperty.propertyName);
 					break;
 				case Facility.REGION:
-					expression = region.get(Region.NAME);
+					expression = cb.lower(region.get(Region.NAME));
 					break;
 				case Facility.DISTRICT:
-					expression = district.get(District.NAME);
+					expression = cb.lower(district.get(District.NAME));
 					break;
 				case Facility.COMMUNITY:
-					expression = community.get(Community.NAME);
+					expression = cb.lower(community.get(Community.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -476,10 +478,10 @@ public class FacilityFacadeEjb
 			cq.orderBy(order);
 		} else {
 			cq.orderBy(
-				cb.asc(region.get(Region.NAME)),
-				cb.asc(district.get(District.NAME)),
-				cb.asc(community.get(Community.NAME)),
-				cb.asc(facility.get(Facility.NAME)));
+				cb.asc(cb.lower(region.get(Region.NAME))),
+				cb.asc(cb.lower(district.get(District.NAME))),
+				cb.asc(cb.lower(community.get(Community.NAME))),
+				cb.asc(cb.lower(facility.get(Facility.NAME))));
 		}
 
 		cq.multiselect(

@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.api.event;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 public class EventGroupIndexDto extends AbstractUuidDto {
@@ -27,16 +25,12 @@ public class EventGroupIndexDto extends AbstractUuidDto {
 	public static final String UUID = "uuid";
 	public static final String NAME = "name";
 	public static final String EVENT_COUNT = "eventCount";
-	public static final String CHANGED_DATE = "changeDate";
-
 	private String name;
 	private Long eventCount;
-	private Date changeDate;
 
-	public EventGroupIndexDto(String uuid, String name, Date changeDate, Long eventCount) {
+	public EventGroupIndexDto(String uuid, String name, Long eventCount) {
 		super(uuid);
 		this.name = name;
-		this.changeDate = changeDate;
 		this.eventCount = eventCount;
 	}
 
@@ -46,14 +40,6 @@ public class EventGroupIndexDto extends AbstractUuidDto {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Date getChangeDate() {
-		return changeDate;
-	}
-
-	public void setChangeDate(Date changeDate) {
-		this.changeDate = changeDate;
 	}
 
 	public Long getEventCount() {

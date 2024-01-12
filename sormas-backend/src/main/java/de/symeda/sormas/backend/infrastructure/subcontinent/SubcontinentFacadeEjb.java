@@ -172,13 +172,13 @@ public class SubcontinentFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case SubcontinentIndexDto.DISPLAY_NAME:
-					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
+					expression = cb.lower(subcontinent.get(Subcontinent.DEFAULT_NAME));
 					break;
 				case SubcontinentDto.CONTINENT:
-					expression = continent.get(Continent.DEFAULT_NAME);
+					expression = cb.lower(continent.get(Continent.DEFAULT_NAME));
 					break;
 				case SubcontinentDto.EXTERNAL_ID:
-					expression = subcontinent.get(sortProperty.propertyName);
+					expression = cb.lower(subcontinent.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -187,7 +187,7 @@ public class SubcontinentFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(subcontinent.get(Subcontinent.DEFAULT_NAME)));
+			cq.orderBy(cb.asc(cb.lower(subcontinent.get(Subcontinent.DEFAULT_NAME))));
 		}
 
 		cq.select(subcontinent);

@@ -109,8 +109,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements HasUuid,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID, String externalToken, String internalToken, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
-						   int visitCount,
-						   Date latestChangedDate // unused, only here for TypedQuery mapping
+						   int visitCount
 	) {
 	//@formatter:on
 

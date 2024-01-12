@@ -155,15 +155,15 @@ public class CountryFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case CountryIndexDto.DISPLAY_NAME:
-					expression = country.get(Country.DEFAULT_NAME);
+					expression = cb.lower(country.get(Country.DEFAULT_NAME));
 					break;
 				case CountryIndexDto.SUBCONTINENT:
-					expression = subcontinent.get(Subcontinent.DEFAULT_NAME);
+					expression = cb.lower(subcontinent.get(Subcontinent.DEFAULT_NAME));
 					break;
 				case CountryIndexDto.EXTERNAL_ID:
 				case CountryIndexDto.ISO_CODE:
 				case CountryIndexDto.UNO_CODE:
-					expression = country.get(sortProperty.propertyName);
+					expression = cb.lower(country.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -172,7 +172,7 @@ public class CountryFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(country.get(Country.ISO_CODE)));
+			cq.orderBy(cb.asc(cb.lower(country.get(Country.ISO_CODE))));
 		}
 
 		cq.select(country);

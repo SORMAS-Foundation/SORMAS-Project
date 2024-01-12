@@ -296,7 +296,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 		List<EventActionIndexDto> actions = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			final CriteriaBuilder cb = em.getCriteriaBuilder();
-			final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			final Root<Action> action = cq.from(getElementClass());
 			final ActionQueryContext queryContext = new ActionQueryContext(cb, cq, action);
 			final ActionJoins actionJoins = queryContext.getJoins();
@@ -360,11 +360,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 			cq.orderBy(getOrderList(sortProperties, queryContext));
 			cq.distinct(true);
 
-			//noinspection unchecked
-			actions.addAll(
-				createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-					.setResultTransformer(new EventActionIndexDtoReasultTransformer())
-					.getResultList());
+			actions.addAll(QueryHelper.getResultList(em, cq, new EventActionIndexDtoReasultTransformer(), first, max));
 		});
 
 		return actions;

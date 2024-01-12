@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -19,6 +20,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -26,7 +28,7 @@ public class TravelEntryListService extends BaseTravelEntryService {
 
 	public List<TravelEntryListEntryDto> getEntriesList(Long personId, Long caseId, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		final TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
@@ -53,9 +55,7 @@ public class TravelEntryListService extends BaseTravelEntryService {
 
 		cq.distinct(true);
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new TravelEntryListEntryDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new TravelEntryListEntryDtoResultTransformer(), first, max);
 	}
 
 	private Predicate buildListEntryCriteriaFilter(Long personId, Long caseId, TravelEntryQueryContext travelEntryQueryContext) {

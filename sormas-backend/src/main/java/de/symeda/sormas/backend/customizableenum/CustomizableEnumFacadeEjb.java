@@ -222,8 +222,10 @@ public class CustomizableEnumFacadeEjb
 				switch (sortProperty.propertyName) {
 				case CustomizableEnumValue.DATA_TYPE:
 				case CustomizableEnumValue.VALUE:
-				case CustomizableEnumValue.CAPTION:
 					expression = root.get(sortProperty.propertyName);
+					break;
+				case CustomizableEnumValue.CAPTION:
+					expression = cb.lower(root.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -43,6 +44,7 @@ import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -596,7 +598,7 @@ public class EventParticipantFacadeEjb
 
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			final CriteriaBuilder cb = em.getCriteriaBuilder();
-			final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
+			final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 			final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 			EventParticipantJoins joins = queryContext.getJoins();
@@ -626,42 +628,33 @@ public class EventParticipantFacadeEjb
 
 			Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
 			Expression<Object> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
+
 			cq.multiselect(
-				eventParticipant.get(EventParticipant.UUID),
-				person.get(Person.UUID),
-				resultingCase.get(Case.UUID),
-				event.get(Event.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				person.get(Person.SEX),
-				person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE),
-				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-				labResultSq,
-				sampleDateSq,
-				eventParticipant.get(EventParticipant.VACCINATION_STATUS),
-				joins.getEventParticipantReportingUser().get(User.UUID),
-				eventParticipant.get(EventParticipant.DELETION_REASON),
-				eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
-				inJurisdictionSelector,
-				inJurisdictionOrOwnedSelector);
-
-			Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, queryContext);
-
-			if (eventParticipantCriteria.getPathogenTestResult() != null) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
-			}
-
-			filter = CriteriaBuilderHelper.and(cb, filter, eventParticipant.get(EventParticipant.ID).in(batchedIds));
-
-			if (filter != null) {
-				cq.where(filter);
-			}
+				Stream
+					.concat(
+						Stream.of(
+							eventParticipant.get(EventParticipant.UUID),
+							person.get(Person.UUID),
+							resultingCase.get(Case.UUID),
+							event.get(Event.UUID),
+							person.get(Person.FIRST_NAME),
+							person.get(Person.LAST_NAME),
+							person.get(Person.SEX),
+							person.get(Person.APPROXIMATE_AGE),
+							eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+							labResultSq,
+							sampleDateSq,
+							eventParticipant.get(EventParticipant.VACCINATION_STATUS),
+							eventParticipant.get(EventParticipant.DELETION_REASON),
+							eventParticipant.get(EventParticipant.OTHER_DELETION_REASON),
+							inJurisdictionSelector,
+							inJurisdictionOrOwnedSelector),
+						sortBy(sortProperties, queryContext).stream())
+					.collect(Collectors.toList()));
+			cq.where(eventParticipant.get(EventParticipant.ID).in(batchedIds));
 			cq.distinct(true);
-			sortBy(sortProperties, queryContext);
 
-			indexList.addAll(QueryHelper.getResultList(em, cq, null, null));
+			indexList.addAll(QueryHelper.getResultList(em, cq, new EventParticipantIndexDtoResultTransformer(), null, null));
 		});
 
 		if (!indexList.isEmpty()) {
@@ -726,6 +719,7 @@ public class EventParticipantFacadeEjb
 		List<Selection<?>> selections = new ArrayList<>();
 		CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
 		CriteriaQuery<?> cq = eventParticipantQueryContext.getQuery();
+		From<?, EventParticipant> eventParticipantRoot = eventParticipantQueryContext.getRoot();
 		EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -734,21 +728,25 @@ public class EventParticipantFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case EventParticipantIndexDto.UUID:
-				case EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION:
 				case EventParticipantIndexDto.VACCINATION_STATUS:
-					expression = eventParticipantQueryContext.getRoot().get(sortProperty.propertyName);
+					expression = eventParticipantRoot.get(sortProperty.propertyName);
+					break;
+				case EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION:
+					expression = cb.lower(eventParticipantRoot.get(sortProperty.propertyName));
 					break;
 				case EventParticipantIndexDto.PERSON_UUID:
 					expression = joins.getPerson().get(Person.UUID);
 					break;
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
-				case EventParticipantIndexDto.LAST_NAME:
-				case EventParticipantIndexDto.FIRST_NAME:
 					expression = joins.getPerson().get(sortProperty.propertyName);
 					break;
+				case EventParticipantIndexDto.LAST_NAME:
+				case EventParticipantIndexDto.FIRST_NAME:
+					expression = cb.lower(joins.getPerson().get(sortProperty.propertyName));
+					break;
 				case EventParticipantIndexDto.CASE_UUID:
-					expression = joins.getResultingCase().get(Case.UUID);
+					expression = cb.lower(joins.getResultingCase().get(Case.UUID));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -758,9 +756,9 @@ public class EventParticipantFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			Expression<?> lastName = joins.getPerson().get(Person.LAST_NAME);
-			cq.orderBy(cb.desc(lastName));
-			selections.add(lastName);
+			Expression<?> changeDate = eventParticipantRoot.get(EventParticipant.CHANGE_DATE);
+			cq.orderBy(cb.desc(changeDate));
+			selections.add(changeDate);
 		}
 
 		return selections;

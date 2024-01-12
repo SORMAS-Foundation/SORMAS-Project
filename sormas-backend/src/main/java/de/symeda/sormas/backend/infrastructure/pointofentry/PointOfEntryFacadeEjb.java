@@ -200,18 +200,20 @@ public class PointOfEntryFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case PointOfEntry.NAME:
+				case PointOfEntry.EXTERNAL_ID:
+					expression = cb.lower(root.get(sortProperty.propertyName));
+					break;
 				case PointOfEntry.POINT_OF_ENTRY_TYPE:
 				case PointOfEntry.LATITUDE:
 				case PointOfEntry.LONGITUDE:
 				case PointOfEntry.ACTIVE:
-				case PointOfEntry.EXTERNAL_ID:
 					expression = root.get(sortProperty.propertyName);
 					break;
 				case Facility.REGION:
-					expression = region.get(Region.NAME);
+					expression = cb.lower(region.get(Region.NAME));
 					break;
 				case Facility.DISTRICT:
-					expression = district.get(District.NAME);
+					expression = cb.lower(district.get(District.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -220,7 +222,10 @@ public class PointOfEntryFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(root.get(PointOfEntry.NAME)));
+			cq.orderBy(
+				cb.asc(cb.lower(region.get(Region.NAME))),
+				cb.asc(cb.lower(district.get(District.NAME))),
+				cb.asc(cb.lower(root.get(PointOfEntry.NAME))));
 		}
 
 		cq.select(root);
