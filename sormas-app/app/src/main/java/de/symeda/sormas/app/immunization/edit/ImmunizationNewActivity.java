@@ -182,7 +182,7 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		if (caseUuid != null || contactUuid != null || eventParticipantUuid != null) {
 			pickOrCreateImmunizationAndSave(immunization, fragment);
 		} else {
-			SelectOrCreatePersonDialog.selectOrCreatePerson(immunization.getPerson(), person -> {
+			SelectOrCreatePersonDialog.selectOrCreatePerson(immunization.getPerson(), immunization, person -> {
 				if (person != null) {
 					immunization.setPerson(person);
 					pickOrCreateImmunizationAndSave(immunization, fragment);
