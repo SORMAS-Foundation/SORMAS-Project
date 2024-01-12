@@ -19,11 +19,13 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
+import java.util.List;
+import java.util.Optional;
+
 import android.view.View;
 
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -189,14 +191,20 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
-		List<DiseaseVariant> diseaseVariants =
-			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao()
+			.getEnumValues(
+				CustomizableEnumType.DISEASE_VARIANT,
+				Optional.ofNullable(record.getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
+				record.getDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
 		}
-		List<SpecificRisk> specificRisks =
-			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
+		List<SpecificRisk> specificRisks = DatabaseHelper.getCustomizableEnumValueDao()
+			.getEnumValues(
+				CustomizableEnumType.SPECIFIC_EVENT_RISK,
+				Optional.ofNullable(record.getSpecificRisk()).map(CustomizableEnum::getValue).orElse(null),
+				record.getDisease());
 		specificRiskList = DataUtils.toItems(specificRisks);
 		if (record.getSpecificRisk() != null && !specificRisks.contains(record.getSpecificRisk())) {
 			specificRiskList.add(DataUtils.toItem(record.getSpecificRisk()));
@@ -305,8 +313,11 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private void updateCustomizableEnumFields(FragmentEventEditLayoutBinding contentBinding) {
 		// Disease variant
 		DiseaseVariant selectedVariant = (DiseaseVariant) contentBinding.eventDiseaseVariant.getValue();
-		List<DiseaseVariant> diseaseVariants =
-			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao()
+			.getEnumValues(
+				CustomizableEnumType.DISEASE_VARIANT,
+				Optional.ofNullable(record.getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
+				record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.eventDiseaseVariant.setSpinnerData(diseaseVariantList);
@@ -319,8 +330,11 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		// Specific risk
 		SpecificRisk selectedRisk = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();
-		List<SpecificRisk> specificRisks =
-			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
+		List<SpecificRisk> specificRisks = DatabaseHelper.getCustomizableEnumValueDao()
+			.getEnumValues(
+				CustomizableEnumType.SPECIFIC_EVENT_RISK,
+				Optional.ofNullable(record.getSpecificRisk()).map(CustomizableEnum::getValue).orElse(null),
+				record.getDisease());
 		specificRiskList.clear();
 		specificRiskList.addAll(DataUtils.toItems(specificRisks));
 		contentBinding.eventSpecificRisk.setSpinnerData(specificRiskList);
