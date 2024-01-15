@@ -15,7 +15,7 @@ public class EventParticipantSaver {
 		this.parentActivity = parentActivity;
 	}
 
-	public void saveEventParticipantLinkedToCase(EventParticipant eventParticipantToSave) {
+	public void saveEventParticipantLinkedToCase(EventParticipant eventParticipantToSave, boolean eventParticipantAlreadyExists) {
 
 		new SavingAsyncTask(parentActivity.getRootView(), eventParticipantToSave) {
 
@@ -32,7 +32,11 @@ public class EventParticipantSaver {
 			@Override
 			protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
 				parentActivity.hidePreloader();
-				super.onPostExecute(taskResult);
+
+				if (!eventParticipantAlreadyExists) {
+					super.onPostExecute(taskResult);
+				}
+
 				if (taskResult.getResultStatus().isSuccess()) {
 					parentActivity.finish();
 				}

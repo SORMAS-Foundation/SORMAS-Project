@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -36,6 +37,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -360,43 +362,70 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 
 		Root<Visit> visit = cq.from(Visit.class);
 		VisitQueryContext queryContext = new VisitQueryContext(cb, cq, visit);
 		Join<Visit, Symptoms> symptoms = queryContext.getJoins().getSymptoms();
 		Join<Visit, User> visitUser = queryContext.getJoins().getUser();
 
+		List<Order> orderList = getOrderList(sortProperties, visit, cb, symptoms, cq);
+
 		cq.multiselect(
-			visit.get(Visit.ID),
-			visit.get(Visit.UUID),
-			visit.get(Visit.VISIT_DATE_TIME),
-			visit.get(Visit.VISIT_STATUS),
-			visit.get(Visit.VISIT_REMARKS),
-			visit.get(Visit.DISEASE),
-			symptoms.get(Symptoms.SYMPTOMATIC),
-			symptoms.get(Symptoms.TEMPERATURE),
-			symptoms.get(Symptoms.TEMPERATURE_SOURCE),
-			visit.get(Visit.ORIGIN),
-			visitUser.get(User.UUID),
-			visitUser.get(User.FIRST_NAME),
-			visitUser.get(User.LAST_NAME),
-			jurisdictionSelector(queryContext));
+			Stream
+				.concat(
+					Stream.of(
+						visit.get(Visit.ID),
+						visit.get(Visit.UUID),
+						visit.get(Visit.VISIT_DATE_TIME),
+						visit.get(Visit.VISIT_STATUS),
+						visit.get(Visit.VISIT_REMARKS),
+						visit.get(Visit.DISEASE),
+						symptoms.get(Symptoms.SYMPTOMATIC),
+						symptoms.get(Symptoms.TEMPERATURE),
+						symptoms.get(Symptoms.TEMPERATURE_SOURCE),
+						visit.get(Visit.ORIGIN),
+						visitUser.get(User.UUID),
+						visitUser.get(User.FIRST_NAME),
+						visitUser.get(User.LAST_NAME),
+						jurisdictionSelector(queryContext)),
+					// add order by expressions to select
+					orderList.stream().map(Order::getExpression))
+				.collect(Collectors.toList()));
 
 		cq.distinct(true);
 		cq.where(service.buildCriteriaFilter(visitCriteria, cb, visit));
+		cq.orderBy(orderList);
 
+		List<VisitIndexDto> indexList = QueryHelper.getResultList(em, cq, new VisitIndexDtoResultTransformer(), first, max);
+
+		if (!indexList.isEmpty()) {
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			indexList.forEach(visitIndex -> pseudonymizer.pseudonymizeDto(VisitIndexDto.class, visitIndex, visitIndex.getInJurisdiction(), null));
+		}
+
+		return indexList;
+	}
+
+	private static List<Order> getOrderList(
+		List<SortProperty> sortProperties,
+		Root<Visit> visit,
+		CriteriaBuilder cb,
+		Join<Visit, Symptoms> symptoms,
+		CriteriaQuery<Tuple> cq) {
+		List<Order> order = new ArrayList<>();
 		if (sortProperties != null && !sortProperties.isEmpty()) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case VisitIndexDto.VISIT_DATE_TIME:
 				case VisitIndexDto.VISIT_STATUS:
-				case VisitIndexDto.VISIT_REMARKS:
 				case VisitIndexDto.DISEASE:
 				case VisitIndexDto.ORIGIN:
 					expression = visit.get(sortProperty.propertyName);
+					break;
+				case VisitIndexDto.VISIT_REMARKS:
+					expression = cb.lower(visit.get(sortProperty.propertyName));
 					break;
 				case VisitIndexDto.SYMPTOMATIC:
 				case VisitIndexDto.TEMPERATURE:
@@ -407,19 +436,11 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
-			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
+			order.add(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
 		}
 
-		List<VisitIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
-
-		if (!indexList.isEmpty()) {
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-			indexList.forEach(visitIndex -> pseudonymizer.pseudonymizeDto(VisitIndexDto.class, visitIndex, visitIndex.getInJurisdiction(), null));
-		}
-
-		return indexList;
+		return order;
 	}
 
 	public Page<VisitIndexDto> getIndexPage(VisitCriteria visitCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
