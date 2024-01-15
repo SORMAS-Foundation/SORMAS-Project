@@ -27,15 +27,21 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_EDIT_BUTTON;
+import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.previousWeekDate;
+import static org.sormas.e2etests.steps.web.application.messages.MessagesDirectorySteps.convertStringToChosenFormatDate;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
@@ -188,6 +194,7 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getPersonUuid());
+          System.out.print(CreateNewTravelEntrySteps.aTravelEntry.getPersonUuid());
         });
     When(
         "I check if popup deletion message appeared",
@@ -316,37 +323,55 @@ public class TravelEntryDirectorySteps implements En {
     Then(
         "I apply the last epi week for week from combobox on Travel Entry directory page",
         () -> {
-          int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+          int week = previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
           //  + 1; // because weeks are counting since end of december previous year
 
           LocalDate newYearSuprise = LocalDate.now().minusDays(7);
           String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
+          webDriverHelpers.selectFromCombobox(WEEK_FROM_OPTION_COMBOBOX, lastEpiWeek);
+
+          String epiWeekDates = webDriverHelpers.getValueFromCombobox(WEEK_FROM_OPTION_COMBOBOX);
+          int epiWeekdetector = epiWeekDates.length();
+
+          LocalDate startDate = finderEpiStartDate(epiWeekdetector, epiWeekDates);
+          LocalDate endDate = finderEpiEndDate(epiWeekdetector, epiWeekDates);
+
+          List<LocalDate> epiDatesCollection =
+              getDatesBetween(startDate, endDate); // wypchnac kolekcje jako poublic
+
+          if (epiDatesCollection.contains(previousWeekDate)) {
+            LocalDate weekBeforeDate = previousWeekDate.minusDays(7);
+            week =
+                weekBeforeDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                    + 1; // because weeks are counting since end of december previous year
+            lastEpiWeek = "Wo " + week + "-" + weekBeforeDate.getYear();
+          }
+
           webDriverHelpers.selectFromCombobox(WEEK_FROM_OPTION_COMBOBOX, lastEpiWeek);
         });
 
     Then(
         "I apply the last epi week for week to combobox on Travel Entry directory page",
         () -> {
-          int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
-                  + 1; // because weeks are counting since end of december previous year
-          if (week == 53) week = 1;
-          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
-          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
-          webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
+            int week =
+                    CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                            + 1; // because weeks are counting since end of december previous year
+            if (week == 53) week = 1;
+            LocalDate newYearSuprise = LocalDate.now().minusDays(7);
+            String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
+            webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
         });
     Then(
         "I apply the week before the last epi week for week to combobox on Travel Entry directory page",
         () -> {
-          int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-          if (week == 53) week = 1;
+            int week =
+                    CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+            if (week == 53) week = 1;
 
-          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
+            LocalDate newYearSuprise = LocalDate.now().minusDays(7);
 
-          String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
-          webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
+            String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
+            webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
         });
 
     When(
@@ -465,6 +490,57 @@ public class TravelEntryDirectorySteps implements En {
     When(
         "I close import popup in Travel Entry",
         () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
+  }
+
+  private static List<LocalDate> getDatesBetween(LocalDate startDate, LocalDate endDate) {
+
+    long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+    return IntStream.iterate(0, i -> i + 1)
+        .limit(numOfDaysBetween)
+        .mapToObj(i -> startDate.plusDays(i))
+        .collect(Collectors.toList());
+  }
+
+  private static LocalDate finderEpiStartDate(Integer stringLength, String chosenSubstring) {
+
+    LocalDate epiDate = null;
+
+    if (stringLength == 25) {
+      epiDate =
+          convertStringToChosenFormatDate(
+              "dd.MM.yyyy",
+              "yyyy-MM-dd",
+              chosenSubstring.substring(11, 16) + "." + chosenSubstring.substring(5, 9));
+    } else {
+      epiDate =
+          convertStringToChosenFormatDate(
+              "dd.MM.yyyy",
+              "yyyy-MM-dd",
+              chosenSubstring.substring(12, 17) + "." + chosenSubstring.substring(6, 10));
+    }
+
+    return epiDate;
+  }
+
+  private static LocalDate finderEpiEndDate(Integer stringLength, String chosenSubstring) {
+
+    LocalDate epiDate = null;
+
+    if (stringLength == 25) {
+      epiDate =
+          convertStringToChosenFormatDate(
+              "dd.MM.yyyy",
+              "yyyy-MM-dd",
+              chosenSubstring.substring(19, 24) + "." + chosenSubstring.substring(5, 9));
+    } else {
+      epiDate =
+          convertStringToChosenFormatDate(
+              "dd.MM.yyyy",
+              "yyyy-MM-dd",
+              chosenSubstring.substring(20, 25) + "." + chosenSubstring.substring(6, 10));
+    }
+
+    return epiDate;
   }
 
   private Map<String, Integer> extractColumnHeadersHashMap() {
