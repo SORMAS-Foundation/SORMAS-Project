@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -87,7 +88,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 
 			final CriteriaBuilder cb = em.getCriteriaBuilder();
-			final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			final Root<DirectoryImmunization> immunization = cq.from(DirectoryImmunization.class);
 
 			DirectoryImmunizationQueryContext directoryImmunizationQueryContext = new DirectoryImmunizationQueryContext(cb, cq, immunization);
@@ -100,40 +101,40 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
 			cq.multiselect(
-				immunization.get(Immunization.UUID),
-				person.get(Person.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				immunization.get(Immunization.DISEASE),
-				person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE),
-				person.get(Person.BIRTHDATE_DD),
-				person.get(Person.BIRTHDATE_MM),
-				person.get(Person.BIRTHDATE_YYYY),
-				person.get(Person.SEX),
-				district.get(District.NAME),
-				immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
-				immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
-				immunization.get(Immunization.IMMUNIZATION_STATUS),
-				immunization.get(Immunization.START_DATE),
-				immunization.get(Immunization.END_DATE),
-				lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
-				immunization.get(Immunization.RECOVERY_DATE),
-				immunization.get(Immunization.DELETION_REASON),
-				immunization.get(Immunization.OTHER_DELETION_REASON),
-				JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
-				immunization.get(Immunization.CHANGE_DATE));
+				Stream
+					.concat(
+						Stream.of(
+							immunization.get(Immunization.UUID),
+							person.get(Person.UUID),
+							person.get(Person.FIRST_NAME),
+							person.get(Person.LAST_NAME),
+							immunization.get(Immunization.DISEASE),
+							person.get(Person.APPROXIMATE_AGE),
+							person.get(Person.APPROXIMATE_AGE_TYPE),
+							person.get(Person.BIRTHDATE_DD),
+							person.get(Person.BIRTHDATE_MM),
+							person.get(Person.BIRTHDATE_YYYY),
+							person.get(Person.SEX),
+							district.get(District.NAME),
+							immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
+							immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
+							immunization.get(Immunization.IMMUNIZATION_STATUS),
+							immunization.get(Immunization.START_DATE),
+							immunization.get(Immunization.END_DATE),
+							lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
+							immunization.get(Immunization.RECOVERY_DATE),
+							immunization.get(Immunization.DELETION_REASON),
+							immunization.get(Immunization.OTHER_DELETION_REASON),
+							JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
+							immunization.get(Immunization.CHANGE_DATE)),
+						// add sort properties to select
+						sortBy(sortProperties, directoryImmunizationQueryContext).stream())
+					.collect(Collectors.toList()));
 
-			Predicate filter = immunization.get(Immunization.ID).in(batchedIds);
-			buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext, filter);
-
-			sortBy(sortProperties, directoryImmunizationQueryContext);
+			buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext, immunization.get(Immunization.ID).in(batchedIds));
 			cq.distinct(true);
 
-			immunizations.addAll(
-				createQuery(cq, null, null).unwrap(org.hibernate.query.Query.class)
-					.setResultTransformer(new ImmunizationIndexDtoResultTransformer())
-					.getResultList());
+			immunizations.addAll(QueryHelper.getResultList(em, cq, new ImmunizationIndexDtoResultTransformer(), null, null));
 		});
 
 		return immunizations;
@@ -187,10 +188,10 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 					expression = immunizationQueryContext.getJoins().getPerson().get(Person.UUID);
 					break;
 				case ImmunizationIndexDto.PERSON_FIRST_NAME:
-					expression = immunizationQueryContext.getJoins().getPerson().get(Person.FIRST_NAME);
+					expression = cb.lower(immunizationQueryContext.getJoins().getPerson().get(Person.FIRST_NAME));
 					break;
 				case ImmunizationIndexDto.PERSON_LAST_NAME:
-					expression = immunizationQueryContext.getJoins().getPerson().get(Person.LAST_NAME);
+					expression = cb.lower(immunizationQueryContext.getJoins().getPerson().get(Person.LAST_NAME));
 					break;
 				case ImmunizationIndexDto.AGE_AND_BIRTH_DATE:
 					expression = immunizationQueryContext.getJoins().getPerson().get(Person.APPROXIMATE_AGE);
@@ -199,7 +200,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 					expression = immunizationQueryContext.getJoins().getPerson().get(Person.SEX);
 					break;
 				case ImmunizationIndexDto.DISTRICT:
-					expression = immunizationQueryContext.getJoins().getPersonJoins().getAddressJoins().getDistrict().get(District.NAME);
+					expression = cb.lower(immunizationQueryContext.getJoins().getPersonJoins().getAddressJoins().getDistrict().get(District.NAME));
 					break;
 				case ImmunizationIndexDto.LAST_VACCINE_TYPE:
 					expression = immunizationQueryContext.getJoins().getLastVaccineType().get(LastVaccineType.VACCINE_TYPE);

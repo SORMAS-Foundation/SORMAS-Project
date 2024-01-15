@@ -442,4 +442,10 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		environment.getEnvironmentSamples().forEach(s -> environmentSampleService.delete(s, deletionDetails));
 		super.delete(environment, deletionDetails);
 	}
+
+	@Override
+	public void restore(Environment environment) {
+		environment.getEnvironmentSamples().forEach(sample -> environmentSampleService.restore(sample));
+		super.restore(environment);
+	}
 }

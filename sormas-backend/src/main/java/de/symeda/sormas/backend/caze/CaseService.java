@@ -1770,7 +1770,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<Case> root = cq.from(Case.class);
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
@@ -1831,10 +1831,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			cq.where(filter);
 		}
 
-		return em.createQuery(cq)
-			.unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new CaseSelectionDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new CaseSelectionDtoResultTransformer(), null, null);
 	}
 
 	public List<CaseListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
@@ -1843,7 +1840,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<Case> caze = cq.from(Case.class);
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
@@ -1866,9 +1863,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		cq.distinct(true);
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new CaseListEntryDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new CaseListEntryDtoResultTransformer(), first, max);
 	}
 
 	public Long getIdByUuid(@NotNull String uuid) {
@@ -1891,7 +1886,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<Case> root = cq.from(Case.class);
 		CaseQueryContext queryContext = new CaseQueryContext(cb, cq, root);
 		CaseJoins joins = queryContext.getJoins();
@@ -1924,10 +1919,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		cq.where(filter);
 
-		return em.createQuery(cq)
-			.unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new CaseSelectionDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new CaseSelectionDtoResultTransformer(), null, null);
 	}
 
 	public boolean hasSimilarCases(CaseSimilarityCriteria criteria) {
