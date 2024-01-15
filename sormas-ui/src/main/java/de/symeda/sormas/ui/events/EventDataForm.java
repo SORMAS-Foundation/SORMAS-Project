@@ -114,7 +114,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
-					fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
+					fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 3, EventDto.REPORTING_USER, 2, "") +
 					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.EVENT_MANAGEMENT_STATUS) +
 					fluidRowLocs(EventDto.EVENT_IDENTIFICATION_SOURCE) +
 					fluidRowLocs(EventDto.RISK_LEVEL, EventDto.SPECIFIC_RISK) +

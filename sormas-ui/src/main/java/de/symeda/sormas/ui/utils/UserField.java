@@ -57,6 +57,8 @@ public class UserField extends CustomField<UserReferenceDto> {
 		userLayout.addComponent(userContactButton);
 		userLayout.setWidthFull();
 		userLayout.setExpandRatio(userCombo, 1);
+		userLayout.setSpacing(false);
+
 		userCombo.setWidthFull();
 
 		userCombo.addValueChangeListener(valueChangeEvent -> {
@@ -82,9 +84,15 @@ public class UserField extends CustomField<UserReferenceDto> {
 	}
 
 	protected Button createUserContactButton() {
+		boolean isReadOnly = userCombo.isReadOnly();
 		Button userContactButton = ButtonHelper.createIconButtonWithCaption("userContact", "", VaadinIcons.EYE, e -> {
 			triggerUserContactPopUpWindow();
-		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
+		},
+			ValoTheme.BUTTON_ICON_ONLY,
+			ValoTheme.BUTTON_BORDERLESS,
+			ValoTheme.BUTTON_LARGE,
+			isReadOnly ? CssStyles.HSPACE_LEFT_6 : CssStyles.HSPACE_LEFT_NONE,
+			isReadOnly ? CssStyles.VSPACE_TOP_6 : CssStyles.VSPACE_NONE);
 		return userContactButton;
 	}
 

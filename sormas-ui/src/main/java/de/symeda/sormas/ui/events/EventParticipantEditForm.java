@@ -45,7 +45,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.REGION, EventParticipantDto.DISTRICT)
-		+ fluidRowLocs(EventParticipantDto.UUID, EventParticipantDto.REPORTING_USER)
+		+ fluidRowLocs(6, EventParticipantDto.UUID, 3, EventParticipantDto.REPORTING_USER, 3, "")
 		+ fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
 		+ loc(MEDICAL_INFORMATION_LOC)
 		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS)
