@@ -53,14 +53,10 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 	 */
 	private final Map<Class<? extends CustomizableEnum>, Map<Disease, List<String>>> enumValuesByDisease = new HashMap<>();
 	/**
-	 * Maps a customizable enum type to a map with all enum values of this type as its keys and the properties defined for these
-	 * enum values as its values.
+	 * Maps a customizable enum type to a map with all enum values of this type as its keys and and info, e.g. properties and active status,
+	 * defined for these enum values as its values.
 	 */
-	private final Map<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new HashMap<>();
-	/**
-	 * Maps a customizable enum type to a map with all enum values of this type as its keys and their active status as its values.
-	 */
-	private final Map<CustomizableEnumType, Map<String, Boolean>> enumActiveStatuses = new HashMap<>();
+	private final Map<CustomizableEnumType, Map<String, CustomizableEnumCacheInfo>> enumInfo = new HashMap<>();
 
 	public CustomizableEnumValueDao(Dao<CustomizableEnumValue, Long> innerDao) {
 		super(innerDao);
@@ -91,7 +87,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 			T enumValue = enumClass.newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
-			enumValue.setProperties(enumProperties.get(type).get(value));
+			enumValue.setProperties(getEnumInfo(type, value).getProperties());
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
@@ -130,7 +126,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 				enumValue = enumClass.newInstance();
 				enumValue.setValue(value);
 				enumValue.setCaption(caption);
-				enumValue.setProperties(enumProperties.get(type).get(value));
+				enumValue.setProperties(getEnumInfo(type, value).getProperties());
 				enumValues.add(enumValue);
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new RuntimeException(e);
@@ -139,7 +135,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 
 		return enumValues.stream()
 			.filter(
-				e -> (enumActiveStatuses.get(type).get(e.getValue()) || (selectedValue != null && selectedValue.equals(e.getValue())))
+				e -> (getEnumInfo(type, e.getValue()).isActive() || (selectedValue != null && selectedValue.equals(e.getValue())))
 					&& (enumValuesByDisease.get(enumClass).get(disease).contains(e.getValue())
 						|| enumValuesByDisease.get(enumClass).get(null).contains(e.getValue())))
 			.collect(Collectors.toList());
@@ -212,8 +208,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 		customizableEnumsByType.clear();
 		enumValuesByLanguage.clear();
 		enumValuesByDisease.clear();
-		enumProperties.clear();
-		enumActiveStatuses.clear();
+		enumInfo.clear();
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			customizableEnumsByType.putIfAbsent(enumType, new ArrayList<>());
@@ -222,11 +217,16 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 		for (CustomizableEnumValue customizableEnumValue : queryForAll()) {
 			CustomizableEnumType enumType = customizableEnumValue.getDataType();
 			customizableEnumsByType.get(enumType).add(customizableEnumValue);
-			enumProperties.putIfAbsent(enumType, new HashMap<>());
-			enumProperties.get(enumType).putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
-			enumActiveStatuses.putIfAbsent(enumType, new HashMap<>());
-			enumActiveStatuses.get(enumType).putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.isActive());
+			enumInfo.putIfAbsent(enumType, new HashMap<>());
+			enumInfo.get(enumType)
+				.putIfAbsent(
+					customizableEnumValue.getValue(),
+					new CustomizableEnumCacheInfo(customizableEnumValue.getProperties(), customizableEnumValue.isActive()));
 		}
+	}
+
+	private CustomizableEnumCacheInfo getEnumInfo(CustomizableEnumType type, String value) {
+		return enumInfo.get(type).get(value);
 	}
 
 }

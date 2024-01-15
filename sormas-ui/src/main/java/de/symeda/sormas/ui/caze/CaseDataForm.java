@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -95,7 +94,6 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -460,7 +458,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			true);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(CaseDataDto.DISEASE_VARIANT);
 		TextField diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
@@ -1123,11 +1121,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
-			List<DiseaseVariant> diseaseVariants = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValues(
-					CustomizableEnumType.DISEASE_VARIANT,
-					Optional.ofNullable(getValue().getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
-					disease);
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));

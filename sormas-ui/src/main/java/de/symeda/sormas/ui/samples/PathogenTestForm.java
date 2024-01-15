@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -45,7 +44,6 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
@@ -260,14 +258,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		// Tested Desease or Tested Pathogen, depending on sample type
 		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
-		ComboBox diseaseVariantField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 
-		ComboBox testedPathogenField = addField(PathogenTestDto.TESTED_PATHOGEN, ComboBox.class);
+		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
 		TextField testedPathogenDetailsField = addField(PathogenTestDto.TESTED_PATHOGEN_DETAILS, TextField.class);
 		testedPathogenDetailsField.setVisible(false);
+		FieldHelper.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
 		testedPathogenField.addValueChangeListener(e -> {
 			Pathogen pathogen = (Pathogen) e.getProperty().getValue();
 			if (pathogen != null && pathogen.isHasDetails()) {
@@ -382,15 +381,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
 
 		Consumer<Disease> updateDiseaseVariantField = disease -> {
-			List<DiseaseVariant> diseaseVariants = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValues(
-					CustomizableEnumType.DISEASE_VARIANT,
-					Optional.ofNullable(getValue().getTestedDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
-					disease);
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField.setVisible(
 				disease != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		};
+
+		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
@@ -444,17 +442,5 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			setRequired(true, PathogenTestDto.LAB);
 		}
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_RESULT);
-
-		addValueChangeListener(e -> {
-			updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
-
-			FieldHelper.updateItems(
-				testedPathogenField,
-				FacadeProvider.getCustomizableEnumFacade()
-					.getEnumValues(
-						CustomizableEnumType.PATHOGEN,
-						Optional.ofNullable(getValue().getTestedPathogen()).map(CustomizableEnum::getValue).orElse(null),
-						null));
-		});
 	}
 }

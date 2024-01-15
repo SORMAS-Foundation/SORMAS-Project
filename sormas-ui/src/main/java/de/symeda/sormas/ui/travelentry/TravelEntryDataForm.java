@@ -14,7 +14,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -32,7 +31,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -152,7 +150,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(TravelEntryDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
@@ -384,11 +382,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
-			List<DiseaseVariant> diseaseVariants = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValues(
-					CustomizableEnumType.DISEASE_VARIANT,
-					Optional.ofNullable(getValue().getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
-					disease);
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));

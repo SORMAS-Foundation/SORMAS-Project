@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -52,7 +51,6 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
@@ -230,7 +228,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.UUID, TextField.class);
 		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		ComboBox diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(EventDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		addFields(EventDto.EXTERNAL_ID);
 		TextField diseaseVariantDetailsField = addField(EventDto.DISEASE_VARIANT_DETAILS, TextField.class);
@@ -250,7 +248,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.RISK_LEVEL);
-		ComboBox specificRiskField = addField(EventDto.SPECIFIC_RISK, ComboBox.class);
+		ComboBox specificRiskField = addCustomizableEnumField(EventDto.SPECIFIC_RISK);
 		specificRiskField.setNullSelectionAllowed(true);
 
 		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
@@ -446,19 +444,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
 			// Disease variants
-			List<DiseaseVariant> diseaseVariants = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValues(
-					CustomizableEnumType.DISEASE_VARIANT,
-					Optional.ofNullable(getValue().getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
-					disease);
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField.setVisible(disease != null && CollectionUtils.isNotEmpty(diseaseVariants));
 			// Specific event risks
-			List<SpecificRisk> specificRiskValues = FacadeProvider.getCustomizableEnumFacade()
-				.getEnumValues(
-					CustomizableEnumType.SPECIFIC_EVENT_RISK,
-					Optional.ofNullable(getValue().getSpecificRisk()).map(CustomizableEnum::getValue).orElse(null),
-					disease);
+			List<SpecificRisk> specificRiskValues =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, disease);
 			FieldHelper.updateItems(specificRiskField, specificRiskValues);
 			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 		});
@@ -644,11 +636,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			// Initialize specific risk field if disease is null
 			if (getValue().getDisease() == null) {
-				List<SpecificRisk> specificRiskValues = FacadeProvider.getCustomizableEnumFacade()
-					.getEnumValues(
-						CustomizableEnumType.SPECIFIC_EVENT_RISK,
-						Optional.ofNullable(getValue().getSpecificRisk()).map(CustomizableEnum::getValue).orElse(null),
-						null);
+				List<SpecificRisk> specificRiskValues =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
 				FieldHelper.updateItems(specificRiskField, specificRiskValues);
 				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 			}

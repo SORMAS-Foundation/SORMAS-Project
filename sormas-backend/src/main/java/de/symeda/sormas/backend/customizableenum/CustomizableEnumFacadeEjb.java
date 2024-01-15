@@ -87,14 +87,10 @@ public class CustomizableEnumFacadeEjb
 	 */
 	private final EnumMap<CustomizableEnumType, List<String>> enumValues = new EnumMap<>(CustomizableEnumType.class);
 	/**
-	 * Maps a customizable enum type to a map with all enum values of this type as its keys and the properties defined for these
-	 * enum values as its values.
+	 * Maps a customizable enum type to a map with all enum values of this type as its keys and info, e.g. properties and active status,
+	 * defined for these enum values as its values.
 	 */
-	private final EnumMap<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new EnumMap<>(CustomizableEnumType.class);
-	/**
-	 * Maps a customizable enum type to a map with all enum values of this type as its keys and their active status as its values.
-	 */
-	private final EnumMap<CustomizableEnumType, Map<String, Boolean>> enumActiveStatuses = new EnumMap<>(CustomizableEnumType.class);
+	private final EnumMap<CustomizableEnumType, Map<String, CustomizableEnumCacheInfo>> enumInfo = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type (defined by its class) to a map which in turn maps all languages for which translations exist to
 	 * the possible enum values of this type, which then finally map to their translated captions.
@@ -309,17 +305,8 @@ public class CustomizableEnumFacadeEjb
 	 */
 	@Lock(LockType.READ)
 	@Override
-	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
-		return getEnumValues(type, null, disease);
-	}
-
-	/**
-	 * @return Entries are currently not returned in any specific order
-	 */
-	@Lock(LockType.READ)
-	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, String selectedValue, Disease disease) {
+	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
 		Language language = I18nProperties.getUserLanguage();
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
 		Optional<Disease> innerDisease = Optional.ofNullable(disease);
@@ -342,7 +329,7 @@ public class CustomizableEnumFacadeEjb
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}
 
-		return diseaseValuesStream.filter(value -> enumActiveStatuses.get(type).get(value) || (selectedValue != null && selectedValue.equals(value)))
+		return diseaseValuesStream.filter(value -> getEnumInfo(type, value).isActive())
 			.map(value -> buildCustomizableEnum(type, value, language, enumClass))
 			.sorted(Comparator.comparing(CustomizableEnum::getCaption))
 			.collect(Collectors.toList());
@@ -359,7 +346,7 @@ public class CustomizableEnumFacadeEjb
 			T enumValue = enumClass.getDeclaredConstructor().newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
-			enumValue.setProperties(enumProperties.get(type).get(value));
+			enumValue.setProperties(getEnumInfo(type, value).getProperties());
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw new RuntimeException(e);
@@ -433,10 +420,9 @@ public class CustomizableEnumFacadeEjb
 	public void loadData() {
 		enumValueEntities.clear();
 		enumValues.clear();
-		enumActiveStatuses.clear();
+		enumInfo.clear();
 		enumValuesByLanguage.clear();
 		enumValuesByDisease.clear();
-		enumProperties.clear();
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			enumValueEntities.putIfAbsent(enumType, new ArrayList<>());
@@ -453,10 +439,9 @@ public class CustomizableEnumFacadeEjb
 					"Enum value " + value + " for customizable enum type " + enumType.toString() + " is not unique");
 			}
 			enumValues.get(enumType).add(value);
-			enumProperties.putIfAbsent(enumType, new HashMap<>());
-			enumProperties.get(enumType).putIfAbsent(value, customizableEnumValue.getProperties());
-			enumActiveStatuses.putIfAbsent(enumType, new HashMap<>());
-			enumActiveStatuses.get(enumType).putIfAbsent(value, customizableEnumValue.isActive());
+			enumInfo.putIfAbsent(enumType, new HashMap<>());
+			enumInfo.get(enumType)
+				.putIfAbsent(value, new CustomizableEnumCacheInfo(customizableEnumValue.getProperties(), customizableEnumValue.isActive()));
 		}
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
@@ -468,6 +453,10 @@ public class CustomizableEnumFacadeEjb
 			// Always add values for no disease because they are relevant in all cases
 			fillDiseaseCache(enumType, enumClass, Optional.empty());
 		}
+	}
+
+	private CustomizableEnumCacheInfo getEnumInfo(CustomizableEnumType type, String value) {
+		return enumInfo.get(type).get(value);
 	}
 
 	public CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
