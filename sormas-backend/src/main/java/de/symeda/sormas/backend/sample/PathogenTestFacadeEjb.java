@@ -338,7 +338,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PATHOGEN_TEST_DELETE)
+	@RightsAllowed({
+		UserRight._PATHOGEN_TEST_DELETE,
+		UserRight._ENVIRONMENT_PATHOGEN_TEST_DELETE })
 	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
@@ -355,7 +357,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
-		FacadeHelper.checkCreateAndEditRights(existingSampleTest, userService, UserRight.PATHOGEN_TEST_CREATE, UserRight.PATHOGEN_TEST_EDIT);
+		FacadeHelper.checkCreateAndEditRights(
+			existingSampleTest,
+			userService,
+			dto.getSample() != null ? UserRight.PATHOGEN_TEST_CREATE : UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE,
+			dto.getSample() != null ? UserRight.PATHOGEN_TEST_EDIT : UserRight.ENVIRONMENT_PATHOGEN_TEST_EDIT);
 
 		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 

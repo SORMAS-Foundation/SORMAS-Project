@@ -30,6 +30,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -40,6 +41,8 @@ import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -48,6 +51,8 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private PathogenTestService pathogenTestService;
 
 	public EnvironmentSampleService() {
 		super(EnvironmentSample.class, DeletableEntityType.ENVIRONMENT_SAMPLE);
@@ -195,5 +200,24 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 		return EnvironmentSampleJurisdictionValidator
 			.of(new EnvironmentSampleQueryContext(cb, cq, from, new EnvironmentSampleJoins(from)), userService.getCurrentUser())
 			.isRootInJurisdictionOrOwned(currentUserHasRestrictedAccessToAssignedEntities());
+	}
+
+	@Override
+	public void delete(EnvironmentSample sample, DeletionDetails deletionDetails) {
+
+		// Mark all pathogen tests of this sample as deleted
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			pathogenTestService.delete(pathogenTest, deletionDetails);
+		}
+
+		super.delete(sample, deletionDetails);
+	}
+
+	@Override
+	public void restore(EnvironmentSample sample) {
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			pathogenTestService.restore(pathogenTest);
+		}
+		super.restore(sample);
 	}
 }

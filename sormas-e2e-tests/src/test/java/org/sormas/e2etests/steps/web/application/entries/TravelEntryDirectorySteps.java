@@ -314,7 +314,7 @@ public class TravelEntryDirectorySteps implements En {
         (String value) ->
             webDriverHelpers.selectFromCombobox(TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX, value));
     Then(
-        "I apply the last epi week for week from combobox on Travel Entry directory page",
+        "I set the last epi week date in week from combobox field on Travel Entry directory page",
         () -> {
           int week =
               CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
@@ -326,26 +326,26 @@ public class TravelEntryDirectorySteps implements En {
         });
 
     Then(
-        "I apply the last epi week for week to combobox on Travel Entry directory page",
-        () -> {
-          int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
-                  + 1; // because weeks are counting since end of december previous year
-          if (week == 53) week = 1;
-          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
-          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
-          webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
-        });
-    Then(
-        "I apply the week before the last epi week for week to combobox on Travel Entry directory page",
+        "I set the last epi week date in week to combobox field on Travel Entry directory page",
         () -> {
           int week =
               CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+          //   + 1; // because weeks are counting since end of december previous year
           if (week == 53) week = 1;
+          LocalDate newYearSuprise = LocalDate.now().minusDays(7);
+          String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
+          webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
+        });
+    Then(
+        "I set the last epi week before date in week to combobox field on Travel Entry directory page",
+        () -> {
+          int weekBeforeLastEpiWeek =
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - 1;
+          if (weekBeforeLastEpiWeek == 53) weekBeforeLastEpiWeek = 1;
 
           LocalDate newYearSuprise = LocalDate.now().minusDays(7);
 
-          String lastEpiWeek = "Wo " + week + "-" + newYearSuprise.getYear();
+          String lastEpiWeek = "Wo " + weekBeforeLastEpiWeek + "-" + newYearSuprise.getYear();
           webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
         });
 

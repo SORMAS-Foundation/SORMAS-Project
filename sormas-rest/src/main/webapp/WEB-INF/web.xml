@@ -721,6 +721,18 @@
 	</security-role>
 
 	<security-role>
+		<role-name>ENVIRONMENT_PATHOGEN_TEST_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_PATHOGEN_TEST_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_PATHOGEN_TEST_DELETE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>DOCUMENT_VIEW</role-name>
 	</security-role>
 
