@@ -39,7 +39,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -56,7 +55,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -122,9 +120,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private final boolean hideEventStatusFilter;
 	private final boolean hideActionFilters;
-	private ComboBox regionField;
-	private ComboBox districtField;
-	private ComboBox communityField;
 
 	protected EventsFilterForm(boolean hideEventStatusFilter, boolean hideActionFilters) {
 		super(
@@ -213,19 +208,19 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140),
 			FieldConfiguration.pixelSized(EventDto.EVENT_IDENTIFICATION_SOURCE, 140));
 
-		regionField = addField(
+		ComboBox regionField = addField(
 			moreFiltersContainer,
 			FieldConfiguration
 				.withCaptionAndPixelSized(LocationDto.REGION, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.REGION), 140));
 		regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		districtField = addField(
+		ComboBox districtField = addField(
 			moreFiltersContainer,
 			FieldConfiguration
 				.withCaptionAndPixelSized(LocationDto.DISTRICT, I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT), 140));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
-		communityField = addField(
+		ComboBox communityField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				LocationDto.COMMUNITY,
@@ -475,20 +470,20 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	@Override
 	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
 		if (region != null) {
-			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			districtField.setEnabled(true);
+			FieldHelper.updateItems(districtFilter, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			districtFilter.setEnabled(true);
 		} else {
-			districtField.setEnabled(false);
+			districtFilter.setEnabled(false);
 		}
 	}
 
 	@Override
 	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
 		if (district != null) {
-			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			communityField.setEnabled(true);
+			FieldHelper.updateItems(communityFilter, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+			communityFilter.setEnabled(true);
 		} else {
-			communityField.setEnabled(false);
+			communityFilter.setEnabled(false);
 		}
 	}
 
@@ -564,8 +559,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private void applyFacilityFieldsDependencies() {
 		applyFacilityFieldsDependencies(
 			(TypeOfPlace) getField(EventDto.TYPE_OF_PLACE).getValue(),
-			(DistrictReferenceDto) districtField.getValue(),
-			(CommunityReferenceDto) communityField.getValue());
+			(DistrictReferenceDto) districtFilter.getValue(),
+			(CommunityReferenceDto) communityFilter.getValue());
 	}
 
 	private void applyFacilityFieldsDependencies(
@@ -590,7 +585,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	}
 
 	private void updateResponsibleUserFieldItems() {
-		updateResponsibleUserFieldItems((DistrictReferenceDto) districtField.getValue(), (RegionReferenceDto) regionField.getValue());
+		updateResponsibleUserFieldItems((DistrictReferenceDto) districtFilter.getValue(), (RegionReferenceDto) regionFilter.getValue());
 	}
 
 	private void updateResponsibleUserFieldItems(DistrictReferenceDto district, RegionReferenceDto region) {
@@ -601,27 +596,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, selectedDisease, UserRight.EVENT_RESPONSIBLE));
 		}
 		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
-	}
-
-	private void hideAndFillJurisdictionFilters() {
-
-		regionField.setVisible(false);
-		regionField.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
-		districtField.setVisible(false);
-		districtField.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
-		communityField.setVisible(false);
-		communityField.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
-	}
-
-	@Override
-	public void setValue(EventCriteria newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(newFieldValue);
-
-		if (newFieldValue != null
-			&& (regionField.isVisible() || districtField.isVisible() || communityField.isVisible())
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFilters();
-		}
 	}
 
 	@Override
