@@ -423,6 +423,13 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CONTACT, casesUUID.get(0));
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
+
+    When(
+        "^I search for the last created case uuid by UI in the CHOOSE SOURCE Contact window for DE$",
+        () -> {
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CONTACT_DE, casesUUID.get(0));
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
     When(
         "^I search for the last case uuid in the CHOOSE SOURCE Contact window for DE$",
         () -> {

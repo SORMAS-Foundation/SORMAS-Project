@@ -68,6 +68,7 @@ public class UserRole extends AbstractDomainObject {
 	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
 	public static final String EMAIL_NOTIFICATIONS = "emailNotificationTypes";
 	public static final String SMS_NOTIFICATIONS = "smsNotificationTypes";
+	public static final String RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES = "restrictAccessToAssignedEntities";
 
 	private Set<UserRight> userRights;
 	private boolean enabled = true;
@@ -80,6 +81,7 @@ public class UserRole extends AbstractDomainObject {
 	private JurisdictionLevel jurisdictionLevel;
 	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
 	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
+	private boolean restrictAccessToAssignedEntities;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
@@ -149,6 +151,15 @@ public class UserRole extends AbstractDomainObject {
 
 	public void setPortHealthUser(boolean portHealthUser) {
 		this.portHealthUser = portHealthUser;
+	}
+
+	@Column
+	public boolean isRestrictAccessToAssignedEntities() {
+		return restrictAccessToAssignedEntities;
+	}
+
+	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
+		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
 	}
 
 	@Enumerated(EnumType.STRING)

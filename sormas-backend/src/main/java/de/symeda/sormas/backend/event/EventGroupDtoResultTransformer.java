@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12,27 +12,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.backend.document;
 
-import java.nio.charset.StandardCharsets;
+package de.symeda.sormas.backend.event;
 
-import javax.enterprise.inject.Specializes;
+import java.util.List;
 
-@Specializes
-public class MockDocumentStorageService extends DocumentStorageService {
+import org.hibernate.transform.ResultTransformer;
+
+import de.symeda.sormas.api.event.EventGroupIndexDto;
+
+public class EventGroupDtoResultTransformer implements ResultTransformer {
+
+	private static final long serialVersionUID = 7542708757907090891L;
 
 	@Override
-	public byte[] read(String storageReference) {
-		return storageReference.getBytes(StandardCharsets.UTF_8);
+	public EventGroupIndexDto transformTuple(Object[] tuple, String[] aliases) {
+		int index = -1;
+
+		//@formatter:off
+        return new EventGroupIndexDto(
+                (String) tuple[++index], (String) tuple[++index], (Long) tuple[++index]
+		);
+        //@formatter:on
 	}
 
 	@Override
-	public String save(Document document, byte[] content) {
-		return document.getUuid();
+	@SuppressWarnings("rawtypes")
+	public List transformList(List list) {
+		return list;
 	}
-
-	@Override
-	public void delete(String storageReference) {
-	}
-
 }

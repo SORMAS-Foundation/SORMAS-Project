@@ -44,8 +44,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -282,6 +280,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setSmsNotificationTypes(source.getSmsNotificationTypes());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 		target.setLinkedDefaultUserRole(source.getLinkedDefaultUserRole());
+		target.setRestrictAccessToAssignedEntities(source.isRestrictAccessToAssignedEntities());
 
 		return target;
 	}
@@ -306,6 +305,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setSmsNotificationTypes(new HashSet<>(source.getSmsNotificationTypes()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 		target.setLinkedDefaultUserRole(source.getLinkedDefaultUserRole());
+		target.setRestrictAccessToAssignedEntities(source.isRestrictAccessToAssignedEntities());
 
 		return target;
 	}
@@ -389,12 +389,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<UserRole> root = cq.from(UserRole.class);
-		Join<UserRole, UserRight> userRightsJoin = root.join(UserRole.USER_RIGHTS, JoinType.LEFT);
+		UserRoleJoins joins = new UserRoleJoins(root);
 
 		Predicate filter = null;
 
 		if (userRoleCriteria != null) {
-			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, root, userRightsJoin);
+			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, root, joins);
 		}
 
 		if (filter != null) {
@@ -410,29 +410,30 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> userRole = cq.from(UserRole.class);
-		Join<UserRole, UserRight> userRightsJoin = userRole.join(UserRole.USER_RIGHTS, JoinType.LEFT);
+		UserRoleJoins joins = new UserRoleJoins(userRole);
 
 		Predicate filter = null;
 
 		if (userRoleCriteria != null) {
-			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, userRole, userRightsJoin);
+			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, userRole, joins);
 		}
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		cq.distinct(true);
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case UserRoleDto.UUID:
-				case UserRoleDto.CAPTION:
 				case UserRoleDto.JURISDICTION_LEVEL:
-				case UserRoleDto.DESCRIPTION:
 					expression = userRole.get(sortProperty.propertyName);
+					break;
+				case UserRoleDto.CAPTION:
+				case UserRoleDto.DESCRIPTION:
+					expression = cb.lower(userRole.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.93.0-SNAPSHOT
+  version: 1.94.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -7179,6 +7179,9 @@ paths:
                   - ENVIRONMENT_SAMPLE_DELETE
                   - ENVIRONMENT_SAMPLE_IMPORT
                   - ENVIRONMENT_SAMPLE_EXPORT
+                  - ENVIRONMENT_PATHOGEN_TEST_CREATE
+                  - ENVIRONMENT_PATHOGEN_TEST_EDIT
+                  - ENVIRONMENT_PATHOGEN_TEST_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7396,6 +7399,9 @@ paths:
                   - ENVIRONMENT_SAMPLE_DELETE
                   - ENVIRONMENT_SAMPLE_IMPORT
                   - ENVIRONMENT_SAMPLE_EXPORT
+                  - ENVIRONMENT_PATHOGEN_TEST_CREATE
+                  - ENVIRONMENT_PATHOGEN_TEST_EDIT
+                  - ENVIRONMENT_PATHOGEN_TEST_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -15255,9 +15261,6 @@ components:
     EventGroupIndexDto:
       type: object
       properties:
-        changeDate:
-          type: string
-          format: date-time
         eventCount:
           type: integer
           format: int64
@@ -17160,6 +17163,7 @@ components:
             - AUTOMATIC_ARCHIVING
             - EDIT_ARCHIVED_ENTITIES
             - EXTERNAL_EMAILS
+            - HIDE_JURISDICTION_FIELDS
             - VIEW_TAB_CASES_HOSPITALIZATION
             - VIEW_TAB_CASES_SYMPTOMS
             - VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA
@@ -17309,6 +17313,7 @@ components:
           - AUTOMATIC_ARCHIVING
           - EDIT_ARCHIVED_ENTITIES
           - EXTERNAL_EMAILS
+          - HIDE_JURISDICTION_FIELDS
           - VIEW_TAB_CASES_HOSPITALIZATION
           - VIEW_TAB_CASES_SYMPTOMS
           - VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA
@@ -24984,6 +24989,8 @@ components:
           type: string
         region:
           $ref: '#/components/schemas/RegionReferenceDto'
+        showOnlyRestrictedAccessToAssignedEntities:
+          type: boolean
         userRole:
           $ref: '#/components/schemas/UserRoleReferenceDto'
     UserDto:
@@ -25268,6 +25275,8 @@ components:
           - BAG_USER
         portHealthUser:
           type: boolean
+        restrictAccessToAssignedEntities:
+          type: boolean
         smsNotificationTypes:
           type: array
           items:
@@ -25458,6 +25467,9 @@ components:
             - ENVIRONMENT_SAMPLE_DELETE
             - ENVIRONMENT_SAMPLE_IMPORT
             - ENVIRONMENT_SAMPLE_EXPORT
+            - ENVIRONMENT_PATHOGEN_TEST_CREATE
+            - ENVIRONMENT_PATHOGEN_TEST_EDIT
+            - ENVIRONMENT_PATHOGEN_TEST_DELETE
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.createOrderBuilder;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.util.Objects.isNull;
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
@@ -169,7 +171,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.messaging.ManualMessageLogDto;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -241,8 +243,8 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper.OrderBuilder;
 import de.symeda.sormas.backend.common.NotificationService;
-import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -297,6 +299,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.outbreak.OutbreakService;
 import de.symeda.sormas.backend.person.Person;
@@ -592,8 +595,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		List<CaseIndexDto> cases = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
-			CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, sortProperties, batchedIds);
-			cases.addAll(QueryHelper.getResultList(em, cq, null, null));
+			CriteriaQuery<Tuple> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, sortProperties, batchedIds);
+			cases.addAll(QueryHelper.getResultList(em, cq, new CaseIndexDtoResultTransformer(), null, null));
 		});
 
 		List<Long> caseIds = cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList());
@@ -646,8 +649,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		List<CaseIndexDetailedDto> cases = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
-			CriteriaQuery<CaseIndexDetailedDto> cq = listQueryBuilder.buildIndexDetailedCriteria(caseCriteria, sortProperties, batchedIds);
-			cases.addAll(QueryHelper.getResultList(em, cq, null, null));
+			CriteriaQuery<Tuple> cq = listQueryBuilder.buildIndexDetailedCriteria(caseCriteria, sortProperties, batchedIds);
+			cases.addAll(QueryHelper.getResultList(em, cq, new CaseIndexDetailedDtoResultTransformer(), null, null));
 		});
 
 		// Load latest events info
@@ -4050,23 +4053,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
+		CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins joins = caseQueryContext.getJoins();
 
-		cq.multiselect(
-			caze.get(Case.UUID),
-			caze.get(Case.CHANGE_DATE),
-			joins.getPerson().get(Person.FIRST_NAME),
-			joins.getPerson().get(Person.LAST_NAME),
-			caze.get(Case.REPORT_DATE),
-			joins.getSymptoms().get(Symptoms.ONSET_DATE),
-			caze.get(Case.FOLLOW_UP_UNTIL),
-			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-			caze.get(Case.DISEASE),
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
+		Path<String> firstName = joins.getPerson().get(Person.FIRST_NAME);
+		Path<String> lastName = joins.getPerson().get(Person.LAST_NAME);
 
 		Predicate filter =
 			CriteriaBuilderHelper.and(cb, service.createUserFilter(caseQueryContext), service.createCriteriaFilter(caseCriteria, caseQueryContext));
@@ -4077,38 +4071,56 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		cq.distinct(true);
 
+		final List<Order> orderList = new ArrayList<>();
 		if (sortProperties != null && !sortProperties.isEmpty()) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				OrderBuilder builder = createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
+
 				switch (sortProperty.propertyName) {
 				case FollowUpDto.UUID:
 				case FollowUpDto.REPORT_DATE:
 				case FollowUpDto.FOLLOW_UP_UNTIL:
-					expression = caze.get(sortProperty.propertyName);
+					order = builder.build(caze.get(sortProperty.propertyName));
 					break;
 				case FollowUpDto.FIRST_NAME:
-					expression = joins.getPerson().get(Person.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					order = builder.build(cb.lower(firstName));
 					break;
 				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
-					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
+					order = builder.build(joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS));
 					break;
 				case FollowUpDto.LAST_NAME:
-					expression = joins.getPerson().get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					order = builder.build(cb.lower(lastName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+
+				orderList.addAll(order);
 			}
-			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+			orderList.add(cb.desc(caze.get(Case.CHANGE_DATE)));
 		}
 
-		List<CaseFollowUpDto> resultList = QueryHelper.getResultList(em, cq, first, max);
+		cq.multiselect(
+			Stream
+				.concat(
+					Stream.of(
+						caze.get(Case.UUID),
+						firstName,
+						lastName,
+						caze.get(Case.REPORT_DATE),
+						joins.getSymptoms().get(Symptoms.ONSET_DATE),
+						caze.get(Case.FOLLOW_UP_UNTIL),
+						joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+						caze.get(Case.DISEASE),
+						JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext))),
+					orderList.stream().map(Order::getExpression))
+				.collect(Collectors.toList()));
+
+		cq.orderBy(orderList);
+
+		List<CaseFollowUpDto> resultList = QueryHelper.getResultList(em, cq, new CaseFollowUpDtoResultTransformer(), first, max);
 		if (!resultList.isEmpty()) {
 
 			List<String> caseUuids = resultList.stream().map(FollowUpDto::getUuid).collect(Collectors.toList());

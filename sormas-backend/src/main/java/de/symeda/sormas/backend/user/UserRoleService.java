@@ -144,11 +144,7 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 		return false;
 	}
 
-	public Predicate buildCriteriaFilter(
-		UserRoleCriteria userRoleCriteria,
-		CriteriaBuilder cb,
-		Root<UserRole> from,
-		Join<UserRole, UserRight> userRightsJoin) {
+	public Predicate buildCriteriaFilter(UserRoleCriteria userRoleCriteria, CriteriaBuilder cb, Root<UserRole> from, UserRoleJoins joins) {
 
 		Predicate filter = null;
 
@@ -157,12 +153,17 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 		}
 
 		if (userRoleCriteria.getUserRight() != null) {
-			Predicate userRightsFilter = userRightsJoin.in(userRoleCriteria.getUserRight());
+			Predicate userRightsFilter = joins.getUserRights().in(userRoleCriteria.getUserRight());
 			filter = CriteriaBuilderHelper.and(cb, filter, userRightsFilter);
 		}
 
 		if (userRoleCriteria.getJurisdictionLevel() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
+		}
+
+		if (userRoleCriteria.getShowOnlyRestrictedAccessToAssignedEntities() != null
+			&& Boolean.TRUE.equals(userRoleCriteria.getShowOnlyRestrictedAccessToAssignedEntities())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES), true));
 		}
 
 		return filter;

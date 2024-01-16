@@ -105,6 +105,10 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 					.findPrefixCaptionWithDefault(column.getId(), column.getCaption(), ImmunizationIndexDto.I18N_PREFIX, PersonDto.I18N_PREFIX));
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(ImmunizationIndexDto.DISTRICT).setHidden(true);
+		}
 	}
 
 	private void setLazyDataProvider() {

@@ -12797,4 +12797,81 @@ ALTER TABLE pathogentest_history ADD COLUMN testedpathogendetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (534, 'Add tested pathogen details #12663');
 
+-- 2023-12-13 Display a history of sent external emails #12465
+ALTER TABLE manualmessagelog
+    ADD COLUMN usedtemplate        text,
+    ADD COLUMN emailaddress        text,
+    ADD COLUMN attacheddocuments   jsonb,
+    ADD COLUMN caze_id             bigint,
+    ADD COLUMN contact_id          bigint,
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN travelentry_id      bigint;
+
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id);
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id);
+ALTER TABLE manualmessagelog
+    ADD CONSTRAINT fk_manualmessagelog_travelentry_id FOREIGN KEY (travelentry_id) REFERENCES travelentry (id);
+
+ALTER TABLE manualmessagelog_history
+    ADD COLUMN usedtemplate        text,
+    ADD COLUMN emailaddress        text,
+    ADD COLUMN attacheddocuments   jsonb,
+    ADD COLUMN caze_id             bigint,
+    ADD COLUMN contact_id          bigint,
+    ADD COLUMN eventparticipant_id bigint,
+    ADD COLUMN travelentry_id      bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (535, 'Display a history of sent external emails #12465');
+
+-- 2023-12-05 Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697
+ALTER TABLE userroles ADD COLUMN restrictAccessToAssignedEntities boolean NOT NULL DEFAULT false;
+ALTER TABLE userroles_history ADD COLUMN restrictAccessToAssignedEntities boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (536, 'Assign case(s) to a User and allow them to see the data of only the assigned case(s) in the system #12697');
+
+-- 2023-12-18 Move hide jurisdiction fields feature property to dedicated feature type #12806
+INSERT INTO featureconfiguration (id, uuid, creationdate, changedate, enabled, featuretype)VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), (SELECT properties::jsonb->'HIDE_JURISDICTION_FIELDS' FROM featureconfiguration WHERE featuretype = 'CASE_SURVEILANCE')::text::boolean, 'HIDE_JURISDICTION_FIELDS');
+
+UPDATE featureconfiguration SET properties = properties::jsonb - 'HIDE_JURISDICTION_FIELDS' WHERE featuretype = 'CASE_SURVEILANCE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (537, 'Move hide jurisdiction fields feature property to dedicated feature type #12806');
+
+-- 2023-12-21 Introduce dedicated environment sample pathogen test rights #12836
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_CREATE'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_EDIT'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'LAB_USER',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
+FROM public.userroles
+WHERE userroles.linkeddefaultuserrole in (
+                                          'ADMIN',
+                                          'NATIONAL_USER',
+                                          'ENVIRONMENTAL_SURVEILLANCE_USER'
+    );
+DELETE FROM userroles_userrights WHERE (userright = 'SAMPLE_VIEW' OR userright = 'SAMPLE_EDIT' OR userright = 'PATHOGEN_TEST_CREATE' OR userright = 'PATHOGEN_TEST_EDIT')
+AND userrole_id IN (SELECT id FROM public.userroles WHERE userroles.linkeddefaultuserrole = 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+UPDATE userroles set changedate = now() WHERE linkeddefaultuserrole in ('ADMIN', 'LAB_USER', 'NATIONAL_USER', 'ENVIRONMENTAL_SURVEILLANCE_USER');
+
+INSERT INTO schema_version (version_number, comment) VALUES (538, 'Introduce dedicated environment sample pathogen test rights #12836');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

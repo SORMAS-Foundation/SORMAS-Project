@@ -154,6 +154,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 			contact.toReference(),
 			null,
 			null,
+			null,
 			otherUser.toReference());
 
 		result = getTaskService().findByAssigneeContactTypeAndStatuses(null, contact.toReference(), null, null);

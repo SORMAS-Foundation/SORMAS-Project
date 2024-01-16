@@ -36,6 +36,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -132,7 +134,7 @@ public class MessagingService {
 			logger.info(String.format("Tried to send an email to a %s without an email address (UUID: %s).", recipientType, recipientUuid));
 		} else {
 			try {
-				emailService.sendEmail(emailAddress, subject, messageContent);
+				emailService.sendEmailAsync(emailAddress, subject, messageContent);
 			} catch (MessagingException e) {
 				logError(recipientUuid, recipientType, MessageType.EMAIL);
 				throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);

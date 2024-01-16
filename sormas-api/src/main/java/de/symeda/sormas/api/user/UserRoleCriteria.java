@@ -9,6 +9,7 @@ public class UserRoleCriteria extends BaseCriteria implements Serializable {
 	private Boolean enabled;
 	private UserRight userRight;
 	private JurisdictionLevel jurisdictionLevel;
+	private Boolean showOnlyRestrictedAccessToAssignedEntities;
 
 	public UserRoleCriteria enabled(Boolean enabled) {
 		this.enabled = enabled;
@@ -39,5 +40,13 @@ public class UserRoleCriteria extends BaseCriteria implements Serializable {
 
 	public void setUserRight(UserRight userRight) {
 		this.userRight = userRight;
+	}
+
+	public Boolean getShowOnlyRestrictedAccessToAssignedEntities() {
+		return showOnlyRestrictedAccessToAssignedEntities;
+	}
+
+	public void setShowOnlyRestrictedAccessToAssignedEntities(Boolean showOnlyRestrictedAccessToAssignedEntities) {
+		this.showOnlyRestrictedAccessToAssignedEntities = showOnlyRestrictedAccessToAssignedEntities;
 	}
 }

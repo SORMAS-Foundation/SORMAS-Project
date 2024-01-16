@@ -145,7 +145,7 @@ public class SharesDirectorySteps implements En {
     When(
         "I click on the The Eye Icon located in the Shares Page",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for the page to load all records
+          TimeUnit.SECONDS.sleep(3); // wait for the page to load all records
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SHARE_FIRST_EYE_ICON);
           webDriverHelpers.clickOnWebElementBySelector(SHARE_FIRST_EYE_ICON);
         });
@@ -175,7 +175,7 @@ public class SharesDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SHARE_UUID_CASE_TITLE);
           webDriverHelpers.clickOnWebElementBySelector(SHARE_UUID_CASE_TITLE);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     And(

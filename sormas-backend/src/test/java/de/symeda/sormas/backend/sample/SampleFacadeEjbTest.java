@@ -276,6 +276,51 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetIndexListBySampleAssociationTypeAndRestrictedAccessToAssignedEntities() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = useNationalAdminLogin();
+		PersonDto cazePerson = creator.createPerson("Case", "Person1");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
+		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
+		cazeSample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
+		getSampleFacade().saveSample(cazeSample);
+		SampleDto sample = creator.createSample(
+			contact.toReference(),
+			DateHelper.subtractDays(new Date(), 4),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility);
+		assertEquals(2, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
+
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertEquals(0, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
+
+		loginWith(user);
+		caze.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(caze);
+		contact.setContactOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getContactFacade().save(contact);
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertEquals(2, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
+	}
+
+	@Test
 	public void testGetIndexListForCaseConvertedFromContact() {
 
 		RDCF rdcf = creator.createRDCF();

@@ -14,6 +14,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
@@ -55,6 +56,7 @@ public class UserRolesView extends AbstractUserView {
 	private ComboBox userRightsFilter;
 	private ComboBox jurisdictionFilter;
 	private ComboBox enabledFilter;
+	private CheckBox showOnlyRestrictedAccessToAssignedEntities;
 
 	private VerticalLayout gridLayout;
 
@@ -165,6 +167,16 @@ public class UserRolesView extends AbstractUserView {
 		});
 		filterLayout.addComponent(jurisdictionFilter);
 
+		showOnlyRestrictedAccessToAssignedEntities = new CheckBox();
+		showOnlyRestrictedAccessToAssignedEntities.setId(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES);
+		showOnlyRestrictedAccessToAssignedEntities.setCaption(I18nProperties.getCaption(Captions.userRoleShowOnlyRestrictedAccessToAssignCases));
+		showOnlyRestrictedAccessToAssignedEntities.addStyleName(CssStyles.CHECKBOX_FILTER_INLINE);
+		showOnlyRestrictedAccessToAssignedEntities.addValueChangeListener(e -> {
+			criteria.setShowOnlyRestrictedAccessToAssignedEntities(e.getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(showOnlyRestrictedAccessToAssignedEntities);
+
 		return filterLayout;
 	}
 
@@ -190,6 +202,10 @@ public class UserRolesView extends AbstractUserView {
 		jurisdictionFilter.setValue(criteria.getJurisdictionLevel() == null ? null : criteria.getJurisdictionLevel());
 		enabledFilter.setValue(criteria.getEnabled() == null ? ALL_FILTER : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
 		userRightsFilter.setValue(criteria.getUserRight() == null ? null : criteria.getUserRight());
+		showOnlyRestrictedAccessToAssignedEntities.setValue(
+			criteria.getShowOnlyRestrictedAccessToAssignedEntities() == null
+				? Boolean.FALSE
+				: criteria.getShowOnlyRestrictedAccessToAssignedEntities());
 
 		applyingCriteria = false;
 	}

@@ -197,8 +197,26 @@
                         android:scrollHorizontally="true"
                         android:maxLines="1"
                         android:ellipsize="end"
+                        android:visibility="@{data.environment != null ? View.GONE : View.VISIBLE}"
                         app:patientValue="@{data}"
                         app:defaultValue='@{@string/value_person_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/environment_environmentName"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:visibility="@{data.environment != null ? View.VISIBLE : View.GONE}"
+                        app:value="@{data.environment.environmentName}"
+                        app:defaultValue='@{@string/value_environment_name_unknown}'
                         />
 
                     <!--<LinearLayout

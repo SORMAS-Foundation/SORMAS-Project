@@ -1407,8 +1407,13 @@ public interface Captions {
 	String exposureFlightNumber = "exposureFlightNumber";
 	String exposureSourceCaseName = "exposureSourceCaseName";
 	String exposureTimePeriod = "exposureTimePeriod";
+	String externalEmailAttachedDocuments = "externalEmailAttachedDocuments";
+	String ExternalEmailOptions_attachedDocuments = "ExternalEmailOptions.attachedDocuments";
 	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
 	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
+	String externalEmailSentBy = "externalEmailSentBy";
+	String externalEmailSentTo = "externalEmailSentTo";
+	String externalEmailUsedTemplate = "externalEmailUsedTemplate";
 	String ExternalMessage = "ExternalMessage";
 	String ExternalMessage_assignee = "ExternalMessage.assignee";
 	String ExternalMessage_caseReportDate = "ExternalMessage.caseReportDate";
@@ -1461,6 +1466,7 @@ public interface Captions {
 	String externalMessageProcess = "externalMessageProcess";
 	String externalMessageRelatedEntriesFound = "externalMessageRelatedEntriesFound";
 	String externalMessagesList = "externalMessagesList";
+	String externalMessageValueNotSpecified = "externalMessageValueNotSpecified";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_excludeAndSend = "ExternalSurveillanceToolGateway.excludeAndSend";
@@ -2640,6 +2646,7 @@ public interface Captions {
 	String userrole_main = "userrole.main";
 	String userrole_notifications = "userrole.notifications";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
+	String UserRole_restrictAccessToAssignedEntities = "UserRole.restrictAccessToAssignedEntities";
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
 	String UserRole_templateUserRole = "UserRole.templateUserRole";
 	String UserRole_userRights = "UserRole.userRights";
@@ -2648,6 +2655,7 @@ public interface Captions {
 	String userRoleNotifications = "userRoleNotifications";
 	String userRoleNotificationTypeEmail = "userRoleNotificationTypeEmail";
 	String userRoleNotificationTypeSms = "userRoleNotificationTypeSms";
+	String userRoleShowOnlyRestrictedAccessToAssignCases = "userRoleShowOnlyRestrictedAccessToAssignCases";
 	String userRoleUserrolesView = "userRoleUserrolesView";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";

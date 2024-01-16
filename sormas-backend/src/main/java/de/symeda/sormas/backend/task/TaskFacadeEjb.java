@@ -530,7 +530,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			Root<Task> task = cq.from(Task.class);
 
 			TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
@@ -602,13 +602,17 @@ public class TaskFacadeEjb implements TaskFacade {
 					joins.getCasePointOfEntry().get(PointOfEntry.NAME)));
 
 			selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
+
+			List<Order> orderList = getOrderList(sortProperties, taskQueryContext);
+			selections.addAll(orderList.stream().map(Order::getExpression).collect(Collectors.toList()));
+
 			cq.multiselect(selections);
 
 			cq.where(task.get(Task.ID).in(batchedIds));
-			cq.orderBy(getOrderList(sortProperties, taskQueryContext));
+			cq.orderBy(orderList);
 			cq.distinct(true);
 
-			tasks.addAll(QueryHelper.getResultList(em, cq, null, null));
+			tasks.addAll(QueryHelper.getResultList(em, cq, new TaskIndexDtoResultTransformer(), null, null));
 		});
 
 		if (!tasks.isEmpty()) {
@@ -658,7 +662,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						emptyValuePseudonymizer.pseudonymizeDto(
 							EnvironmentReferenceDto.class,
 							t.getEnvironment(),
-							taskJurisdictionFlagsDto.getEventInJurisdiction(),
+							taskJurisdictionFlagsDto.getEnvironmentInJurisdiction(),
 							null);
 					}
 				}, true);
@@ -709,58 +713,55 @@ public class TaskFacadeEjb implements TaskFacade {
 		List<Order> orderList = new ArrayList<>();
 		if (sortProperties != null && sortProperties.size() > 0) {
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
+
 				switch (sortProperty.propertyName) {
 				case TaskIndexDto.UUID:
-				case TaskIndexDto.ASSIGNEE_REPLY:
-				case TaskIndexDto.CREATOR_COMMENT:
 				case TaskIndexDto.PRIORITY:
 				case TaskIndexDto.DUE_DATE:
 				case TaskIndexDto.SUGGESTED_START:
 				case TaskIndexDto.TASK_CONTEXT:
 				case TaskIndexDto.TASK_STATUS:
 				case TaskIndexDto.TASK_TYPE:
-					expression = taskRoot.get(sortProperty.propertyName);
+					order = orderBuilder.build(taskRoot.get(sortProperty.propertyName));
+					break;
+				case TaskIndexDto.ASSIGNEE_REPLY:
+				case TaskIndexDto.CREATOR_COMMENT:
+					order = orderBuilder.build(cb.lower(taskRoot.get(sortProperty.propertyName)));
 					break;
 				case TaskIndexDto.ASSIGNEE_USER:
-					expression = joins.getAssignee().get(User.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getAssignee().get(User.FIRST_NAME);
+					order = orderBuilder.build(cb.lower(joins.getAssignee().get(User.LAST_NAME)), cb.lower(joins.getAssignee().get(User.FIRST_NAME)));
 					break;
 				case TaskIndexDto.CREATOR_USER:
-					expression = joins.getCreator().get(User.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCreator().get(User.FIRST_NAME);
+					order = orderBuilder.build(cb.lower(joins.getCreator().get(User.LAST_NAME)), cb.lower(joins.getCreator().get(User.FIRST_NAME)));
 					break;
 				case TaskIndexDto.ASSIGNED_BY_USER:
-					expression = joins.getAssignedBy().get(User.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getAssignedBy().get(User.FIRST_NAME);
+					order =
+						orderBuilder.build(cb.lower(joins.getAssignedBy().get(User.LAST_NAME)), cb.lower(joins.getAssignedBy().get(User.FIRST_NAME)));
 					break;
 				case TaskIndexDto.CAZE:
-					expression = joins.getCasePerson().get(Person.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCasePerson().get(Person.FIRST_NAME);
+					order = orderBuilder
+						.build(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)));
 					break;
 				case TaskIndexDto.CONTACT:
-					expression = joins.getContactPerson().get(Person.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getContactPerson().get(Person.FIRST_NAME);
+					order = orderBuilder
+						.build(cb.lower(joins.getContactPerson().get(Person.LAST_NAME)), cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)));
 					break;
 				case TaskIndexDto.EVENT:
-					expression = joins.getEvent().get(Event.START_DATE);
+					order = orderBuilder.build(joins.getEvent().get(Event.START_DATE));
 					break;
 				case TaskIndexDto.DISTRICT:
-					expression = taskQueryContext.getDistrictNameForIndex();
+					order = orderBuilder.build(cb.lower(taskQueryContext.getDistrictNameForIndex()));
 					break;
 				case TaskIndexDto.REGION:
-					expression = taskQueryContext.getRegionNameForIndex();
+					order = orderBuilder.build(cb.lower(taskQueryContext.getRegionNameForIndex()));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 
-				orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				orderList.addAll(order);
 			}
 		}
 

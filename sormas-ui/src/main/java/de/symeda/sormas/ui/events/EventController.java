@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -946,38 +947,46 @@ public class EventController {
 			}
 		});
 
-		final String uuid = event.getUuid();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
-				if (!existEventParticipantsLinkedToEvent(event)) {
-					try {
-						FacadeProvider.getEventFacade().delete(uuid, deleteDetails);
-					} catch (ExternalSurveillanceToolRuntimeException e) {
-						Notification.show(
-							String.format(
-								I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
-								DataHelper.getShortUuid(uuid)),
-							"",
-							Type.ERROR_MESSAGE);
+		if (Objects.requireNonNull(UserProvider.getCurrent())
+			.getUserRoles()
+			.stream()
+			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+			|| DataHelper.equal(event.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
+			final String uuid = event.getUuid();
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+				editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
+					if (!existEventParticipantsLinkedToEvent(event)) {
+						try {
+							FacadeProvider.getEventFacade().delete(uuid, deleteDetails);
+						} catch (ExternalSurveillanceToolRuntimeException e) {
+							Notification.show(
+								String.format(
+									I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
+									DataHelper.getShortUuid(uuid)),
+								"",
+								Type.ERROR_MESSAGE);
+						}
+					} else {
+						VaadinUiUtil.showSimplePopupWindow(
+							I18nProperties.getString(Strings.headingEventNotDeleted),
+							I18nProperties.getString(Strings.messageEventsNotDeletedLinkedEntitiesReason));
 					}
-				} else {
-					VaadinUiUtil.showSimplePopupWindow(
-						I18nProperties.getString(Strings.headingEventNotDeleted),
-						I18nProperties.getString(Strings.messageEventsNotDeletedLinkedEntitiesReason));
-				}
-				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
-				FacadeProvider.getEventFacade().restore(uuid);
-				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
-		}
+					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+				}, getDeleteConfirmationDetails(Collections.singletonList(eventUuid)), (deleteDetails) -> {
+					FacadeProvider.getEventFacade().restore(uuid);
+					UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+				}, I18nProperties.getString(Strings.entityEvent), uuid, FacadeProvider.getEventFacade());
+			}
 
-		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
-			ControllerProvider.getArchiveController().addArchivingButton(event, ArchiveHandlers.forEvent(), editView, () -> {
-				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setRelevanceStatusChangedEvent(null);
-				navigateToData(uuid);
-			});
+			// Initialize 'Archive' button
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+				ControllerProvider.getArchiveController().addArchivingButton(event, ArchiveHandlers.forEvent(), editView, () -> {
+					ViewModelProviders.of(EventParticipantsView.class)
+						.get(EventParticipantsViewConfiguration.class)
+						.setRelevanceStatusChangedEvent(null);
+					navigateToData(uuid);
+				});
+			}
 		}
 
 		editView.restrictEditableComponentsOnEditView(
