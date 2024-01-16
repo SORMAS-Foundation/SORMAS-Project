@@ -15096,6 +15096,9 @@
       "CustomizableEnumValueDto" : {
         "type" : "object",
         "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
           "caption" : {
             "type" : "string",
             "maxLength" : 1000000,
