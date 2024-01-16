@@ -9,14 +9,12 @@ import java.util.stream.Stream;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -55,12 +53,11 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		ImmunizationCriteria.HEALTH_FACILITY,
 		ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION) + loc(WEEK_AND_DATE_FILTER);
 
-	private ComboBox regionFilter;
-	private ComboBox districtFilter;
-	private ComboBox communityFilter;
-
 	public ImmunizationFilterForm() {
-		super(ImmunizationCriteria.class, ImmunizationCriteria.I18N_PREFIX);
+		super(
+			ImmunizationCriteria.class,
+			ImmunizationCriteria.I18N_PREFIX,
+			JurisdictionFieldConfig.withPrefillOnHide(ImmunizationCriteria.REGION, ImmunizationCriteria.DISTRICT, ImmunizationCriteria.COMMUNITY));
 	}
 
 	@Override
@@ -104,17 +101,17 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
 		if (currentUserDto().getRegion() == null) {
-			regionFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
+			ComboBox regionFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
-		districtFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
+		ComboBox districtFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		if (currentUserDto().getDistrict() != null) {
 			districtFilter.setVisible(false);
 		}
 
-		communityFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.COMMUNITY, 140));
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.COMMUNITY, 140));
 
 		ComboBox typeGroup = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.FACILITY_TYPE_GROUP, 140));
 		typeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -446,27 +443,6 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 			criteria.setToDate(toDate);
 		} else {
 			weekAndDateFilter.setNotificationsForMissingFilters();
-		}
-	}
-
-	private void hideAndFillJurisdictionFilters() {
-
-		regionFilter.setVisible(false);
-		regionFilter.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
-		districtFilter.setVisible(false);
-		districtFilter.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
-		communityFilter.setVisible(false);
-		communityFilter.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
-	}
-
-	@Override
-	public void setValue(ImmunizationCriteria newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(newFieldValue);
-
-		if (newFieldValue != null
-			&& (regionFilter.isVisible() || districtFilter.isVisible() || communityFilter.isVisible())
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFilters();
 		}
 	}
 }

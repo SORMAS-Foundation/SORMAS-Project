@@ -38,7 +38,7 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 	private static final long serialVersionUID = 3261148255867475008L;
 
 	protected PersonSelectionFilterForm() {
-		super(PersonSimilarityCriteria.class, CaseDataDto.I18N_PREFIX, null, Captions.actionSearch, Captions.actionReset, true);
+		super(PersonSimilarityCriteria.class, CaseDataDto.I18N_PREFIX, null, Captions.actionSearch, Captions.actionReset, null, true);
 	}
 
 	@Override

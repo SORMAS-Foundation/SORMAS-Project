@@ -55,7 +55,10 @@ public class EnvironmentSampleGridFilterForm extends AbstractFilterForm<Environm
 			EnvironmentSampleCriteria.GPS_LON_TO);
 
 	protected EnvironmentSampleGridFilterForm() {
-		super(EnvironmentSampleCriteria.class, EnvironmentSampleIndexDto.I18N_PREFIX);
+		super(
+			EnvironmentSampleCriteria.class,
+			EnvironmentSampleIndexDto.I18N_PREFIX,
+			JurisdictionFieldConfig.of(EnvironmentSampleCriteria.REGION, EnvironmentSampleCriteria.DISTRICT, null));
 	}
 
 	@Override

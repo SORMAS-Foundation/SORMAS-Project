@@ -6,6 +6,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsSubComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -16,7 +17,7 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 	private final FatalitiesSummaryElementComponent fatalitiesSummaryElementComponent;
 
 	// "Outbreak Districts" elements
-	private final DiseaseSummaryElementComponent lastReportedDistrict;
+	private DiseaseSummaryElementComponent lastReportedDistrict;
 	private DiseaseSummaryElementComponent outbreakDistrictCount;
 
 	//"cases in quarantine" elements 
@@ -33,11 +34,14 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		fatalitiesSummaryElementComponent = new FatalitiesSummaryElementComponent();
 		addComponent(fatalitiesSummaryElementComponent);
 
-		lastReportedDistrict =
-			new DiseaseSummaryElementComponent(Strings.headingLastReportedDistrict, I18nProperties.getString(Strings.none).toUpperCase());
-		addComponent(lastReportedDistrict);
+		boolean jurisdictionFieldsVisible = UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS);
+		if (jurisdictionFieldsVisible) {
+			lastReportedDistrict =
+				new DiseaseSummaryElementComponent(Strings.headingLastReportedDistrict, I18nProperties.getString(Strings.none).toUpperCase());
+			addComponent(lastReportedDistrict);
+		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+		if (UiUtil.enabled(FeatureType.OUTBREAKS) && jurisdictionFieldsVisible) {
 			outbreakDistrictCount = new DiseaseSummaryElementComponent(Strings.headingOutbreakDistricts);
 			addComponent(outbreakDistrictCount);
 		}
@@ -62,10 +66,13 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 	public void update(DashboardDataProvider dashboardDataProvider) {
 		fatalitiesSummaryElementComponent.update(dashboardDataProvider.getCases(), dashboardDataProvider.getPreviousCases());
 
-		String district = dashboardDataProvider.getLastReportedDistrict();
-		lastReportedDistrict.updateTotalLabel(DataHelper.isNullOrEmpty(district) ? I18nProperties.getString(Strings.none).toUpperCase() : district);
+		if (lastReportedDistrict != null) {
+			String district = dashboardDataProvider.getLastReportedDistrict();
+			lastReportedDistrict
+				.updateTotalLabel(DataHelper.isNullOrEmpty(district) ? I18nProperties.getString(Strings.none).toUpperCase() : district);
+		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+		if (outbreakDistrictCount != null) {
 			outbreakDistrictCount.updateTotalLabel(dashboardDataProvider.getOutbreakDistrictCount().toString());
 		}
 
