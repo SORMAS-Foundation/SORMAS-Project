@@ -43,6 +43,7 @@ import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -112,6 +113,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	ComboBox relationToCase;
 	AdoptAddressLayout adoptAddressLayout;
 
+	ComboBox region;
+	ComboBox district;
+	ComboBox community;
+
 	private final boolean showPersonSearchButton;
 
 	/**
@@ -151,9 +156,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		getContent().addComponent(personCreateForm, ContactDto.PERSON);
 
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
-		ComboBox region = addInfrastructureField(ContactDto.REGION);
-		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
-		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
+		region = addInfrastructureField(ContactDto.REGION);
+		district = addInfrastructureField(ContactDto.DISTRICT);
+		community = addInfrastructureField(ContactDto.COMMUNITY);
 
 		multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
 		firstContactDate = addField(ContactDto.FIRST_CONTACT_DATE, DateField.class);
@@ -182,7 +187,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(4);
 		relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
-
 
 		adoptAddressLayout = new AdoptAddressLayout();
 		adoptAddressLayout.setVisible(false);
@@ -357,6 +361,16 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		contactProximity.setValue(value);
 	}
 
+	private void hideAndFillJurisdictionFields() {
+
+		region.setVisible(false);
+		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		district.setVisible(false);
+		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		community.setVisible(false);
+		community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
@@ -387,6 +401,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		super.setValue(newFieldValue);
 		updateDateComparison();
 		adoptAddressLayout.setContact(newFieldValue);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 
 	private void updateDateComparison() {

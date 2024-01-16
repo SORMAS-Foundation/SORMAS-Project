@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.utils;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
 import java.util.stream.Stream;
@@ -163,7 +162,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			applyDependenciesOnNewValue(newFieldValue);
 
 			if (moreFiltersLayout != null) {
-				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
+				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty() && f.isVisible());
 				formActionButtonsComponent.toggleMoreFilters(hasExpandedFilter);
 			}
 		});

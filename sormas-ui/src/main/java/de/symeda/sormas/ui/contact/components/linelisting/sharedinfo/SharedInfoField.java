@@ -48,7 +48,6 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		region.setItemCaptionGenerator(item -> item.buildCaption());
 		district.setItemCaptionGenerator(item -> item.buildCaption());
 
-
 		this.initialDiseaseValue = initialDiseaseValue;
 	}
 

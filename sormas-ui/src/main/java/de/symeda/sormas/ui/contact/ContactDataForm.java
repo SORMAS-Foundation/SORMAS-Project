@@ -170,7 +170,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private NullableOptionGroup contactProximity;
+	private ComboBox region;
 	private ComboBox district;
+	private ComboBox community;
 	private UserField contactOfficerField;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
@@ -465,11 +467,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactOfficerField = addField(ContactDto.CONTACT_OFFICER, UserField.class);
 		contactOfficerField.setEnabled(true);
 
-		ComboBox region = addInfrastructureField(ContactDto.REGION);
+		region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		district = addInfrastructureField(ContactDto.DISTRICT);
 		district.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
-		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
+		community = addInfrastructureField(ContactDto.COMMUNITY);
 		community.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.COMMUNITY));
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -1037,6 +1039,16 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
+	private void hideAndFillJurisdictionFields() {
+
+		region.setVisible(false);
+		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		district.setVisible(false);
+		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		community.setVisible(false);
+		community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+	}
+
 	@Override
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
@@ -1053,6 +1065,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		updateContactOfficers();
 		updateOverwriteFollowUpUntil();
 		updateFollowUpStatusComponents();
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

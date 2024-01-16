@@ -10,6 +10,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -77,7 +78,11 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 
 		getColumn(ContactIndexDetailedDto.SEX).setWidth(80);
 		getColumn(ContactIndexDetailedDto.APPROXIMATE_AGE).setWidth(50);
-		getColumn(ContactIndexDetailedDto.DISTRICT_NAME).setWidth(150);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(ContactIndexDetailedDto.DISTRICT_NAME).setHidden(true);
+		} else {
+			getColumn(ContactIndexDetailedDto.DISTRICT_NAME).setWidth(150);
+		}
 		getColumn(ContactIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(ContactIndexDetailedDto.CITY).setWidth(150);
 		getColumn(ContactIndexDetailedDto.STREET).setWidth(150);
