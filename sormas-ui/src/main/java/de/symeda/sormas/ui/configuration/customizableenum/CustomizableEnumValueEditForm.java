@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.configuration.customizableenum;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static java.util.function.Predicate.not;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
@@ -34,6 +36,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
@@ -47,7 +50,8 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 	private static final String HTML_LAYOUT = fluidRowLocs(CustomizableEnumValueDto.DATA_TYPE, CustomizableEnumValueDto.UUID)
 		+ fluidRowLocs(CustomizableEnumValueDto.VALUE, CustomizableEnumValueDto.CAPTION)
 		+ fluidRowLocs(CustomizableEnumValueDto.DESCRIPTION)
-		+ fluidRowLocs(CustomizableEnumValueDto.PROPERTIES)
+		+ fluidRowLocs(CustomizableEnumValueDto.ACTIVE)
+		+ fluidRowLocsCss(CssStyles.VSPACE_TOP_3, CustomizableEnumValueDto.PROPERTIES)
 		+ fluidRowLocs(CustomizableEnumValueDto.TRANSLATIONS)
 		+ fluidRowLocs(CustomizableEnumValueDto.DISEASES);
 
@@ -67,6 +71,7 @@ public class CustomizableEnumValueEditForm extends AbstractEditForm<Customizable
 	protected void addFields() {
 
 		addField(CustomizableEnumValueDto.DATA_TYPE, ComboBox.class);
+		addField(CustomizableEnumValueDto.ACTIVE, CheckBox.class);
 		addFields(
 			CustomizableEnumValueDto.UUID,
 			CustomizableEnumValueDto.VALUE,

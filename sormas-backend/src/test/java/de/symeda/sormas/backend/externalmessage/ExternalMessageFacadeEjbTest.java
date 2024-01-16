@@ -285,6 +285,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		diseases.add(Disease.CORONAVIRUS);
 		diseaseVariantEnumValue.setDiseases(diseases);
 		diseaseVariantEnumValue.setCaption("BF.1.2 variant");
+		diseaseVariantEnumValue.setActive(true);
 		getCustomizableEnumValueService().ensurePersisted(diseaseVariantEnumValue);
 
 		DiseaseVariant diseaseVariant = new DiseaseVariant();
@@ -295,6 +296,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		diseaseVariantEnumValue2.setValue("BF.1.3");
 		diseaseVariantEnumValue2.setDiseases(diseases);
 		diseaseVariantEnumValue2.setCaption("BF.1.3 variant");
+		diseaseVariantEnumValue2.setActive(true);
 		getCustomizableEnumValueService().ensurePersisted(diseaseVariantEnumValue2);
 
 		DiseaseVariant diseaseVariant2 = new DiseaseVariant();
