@@ -27,6 +27,7 @@ public class CustomizableEnumCriteria extends BaseCriteria implements Serializab
 	private String freeTextFilter;
 	private CustomizableEnumType dataType;
 	private Disease disease;
+	private Boolean active = true;
 
 	public String getFreeTextFilter() {
 		return freeTextFilter;
@@ -52,6 +53,15 @@ public class CustomizableEnumCriteria extends BaseCriteria implements Serializab
 
 	public CustomizableEnumCriteria disease(Disease disease) {
 		this.disease = disease;
+		return this;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public CustomizableEnumCriteria active(Boolean active) {
+		this.active = active;
 		return this;
 	}
 

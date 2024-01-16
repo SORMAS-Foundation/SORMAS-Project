@@ -150,7 +150,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(TravelEntryDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);

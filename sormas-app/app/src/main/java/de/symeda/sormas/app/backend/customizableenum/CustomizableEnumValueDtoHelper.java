@@ -62,6 +62,7 @@ public class CustomizableEnumValueDtoHelper extends AdoDtoHelper<CustomizableEnu
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());
 		target.setDefaultValue(source.isDefaultValue());
+		target.setActive(source.isActive());
 	}
 
 	@Override

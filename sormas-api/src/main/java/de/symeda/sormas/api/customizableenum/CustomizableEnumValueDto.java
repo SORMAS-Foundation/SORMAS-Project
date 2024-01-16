@@ -47,6 +47,7 @@ public class CustomizableEnumValueDto extends EntityDto {
 	public static final String TRANSLATIONS = "translations";
 	public static final String DISEASES = "diseases";
 	public static final String PROPERTIES = "properties";
+	public static final String ACTIVE = "active";
 
 	@NotNull(message = Validations.required)
 	private CustomizableEnumType dataType;
@@ -69,10 +70,12 @@ public class CustomizableEnumValueDto extends EntityDto {
 	 * or translations because they can be translated via properties files.
 	 */
 	private boolean defaultValue;
+	private boolean active;
 
 	public static CustomizableEnumValueDto build() {
 		CustomizableEnumValueDto dto = new CustomizableEnumValueDto();
 		dto.setUuid(DataHelper.createUuid());
+		dto.setActive(true);
 		return dto;
 	}
 
@@ -146,5 +149,13 @@ public class CustomizableEnumValueDto extends EntityDto {
 
 	public void setDefaultValue(boolean defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

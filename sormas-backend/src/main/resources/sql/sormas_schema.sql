@@ -12874,4 +12874,10 @@ UPDATE userroles set changedate = now() WHERE linkeddefaultuserrole in ('ADMIN',
 
 INSERT INTO schema_version (version_number, comment) VALUES (538, 'Introduce dedicated environment sample pathogen test rights #12836');
 
+-- 2024-01-10 Add active column to customizable enum values #12804
+ALTER TABLE customizableenumvalue ADD COLUMN active boolean default true;
+ALTER TABLE customizableenumvalue_history ADD COLUMN active boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (539, 'Add active column to customizable enum values #12804');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

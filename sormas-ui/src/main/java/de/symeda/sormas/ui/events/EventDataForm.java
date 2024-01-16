@@ -228,7 +228,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.UUID, TextField.class);
 		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		ComboBox diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(EventDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		addFields(EventDto.EXTERNAL_ID);
 		TextField diseaseVariantDetailsField = addField(EventDto.DISEASE_VARIANT_DETAILS, TextField.class);
@@ -248,7 +248,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.RISK_LEVEL);
-		ComboBox specificRiskField = addField(EventDto.SPECIFIC_RISK, ComboBox.class);
+		ComboBox specificRiskField = addCustomizableEnumField(EventDto.SPECIFIC_RISK);
 		specificRiskField.setNullSelectionAllowed(true);
 
 		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
