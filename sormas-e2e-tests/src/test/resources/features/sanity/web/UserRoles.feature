@@ -158,7 +158,13 @@ Feature: User roles checks
 
   @tmsLink=HSP-6300 @env_main
   Scenario: Check Delete Case right working without Edit rights
+    When API: I create a new person
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    And API: I check that POST call status code is 200
     Given I log in as a Admin User
+    And I open the last created Case via API
+    Then I get the case person UUID displayed on Edit case page
     And I click on the Users from navbar
     And I check if there is any user with the "NewTestUser" role and change his role
     And I click on User roles tab from Users Page
@@ -184,8 +190,8 @@ Feature: User roles checks
     Then I click on logout button from navbar
     And I login with new created user with chosen new role
     And I click on the Cases button from navbar
+    Then I search for the last "created" case on Case directory page
     And I open the first Case result in Case Directory
-    Then I get the case person UUID displayed on Edit case page
     Then I click on Delete button from case
     And I click on Yes option in Confirm deletion popup
     When I set Reason for deletion as "Deletion request by affected person according to GDPR"
