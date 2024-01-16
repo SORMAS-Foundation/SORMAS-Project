@@ -6,12 +6,15 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.Query;
+import org.hibernate.transform.ResultTransformer;
 
 /**
  * Helper methods for building JDBC queries.
@@ -144,6 +147,40 @@ public final class QueryHelper {
 		}
 
 		return resultList;
+	}
+
+	/**
+	 * Executes a query and returns the result. Can be selected down to a definite batch
+	 * starting at {@code first} and limited by {@code max}.
+	 *
+	 * @param <T>
+	 *            Entity, DTO or simple type for the returned list.
+	 * @param em
+	 *            The {@link EntityManager} to be invoked.
+	 * @param cq
+	 *            The {@link CriteriaQuery} to be executed.
+	 * @param resultTransformer
+	 *            The {@link ResultTransformer} to be used for creating dto from tuple.
+	 * @param first
+	 *            The first entity to be returned (optional).
+	 * @param max
+	 *            The maximum number of entries to be fetched (optional).
+	 * @return
+	 */
+	public static <T> List<T> getResultList(
+		EntityManager em,
+		CriteriaQuery<Tuple> cq,
+		ResultTransformer resultTransformer,
+		Integer first,
+		Integer max) {
+
+		TypedQuery<Tuple> query = em.createQuery(cq);
+		if (first != null && max != null) {
+			query = query.setFirstResult(first).setMaxResults(max);
+		}
+
+		//noinspection unchecked
+		return query.unwrap(Query.class).setResultTransformer(resultTransformer).getResultList();
 	}
 
 	/**

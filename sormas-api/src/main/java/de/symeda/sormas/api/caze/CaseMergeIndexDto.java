@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.caze;
 
 import java.util.Date;
-import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -79,7 +78,6 @@ public class CaseMergeIndexDto extends CaseIndexDto {
 			deletionReason,
 			otherDeletionReason,
 			isInJurisdiction,
-			null,
 			null
 		);
 	}

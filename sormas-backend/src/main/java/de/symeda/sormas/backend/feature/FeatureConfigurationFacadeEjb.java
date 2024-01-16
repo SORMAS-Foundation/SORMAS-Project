@@ -217,10 +217,10 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case FeatureConfiguration.REGION:
-					expression = regionJoin.get(Region.NAME);
+					expression = cb.lower(regionJoin.get(Region.NAME));
 					break;
 				case FeatureConfiguration.DISTRICT:
-					expression = root.get(District.NAME);
+					expression = cb.lower(root.get(District.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -229,8 +229,9 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(regionJoin.get(Region.NAME)));
+			cq.orderBy(cb.asc(root.get(FeatureConfiguration.CHANGE_DATE)));
 		}
+
 		return QueryHelper.getResultList(em, cq, offset, size);
 
 	}

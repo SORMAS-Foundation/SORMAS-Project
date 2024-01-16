@@ -7179,6 +7179,9 @@ paths:
                   - ENVIRONMENT_SAMPLE_DELETE
                   - ENVIRONMENT_SAMPLE_IMPORT
                   - ENVIRONMENT_SAMPLE_EXPORT
+                  - ENVIRONMENT_PATHOGEN_TEST_CREATE
+                  - ENVIRONMENT_PATHOGEN_TEST_EDIT
+                  - ENVIRONMENT_PATHOGEN_TEST_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7396,6 +7399,9 @@ paths:
                   - ENVIRONMENT_SAMPLE_DELETE
                   - ENVIRONMENT_SAMPLE_IMPORT
                   - ENVIRONMENT_SAMPLE_EXPORT
+                  - ENVIRONMENT_PATHOGEN_TEST_CREATE
+                  - ENVIRONMENT_PATHOGEN_TEST_EDIT
+                  - ENVIRONMENT_PATHOGEN_TEST_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -15255,9 +15261,6 @@ components:
     EventGroupIndexDto:
       type: object
       properties:
-        changeDate:
-          type: string
-          format: date-time
         eventCount:
           type: integer
           format: int64
@@ -25464,6 +25467,9 @@ components:
             - ENVIRONMENT_SAMPLE_DELETE
             - ENVIRONMENT_SAMPLE_IMPORT
             - ENVIRONMENT_SAMPLE_EXPORT
+            - ENVIRONMENT_PATHOGEN_TEST_CREATE
+            - ENVIRONMENT_PATHOGEN_TEST_EDIT
+            - ENVIRONMENT_PATHOGEN_TEST_DELETE
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

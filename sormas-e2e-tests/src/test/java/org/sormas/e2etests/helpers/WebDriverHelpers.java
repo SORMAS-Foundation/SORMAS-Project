@@ -19,9 +19,11 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+import static org.sormas.e2etests.steps.BaseSteps.driver;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -45,6 +47,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -70,6 +74,21 @@ public class WebDriverHelpers {
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
     this.baseSteps = baseSteps;
     this.assertHelpers = assertHelpers;
+  }
+
+  public static String waitForSpinnerNotVisible(int timeOutInSeconds) {
+    driver.getCurrentUrl();
+    if ((driver == null) || (driver.getCurrentUrl() == null) || driver.getCurrentUrl().isEmpty()) {
+
+      return "Wrong usage of waitForSpinnerNotVisible()";
+    }
+    try {
+      (new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds)))
+          .until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(driver.getCurrentUrl())));
+      return null;
+    } catch (TimeoutException e) {
+      return "Too short time for waitForSpinnerNotVisible()";
+    }
   }
 
   private WebElement findElement(By selector) {
