@@ -129,6 +129,18 @@ public class UserField extends CustomField<UserReferenceDto> {
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin(false);
 		if (userDto != null) {
+			if (userCombo.isReadOnly()) {
+				HorizontalLayout reportingUserLayout = new HorizontalLayout();
+				Label reportingUserLabel = new Label(I18nProperties.getString(Strings.reportingUser));
+				reportingUserLabel.addStyleName(LABEL_BOLD);
+				reportingUserLayout.addComponent(reportingUserLabel);
+
+				Label reportingUser = new Label(getValue().getCaption());
+				reportingUserLayout.addComponent(reportingUser);
+
+				verticalLayout.addComponent(reportingUserLayout);
+			}
+
 			HorizontalLayout telephoneNumberLayout = new HorizontalLayout();
 			Label telephoneLabel = new Label(I18nProperties.getString(Strings.promptTelephoneNumber));
 			telephoneLabel.addStyleName(LABEL_BOLD);
