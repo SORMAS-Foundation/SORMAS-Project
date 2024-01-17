@@ -99,7 +99,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(ImmunizationDto.UUID, ImmunizationDto.EXTERNAL_ID)
-		+ fluidRowLocs(ImmunizationDto.REPORT_DATE, ImmunizationDto.REPORTING_USER)
+		+ fluidRowLocs(6, ImmunizationDto.REPORT_DATE, 3,ImmunizationDto.REPORTING_USER, 3, "")
 		+ fluidRowLocs(ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS)
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)

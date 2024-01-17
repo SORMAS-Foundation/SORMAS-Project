@@ -49,7 +49,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.UUID, EnvironmentDto.EXTERNAL_ID) +
-			fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.REPORTING_USER) +
+			fluidRowLocs(6, EnvironmentDto.REPORT_DATE, 3, EnvironmentDto.REPORTING_USER, 3, "") +
 			fluidRowLocs(EnvironmentDto.INVESTIGATION_STATUS, "") +
 			fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") +
 			fluidRowLocs(EnvironmentDto.WATER_TYPE, EnvironmentDto.OTHER_WATER_TYPE) +
