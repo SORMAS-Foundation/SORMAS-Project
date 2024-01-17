@@ -57,7 +57,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		super(
 			ImmunizationCriteria.class,
 			ImmunizationCriteria.I18N_PREFIX,
-			JurisdictionFieldConfig.withPrefillOnHide(ImmunizationCriteria.REGION, ImmunizationCriteria.DISTRICT, ImmunizationCriteria.COMMUNITY));
+			JurisdictionFieldConfig.of(ImmunizationCriteria.REGION, ImmunizationCriteria.DISTRICT, ImmunizationCriteria.COMMUNITY));
 	}
 
 	@Override
