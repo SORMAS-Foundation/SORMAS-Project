@@ -71,6 +71,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -605,7 +606,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		ignoreMeansOfImmunizationChange = false;
 		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();
 		}
 

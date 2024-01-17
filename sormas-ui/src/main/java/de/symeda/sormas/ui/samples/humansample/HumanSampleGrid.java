@@ -34,6 +34,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -209,6 +210,10 @@ public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriter
 
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 
+		}
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(SampleIndexDto.DISTRICT).setHidden(true);
 		}
 	}
 

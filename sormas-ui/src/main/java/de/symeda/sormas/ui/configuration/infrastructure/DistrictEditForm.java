@@ -28,6 +28,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureDtoWithDefault;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
@@ -62,7 +63,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			addField(InfrastructureDtoWithDefault.DEFAULT_INFRASTRUCTURE, CheckBox.class);
 		}
 
