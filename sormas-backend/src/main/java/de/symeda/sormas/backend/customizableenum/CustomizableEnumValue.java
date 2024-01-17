@@ -52,6 +52,7 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	public static final String VALUE = "value";
 	public static final String CAPTION = "caption";
 	public static final String DISEASES = "diseases";
+	public static final String ACTIVE = "active";
 
 	private CustomizableEnumType dataType;
 	private String value;
@@ -66,6 +67,7 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	 * or translations because they can be translated via properties files.
 	 */
 	private boolean defaultValue;
+	private boolean active;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -151,5 +153,14 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	public void setDefaultValue(boolean defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	@Column
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

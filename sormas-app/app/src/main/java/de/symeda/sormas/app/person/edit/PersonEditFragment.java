@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import androidx.databinding.ObservableList;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -157,8 +159,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> initialPlaceOfBirthFacilities =
 			InfrastructureDaoHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
-		List<Item> occupationTypeList =
-			DataUtils.toItems(DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
+		List<Item> occupationTypeList = DataUtils.toItems(
+			DatabaseHelper.getCustomizableEnumValueDao()
+				.getEnumValues(
+					CustomizableEnumType.OCCUPATION_TYPE,
+					Optional.ofNullable(record.getOccupationType()).map(CustomizableEnum::getValue).orElse(null),
+					null));
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
 		List<Item> countryList = InfrastructureDaoHelper.loadCountries();
 

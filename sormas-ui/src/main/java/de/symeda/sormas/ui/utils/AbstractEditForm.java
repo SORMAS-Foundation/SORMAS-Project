@@ -39,6 +39,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -263,6 +264,20 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				} else {
 					inactiveValue.setCaption(value.getCaption());
 				}
+				field.addItem(inactiveValue);
+			}
+		});
+		return field;
+	}
+
+	protected ComboBox addCustomizableEnumField(String fieldId) {
+		ComboBox field = addField(fieldId, ComboBox.class);
+		// Make sure that the ComboBox still contains a pre-selected inactive customizable enum
+		field.addValueChangeListener(e -> {
+			CustomizableEnum value = (CustomizableEnum) e.getProperty().getValue();
+			if (value != null && !field.containsId(value)) {
+				CustomizableEnum inactiveValue = value.clone();
+				inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");
 				field.addItem(inactiveValue);
 			}
 		});

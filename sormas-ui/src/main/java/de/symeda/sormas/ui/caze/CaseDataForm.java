@@ -458,7 +458,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			true);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(CaseDataDto.DISEASE_VARIANT);
 		TextField diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
