@@ -27,7 +27,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		super(
 			PersonCriteria.class,
 			PersonDto.I18N_PREFIX,
-			JurisdictionFieldConfig.of(PersonCriteria.REGION, PersonCriteria.DISTRICT, PersonCriteria.COMMUNITY));
+			JurisdictionFieldConfig.withNoPrefillOnHide(PersonCriteria.REGION, PersonCriteria.DISTRICT, PersonCriteria.COMMUNITY));
 	}
 
 	@Override

@@ -227,7 +227,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private void hideAndFillJurisdictionField(@Nullable ComboBox field, Supplier<ReferenceDto> defaultValueGetter) {
 		if (field != null) {
 			field.setVisible(false);
-			field.setValue(defaultValueGetter.get());
+			if (jurisdictionFieldConfig.prefillOnHide) {
+				field.setValue(defaultValueGetter.get());
+			}
 		}
 	}
 
@@ -379,16 +381,29 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	protected static class JurisdictionFieldConfig {
 
-		private String region;
-		private String district;
-		private String community;
+		private final String region;
+		private final String district;
+		private final String community;
+
+		private boolean prefillOnHide;
+
+		private JurisdictionFieldConfig(String region, String district, String community) {
+			this.region = region;
+			this.district = district;
+			this.community = community;
+		}
 
 		public static JurisdictionFieldConfig of(String region, String district, String community) {
-			JurisdictionFieldConfig names = new JurisdictionFieldConfig();
-			names.region = region;
-			names.district = district;
-			names.community = community;
+			JurisdictionFieldConfig names = new JurisdictionFieldConfig(region, district, community);
+			names.prefillOnHide = true;
 			return names;
 		}
+
+		public static JurisdictionFieldConfig withNoPrefillOnHide(String region, String district, String community) {
+			JurisdictionFieldConfig names = new JurisdictionFieldConfig(region, district, community);
+			names.prefillOnHide = false;
+			return names;
+		}
+
 	}
 }
