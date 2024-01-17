@@ -51,7 +51,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			CampaignFormDataCriteria.class,
 			CampaignFormDataDto.I18N_PREFIX,
 			JurisdictionFieldConfig
-				.of(CampaignFormDataCriteria.REGION, CampaignFormDataCriteria.DISTRICT, CampaignFormDataCriteria.COMMUNITY));
+				.withPrefillOnHide(CampaignFormDataCriteria.REGION, CampaignFormDataCriteria.DISTRICT, CampaignFormDataCriteria.COMMUNITY));
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();

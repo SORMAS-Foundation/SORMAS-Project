@@ -35,7 +35,7 @@ public class CampaignStatisticsFilterForm extends AbstractFilterForm<CampaignSta
 			CampaignStatisticsCriteria.class,
 			CampaignStatisticsDto.I18N_PREFIX,
 			JurisdictionFieldConfig
-				.of(CampaignStatisticsCriteria.REGION, CampaignStatisticsCriteria.DISTRICT, CampaignStatisticsCriteria.COMMUNITY));
+				.withPrefillOnHide(CampaignStatisticsCriteria.REGION, CampaignStatisticsCriteria.DISTRICT, CampaignStatisticsCriteria.COMMUNITY));
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
