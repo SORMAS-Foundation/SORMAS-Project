@@ -191,9 +191,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
 		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 
-		ComboBox jurisdictionTypeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.JURISDICTION_TYPE, 140));
-		jurisdictionTypeField.setInputPrompt(I18nProperties.getCaption(Captions.caseJurisdictionType));
-		FieldHelper.updateEnumData(jurisdictionTypeField, Arrays.asList(CaseJurisdictionType.values()));
+		if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			ComboBox jurisdictionTypeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.JURISDICTION_TYPE, 140));
+			jurisdictionTypeField.setInputPrompt(I18nProperties.getCaption(Captions.caseJurisdictionType));
+			FieldHelper.updateEnumData(jurisdictionTypeField, Arrays.asList(CaseJurisdictionType.values()));
+		}
 
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
