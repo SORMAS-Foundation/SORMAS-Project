@@ -144,6 +144,7 @@ public interface Validations {
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
+	String invalidNationalHealthId = "invalidNationalHealthId";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
 	String latitudeBetween = "latitudeBetween";
