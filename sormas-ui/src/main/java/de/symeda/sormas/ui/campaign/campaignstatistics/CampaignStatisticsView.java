@@ -24,6 +24,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
@@ -80,18 +81,21 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		}
 
 		VerticalLayout mainLayout = new VerticalLayout();
-
-		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
 		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
-		jurisdictionSelector.addValueChangeListener(e -> {
-			CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
-			criteria.setGroupingLevel(groupingValue);
-			grid.setColumnsVisibility(groupingValue);
-			grid.reload();
-		});
-		jurisdictionLayout.addComponent(jurisdictionSelector);
-		mainLayout.addComponent(jurisdictionLayout);
 
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			jurisdictionSelector.setVisible(false);
+		} else {
+			HorizontalLayout jurisdictionLayout = new HorizontalLayout();
+			jurisdictionSelector.addValueChangeListener(e -> {
+				CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
+				criteria.setGroupingLevel(groupingValue);
+				grid.setColumnsVisibility(groupingValue);
+				grid.reload();
+			});
+			jurisdictionLayout.addComponent(jurisdictionSelector);
+			mainLayout.addComponent(jurisdictionLayout);
+		}
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
 		filtersLayout.setWidthFull();
