@@ -49,6 +49,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
@@ -140,6 +141,18 @@ public class DistrictsSteps implements En {
           sex = travelEntry.getSex();
           fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(districts.getRegion());
+          boolean districtAvailability;
+          districtAvailability =
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  RESPONSIBLE_DISTRICT_COMBOBOX, districts.getDistrictName());
+          while (districtAvailability == false) {
+            selectResponsibleRegion(
+                "Baden-W\u00FCrttemberg"); // for refresh region combobox purpose
+            selectResponsibleRegion(districts.getRegion());
+            districtAvailability =
+                webDriverHelpers.checkIfElementExistsInCombobox(
+                    RESPONSIBLE_DISTRICT_COMBOBOX, districts.getDistrictName());
+          }
           selectResponsibleDistrict(districts.getDistrictName());
           fillDisease(travelEntry.getDisease());
           disease = travelEntry.getDisease();
@@ -404,8 +417,7 @@ public class DistrictsSteps implements En {
   }
 
   private void selectResponsibleDistrict(String responsibleDistrict) {
-    webDriverHelpers.selectFromCombobox(
-        CreateNewTravelEntryPage.RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
+    webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
   private void fillDisease(String disease) {
