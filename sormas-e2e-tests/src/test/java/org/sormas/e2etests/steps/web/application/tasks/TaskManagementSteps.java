@@ -116,9 +116,9 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
           webDriverHelpers.scrollToElement(CreateNewTaskSteps.task.getCommentsOnExecution());
-          webDriverHelpers.clickOnWebElementBySelector(
-              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+          webDriverHelpers.ClickAndWaitForNewFormLoaded(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()),
+              EDIT_TASK_MODAL_FORM);
         });
     When(
         "^I filter out last created task from Tasks Directory$",
@@ -691,9 +691,9 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
-          webDriverHelpers.clickOnWebElementBySelector(
-              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.ClickAndWaitForNewFormLoaded(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()),
+              EDIT_TASK_MODAL_FORM);
         });
 
     When(
