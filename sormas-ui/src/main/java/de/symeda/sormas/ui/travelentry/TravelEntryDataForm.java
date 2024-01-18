@@ -69,7 +69,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(TRAVEL_ENTRY_HEADING_LOC) +
-					fluidRowLocs(4, TravelEntryDto.UUID, 3, TravelEntryDto.REPORT_DATE, 5, TravelEntryDto.REPORTING_USER) +
+					fluidRowLocs(4, TravelEntryDto.UUID, 3, TravelEntryDto.REPORT_DATE, 3, TravelEntryDto.REPORTING_USER, 2, "") +
 					fluidRowLocs(4, TravelEntryDto.EXTERNAL_ID)
 			+ fluidRow(
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),

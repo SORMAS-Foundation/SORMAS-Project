@@ -26,6 +26,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -101,7 +103,6 @@ public class LineListingLayout extends VerticalLayout {
 		district = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
 		district.setItemCaptionGenerator(item -> item.buildCaption());
 		district.setId("lineListingDistrict");
-		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);
 
 		typeGroup = new ComboBox<>(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -158,6 +159,13 @@ public class LineListingLayout extends VerticalLayout {
 			updateDistricts(userRegion);
 		} else {
 			region.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		}
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			region.setVisible(false);
+			region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+			district.setVisible(false);
+			district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();
@@ -487,6 +495,11 @@ public class LineListingLayout extends VerticalLayout {
 				formatAsFirstLine();
 			} else {
 				formatAsOtherLine();
+			}
+
+			if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+				community.setVisible(false);
+				community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 			}
 		}
 

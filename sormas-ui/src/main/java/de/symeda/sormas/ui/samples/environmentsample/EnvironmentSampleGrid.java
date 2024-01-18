@@ -28,6 +28,7 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleCrite
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleMaterial;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -144,6 +146,10 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 				column.setCaption(I18nProperties.findPrefixCaption(column.getId(), EnvironmentSampleIndexDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
 				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 			}
+		}
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(EnvironmentSampleIndexDto.DISTRICT).setHidden(true);
 		}
 
 		addItemClickListener(

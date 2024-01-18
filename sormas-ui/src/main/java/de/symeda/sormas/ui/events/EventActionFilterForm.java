@@ -30,7 +30,7 @@ public class EventActionFilterForm extends AbstractFilterForm<ActionCriteria> {
 	private static final long serialVersionUID = -8661345403078183132L;
 
 	protected EventActionFilterForm() {
-		super(ActionCriteria.class, ActionDto.I18N_PREFIX);
+		super(ActionCriteria.class, ActionDto.I18N_PREFIX, null);
 	}
 
 	@Override

@@ -38,7 +38,7 @@ import de.symeda.sormas.ui.utils.UserField;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
-	private static final String HTML_LAYOUT = fluidRowLocs(VaccinationDto.REPORT_DATE, VaccinationDto.REPORTING_USER)
+	private static final String HTML_LAYOUT = fluidRowLocs(6, VaccinationDto.REPORT_DATE, 3, VaccinationDto.REPORTING_USER, 3, "")
 		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINATION_DATE))
 		+ fluidRowLocs(VaccinationDto.VACCINE_NAME, VaccinationDto.OTHER_VACCINE_NAME)
 		+ fluidRowLocs(VaccinationDto.VACCINE_MANUFACTURER, VaccinationDto.OTHER_VACCINE_MANUFACTURER)

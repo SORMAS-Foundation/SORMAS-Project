@@ -75,6 +75,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
@@ -370,7 +371,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				FieldHelper.removeItems(facility);
 				// Add a visual indictator reminding the user to select a district
 
-				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+				if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 					facility.setComponentError(new ErrorMessage() {
 
 						@Override
@@ -602,7 +603,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	protected void setInternalValue(LocationDto newValue) {
 		super.setInternalValue(newValue);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();
 		}
 	}
@@ -622,7 +623,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			facility.setComponentError(null);
 			facilityDetails.setValue(locationDto.getFacilityDetails());
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 				hideAndFillJurisdictionFields();
 			}
 		}
