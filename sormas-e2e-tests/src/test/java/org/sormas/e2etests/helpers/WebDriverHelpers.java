@@ -91,6 +91,21 @@ public class WebDriverHelpers {
     }
   }
 
+  public void ClickAndWaitForNewFormLoaded(By selector, By newForm) {
+    try {
+      driver.getCurrentUrl();
+      driver.findElement(selector).click();
+      WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(35));
+      wait.until(ExpectedConditions.visibilityOfElementLocated(newForm));
+    } catch (NoSuchElementException e) {
+      System.err.println("Element not found:" + e.getMessage());
+    } catch (TimeoutException e) {
+      System.err.println("Timeout waiting for element: " + e.getMessage());
+    } catch (Exception e) {
+      System.err.println("An excepted error occurred: " + e.getMessage());
+    }
+  }
+
   private WebElement findElement(By selector) {
     try {
       return baseSteps.getDriver().findElement(selector);
