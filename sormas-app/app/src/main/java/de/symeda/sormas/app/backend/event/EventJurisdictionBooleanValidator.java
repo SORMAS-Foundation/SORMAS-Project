@@ -43,10 +43,23 @@ public class EventJurisdictionBooleanValidator extends BooleanJurisdictionValida
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
-    @Override
-    public Boolean isRootInJurisdictionOrOwned() {
-        return userJurisdiction.getUuid().equals(eventJurisdictionDto.getReportingUserUuid()) || userJurisdiction.getUuid().equals(eventJurisdictionDto.getResponsibleUserUuid()) || inJurisdiction();
-    }
+	@Override
+	public Boolean isRootInJurisdictionOrOwned() {
+		return getReportedByCurrentUser() || getCurrentUserResponsible() || inJurisdiction();
+	}
+
+	private boolean getReportedByCurrentUser() {
+		return userJurisdiction.getUuid().equals(eventJurisdictionDto.getReportingUserUuid());
+	}
+
+	public boolean getCurrentUserResponsible() {
+		return userJurisdiction.getUuid().equals(eventJurisdictionDto.getResponsibleUserUuid());
+	}
+
+	@Override
+	public Boolean isRootInJurisdictionForRestrictedAccess() {
+		return getReportedByCurrentUser() || getCurrentUserResponsible();
+	}
 
     @Override
     protected Disease getDisease() {

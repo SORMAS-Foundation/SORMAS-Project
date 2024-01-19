@@ -46,10 +46,19 @@ public class ContactJurisdictionBooleanValidator extends BooleanJurisdictionVali
         return isInJurisdictionByJurisdictionLevel(userJurisdiction.getJurisdictionLevel());
     }
 
-    @Override
-    public Boolean isRootInJurisdictionOrOwned() {
-        return userJurisdiction.getUuid().equals(contactJurisdictionDto.getReportingUserUuid()) || inJurisdiction();
+	@Override
+	public Boolean isRootInJurisdictionOrOwned() {
+		return getReportedByCurrentUser() || inJurisdiction();
+	}
+
+	private boolean getReportedByCurrentUser(){
+        return userJurisdiction.getUuid().equals(contactJurisdictionDto.getReportingUserUuid());
     }
+
+	@Override
+	public Boolean isRootInJurisdictionForRestrictedAccess() {
+		return getReportedByCurrentUser() || userJurisdiction.getUuid().equals(contactJurisdictionDto.getContactOfficerUuid());
+	}
 
     @Override
     protected Disease getDisease() {

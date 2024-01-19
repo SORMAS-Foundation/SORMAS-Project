@@ -28,6 +28,7 @@ public class EventParticipantJurisdictionDto implements Serializable {
 	private String districtUuid;
 	private String eventUuid;
 	private EventJurisdictionDto eventJurisdictionDto;
+	private String eventResponsibleUserUuid;
 
 	public EventParticipantJurisdictionDto() {
 	}
@@ -95,5 +96,13 @@ public class EventParticipantJurisdictionDto implements Serializable {
 
 	public void setEventJurisdictionDto(EventJurisdictionDto eventJurisdictionDto) {
 		this.eventJurisdictionDto = eventJurisdictionDto;
+	}
+
+	public String getEventResponsibleUserUuid() {
+		return eventResponsibleUserUuid;
+	}
+
+	public void setEventResponsibleUserUuid(String eventResponsibleUserUuid) {
+		this.eventResponsibleUserUuid = eventResponsibleUserUuid;
 	}
 }

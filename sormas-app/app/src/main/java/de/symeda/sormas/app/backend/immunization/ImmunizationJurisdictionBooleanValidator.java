@@ -15,9 +15,14 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
 import de.symeda.sormas.app.backend.caze.ResponsibleJurisdictionDto;
+import de.symeda.sormas.app.backend.person.PersonJurisdictionBooleanValidator;
 import de.symeda.sormas.app.util.BooleanJurisdictionValidator;
 import de.symeda.sormas.app.util.UserJurisdiction;
 
@@ -46,6 +51,13 @@ public class ImmunizationJurisdictionBooleanValidator extends BooleanJurisdictio
 	@Override
 	public Boolean isRootInJurisdictionOrOwned() {
 		return userJurisdiction.getUuid().equals(immunizationJurisdiction.getReportingUserUuid()) || inJurisdiction();
+	}
+
+	@Override
+	public Boolean isRootInJurisdictionForRestrictedAccess() {
+		PersonJurisdictionBooleanValidator personJurisdictionBooleanValidator = new PersonJurisdictionBooleanValidator(userJurisdiction, immunizationJurisdiction.getPersonJurisdiction());
+
+		return isRootInJurisdictionOrOwned() && personJurisdictionBooleanValidator.isRootInJurisdictionForRestrictedAccess();
 	}
 
 	@Override
