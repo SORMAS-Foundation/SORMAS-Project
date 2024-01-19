@@ -1395,7 +1395,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (isRestrictedToAssignedEntities()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
 		}
 
@@ -1410,7 +1410,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filterResponsible = cb.disjunction();
 			}
 
-			if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+			if (!isRestrictedToAssignedEntities()) {
 				switch (jurisdictionLevel) {
 				case REGION:
 					final Region region = currentUser.getRegion();
@@ -1687,19 +1687,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(caze.getSurveillanceOfficer(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
-		}
-
 		return super.getEditPermissionType(caze);
 	}
 
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
-
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(caze.getSurveillanceOfficer(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
-		}
 
 		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;

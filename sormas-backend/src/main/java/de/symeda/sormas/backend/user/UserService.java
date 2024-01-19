@@ -497,6 +497,9 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(UserReference.ID), userRoot.get(AbstractDomainObject.ID)));
 		}
 
+		Join<Object, Object> rolesJoin = root.join(User.USER_ROLES, JoinType.LEFT);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES), false));
+
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -504,7 +507,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 
-		return em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
+		final List<UserReference> resultList = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
+		return resultList;
 	}
 
 	public List<UserReference> getUserReferencesByIds(Collection<Long> userIds) {

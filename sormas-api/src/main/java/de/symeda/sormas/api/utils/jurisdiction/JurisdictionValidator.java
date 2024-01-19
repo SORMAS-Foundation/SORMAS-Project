@@ -23,21 +23,23 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 public abstract class JurisdictionValidator<T> {
 
 	protected List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
+	private boolean userHasRestrictedAccess;
 
-	public JurisdictionValidator(List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators) {
+	public JurisdictionValidator(List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators, boolean userHasRestrictedAccess) {
 		this.associatedJurisdictionValidators = associatedJurisdictionValidators;
+		this.userHasRestrictedAccess = userHasRestrictedAccess;
 	}
 
 	// disease restriction overrules entity ownership
 	public T inJurisdictionOrOwned() {
-		T rootInJurisdictionOrOwned = isRootInJurisdictionOrOwned();
+		T rootInJurisdictionOrOwned = isRootAccessible();
 		T rootHasLimitedDisease = hasUserLimitedDisease();
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
 			final List<T> jurisdictionTypes = new ArrayList<>();
 			jurisdictionTypes.add(and(rootInJurisdictionOrOwned, rootHasLimitedDisease));
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
 				if (jurisdictionValidator != null) {
-					T associatedInJurisdictionOrOwned = jurisdictionValidator.isRootInJurisdictionOrOwned();
+					T associatedInJurisdictionOrOwned = jurisdictionValidator.isRootAccessible();
 					T associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
 					jurisdictionTypes.add(and(associatedInJurisdictionOrOwned, associatedHasLimitedDisease));
 				}
@@ -68,11 +70,20 @@ public abstract class JurisdictionValidator<T> {
 		}
 	}
 
+	public T isRootAccessible() {
+		if (userHasRestrictedAccess) {
+			return isRootInJurisdictionForRestrictedAccess();
+		}
+		return isRootInJurisdictionOrOwned();
+	}
+
 	public abstract T isRootInJurisdiction();
 
 	public abstract T isRootInJurisdictionOrOwned();
 
 	public abstract T hasUserLimitedDisease();
+
+	public abstract T isRootInJurisdictionForRestrictedAccess();
 
 	protected T isInJurisdictionByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 

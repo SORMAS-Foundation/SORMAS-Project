@@ -41,7 +41,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -90,7 +92,6 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
@@ -220,7 +221,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		TaskJoins joins = taskQueryContext.getJoins();
 
 		Predicate assigneeFilter;
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (isRestrictedToAssignedEntities()) {
 			assigneeFilter = cb.disjunction();
 		} else {
 			assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
@@ -861,6 +862,17 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				cb.and(
 					cb.isNotNull(joins.getEnvironment()),
 					environmentService.inJurisdictionOrOwned(new EnvironmentQueryContext(cb, qc.getQuery(), joins.getEnvironmentJoins())))));
+	}
+
+	private Predicate getObjectSubquery(TaskQueryContext qc, CriteriaBuilder cb, Function<TaskJoins, Predicate> jurisdictionPredicate) {
+		Subquery<Object> inJurisditionSubquery = qc.getQuery().subquery(Object.class);
+		final Root<Task> from = inJurisditionSubquery.from(Task.class);
+		TaskJoins taskJoins = new TaskJoins(from);
+		inJurisditionSubquery.select(from.get(AbstractDomainObject.ID));
+		inJurisditionSubquery
+			.where(jurisdictionPredicate.apply(taskJoins), cb.equal(from.get(AbstractDomainObject.ID), qc.getRoot().get(AbstractDomainObject.ID)));
+
+		return cb.exists(inJurisditionSubquery);
 	}
 
 	@Override

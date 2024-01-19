@@ -308,7 +308,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 		assertEquals(0, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
 
 		loginWith(user);

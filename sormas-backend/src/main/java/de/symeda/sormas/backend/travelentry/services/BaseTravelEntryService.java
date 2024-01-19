@@ -8,9 +8,13 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
@@ -22,6 +26,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 
 	@EJB
 	protected UserService userService;
+	@EJB
+	private PersonService personService;
 
 	protected BaseTravelEntryService() {
 		super(TravelEntry.class, DeletableEntityType.TRAVEL_ENTRY);
@@ -65,6 +71,23 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 			filter = inJurisdictionOrOwned(qc);
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(TravelEntry.DISEASE)));
+		}
+		if (isRestrictedToAssignedEntities()) {
+			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, qc.getQuery(), qc.getJoins().getPersonJoins());
+
+			final PersonCriteria personCaseCriteria = new PersonCriteria();
+			personCaseCriteria.setPersonAssociation(PersonAssociation.CASE);
+			final Predicate personCaseUserFilter = personService.createUserFilter(personQueryContext, personCaseCriteria);
+
+			final PersonCriteria personContactCriteria = new PersonCriteria();
+			personContactCriteria.setPersonAssociation(PersonAssociation.CONTACT);
+			final Predicate personContactUserFilter = personService.createUserFilter(personQueryContext, personContactCriteria);
+
+			final PersonCriteria personEventParticipantCriteria = new PersonCriteria();
+			personEventParticipantCriteria.setPersonAssociation(PersonAssociation.EVENT_PARTICIPANT);
+			final Predicate personEventParticipantUserFilter = personService.createUserFilter(personQueryContext, personEventParticipantCriteria);
+
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(personCaseUserFilter, personContactUserFilter, personEventParticipantUserFilter));
 		}
 		return filter;
 	}

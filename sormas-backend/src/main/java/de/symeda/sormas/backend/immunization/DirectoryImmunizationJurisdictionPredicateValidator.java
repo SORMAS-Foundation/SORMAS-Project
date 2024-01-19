@@ -17,18 +17,21 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 public final class DirectoryImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final DirectoryImmunizationJoins joins;
+	private final DirectoryImmunizationQueryContext queryContext;
 
 	private DirectoryImmunizationJurisdictionPredicateValidator(
 		CriteriaBuilder cb,
 		DirectoryImmunizationJoins joins,
 		User user,
-		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+		List<PredicateJurisdictionValidator> associatedJurisdictionValidators,
+		DirectoryImmunizationQueryContext queryContext) {
 		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
+		this.queryContext = queryContext;
 	}
 
 	public static DirectoryImmunizationJurisdictionPredicateValidator of(DirectoryImmunizationQueryContext qc, User user) {
-		return new DirectoryImmunizationJurisdictionPredicateValidator(qc.getCriteriaBuilder(), qc.getJoins(), user, null);
+		return new DirectoryImmunizationJurisdictionPredicateValidator(qc.getCriteriaBuilder(), qc.getJoins(), user, null, qc);
 	}
 
 	@Override
@@ -38,9 +41,20 @@ public final class DirectoryImmunizationJurisdictionPredicateValidator extends P
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		return cb.or(reportedByCurrentUser, this.isRootInJurisdiction());
+	}
+
+	private Predicate getReportedByCurrentUser() {
 		final Path<Object> reportingUserPath = joins.getRoot().get(Immunization.REPORTING_USER);
 		final Predicate reportedByCurrentUser = cb.and(cb.isNotNull(reportingUserPath), cb.equal(reportingUserPath.get(User.ID), user.getId()));
-		return cb.or(reportedByCurrentUser, this.isRootInJurisdiction());
+		return reportedByCurrentUser;
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		//for restricted access the immunization is only accessible when the associated person is accessible
+		return cb.disjunction();
 	}
 
 	@Override

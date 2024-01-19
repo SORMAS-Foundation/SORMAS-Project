@@ -185,9 +185,6 @@ public class CaseListCriteriaBuilder {
 			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
 		}
 
-		if (currentUserService.hasRestrictedAccessToAssignedEntities()) {
-			caseUserFilterCriteria.setRestrictAccessToAssignedEntities(true);
-		}
 		Predicate filter = caseService.createUserFilter(caseQueryContext, caseUserFilterCriteria);
 
 		if (!prefetchIds) {

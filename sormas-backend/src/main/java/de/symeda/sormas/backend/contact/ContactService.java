@@ -1082,7 +1082,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Predicate filter = null;
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (isRestrictedToAssignedEntities()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER).get(User.ID), getCurrentUser().getId()));
 		}
 
@@ -1098,7 +1098,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = cb.or(filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
-		if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (!isRestrictedToAssignedEntities()) {
 			switch (jurisdictionLevel) {
 			case REGION:
 				final Region region = currentUser.getRegion();
@@ -1844,10 +1844,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		if (!inJurisdictionOrOwned(contact)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
-		}
-
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(contact.getContactOfficer(), (getCurrentUser()))) {
-			return EditPermissionType.REFUSED;
 		}
 
 		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)

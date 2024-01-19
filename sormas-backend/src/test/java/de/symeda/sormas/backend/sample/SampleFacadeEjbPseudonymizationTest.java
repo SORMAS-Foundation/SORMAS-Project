@@ -19,23 +19,31 @@ package de.symeda.sormas.backend.sample;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.Query;
 
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -49,6 +57,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -105,6 +114,84 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample = createCaseSample(caze, user1);
 
 		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), "Lab");
+	}
+
+	@Test
+	public void testPseudonymizedGetByUuidWithLimitedUser() throws InterruptedException {
+
+		// deactivate AUTOMATIC_RESPONSIBILITY_ASSIGNMENT in order to assign the limited user to a case from outside jurisdiction
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_SURVEILANCE);
+
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select f from featureconfiguration f");
+			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+			properties.put(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false);
+			singleResult.setProperties(properties);
+			em.persist(singleResult);
+		});
+
+		// case and sample within limited user's jurisdiction
+		CaseDataDto caze1 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
+		SampleDto sample1 = createCaseSample(caze1, user1);
+
+		// case and sample outside limited user's jurisdiction
+		CaseDataDto caze2 = creator.createCase(user2.toReference(), creator.createPerson("Max", "Mustermann").toReference(), rdcf2);
+		SampleDto sample2 = createCaseSample(caze2, user2);
+
+		loginWith(nationalAdmin);
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
+
+		//case and sample created by limited user within limited user's  jurisdiction
+		CaseDataDto caze3 = creator.createCase(
+			surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference(),
+			creator.createPerson("Max", "Mustermann").toReference(),
+			rdcf2);
+		SampleDto sample3 = createCaseSample(caze3, surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+
+		//case and sample created by limited user outside limited user's jurisdiction
+		CaseDataDto caze4 = creator.createCase(
+			surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference(),
+			creator.createPerson("Max", "Mustermann").toReference(),
+			rdcf2);
+		SampleDto sample4 = createCaseSample(caze4, surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
+		final SampleDto testSample1 = getSampleFacade().getSampleByUuid(sample1.getUuid());
+		final SampleDto testSample2 = getSampleFacade().getSampleByUuid(sample2.getUuid());
+		assertThat(testSample1.isPseudonymized(), is(true));
+		assertThat(testSample1.getComment(), is(emptyString()));
+		assertThat(testSample2.isPseudonymized(), is(true));
+		assertThat(testSample2.getComment(), is(emptyString()));
+
+		loginWith(nationalAdmin);
+		final CaseDataDto testCase1 = getCaseFacade().getCaseDataByUuid(caze1.getUuid());
+		testCase1.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(testCase1);
+		final CaseDataDto testCase2 = getCaseFacade().getCaseDataByUuid(caze2.getUuid());
+		testCase2.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(testCase2);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		final SampleDto returnedTestSample1 = getSampleFacade().getSampleByUuid(sample1.getUuid());
+		assertThat(returnedTestSample1.isPseudonymized(), is(false));
+		assertThat(returnedTestSample1.getComment(), is("Test comment"));
+
+		final SampleDto returnedTestSample2 = getSampleFacade().getSampleByUuid(sample2.getUuid());
+		assertThat(returnedTestSample2.isPseudonymized(), is(false));
+		assertThat(returnedTestSample2.getComment(), is("Test comment"));
+
+		final SampleDto returnedTestSample3 = getSampleFacade().getSampleByUuid(sample3.getUuid());
+		assertThat(returnedTestSample3.isPseudonymized(), is(false));
+		assertThat(returnedTestSample3.getComment(), is("Test comment"));
+
+		final SampleDto returnedTestSample4 = getSampleFacade().getSampleByUuid(sample4.getUuid());
+		assertThat(returnedTestSample4.isPseudonymized(), is(false));
+		assertThat(returnedTestSample4.getComment(), is("Test comment"));
 	}
 
 	@Test
