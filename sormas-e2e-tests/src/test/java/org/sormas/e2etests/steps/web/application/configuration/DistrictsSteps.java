@@ -141,11 +141,14 @@ public class DistrictsSteps implements En {
           sex = travelEntry.getSex();
           fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(districts.getRegion());
+          long timeoutInMillis = 120000;
+          long startTime = System.currentTimeMillis();
           boolean districtAvailability;
           districtAvailability =
               webDriverHelpers.checkIfElementExistsInCombobox(
                   RESPONSIBLE_DISTRICT_COMBOBOX, districts.getDistrictName());
-          while (districtAvailability == false) {
+          while (districtAvailability == false
+              && (System.currentTimeMillis() - startTime) < timeoutInMillis) {
             selectResponsibleRegion(
                 "Baden-W\u00FCrttemberg"); // for refresh region combobox purpose
             selectResponsibleRegion(districts.getRegion());
