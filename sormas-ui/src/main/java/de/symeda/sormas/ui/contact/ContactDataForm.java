@@ -1066,7 +1066,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		updateOverwriteFollowUpUntil();
 		updateFollowUpStatusComponents();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();
 		}
 

@@ -17,7 +17,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -33,7 +32,6 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -96,10 +94,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS)
 
 		+ loc(WEEK_AND_DATE_FILTER);
-
-	private ComboBox regionField;
-	private ComboBox districtField;
-	private ComboBox communityField;
 
 	protected ContactsFilterForm() {
 		super(
@@ -174,7 +168,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		UserDto user = currentUserDto();
 
 		if (user.getRegion() == null) {
-			regionField = addField(
+			ComboBox regionField = addField(
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(
 					ContactCriteria.REGION,
@@ -183,7 +177,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
-		districtField = addField(
+		ComboBox districtField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				ContactCriteria.DISTRICT,
@@ -191,7 +185,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				240));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
-		communityField = addField(
+		ComboBox communityField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				ContactCriteria.COMMUNITY,
@@ -327,8 +321,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
 				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
-				CHECKBOX_STYLE))
-			.setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
+				CHECKBOX_STYLE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
@@ -594,24 +587,4 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		return FacadeProvider.getUserFacade().getUsersByRegionAndRights(regionReferenceDto, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
 	}
 
-	private void hideAndFillJurisdictionFilters() {
-
-		regionField.setVisible(false);
-		regionField.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
-		districtField.setVisible(false);
-		districtField.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
-		communityField.setVisible(false);
-		communityField.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
-	}
-
-	@Override
-	public void setValue(ContactCriteria newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(newFieldValue);
-
-		if (newFieldValue != null
-			&& (regionField.isVisible() || districtField.isVisible() || communityField.isVisible())
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFilters();
-		}
-	}
 }

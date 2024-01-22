@@ -78,7 +78,7 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 
 		getColumn(ContactIndexDetailedDto.SEX).setWidth(80);
 		getColumn(ContactIndexDetailedDto.APPROXIMATE_AGE).setWidth(50);
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			getColumn(ContactIndexDetailedDto.DISTRICT_NAME).setHidden(true);
 		} else {
 			getColumn(ContactIndexDetailedDto.DISTRICT_NAME).setWidth(150);
