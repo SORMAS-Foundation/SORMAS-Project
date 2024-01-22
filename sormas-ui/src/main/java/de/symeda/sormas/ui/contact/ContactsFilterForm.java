@@ -105,7 +105,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		super(
 			ContactCriteria.class,
 			ContactIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			JurisdictionFieldConfig.of(ContactCriteria.REGION, ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY));
 	}
 
 	@Override
@@ -326,7 +327,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
 				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
-				CHECKBOX_STYLE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
+				CHECKBOX_STYLE))
+			.setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,

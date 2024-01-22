@@ -236,6 +236,12 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, EventIndexDto.CONTACT_COUNT));
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(EventIndexDto.REGION).setHidden(true);
+			getColumn(EventIndexDto.DISTRICT).setHidden(true);
+			getColumn(EventIndexDto.COMMUNITY).setHidden(true);
+		}
 	}
 
 	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid) {

@@ -23,7 +23,6 @@ import java.util.List;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.Menu;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -347,21 +346,23 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
 		EventPickOrCreateDialog.pickOrCreateEvent(caze, null, event -> {
 			if (event != null) {
-				//link existing event to case
-				EventParticipant eventParticipantToSave = DatabaseHelper.getEventParticipantDao().build();
-				eventParticipantToSave.setPerson(caze.getPerson());
-				eventParticipantToSave.setEvent(event);
-				eventParticipantToSave.setResultingCaseUuid(caze.getUuid());
 				EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(this);
 
+				//link existing event to case
 				if (!isEventLinkedToCase(caze, event)) {
 					boolean eventParticipantAlreadyExists =
 						DatabaseHelper.getEventParticipantDao().eventParticipantAlreadyExists(event, caze.getPerson());
-					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave, eventParticipantAlreadyExists);
-
+					EventParticipant eventParticipant;
 					if (eventParticipantAlreadyExists) {
+						eventParticipant = DatabaseHelper.getEventParticipantDao().getByEventAndPerson(event, caze.getPerson()).get(0);
 						NotificationHelper.showNotification(this, WARNING, I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant));
+					} else {
+						eventParticipant = DatabaseHelper.getEventParticipantDao().build();
+						eventParticipant.setPerson(caze.getPerson());
+						eventParticipant.setEvent(event);
 					}
+					eventParticipant.setResultingCaseUuid(caze.getUuid());
+					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipant, eventParticipantAlreadyExists);
 
 				} else {
 					NotificationHelper

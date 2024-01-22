@@ -61,7 +61,10 @@ public class EnvironmentFilterForm extends AbstractFilterForm<EnvironmentCriteri
 			EnvironmentCriteria.GPS_LON_TO);
 
 	public EnvironmentFilterForm() {
-		super(EnvironmentCriteria.class, EnvironmentDto.I18N_PREFIX);
+		super(
+			EnvironmentCriteria.class,
+			EnvironmentDto.I18N_PREFIX,
+			JurisdictionFieldConfig.of(EnvironmentCriteria.REGION, EnvironmentCriteria.DISTRICT, EnvironmentCriteria.COMMUNITY));
 	}
 
 	private static UserRight[] getResponsibleUserRights() {

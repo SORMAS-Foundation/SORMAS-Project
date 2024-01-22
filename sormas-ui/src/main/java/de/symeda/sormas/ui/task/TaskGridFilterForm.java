@@ -48,7 +48,8 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		super(
 			TaskCriteria.class,
 			TaskIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCheckers(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)));
+			FieldVisibilityCheckers.withCheckers(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
+			JurisdictionFieldConfig.of(TaskIndexDto.REGION, TaskIndexDto.DISTRICT, null));
 	}
 
 	@Override
