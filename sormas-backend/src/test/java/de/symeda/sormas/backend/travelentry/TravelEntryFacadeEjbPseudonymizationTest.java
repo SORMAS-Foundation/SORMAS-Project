@@ -68,26 +68,22 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		// travel entry within limited user's jurisdiction
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		TravelEntryDto travelEntry1 = creator.createTravelEntry(
-			person1.toReference(),
-			nationalUser.toReference(),
-			Disease.CORONAVIRUS,
-			rdcf1.region,
-			rdcf1.district,
-			rdcf1.pointOfEntry);
-		travelEntry1.setQuarantineHomePossibleComment("pacient can stay home");
-		getTravelEntryFacade().save(travelEntry1);
+				person1.toReference(),
+				nationalUser.toReference(), rdcf1, v ->{
+					v.setDisease(Disease.CORONAVIRUS);
+					v.setQuarantineHomePossibleComment("pacient can stay home");
+				}
+		);
 
 		// travel entry outside limited user's jurisdiction
 		PersonDto person2 = creator.createPerson("John", "Doe");
 		TravelEntryDto travelEntry2 = creator.createTravelEntry(
-			person2.toReference(),
-			nationalUser.toReference(),
-			Disease.CORONAVIRUS,
-			rdcf2.region,
-			rdcf2.district,
-			rdcf2.pointOfEntry);
-		travelEntry2.setQuarantineHomePossibleComment("pacient can stay home second");
-		getTravelEntryFacade().save(travelEntry2);
+				person2.toReference(),
+				nationalUser.toReference(),rdcf2, v -> {
+					v.setDisease(Disease.CORONAVIRUS);
+					v.setQuarantineHomePossibleComment("pacient can stay home second");
+				}
+		);
 
 		loginWith(nationalAdmin);
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
@@ -96,26 +92,22 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		// travel entry created by limited user within limited user's jurisdiction
 		PersonDto person3 = creator.createPerson("John", "Doe");
 		TravelEntryDto travelEntry3 = creator.createTravelEntry(
-			person3.toReference(),
-			nationalUser.toReference(),
-			Disease.CORONAVIRUS,
-			rdcf1.region,
-			rdcf1.district,
-			rdcf1.pointOfEntry);
-		travelEntry3.setQuarantineHomePossibleComment("pacient can stay home");
-		getTravelEntryFacade().save(travelEntry3);
+				person3.toReference(),
+				nationalUser.toReference(), rdcf1, v -> {
+					v.setDisease(Disease.CORONAVIRUS);
+					v.setQuarantineHomePossibleComment("pacient can stay home");
+				}
+		);
 
 		// travel entry created by limited user outside limited user's jurisdiction
 		PersonDto person4 = creator.createPerson("John", "Doe");
 		TravelEntryDto travelEntry4 = creator.createTravelEntry(
-			person4.toReference(),
-			nationalUser.toReference(),
-			Disease.CORONAVIRUS,
-			rdcf2.region,
-			rdcf2.district,
-			rdcf2.pointOfEntry);
-		travelEntry4.setQuarantineHomePossibleComment("pacient can stay home second");
-		getTravelEntryFacade().save(travelEntry4);
+				person4.toReference(),
+				nationalUser.toReference(), rdcf2, v-> {
+					v.setDisease(Disease.CORONAVIRUS);
+					v.setQuarantineHomePossibleComment("pacient can stay home second");
+				}
+		);
 
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
 		TravelEntryDto testTravelEntry = getTravelEntryFacade().getByUuid(travelEntry1.getUuid());

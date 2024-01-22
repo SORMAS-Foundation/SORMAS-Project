@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -93,29 +94,23 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		loginWith(nationalAdmin);
 
 		// event within limited user's jurisdiction
-		EventParticipantDto eventParticipant1 = createEventParticipant(user1, rdcf1);
-		EventDto eventDto1 = getEventFacade().getEventByUuid(eventParticipant1.getEvent().getUuid(), false);
-		eventDto1.setConnectionNumber("123");
-		getEventFacade().save(eventDto1);
+		EventParticipantDto eventParticipant1 = createEventParticipant(user1, rdcf1, e -> e.setConnectionNumber("123"));
 
 		// event outside limited user's jurisdiction
-		EventParticipantDto eventParticipant2 = createEventParticipant(user2, rdcf2);
-		EventDto eventDto2 = getEventFacade().getEventByUuid(eventParticipant2.getEvent().getUuid(), false);
-		eventDto2.setConnectionNumber("456");
-		getEventFacade().save(eventDto2);
+		EventParticipantDto eventParticipant2 = createEventParticipant(user2, rdcf2, e -> e.setConnectionNumber("456"));
 
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
 
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		final EventDto testEvent1 = getEventFacade().getEventByUuid(eventDto1.getUuid(), false);
+		final EventDto testEvent1 = getEventFacade().getEventByUuid(eventParticipant1.getEvent().getUuid(), false);
 		assertThat(testEvent1.isPseudonymized(), is(true));
 		assertThat(testEvent1.getConnectionNumber(), is(emptyString()));
 		final EventParticipantDto testEventParticipant1 = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant1.getUuid());
 		assertThat(testEventParticipant1.isPseudonymized(), is(true));
 		assertThat(testEventParticipant1.getPerson().getFirstName(), is("Confidential"));
 
-		final EventDto testEvent1Second = getEventFacade().getEventByUuid(eventDto2.getUuid(), false);
+		final EventDto testEvent1Second = getEventFacade().getEventByUuid(eventParticipant2.getEvent().getUuid(), false);
 		assertThat(testEvent1Second.isPseudonymized(), is(true));
 		assertThat(testEvent1Second.getConnectionNumber(), is(emptyString()));
 		final EventParticipantDto testEventParticipant1Second = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant2.getUuid());
@@ -123,16 +118,12 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(testEventParticipant1Second.getPerson().getFirstName(), is("Confidential"));
 
 		// event created by limited user in the same jurisdiction
-		EventParticipantDto eventParticipant3 = createEventParticipant(surveillanceOfficerWithRestrictedAccessToAssignedEntities, rdcf1);
-		EventDto eventDto3 = getEventFacade().getEventByUuid(eventParticipant3.getEvent().getUuid(), false);
-		eventDto3.setConnectionNumber("789");
-		getEventFacade().save(eventDto3);
+		EventParticipantDto eventParticipant3 =
+			createEventParticipant(surveillanceOfficerWithRestrictedAccessToAssignedEntities, rdcf1, e -> e.setConnectionNumber("789"));
 
 		// event created by limited user outside it's jurisdiction
-		EventParticipantDto eventParticipant4 = createEventParticipant(surveillanceOfficerWithRestrictedAccessToAssignedEntities, rdcf2);
-		EventDto eventDto4 = getEventFacade().getEventByUuid(eventParticipant4.getEvent().getUuid(), false);
-		eventDto4.setConnectionNumber("987");
-		getEventFacade().save(eventDto4);
+		EventParticipantDto eventParticipant4 =
+			createEventParticipant(surveillanceOfficerWithRestrictedAccessToAssignedEntities, rdcf2, e -> e.setConnectionNumber("987"));
 
 		loginWith(nationalAdmin);
 		testEvent1.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
@@ -141,28 +132,28 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		getEventFacade().save(testEvent1Second);
 
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		final EventDto testEvent3 = getEventFacade().getEventByUuid(eventDto1.getUuid(), false);
+		final EventDto testEvent3 = getEventFacade().getEventByUuid(eventParticipant1.getEvent().getUuid(), false);
 		assertThat(testEvent3.isPseudonymized(), is(false));
 		assertThat(testEvent3.getConnectionNumber(), is("123"));
 		final EventParticipantDto testEventParticipant3 = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant1.getUuid());
 		assertThat(testEventParticipant3.isPseudonymized(), is(false));
 		assertThat(testEventParticipant3.getPerson().getFirstName(), is("John"));
 
-		final EventDto testEvent3Second = getEventFacade().getEventByUuid(eventDto2.getUuid(), false);
+		final EventDto testEvent3Second = getEventFacade().getEventByUuid(eventParticipant2.getEvent().getUuid(), false);
 		assertThat(testEvent3Second.isPseudonymized(), is(false));
 		assertThat(testEvent3Second.getConnectionNumber(), is("456"));
 		final EventParticipantDto testEventParticipant3Second = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant2.getUuid());
 		assertThat(testEventParticipant3Second.isPseudonymized(), is(false));
 		assertThat(testEventParticipant3Second.getPerson().getFirstName(), is("John"));
 
-		final EventDto testEvent3Third = getEventFacade().getEventByUuid(eventDto3.getUuid(), false);
+		final EventDto testEvent3Third = getEventFacade().getEventByUuid(eventParticipant3.getEvent().getUuid(), false);
 		assertThat(testEvent3Third.isPseudonymized(), is(false));
 		assertThat(testEvent3Third.getConnectionNumber(), is("789"));
 		final EventParticipantDto testEventParticipant3Third = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant3.getUuid());
 		assertThat(testEventParticipant3Third.isPseudonymized(), is(false));
 		assertThat(testEventParticipant3Third.getPerson().getFirstName(), is("John"));
 
-		final EventDto testEvent3Fourth = getEventFacade().getEventByUuid(eventDto4.getUuid(), false);
+		final EventDto testEvent3Fourth = getEventFacade().getEventByUuid(eventParticipant4.getEvent().getUuid(), false);
 		assertThat(testEvent3Fourth.isPseudonymized(), is(false));
 		assertThat(testEvent3Fourth.getConnectionNumber(), is("987"));
 		final EventParticipantDto testEventParticipant3Fourth = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant4.getUuid());
@@ -246,10 +237,17 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 	}
 
 	private EventParticipantDto createEventParticipant(UserDto user, TestDataCreator.RDCF rdcf) {
+		return createEventParticipant(user, rdcf, null);
+	}
+
+	private EventParticipantDto createEventParticipant(UserDto user, TestDataCreator.RDCF rdcf, Consumer<EventDto> eventCustomSettings) {
 		EventDto event = creator.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "", "", user.toReference(), null, e -> {
 			e.getEventLocation().setRegion(rdcf.region);
 			e.getEventLocation().setDistrict(rdcf.district);
 			e.getEventLocation().setCommunity(rdcf.community);
+			if (eventCustomSettings != null) {
+				eventCustomSettings.accept(e);
+			}
 		});
 
 		PersonDto person = creator.createPerson("John", "Smith", Sex.MALE, 1980, 10, 23, p -> {

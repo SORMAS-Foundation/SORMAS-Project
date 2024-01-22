@@ -119,28 +119,28 @@ public class ImmunizationFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 		// immunization within limited user's jurisdiction
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		final ImmunizationDto immunization1 = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person1.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf1);
-		immunization1.setAdditionalDetails("confidential details");
-		getImmunizationFacade().save(immunization1);
+				Disease.CORONAVIRUS,
+				person1.toReference(),
+				nationalUser.toReference(), rdcf1, v->{
+					v.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+					v.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+					v.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+					v.setAdditionalDetails("confidential details");
+				}
+		);
 
 		// immunization outside limited user's jurisdiction
 		PersonDto person2 = creator.createPerson("Max", "MUstermann");
 		final ImmunizationDto immunization2 = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person2.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf2);
-		immunization2.setAdditionalDetails("confidential details second");
-		getImmunizationFacade().save(immunization2);
+				Disease.CORONAVIRUS,
+				person2.toReference(),
+				nationalUser.toReference(), rdcf2, v-> {
+					v.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+					v.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+					v.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+					v.setAdditionalDetails("confidential details second");
+				}
+		);
 
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
@@ -148,28 +148,28 @@ public class ImmunizationFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 		// immunization created by limited user within limited user's jurisdiction
 		PersonDto person3 = creator.createPerson("John", "Doe");
 		final ImmunizationDto immunization3 = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person3.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf1);
-		immunization3.setAdditionalDetails("confidential details");
-		getImmunizationFacade().save(immunization3);
+				Disease.CORONAVIRUS,
+				person3.toReference(),
+				nationalUser.toReference(), rdcf1, v-> {
+					v.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+					v.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+					v.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+					v.setAdditionalDetails("confidential details");
+				}
+		);
 
 		// immunization created by limited user outside limited user's jurisdiction
 		PersonDto person4 = creator.createPerson("Max", "MUstermann");
 		final ImmunizationDto immunization4 = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person4.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf2);
-		immunization4.setAdditionalDetails("confidential details second");
-		getImmunizationFacade().save(immunization4);
+				Disease.CORONAVIRUS,
+				person4.toReference(),
+				nationalUser.toReference(), rdcf2, v-> {
+					v.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+					v.setMeansOfImmunization(MeansOfImmunization.VACCINATION);
+					v.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+					v.setAdditionalDetails("confidential details second");
+				}
+		);
 
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
 		ImmunizationDto testImmunization = getImmunizationFacade().getByUuid(immunization1.getUuid());

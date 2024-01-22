@@ -100,10 +100,8 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-//		if (currentUserDto().getRegion() == null) {
 			ComboBox regionFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-//		}
 
 		ComboBox districtFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
