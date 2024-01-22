@@ -36,6 +36,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.expressions.ExpressionProcessor;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -47,6 +48,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	public static final String CAMPAIGN_FORM_LOC = "campaignFormLoc";
 	private AreaReferenceDto area;
 	public static final String AREA = "area";
+	private ComboBox cbArea;
+	private ComboBox cbRegion;
+	private ComboBox cbDistrict;
+	private ComboBox cbCommunity;
 
 	public AreaReferenceDto getArea() {
 		return area;
@@ -78,9 +83,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbCampaign = addField(CampaignFormDataDto.CAMPAIGN, ComboBox.class);
 		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
 
-		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
-		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
-		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
+		cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
+		cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
+		cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
 
 		addField(CampaignFormDataDto.FORM_DATE, DateField.class);
 
@@ -99,7 +104,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-			ComboBox cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
+			cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
 			cbArea.setCaption(I18nProperties.getCaption(Captions.CampaignFormData_area));
 			setRequired(true, CampaignFormDataEditForm.AREA);
 			cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
@@ -142,6 +147,23 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		if (currentUser.getCommunity() != null) {
 			cbCommunity.setValue(currentUser.getCommunity());
 			cbCommunity.setEnabled(false);
+		}
+	}
+
+	private void hideAndFillJurisdictionFields() {
+		RegionReferenceDto defaultRegion = FacadeProvider.getRegionFacade().getDefaultInfrastructureReference();
+		cbRegion.setVisible(false);
+		cbRegion.setValue(defaultRegion);
+
+		cbDistrict.setVisible(false);
+		cbDistrict.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+
+		cbCommunity.setVisible(false);
+		cbCommunity.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			cbArea.setVisible(false);
+			cbArea.setValue(FacadeProvider.getRegionFacade().getByUuid(defaultRegion.getUuid()).getArea());
 		}
 	}
 
@@ -219,5 +241,14 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	@Override
+	protected void setInternalValue(CampaignFormDataDto newValue) {
+		super.setInternalValue(newValue);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 }
