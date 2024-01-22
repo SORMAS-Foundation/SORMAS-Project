@@ -32,17 +32,17 @@ public class EnvironmentJurisdictionBooleanValidator extends BooleanJurisdiction
 
 	@Override
 	public Boolean isRootInJurisdictionOrOwned() {
-		return getReportedAndResponsibleByCurrentUser() || inJurisdiction();
+		return isReportedAndResponsibleByCurrentUser() || inJurisdiction();
 	}
 
-	private boolean getReportedAndResponsibleByCurrentUser() {
+	private boolean isReportedAndResponsibleByCurrentUser() {
 		return userJurisdiction.getUuid().equals(environmentJurisdiction.getReportingUserUuid())
 			|| userJurisdiction.getUuid().equals(environmentJurisdiction.getResponsibleUserUuid());
 	}
 
 	@Override
 	public Boolean isRootInJurisdictionForRestrictedAccess() {
-		return getReportedAndResponsibleByCurrentUser();
+		return isReportedAndResponsibleByCurrentUser();
 	}
 
 	@Override

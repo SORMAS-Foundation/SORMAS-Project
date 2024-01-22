@@ -12,7 +12,7 @@ import de.symeda.sormas.app.util.UserJurisdiction;
 public class PersonJurisdictionBooleanValidator extends BooleanJurisdictionValidator {
 
 	private final PersonJurisdictionDto personJurisdiction;
-	private final UserJurisdiction userJurisdiction;
+	protected final UserJurisdiction userJurisdiction;
 
 	public PersonJurisdictionBooleanValidator(UserJurisdiction userJurisdiction, PersonJurisdictionDto personJurisdiction) {
 		super(null, userJurisdiction);

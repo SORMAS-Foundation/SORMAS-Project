@@ -48,16 +48,16 @@ public class ContactJurisdictionBooleanValidator extends BooleanJurisdictionVali
 
 	@Override
 	public Boolean isRootInJurisdictionOrOwned() {
-		return getReportedByCurrentUser() || inJurisdiction();
+		return isReportedByCurrentUser() || inJurisdiction();
 	}
 
-	private boolean getReportedByCurrentUser(){
+	private boolean isReportedByCurrentUser(){
         return userJurisdiction.getUuid().equals(contactJurisdictionDto.getReportingUserUuid());
     }
 
 	@Override
 	public Boolean isRootInJurisdictionForRestrictedAccess() {
-		return getReportedByCurrentUser() || userJurisdiction.getUuid().equals(contactJurisdictionDto.getContactOfficerUuid());
+		return isReportedByCurrentUser() || userJurisdiction.getUuid().equals(contactJurisdictionDto.getContactOfficerUuid());
 	}
 
     @Override

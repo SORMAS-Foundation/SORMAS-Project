@@ -27,8 +27,6 @@ public class ImmunizationJurisdictionDto implements Serializable {
 
     private String reportingUserUuid;
     private ResponsibleJurisdictionDto responsibleJurisdiction;
-
-	private String personUuid;
 	private PersonJurisdictionDto personJurisdiction;
     public ImmunizationJurisdictionDto() {
     }
@@ -55,13 +53,6 @@ public class ImmunizationJurisdictionDto implements Serializable {
     public void setResponsibleJurisdiction(ResponsibleJurisdictionDto responsibleJurisdiction) {
         this.responsibleJurisdiction = responsibleJurisdiction;
     }
-	public String getPersonUuid() {
-		return personUuid;
-	}
-
-	public void setPersonUuid(String personUuid) {
-		this.personUuid = personUuid;
-	}
 
 	public PersonJurisdictionDto getPersonJurisdiction() {
 		return personJurisdiction;

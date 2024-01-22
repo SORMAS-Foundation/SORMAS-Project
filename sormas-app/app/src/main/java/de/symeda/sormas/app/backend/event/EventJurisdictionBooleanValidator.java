@@ -45,20 +45,20 @@ public class EventJurisdictionBooleanValidator extends BooleanJurisdictionValida
 
 	@Override
 	public Boolean isRootInJurisdictionOrOwned() {
-		return getReportedByCurrentUser() || getCurrentUserResponsible() || inJurisdiction();
+		return getReportedByCurrentUser() || isCurrentUserResponsible() || inJurisdiction();
 	}
 
 	private boolean getReportedByCurrentUser() {
 		return userJurisdiction.getUuid().equals(eventJurisdictionDto.getReportingUserUuid());
 	}
 
-	public boolean getCurrentUserResponsible() {
+	public boolean isCurrentUserResponsible() {
 		return userJurisdiction.getUuid().equals(eventJurisdictionDto.getResponsibleUserUuid());
 	}
 
 	@Override
 	public Boolean isRootInJurisdictionForRestrictedAccess() {
-		return getReportedByCurrentUser() || getCurrentUserResponsible();
+		return getReportedByCurrentUser() || isCurrentUserResponsible();
 	}
 
     @Override
