@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class EventParticipantsPage {
   public static final By ADD_PARTICIPANT_BUTTON = By.cssSelector("div#eventParticipantAddPerson");
+  public static final By EVENT_PARTICIPANT_UUID_INPUT = By.cssSelector("input#uuid");
   public static final By PARTICIPANT_FIRST_NAME_INPUT = By.cssSelector(".popupContent #firstName");
   public static final By PARTICIPANT_LAST_NAME_INPUT = By.cssSelector(".popupContent #lastName");
   public static final By PARTICIPANT_REGION_COMBOBOX = By.cssSelector(".popupContent #region div");
@@ -72,6 +73,8 @@ public class EventParticipantsPage {
   public static final By ENTER_BULK_EDIT_MODE_BUTTON = By.id("actionEnterBulkEditMode");
   public static final By EVENT_PARTICIPANTS_GRID =
       By.xpath("//div[@class='v-grid v-widget v-has-width v-has-height']");
+  public static final By EVENT_PARTICIPANTS =
+      By.cssSelector(".v-tabsheet-tabitem.v-layout.v-widget.back");
   public static final By EVENT_PARTICIPANT_PERSON_TAB =
       By.cssSelector("#tab-events-eventparticipants-person");
   public static final By EVENT_PARTICIPANT_DATA_TAB =
