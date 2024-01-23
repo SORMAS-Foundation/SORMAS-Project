@@ -956,8 +956,6 @@ public class UserFacadeEjb implements UserFacade {
 				Arrays.asList(UserRight.CASE_RESPONSIBLE))
 			.stream()
 			.map(userReference -> userService.getByUuid(userReference.getUuid()))
-			.collect(Collectors.toList())
-			.stream()
 			.filter(user -> !UserHelper.isRestrictedToAssignEntities(user))
 			.collect(Collectors.toList());
 		return possibleUserForReplacement;

@@ -507,8 +507,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 
-		final List<UserReference> resultList = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
-		return resultList;
+		return em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();
 	}
 
 	public List<UserReference> getUserReferencesByIds(Collection<Long> userIds) {
