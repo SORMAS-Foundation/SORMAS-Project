@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
@@ -83,7 +84,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		VerticalLayout mainLayout = new VerticalLayout();
 		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			jurisdictionSelector.setVisible(false);
 		} else {
 			HorizontalLayout jurisdictionLayout = new HorizontalLayout();

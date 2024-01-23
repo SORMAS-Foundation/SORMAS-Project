@@ -8,6 +8,7 @@ import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
 public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, CampaignStatisticsCriteria> {
@@ -51,7 +52,7 @@ public class CampaignStatisticsGrid extends FilteredGrid<CampaignStatisticsDto, 
 
 	public void setColumnsVisibility(CampaignJurisdictionLevel groupingLevel) {
 		setAreaColumnVisible(
-			!FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)
+			UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)
 				&& (CampaignJurisdictionLevel.AREA.equals(groupingLevel) || CampaignJurisdictionLevel.REGION.equals(groupingLevel)));
 		setRegionColumnVisible(
 			CampaignJurisdictionLevel.REGION.equals(groupingLevel)
