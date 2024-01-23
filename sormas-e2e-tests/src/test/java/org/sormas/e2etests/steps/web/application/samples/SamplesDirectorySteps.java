@@ -25,6 +25,8 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EXPORT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.FINAL_LABORATORY_RESULT;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.LABORATORY_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.PENDING_TEST_TABLE_RESULTS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.POSITIVE_TEST_TABLE_RESULTS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESET_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_CLASIFICATION_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_DISEASE_SEARCH_COMBOBOX;
@@ -39,7 +41,9 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SEARCH_RESULT_SAMPLE;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SPECIMEN_CONDITION_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.TEST_RESULTS_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.TOTAL_SAMPLE_COUNTER;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.events.EditEventSteps.eventParticipantsUUIDList;
 import static org.sormas.e2etests.steps.web.application.events.EventDirectorySteps.userDirPath;
 
 import com.google.common.truth.Truth;
@@ -303,6 +307,46 @@ public class SamplesDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilWebElementHasAttributeWithValue(
               SEARCH_RESULT_SAMPLE, "title", CreateNewSampleSteps.sampleId);
+        });
+
+    When(
+        "I filter the Sample for {string} event participant by {string} Final laboratory result",
+        (String result, String testResult) -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.selectFromCombobox(TEST_RESULTS_SEARCH_COMBOBOX, testResult);
+          switch (result) {
+            case "First":
+              webDriverHelpers.fillAndSubmitInWebElement(
+                  SAMPLE_SEARCH_INPUT, eventParticipantsUUIDList.get(0));
+              TimeUnit.SECONDS.sleep(2); // wait for reaction
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+            case "Second":
+              webDriverHelpers.fillAndSubmitInWebElement(
+                  SAMPLE_SEARCH_INPUT, eventParticipantsUUIDList.get(1));
+              TimeUnit.SECONDS.sleep(2); // wait for reaction
+              webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              break;
+          }
+        });
+
+    When(
+        "I check that all Sample has {string} result in in Sample directory",
+        (String result) -> {
+          Integer totalSampleCounter =
+              Integer.valueOf(webDriverHelpers.getTextFromPresentWebElement(TOTAL_SAMPLE_COUNTER));
+          Integer totalOccurrence = 0;
+          switch (result) {
+            case "Positive":
+              totalOccurrence = webDriverHelpers.getNumberOfElements(POSITIVE_TEST_TABLE_RESULTS);
+              break;
+            case "Pending":
+              totalOccurrence = webDriverHelpers.getNumberOfElements(PENDING_TEST_TABLE_RESULTS);
+              break;
+          }
+          softly.assertEquals(totalSampleCounter, totalOccurrence);
+          softly.assertAll();
         });
 
     When(
