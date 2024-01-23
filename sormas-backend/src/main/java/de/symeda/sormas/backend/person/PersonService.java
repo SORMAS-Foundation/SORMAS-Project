@@ -116,6 +116,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.VisitService;
 
@@ -352,16 +353,16 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 				eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
 			break;
 		case IMMUNIZATION:
-			associationPredicate = CriteriaBuilderHelper.and(
-				cb,
-				immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
-				immunizationService.createDefaultFilter(cb, joins.getImmunization()));
+				associationPredicate = CriteriaBuilderHelper.and(
+					cb,
+					immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
+					immunizationService.createDefaultFilter(cb, joins.getImmunization()));
 			break;
 		case TRAVEL_ENTRY:
-			associationPredicate = CriteriaBuilderHelper.and(
-				cb,
-				travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
-				travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
+				associationPredicate = CriteriaBuilderHelper.and(
+					cb,
+					travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
+					travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 			break;
 		case ALL:
 		default:
@@ -1093,14 +1094,10 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 
 		cq.where(
 			cb.equal(from.get(Person.UUID), personUuid),
+			cb.equal(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new PersonQueryContext(cb, cq, from))), true),
 			cb.or(
 				cb.and(
-					cb.and(
-						cb.isNotNull(joins.getCaze()),
-						cb.isFalse(joins.getCaze().get(Case.DELETED)),
-						currentUserHasRestrictedAccessToAssignedEntities()
-							? cb.equal(joins.getCaze().get(Case.SURVEILLANCE_OFFICER).get(User.ID), getCurrentUser().getId())
-							: cb.conjunction()),
+					cb.and(cb.isNotNull(joins.getCaze()), cb.isFalse(joins.getCaze().get(Case.DELETED))),
 					caseService.createOwnershipPredicate(true, joins.getCaze(), cb, cq)),
 				cb.and(
 					cb.and(cb.isNotNull(joins.getContact()), cb.isFalse(joins.getContact().get(Contact.DELETED))),

@@ -75,6 +75,16 @@ public class SampleJurisdictionBooleanValidator extends BooleanJurisdictionValid
     }
 
     @Override
+    public Boolean isRootInJurisdictionForRestrictedAccess() {
+
+        boolean currentUserIsSurveilanceOfficer = userJurisdiction.getUuid().equals(sampleJurisdictionDto.getCaseJurisdiction().getSurveillanceOfficerUuid());
+        boolean currentUserIsContactOfficer = userJurisdiction.getUuid().equals(sampleJurisdictionDto.getContactJurisdiction().getContactOfficerUuid());
+        boolean currentUserIsResponsibleOfficer = userJurisdiction.getUuid().equals(sampleJurisdictionDto.getEventParticipantJurisdiction().getEventResponsibleUserUuid());
+
+        return currentUserIsSurveilanceOfficer || currentUserIsContactOfficer || currentUserIsResponsibleOfficer;
+    }
+
+    @Override
     protected Disease getDisease() {
 		return null;
     }

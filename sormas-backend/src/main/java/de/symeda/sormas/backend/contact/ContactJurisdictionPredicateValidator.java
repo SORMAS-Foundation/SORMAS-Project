@@ -77,13 +77,27 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+
+		return cb.or(reportedByCurrentUser, inJurisdiction());
+	}
+
+	private Predicate getReportedByCurrentUser() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
+		return reportedByCurrentUser;
+	}
 
-		return cb.or(reportedByCurrentUser, inJurisdiction());
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		final Predicate restrictedAccess = user != null
+			? cb.equal(joins.getRoot().get(Contact.CONTACT_OFFICER).get(User.ID), user.getId())
+			: cb.equal(joins.getRoot().get(Contact.CONTACT_OFFICER).get(User.ID), userPath.get(User.ID));
+		return cb.or(reportedByCurrentUser, restrictedAccess);
 	}
 
 	@Override

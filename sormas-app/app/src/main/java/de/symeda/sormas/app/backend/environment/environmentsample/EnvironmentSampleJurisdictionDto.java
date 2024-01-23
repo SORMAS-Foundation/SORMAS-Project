@@ -23,6 +23,7 @@ public class EnvironmentSampleJurisdictionDto implements Serializable {
 	private String regionUuid;
 	private String districtUuid;
 	private String communityUuid;
+	private String environmentResponsibleUser;
 
 	public EnvironmentSampleJurisdictionDto() {
 	}
@@ -67,4 +68,11 @@ public class EnvironmentSampleJurisdictionDto implements Serializable {
 		this.communityUuid = communityUuid;
 	}
 
+	public String getEnvironmentResponsibleUser() {
+		return environmentResponsibleUser;
+	}
+
+	public void setEnvironmentResponsibleUser(String environmentResponsibleUser) {
+		this.environmentResponsibleUser = environmentResponsibleUser;
+	}
 }

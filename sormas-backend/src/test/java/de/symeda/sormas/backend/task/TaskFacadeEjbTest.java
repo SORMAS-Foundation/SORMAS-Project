@@ -188,7 +188,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 		assertEquals(0, getTaskFacade().getIndexList(null, 0, 100, null).size());
 
 		loginWith(user);
