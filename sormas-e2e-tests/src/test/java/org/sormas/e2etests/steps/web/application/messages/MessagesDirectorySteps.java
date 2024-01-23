@@ -131,6 +131,7 @@ public class MessagesDirectorySteps implements En {
     And(
         "^I verify that status for result (\\d+) is set to processed in Message Directory page$",
         (Integer resultNumber) -> {
+            TimeUnit.SECONDS.sleep(3); //waiting for refresh
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(getProcessStatusByIndex(resultNumber)),
               "Verarbeitet",
