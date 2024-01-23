@@ -1,11 +1,10 @@
 package de.symeda.sormas.app.backend.person;
 
-import java.util.stream.Collectors;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
 import de.symeda.sormas.app.backend.contact.ContactJurisdictionDto;
 import de.symeda.sormas.app.backend.event.EventJurisdictionDto;
+import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.util.BooleanJurisdictionValidator;
 import de.symeda.sormas.app.util.UserJurisdiction;
 
@@ -27,75 +26,78 @@ public class PersonJurisdictionBooleanValidator extends BooleanJurisdictionValid
 
 	@Override
 	public Boolean isRootInJurisdiction() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	public Boolean isRootInJurisdictionOrOwned() {
-		return this.isRootInJurisdiction();
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	public Boolean isRootInJurisdictionForRestrictedAccess() {
 
-		boolean currentUserIsSurveillanceOfficer = personJurisdiction.getCaseJurisdiction()
+		boolean currentUserIsSurveillanceOfficer = personJurisdiction.getCaseJurisdictions()
 			.stream()
 			.map(CaseJurisdictionDto::getSurveillanceOfficerUuid)
-			.collect(Collectors.toList())
-			.contains(userJurisdiction.getUuid());
+			.anyMatch(surveillanceOfficer -> surveillanceOfficer.equals(userJurisdiction.getUuid()));
 
-		boolean currentUserIsContactOfficer = personJurisdiction.getContactJurisdiction()
+		if (currentUserIsSurveillanceOfficer) {
+			return true;
+		}
+
+		boolean currentUserIsContactOfficer = personJurisdiction.getContactJurisdictions()
 			.stream()
 			.map(ContactJurisdictionDto::getContactOfficerUuid)
-			.collect(Collectors.toList())
-			.contains(userJurisdiction.getUuid());
+			.anyMatch(contactOfficer -> contactOfficer.equals(userJurisdiction.getUuid()));
 
-		boolean currentUserIsResponsibleUser = personJurisdiction.getEventJurisdiction()
+		if (currentUserIsContactOfficer) {
+			return true;
+		}
+
+		return personJurisdiction.getEventJurisdictions()
 			.stream()
 			.map(EventJurisdictionDto::getResponsibleUserUuid)
-			.collect(Collectors.toList())
-			.contains(userJurisdiction.getUuid());
-
-		return currentUserIsSurveillanceOfficer || currentUserIsContactOfficer || currentUserIsResponsibleUser;
+			.anyMatch(responsibleUser -> responsibleUser.equals(userJurisdiction.getUuid()));
 	}
 
 	@Override
 	protected Boolean whenNotAllowed() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenNationalLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenRegionalLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenDistrictLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenCommunityLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenFacilityLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenPointOfEntryLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 
 	@Override
 	protected Boolean whenLaboratoryLevel() {
-		return false;
+		throw new NotImplementedException("Person jurisdiction depends on linked core entity jurisdiction");
 	}
 }

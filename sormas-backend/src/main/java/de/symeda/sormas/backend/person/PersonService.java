@@ -295,17 +295,8 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 				createAssociationPredicate(queryContext, PersonAssociation.TRAVEL_ENTRY));
 			break;
 		case CASE:
-			userFilter =
-				CriteriaBuilderHelper.or(queryContext.getCriteriaBuilder(), createAssociationPredicate(queryContext, PersonAssociation.CASE));
-			break;
 		case CONTACT:
-			userFilter =
-				CriteriaBuilderHelper.or(queryContext.getCriteriaBuilder(), createAssociationPredicate(queryContext, PersonAssociation.CONTACT));
-			break;
 		case EVENT_PARTICIPANT:
-			userFilter = CriteriaBuilderHelper
-				.or(queryContext.getCriteriaBuilder(), createAssociationPredicate(queryContext, PersonAssociation.EVENT_PARTICIPANT));
-			break;
 		case IMMUNIZATION:
 		case TRAVEL_ENTRY:
 			userFilter = createAssociationPredicate(queryContext, personAssociation);
@@ -362,24 +353,16 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 				eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
 			break;
 		case IMMUNIZATION:
-			if (!isRestrictedToAssignedEntities()) {
 				associationPredicate = CriteriaBuilderHelper.and(
 					cb,
 					immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
 					immunizationService.createDefaultFilter(cb, joins.getImmunization()));
-			} else {
-				associationPredicate = CriteriaBuilderHelper.and(cb, cb.disjunction());
-			}
 			break;
 		case TRAVEL_ENTRY:
-			if (!isRestrictedToAssignedEntities()) {
 				associationPredicate = CriteriaBuilderHelper.and(
 					cb,
 					travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
 					travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
-			} else {
-				associationPredicate = CriteriaBuilderHelper.and(cb, cb.disjunction());
-			}
 			break;
 		case ALL:
 		default:

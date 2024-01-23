@@ -723,18 +723,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	@Override
 	public SampleJurisdictionFlagsDto getJurisdictionFlags(Sample entity) {
 
-		final SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto = getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
-		return sampleJurisdictionFlagsDto;
+		return getJurisdictionsFlags(Collections.singletonList(entity)).get(entity.getId());
 	}
 
 	@Override
 	public Map<Long, SampleJurisdictionFlagsDto> getJurisdictionsFlags(List<Sample> entities) {
 
-		final Map<Long, SampleJurisdictionFlagsDto> selectionAttributes = getSelectionAttributes(
+		return getSelectionAttributes(
 			entities,
 			(cb, cq, from) -> getJurisdictionSelections(new SampleQueryContext(cb, cq, from)),
 			e -> new SampleJurisdictionFlagsDto(e));
-		return selectionAttributes;
 	}
 
 	@Override

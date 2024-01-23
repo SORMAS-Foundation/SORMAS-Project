@@ -93,10 +93,6 @@ public class EnvironmentSampleFacadeEjbPseudonymizationTest extends AbstractBean
 				s.getLocation().setCity("Test city second");
 			});
 
-//		loginWith(nationalAdmin);
-//		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
-//			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
-
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
 		EnvironmentSampleDto testSample1 = getEnvironmentSampleFacade().getByUuid(sample1.getUuid());
 		assertThat(testSample1.isPseudonymized(), is(true));

@@ -403,25 +403,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter = null;
 
-		if (isRestrictedToAssignedEntities()) {
-			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, qc.getQuery(), qc.getJoins().getPersonJoins());
-
-			final PersonCriteria personCaseCriteria = new PersonCriteria();
-			personCaseCriteria.setPersonAssociation(PersonAssociation.CASE);
-			final Predicate personCaseUserFilter = personService.createUserFilter(personQueryContext, personCaseCriteria);
-
-			final PersonCriteria personContactCriteria = new PersonCriteria();
-			personContactCriteria.setPersonAssociation(PersonAssociation.CONTACT);
-			final Predicate personContactUserFilter = personService.createUserFilter(personQueryContext, personContactCriteria);
-
-			final PersonCriteria personEventParticipantCriteria = new PersonCriteria();
-			personEventParticipantCriteria.setPersonAssociation(PersonAssociation.EVENT_PARTICIPANT);
-			final Predicate personEventParticipantUserFilter = personService.createUserFilter(personQueryContext, personEventParticipantCriteria);
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(personCaseUserFilter, personContactUserFilter, personEventParticipantUserFilter));
-		} else {
 			filter = isInJurisdictionOrOwned(qc);
-		}
 
 		filter = CriteriaBuilderHelper
 			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));

@@ -1395,7 +1395,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
-		if (isRestrictedToAssignedEntities()) {
+		final boolean restrictedToAssignedEntities = isRestrictedToAssignedEntities();
+		if (restrictedToAssignedEntities) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
 		}
 
@@ -1410,7 +1411,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filterResponsible = cb.disjunction();
 			}
 
-			if (!isRestrictedToAssignedEntities()) {
+			if (!restrictedToAssignedEntities) {
 				switch (jurisdictionLevel) {
 				case REGION:
 					final Region region = currentUser.getRegion();

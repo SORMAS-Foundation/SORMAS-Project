@@ -92,7 +92,6 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	public Predicate inJurisdictionOrOwned() {
-//		Predicate rootInJurisdictionOrOwned = isRootInJurisdictionOrOwned();
 		Predicate rootInJurisdictionOrOwned = isRootAccessible();
 		Predicate rootHasLimitedDisease = hasUserLimitedDisease();
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {

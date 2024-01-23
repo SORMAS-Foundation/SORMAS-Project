@@ -41,7 +41,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.lang3.ArrayUtils;
@@ -220,11 +219,12 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 		TaskJoins joins = taskQueryContext.getJoins();
 
-		Predicate assigneeFilter;
+		Predicate assigneeJurisdictionFilter;
 		if (isRestrictedToAssignedEntities()) {
-			assigneeFilter = cb.disjunction();
+			//filters out tasks assigned to other users in the same jurisdiction (which are not linked to a core entity assigned to the limited user) 
+			assigneeJurisdictionFilter = cb.disjunction();
 		} else {
-			assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
+			assigneeJurisdictionFilter = createAssigneeJurisdictionFilter(cb, joins.getAssignee());
 		}
 
 		Predicate relatedEntityNotDeletedFilter = cb.or(
@@ -237,7 +237,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION && currentUser.getUserRoles().stream().noneMatch(UserRole::isPortHealthUser)) {
-			return cb.and(assigneeFilter, relatedEntityNotDeletedFilter);
+			return cb.and(assigneeJurisdictionFilter, relatedEntityNotDeletedFilter);
 		}
 
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
@@ -281,7 +281,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 			filter = cb.or(filter, environmantFilter);
 		}
 
-		filter = cb.or(filter, assigneeFilter);
+		filter = cb.or(filter, assigneeJurisdictionFilter);
 
 		if (RequestContextHolder.isMobileSync()) {
 			Predicate limitedChangeDatePredicate = CriteriaBuilderHelper.and(cb, createLimitedChangeDateFilter(cb, taskQueryContext.getRoot()));
@@ -331,7 +331,7 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 		return createUserFilter(new TaskQueryContext(cb, cq, from), new TaskCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
-	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
+	public Predicate createAssigneeJurisdictionFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
 		return CriteriaBuilderHelper
 			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilter(cb, assigneeUserJoin));
 	}
@@ -862,17 +862,6 @@ public class TaskService extends AdoServiceWithUserFilterAndJurisdiction<Task>
 				cb.and(
 					cb.isNotNull(joins.getEnvironment()),
 					environmentService.inJurisdictionOrOwned(new EnvironmentQueryContext(cb, qc.getQuery(), joins.getEnvironmentJoins())))));
-	}
-
-	private Predicate getObjectSubquery(TaskQueryContext qc, CriteriaBuilder cb, Function<TaskJoins, Predicate> jurisdictionPredicate) {
-		Subquery<Object> inJurisditionSubquery = qc.getQuery().subquery(Object.class);
-		final Root<Task> from = inJurisditionSubquery.from(Task.class);
-		TaskJoins taskJoins = new TaskJoins(from);
-		inJurisditionSubquery.select(from.get(AbstractDomainObject.ID));
-		inJurisditionSubquery
-			.where(jurisdictionPredicate.apply(taskJoins), cb.equal(from.get(AbstractDomainObject.ID), qc.getRoot().get(AbstractDomainObject.ID)));
-
-		return cb.exists(inJurisditionSubquery);
 	}
 
 	@Override

@@ -1,16 +1,24 @@
 package de.symeda.sormas.backend.immunization;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
@@ -54,7 +62,25 @@ public final class DirectoryImmunizationJurisdictionPredicateValidator extends P
 	@Override
 	public Predicate isRootInJurisdictionForRestrictedAccess() {
 		//for restricted access the immunization is only accessible when the associated person is accessible
-		return cb.disjunction();
+		Predicate isRootInJurisdiction = isRootInJurisdictionOrOwned();
+
+		final CriteriaQuery<?> cq = queryContext.getQuery();
+
+		Subquery<Boolean> personSubquery = cq.subquery(Boolean.class);
+		final Root<Immunization> from = personSubquery.from(Immunization.class);
+		ImmunizationJoins immunizationJoins = new ImmunizationJoins(from);
+		final Predicate isPersonInJurisdiction = PersonJurisdictionPredicateValidator
+				.of(
+						cq,
+						cb,
+						immunizationJoins.getPersonJoins(),
+						user,
+						new HashSet<>(Arrays.asList(PersonAssociation.CASE, PersonAssociation.CONTACT, PersonAssociation.EVENT_PARTICIPANT)))
+				.isRootInJurisdictionForRestrictedAccess();
+		personSubquery.select(from.get(AbstractDomainObject.ID));
+		personSubquery.where(isPersonInJurisdiction, cb.equal(from.get(AbstractDomainObject.ID), joins.getRoot().get(AbstractDomainObject.ID)));
+
+		return and(isRootInJurisdiction, cb.exists(personSubquery));
 	}
 
 	@Override

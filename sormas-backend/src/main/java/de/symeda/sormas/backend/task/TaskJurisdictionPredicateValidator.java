@@ -91,10 +91,7 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 		List<Predicate> associationPredicates = new ArrayList<>(associatedJurisdictionValidators.size());
 		for (JurisdictionValidator<Predicate> associatedJurisdictionValidator : associatedJurisdictionValidators) {
-			if (!TravelEntryJurisdictionPredicateValidator.class.isAssignableFrom(associatedJurisdictionValidator.getClass())
-				&& !ImmunizationJurisdictionPredicateValidator.class.isAssignableFrom(associatedJurisdictionValidator.getClass())) {
 				associationPredicates.add(associatedJurisdictionValidator.isRootInJurisdictionForRestrictedAccess());
-			}
 		}
 		return cb.or(createdByCurrentUser, assignedToCurrentUser, or(associationPredicates));
 	}

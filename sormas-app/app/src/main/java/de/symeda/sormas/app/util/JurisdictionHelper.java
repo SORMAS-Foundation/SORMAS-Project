@@ -160,32 +160,26 @@ public class JurisdictionHelper {
 
 		PersonJurisdictionDto personJurisdiction = new PersonJurisdictionDto();
 
-		DatabaseHelper.getCaseDao()
-			.getByPerson(person)
-			.stream()
-			.map(Case::getSurveillanceOfficer)
-			.collect(Collectors.toList())
-			.forEach(caseSurveillanceOfficer -> {
-				personJurisdiction.getCaseJurisdiction().add(new CaseJurisdictionDto().setSurveillanceOfficerUuid(caseSurveillanceOfficer.getUuid()));
-			});
+		personJurisdiction.setCaseJurisdictions(
+			DatabaseHelper.getCaseDao()
+				.getByPerson(person)
+				.stream()
+				.map(surveillanceOfficer -> new CaseJurisdictionDto().setSurveillanceOfficerUuid(surveillanceOfficer.getUuid()))
+				.collect(Collectors.toList()));
 
-		DatabaseHelper.getContactDao()
-			.getByPerson(person)
-			.stream()
-			.map(Contact::getContactOfficer)
-			.collect(Collectors.toList())
-			.forEach(contactOfficer -> {
-				personJurisdiction.getContactJurisdiction().add(new ContactJurisdictionDto().setContactOfficerUuid(contactOfficer.getUuid()));
-			});
+		personJurisdiction.setContactJurisdictions(
+			DatabaseHelper.getContactDao()
+				.getByPerson(person)
+				.stream()
+				.map(contactOfficer -> new ContactJurisdictionDto().setContactOfficerUuid(contactOfficer.getUuid()))
+				.collect(Collectors.toList()));
 
-		DatabaseHelper.getEventDao()
-			.getByEventParticipantPerson(person)
-			.stream()
-			.map(Event::getResponsibleUser)
-			.collect(Collectors.toList())
-			.forEach(responsibleUser -> {
-				personJurisdiction.getEventJurisdiction().add(new EventJurisdictionDto().setResponsibleUserUuid(responsibleUser.getUuid()));
-			});
+		personJurisdiction.setEventJurisdictions(
+			DatabaseHelper.getEventDao()
+				.getByEventParticipantPerson(person)
+				.stream()
+				.map(responsibleUser -> new EventJurisdictionDto().setResponsibleUserUuid(responsibleUser.getUuid()))
+				.collect(Collectors.toList()));
 
 		return personJurisdiction;
 	}
