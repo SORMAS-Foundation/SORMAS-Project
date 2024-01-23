@@ -163,7 +163,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			cbArea.setVisible(false);
-			cbArea.setValue(FacadeProvider.getRegionFacade().getByUuid(defaultRegion.getUuid()).getArea());
+			cbArea.setValue(defaultRegion != null ? FacadeProvider.getRegionFacade().getByUuid(defaultRegion.getUuid()).getArea() : null);
 		}
 	}
 
