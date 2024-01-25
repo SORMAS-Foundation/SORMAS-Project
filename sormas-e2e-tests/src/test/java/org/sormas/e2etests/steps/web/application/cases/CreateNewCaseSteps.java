@@ -575,8 +575,6 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
-          caze.getUuid();
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
@@ -589,7 +587,6 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_RADIO_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CASE_POPUP_SAVE_BUTTON);
           }
-          TimeUnit.SECONDS.sleep(2);
         });
 
     Then(
