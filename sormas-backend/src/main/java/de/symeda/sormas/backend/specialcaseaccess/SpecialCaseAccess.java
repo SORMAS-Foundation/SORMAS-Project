@@ -34,6 +34,7 @@ public class SpecialCaseAccess extends AbstractDomainObject {
 	private static final long serialVersionUID = -4418393030246909960L;
 
 	public static final String CAZE = "caze";
+	public static final String ASSIGNED_TO = "assignedTo";
 	public static final String END_DATE_TIME = "endDateTime";
 
 	private Case caze;

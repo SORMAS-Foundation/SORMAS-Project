@@ -238,6 +238,7 @@ public interface Captions {
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkRestore = "bulkRestore";
 	String bulkSkipped = "bulkSkipped";
+	String bulkSpecialCaseAccess = "bulkSpecialCaseAccess";
 	String bulkSuccessful = "bulkSuccessful";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
@@ -2217,6 +2218,7 @@ public interface Captions {
 	String SormasToSormasShareRequestIndex_uuid = "SormasToSormasShareRequestIndex.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
 	String specailCaseAccessNoAccessGranted = "specailCaseAccessNoAccessGranted";
+	String SpecialCaseAccess = "SpecialCaseAccess";
 	String specialCaseAccessNew = "specialCaseAccessNew";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";

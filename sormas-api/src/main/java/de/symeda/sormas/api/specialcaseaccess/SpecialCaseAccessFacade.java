@@ -24,6 +24,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Remote
 public interface SpecialCaseAccessFacade {
@@ -33,4 +34,8 @@ public interface SpecialCaseAccessFacade {
 	List<SpecialCaseAccessDto> getAllActiveByCase(CaseReferenceDto caze);
 
     void delete(String uuid);
+
+    void saveAll(@Valid List<SpecialCaseAccessDto> specialAccesses);
+
+    boolean isAnyAssignedToUser(List<CaseReferenceDto> cases, UserReferenceDto user);
 }
