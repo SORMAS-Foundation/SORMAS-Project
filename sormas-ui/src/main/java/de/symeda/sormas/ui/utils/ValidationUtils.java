@@ -53,8 +53,11 @@ public class ValidationUtils {
 		}
 
 		// already initialized
-		if (field.getData() != null && Property.ValueChangeListener.class.isAssignableFrom(field.getData().getClass())) {
-			return;
+		if (field.getData() != null) {
+			// remove old listener
+			if (Property.ValueChangeListener.class.isAssignableFrom(field.getData().getClass())) {
+				field.removeValueChangeListener((Property.ValueChangeListener) field.getData());
+			}
 		}
 
 		Function<String, Void> validateExternalToken = (String value) -> {

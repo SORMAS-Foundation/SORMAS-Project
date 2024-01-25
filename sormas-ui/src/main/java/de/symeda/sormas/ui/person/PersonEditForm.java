@@ -592,7 +592,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					Validations.invalidNationalHealthId,
 					nationalHealthIdWarningLabel,
 					nationalHealthId -> !LuxembourgNationalHealthIdValidator
-						.isValid(nationalHealthId, getValue().getBirthdateYYYY(), getValue().getBirthdateMM(), getValue().getBirthdateDD()),
+						.isValid(nationalHealthId, (Integer)birthDateYear.getValue(), (Integer)birthDateMonth.getValue(), (Integer)birthDateDay.getValue()),
 					ErrorLevel.WARNING);
 			}
 
