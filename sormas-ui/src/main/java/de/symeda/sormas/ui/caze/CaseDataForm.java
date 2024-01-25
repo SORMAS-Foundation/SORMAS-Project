@@ -346,7 +346,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addFields();
 	}
 
-//TODO: test the next part
 	public static void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
