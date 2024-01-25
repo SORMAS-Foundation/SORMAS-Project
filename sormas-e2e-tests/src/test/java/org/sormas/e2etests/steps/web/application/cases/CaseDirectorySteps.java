@@ -1569,8 +1569,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
           webDriverHelpers.waitForSpinnerNotVisible(30);
-          TimeUnit.SECONDS.sleep(5); // waiting for page is loaded
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
+          webDriverHelpers.waitForElementPresent(REPORTING_TOOL_MESSAGE, 30);
         });
 
     And(

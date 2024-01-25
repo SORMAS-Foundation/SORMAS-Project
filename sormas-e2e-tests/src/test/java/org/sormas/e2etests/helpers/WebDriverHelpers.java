@@ -91,6 +91,12 @@ public class WebDriverHelpers {
     }
   }
 
+  public static void waitForElementPresent(By selector, int timeOutInSeconds) {
+    driver.getCurrentUrl();
+    new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds))
+        .until(ExpectedConditions.presenceOfElementLocated(selector));
+  }
+
   public void ClickAndWaitForNewFormLoaded(By selector, By newForm) {
     try {
       driver.getCurrentUrl();
