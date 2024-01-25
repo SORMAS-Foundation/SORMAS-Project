@@ -1172,13 +1172,6 @@
 				</exclusions>
 			</dependency>
 
-            <dependency>
-                <groupId>org.apache.pdfbox</groupId>
-                <artifactId>pdfbox</artifactId>
-                <version>3.0.0</version>
-                <scope>provided</scope>
-            </dependency>
-
 			<!-- *** Domain libs END *** -->
 
 			<!-- *** Compile dependencies *** -->

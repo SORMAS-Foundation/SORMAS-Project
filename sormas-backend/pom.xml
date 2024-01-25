@@ -213,11 +213,11 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-        </dependency>
-
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>3.0.0</version>
+		</dependency>
 
         <!-- *** Domain libs END *** -->
 
