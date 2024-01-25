@@ -1419,7 +1419,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
-	private void hideAndFillJurisdictionFields() {
+	private void hideJurisdictionFields() {
 		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
 		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
@@ -1718,7 +1718,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFields();
+			hideJurisdictionFields();
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
