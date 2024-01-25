@@ -620,10 +620,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private void hideAndFillJurisdictionFields() {
 		region.setVisible(false);
 		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
-
 		district.setVisible(false);
 		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
-
 		community.setVisible(false);
 		community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
