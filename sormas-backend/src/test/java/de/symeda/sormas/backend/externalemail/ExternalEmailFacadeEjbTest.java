@@ -16,7 +16,7 @@
 package de.symeda.sormas.backend.externalemail;
 
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.updateLineSeparatorsBasedOnOS;
-import static de.symeda.sormas.backend.externalemail.luxembourg.NationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
+import static de.symeda.sormas.backend.util.luxembourg.LuxembourgNationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
