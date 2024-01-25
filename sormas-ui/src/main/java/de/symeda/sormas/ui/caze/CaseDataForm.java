@@ -303,6 +303,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
+	private ComboBox regionCombo;
 	private ComboBox districtCombo;
 	private ComboBox communityCombo;
 	private OptionGroup facilityOrHome;
@@ -781,7 +782,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
 
-		ComboBox regionCombo = addInfrastructureField(CaseDataDto.REGION);
+		regionCombo = addInfrastructureField(CaseDataDto.REGION);
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
@@ -1417,10 +1418,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
-
-		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideJurisdictionFields();
-		}
 	}
 
 	private void hideJurisdictionFields() {
@@ -1432,8 +1429,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		differentPlaceOfStayJurisdiction.setVisible(false);
 
 		responsibleRegion.setVisible(false);
+		responsibleRegion.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		responsibleDistrict.setVisible(false);
+		responsibleDistrict.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		responsibleCommunity.setVisible(false);
+		responsibleCommunity.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+
+		regionCombo.setVisible(false);
+		regionCombo.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		districtCombo.setVisible(false);
+		districtCombo.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		communityCombo.setVisible(false);
+		communityCombo.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
 	private void updateFacilityOrHome() {
@@ -1718,6 +1725,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
