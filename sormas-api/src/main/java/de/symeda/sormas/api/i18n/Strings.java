@@ -1397,6 +1397,7 @@ public interface Strings {
 	String messagePersonListAddedAsEventPerticipants = "messagePersonListAddedAsEventPerticipants";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
 	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
+	String messagePersonNationalHealthIdInvalid = "messagePersonNationalHealthIdInvalid";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePickEventParticipantsIncompleteSelection = "messagePickEventParticipantsIncompleteSelection";
