@@ -1419,27 +1419,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
-	private void hideJurisdictionFields() {
-
+	private void hideAndFillJurisdictionFields() {
 		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
-
 		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
 		differentPlaceOfStayJurisdiction.setVisible(false);
 
 		responsibleRegion.setVisible(false);
-		responsibleRegion.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		responsibleDistrict.setVisible(false);
-		responsibleDistrict.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		responsibleCommunity.setVisible(false);
-		responsibleCommunity.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 
 		regionCombo.setVisible(false);
-		regionCombo.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		districtCombo.setVisible(false);
-		districtCombo.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		communityCombo.setVisible(false);
-		communityCombo.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
 	private void updateFacilityOrHome() {
@@ -1726,7 +1718,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideJurisdictionFields();
+			hideAndFillJurisdictionFields();
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
