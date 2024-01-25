@@ -653,7 +653,6 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_NAME_INPUT);
           personUuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
-          System.out.print(personUuid);
         });
 
     And(
