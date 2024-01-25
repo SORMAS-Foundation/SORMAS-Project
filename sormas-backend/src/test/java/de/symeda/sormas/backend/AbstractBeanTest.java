@@ -33,10 +33,6 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
-import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb;
-import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb.ManualMessageLogFacadeEjbLocal;
-import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,6 +90,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
@@ -107,6 +104,7 @@ import de.symeda.sormas.api.sormastosormas.entities.contact.SormasToSormasContac
 import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
+import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -203,6 +201,8 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFaca
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb.ManualMessageLogFacadeEjbLocal;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
@@ -242,6 +242,8 @@ import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -1032,11 +1034,19 @@ public abstract class AbstractBeanTest {
 		return getBean(ExternalEmailFacadeEjbLocal.class);
 	}
 
-    public ManualMessageLogFacade getManualMessageLogFacade() {
-        return getBean(ManualMessageLogFacadeEjbLocal.class);
-    }
+	public ManualMessageLogFacade getManualMessageLogFacade() {
+		return getBean(ManualMessageLogFacadeEjbLocal.class);
+	}
 
-    public ManualMessageLogService getManualMessageLogService() {
-        return getBean(ManualMessageLogService.class);
-    }
+	public ManualMessageLogService getManualMessageLogService() {
+		return getBean(ManualMessageLogService.class);
+	}
+
+	public SpecialCaseAccessFacade getSpecialCaseAccessFacade() {
+		return getBean(SpecialCaseAccessFacadeEjbLocal.class);
+	}
+
+	public SpecialCaseAccessService getSpecialCaseAccessService() {
+		return getBean(SpecialCaseAccessService.class);
+	}
 }

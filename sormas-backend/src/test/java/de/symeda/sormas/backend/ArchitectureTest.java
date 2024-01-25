@@ -84,6 +84,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestFacadeEJB;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
@@ -275,7 +276,7 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-				Arrays.asList("getExternalMessagesAdapterVersion", "fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "delete"),
+			Arrays.asList("getExternalMessagesAdapterVersion", "fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "delete"),
 			classes);
 	}
 
@@ -462,6 +463,11 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testManualMessageLogFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(ManualMessageLogFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSpecialCaseAccessFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SpecialCaseAccessFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

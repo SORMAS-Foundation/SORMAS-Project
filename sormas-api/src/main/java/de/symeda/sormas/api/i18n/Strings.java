@@ -512,6 +512,7 @@ public interface Strings {
 	String headingCreateNewUserRole = "headingCreateNewUserRole";
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
+	String headingCreateSpecailCaseAccess = "headingCreateSpecailCaseAccess";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingCurrentHospitalization = "headingCurrentHospitalization";
 	String headingCustomizableEnumConfigurationInfo = "headingCustomizableEnumConfigurationInfo";
@@ -556,6 +557,7 @@ public interface Strings {
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
 	String headingEditSample = "headingEditSample";
+	String headingEditSpecailCaseAccess = "headingEditSpecailCaseAccess";
 	String headingEditSubcontinent = "headingEditSubcontinent";
 	String headingEditSurveillanceReport = "headingEditSurveillanceReport";
 	String headingEditTask = "headingEditTask";
@@ -792,6 +794,7 @@ public interface Strings {
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
+	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
