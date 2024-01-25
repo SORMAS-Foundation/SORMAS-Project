@@ -345,6 +345,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addFields();
 	}
 
+//TODO: test the next part
 	public static void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
@@ -1425,9 +1426,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private void hideJurisdictionFields() {
 
 		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
+
 		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
 		differentPlaceOfStayJurisdiction.setVisible(false);
+
 		responsibleRegion.setVisible(false);
 		responsibleDistrict.setVisible(false);
 		responsibleCommunity.setVisible(false);
