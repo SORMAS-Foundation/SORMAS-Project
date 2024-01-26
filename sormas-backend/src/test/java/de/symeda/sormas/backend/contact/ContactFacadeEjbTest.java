@@ -1019,7 +1019,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 		final List<ContactIndexDto> indexList = getContactFacade().getIndexList(null, 0, 100, null);
 		assertEquals(0, indexList.size());
 

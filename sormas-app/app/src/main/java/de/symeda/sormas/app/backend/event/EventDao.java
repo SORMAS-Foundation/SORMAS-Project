@@ -39,7 +39,9 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
@@ -259,5 +261,20 @@ public class EventDao extends AbstractAdoDao<Event> {
 		}
 
 		return queryBuilder;
+	}
+	public List<Event> getByEventParticipantPerson(Person person){
+		try {
+			QueryBuilder<Event, Long> queryBuilder = queryBuilder();
+			QueryBuilder<EventParticipant, Long> eventParticipantBuilder = DatabaseHelper.getEventParticipantDao().queryBuilder();
+			queryBuilder.leftJoin(eventParticipantBuilder);
+			Where<EventParticipant, Long> where = eventParticipantBuilder.where();
+
+			where.eq(EventParticipant.PERSON + "_id", person.getId());
+
+			return queryBuilder.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform queryByCriteria on Event");
+			throw new RuntimeException(e);
+		}
 	}
 }

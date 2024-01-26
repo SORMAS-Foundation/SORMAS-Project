@@ -48,6 +48,7 @@ public class CasePersonView extends AbstractCaseView implements PersonSideCompon
 
 		CaseDataDto caseData = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		person = FacadeProvider.getPersonFacade().getByUuid(caseData.getPerson().getUuid());
+		boolean isEditAllowed = isEditAllowed();
 		CommitDiscardWrapperComponent<PersonEditForm> editComponent = ControllerProvider.getPersonController()
 			.getPersonEditComponent(
 				PersonContext.CASE,
@@ -56,11 +57,11 @@ public class CasePersonView extends AbstractCaseView implements PersonSideCompon
 				caseData.getDiseaseDetails(),
 				UserRight.CASE_EDIT,
 				getViewMode(),
-				isEditAllowed());
+				isEditAllowed);
 		DetailSubComponentWrapper componentWrapper = addComponentWrapper(editComponent);
 		CustomLayout layout = addPageLayout(componentWrapper, editComponent);
 		setSubComponent(componentWrapper);
-		addSideComponents(layout, DeletableEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed());
+		addSideComponents(layout, DeletableEntityType.CASE, caseData.getUuid(), person.toReference(), this::showUnsavedChangesPopup, isEditAllowed);
 		setEditPermission(
 			editComponent,
 			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),

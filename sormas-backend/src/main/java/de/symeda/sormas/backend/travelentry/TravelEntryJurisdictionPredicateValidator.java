@@ -1,26 +1,34 @@
 package de.symeda.sormas.backend.travelentry;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final TravelEntryJoins joins;
+	private final CriteriaQuery<?> cq;
 
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
@@ -30,6 +38,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
+		this.cq = cq;
 	}
 
 	private TravelEntryJurisdictionPredicateValidator(
@@ -40,6 +49,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, null, userPath, associatedJurisdictionValidators);
 		this.joins = joins;
+		this.cq = cq;
 	}
 
 	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, User user) {
@@ -50,7 +60,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 			user,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()), user)));
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getResultingCase()), user)));
 	}
 
 	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, Path userPath) {
@@ -60,9 +70,8 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 			qc.getJoins(),
 			userPath,
 			Collections.singletonList(
-				CaseJurisdictionPredicateValidator.of(
-					new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
-					userPath)));
+				CaseJurisdictionPredicateValidator
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getResultingCase()), userPath)));
 	}
 
 	@Override
@@ -79,6 +88,29 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 				: cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
 		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		Predicate isRootInJurisdiction = isRootInJurisdictionOrOwned();
+
+		Subquery<Boolean> personSubquery = cq.subquery(Boolean.class);
+		final Root<TravelEntry> from = personSubquery.from(TravelEntry.class);
+		TravelEntryJoins travelEntryJoins = new TravelEntryJoins(from);
+
+		final Predicate isPersonInJurisdiction = PersonJurisdictionPredicateValidator
+			.of(
+				cq,
+				cb,
+				travelEntryJoins.getPersonJoins(),
+				user,
+				new HashSet<>(Arrays.asList(PersonAssociation.CASE, PersonAssociation.CONTACT, PersonAssociation.EVENT_PARTICIPANT)))
+			.isRootInJurisdictionForRestrictedAccess();
+
+		personSubquery.select(from.get(AbstractDomainObject.ID));
+		personSubquery.where(isPersonInJurisdiction, cb.equal(from.get(AbstractDomainObject.ID), joins.getRoot().get(AbstractDomainObject.ID)));
+
+		return and(isRootInJurisdiction, cb.exists(personSubquery));
 	}
 
 	@Override

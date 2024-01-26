@@ -59,20 +59,34 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		final Predicate currentUserResponsible = getCurrentUserResponsible();
 
+		return cb.or(reportedByCurrentUser, currentUserResponsible, this.isRootInJurisdiction());
+	}
+
+	private Predicate getReportedByCurrentUser() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Event.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Event.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Event.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
+		return reportedByCurrentUser;
+	}
 
-		final Predicate currentUserResponsible = cb.and(
+	private Predicate getCurrentUserResponsible() {
+		return cb.and(
 			cb.isNotNull(joins.getRoot().get(Event.RESPONSIBLE_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID)));
+	}
 
-		return cb.or(reportedByCurrentUser, currentUserResponsible, this.isRootInJurisdiction());
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		final Predicate currentUserResponsible = getCurrentUserResponsible();
+		return cb.or(reportedByCurrentUser, currentUserResponsible);
 	}
 
 	@Override
