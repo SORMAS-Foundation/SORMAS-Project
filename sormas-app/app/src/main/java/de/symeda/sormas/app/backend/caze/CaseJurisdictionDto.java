@@ -34,6 +34,7 @@ public class CaseJurisdictionDto implements Serializable {
 	private String healthFacilityUuid;
 	private String pointOfEntryUuid;
 	private List<String> sampleLabUuids;
+	private String surveillanceOfficerUuid;
 
 	public CaseJurisdictionDto() {
 	}
@@ -117,5 +118,14 @@ public class CaseJurisdictionDto implements Serializable {
 
 	public void setSampleLabUuids(List<String> sampleLabUuids) {
 		this.sampleLabUuids = sampleLabUuids;
+	}
+
+	public String getSurveillanceOfficerUuid() {
+		return surveillanceOfficerUuid;
+	}
+
+	public CaseJurisdictionDto setSurveillanceOfficerUuid(String surveillanceOfficerUuid) {
+		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
+		return this;
 	}
 }

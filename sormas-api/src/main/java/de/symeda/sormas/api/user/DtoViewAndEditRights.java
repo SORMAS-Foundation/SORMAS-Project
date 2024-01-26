@@ -87,7 +87,9 @@ public class DtoViewAndEditRights {
 		viewRights.put(
 			PathogenTestDto.class.getSimpleName(),
 			Stream.of(UserRight.SAMPLE_VIEW, UserRight.ENVIRONMENT_SAMPLE_VIEW).collect(Collectors.toSet()));
-		editRights.put(PathogenTestDto.class.getSimpleName(), Collections.singleton(UserRight.PATHOGEN_TEST_EDIT));
+		editRights.put(
+			PathogenTestDto.class.getSimpleName(),
+			Stream.of(UserRight.PATHOGEN_TEST_EDIT, UserRight.ENVIRONMENT_PATHOGEN_TEST_EDIT).collect(Collectors.toSet()));
 
 		viewRights.put(PersonDto.class.getSimpleName(), Collections.singleton(UserRight.PERSON_VIEW));
 		editRights.put(PersonDto.class.getSimpleName(), Collections.singleton(UserRight.PERSON_EDIT));

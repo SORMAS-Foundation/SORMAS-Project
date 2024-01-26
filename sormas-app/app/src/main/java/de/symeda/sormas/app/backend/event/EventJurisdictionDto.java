@@ -56,8 +56,9 @@ public class EventJurisdictionDto implements Serializable {
 		return responsibleUserUuid;
 	}
 
-	public void setResponsibleUserUuid(String responsibleUserUuid) {
+	public EventJurisdictionDto setResponsibleUserUuid(String responsibleUserUuid) {
 		this.responsibleUserUuid = responsibleUserUuid;
+		return this;
 	}
 
 	public String getRegionUuid() {

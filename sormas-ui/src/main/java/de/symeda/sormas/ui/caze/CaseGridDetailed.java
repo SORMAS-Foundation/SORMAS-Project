@@ -13,6 +13,7 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -153,5 +154,10 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()))
 			.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))
 			.setWidth(80);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(CaseIndexDetailedDto.RESPONSIBLE_REGION).setHidden(true);
+			getColumn(CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY).setHidden(true);
+		}
 	}
 }

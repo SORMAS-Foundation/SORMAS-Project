@@ -126,7 +126,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.UUID) +
 					fluidRowLocs(ContactDto.EXTERNAL_ID, ContactDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(ContactDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
-					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
+					fluidRowLocs(3, ContactDto.REPORTING_USER, 4, ContactDto.REPORT_DATE_TIME, 4,ContactDto.REPORTING_DISTRICT, 1, "") +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +

@@ -175,7 +175,7 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 						eventParticipantToSave.setEvent(eventToSave);
 						eventParticipantToSave.setResultingCaseUuid(linkedCase.getUuid());
 						EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(EventNewActivity.this);
-						eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave);
+						eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave, false);
 					} else {
 						EventEditActivity.startActivity(getContext(), eventToSave.getUuid(), EventSection.EVENT_PARTICIPANTS);
 					}

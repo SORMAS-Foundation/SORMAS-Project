@@ -117,6 +117,7 @@ public class PathogenTestController {
 		int caseSampleCount,
 		Consumer<PathogenTestDto> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
+
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created 
 		createForm.setValue(pathogenTest);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
@@ -146,7 +147,7 @@ public class PathogenTestController {
 
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -190,8 +191,9 @@ public class PathogenTestController {
 
 		// get fresh data
 		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
+		boolean forHumanSample = pathogenTest.getSample() != null;
 		final PathogenTestForm form;
-		if (pathogenTest.getSample() != null) {
+		if (forHumanSample) {
 			SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
 			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
 		} else {
@@ -230,9 +232,9 @@ public class PathogenTestController {
 				}
 			}
 			editView.restrictEditableComponentsOnEditView(
-				UserRight.SAMPLE_EDIT,
-				UserRight.PATHOGEN_TEST_EDIT,
-				UserRight.PATHOGEN_TEST_DELETE,
+				forHumanSample ? UserRight.SAMPLE_EDIT : UserRight.ENVIRONMENT_SAMPLE_EDIT,
+				forHumanSample ? UserRight.PATHOGEN_TEST_EDIT : UserRight.ENVIRONMENT_PATHOGEN_TEST_EDIT,
+				forHumanSample ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE,
 				null,
 				pathogenTest.isInJurisdiction());
 

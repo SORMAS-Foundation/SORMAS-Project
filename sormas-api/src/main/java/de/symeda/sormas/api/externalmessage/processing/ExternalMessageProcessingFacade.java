@@ -48,7 +48,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
@@ -253,8 +252,8 @@ public abstract class ExternalMessageProcessingFacade {
 
 	}
 
-	public boolean isFeaturePropertyValueTrue(FeatureType featureType, FeatureTypeProperty featureTypeProperty) {
-		return featureConfigurationFacade.isPropertyValueTrue(featureType, featureTypeProperty);
+	public boolean isFeatureEnabled(FeatureType featureType) {
+		return featureConfigurationFacade.isFeatureEnabled(featureType);
 	}
 
 	public RegionReferenceDto getDefaultRegionReference() {

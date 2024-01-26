@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Item;
@@ -49,6 +50,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -79,6 +81,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -103,6 +106,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
+	private static final String NATIONAL_HEALTH_ID_WARNING_LABEL = "nationalHealthIdWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -134,6 +138,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
                     ) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
+                    fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(PersonDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
 
@@ -350,7 +355,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personContactDetailsField.setCaption(null);
 		personContactDetailsField.setPseudonymized(isPseudonymized);
 
-		ComboBox occupationTypeField = addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
+		ComboBox occupationTypeField = addCustomizableEnumField(PersonDto.OCCUPATION_TYPE);
 		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
 		occupationTypeDetailsField.setVisible(false);
 		FieldHelper
@@ -366,7 +371,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
 		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
 
-		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
+		addField(PersonDto.PASSPORT_NUMBER);
+
+		TextField nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID);
+		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
+		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
+		getContent().addComponent(nationalHealthIdWarningLabel, NATIONAL_HEALTH_ID_WARNING_LABEL);
+
 		Field externalId = addField(PersonDto.EXTERNAL_ID);
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			externalId.setEnabled(false);
@@ -566,13 +577,24 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			burialDate.setValidationVisible(!burialDate.isValid());
 		});
 
-		addValueChangeListener((e) -> {
+		addValueChangeListener(e -> {
 			ValidationUtils.initComponentErrorValidator(
 				externalTokenField,
 				getValue().getExternalToken(),
 				Validations.duplicateExternalToken,
 				externalTokenWarningLabel,
-				(externalToken) -> FacadeProvider.getPersonFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
+				externalToken -> FacadeProvider.getPersonFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
+
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				ValidationUtils.initComponentErrorValidator(
+					nationalHealthIdField,
+					getValue().getNationalHealthId(),
+					Validations.invalidNationalHealthId,
+					nationalHealthIdWarningLabel,
+					nationalHealthId -> !LuxembourgNationalHealthIdValidator
+						.isValid(nationalHealthId, (Integer)birthDateYear.getValue(), (Integer)birthDateMonth.getValue(), (Integer)birthDateDay.getValue()),
+					ErrorLevel.WARNING);
+			}
 
 			personContactDetailsField.setThisPerson((PersonDto) e.getProperty().getValue());
 		});

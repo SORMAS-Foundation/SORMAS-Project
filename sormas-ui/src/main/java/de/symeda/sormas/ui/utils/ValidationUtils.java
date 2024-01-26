@@ -20,7 +20,9 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,13 +38,31 @@ public class ValidationUtils {
 		String validationMessageTag,
 		Label warningLabel,
 		Function<String, Boolean> exists) {
+		initComponentErrorValidator(field, initialFieldValue, validationMessageTag, warningLabel, exists, ErrorLevel.ERROR);
+	}
+
+	public static void initComponentErrorValidator(
+		TextField field,
+		String initialFieldValue,
+		String validationMessageTag,
+		Label warningLabel,
+		Function<String, Boolean> isInvlaid,
+		ErrorLevel errorLevel) {
 		if (field == null) {
 			return;
 		}
 
+		// already initialized
+		if (field.getData() != null) {
+			// remove old listener
+			if (Property.ValueChangeListener.class.isAssignableFrom(field.getData().getClass())) {
+				field.removeValueChangeListener((Property.ValueChangeListener) field.getData());
+			}
+		}
+
 		Function<String, Void> validateExternalToken = (String value) -> {
-			if (field.isVisible() && !StringUtils.isEmpty(value) && exists.apply(value)) {
-				field.setComponentError(new UserError(I18nProperties.getValidationError(validationMessageTag)));
+			if (field.isVisible() && !StringUtils.isEmpty(value) && isInvlaid.apply(value)) {
+				field.setComponentError(new UserError(I18nProperties.getValidationError(validationMessageTag), null, errorLevel));
 				warningLabel.setVisible(true);
 			} else {
 				field.setComponentError(null);
@@ -53,6 +73,8 @@ public class ValidationUtils {
 		};
 
 		validateExternalToken.apply(initialFieldValue);
-		field.addValueChangeListener(f -> validateExternalToken.apply((String) f.getProperty().getValue()));
+		Property.ValueChangeListener valueChangeListener = f -> validateExternalToken.apply((String) f.getProperty().getValue());
+		field.addValueChangeListener(valueChangeListener);
+		field.setData(valueChangeListener);
 	}
 }

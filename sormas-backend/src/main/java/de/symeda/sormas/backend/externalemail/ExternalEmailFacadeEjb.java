@@ -60,6 +60,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.messaging.EmailService;
@@ -75,7 +76,6 @@ import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLoca
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.document.DocumentStorageService;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.externalemail.luxembourg.NationalHealthIdValidator;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
@@ -151,8 +151,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 
 		User currentUser = userService.getCurrentUser();
 		DocumentTemplateEntities documentEntities = templateEntitiesBuilder.resolveEntities(
-				new RootEntities().addReference(options.getRootEntityType(), options.getRootEntityReference())
-						.addEntity(RootEntityType.ROOT_USER, currentUser));
+			new RootEntities().addReference(options.getRootEntityType(), options.getRootEntityReference())
+				.addEntity(RootEntityType.ROOT_USER, currentUser));
 
 		PersonReferenceDto personRef = (PersonReferenceDto) documentEntities.getEntity(RootEntityType.ROOT_PERSON);
 		Person person = personService.getByReferenceDto(personRef);
@@ -176,7 +176,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		}
 
 		String generatedText =
-				documentTemplateFacade.generateDocumentTxtFromEntities(options.getDocumentWorkflow(), options.getTemplateName(), documentEntities, null);
+			documentTemplateFacade.generateDocumentTxtFromEntities(options.getDocumentWorkflow(), options.getTemplateName(), documentEntities, null);
 		EmailTemplateTexts emailTexts = splitTemplateContent(generatedText);
 
 		try {
@@ -184,10 +184,10 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 
 			if (passwordType == PasswordType.RANDOM) {
 				messagingService.sendManualMessage(
-						person,
-						null,
-						String.format(I18nProperties.getString(Strings.messageExternalEmailAttachmentPassword), password),
-						MessageType.SMS);
+					person,
+					null,
+					String.format(I18nProperties.getString(Strings.messageExternalEmailAttachmentPassword), password),
+					MessageType.SMS);
 			}
 		} catch (MessagingException | NotificationDeliveryFailedException e) {
 			logger.error("Error sending email", e);
@@ -201,9 +201,9 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private static void validateAttachedDocuments(List<Document> sormasDocuments, ExternalEmailOptionsDto options) {
 		DocumentRelatedEntityType documentRelatedEntityType = DOCUMENT_WORKFLOW_DOCUMENT_RELATION_MAPPING.get(options.getDocumentWorkflow());
 		if (sormasDocuments.stream()
-				.anyMatch(
-						d -> d.getRelatedEntityType() != documentRelatedEntityType
-								&& !Objects.equals(d.getRelatedEntityUuid(), options.getRootEntityReference().getUuid()))) {
+			.anyMatch(
+				d -> d.getRelatedEntityType() != documentRelatedEntityType
+					&& !Objects.equals(d.getRelatedEntityUuid(), options.getRootEntityReference().getUuid()))) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.attachedDocumentNotRelatedToEntity));
 		}
 	}
@@ -238,30 +238,30 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		PasswordType passwordType = getApplicablePasswordType(person);
 
 		switch (passwordType) {
-			case HEALTH_ID:
-				return new Pair<>(person.getNationalHealthId(), passwordType);
-			case RANDOM:
-				return new Pair<>(generateRandomPassword(), passwordType);
-			case NONE:
-			default:
-				throw new ExternalEmailException(I18nProperties.getString(Strings.errorExternalEmailAttachmentCannotEncrypt));
+		case HEALTH_ID:
+			return new Pair<>(person.getNationalHealthId(), passwordType);
+		case RANDOM:
+			return new Pair<>(generateRandomPassword(), passwordType);
+		case NONE:
+		default:
+			throw new ExternalEmailException(I18nProperties.getString(Strings.errorExternalEmailAttachmentCannotEncrypt));
 		}
 	}
 
 	private static String generateRandomPassword() {
 		return new RandomStringGenerator.Builder().withinRange(
-						new char[]{
-								'a',
-								'z'},
-						new char[]{
-								'A',
-								'Z'},
-						new char[]{
-								'2',
-								'9'})
-				.filteredBy(codePoint -> !"lIO".contains(String.valueOf((char) codePoint)))
-				.build()
-				.generate(ATTACHMENT_PASSWORD_LENGTH);
+			new char[] {
+				'a',
+				'z' },
+			new char[] {
+				'A',
+				'Z' },
+			new char[] {
+				'2',
+				'9' })
+			.filteredBy(codePoint -> !"lIO".contains(String.valueOf((char) codePoint)))
+			.build()
+			.generate(ATTACHMENT_PASSWORD_LENGTH);
 	}
 
 	private static void validateOptions(ExternalEmailOptionsDto options) {
@@ -272,10 +272,10 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	}
 
 	private ManualMessageLog createMessageLog(
-			ExternalEmailOptionsDto options,
-			PersonReferenceDto personRef,
-			User currentUser,
-			List<Document> attachedDocuments) {
+		ExternalEmailOptionsDto options,
+		PersonReferenceDto personRef,
+		User currentUser,
+		List<Document> attachedDocuments) {
 		ManualMessageLog log = new ManualMessageLog();
 
 		log.setMessageType(MessageType.EMAIL);
@@ -290,10 +290,10 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		log.setCaze(caseService.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_CASE, CaseReferenceDto.class)));
 		log.setContact(contactService.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_CONTACT, ContactReferenceDto.class)));
 		log.setEventParticipant(
-				eventParticipantService
-						.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_EVENT_PARTICIPANT, EventParticipantReferenceDto.class)));
+			eventParticipantService
+				.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_EVENT_PARTICIPANT, EventParticipantReferenceDto.class)));
 		log.setTravelEntry(
-				travelEntryService.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_TRAVEL_ENTRY, TravelEntryReferenceDto.class)));
+			travelEntryService.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_TRAVEL_ENTRY, TravelEntryReferenceDto.class)));
 
 		return log;
 	}
@@ -312,7 +312,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			return false;
 		}
 
-		return NationalHealthIdValidator.isValid(nationalHealthId, person);
+		return LuxembourgNationalHealthIdValidator.isValid(nationalHealthId, person.getBirthdateYYYY(), person.getBirthdateMM(), person.getBirthdateDD());
 	}
 
 	@Stateless

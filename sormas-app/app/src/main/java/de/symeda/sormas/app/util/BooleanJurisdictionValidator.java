@@ -21,13 +21,15 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.UserDtoHelper;
 
 public abstract class BooleanJurisdictionValidator extends JurisdictionValidator<Boolean> {
 
 	private final UserJurisdiction userJurisdiction;
 
 	public BooleanJurisdictionValidator(List<BooleanJurisdictionValidator> associatedJurisdictionValidators, UserJurisdiction userJurisdiction) {
-		super(associatedJurisdictionValidators);
+		super(associatedJurisdictionValidators, UserDtoHelper.isRestrictedToAssignEntities(ConfigProvider.getUser()));
 		this.userJurisdiction = userJurisdiction;
 	}
 

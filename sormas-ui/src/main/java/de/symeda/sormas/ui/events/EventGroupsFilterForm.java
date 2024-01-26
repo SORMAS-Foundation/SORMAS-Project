@@ -10,9 +10,9 @@ import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -22,7 +22,10 @@ public class EventGroupsFilterForm extends AbstractFilterForm<EventGroupCriteria
 	private static final long serialVersionUID = -1166745065032487009L;
 
 	protected EventGroupsFilterForm() {
-		super(EventGroupCriteria.class, EventGroupIndexDto.I18N_PREFIX);
+		super(
+			EventGroupCriteria.class,
+			EventGroupIndexDto.I18N_PREFIX,
+			JurisdictionFieldConfig.of(EventGroupCriteria.REGION, EventGroupCriteria.DISTRICT, EventGroupCriteria.COMMUNITY));
 	}
 
 	@Override

@@ -41,7 +41,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -123,11 +122,13 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -178,6 +179,8 @@ public class UserFacadeEjb implements UserFacade {
 	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private UserRoleService userRoleService;
+	@EJB
+	private PersonService personService;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -681,6 +684,7 @@ public class UserFacadeEjb implements UserFacade {
 		Root<User> user = cq.from(User.class);
 		Join<User, District> district = user.join(User.DISTRICT, JoinType.LEFT);
 		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
+		Join<Location, Region> region = address.join(Location.REGION, JoinType.LEFT);
 		Join<User, Facility> facility = user.join(User.HEALTH_FACILITY, JoinType.LEFT);
 
 		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
@@ -706,36 +710,37 @@ public class UserFacadeEjb implements UserFacade {
 		}
 
 		if (sortProperties != null && !sortProperties.isEmpty()) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
+			List<Order> orderList = new ArrayList<>();
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
 				switch (sortProperty.propertyName) {
 				case EntityDto.UUID:
 				case UserDto.ACTIVE:
+					order = orderBuilder.build(user.get(sortProperty.propertyName));
+					break;
 				case UserDto.USER_NAME:
 				case UserDto.USER_EMAIL:
-					expression = user.get(sortProperty.propertyName);
+					order = orderBuilder.build(cb.lower(user.get(sortProperty.propertyName)));
 					break;
 				case UserDto.NAME:
-					expression = user.get(User.FIRST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = user.get(User.LAST_NAME);
+					order = orderBuilder.build(cb.lower(user.get(User.FIRST_NAME)), cb.lower(user.get(User.LAST_NAME)));
 					break;
 				case UserDto.DISTRICT:
-					expression = district.get(District.NAME);
+					order = orderBuilder.build(cb.lower(district.get(District.NAME)));
 					break;
 				case UserDto.ADDRESS:
-					expression = address.get(Location.REGION);
+					order = orderBuilder.build(cb.lower(region.get(Region.NAME)));
 					break;
 				case UserDto.HEALTH_FACILITY:
-					expression = facility.get(Facility.NAME);
+					order = orderBuilder.build(cb.lower(facility.get(Facility.NAME)));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				orderList.addAll(order);
 			}
-			cq.orderBy(order);
+			cq.orderBy(orderList);
 		} else {
 			cq.orderBy(cb.desc(user.get(AbstractDomainObject.CHANGE_DATE)));
 		}
@@ -951,6 +956,7 @@ public class UserFacadeEjb implements UserFacade {
 				Arrays.asList(UserRight.CASE_RESPONSIBLE))
 			.stream()
 			.map(userReference -> userService.getByUuid(userReference.getUuid()))
+			.filter(user -> !UserHelper.isRestrictedToAssignEntities(user))
 			.collect(Collectors.toList());
 		return possibleUserForReplacement;
 	}

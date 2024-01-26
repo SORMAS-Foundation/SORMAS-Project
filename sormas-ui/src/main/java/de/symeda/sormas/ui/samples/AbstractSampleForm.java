@@ -75,7 +75,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	//@formatter:off
     protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-            fluidRowLocs(SampleDto.UUID, REPORT_INFO_LABEL_LOC, SampleDto.REPORTING_USER) +
+            fluidRowLocs(4, SampleDto.UUID, 4, REPORT_INFO_LABEL_LOC, 3,SampleDto.REPORTING_USER, 1, "") +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +

@@ -818,13 +818,16 @@ public interface Captions {
 	String creationDate = "creationDate";
 	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
 	String CustomizableEnum_hasDetails_short = "CustomizableEnum.hasDetails.short";
+	String CustomizableEnumValue_active = "CustomizableEnumValue.active";
 	String CustomizableEnumValue_caption = "CustomizableEnumValue.caption";
 	String CustomizableEnumValue_dataType = "CustomizableEnumValue.dataType";
 	String CustomizableEnumValue_diseases = "CustomizableEnumValue.diseases";
 	String CustomizableEnumValue_properties = "CustomizableEnumValue.properties";
 	String CustomizableEnumValue_value = "CustomizableEnumValue.value";
+	String customizableEnumValueActiveValues = "customizableEnumValueActiveValues";
 	String customizableEnumValueAllDiseases = "customizableEnumValueAllDiseases";
 	String customizableEnumValueDiseaseCount = "customizableEnumValueDiseaseCount";
+	String customizableEnumValueInactiveValues = "customizableEnumValueInactiveValues";
 	String customizableEnumValueNoProperties = "customizableEnumValueNoProperties";
 	String dashboardAggregatedNumber = "dashboardAggregatedNumber";
 	String dashboardAlive = "dashboardAlive";
@@ -1466,6 +1469,7 @@ public interface Captions {
 	String externalMessageProcess = "externalMessageProcess";
 	String externalMessageRelatedEntriesFound = "externalMessageRelatedEntriesFound";
 	String externalMessagesList = "externalMessagesList";
+	String externalMessageValueNotSpecified = "externalMessageValueNotSpecified";
 	String ExternalSurveillanceToolGateway_confirmDelete = "ExternalSurveillanceToolGateway.confirmDelete";
 	String ExternalSurveillanceToolGateway_confirmSend = "ExternalSurveillanceToolGateway.confirmSend";
 	String ExternalSurveillanceToolGateway_excludeAndSend = "ExternalSurveillanceToolGateway.excludeAndSend";

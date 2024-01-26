@@ -92,7 +92,7 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	public Predicate inJurisdictionOrOwned() {
-		Predicate rootInJurisdictionOrOwned = isRootInJurisdictionOrOwned();
+		Predicate rootInJurisdictionOrOwned = isRootAccessible();
 		Predicate rootHasLimitedDisease = hasUserLimitedDisease();
 		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
 			final List<Predicate> jurisdictionTypes = new ArrayList<>();
@@ -101,7 +101,7 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 			diseaseJurisdictionTypes.add(rootHasLimitedDisease);
 			for (JurisdictionValidator<Predicate> jurisdictionValidator : associatedJurisdictionValidators) {
 				if (jurisdictionValidator != null) {
-					Predicate associatedInJurisdictionOrOwned = jurisdictionValidator.isRootInJurisdictionOrOwned();
+					Predicate associatedInJurisdictionOrOwned = jurisdictionValidator.isRootAccessible();
 					Predicate associatedHasLimitedDisease = jurisdictionValidator.hasUserLimitedDisease();
 					jurisdictionTypes.add(associatedInJurisdictionOrOwned);
 					diseaseJurisdictionTypes.add(associatedHasLimitedDisease);
@@ -133,6 +133,15 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 		} else {
 			return and(rootInJurisdiction, rootHasLimitedDisease);
 		}
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		List<Predicate> associationPredicates = new ArrayList<>(associatedJurisdictionValidators.size());
+		for (JurisdictionValidator<Predicate> associatedJurisdictionValidator : associatedJurisdictionValidators) {
+			associationPredicates.add(associatedJurisdictionValidator.isRootInJurisdictionForRestrictedAccess());
+		}
+		return or(associationPredicates);
 	}
 
 	@Override

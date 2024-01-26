@@ -149,13 +149,15 @@ public class DistrictFacadeEjb
 				switch (sortProperty.propertyName) {
 				case District.NAME:
 				case District.EPID_CODE:
-				case District.GROWTH_RATE:
 				case District.EXTERNAL_ID:
+					expression = cb.lower(district.get(sortProperty.propertyName));
+					break;
+				case District.GROWTH_RATE:
 				case District.DEFAULT_INFRASTRUCTURE:
 					expression = district.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
-					expression = region.get(Region.NAME);
+					expression = cb.lower(region.get(Region.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -164,7 +166,7 @@ public class DistrictFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)));
+			cq.orderBy(cb.asc(cb.lower(region.get(Region.NAME))), cb.asc(cb.lower(district.get(District.NAME))));
 		}
 
 		cq.select(district);

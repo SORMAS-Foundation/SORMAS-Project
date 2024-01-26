@@ -821,7 +821,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexListByARestrictedAccessToAssignedEntities() {
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 
 		String lastName = "Person";
 		PersonDto cazePerson = creator.createPerson("Case", lastName);

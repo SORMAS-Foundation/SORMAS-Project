@@ -52,6 +52,7 @@ public class CollapsiblePathogenTestForm extends VerticalLayout {
 
 		commitDiscardForm.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
 		commitDiscardForm.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+		commitDiscardForm.getDiscardButton().setId("cancel");
 		commitDiscardForm.getButtonsPanel().setComponentAlignment(commitDiscardForm.getDiscardButton(), Alignment.BOTTOM_LEFT);
 		commitDiscardForm.addDoneListener(this::collapse);
 
