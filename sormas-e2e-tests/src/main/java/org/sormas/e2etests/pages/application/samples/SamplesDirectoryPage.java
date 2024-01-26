@@ -29,6 +29,8 @@ public class SamplesDirectoryPage {
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
   public static final By SAMPLE_GRID_RESULTS_ROWS =
       By.cssSelector("[class='v-grid-tablewrapper'] tbody>tr");
+  public static final By RELEVANCE_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_SEARCH_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
   public static final By LABORATORY_SEARCH_COMBOBOX =

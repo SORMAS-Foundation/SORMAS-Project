@@ -127,6 +127,9 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_CASE_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CASE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.shares.EditSharesPage.SHARE_UUID_CASE_TITLE;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
@@ -572,8 +575,18 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
 
-          TimeUnit.SECONDS.sleep(2);
+    When(
+        "^I create a new case for the same person$",
+        () -> {
+          fillAllCaseFieldsForTheSamePerson(caze);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CASE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CASE_POPUP_SAVE_BUTTON);
+          }
         });
 
     Then(
@@ -1839,6 +1852,21 @@ public class CreateNewCaseSteps implements En {
     fillLastName(caze.getLastName());
     fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
     selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    fillPlaceDescription(caze.getPlaceDescription());
+  }
+
+  private void fillAllCaseFieldsForTheSamePerson(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectResponsibleCommunity(caze.getResponsibleCommunity());
+    selectPlaceOfStay(caze.getPlaceOfStay());
     selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
     fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
     fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());

@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditPersonPage {
   public static final By UUID_INPUT = By.cssSelector("#uuid");
+  public static final By NEW_CASE_BUTTON = By.cssSelector("div[id^='New case']");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By FIRST_NAME_INPUT = By.id("firstName");
@@ -109,6 +110,7 @@ public class EditPersonPage {
       By.cssSelector(".v-Notification.error.v-Notification-error");
   public static final By ERROR_INDICATOR =
       By.cssSelector(".v-errorindicator.v-errorindicator-info");
+  public static final By SEE_SAMPLES_FOR_PERSON_BUTTON = By.id("See samples for this person");
   public static final By SEE_CASES_FOR_PERSON_BUTTON = By.id("See cases for this person");
   public static final By SEE_CASES_FOR_PERSON_BUTTON_DE =
       By.id("F\u00E4lle f\u00FCr diese Person ansehen");

@@ -32,14 +32,19 @@ public class EventParticipantsPage {
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
   public static final By SEX_COMBOBOX_REQUIRED =
       By.xpath("//div[@id='sex' and contains(@class, 'v-required v-filterselect-required')]");
+  public static final By PICK_OR_CASE_PERSON_POPUP =
+      By.xpath("//*[contains(text(),'Pick or Create a Case')]");
   public static final By PICK_OR_CREATE_PERSON_POPUP =
       By.xpath("//*[contains(text(),'Pick or create person')]");
   public static final By PICK_OR_CREATE_CONTACT_POPUP =
       By.xpath("//*[contains(text(),'Pick or create contact')]");
   public static final By CREATE_NEW_PERSON_RADIO_BUTTON =
       By.xpath("//label[contains(text(),'Create a new person')]");
+  public static final By CREATE_NEW_CASE_RADIO_BUTTON =
+      By.xpath("//label[contains(text(),'Create a new case')]");
   public static final By EVENT_PARTICIPANTS_TAB = By.id("tab-events-eventparticipants");
   public static final By PICK_OR_CREATE_POPUP_SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By PICK_OR_CASE_POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By ERROR_MESSAGE_TEXT = By.cssSelector("p.v-Notification-description");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
