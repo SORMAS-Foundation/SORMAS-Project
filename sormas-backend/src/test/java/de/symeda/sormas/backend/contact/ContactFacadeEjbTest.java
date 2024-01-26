@@ -38,7 +38,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1034,6 +1036,57 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(caze);
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
 		assertEquals(2, getContactFacade().getIndexList(null, 0, 100, null).size());
+	}
+
+	@Test
+	public void testGetIndexListWithLimitedDisease() {
+		RDCF rdcf1 = creator.createRDCF("Region1", "District1", "Community1", "Facility1", "PointOfEntry1");
+		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2", "PointOfEntry2");
+
+		final UserDto surveillanceOfficer = creator.createSurveillanceOfficer(rdcf1);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		final ContactDto contact = creator.createContact(
+			surveillanceOfficer.toReference(),
+			null,
+			contactPerson.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
+
+		PersonDto contactPerson2 = creator.createPerson("Contact2", "Person2");
+		final ContactDto contact2 = creator
+			.createContact(surveillanceOfficer.toReference(), null, contactPerson2.toReference(), null, new Date(), new Date(), Disease.EVD, rdcf1);
+
+		PersonDto contactPerson3 = creator.createPerson("Contact3", "Person3");
+		final ContactDto contact3 = creator.createContact(
+			surveillanceOfficer.toReference(),
+			null,
+			contactPerson3.toReference(),
+			null,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
+
+		PersonDto contactPerson4 = creator.createPerson("Contact3", "Person3");
+		final ContactDto contact4 = creator
+			.createContact(surveillanceOfficer.toReference(), null, contactPerson4.toReference(), null, new Date(), new Date(), Disease.EVD, rdcf2);
+
+		loginWith(nationalAdmin);
+		Set<Disease> diseaseList = new HashSet<>();
+		diseaseList.add(Disease.CORONAVIRUS);
+		surveillanceOfficer.setLimitedDiseases(diseaseList);
+		getUserFacade().saveUser(surveillanceOfficer, false);
+
+		loginWith(surveillanceOfficer);
+		assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
+		assertEquals(4, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
 	}
 
 	@Test
