@@ -23,6 +23,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -180,9 +181,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 
 		final String uuid = sampleDto.getUuid();
 		final boolean deleted = FacadeProvider.getSampleFacade().isDeleted(uuid);
-
-		layout.disableIfNecessary(deleted, null);
-		editComponent.setEnabled(isEditAllowed());
+		layout.disableIfNecessary(deleted, isEditAllowed() ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED);
 	}
 
 	private AbstractInfoLayout<EntityDto> getDependentSideComponent(SampleDto sampleDto) {
