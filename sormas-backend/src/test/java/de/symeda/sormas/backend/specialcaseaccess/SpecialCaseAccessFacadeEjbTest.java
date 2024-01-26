@@ -60,4 +60,23 @@ public class SpecialCaseAccessFacadeEjbTest extends AbstractBeanTest {
 		assertThat(specialAccesses.get(0).getAssignedBy(), is(user));
 		assertThat(specialAccesses.get(0).getAssignedTo(), is(otherUser));
 	}
+
+	@Test
+	public void testDeleteExpiredSpecialAccesses() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf, "officer", DefaultUserRole.SURVEILLANCE_OFFICER).toReference();
+		CaseDataDto caze = creator.createCase(user, rdcf, null);
+
+		TestDataCreator.RDCF otherRdcf = creator.createRDCF();
+		UserReferenceDto otherUser = creator.createUser(otherRdcf, "otherOfficer", DefaultUserRole.SURVEILLANCE_OFFICER).toReference();
+
+		creator.createSpecialCaseAccess(caze.toReference(), user, otherUser, DateHelper.addDays(new Date(), 1));
+		// expired ones should be deleted
+		creator.createSpecialCaseAccess(caze.toReference(), user, otherUser, DateHelper.subtractDays(new Date(), 1));
+
+		getSpecialCaseAccessFacade().deleteExpiredSpecialCaseAccesses();
+
+		long specialAccessCount = getSpecialCaseAccessService().count();
+		assertThat(specialAccessCount, is(1L));
+	}
 }

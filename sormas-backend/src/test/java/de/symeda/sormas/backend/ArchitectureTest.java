@@ -467,7 +467,7 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testSpecialCaseAccessFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(SpecialCaseAccessFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
+		assertFacadeEjbAnnotated(SpecialCaseAccessFacadeEjb.class, AuthMode.CLASS_ONLY, Collections.singletonList("deleteExpiredSpecialCaseAccesses"), classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

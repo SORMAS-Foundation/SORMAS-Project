@@ -38,4 +38,6 @@ public interface SpecialCaseAccessFacade {
     void saveAll(@Valid List<SpecialCaseAccessDto> specialAccesses);
 
     boolean isAnyAssignedToUser(List<CaseReferenceDto> cases, UserReferenceDto user);
+
+    void deleteExpiredSpecialCaseAccesses();
 }

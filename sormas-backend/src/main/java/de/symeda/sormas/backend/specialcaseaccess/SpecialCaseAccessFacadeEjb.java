@@ -73,7 +73,17 @@ public class SpecialCaseAccessFacadeEjb implements SpecialCaseAccessFacade {
 
 	@Override
 	public void saveAll(@Valid List<SpecialCaseAccessDto> specialAccesses) {
-		specialAccesses.forEach(this::save);
+		specialAccesses.forEach(access -> {
+			specialCaseAccessService.deleteByCaseAndAssignee(access.getCaze(), access.getAssignedTo());
+			save(access);
+		});
+	}
+
+	@RightsAllowed(UserRight._SYSTEM)
+	public void deleteExpiredSpecialCaseAccesses() {
+		specialCaseAccessService
+				.getByPredicate((cb, from, cq) -> cb.lessThanOrEqualTo(from.get(SpecialCaseAccess.END_DATE_TIME), new java.util.Date()))
+				.forEach(specialCaseAccessService::deletePermanent);
 	}
 
 	private SpecialCaseAccess fillOrBuildEntity(SpecialCaseAccessDto source, SpecialCaseAccess target) {
