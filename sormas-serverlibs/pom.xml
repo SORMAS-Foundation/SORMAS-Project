@@ -289,11 +289,6 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-		</dependency>
-
 		<!-- *** Exclude Payara modules *** (with explicite scope "runtime") -->
 
 		<dependency>

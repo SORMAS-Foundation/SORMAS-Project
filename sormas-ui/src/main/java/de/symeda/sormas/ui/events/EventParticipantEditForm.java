@@ -110,11 +110,9 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		setVisible(false, EventParticipantDto.DELETION_REASON, EventParticipantDto.OTHER_DELETION_REASON);
 	}
 
-	private void hideAndFillJurisdictionFields() {
+	private void hideJurisdictionFields() {
 		region.setVisible(false);
-		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		district.setVisible(false);
-		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 	}
 
 	@Override
@@ -132,7 +130,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		super.setInternalValue(newValue);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFields();
+			hideJurisdictionFields();
 		}
 	}
 
