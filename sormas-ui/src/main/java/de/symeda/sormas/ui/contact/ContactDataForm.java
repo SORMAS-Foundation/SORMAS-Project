@@ -1039,14 +1039,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void hideAndFillJurisdictionFields() {
-
+	private void hideJurisdictionFields() {
 		region.setVisible(false);
-		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		district.setVisible(false);
-		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		community.setVisible(false);
-		community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
 	@Override
@@ -1067,7 +1063,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		updateFollowUpStatusComponents();
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFields();
+			hideJurisdictionFields();
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
