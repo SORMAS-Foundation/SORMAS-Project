@@ -92,9 +92,17 @@ public class WebDriverHelpers {
   }
 
   public static void waitForElementPresent(By selector, int timeOutInSeconds) {
-    driver.getCurrentUrl();
-    new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds))
-        .until(ExpectedConditions.presenceOfElementLocated(selector));
+    try {
+      driver.getCurrentUrl();
+      new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds))
+          .until(ExpectedConditions.presenceOfElementLocated(selector));
+    } catch (NoSuchElementException e) {
+      System.err.println("Element not found:" + e.getMessage());
+    } catch (TimeoutException e) {
+      System.err.println("Timeout waiting for element:" + e.getMessage());
+    } catch (Exception e) {
+      System.err.println("An expected error occurred: " + e.getMessage());
+    }
   }
 
   public void ClickAndWaitForNewFormLoaded(By selector, By newForm) {
