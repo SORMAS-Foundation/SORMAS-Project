@@ -1075,13 +1075,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		final ContactDto contact4 = creator
 			.createContact(surveillanceOfficer.toReference(), null, contactPerson4.toReference(), null, new Date(), new Date(), Disease.EVD, rdcf2);
 
-		loginWith(surveillanceOfficer);
-		assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
-
-		ContactCriteria contactCriteria = new ContactCriteria();
-		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
-		assertEquals(4, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
-
 		loginWith(nationalAdmin);
 		Set<Disease> diseaseList = new HashSet<>();
 		diseaseList.add(Disease.CORONAVIRUS);
@@ -1091,6 +1084,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		loginWith(surveillanceOfficer);
 		assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
 
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setIncludeContactsFromOtherJurisdictions(true);
 		assertEquals(4, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
 	}
 

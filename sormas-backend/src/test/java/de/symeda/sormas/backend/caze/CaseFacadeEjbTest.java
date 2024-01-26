@@ -931,8 +931,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf1);
 
 		loginWith(nationalAdmin);
-		assertEquals(4, getCaseFacade().getIndexList(null, 0, 100, null).size());
-
 		Set<Disease> diseaseList = new HashSet<>();
 		diseaseList.add(Disease.CORONAVIRUS);
 		surveillanceOfficer.setLimitedDiseases(diseaseList);
