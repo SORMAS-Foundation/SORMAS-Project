@@ -52,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -64,6 +65,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
@@ -141,6 +143,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private Collection<? extends CaseIndexDto> selectedCases;
 	private OptionGroup facilityOrHome;
 	private HorizontalLayout warningLayout;
+
+	private ComboBox region;
+	private ComboBox district;
+	private ComboBox community;
 
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends CaseIndexDto> selectedCases) {
 		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX);
@@ -286,11 +292,11 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkFacility));
 		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
 
-		ComboBox region = addInfrastructureField(CaseBulkEditData.REGION);
+		region = addInfrastructureField(CaseBulkEditData.REGION);
 		region.setEnabled(false);
-		ComboBox district = addInfrastructureField(CaseBulkEditData.DISTRICT);
+		district = addInfrastructureField(CaseBulkEditData.DISTRICT);
 		district.setEnabled(false);
-		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
+		community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
 		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
@@ -516,6 +522,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				FieldHelper.removeSoftRequiredStyle(community);
 			}
 		});
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 
 	@Override
@@ -605,5 +615,14 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		if (!visible) {
 			diseaseVariantCheckBox.setValue(false);
 		}
+	}
+
+	private void hideAndFillJurisdictionFields() {
+		region.setVisible(false);
+		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		district.setVisible(false);
+		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		community.setVisible(false);
+		community.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 }
