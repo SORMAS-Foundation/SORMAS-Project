@@ -142,3 +142,5 @@ Feature: Sample filter functionality
     And I check that number of displayed sample results is 2
     And I select "Deleted samples" Relevance Status option among the filter options
     And I check that number of displayed sample results is 1
+    And I select "All active and archived samples" Relevance Status option among the filter options
+    And I check that number of displayed sample results is 3
