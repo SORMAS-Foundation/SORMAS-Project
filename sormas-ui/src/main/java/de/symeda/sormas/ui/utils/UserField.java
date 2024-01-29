@@ -5,6 +5,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.v7.shared.ui.textfield.AbstractTextFieldState;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -31,6 +32,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 	private boolean readOnly;
 	private boolean enabled;
 	private List<UserReferenceDto> items = new ArrayList<>();
+	private boolean valueChanged = false;
 
 	public UserField() {
 	}
@@ -62,7 +64,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 		userCombo.setWidthFull();
 
 		userCombo.addValueChangeListener(valueChangeEvent -> {
-			setInternalValue((UserReferenceDto) userCombo.getValue());
+			super.setValue((UserReferenceDto) userCombo.getValue());
 		});
 
 		return userLayout;
