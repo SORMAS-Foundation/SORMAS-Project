@@ -5,7 +5,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.v7.shared.ui.textfield.AbstractTextFieldState;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
