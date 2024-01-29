@@ -32,7 +32,6 @@ public class UserField extends CustomField<UserReferenceDto> {
 	private boolean readOnly;
 	private boolean enabled;
 	private List<UserReferenceDto> items = new ArrayList<>();
-	private boolean valueChanged = false;
 
 	public UserField() {
 	}
