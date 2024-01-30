@@ -201,8 +201,8 @@ public class EditPersonSteps implements En {
     When(
         "I check that new edited person is correctly displayed in Edit Person page",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForElementPresent(PRESENT_CONDITION_INPUT, 2);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(PRESENT_CONDITION_INPUT);
           collectedPerson = collectPersonData();
           TimeUnit.SECONDS.sleep(2); // wait for reaction
