@@ -141,8 +141,11 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 			.collect(Collectors.toList());
 	}
 
-	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
-		return !getEnumValues(type, disease).isEmpty();
+	public void clearCache() {
+		customizableEnumsByType.clear();
+		enumValuesByLanguage.clear();
+		enumValuesByDisease.clear();
+		enumInfo.clear();
 	}
 
 	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
@@ -205,10 +208,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 	}
 
 	private void loadData() {
-		customizableEnumsByType.clear();
-		enumValuesByLanguage.clear();
-		enumValuesByDisease.clear();
-		enumInfo.clear();
+		clearCache();
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			customizableEnumsByType.putIfAbsent(enumType, new ArrayList<>());
