@@ -21,7 +21,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 
-public class UserRightFieldAccessChecker implements FieldAccessChecker {
+public class UserRightFieldAccessChecker<T> implements FieldAccessChecker<T> {
 
 	private final UserRight userRight;
 	private final boolean hasRight;
@@ -42,7 +42,7 @@ public class UserRightFieldAccessChecker implements FieldAccessChecker {
 	}
 
 	@Override
-	public boolean hasRight() {
+	public boolean hasRight(T object) {
 		return hasRight;
 	}
 }

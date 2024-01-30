@@ -20,11 +20,11 @@ package de.symeda.sormas.api.utils.fieldaccess;
 
 import java.lang.reflect.Field;
 
-public interface FieldAccessChecker {
+public interface FieldAccessChecker<T> {
 
 	boolean isConfiguredForCheck(Field field, boolean withMandatory);
 
 	boolean isEmbedded(Field field);
 
-	boolean hasRight();
+	boolean hasRight(T object);
 }

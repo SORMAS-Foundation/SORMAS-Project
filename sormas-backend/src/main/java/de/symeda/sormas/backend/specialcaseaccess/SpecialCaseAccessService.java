@@ -77,4 +77,13 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 				cb.equal(from.join(SpecialCaseAccess.ASSIGNED_TO, JoinType.LEFT).get(User.UUID), assignedTo.getUuid())))
 			.forEach(this::deletePermanent);
 	}
+
+	public boolean isGrantedToCurrentUser(CaseReferenceDto caze) {
+
+		return exists(
+			(cb, from, cq) -> cb.and(
+				cb.equal(from.join(SpecialCaseAccess.CAZE, JoinType.LEFT).get(Case.UUID), caze.getUuid()),
+				cb.equal(from.get(SpecialCaseAccess.ASSIGNED_TO), getCurrentUser()),
+				cb.greaterThanOrEqualTo(from.get(SpecialCaseAccess.END_DATE_TIME), new Date())));
+	}
 }

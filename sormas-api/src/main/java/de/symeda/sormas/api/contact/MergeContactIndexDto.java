@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
@@ -55,6 +56,7 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	private String firstName;
 	@PersonalData
 	private String lastName;
+	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
 	private CaseReferenceDto caze;

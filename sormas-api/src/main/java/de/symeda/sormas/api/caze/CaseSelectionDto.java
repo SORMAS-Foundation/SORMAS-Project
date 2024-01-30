@@ -5,10 +5,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import org.apache.commons.lang3.StringUtils;
 
 public class CaseSelectionDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
@@ -36,6 +36,7 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 	@PersonalData
 	@SensitiveData
 	private String personLastName;
+	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private String responsibleDistrictName;
 	@PersonalData

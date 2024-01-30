@@ -89,11 +89,9 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(PrescriptionIndexDto.class, indexList, p -> p.getInJurisdiction(), (p, inJurisdiction) -> {
-			pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexType.class, p.getPrescriptionIndexType(), inJurisdiction, null);
-			pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexRoute.class, p.getPrescriptionIndexRoute(), inJurisdiction, null);
-		});
+		Pseudonymizer<PrescriptionIndexDto> pseudonymizer =
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(PrescriptionIndexDto.class, indexList, PrescriptionIndexDto::getInJurisdiction, null);
 
 		return indexList;
 	}
@@ -148,12 +146,11 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	private List<PrescriptionDto> toPseudonymizedDtos(List<Prescription> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<PrescriptionDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		Pseudonymizer<PrescriptionDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+
+		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<PrescriptionDto> getByUuids(List<String> uuids) {
 
@@ -208,13 +205,14 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(PrescriptionExportDto.class, exportList, p -> p.getInJurisdiction(), null);
+		Pseudonymizer<PrescriptionExportDto> pseudonymizer =
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(PrescriptionExportDto.class, exportList, PrescriptionExportDto::getInJurisdiction, null);
 
 		return exportList;
 	}
 
-	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer pseudonymizer) {
+	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer<PrescriptionDto> pseudonymizer) {
 
 		if (source == null) {
 			return null;
@@ -224,14 +222,14 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		return convertToDto(source, pseudonymizer, inJurisdiction);
 	}
 
-	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer<PrescriptionDto> pseudonymizer, boolean inJurisdiction) {
 
 		PrescriptionDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
-	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer<PrescriptionDto> pseudonymizer, boolean inJurisdiction) {
 		if (source != null && dto != null) {
 			pseudonymizer.pseudonymizeDto(PrescriptionDto.class, dto, inJurisdiction, null);
 		}
@@ -239,7 +237,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	private void restorePseudonymizedDto(PrescriptionDto prescription, Prescription existingPrescription, PrescriptionDto existingPrescriptionDto) {
 		if (existingPrescription != null) {
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			Pseudonymizer<PrescriptionDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(
 				PrescriptionDto.class,
 				prescription,

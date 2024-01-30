@@ -110,6 +110,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
+import de.symeda.sormas.api.utils.pseudonymization.DtoPseudonymizer;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
@@ -166,6 +167,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -246,6 +248,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public CaseService() {
 		super(Case.class, DeletableEntityType.CASE);
@@ -2353,5 +2357,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 		return caseUuids.size() == 1 ? caseUuids.get(0) : null;
+	}
+
+	public DtoPseudonymizer.RightCheck createPseudonymizationRightChecker(CaseReferenceDto caze) {
+		return r -> userService.hasRight(r) || specialCaseAccessService.isGrantedToCurrentUser(caze);
 	}
 }

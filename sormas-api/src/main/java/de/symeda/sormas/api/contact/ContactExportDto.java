@@ -49,6 +49,7 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -102,6 +103,7 @@ public class ContactExportDto extends AbstractUuidDto {
 	@SensitiveData
 	private String otherSalutation;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private BirthDateDto birthdate;
 	private String approximateAge;
 	private Date reportDate;

@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.uuid.HasUuid;
@@ -67,6 +68,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements HasUuid,
 	private String firstName;
 	@PersonalData
 	private String lastName;
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;

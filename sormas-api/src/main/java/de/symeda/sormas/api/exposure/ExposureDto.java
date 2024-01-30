@@ -34,6 +34,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -119,6 +121,8 @@ public class ExposureDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String exposureTypeDetails;
 	@Valid
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private LocationDto location;
 	private ExposureRole exposureRole;
 

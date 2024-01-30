@@ -688,7 +688,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				}
 			}
 
-			if (exportDto.getAdditionalTestingRequested()) {
+			if (Boolean.TRUE.equals(exportDto.getAdditionalTestingRequested())) {
 				List<AdditionalTest> additionalTests = additionalTestService.getAllBySample(sampleFromExportDto);
 				if (!additionalTests.isEmpty()) {
 					exportDto.setAdditionalTest(AdditionalTestFacadeEjb.toDto(additionalTests.get(0)));
@@ -702,17 +702,18 @@ public class SampleFacadeEjb implements SampleFacade {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
 
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer<SampleExportDto> pseudonymizer =
+				Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			boolean isInJurisdiction = exportDto.getSampleJurisdictionFlagsDto().getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(
 				SampleExportDto.class,
 				exportDto,
 				isInJurisdiction,
-				s -> pseudonymizer.pseudonymizeDtoCollection(
+				s -> pseudonymizer.pseudonymizeEmbeddedDtoCollection(
 					SampleExportDto.SampleExportPathogenTest.class,
 					exportDto.getOtherPathogenTests(),
-					t -> isInJurisdiction,
-					null));
+					isInJurisdiction,
+					exportDto));
 		}
 
 		return resultList;
@@ -799,11 +800,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		long startTime = DateHelper.startTime();
 
 		List<ProcessedEntity> processedSamples = new ArrayList<>();
-		IterableHelper
-			.executeBatched(
-				sampleUuids,
-				DELETED_BATCH_SIZE,
-				batchedSampleUuids -> processedSamples.addAll(sampleService.deleteAll(batchedSampleUuids, deletionDetails)));
+		IterableHelper.executeBatched(
+			sampleUuids,
+			DELETED_BATCH_SIZE,
+			batchedSampleUuids -> processedSamples.addAll(sampleService.deleteAll(batchedSampleUuids, deletionDetails)));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 
 		return processedSamples;
@@ -875,7 +875,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return target;
 	}
 
-	public SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
+	public SampleDto convertToDto(Sample source, Pseudonymizer<SampleDto> pseudonymizer) {
 
 		if (source == null) {
 			return null;
@@ -884,7 +884,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return convertToDto(source, pseudonymizer, sampleService.getJurisdictionFlags(source));
 	}
 
-	private SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
+	private SampleDto convertToDto(Sample source, Pseudonymizer<SampleDto> pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
 
 		SampleDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
@@ -895,24 +895,26 @@ public class SampleFacadeEjb implements SampleFacade {
 	private List<SampleDto> toPseudonymizedDtos(List<Sample> entities) {
 
 		Map<Long, SampleJurisdictionFlagsDto> jurisdictionFlags = sampleService.getJurisdictionsFlags(entities);
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<SampleDto> pseudonymizer = createPseudonymizer();
+
 		List<SampleDto> dtos =
 			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 		return dtos;
 	}
 
-	private Pseudonymizer createPseudonymizer() {
+	private Pseudonymizer<SampleDto> createPseudonymizer() {
 		return Pseudonymizer.getDefault(userService::hasRight);
 	}
 
-	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
+	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer<SampleDto> pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
 
 		if (dto != null) {
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, jurisdictionFlags.getInJurisdiction(), s -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser, s);
 				pseudonymizeAssociatedObjects(
+					s,
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),
 					s.getAssociatedEventParticipant(),
@@ -928,45 +930,47 @@ public class SampleFacadeEjb implements SampleFacade {
 			boolean inJurisdiction = sampleService.getJurisdictionFlags(existingSample).getInJurisdiction();
 			User currentUser = userService.getCurrentUser();
 
-			Pseudonymizer pseudonymizer = createPseudonymizer();
+			Pseudonymizer<SampleDto> pseudonymizer = createPseudonymizer();
 			pseudonymizer.restoreUser(existingSample.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(SampleDto.class, dto, existingSampleDto, inJurisdiction);
 		}
 	}
 
 	private void pseudonymizeAssociatedObjects(
+		SampleDto sample,
 		CaseReferenceDto sampleCase,
 		ContactReferenceDto sampleContact,
 		EventParticipantReferenceDto sampleEventParticipant,
-		Pseudonymizer pseudonymizer,
+		Pseudonymizer<SampleDto> pseudonymizer,
 		SampleJurisdictionFlagsDto jurisdictionFlagsDto) {
 
 		if (sampleCase != null) {
-			pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, sampleCase, jurisdictionFlagsDto.getCaseInJurisdiction(), null);
+
+			casePseudonymizer.pseudonymizeDto(CaseReferenceDto.class, sampleCase, jurisdictionFlagsDto.getCaseInJurisdiction(), null);
 		}
 
 		if (sampleContact != null) {
-			pseudonymizer.pseudonymizeDto(
+			pseudonymizer.pseudonymizeEmbeddedDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getContactName(),
 				jurisdictionFlagsDto.getContactInJurisdiction(),
-				null);
+				sample);
 
 			if (sampleContact.getCaseName() != null) {
-				pseudonymizer.pseudonymizeDto(
+				pseudonymizer.pseudonymizeEmbeddedDto(
 					ContactReferenceDto.PersonName.class,
 					sampleContact.getCaseName(),
 					jurisdictionFlagsDto.getContactCaseInJurisdiction(),
-					null);
+					sample);
 			}
 		}
 
 		if (sampleEventParticipant != null) {
-			pseudonymizer.pseudonymizeDto(
+			pseudonymizer.pseudonymizeEmbeddedDto(
 				EventParticipantReferenceDto.class,
 				sampleEventParticipant,
 				jurisdictionFlagsDto.getEvenParticipantInJurisdiction(),
-				null);
+				sample);
 		}
 	}
 

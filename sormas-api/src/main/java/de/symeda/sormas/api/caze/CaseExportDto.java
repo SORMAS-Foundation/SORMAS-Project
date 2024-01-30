@@ -58,6 +58,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.LocationHelper;
@@ -140,6 +141,7 @@ public class CaseExportDto extends AbstractUuidDto {
 	private YesNoUnknown pregnant;
 	private String approximateAge;
 	private String ageGroup;
+	@EmbeddedSensitiveData
 	private BirthDateDto birthdate;
 	private Date reportDate;
 	private String region;
@@ -191,6 +193,7 @@ public class CaseExportDto extends AbstractUuidDto {
 	private String initialDetectionPlace;
 	private PresentCondition presentCondition;
 	private Date deathDate;
+	@EmbeddedSensitiveData
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
@@ -241,6 +244,7 @@ public class CaseExportDto extends AbstractUuidDto {
 	private boolean traveled;
 	private boolean burialAttended;
 	private YesNoUnknown contactWithSourceCaseKnown;
+	@EmbeddedSensitiveData
 	private SymptomsDto symptoms;
 	//	private Date onsetDate;
 //	private String symptoms;
@@ -261,8 +265,11 @@ public class CaseExportDto extends AbstractUuidDto {
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;
 	private int numberOfClinicalVisits;
+	@EmbeddedSensitiveData
 	private EmbeddedSampleExportDto sample1 = new EmbeddedSampleExportDto(null);
+	@EmbeddedSensitiveData
 	private EmbeddedSampleExportDto sample2 = new EmbeddedSampleExportDto(null);
+	@EmbeddedSensitiveData
 	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto(null);
 	private List<EmbeddedSampleExportDto> otherSamples = new ArrayList<>();
 

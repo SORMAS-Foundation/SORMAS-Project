@@ -25,6 +25,7 @@ import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -56,6 +57,7 @@ public class PersonExportDto extends AbstractUuidDto {
 	@SensitiveData
 	private String otherSalutation;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private BirthDateDto birthdate;
 	private String approximateAge;
 	private String ageGroup;

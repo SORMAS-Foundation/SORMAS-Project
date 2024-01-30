@@ -63,7 +63,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -400,8 +399,9 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		List<VisitIndexDto> indexList = QueryHelper.getResultList(em, cq, new VisitIndexDtoResultTransformer(), first, max);
 
 		if (!indexList.isEmpty()) {
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-			indexList.forEach(visitIndex -> pseudonymizer.pseudonymizeDto(VisitIndexDto.class, visitIndex, visitIndex.getInJurisdiction(), null));
+			Pseudonymizer<VisitIndexDto> pseudonymizer =
+				Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			pseudonymizer.pseudonymizeDtoCollection(VisitIndexDto.class, indexList, VisitIndexDto::getInJurisdiction, null);
 		}
 
 		return indexList;
@@ -525,7 +525,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 			if (!resultList.isEmpty()) {
 
-				Pseudonymizer pseudonymizer = createPseudonymizer();
+				Pseudonymizer<VisitExportDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 				Set<Long> userIds = resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet());
 				Map<Long, UserReference> visitUsers = userIds.isEmpty()
 					? null
@@ -540,11 +540,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 						exportDto.setVisitUserRoles(user.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
 					}
 
-					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
-						if (v.getSymptoms() != null) {
-							pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
-						}
-					});
+					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
 
 					if (symptoms != null) {
 						Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
@@ -587,24 +583,20 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	}
 
 	@Override
-	protected void pseudonymizeDto(Visit source, VisitDto visitDto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(Visit source, VisitDto visitDto, Pseudonymizer<VisitDto> pseudonymizer, boolean inJurisdiction) {
 
 		if (visitDto != null) {
-			pseudonymizer.pseudonymizeDto(VisitDto.class, visitDto, inJurisdiction, v -> {
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, visitDto.getPerson(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitDto.getSymptoms(), inJurisdiction, null);
-			});
+			pseudonymizer.pseudonymizeDto(VisitDto.class, visitDto, inJurisdiction, null);
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(VisitDto dto, VisitDto existingDto, Visit existingVisit, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(VisitDto dto, VisitDto existingDto, Visit existingVisit, Pseudonymizer<VisitDto> pseudonymizer) {
 
 		if (existingDto != null) {
 			boolean isInJurisdiction = service.inJurisdictionOrOwned(existingVisit);
 
 			pseudonymizer.restorePseudonymizedValues(VisitDto.class, dto, existingDto, isInJurisdiction);
-			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingDto.getSymptoms(), isInJurisdiction);
 		}
 	}
 

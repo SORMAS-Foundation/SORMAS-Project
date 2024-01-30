@@ -22,6 +22,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -55,6 +56,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	@SensitiveData
 	private String personLastName;
 	private Disease disease;
+	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
 	private String district;

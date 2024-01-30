@@ -22,6 +22,7 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
@@ -32,7 +33,8 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import javax.validation.constraints.NotNull;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -59,6 +61,8 @@ public class VisitDto extends PseudonymizableDto {
 	public static final String ORIGIN = "origin";
 
 	@NotNull(message = Validations.validPerson)
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private PersonReferenceDto person;
 	private Disease disease;
 	@NotNull(message = Validations.visitDate)
@@ -71,6 +75,7 @@ public class VisitDto extends PseudonymizableDto {
 	@SensitiveData
 	private String visitRemarks;
 	@Valid
+	@EmbeddedSensitiveData
 	private SymptomsDto symptoms;
 	@SensitiveData
 	@Min(value = -90, message = Validations.numberTooSmall)

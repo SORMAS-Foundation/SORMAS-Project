@@ -95,7 +95,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return toPseudonymizedDto(source, createPseudonymizer());
 	}
 
-	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer) {
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer<DTO> pseudonymizer) {
 
 		if (source == null) {
 			return null;
@@ -105,7 +105,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return toPseudonymizedDto(source, pseudonymizer, inJurisdiction);
 	}
 
-	public DTO toPseudonymizedDto(ADO source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	public DTO toPseudonymizedDto(ADO source, Pseudonymizer<DTO> pseudonymizer, boolean inJurisdiction) {
 
 		if (source == null) {
 			return null;
@@ -121,7 +121,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<DTO> pseudonymizer = createPseudonymizer();
 		List<Long> jurisdictionIds = service.getInJurisdictionIds(adoList);
 
 		return adoList.stream()
@@ -133,7 +133,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		restorePseudonymizedDto(dto, existingDto, entity, createPseudonymizer());
 	}
 
-	protected Pseudonymizer createPseudonymizer() {
+	protected Pseudonymizer<DTO> createPseudonymizer() {
 		return Pseudonymizer.getDefault(userService::hasRight);
 	}
 
@@ -151,9 +151,9 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return adoStream.map(this::toRefDto).collect(Collectors.toList());
 	}
 
-	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction);
+	protected abstract void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer<DTO> pseudonymizer, boolean inJurisdiction);
 
-	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
+	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer<DTO> pseudonymizer);
 
 	protected boolean isAdoInJurisdiction(ADO ado) {
 		return service.inJurisdictionOrOwned(ado);

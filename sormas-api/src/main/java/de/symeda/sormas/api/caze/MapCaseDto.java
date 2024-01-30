@@ -19,6 +19,8 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
@@ -35,6 +37,8 @@ public class MapCaseDto extends AbstractUuidDto {
 	private Date reportDate;
 	private CaseClassification caseClassification;
 	private Disease disease;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private PersonReferenceDto person;
 	@PersonalData
 	@SensitiveData

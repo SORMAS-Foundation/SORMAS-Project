@@ -47,6 +47,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -117,11 +119,14 @@ public class EventParticipantExportDto implements Serializable {
 	private Sex sex;
 	private String approximateAge;
 	private String ageGroup;
+	@EmbeddedPersonalData
 	private BirthDateDto birthdate;
+	@SensitiveData
 	private String nationalHealthId;
 
 	private PresentCondition presentCondition;
 	private Date deathDate;
+	@EmbeddedSensitiveData
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;

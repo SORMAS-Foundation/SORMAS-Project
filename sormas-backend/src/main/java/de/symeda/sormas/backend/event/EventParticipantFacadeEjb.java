@@ -62,8 +62,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.BirthDateDto;
-import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -314,12 +312,10 @@ public class EventParticipantFacadeEjb
 
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
-		User user = userService.getCurrentUser();
-
 		EventReferenceDto eventReferenceDto = dto.getEvent();
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<EventParticipantDto> pseudonymizer = createPseudonymizer();
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
 		validate(dto);
@@ -668,8 +664,9 @@ public class EventParticipantFacadeEjb
 			}
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdictionOrOwned(), null);
+		Pseudonymizer<EventParticipantIndexDto> pseudonymizer =
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, EventParticipantIndexDto::getInJurisdictionOrOwned, null);
 
 		return indexList;
 	}
@@ -792,8 +789,9 @@ public class EventParticipantFacadeEjb
 
 		List<EventParticipantListEntryDto> result = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
+		Pseudonymizer<EventParticipantListEntryDto> pseudonymizer =
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, EventParticipantListEntryDto::getInJurisdiction, null);
 
 		return result;
 	}
@@ -949,7 +947,8 @@ public class EventParticipantFacadeEjb
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer<EventParticipantExportDto> pseudonymizer =
+				Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
@@ -1015,9 +1014,7 @@ public class EventParticipantFacadeEjb
 				Optional.ofNullable(eventParticipantContactCount.get(exportDto.getEventParticipantUuid())).ifPresent(exportDto::setContactCount);
 
 				pseudonymizer.pseudonymizeDto(EventParticipantExportDto.class, exportDto, inJurisdiction, (c) -> {
-					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDtoCollection(EmbeddedSampleExportDto.class, c.getEventParticipantSamples(), s -> inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(BurialInfoDto.class, c.getBurialInfo(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeEmbeddedDtoCollection(EmbeddedSampleExportDto.class, c.getEventParticipantSamples(), inJurisdiction, c);
 				});
 			}
 		}
@@ -1143,15 +1140,19 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(
+		EventParticipant source,
+		EventParticipantDto dto,
+		Pseudonymizer<EventParticipantDto> pseudonymizer,
+		boolean inJurisdiction) {
 
 		if (source != null) {
 			validate(dto);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, (ep) -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), ep::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), ep::setReportingUser, ep);
 			});
-			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
+			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeEmbeddedDto(LocationDto.class, l, inJurisdiction, dto));
 		}
 	}
 
@@ -1159,7 +1160,7 @@ public class EventParticipantFacadeEjb
 		EventParticipantDto dto,
 		EventParticipantDto originalDto,
 		EventParticipant originalEventParticipant,
-		Pseudonymizer pseudonymizer) {
+		Pseudonymizer<EventParticipantDto> pseudonymizer) {
 
 		if (originalDto != null) {
 			pseudonymizer
@@ -1267,7 +1268,7 @@ public class EventParticipantFacadeEjb
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<SimilarEventParticipantDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, SimilarEventParticipantDto::getInJurisdiction, null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {

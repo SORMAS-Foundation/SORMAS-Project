@@ -70,8 +70,6 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -1388,12 +1386,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			persons.addAll(QueryHelper.getResultList(em, cq, new PersonIndexDtoResultTransformer(), null, null));
 		});
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PersonIndexDto.class,
-			persons,
-			PersonIndexDto::getInJurisdiction,
-			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+		Pseudonymizer<PersonIndexDto> pseudonymizer =
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(PersonIndexDto.class, persons, PersonIndexDto::getInJurisdiction, null);
 
 		logger.debug(
 			"getIndexList() finished. association={}, count={}, {}ms",
@@ -1581,12 +1576,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		List<PersonExportDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PersonExportDto.class,
-			persons,
-			PersonExportDto::getInJurisdiction,
-			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(BirthDateDto.class, p.getBirthdate(), isInJurisdiction, null));
+		Pseudonymizer<PersonExportDto> pseudonymizer =
+			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(PersonExportDto.class, persons, PersonExportDto::getInJurisdiction, null);
 
 		logger.debug(
 			"getExportList() finished. association={}, count={}, {}ms",
@@ -1617,35 +1609,35 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	protected void pseudonymizeDto(Person source, PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
+	protected void pseudonymizeDto(Person source, PersonDto dto, Pseudonymizer<PersonDto> pseudonymizer, boolean isInJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
-				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
-				p.getPersonContactDetails().forEach(pcd -> pseudonymizer.pseudonymizeDto(PersonContactDetailDto.class, pcd, isInJurisdiction, null));
+				pseudonymizer.pseudonymizeEmbeddedDtoCollection(LocationDto.class, p.getAddresses(), isInJurisdiction, p);
+				pseudonymizer.pseudonymizeEmbeddedDtoCollection(PersonContactDetailDto.class, p.getPersonContactDetails(), isInJurisdiction, p);
 			});
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(PersonDto source, PersonDto existingPerson, Person person, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(PersonDto source, PersonDto existingPerson, Person person, Pseudonymizer<PersonDto> pseudonymizer) {
 		if (person != null && existingPerson != null) {
 			boolean isInJurisdiction = isAdoInJurisdiction(person);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
 			source.getAddresses()
 				.forEach(
-					l -> pseudonymizer.restorePseudonymizedValues(
+					l -> pseudonymizer.restoreEmbeddedPseudonymizedValues(
 						LocationDto.class,
 						l,
 						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
+						existingPerson,
 						isInJurisdiction));
 			source.getPersonContactDetails()
 				.forEach(
-					pcd -> pseudonymizer.restorePseudonymizedValues(
+					pcd -> pseudonymizer.restoreEmbeddedPseudonymizedValues(
 						PersonContactDetailDto.class,
 						pcd,
 						existingPerson.getPersonContactDetails().stream().filter(a -> a.getUuid().equals(pcd.getUuid())).findFirst().orElse(null),
+						existingPerson,
 						isInJurisdiction));
 		}
 	}
