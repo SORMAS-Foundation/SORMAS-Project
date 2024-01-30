@@ -376,6 +376,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID);
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
 		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
+		nationalHealthIdWarningLabel.setVisible(false);
 		getContent().addComponent(nationalHealthIdWarningLabel, NATIONAL_HEALTH_ID_WARNING_LABEL);
 
 		Field externalId = addField(PersonDto.EXTERNAL_ID);
@@ -588,11 +589,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				ValidationUtils.initComponentErrorValidator(
 					nationalHealthIdField,
-					getValue().getNationalHealthId(),
+					nationalHealthIdField.getValue(),
 					Validations.invalidNationalHealthId,
 					nationalHealthIdWarningLabel,
-					nationalHealthId -> !LuxembourgNationalHealthIdValidator
-						.isValid(nationalHealthId, (Integer)birthDateYear.getValue(), (Integer)birthDateMonth.getValue(), (Integer)birthDateDay.getValue()),
+					nationalHealthId -> !LuxembourgNationalHealthIdValidator.isValid(
+						nationalHealthId,
+						(Integer) birthDateYear.getValue(),
+						(Integer) birthDateMonth.getValue(),
+						(Integer) birthDateDay.getValue()),
 					ErrorLevel.WARNING);
 			}
 
