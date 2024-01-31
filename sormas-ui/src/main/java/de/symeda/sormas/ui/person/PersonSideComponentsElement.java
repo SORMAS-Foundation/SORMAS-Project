@@ -108,12 +108,11 @@ public interface PersonSideComponentsElement {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
-			contactListComponent =
-				new ContactListComponent(
-					person,
-					entityType == DeletableEntityType.CONTACT ? entityUuid : null,
-					showUnsavedChangesPopup,
-					isEditAllowed);
+			contactListComponent = new ContactListComponent(
+				person,
+				entityType == DeletableEntityType.CONTACT ? entityUuid : null,
+				showUnsavedChangesPopup,
+				isEditAllowed);
 			layout.addComponent(new SideComponentLayout(contactListComponent), CONTACTS_LOC);
 		}
 
@@ -153,7 +152,8 @@ public interface PersonSideComponentsElement {
 				.eventParticipantUuids(eventParticipantList)
 				.sampleAssociationType(SampleAssociationType.PERSON);
 
-			SampleListComponent sampleList = new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, isEditAllowed);
+			SampleListComponent sampleList =
+				new SampleListComponent(sampleCriteria, showUnsavedChangesPopup, isEditAllowed, SampleAssociationType.PERSON);
 			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
 			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}

@@ -35,7 +35,11 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
+	public SampleListComponent(
+		SampleCriteria sampleCriteria,
+		Consumer<Runnable> actionCallback,
+		boolean isEditAllowed,
+		SampleAssociationType sampleAssociationType) {
 		super(I18nProperties.getString(Strings.entitySamples), actionCallback);
 
 		SampleList sampleList = new SampleList(sampleCriteria, isEditAllowed);
@@ -61,7 +65,23 @@ public class SampleListComponent extends SideComponent {
 		addComponent(sampleList);
 		sampleList.reload();
 		if (!sampleList.isEmpty()) {
-			final Button seeSamples = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToSamples));
+
+			String buttonCaption = null;
+			switch (sampleAssociationType) {
+			case CASE:
+				buttonCaption = I18nProperties.getCaption(Captions.caseLinkToSamples);
+				break;
+			case CONTACT:
+				buttonCaption = I18nProperties.getCaption(Captions.contactLinkToSamples);
+				break;
+			case EVENT_PARTICIPANT:
+				buttonCaption = I18nProperties.getCaption(Captions.eventParticipantLinkToSamples);
+				break;
+			default:
+				buttonCaption = I18nProperties.getCaption(Captions.personLinkToSamples);
+			}
+			final Button seeSamples = ButtonHelper.createButton(buttonCaption);
+
 			CssStyles.style(seeSamples, ValoTheme.BUTTON_PRIMARY);
 			seeSamples.addClickListener(clickEvent -> ControllerProvider.getSampleController().navigateTo(sampleCriteria));
 			addComponent(seeSamples);

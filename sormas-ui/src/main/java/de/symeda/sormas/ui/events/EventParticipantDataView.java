@@ -116,7 +116,8 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 					.disease(event.getDisease())
 					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
 				this::showUnsavedChangesPopup,
-				editAllowed);
+				editAllowed,
+				SampleAssociationType.EVENT_PARTICIPANT);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -190,7 +191,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forEventParticipant(eventParticipant, editAllowed, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forEventParticipant(eventParticipant, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 
