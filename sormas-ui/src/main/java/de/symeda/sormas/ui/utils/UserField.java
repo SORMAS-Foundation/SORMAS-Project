@@ -65,6 +65,10 @@ public class UserField extends CustomField<UserReferenceDto> {
 			super.setValue((UserReferenceDto) userCombo.getValue());
 		});
 
+		addValueChangeListener(c -> {
+			userCombo.setValue(c.getProperty().getValue());
+		});
+
 		return userLayout;
 	}
 
@@ -197,4 +201,5 @@ public class UserField extends CustomField<UserReferenceDto> {
 	public Class<? extends UserReferenceDto> getType() {
 		return UserReferenceDto.class;
 	}
+
 }
