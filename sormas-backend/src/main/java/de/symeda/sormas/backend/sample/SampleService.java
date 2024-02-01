@@ -182,7 +182,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		List<SampleIndexDto> samples = new ArrayList<>();
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			final CriteriaBuilder cb = em.getCriteriaBuilder();
-			final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
+			final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			final Root<Sample> sample = cq.from(Sample.class);
 
 			SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
@@ -241,13 +241,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			selections.add(testCountSq.getSelection());
 
 			selections.addAll(getJurisdictionSelections(sampleQueryContext));
+
+			List<Order> orderList = getOrderList(sortProperties, sampleQueryContext);
+			selections.addAll(orderList.stream().map(Order::getExpression).collect(Collectors.toList()));
+
 			cq.multiselect(selections);
 
 			cq.where(sample.get(Sample.ID).in(batchedIds));
-			cq.orderBy(getOrderList(sortProperties, sampleQueryContext));
+			cq.orderBy(orderList);
 			cq.distinct(true);
 
-			samples.addAll(QueryHelper.getResultList(em, cq, null, null));
+			samples.addAll(QueryHelper.getResultList(em, cq, new SampleIndexDtoResultTransformer(), null, null));
 		});
 
 		if (!samples.isEmpty()) {
@@ -360,10 +364,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
+
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
-				case SampleIndexDto.LAB_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
 				case SampleIndexDto.REFERRED:
@@ -374,40 +379,41 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				case SampleIndexDto.SAMPLE_PURPOSE:
 				case SampleIndexDto.PATHOGEN_TEST_RESULT:
 				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
-					expression = sample.get(sortProperty.propertyName);
+					order = orderBuilder.build(sample.get(sortProperty.propertyName));
+					break;
+				case SampleIndexDto.LAB_SAMPLE_ID:
+					order = orderBuilder.build(cb.lower(sample.get(sortProperty.propertyName)));
 					break;
 				case SampleIndexDto.DISEASE:
-					expression = sampleQueryContext.getDiseaseExpression();
+					order = orderBuilder.build(sampleQueryContext.getDiseaseExpression());
 					break;
 				case SampleIndexDto.EPID_NUMBER:
-					expression = joins.getCaze().get(Case.EPID_NUMBER);
+					order = orderBuilder.build(cb.lower(joins.getCaze().get(Case.EPID_NUMBER)));
 					break;
 				case SampleIndexDto.ASSOCIATED_CASE:
-					expression = joins.getCasePerson().get(Person.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getCasePerson().get(Person.FIRST_NAME);
+					order = orderBuilder
+						.build(cb.lower(joins.getCasePerson().get(Person.LAST_NAME)), cb.lower(joins.getCasePerson().get(Person.FIRST_NAME)));
 					break;
 				case SampleIndexDto.ASSOCIATED_CONTACT:
-					expression = joins.getContactPerson().get(Person.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getContactPerson().get(Person.FIRST_NAME);
+					order = orderBuilder
+						.build(cb.lower(joins.getContactPerson().get(Person.LAST_NAME)), cb.lower(joins.getContactPerson().get(Person.FIRST_NAME)));
 					break;
 				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
-					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
-					orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
+					order = orderBuilder.build(
+						cb.lower(joins.getEventParticipantPerson().get(Person.LAST_NAME)),
+						cb.lower(joins.getEventParticipantPerson().get(Person.FIRST_NAME)));
 					break;
 				case SampleIndexDto.DISTRICT:
-					expression = sampleQueryContext.getDistrictNameExpression();
+					order = orderBuilder.build(cb.lower(sampleQueryContext.getDistrictNameExpression()));
 					break;
 				case SampleIndexDto.LAB:
-					expression = joins.getLab().get(Facility.NAME);
+					order = orderBuilder.build(cb.lower(joins.getLab().get(Facility.NAME)));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 
-				orderList.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				orderList.addAll(order);
 			}
 		} else {
 			orderList.add(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
@@ -422,7 +428,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
@@ -470,9 +476,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new SampleListEntryDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new SampleListEntryDtoResultTransformer(), first, max);
 	}
 
 	@Override
@@ -656,10 +660,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				cb,
 				filter,
 				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
-				RequestContextHolder.isMobileSync()
+				RequestContextHolder.isMobileSync() && !isRestrictedToAssignedEntities()
 					? null
 					: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
-				RequestContextHolder.isMobileSync()
+				RequestContextHolder.isMobileSync() && !isRestrictedToAssignedEntities()
 					? null
 					: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 		}

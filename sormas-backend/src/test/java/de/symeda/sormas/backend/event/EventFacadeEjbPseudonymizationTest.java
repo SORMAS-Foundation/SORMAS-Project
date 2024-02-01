@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -91,6 +92,82 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		EventDto event = createEvent(user1, rdcf1);
 
 		assertPseudonymized(getEventFacade().getEventByUuid(event.getUuid(), false));
+	}
+
+	@Test
+	public void testPseudonymizedGetByUuidWithLimitedUser() {
+
+		loginWith(nationalAdmin);
+
+		// event within limited user's jurisdiction
+		EventDto event1 = creator
+			.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user1.toReference(), rdcf1, e -> {
+				e.setConnectionNumber("123");
+			});
+
+		// event outside limited user's jurisdiction
+		EventDto event2 = creator
+			.createEvent(EventStatus.SIGNAL, EventInvestigationStatus.PENDING, "Test title", "Test Description", user2.toReference(), rdcf2, e -> {
+				e.setConnectionNumber("456");
+			});
+
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		final EventDto testEvent1 = getEventFacade().getEventByUuid(event1.getUuid(), false);
+		assertThat(testEvent1.isPseudonymized(), is(true));
+		assertThat(testEvent1.getConnectionNumber(), is(emptyString()));
+		final EventDto testEvent2 = getEventFacade().getEventByUuid(event2.getUuid(), false);
+		assertThat(testEvent2.isPseudonymized(), is(true));
+		assertThat(testEvent2.getConnectionNumber(), is(emptyString()));
+
+		//event created by limited user in the same jurisdiction
+		EventDto event3 = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Test title",
+			"Test Description",
+			surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference(),
+			rdcf1,
+			e -> {
+				e.setConnectionNumber("789");
+			});
+
+		//event created by limited user outside limited user's jurisdiction
+		EventDto event4 = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Test title",
+			"Test Description",
+			surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference(),
+			rdcf2,
+			e -> {
+				e.setConnectionNumber("987");
+			});
+
+		loginWith(nationalAdmin);
+		testEvent1.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getEventFacade().save(testEvent1);
+		testEvent2.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getEventFacade().save(testEvent2);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		final EventDto testForEvent1 = getEventFacade().getEventByUuid(event1.getUuid(), false);
+		assertThat(testForEvent1.isPseudonymized(), is(false));
+		assertThat(testForEvent1.getConnectionNumber(), is("123"));
+
+		final EventDto testForEvent2 = getEventFacade().getEventByUuid(event2.getUuid(), false);
+		assertThat(testForEvent2.isPseudonymized(), is(false));
+		assertThat(testForEvent2.getConnectionNumber(), is("456"));
+
+		final EventDto testForEvent3 = getEventFacade().getEventByUuid(event3.getUuid(), false);
+		assertThat(testForEvent3.isPseudonymized(), is(false));
+		assertThat(testForEvent3.getConnectionNumber(), is("789"));
+
+		final EventDto testForEvent4 = getEventFacade().getEventByUuid(event4.getUuid(), false);
+		assertThat(testForEvent4.isPseudonymized(), is(false));
+		assertThat(testForEvent4.getConnectionNumber(), is("987"));
 	}
 
 	@Test

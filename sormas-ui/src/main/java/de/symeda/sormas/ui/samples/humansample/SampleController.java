@@ -261,7 +261,10 @@ public class SampleController {
 		sampleComponent.addCommitListener(savePathogenTest);
 
 		// add delete if allowed
-		if (isNew || isNull(pathogenTest) || UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
+		if (isNew
+			|| isNull(pathogenTest)
+			|| UserProvider.getCurrent()
+				.hasUserRight(pathogenTest.getSample() != null ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE)) {
 			collapsibleForm.setDeleteHandler(() -> {
 				sampleComponent.removeComponent(separator);
 				sampleComponent.removeComponent(collapsibleForm);

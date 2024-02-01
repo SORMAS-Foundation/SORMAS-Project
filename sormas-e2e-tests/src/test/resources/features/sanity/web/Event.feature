@@ -736,7 +736,6 @@ Feature: Create events
     Then I check the end of processing date in the archive popup
     And I click on the Events button from navbar
     Then I set Relevance Status Filter to Archived events on Event Directory page
-    And I search for specific event by uuid in event directory
     And I click on the searched event
     Then I click on the Event participant tab
     And I choose Archived event participants from combobox in the Event participant tab

@@ -17,15 +17,19 @@ package de.symeda.sormas.backend.immunization;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -48,6 +52,8 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -64,6 +70,7 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
@@ -79,6 +86,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.Vaccination;
+import org.hibernate.query.Query;
 
 @Stateless
 @LocalBean
@@ -124,7 +132,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Disease disease, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
 
 		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, immunization);
@@ -149,9 +157,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 
 		cq.distinct(true);
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new ImmunizationListEntryDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new ImmunizationListEntryDtoResultTransformer(), first, max);
 	}
 
 	@Override
@@ -171,22 +177,15 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 				cb,
 				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
-					.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, personService.getPermittedAssociations())
+					.of(
+						qc.getQuery(),
+						cb,
+						new PersonJoins(qc.getJoins().getPerson()),
+						currentUser,
+						new HashSet<>(Arrays.asList(PersonAssociation.CASE, PersonAssociation.CONTACT, PersonAssociation.EVENT_PARTICIPANT)))
 					.inJurisdictionOrOwned());
 		}
 		return filter;
-	}
-
-	@Override
-	public boolean inJurisdictionOrOwned(Immunization immunization) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
-		Root<Immunization> root = cq.from(Immunization.class);
-		// Deviation from super implementation: createUserFilter
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext(cb, cq, root))));
-		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
-		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
 	}
 
 	public Predicate createActiveImmunizationsFilter(CriteriaBuilder cb, From<?, Immunization> root) {
@@ -558,9 +557,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 			return null;
 		}
 
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter = inJurisdictionOrOwned(qc);
 
-		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		filter = CriteriaBuilderHelper
 			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));
 

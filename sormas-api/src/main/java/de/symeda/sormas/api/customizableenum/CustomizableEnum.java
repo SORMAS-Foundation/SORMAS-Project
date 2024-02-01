@@ -25,7 +25,7 @@ import de.symeda.sormas.api.audit.AuditedClass;
  * Base class for customizable enums. Supposed to be extended for every enum that is made customizable to ensure type safety.
  */
 @AuditedClass
-public abstract class CustomizableEnum implements Serializable {
+public abstract class CustomizableEnum implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 8698428745095686559L;
 
@@ -94,6 +94,15 @@ public abstract class CustomizableEnum implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(value);
+	}
+
+	@Override
+	public CustomizableEnum clone() {
+		try {
+			return (CustomizableEnum) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public abstract Map<String, Class<?>> getAllProperties();

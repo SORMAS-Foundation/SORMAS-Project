@@ -799,11 +799,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		long startTime = DateHelper.startTime();
 
 		List<ProcessedEntity> processedSamples = new ArrayList<>();
-		IterableHelper
-			.executeBatched(
-				sampleUuids,
-				DELETED_BATCH_SIZE,
-				batchedSampleUuids -> processedSamples.addAll(sampleService.deleteAll(batchedSampleUuids, deletionDetails)));
+		IterableHelper.executeBatched(
+			sampleUuids,
+			DELETED_BATCH_SIZE,
+			batchedSampleUuids -> processedSamples.addAll(sampleService.deleteAll(batchedSampleUuids, deletionDetails)));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 
 		return processedSamples;
@@ -1117,7 +1116,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public boolean isDeleted(String sampleUuid) {
-		return caseService.isDeleted(sampleUuid);
+		return sampleService.isDeleted(sampleUuid);
 	}
 
 	@Override

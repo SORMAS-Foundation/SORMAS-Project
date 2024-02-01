@@ -28,6 +28,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -45,7 +46,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.REGION, EventParticipantDto.DISTRICT)
-		+ fluidRowLocs(EventParticipantDto.UUID, EventParticipantDto.REPORTING_USER)
+		+ fluidRowLocs(6, EventParticipantDto.UUID, 3, EventParticipantDto.REPORTING_USER, 3, "")
 		+ fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
 		+ loc(MEDICAL_INFORMATION_LOC)
 		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS)
@@ -53,6 +54,8 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		+ fluidRowLocs(EventParticipantDto.OTHER_DELETION_REASON);
 
 	private final EventDto event;
+	private ComboBox region;
+	private ComboBox district;
 
 	public EventParticipantEditForm(EventDto event, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
@@ -75,9 +78,9 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		}
 
 		addField(EventParticipantDto.INVOLVEMENT_DESCRIPTION, TextField.class);
-		ComboBox region = addInfrastructureField(EventParticipantDto.REGION);
+		region = addInfrastructureField(EventParticipantDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(EventParticipantDto.I18N_PREFIX, EventParticipantDto.REGION));
-		ComboBox district = addInfrastructureField(EventParticipantDto.DISTRICT);
+		district = addInfrastructureField(EventParticipantDto.DISTRICT);
 		district.setDescription(I18nProperties.getPrefixDescription(EventParticipantDto.I18N_PREFIX, EventParticipantDto.DISTRICT));
 
 		region.addValueChangeListener(e -> {
@@ -107,6 +110,11 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		setVisible(false, EventParticipantDto.DELETION_REASON, EventParticipantDto.OTHER_DELETION_REASON);
 	}
 
+	private void hideJurisdictionFields() {
+		region.setVisible(false);
+		district.setVisible(false);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
@@ -115,6 +123,15 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	@Override
 	public void setValue(EventParticipantDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
+	}
+
+	@Override
+	protected void setInternalValue(EventParticipantDto newValue) {
+		super.setInternalValue(newValue);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
 	}
 
 }

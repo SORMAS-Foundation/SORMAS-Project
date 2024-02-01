@@ -126,7 +126,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.UUID) +
 					fluidRowLocs(ContactDto.EXTERNAL_ID, ContactDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(ContactDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
-					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
+					fluidRowLocs(3, ContactDto.REPORTING_USER, 4, ContactDto.REPORT_DATE_TIME, 4,ContactDto.REPORTING_DISTRICT, 1, "") +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
@@ -170,7 +170,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private NullableOptionGroup contactProximity;
+	private ComboBox region;
 	private ComboBox district;
+	private ComboBox community;
 	private UserField contactOfficerField;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
@@ -465,11 +467,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactOfficerField = addField(ContactDto.CONTACT_OFFICER, UserField.class);
 		contactOfficerField.setEnabled(true);
 
-		ComboBox region = addInfrastructureField(ContactDto.REGION);
+		region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
 		district = addInfrastructureField(ContactDto.DISTRICT);
 		district.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
-		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
+		community = addInfrastructureField(ContactDto.COMMUNITY);
 		community.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.COMMUNITY));
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -1037,6 +1039,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
+	private void hideJurisdictionFields() {
+		region.setVisible(false);
+		district.setVisible(false);
+		community.setVisible(false);
+	}
+
 	@Override
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
@@ -1053,6 +1061,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		updateContactOfficers();
 		updateOverwriteFollowUpUntil();
 		updateFollowUpStatusComponents();
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

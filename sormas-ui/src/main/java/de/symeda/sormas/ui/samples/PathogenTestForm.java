@@ -258,12 +258,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		// Tested Desease or Tested Pathogen, depending on sample type
 		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
-		ComboBox diseaseVariantField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		TextField diseaseVariantDetailsField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 
-		ComboBox testedPathogenField = addField(PathogenTestDto.TESTED_PATHOGEN, ComboBox.class);
+		ComboBox testedPathogenField = addCustomizableEnumField(PathogenTestDto.TESTED_PATHOGEN);
 		TextField testedPathogenDetailsField = addField(PathogenTestDto.TESTED_PATHOGEN_DETAILS, TextField.class);
 		testedPathogenDetailsField.setVisible(false);
 		FieldHelper.updateItems(testedPathogenField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.PATHOGEN, null));
@@ -388,7 +388,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				disease != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		};
 
-		// trigger the update, as the disease may already be set
 		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {

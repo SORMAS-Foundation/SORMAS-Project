@@ -132,4 +132,10 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		UserReferenceDto dto = new UserReferenceDto(ado.getUuid());
 		return dto;
 	}
+	public static boolean isRestrictedToAssignEntities(User user) {
+		if (user != null && !user.getUserRoles().isEmpty()) {
+			return user.getUserRoles().stream().allMatch(UserRole::isRestrictAccessToAssignedEntities);
+		}
+		return false;
+	}
 }

@@ -177,7 +177,7 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 			return;
 		}
 
-		SelectOrCreatePersonDialog.selectOrCreatePerson(contactToSave.getPerson(), new Consumer<Person>() {
+		SelectOrCreatePersonDialog.selectOrCreatePerson(contactToSave.getPerson(), contactToSave, new Consumer<Person>() {
 
 			@Override
 			public void accept(Person person) {

@@ -57,10 +57,16 @@ public class UserField extends CustomField<UserReferenceDto> {
 		userLayout.addComponent(userContactButton);
 		userLayout.setWidthFull();
 		userLayout.setExpandRatio(userCombo, 1);
+		userLayout.setSpacing(false);
+
 		userCombo.setWidthFull();
 
 		userCombo.addValueChangeListener(valueChangeEvent -> {
-			setInternalValue((UserReferenceDto) userCombo.getValue());
+			super.setValue((UserReferenceDto) userCombo.getValue());
+		});
+
+		addValueChangeListener(c -> {
+			userCombo.setValue(c.getProperty().getValue());
 		});
 
 		return userLayout;
@@ -82,9 +88,15 @@ public class UserField extends CustomField<UserReferenceDto> {
 	}
 
 	protected Button createUserContactButton() {
+		boolean isReadOnly = userCombo.isReadOnly();
 		Button userContactButton = ButtonHelper.createIconButtonWithCaption("userContact", "", VaadinIcons.EYE, e -> {
 			triggerUserContactPopUpWindow();
-		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
+		},
+			ValoTheme.BUTTON_ICON_ONLY,
+			ValoTheme.BUTTON_BORDERLESS,
+			ValoTheme.BUTTON_LARGE,
+			isReadOnly ? CssStyles.HSPACE_LEFT_6 : CssStyles.HSPACE_LEFT_NONE,
+			isReadOnly ? CssStyles.VSPACE_TOP_6 : CssStyles.VSPACE_NONE);
 		return userContactButton;
 	}
 
@@ -121,6 +133,18 @@ public class UserField extends CustomField<UserReferenceDto> {
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin(false);
 		if (userDto != null) {
+			if (userCombo.isReadOnly()) {
+				HorizontalLayout reportingUserLayout = new HorizontalLayout();
+				Label reportingUserLabel = new Label(I18nProperties.getString(Strings.reportingUser));
+				reportingUserLabel.addStyleName(LABEL_BOLD);
+				reportingUserLayout.addComponent(reportingUserLabel);
+
+				Label reportingUser = new Label(getValue().getCaption());
+				reportingUserLayout.addComponent(reportingUser);
+
+				verticalLayout.addComponent(reportingUserLayout);
+			}
+
 			HorizontalLayout telephoneNumberLayout = new HorizontalLayout();
 			Label telephoneLabel = new Label(I18nProperties.getString(Strings.promptTelephoneNumber));
 			telephoneLabel.addStyleName(LABEL_BOLD);
@@ -177,4 +201,5 @@ public class UserField extends CustomField<UserReferenceDto> {
 	public Class<? extends UserReferenceDto> getType() {
 		return UserReferenceDto.class;
 	}
+
 }

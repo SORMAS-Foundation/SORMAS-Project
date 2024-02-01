@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.UserField;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -128,6 +127,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.surveillancereport.CaseReinfectionCheckBoxTree;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
@@ -145,6 +145,7 @@ import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
+import de.symeda.sormas.ui.utils.UserField;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -184,7 +185,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
-					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
+					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 3, CaseDataDto.REPORTING_USER, 2, "") +
 					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS, CASE_CLASSIFICATION_CALCULATE_BTN_LOC) +
 					fluidRow(fluidColumnLoc(3, 0, CaseDataDto.CASE_REFERENCE_DEFINITION)) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
@@ -302,6 +303,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
+	private ComboBox regionCombo;
 	private ComboBox districtCombo;
 	private ComboBox communityCombo;
 	private OptionGroup facilityOrHome;
@@ -458,7 +460,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			true);
 
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(CaseDataDto.DISEASE_VARIANT);
 		TextField diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
@@ -779,7 +781,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
 
-		ComboBox regionCombo = addInfrastructureField(CaseDataDto.REGION);
+		regionCombo = addInfrastructureField(CaseDataDto.REGION);
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
@@ -1415,22 +1417,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
-
-		if (FacadeProvider.getFeatureConfigurationFacade()
-			.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.HIDE_JURISDICTION_FIELDS)) {
-			hideJurisdictionFields();
-		}
 	}
 
 	private void hideJurisdictionFields() {
-
 		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
 		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
 		differentPlaceOfStayJurisdiction.setVisible(false);
+
 		responsibleRegion.setVisible(false);
 		responsibleDistrict.setVisible(false);
 		responsibleCommunity.setVisible(false);
+
+		regionCombo.setVisible(false);
+		districtCombo.setVisible(false);
+		communityCombo.setVisible(false);
 	}
 
 	private void updateFacilityOrHome() {
@@ -1715,6 +1716,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

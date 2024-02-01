@@ -125,7 +125,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		super(
 			EventCriteria.class,
 			EventIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			JurisdictionFieldConfig.of(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY));
 		this.hideEventStatusFilter = hideEventStatusFilter;
 		this.hideActionFilters = hideActionFilters;
 
@@ -468,23 +469,21 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	@Override
 	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
-		final ComboBox districtField = getField(districtFieldId);
 		if (region != null) {
-			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			districtField.setEnabled(true);
+			FieldHelper.updateItems(districtFilter, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			districtFilter.setEnabled(true);
 		} else {
-			districtField.setEnabled(false);
+			districtFilter.setEnabled(false);
 		}
 	}
 
 	@Override
 	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
-		final ComboBox communityField = getField(communityFieldId);
 		if (district != null) {
-			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-			communityField.setEnabled(true);
+			FieldHelper.updateItems(communityFilter, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+			communityFilter.setEnabled(true);
 		} else {
-			communityField.setEnabled(false);
+			communityFilter.setEnabled(false);
 		}
 	}
 
@@ -560,8 +559,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private void applyFacilityFieldsDependencies() {
 		applyFacilityFieldsDependencies(
 			(TypeOfPlace) getField(EventDto.TYPE_OF_PLACE).getValue(),
-			(DistrictReferenceDto) getField(LocationDto.DISTRICT).getValue(),
-			(CommunityReferenceDto) getField(LocationDto.COMMUNITY).getValue());
+			(DistrictReferenceDto) districtFilter.getValue(),
+			(CommunityReferenceDto) communityFilter.getValue());
 	}
 
 	private void applyFacilityFieldsDependencies(
@@ -586,9 +585,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	}
 
 	private void updateResponsibleUserFieldItems() {
-		updateResponsibleUserFieldItems(
-			(DistrictReferenceDto) getField(EventCriteria.DISTRICT).getValue(),
-			(RegionReferenceDto) getField(EventCriteria.REGION).getValue());
+		updateResponsibleUserFieldItems((DistrictReferenceDto) districtFilter.getValue(), (RegionReferenceDto) regionFilter.getValue());
 	}
 
 	private void updateResponsibleUserFieldItems(DistrictReferenceDto district, RegionReferenceDto region) {

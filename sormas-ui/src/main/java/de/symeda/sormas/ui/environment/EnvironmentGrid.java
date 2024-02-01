@@ -22,9 +22,11 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -75,7 +77,15 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 		}
 
 		addItemClickListener(
-			new ShowDetailsListener<>(EnvironmentIndexDto.UUID, e -> ControllerProvider.getEnvironmentController().navigateToEnvironment(e.getUuid())));
+			new ShowDetailsListener<>(
+				EnvironmentIndexDto.UUID,
+				e -> ControllerProvider.getEnvironmentController().navigateToEnvironment(e.getUuid())));
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(EnvironmentIndexDto.REGION).setHidden(true);
+			getColumn(EnvironmentIndexDto.DISTRICT).setHidden(true);
+			getColumn(EnvironmentIndexDto.COMMUNITY).setHidden(true);
+		}
 	}
 
 	public void reload() {

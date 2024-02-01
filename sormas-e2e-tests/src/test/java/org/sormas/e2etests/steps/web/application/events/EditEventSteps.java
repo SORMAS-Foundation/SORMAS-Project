@@ -166,12 +166,14 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DELETE_EVENT_PARTICIPANT_BUTTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_GRID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DATA_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.GENERAL_COMMENT_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.INVOLVEMENT_DESCRIPTION_INPUT;
@@ -280,6 +282,7 @@ public class EditEventSteps implements En {
   private static String eventParticipantUUID;
   private static String eventUUID;
   public static List<String> externalEventUUID = new ArrayList<>();
+  public static List<String> eventParticipantsUUIDList = new ArrayList<>();
   LocalDate dateOfBirth;
   List<Person> eventParticipantList = new ArrayList<>();
 
@@ -766,6 +769,21 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I add Participant to an Event with the new person data",
+        () -> {
+          String fName = faker.name().firstName();
+          String lName = faker.name().lastName();
+          String sexEn = GenderValues.getRandomGender();
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, fName);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, lName);
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sexEn);
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_REGION_COMBOBOX, RegionsValues.VoreingestellteBundeslander.getName());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_DISTRICT_COMBOBOX, DistrictsValues.VoreingestellterLandkreis.getName());
+        });
+
+    When(
         "I click on save button in Add Participant form",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -839,6 +857,12 @@ public class EditEventSteps implements En {
         "I click on Event Participant Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANT_DATA_TAB);
+        });
+
+    When(
+        "I click on Event Participants tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS);
         });
 
     When(
@@ -2044,6 +2068,18 @@ public class EditEventSteps implements En {
         "^I save Add participant form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
+        });
+
+    And(
+        "^I collect event participant uuid$",
+        () -> {
+          String eventParticipantUuid =
+              webDriverHelpers.getValueFromWebElement(EVENT_PARTICIPANT_UUID_INPUT);
+          eventParticipantsUUIDList.add(eventParticipantUuid);
         });
 
     When(

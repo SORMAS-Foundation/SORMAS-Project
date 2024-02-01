@@ -90,7 +90,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		final EnvironmentJoins environmentJoins = queryContext.getJoins();
 		final From<?, Environment> environmentJoin = queryContext.getRoot();
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (isRestrictedToAssignedEntities()) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(environmentJoin.get(Environment.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
 		} else {
@@ -403,10 +403,6 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(environment.getResponsibleUser(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
-		}
-
 		return super.getEditPermissionType(environment);
 	}
 
@@ -441,5 +437,11 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	public void delete(Environment environment, DeletionDetails deletionDetails) {
 		environment.getEnvironmentSamples().forEach(s -> environmentSampleService.delete(s, deletionDetails));
 		super.delete(environment, deletionDetails);
+	}
+
+	@Override
+	public void restore(Environment environment) {
+		environment.getEnvironmentSamples().forEach(sample -> environmentSampleService.restore(sample));
+		super.restore(environment);
 	}
 }

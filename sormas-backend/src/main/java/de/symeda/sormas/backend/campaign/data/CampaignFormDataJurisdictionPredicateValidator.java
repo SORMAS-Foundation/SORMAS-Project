@@ -47,6 +47,11 @@ public class CampaignFormDataJurisdictionPredicateValidator extends PredicateJur
 	}
 
 	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		return cb.disjunction();
+	}
+
+	@Override
 	protected Predicate whenNotAllowed() {
 		return cb.disjunction();
 	}

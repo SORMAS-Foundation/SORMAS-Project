@@ -57,7 +57,7 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 	private static final long serialVersionUID = -7375416530959728367L;
 
 	protected ExternalMessageGridFilterForm() {
-		super(ExternalMessageCriteria.class, ExternalMessageIndexDto.I18N_PREFIX);
+		super(ExternalMessageCriteria.class, ExternalMessageIndexDto.I18N_PREFIX, null);
 	}
 
 	@Override

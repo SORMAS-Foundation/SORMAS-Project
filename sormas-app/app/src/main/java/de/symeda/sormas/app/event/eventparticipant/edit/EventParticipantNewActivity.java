@@ -135,7 +135,9 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 			return;
 		}
 
-		SelectOrCreatePersonDialog.selectOrCreatePerson(eventParticipantToSave.getPerson(), new Consumer<Person>() {
+		final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
+
+		SelectOrCreatePersonDialog.selectOrCreatePerson(eventParticipantToSave.getPerson(), event, new Consumer<Person>() {
 
 			@Override
 			public void accept(Person person) {
@@ -151,7 +153,6 @@ public class EventParticipantNewActivity extends BaseEditActivity<EventParticipa
 					@Override
 					protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
 						DatabaseHelper.getPersonDao().saveAndSnapshot(eventParticipantToSave.getPerson());
-						final Event event = DatabaseHelper.getEventDao().queryUuid(eventUuid);
 						eventParticipantToSave.setEvent(event);
 						DatabaseHelper.getEventParticipantDao().saveAndSnapshot(eventParticipantToSave);
 					}

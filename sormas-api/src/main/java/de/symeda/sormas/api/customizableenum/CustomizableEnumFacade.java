@@ -82,11 +82,11 @@ public interface CustomizableEnumFacade
 	 * Retrieves the cached contents of all enum value instances of the specified type. The results are already
 	 * internationalized based on the user's language, or the server language as a fallback. If the enum values for the
 	 * specified type and disease have not been requested yet, the cache is extended with them on demand.
-	 * 
+	 *
 	 * @param type
 	 *            The type for which to retrieve the enum values
 	 * @param disease
-	 *            The disease for which to retrieve the enum values. If null, all enum values that are disease-independent are retrieved
+	 *            The disease for which to retrieve the enum values; if null, all enum values that are disease-independent are retrieved
 	 * @param <T>
 	 *            The specific extension of {@link CustomizableEnum} for type safety
 	 * @return A list of all enum instances containing their values, internationalized captions, and optional properties

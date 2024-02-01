@@ -21,11 +21,11 @@ import java.util.List;
 import com.j256.ormlite.dao.Dao;
 
 import android.util.Log;
-
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 
@@ -64,6 +64,34 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 			Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
 			throw new RuntimeException(e);
 		}
+	}
+
+	public List<EventParticipant> getByEventAndPerson(Event event, Person person) {
+
+		if (event.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+
+		try {
+			return queryBuilder().where()
+				.eq(EventParticipant.EVENT + "_id", event)
+				.and()
+				.eq(AbstractDomainObject.SNAPSHOT, false)
+				.and()
+				.eq(EventParticipant.PERSON + "_id", person)
+				.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getByEventAndPerson on EventParticipant");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public boolean eventParticipantAlreadyExists(Event event, Person person) {
+		if (event.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+
+		return getByEventAndPerson(event, person).size() > 0;
 	}
 
 	public Long countByEvent(Event event) {

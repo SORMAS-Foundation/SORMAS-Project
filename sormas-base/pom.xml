@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.93.0</version>
+	<version>1.94.0</version>
 
 	<properties>
 		<maven.minimum.version>3.6.3</maven.minimum.version>
@@ -1171,13 +1171,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-
-            <dependency>
-                <groupId>org.apache.pdfbox</groupId>
-                <artifactId>pdfbox</artifactId>
-                <version>3.0.0</version>
-                <scope>provided</scope>
-            </dependency>
 
 			<!-- *** Domain libs END *** -->
 

@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -140,6 +141,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -1080,7 +1082,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Predicate filter = null;
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		final boolean restrictedToAssignedEntities = isRestrictedToAssignedEntities();
+		if (restrictedToAssignedEntities) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER).get(User.ID), getCurrentUser().getId()));
 		}
 
@@ -1096,7 +1099,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = cb.or(filter, cb.equal(contactRoot.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
-		if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (!restrictedToAssignedEntities) {
 			switch (jurisdictionLevel) {
 			case REGION:
 				final Region region = currentUser.getRegion();
@@ -1133,8 +1136,13 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
-			CriteriaBuilderHelper
-				.limitedDiseasePredicate(cb, currentUser, contactRoot.get(Contact.DISEASE), cb.isNull(contactRoot.get(Contact.DISEASE))));
+			CriteriaBuilderHelper.limitedDiseasePredicate(
+				cb,
+				currentUser,
+				contactRoot.get(Contact.DISEASE),
+				cb.or(
+					cb.isNull(contactRoot.get(Contact.DISEASE)),
+					cb.equal(contactRoot.get(Contact.REPORTING_USER).get(User.ID), currentUser.getId()))));
 
 		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
@@ -1844,10 +1852,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			return EditPermissionType.OUTSIDE_JURISDICTION;
 		}
 
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(contact.getContactOfficer(), (getCurrentUser()))) {
-			return EditPermissionType.REFUSED;
-		}
-
 		if (sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)
 			|| (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver())) {
 			return EditPermissionType.WITHOUT_OWNERSHIP;
@@ -1942,7 +1946,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 		final Root<Contact> contact = cq.from(Contact.class);
 
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
@@ -1966,9 +1970,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		cq.distinct(true);
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
-			.setResultTransformer(new ContactListEntryDtoResultTransformer())
-			.getResultList();
+		return QueryHelper.getResultList(em, cq, new ContactListEntryDtoResultTransformer(), first, max);
 	}
 
 	public long getContactCount(CaseReferenceDto caze) {

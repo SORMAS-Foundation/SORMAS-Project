@@ -227,7 +227,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 
 		// Person selection can be skipped if the case was created from a contact or event participant
 		if (contactUuid == null && eventParticipantUuid == null) {
-			SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
+			SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), caze, person -> {
 				if (person != null) {
 					caze.setPerson(person);
 					pickOrCreateCaseAndSave(caze, fragment);

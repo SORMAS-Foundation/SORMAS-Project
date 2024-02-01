@@ -29,7 +29,7 @@ public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCrite
 	private final ShareRequestViewType viewType;
 
 	protected ShareRequestFilterForm(ShareRequestViewType viewType) {
-		super(ShareRequestCriteria.class, SormasToSormasShareRequestDto.I18N_PREFIX, false);
+		super(ShareRequestCriteria.class, SormasToSormasShareRequestDto.I18N_PREFIX, null, false);
 
 		this.viewType = viewType;
 		addFields();

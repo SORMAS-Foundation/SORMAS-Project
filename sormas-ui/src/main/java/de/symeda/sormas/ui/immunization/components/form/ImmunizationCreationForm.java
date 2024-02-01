@@ -35,6 +35,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -91,6 +93,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 	private final PersonReferenceDto personDto;
 	private final Disease disease;
+	private ComboBox responsibleRegion;
+	private ComboBox responsibleDistrict;
+	private ComboBox responsibleCommunity;
 
 	public ImmunizationCreationForm() {
 		this(null, null);
@@ -143,15 +148,15 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addInfrastructureField(ImmunizationDto.RESPONSIBLE_REGION);
+		responsibleRegion = addInfrastructureField(ImmunizationDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addInfrastructureField(ImmunizationDto.RESPONSIBLE_DISTRICT);
-		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
-		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
+		responsibleDistrict = addInfrastructureField(ImmunizationDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict.setRequired(true);
+		responsibleCommunity = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity.setNullSelectionAllowed(true);
+		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
-		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
 
 		ComboBox facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
@@ -256,7 +261,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			}
 		});
 
-		responsibleDistrictCombo.addValueChangeListener(e -> {
+		responsibleDistrict.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			if (districtDto != null && facilityType.getValue() != null) {
@@ -267,7 +272,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			}
 		});
 
-		responsibleCommunityCombo.addValueChangeListener(e -> {
+		responsibleCommunity.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 			if (facilityType.getValue() != null) {
@@ -276,10 +281,10 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 					communityDto != null
 						? FacadeProvider.getFacilityFacade()
 							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
-						: responsibleDistrictCombo.getValue() != null
+						: responsibleDistrict.getValue() != null
 							? FacadeProvider.getFacilityFacade()
 								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) responsibleDistrictCombo.getValue(),
+									(DistrictReferenceDto) responsibleDistrict.getValue(),
 									(FacilityType) facilityType.getValue(),
 									true,
 									false)
@@ -293,13 +298,13 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);
-			if (facilityType.getValue() != null && responsibleDistrictCombo.getValue() != null) {
-				if (responsibleCommunityCombo.getValue() != null) {
+			if (facilityType.getValue() != null && responsibleDistrict.getValue() != null) {
+				if (responsibleCommunity.getValue() != null) {
 					FieldHelper.updateItems(
 						facilityCombo,
 						FacadeProvider.getFacilityFacade()
 							.getActiveFacilitiesByCommunityAndType(
-								(CommunityReferenceDto) responsibleCommunityCombo.getValue(),
+								(CommunityReferenceDto) responsibleCommunity.getValue(),
 								(FacilityType) facilityType.getValue(),
 								true,
 								false));
@@ -308,7 +313,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 						facilityCombo,
 						FacadeProvider.getFacilityFacade()
 							.getActiveFacilitiesByDistrictAndType(
-								(DistrictReferenceDto) responsibleDistrictCombo.getValue(),
+								(DistrictReferenceDto) responsibleDistrict.getValue(),
 								(FacilityType) facilityType.getValue(),
 								true,
 								false));
@@ -363,6 +368,17 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		}
 	}
 
+	private void hideAndFillJurisdictionFields() {
+
+		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
+		responsibleRegion.setVisible(false);
+		responsibleRegion.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		responsibleDistrict.setVisible(false);
+		responsibleDistrict.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		responsibleCommunity.setVisible(false);
+		responsibleCommunity.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+	}
+
 	public PersonDto getPerson() {
 		PersonDto person = PersonDto.build();
 		personCreateForm.transferDataToPerson(person);
@@ -380,5 +396,14 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS).getValue());
 		immunizationDto.setImmunizationStatus((ImmunizationStatus) getField(ImmunizationDto.IMMUNIZATION_STATUS).getValue());
 		return immunizationDto;
+	}
+
+	@Override
+	protected void setInternalValue(ImmunizationDto newValue) {
+		super.setInternalValue(newValue);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 }

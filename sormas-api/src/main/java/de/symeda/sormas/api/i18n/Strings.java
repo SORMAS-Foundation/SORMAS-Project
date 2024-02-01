@@ -1397,6 +1397,7 @@ public interface Strings {
 	String messagePersonListAddedAsEventPerticipants = "messagePersonListAddedAsEventPerticipants";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
 	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
+	String messagePersonNationalHealthIdInvalid = "messagePersonNationalHealthIdInvalid";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePickEventParticipantsIncompleteSelection = "messagePickEventParticipantsIncompleteSelection";
@@ -1687,6 +1688,7 @@ public interface Strings {
 	String reloadPageToSeeChanges = "reloadPageToSeeChanges";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String reportingUser = "reportingUser";
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";

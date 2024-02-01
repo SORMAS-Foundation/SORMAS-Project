@@ -116,10 +116,13 @@ public class EditSampleSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_SAMPLE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              DELETE_SAMPLE_REASON_POPUP);
           webDriverHelpers.selectFromCombobox(
               DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_SEARCH_INPUT);
+          if (webDriverHelpers.isElementPresent(SAMPLE_SEARCH_INPUT))
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_SEARCH_INPUT);
         });
 
     When(

@@ -51,12 +51,13 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		ImmunizationCriteria.FACILITY_TYPE_GROUP,
 		ImmunizationCriteria.FACILITY_TYPE,
 		ImmunizationCriteria.HEALTH_FACILITY,
-		ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION)
-
-		+ loc(WEEK_AND_DATE_FILTER);
+		ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION) + loc(WEEK_AND_DATE_FILTER);
 
 	public ImmunizationFilterForm() {
-		super(ImmunizationCriteria.class, ImmunizationCriteria.I18N_PREFIX);
+		super(
+			ImmunizationCriteria.class,
+			ImmunizationCriteria.I18N_PREFIX,
+			JurisdictionFieldConfig.of(ImmunizationCriteria.REGION, ImmunizationCriteria.DISTRICT, ImmunizationCriteria.COMMUNITY));
 	}
 
 	@Override
@@ -99,12 +100,10 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-		if (currentUserDto().getRegion() == null) {
-			final ComboBox regionFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
+			ComboBox regionFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-		}
 
-		final ComboBox districtFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
+		ComboBox districtFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		if (currentUserDto().getDistrict() != null) {
 			districtFilter.setVisible(false);
@@ -138,19 +137,18 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
+
 		super.applyDependenciesOnFieldChange(propertyId, event);
 
 		final ImmunizationCriteria criteria = getValue();
 
-		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
-		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);
 		final ComboBox facilityTypeGroupField = getField(ImmunizationCriteria.FACILITY_TYPE_GROUP);
 		final ComboBox facilityTypeField = getField(ImmunizationCriteria.FACILITY_TYPE);
 		final ComboBox facilityField = getField(ImmunizationCriteria.HEALTH_FACILITY);
 
 		final UserDto user = currentUserDto();
 		final DistrictReferenceDto currentDistrict =
-			user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtField.getValue();
+			user.getDistrict() != null ? user.getDistrict() : (DistrictReferenceDto) districtFilter.getValue();
 
 		switch (propertyId) {
 		case ImmunizationCriteria.REGION: {
@@ -158,12 +156,12 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 			if (!DataHelper.equal(region, criteria.getRegion())) {
 				if (region != null) {
-					enableFields(districtField);
-					FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					enableFields(districtFilter);
+					FieldHelper.updateItems(districtFilter, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 				} else {
-					clearAndDisableFields(districtField);
+					clearAndDisableFields(districtFilter);
 				}
-				clearAndDisableFields(communityField, facilityField, facilityTypeField, facilityTypeGroupField);
+				clearAndDisableFields(communityFilter, facilityField, facilityTypeField, facilityTypeGroupField);
 			}
 
 			break;
@@ -173,7 +171,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 			if (!DataHelper.equal(newDistrict, criteria.getDistrict())) {
 				if (newDistrict != null) {
-					enableFields(communityField, facilityTypeGroupField);
+					enableFields(communityFilter, facilityTypeGroupField);
 
 					clearAndDisableFields(facilityField);
 					if (facilityTypeGroupField != null) {
@@ -188,9 +186,9 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 						}
 					}
 
-					FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
+					FieldHelper.updateItems(communityFilter, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(newDistrict.getUuid()));
 				} else {
-					clearAndDisableFields(communityField, facilityField, facilityTypeField, facilityTypeGroupField);
+					clearAndDisableFields(communityFilter, facilityField, facilityTypeField, facilityTypeGroupField);
 				}
 			}
 
@@ -244,7 +242,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 					enableFields(facilityField);
 					facilityField.setValue(null);
 
-					CommunityReferenceDto community = (CommunityReferenceDto) communityField.getValue();
+					CommunityReferenceDto community = (CommunityReferenceDto) communityFilter.getValue();
 					if (community != null) {
 						FieldHelper.updateItems(
 							facilityField,
@@ -276,19 +274,18 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 	@Override
 	protected void applyDependenciesOnNewValue(ImmunizationCriteria criteria) {
+
 		final UserDto user = currentUserDto();
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		final JurisdictionLevel userJurisdictionLevel = currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : null;
 
-		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
-		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);
 		final ComboBox facilityTypeGroupField = getField(ImmunizationCriteria.FACILITY_TYPE_GROUP);
 		final ComboBox facilityTypeField = getField(ImmunizationCriteria.FACILITY_TYPE);
 		final ComboBox facilityField = getField(ImmunizationCriteria.HEALTH_FACILITY);
 
 		// Disable all fields
-		clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
+		clearAndDisableFields(districtFilter, communityFilter, facilityTypeGroupField, facilityTypeField, facilityField);
 
 		// Get initial field values according to user and criteria
 		final RegionReferenceDto region = user.getRegion() == null ? criteria.getRegion() : user.getRegion();
@@ -299,21 +296,21 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 		// district
 		if (region != null) {
-			enableFields(districtField);
-			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			enableFields(districtFilter);
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 			// community
 			if (district != null) {
-				districtField.setValue(district);
-				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
-				enableFields(communityField);
+				districtFilter.setValue(district);
+				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				enableFields(communityFilter);
 				if (community != null) {
-					communityField.setValue(community);
+					communityFilter.setValue(community);
 				}
 			} else {
-				clearAndDisableFields(communityField);
+				clearAndDisableFields(communityFilter);
 			}
 		} else {
-			clearAndDisableFields(districtField, communityField);
+			clearAndDisableFields(districtFilter, communityFilter);
 		}
 
 		// facility
@@ -347,11 +344,11 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 		// Disable fields according to user & jurisdiction
 		if (userJurisdictionLevel == JurisdictionLevel.DISTRICT) {
-			clearAndDisableFields(districtField);
+			clearAndDisableFields(districtFilter);
 		} else if (userJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
-			clearAndDisableFields(districtField, communityField);
+			clearAndDisableFields(districtFilter, communityFilter);
 		} else if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
+			clearAndDisableFields(districtFilter, communityFilter, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
 		ComboBox birthDateDD = getField(ImmunizationCriteria.BIRTHDATE_DD);
@@ -446,5 +443,4 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
-
 }
