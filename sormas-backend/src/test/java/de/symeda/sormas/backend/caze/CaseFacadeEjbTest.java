@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -190,6 +191,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	private RDCF rdcf;
+	private RDCF rdcf1;
 	private UserDto nationalUser;
 	private UserDto surveillanceSupervisor;
 	private UserDto surveillanceOfficer;
@@ -200,6 +202,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		rdcf1 = creator.createRDCF("Region1", "District1", "Community1", "Facility1");
 		surveillanceSupervisor = creator.createSurveillanceSupervisor(rdcf);
 		surveillanceOfficer = creator.createSurveillanceOfficer(rdcf);
 		surveillanceOfficerWithRestrictedAccessToAssignedEntities = creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
@@ -881,6 +884,64 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME, false),
 				new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 		assertEquals(1, results2.size());
+	}
+
+	@Test
+	public void testGetIndexListWithLimitedDisease() {
+
+		String lastName = "Person";
+		PersonDto cazePerson1 = creator.createPerson("Case1", lastName);
+		final CaseDataDto case1 = creator.createCase(
+			surveillanceOfficer.toReference(),
+			cazePerson1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case2", lastName);
+		final CaseDataDto case2 = creator.createCase(
+			surveillanceOfficer.toReference(),
+			cazePerson2.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto cazePerson3 = creator.createPerson("Case3", lastName);
+		final CaseDataDto case3 = creator.createCase(
+			surveillanceOfficer.toReference(),
+			cazePerson3.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf1);
+
+		PersonDto cazePerson4 = creator.createPerson("Case2", lastName);
+		final CaseDataDto case4 = creator.createCase(
+			surveillanceOfficer.toReference(),
+			cazePerson4.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf1);
+
+		loginWith(nationalAdmin);
+		Set<Disease> diseaseList = new HashSet<>();
+		diseaseList.add(Disease.CORONAVIRUS);
+		surveillanceOfficer.setLimitedDiseases(diseaseList);
+		getUserFacade().saveUser(surveillanceOfficer, false);
+
+		loginWith(surveillanceOfficer);
+		assertEquals(2, getCaseFacade().getIndexList(null, 0, 100, null).size());
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+		assertEquals(4, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
 	}
 
 	@Test

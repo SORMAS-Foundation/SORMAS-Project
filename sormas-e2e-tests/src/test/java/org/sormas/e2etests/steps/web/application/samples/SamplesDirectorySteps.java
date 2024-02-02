@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.LABORATORY_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.PENDING_TEST_TABLE_RESULTS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.POSITIVE_TEST_TABLE_RESULTS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RELEVANCE_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESET_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_CLASIFICATION_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_DISEASE_SEARCH_COMBOBOX;
@@ -173,6 +174,12 @@ public class SamplesDirectorySteps implements En {
         (String specimenCondition) -> {
           webDriverHelpers.selectFromCombobox(
               SPECIMEN_CONDITION_SEARCH_COMBOBOX, specimenCondition);
+        });
+
+    When(
+        "I select {string} Relevance Status option among the filter options",
+        (String relevanceStatus) -> {
+          webDriverHelpers.selectFromCombobox(RELEVANCE_STATUS_FILTER_COMBOBOX, relevanceStatus);
         });
 
     When(

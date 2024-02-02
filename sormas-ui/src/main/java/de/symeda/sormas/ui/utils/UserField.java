@@ -62,7 +62,11 @@ public class UserField extends CustomField<UserReferenceDto> {
 		userCombo.setWidthFull();
 
 		userCombo.addValueChangeListener(valueChangeEvent -> {
-			setInternalValue((UserReferenceDto) userCombo.getValue());
+			super.setValue((UserReferenceDto) userCombo.getValue());
+		});
+
+		addValueChangeListener(c -> {
+			userCombo.setValue(c.getProperty().getValue());
 		});
 
 		return userLayout;
@@ -197,4 +201,5 @@ public class UserField extends CustomField<UserReferenceDto> {
 	public Class<? extends UserReferenceDto> getType() {
 		return UserReferenceDto.class;
 	}
+
 }

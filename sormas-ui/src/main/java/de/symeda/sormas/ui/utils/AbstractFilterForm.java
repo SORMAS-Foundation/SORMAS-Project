@@ -204,7 +204,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			applyDependenciesOnNewValue(newFieldValue);
 
 			if (moreFiltersLayout != null) {
-				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
+				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty() && f.isVisible());
 				formActionButtonsComponent.toggleMoreFilters(hasExpandedFilter);
 			}
 		});
