@@ -160,6 +160,9 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean deleted = Boolean.FALSE;
 	public Boolean excludeSharedCases;
 
+	private Boolean includeNotACaseClassification;
+
+
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
 	}
@@ -824,5 +827,22 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
+	}
+
+
+	public CaseCriteria caseClassification(CaseClassification caseClassification) {
+		setCaseClassification(caseClassification);
+		return this;
+	}
+
+
+
+	public CaseCriteria includeNotACaseClassification(Boolean includeNotACaseClassification) {
+		this.includeNotACaseClassification = includeNotACaseClassification;
+		return this;
+	}
+
+	public Boolean isIncludeNotACaseClassification() {
+		return includeNotACaseClassification;
 	}
 }

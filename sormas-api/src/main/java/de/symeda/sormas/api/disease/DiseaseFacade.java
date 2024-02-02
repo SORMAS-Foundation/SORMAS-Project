@@ -1,3 +1,5 @@
+package de.symeda.sormas.api.disease;
+
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -15,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.disease;
 
 import java.util.Date;
 import java.util.List;
@@ -23,8 +24,10 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
 
 @Remote
@@ -54,7 +57,10 @@ public interface DiseaseFacade {
             Date from,
             Date to,
             Date previousFromDate,
-            Date previousToDate);
+            Date previousToDate,
+            CriteriaDateType newCaseDateType,
+            CaseClassification caseClassification
+    );
     //
     DiseaseBurdenDto getDiseaseGridForDashboard(
             RegionReferenceDto regionRef,
@@ -63,6 +69,9 @@ public interface DiseaseFacade {
             Date from,
             Date to,
             Date previousFromDate,
-            Date previousToDate);
-
+            Date previousToDate,
+            CriteriaDateType newCaseDateType,
+            CaseClassification caseClassification
+    );
 }
+

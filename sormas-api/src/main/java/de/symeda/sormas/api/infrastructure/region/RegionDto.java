@@ -156,4 +156,8 @@ public class RegionDto extends InfrastructureDtoWithDefault {
 	public String i18nPrefix() {
 		return I18N_PREFIX;
 	}
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

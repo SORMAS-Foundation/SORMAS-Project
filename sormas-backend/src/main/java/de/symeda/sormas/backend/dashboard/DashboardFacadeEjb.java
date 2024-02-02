@@ -795,6 +795,14 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return diseasesBurden;
 	}
 
+	@Override
+	@RightsAllowed({
+			UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+			UserRight._DASHBOARD_CONTACT_VIEW })
+	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getNewTestResultCountByResultType(dashboardCriteria);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class DashboardFacadeEjbLocal extends DashboardFacadeEjb {

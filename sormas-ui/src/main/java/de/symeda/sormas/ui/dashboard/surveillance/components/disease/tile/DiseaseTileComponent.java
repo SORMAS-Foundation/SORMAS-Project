@@ -17,16 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile;
 
+import java.util.Date;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -35,127 +38,26 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-
-import java.util.List;
 
 public class DiseaseTileComponent extends VerticalLayout {
-//import java.util.List;
-
-//public class DiseaseDetailsComponent extends VerticalLayout {
-//public class DiseaseDetailsComponent extends CssLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	
-	public static final String CARD_COUNT = "count";
-	public static final String DISEASE_GRID = "grid";
-	public static final String DISEASE_MAP = "diseasemap";
-	private DashboardDataProvider dashboardDataProvider;
-	private List<DiseaseBurdenDto> diseaseBurden;
-
-	//public DiseaseDetailsComponent(DiseaseBurdenDto diseaseBurden) {
-//	public DiseaseDetailsComponent(DashboardDataProvider dashboardDataProvider) {
-//		setSizeFull();
-////		setMargin(false);
-//		this.dashboardDataProvider = dashboardDataProvider;
-//	}
-
-public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {
+	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
 		setMargin(false);
 		setSpacing(false);
 
-		addTopLayout(
-		diseaseBurden.getDisease(),
-		diseaseBurden.getCaseCount(),
-		diseaseBurden.getPreviousCaseCount(),
-		diseaseBurden.getOutbreakDistrictCount() > 0);
-		addStatsLayout(diseaseBurden.getCaseDeathCount(), diseaseBurden.getEventCount(), diseaseBurden.getLastReportedDistrictName());
-		}
+		addTopLayout(diseaseBurden.getDisease(), diseaseBurden.getCaseCount(), diseaseBurden.getPreviousCaseCount(),
+				diseaseBurden.getOutbreakDistrictCount() > 0);
+//		addStatsLayout(
+//			diseaseBurden.getCaseDeathCount(),
+//			diseaseBurden.getEventCount(),
+//			diseaseBurden.getLastReportedDistrictName(),
+//			diseaseBurden.getDisease());
 
-	public void refresh(){
-		String htmlLayout = LayoutUtil.fluidRow(
-			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CARD_COUNT),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DISEASE_GRID),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DISEASE_MAP));
 
-		addTopLayout(
-				dashboardDataProvider.getDiseaseBurdenDetail().getDisease(),
-				dashboardDataProvider.getDiseaseBurdenDetail().getCaseCount(),
-				dashboardDataProvider.getDiseaseBurdenDetail().getPreviousCaseCount(),
-				dashboardDataProvider.getDiseaseBurdenDetail().getOutbreakDistrictCount() > 0);
+		addStatsLayout(diseaseBurden, dashboardDataProvider);
 
-		addStatsLayout(
-				dashboardDataProvider.getDiseaseBurdenDetail().getCaseDeathCount(),
-				dashboardDataProvider.getDiseaseBurdenDetail().getEventCount(),
-				dashboardDataProvider.getDiseaseBurdenDetail().getLastReportedDistrictName(),
-				dashboardDataProvider.getDiseaseBurdenDetail().getDisease()
-		);
-	
-	}
-
-	private void addStatsLayout(Long fatalities, Long events, String district, Disease disease) {
-		VerticalLayout layout = new VerticalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-		layout.setSpacing(false);
-		CssStyles.style(layout, CssStyles.BACKGROUND_HIGHLIGHT);
-
-		HorizontalLayout statsItem = createStatsItem(
-				I18nProperties.getCaption(Captions.dashboardLastReport) + ": ",
-				district.length() == 0 ? I18nProperties.getString(Strings.none) : district,
-				false,
-				true);
-		CssStyles.style(statsItem, CssStyles.VSPACE_TOP_4);
-		layout.addComponent(statsItem);
-		layout.addComponent(createStatsItem(I18nProperties.getCaption(Captions.dashboardFatalities), fatalities.toString(), fatalities > 0, false));
-		statsItem = createStatsItem(I18nProperties.getCaption(Captions.DiseaseBurden_eventCount), events.toString(), false, false);
-		CssStyles.style(statsItem, CssStyles.VSPACE_4);
-		layout.addComponent(statsItem);
-
-		layout.addComponent(addDiseaseButton(disease));
-
-		addComponent(layout);
-	}
-
-	private Button addDiseaseButton(Disease diseaseName) {
-		Button diseaseDetailButton = ButtonHelper
-				.createIconButton(null, VaadinIcons.ELLIPSIS_DOTS_H, null, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
-		diseaseDetailButton.setVisible(true);
-		diseaseDetailButton.addClickListener(click -> ControllerProvider.getDashboardController().navigateToDisease(diseaseName));
-
-//		Button diseaseDetailButton = ButtonHelper
-//			.createIconButton(null, VaadinIcons.ELLIPSIS_DOTS_H, null, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
-//		diseaseDetailButton.setVisible(true);
-//		layout.addComponent(diseaseDetailButton);
-//		diseaseDetailButton.addClickListener(click -> ControllerProvider.getDashboardController().navigateToDisease(disease.getName()));
-
-		return diseaseDetailButton;
-	}
-
-	private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label nameLabel = new Label(label);
-		CssStyles.style(nameLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.HSPACE_LEFT_3);
-		layout.addComponent(nameLabel);
-		if (!singleColumn) {
-			layout.setExpandRatio(nameLabel, 1);
-		}
-
-		Label valueLabel = new Label(value);
-		CssStyles.style(
-				valueLabel,
-				CssStyles.LABEL_PRIMARY,
-				isCritical ? CssStyles.LABEL_CRITICAL : "",
-				singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
-		layout.addComponent(valueLabel);
-		layout.setExpandRatio(valueLabel, singleColumn ? 1f : 0.65f);
-
-		return layout;
 	}
 
 	private void addTopLayout(Disease disease, Long casesCount, Long previousCasesCount, boolean isOutbreak) {
@@ -178,12 +80,9 @@ public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		nameLayout.setHeight(100, Unit.PERCENTAGE);
 		Label nameLabel = new Label(disease.toShortString());
-		nameLabel.addStyleNames(
-			CssStyles.LABEL_WHITE,
-			nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
-			CssStyles.LABEL_BOLD,
-			CssStyles.ALIGN_CENTER,
-			CssStyles.LABEL_UPPERCASE);
+		nameLabel.addStyleNames(CssStyles.LABEL_WHITE,
+				nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
+				CssStyles.LABEL_BOLD, CssStyles.ALIGN_CENTER, CssStyles.LABEL_UPPERCASE);
 		nameLayout.addComponent(nameLabel);
 		nameLayout.setComponentAlignment(nameLabel, Alignment.MIDDLE_CENTER);
 		nameAndOutbreakLayout.addComponent(nameLayout);
@@ -214,8 +113,8 @@ public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {
 		countLayout.setWidth(100, Unit.PERCENTAGE);
 
 		Label countLabel = new Label(casesCount.toString());
-		countLabel
-			.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XXXLARGE, CssStyles.ALIGN_CENTER, CssStyles.VSPACE_TOP_4);
+		countLabel.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XXXLARGE,
+				CssStyles.ALIGN_CENTER, CssStyles.VSPACE_TOP_4);
 		countLayout.addComponent(countLabel);
 		countLayout.setComponentAlignment(countLabel, Alignment.BOTTOM_CENTER);
 
@@ -233,15 +132,17 @@ public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {
 			} else {
 				chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
 			}
-			growthLabel.setValue(
-				"<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-" + CssStyles.LABEL_WHITE
-					+ " align-center v-label-align-center bold v-label-bold v-has-width\" " + "	  style=\"margin-top: 3px;\">"
-					+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>" + "</div>");
+			growthLabel.setValue("<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-"
+					+ CssStyles.LABEL_WHITE + " align-center v-label-align-center bold v-label-bold v-has-width\" "
+					+ "	  style=\"margin-top: 3px;\">"
+					+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
+					+ "</div>");
 
 			comparisonLayout.addComponent(growthLabel);
 
 			Label previousCountLabel = new Label(previousCasesCount.toString());
-			previousCountLabel.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XLARGE, CssStyles.HSPACE_LEFT_4);
+			previousCountLabel.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XLARGE,
+					CssStyles.HSPACE_LEFT_4);
 			comparisonLayout.addComponent(previousCountLabel);
 			comparisonLayout.setComponentAlignment(growthLabel, Alignment.MIDDLE_CENTER);
 			comparisonLayout.setComponentAlignment(previousCountLabel, Alignment.MIDDLE_CENTER);
@@ -258,24 +159,111 @@ public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {
 		addComponent(layout);
 	}
 
-	private void addStatsLayout(Long fatalities, Long events, String district) {
+//	private void addStatsLayout(Long fatalities, Long events, String district, Disease disease) {
+//		VerticalLayout layout = new VerticalLayout();
+//		layout.setWidth(100, Unit.PERCENTAGE);
+//		layout.setMargin(false);
+//		layout.setSpacing(false);
+//		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
+//
+//		StatsItem lastReportItem =
+//			new StatsItem.Builder(Captions.dashboardLastReport, district.length() == 0 ? I18nProperties.getString(Strings.none) : district)
+//				.singleColumn(true)
+//				.build();
+//		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
+//		layout.addComponent(lastReportItem);
+//		layout.addComponent(new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build());
+//		StatsItem noOfEventsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
+//		noOfEventsItem.addStyleName(CssStyles.VSPACE_4);
+//		layout.addComponent(noOfEventsItem);
+//
+//		layout.addComponent(addDiseaseButton(disease));
+//
+//		addComponent(layout);
+//	}
+
+	private void addStatsLayout(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
+
+		Long fatalities = diseaseBurden.getCaseDeathCount();
+		Long events = diseaseBurden.getEventCount();
+		String district = diseaseBurden.getLastReportedDistrictName();
+		Disease disease = diseaseBurden.getDisease();
+		Date dateFrom = diseaseBurden.getFrom();
+		Date dateTo = diseaseBurden.getTo();
+
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setMargin(false);
 		layout.setSpacing(false);
 		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
 
-		StatsItem lastReportItem =
-			new StatsItem.Builder(Captions.dashboardLastReport, district.length() == 0 ? I18nProperties.getString(Strings.none) : district)
-				.singleColumn(true)
-				.build();
+		StatsItem lastReportItem = new StatsItem.Builder(Captions.dashboardLastReport,
+				district.length() == 0 ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
 		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
 		layout.addComponent(lastReportItem);
-		layout.addComponent(new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build());
+
+
+		StatsItem fatality = new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build();
+		fatality.addStyleName(CssStyles.HSPACE_LEFT_5);
+		layout.addComponent(fatality);
+
 		StatsItem noOfEventsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
 		noOfEventsItem.addStyleName(CssStyles.VSPACE_4);
 		layout.addComponent(noOfEventsItem);
 
+		Button component = addDiseaseButton(disease, dashboardDataProvider);
+
+		layout.addComponent(component);
+
 		addComponent(layout);
+	}
+
+	private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+		layout.setSpacing(false);
+
+		Label nameLabel = new Label(label);
+		CssStyles.style(nameLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "",
+				CssStyles.HSPACE_LEFT_3);
+		layout.addComponent(nameLabel);
+		if (!singleColumn) {
+			layout.setExpandRatio(nameLabel, 1);
+		}
+
+		Label valueLabel = new Label(value);
+		CssStyles.style(valueLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "",
+				singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
+		layout.addComponent(valueLabel);
+		layout.setExpandRatio(valueLabel, singleColumn ? 1f : 0.65f);
+
+		return layout;
+	}
+
+	private Button addDiseaseButton(Disease diseaseName, DashboardDataProvider dashboardDataProvider) {
+
+		Date from =dashboardDataProvider.getFromDate();
+		Date to = dashboardDataProvider.getToDate();
+		NewDateFilterType type = dashboardDataProvider.getDateFilterType();
+
+		Button diseaseDetailButton = ButtonHelper.createIconButton(null, VaadinIcons.ELLIPSIS_DOTS_H, null,
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
+		diseaseDetailButton.setVisible(true);
+//		diseaseDetailButton.addClickListener(
+//				click -> ControllerProvider.getDashboardController().navigateToDisease(diseaseName, from,to,type));
+
+		diseaseDetailButton.addClickListener(
+				click -> ControllerProvider.getDashboardController().navigateToDisease(diseaseName, dashboardDataProvider));
+
+
+
+//		Button diseaseDetailButton = ButtonHelper
+//			.createIconButton(null, VaadinIcons.ELLIPSIS_DOTS_H, null, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
+//		diseaseDetailButton.setVisible(true);
+//		layout.addComponent(diseaseDetailButton);
+//		diseaseDetailButton.addClickListener(click -> ControllerProvider.getDashboardController().navigateToDisease(disease.getName()));
+
+		return diseaseDetailButton;
 	}
 }

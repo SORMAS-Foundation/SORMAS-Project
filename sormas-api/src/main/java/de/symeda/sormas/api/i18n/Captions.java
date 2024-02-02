@@ -2838,4 +2838,5 @@ public interface Captions {
 	String years = "years";
 	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 
+	String dashboardDistrictDiseaseBurden="dashboardDistrictDiseaseBurden";
 }

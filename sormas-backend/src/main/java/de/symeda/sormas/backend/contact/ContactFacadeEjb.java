@@ -67,6 +67,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2386,6 +2387,21 @@ public class ContactFacadeEjb
 	public User getRandomRegionContactResponsible(Region region) {
 
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
+	}
+
+	@Override
+	public List<DashboardContactDto> getContactsForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef,
+			Disease disease,
+			Date from,
+			Date to,
+			CaseClassification caseClassification) {
+
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return service.getContactsForDashboard(region, district, disease, from, to);
 	}
 
 	@LocalBean

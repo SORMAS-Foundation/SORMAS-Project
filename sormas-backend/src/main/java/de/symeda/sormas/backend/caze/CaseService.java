@@ -2467,13 +2467,16 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return filter;
 	}
 
-
 	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Case> from) {
 
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
-		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
+		//Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
+		Join<Case, Region> responsibleRegion = from.join(Case.RESPONSIBLE_REGION, JoinType.LEFT);
+
+		//Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
+		Join<Case, District> responsibleDistrict = from.join(Case.RESPONSIBLE_DISTRICT, JoinType.LEFT);
+
 		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
 		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
 		Predicate filter = null;
@@ -2488,16 +2491,24 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+
+			filter = and(cb, filter, cb.equal(responsibleRegion.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+
+//			filter = and(cb, filter,
+//					cb.or(
+//					cb.and(cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()),cb.isNotNull(region.get(Region.UUID))),
+//					cb.and(cb.equal(responsibleRegion.get(Region.UUID), caseCriteria.getRegion().getUuid()),cb.isNull(region.get(Region.UUID)))));
+
 		}
+
+
 		if (caseCriteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter = and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), caseCriteria.getDistrict().getUuid()));
 		}
 		if (caseCriteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
 		}
-		if (Boolean.TRUE.equals(caseCriteria.
-				getExcludeSharedCases())) {
+		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
 			User currentUser = getCurrentUser();
 			if (currentUser != null) {
 				if (currentUser.getDistrict() != null) {
@@ -2507,7 +2518,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 							cb.not(
 									cb.and(
 											cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
-											cb.notEqual(region.get(District.UUID), currentUser.getDistrict().getUuid()))));
+											cb.notEqual(responsibleRegion.get(District.UUID), currentUser.getDistrict().getUuid()))));
 				} else if (currentUser.getRegion() != null) {
 					filter = and(
 							cb,
@@ -2515,7 +2526,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 							cb.not(
 									cb.and(
 											cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
-											cb.notEqual(region.get(Region.UUID), currentUser.getRegion().getUuid()))));
+											cb.notEqual(responsibleRegion.get(Region.UUID), currentUser.getRegion().getUuid()))));
 				}
 			}
 		}
@@ -2540,15 +2551,31 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 					filter,
 					cb.equal(from.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
 		}
+
+
+//		else {
+//			filter = and(cb, filter, cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+//
+//		}
 		if (caseCriteria.getCaseClassification() != null) {
+
 			filter = and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
+
 		}
+
+		if (caseCriteria.isIncludeNotACaseClassification()==null||caseCriteria.isIncludeNotACaseClassification()==false) {
+			filter = and(cb, filter, cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+		}
+
+
 		if (caseCriteria.getInvestigationStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.INVESTIGATION_STATUS), caseCriteria.getInvestigationStatus()));
 		}
+
 		if (caseCriteria.getPresentCondition() != null) {
 			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
 		}
+
 		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
 			filter = and(
 					cb,
@@ -2663,6 +2690,208 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				}
 			}
 		}
+
+
+
 		return filter;
 	}
+
+
+//	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Case> from) {
+//
+//		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
+//		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
+//		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
+//		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
+//		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
+//		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+//		Predicate filter = null;
+//		if (caseCriteria.getReportingUserRole() != null) {
+//			filter =
+//					and(cb, filter, cb.isMember(caseCriteria.getReportingUserRole(), from.join(Case.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+//		}
+//		if (caseCriteria.getDisease() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
+//		}
+//		if (caseCriteria.getOutcome() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
+//		}
+//		if (caseCriteria.getRegion() != null) {
+//			filter = and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+//		}
+//		if (caseCriteria.getDistrict() != null) {
+//			filter = and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+//		}
+//		if (caseCriteria.getCommunity() != null) {
+//			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
+//		}
+//		if (Boolean.TRUE.equals(caseCriteria.
+//				getExcludeSharedCases())) {
+//			User currentUser = getCurrentUser();
+//			if (currentUser != null) {
+//				if (currentUser.getDistrict() != null) {
+//					filter = and(
+//							cb,
+//							filter,
+//							cb.not(
+//									cb.and(
+//											cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
+//											cb.notEqual(region.get(District.UUID), currentUser.getDistrict().getUuid()))));
+//				} else if (currentUser.getRegion() != null) {
+//					filter = and(
+//							cb,
+//							filter,
+//							cb.not(
+//									cb.and(
+//											cb.equal(from.get(Case.SHARED_TO_COUNTRY), true),
+//											cb.notEqual(region.get(Region.UUID), currentUser.getRegion().getUuid()))));
+//				}
+//			}
+//		}
+//		if (caseCriteria.getCaseOrigin() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
+//		}
+//		if (caseCriteria.getHealthFacility() != null) {
+//			filter = and(
+//					cb,
+//					filter,
+//					cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+//		}
+//		if (caseCriteria.getPointOfEntry() != null) {
+//			filter = and(
+//					cb,
+//					filter,
+//					cb.equal(from.join(Case.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
+//		}
+//		if (caseCriteria.getSurveillanceOfficer() != null) {
+//			filter = and(
+//					cb,
+//					filter,
+//					cb.equal(from.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
+//		}
+//		if (caseCriteria.getCaseClassification() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
+//		}
+//		if (caseCriteria.getInvestigationStatus() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.INVESTIGATION_STATUS), caseCriteria.getInvestigationStatus()));
+//		}
+//		if (caseCriteria.getPresentCondition() != null) {
+//			filter = and(cb, filter, cb.equal(person.get(Person.PRESENT_CONDITION), caseCriteria.getPresentCondition()));
+//		}
+//		if (caseCriteria.getNewCaseDateFrom() != null && caseCriteria.getNewCaseDateTo() != null) {
+//			filter = and(
+//					cb,
+//					filter,
+//					createNewCaseFilter(
+//							cb,
+//							from,
+//							DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()),
+//							DateHelper.getEndOfDay(caseCriteria.getNewCaseDateTo()),
+//							caseCriteria.getNewCaseDateType()));
+//		}
+//		if (caseCriteria.getCreationDateFrom() != null) {
+//			filter = and(cb, filter, cb.greaterThan(from.get(Case.CREATION_DATE), DateHelper.getStartOfDay(caseCriteria.getCreationDateFrom())));
+//		}
+//		if (caseCriteria.getCreationDateTo() != null) {
+//			filter = and(cb, filter, cb.lessThan(from.get(Case.CREATION_DATE), DateHelper.getEndOfDay(caseCriteria.getCreationDateTo())));
+//		}
+//		if (caseCriteria.getQuarantineTo() != null) {
+//			filter = and(
+//					cb,
+//					filter,
+//					cb.between(
+//							from.get(Case.QUARANTINE_TO),
+//							DateHelper.getStartOfDay(caseCriteria.getQuarantineTo()),
+//							DateHelper.getEndOfDay(caseCriteria.getQuarantineTo())));
+//		}
+//		if (caseCriteria.getPerson() != null) {
+//			filter = and(cb, filter, cb.equal(from.join(Case.PERSON, JoinType.LEFT).get(Person.UUID), caseCriteria.getPerson().getUuid()));
+//		}
+//		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
+//			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+//			filter = and(
+//					cb,
+//					filter,
+//					cb.and(
+//							cb.or(cb.isNull(from.get(Case.REPORT_LAT)), cb.isNull(from.get(Case.REPORT_LON))),
+//							cb.or(cb.isNull(personAddress.get(Location.LATITUDE)), cb.isNull(personAddress.get(Location.LONGITUDE)))));
+//		}
+//		if (caseCriteria.getMustBePortHealthCaseWithoutFacility() != null && caseCriteria.getMustBePortHealthCaseWithoutFacility() == true) {
+//			filter = and(
+//					cb,
+//					filter,
+//					cb.and(cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY), cb.isNull(from.join(Case.HEALTH_FACILITY, JoinType.LEFT))));
+//		}
+//		if (caseCriteria.getMustHaveCaseManagementData() != null && caseCriteria.getMustHaveCaseManagementData() == true) {
+//			Subquery<Prescription> prescriptionSubquery = cq.subquery(Prescription.class);
+//			Root<Prescription> prescriptionRoot = prescriptionSubquery.from(Prescription.class);
+//			prescriptionSubquery.select(prescriptionRoot).where(cb.equal(prescriptionRoot.get(Prescription.THERAPY), from.get(Case.THERAPY)));
+//			Subquery<Treatment> treatmentSubquery = cq.subquery(Treatment.class);
+//			Root<Treatment> treatmentRoot = treatmentSubquery.from(Treatment.class);
+//			treatmentSubquery.select(treatmentRoot).where(cb.equal(treatmentRoot.get(Treatment.THERAPY), from.get(Case.THERAPY)));
+//			Subquery<ClinicalVisit> clinicalVisitSubquery = cq.subquery(ClinicalVisit.class);
+//			Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitSubquery.from(ClinicalVisit.class);
+//			clinicalVisitSubquery.select(clinicalVisitRoot)
+//					.where(cb.equal(clinicalVisitRoot.get(ClinicalVisit.CLINICAL_COURSE), from.get(Case.CLINICAL_COURSE)));
+//			filter = and(cb, filter, cb.or(cb.exists(prescriptionSubquery), cb.exists(treatmentSubquery), cb.exists(clinicalVisitSubquery)));
+//		}
+//		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
+//			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
+//		}
+//		if (caseCriteria.getRelevanceStatus() != null) {
+//			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+//				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
+//			} else if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+//				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
+//			}
+//		}
+//		if (caseCriteria.getDeleted() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
+//		}
+//		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
+//			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
+//			for (int i = 0; i < textFilters.length; i++) {
+//				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+//				if (!DataHelper.isNullOrEmpty(textFilter)) {
+//					Predicate likeFilters = cb.or(
+//							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+//							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+//							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+//							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+//							cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
+//							cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
+//					filter = and(cb, filter, likeFilters);
+//				}
+//			}
+//		}
+//		if (caseCriteria.getReportingUserLike() != null) {
+//			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");
+//			for (int i = 0; i < textFilters.length; i++) {
+//				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+//				if (!DataHelper.isNullOrEmpty(textFilter)) {
+//					Predicate likeFilters = cb.or(
+//							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
+//							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
+//							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
+//					filter = and(cb, filter, likeFilters);
+//				}
+//			}
+//		}
+//		if (caseCriteria.getSourceCaseInfoLike() != null) {
+//			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
+//			for (int i = 0; i < textFilters.length; i++) {
+//				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+//				if (!DataHelper.isNullOrEmpty(textFilter)) {
+//					Predicate likeFilters = cb.or(
+//							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+//							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+//							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+//							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+//							cb.like(cb.lower(from.get(Case.EXTERNAL_ID)), textFilter));
+//					filter = and(cb, filter, likeFilters);
+//				}
+//			}
+//		}
+//		return filter;
+//	}
 }

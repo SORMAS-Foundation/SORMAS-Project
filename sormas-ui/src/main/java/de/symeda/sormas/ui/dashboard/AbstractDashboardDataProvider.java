@@ -18,9 +18,15 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.BaseDashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
 public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCriteria<C>> {
 
@@ -32,6 +38,11 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 	protected DistrictReferenceDto district;
 	protected Disease disease;
 	private DashboardType dashboardType;
+	private CriteriaDateType newCaseDateType;
+
+	private CaseClassification caseClassification;
+	private NewDateFilterType dateFilterType;
+
 
 	public abstract void refreshData();
 
@@ -108,4 +119,68 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 	public void setDashboardType(DashboardType dashboardType) {
 		this.dashboardType = dashboardType;
 	}
+
+	public void setNewCaseDateType(CriteriaDateType newCaseDateType) {
+		this.newCaseDateType = newCaseDateType;
+	}
+
+	public CriteriaDateType getNewCaseDateType() {
+		return newCaseDateType;
+	}
+
+
+	public DashboardCriteria getCriteria() {
+		return new DashboardCriteria().region(region)
+				.district(district)
+				.disease(disease)
+				.dateBetween(fromDate, toDate)
+				.caseClassification(caseClassification)
+				.newCaseDateType(newCaseDateType)
+				.dateFilterType(dateFilterType);
+	}
+
+
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
+
+
+
+	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
+		this.newCaseDateType = newCaseDateType;
+	}
+
+	public NewDateFilterType getDateFilterType() {
+		if (dateFilterType == NewDateFilterType.TODAY) {
+			setFromDate(DateHelper.getStartOfDay(new Date()));
+			setToDate(new Date());
+		}
+		if (dateFilterType == NewDateFilterType.YESTERDAY) {
+			setFromDate(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1)));
+			setToDate(DateHelper.getEndOfDay(DateHelper.subtractDays(new Date(), 1)));
+		}
+		if (dateFilterType == NewDateFilterType.THIS_WEEK) {
+			setFromDate(DateHelper.getStartOfWeek(new Date()));
+			setToDate(new Date());
+		}
+		if (dateFilterType == NewDateFilterType.LAST_WEEK) {
+			setFromDate(DateHelper.getStartOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
+			setToDate(DateHelper.getEndOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
+		}
+		if (dateFilterType == NewDateFilterType.THIS_YEAR) {
+			setFromDate(DateHelper.getStartOfWeek(DateHelper.getStartOfYear(new Date())));
+			setToDate(new Date());
+		}
+		return dateFilterType;
+	}
+
+	public void setDateFilterType(NewDateFilterType dateFilterType) {
+		this.dateFilterType = dateFilterType;
+	}
+
 }

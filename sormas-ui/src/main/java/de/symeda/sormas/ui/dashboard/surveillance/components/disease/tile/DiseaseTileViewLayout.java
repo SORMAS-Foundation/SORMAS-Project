@@ -23,10 +23,18 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+
 
 public class DiseaseTileViewLayout extends CssLayout {
 
+	private DashboardDataProvider dashboardDataProvider;
+
 	private static final long serialVersionUID = 6582975657305031105L;
+
+	public DiseaseTileViewLayout(DashboardDataProvider dashboardDataProvider) {
+		this.dashboardDataProvider = dashboardDataProvider;
+	}
 
 	@Override
 	protected String getCss(Component c) {
@@ -37,7 +45,8 @@ public class DiseaseTileViewLayout extends CssLayout {
 		this.removeAllComponents();
 
 		for (DiseaseBurdenDto diseaseBurden : diseasesBurden) {
-			DiseaseTileComponent tile = new DiseaseTileComponent(diseaseBurden);
+
+			DiseaseTileComponent tile = new DiseaseTileComponent(diseaseBurden,this.dashboardDataProvider);
 			tile.setWidth(230, Unit.PIXELS);
 			addComponent(tile);
 		}

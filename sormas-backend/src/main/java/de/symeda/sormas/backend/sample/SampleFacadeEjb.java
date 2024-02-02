@@ -1131,6 +1131,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isEditAllowed(sample);
 	}
 
+
+
 	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._CASE_CREATE })

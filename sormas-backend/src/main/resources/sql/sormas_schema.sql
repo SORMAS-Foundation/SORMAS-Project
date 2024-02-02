@@ -12874,4 +12874,9 @@ UPDATE userroles set changedate = now() WHERE linkeddefaultuserrole in ('ADMIN',
 
 INSERT INTO schema_version (version_number, comment) VALUES (538, 'Introduce dedicated environment sample pathogen test rights #12836');
 
+-- 2024-01-29 Assigning DASHBOARD_DISEASE_DETAILS_ACCESS right to userroles that can view surveilance dashboard
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'DASHBOARD_DISEASE_DETAILS_ACCESS' FROM userroles_userrights WHERE userright = 'DASHBOARD_SURVEILLANCE_VIEW';
+
+INSERT INTO schema_version (version_number, comment) VALUES (540, 'Assigning DASHBOARD_DISEASE_DETAILS_ACCESS right to userroles that can view surveilance dashboard');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

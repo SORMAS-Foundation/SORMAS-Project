@@ -66,6 +66,7 @@ public enum UserRight {
 	PERSON_EXPORT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
 	PERSON_CONTACT_DETAILS_DELETE(UserRightGroup.PERSON, UserRight._PERSON_EDIT),
 	PERSON_MERGE(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
+	DISEASE_DETAILS_ACCESS(UserRightGroup.DISEASE),
 
 	SAMPLE_VIEW(UserRightGroup.SAMPLE),
 	SAMPLE_CREATE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
@@ -164,6 +165,8 @@ public enum UserRight {
 	DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS(UserRightGroup.DASHBOARD, UserRight._DASHBOARD_CONTACT_VIEW),
 	DASHBOARD_CAMPAIGNS_VIEW(UserRightGroup.DASHBOARD, UserRight._CAMPAIGN_VIEW),
 	DASHBOARD_SAMPLES_VIEW(UserRightGroup.DASHBOARD, UserRight._SAMPLE_VIEW),
+	DASHBOARD_DISEASE_DETAILS_ACCESS(UserRightGroup.DASHBOARD,UserRight._DISEASE_DETAILS_ACCESS),
+
 
 	CASE_CLINICIAN_VIEW(UserRightGroup.CASE_MANAGEMENT, UserRight._CASE_VIEW),
 
@@ -279,6 +282,7 @@ public enum UserRight {
 
 	//@formatter:on
 
+	private static final String _DISEASE_DETAILS_ACCESS ="DISEASE_DETAILS_ACCESS" ;
 	/*
 	 * Hint for SonarQube issues:
 	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
