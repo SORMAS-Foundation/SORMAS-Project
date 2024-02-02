@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -86,7 +87,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			final CriteriaBuilder cb = em.getCriteriaBuilder();
-			final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+			final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 			TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
@@ -98,21 +99,27 @@ public class TravelEntryService extends BaseTravelEntryService {
 			final Join<Location, District> district = joins.getPersonJoins().getAddressJoins().getDistrict();
 
 			cq.multiselect(
-				travelEntry.get(TravelEntry.UUID),
-				travelEntry.get(TravelEntry.EXTERNAL_ID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				district.get(District.NAME),
-				pointOfEntry.get(PointOfEntry.NAME),
-				travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
-				travelEntry.get(TravelEntry.RECOVERED),
-				travelEntry.get(TravelEntry.VACCINATED),
-				travelEntry.get(TravelEntry.TESTED_NEGATIVE),
-				travelEntry.get(TravelEntry.QUARANTINE_TO),
-				travelEntry.get(TravelEntry.DELETION_REASON),
-				travelEntry.get(TravelEntry.OTHER_DELETION_REASON),
-				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
-				travelEntry.get(TravelEntry.CHANGE_DATE));
+				Stream
+					.concat(
+						Stream.of(
+							travelEntry.get(TravelEntry.UUID),
+							travelEntry.get(TravelEntry.EXTERNAL_ID),
+							person.get(Person.FIRST_NAME),
+							person.get(Person.LAST_NAME),
+							district.get(District.NAME),
+							pointOfEntry.get(PointOfEntry.NAME),
+							travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
+							travelEntry.get(TravelEntry.RECOVERED),
+							travelEntry.get(TravelEntry.VACCINATED),
+							travelEntry.get(TravelEntry.TESTED_NEGATIVE),
+							travelEntry.get(TravelEntry.QUARANTINE_TO),
+							travelEntry.get(TravelEntry.DELETION_REASON),
+							travelEntry.get(TravelEntry.OTHER_DELETION_REASON),
+							JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(travelEntryQueryContext)),
+							travelEntry.get(TravelEntry.CHANGE_DATE)),
+						// add sorting properties to the select clause
+						sortBy(sortProperties, travelEntryQueryContext).stream())
+					.collect(Collectors.toList()));
 
 			Predicate filter = travelEntry.get(TravelEntry.ID).in(batchedIds);
 
@@ -126,13 +133,9 @@ public class TravelEntryService extends BaseTravelEntryService {
 				cq.where(filter);
 			}
 
-			sortBy(sortProperties, travelEntryQueryContext);
 			cq.distinct(true);
 
-			travelEntries.addAll(
-				createQuery(cq, null, null).unwrap(org.hibernate.query.Query.class)
-					.setResultTransformer(new TravelEntryIndexDtoResultTransformer())
-					.getResultList());
+			travelEntries.addAll(QueryHelper.getResultList(em, cq, new TravelEntryIndexDtoResultTransformer(), null, null));
 		});
 
 		return travelEntries;
@@ -184,24 +187,26 @@ public class TravelEntryService extends BaseTravelEntryService {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case TravelEntryIndexDto.UUID:
-				case TravelEntryIndexDto.EXTERNAL_ID:
 				case TravelEntryIndexDto.RECOVERED:
 				case TravelEntryIndexDto.VACCINATED:
 				case TravelEntryIndexDto.TESTED_NEGATIVE:
 				case TravelEntryIndexDto.QUARANTINE_TO:
 					expression = travelEntryJoins.getRoot().get(sortProperty.propertyName);
 					break;
+				case TravelEntryIndexDto.EXTERNAL_ID:
+					expression = cb.lower(travelEntryJoins.getRoot().get(sortProperty.propertyName));
+					break;
 				case TravelEntryIndexDto.PERSON_FIRST_NAME:
-					expression = person.get(Person.FIRST_NAME);
+					expression = cb.lower(person.get(Person.FIRST_NAME));
 					break;
 				case TravelEntryIndexDto.PERSON_LAST_NAME:
-					expression = person.get(Person.LAST_NAME);
+					expression = cb.lower(person.get(Person.LAST_NAME));
 					break;
 				case TravelEntryIndexDto.HOME_DISTRICT_NAME:
-					expression = district.get(District.NAME);
+					expression = cb.lower(district.get(District.NAME));
 					break;
 				case TravelEntryIndexDto.POINT_OF_ENTRY_NAME:
-					expression = travelEntryJoins.getPointOfEntry().get(PointOfEntry.NAME);
+					expression = cb.lower(travelEntryJoins.getPointOfEntry().get(PointOfEntry.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

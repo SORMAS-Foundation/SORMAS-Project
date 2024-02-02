@@ -59,4 +59,6 @@ public interface DashboardFacade {
 		Date previousFromDate,
 		Date previousToDate,
 		CriteriaDateType newCaseDateType);
+
+    Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
 }

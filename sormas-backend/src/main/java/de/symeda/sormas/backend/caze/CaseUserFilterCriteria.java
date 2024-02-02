@@ -9,6 +9,7 @@ public class CaseUserFilterCriteria {
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
 	private boolean excludeLimitedSyncRestrictions;
 	private boolean restrictAccessToAssignedEntities;
+	private boolean excludeSharedCases;
 
 	public boolean isExcludeCasesFromContacts() {
 		return excludeCasesFromContacts;
@@ -48,4 +49,15 @@ public class CaseUserFilterCriteria {
 	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
 		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
 	}
+
+	public boolean isExcludeSharedCases() {
+		return excludeSharedCases;
+	}
+
+	public CaseUserFilterCriteria excludeSharedCases(boolean excludeSharedCases) {
+		this.excludeSharedCases = excludeSharedCases;
+		return this;
+	}
+
+
 }

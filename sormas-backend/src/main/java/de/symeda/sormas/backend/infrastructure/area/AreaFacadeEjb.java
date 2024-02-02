@@ -78,7 +78,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 				switch (sortProperty.propertyName) {
 				case Area.NAME:
 				case Area.EXTERNAL_ID:
-					expression = areaRoot.get(sortProperty.propertyName);
+					expression = cb.lower(areaRoot.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -39,6 +40,8 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	private Date changeDateAfter;
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
+
+	private CaseClassification caseClassification;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -135,5 +138,15 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 
 	public Date getReportedDateTo() {
 		return reportedDateTo;
+	}
+
+
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public OutbreakCriteria caseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+		return this;
 	}
 }

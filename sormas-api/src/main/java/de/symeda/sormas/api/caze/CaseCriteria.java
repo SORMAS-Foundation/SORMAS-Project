@@ -155,6 +155,13 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	 * Used for filtering merge-able cases to filter both lead and similar cases.
 	 */
 	private Set<String> caseUuidsForMerge;
+	private String nameUuidEpidNumberLike;
+
+	private Boolean deleted = Boolean.FALSE;
+	public Boolean excludeSharedCases;
+
+	private Boolean includeNotACaseClassification;
+
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -792,5 +799,50 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.caseUuidsForMerge = caseUuidsForMerge;
 
 		return this;
+	}
+
+	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
+		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
+	}
+
+	@IgnoreForUrl
+	public String getNameUuidEpidNumberLike() {
+		return nameUuidEpidNumberLike;
+	}
+
+	public CaseCriteria deleted(Boolean deleted) {
+		this.deleted = deleted;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+
+	public Boolean getExcludeSharedCases() {
+		return excludeSharedCases;
+	}
+
+	public void setExcludeSharedCases(Boolean excludeSharedCases) {
+		this.excludeSharedCases = excludeSharedCases;
+	}
+
+
+	public CaseCriteria caseClassification(CaseClassification caseClassification) {
+		setCaseClassification(caseClassification);
+		return this;
+	}
+
+
+
+	public CaseCriteria includeNotACaseClassification(Boolean includeNotACaseClassification) {
+		this.includeNotACaseClassification = includeNotACaseClassification;
+		return this;
+	}
+
+	public Boolean isIncludeNotACaseClassification() {
+		return includeNotACaseClassification;
 	}
 }

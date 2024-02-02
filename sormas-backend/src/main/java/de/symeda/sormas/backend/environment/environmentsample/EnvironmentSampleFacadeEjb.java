@@ -31,6 +31,7 @@ import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
@@ -317,40 +318,43 @@ public class EnvironmentSampleFacadeEjb
 		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
 		CriteriaQuery<?> cq = queryContext.getQuery();
 
+		EnvironmentSampleJoins joins = queryContext.getJoins();
+		From<?, EnvironmentSample> sample = queryContext.getRoot();
+
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 
-				/*
-				 * joins.getLocationJoins().getDistrict().get(District.NAME),
-				 * joins.getLaboratory().get(Facility.NAME),
-				 */
-
 				switch (sortProperty.propertyName) {
 				case EnvironmentSampleIndexDto.UUID:
-				case EnvironmentSampleIndexDto.FIELD_SAMPLE_ID:
 				case EnvironmentSampleIndexDto.SAMPLE_DATE_TIME:
 				case EnvironmentSampleIndexDto.DISPATCHED:
 				case EnvironmentSampleIndexDto.DISPATCH_DATE:
 				case EnvironmentSampleIndexDto.RECEIVED:
 				case EnvironmentSampleIndexDto.SAMPLE_MATERIAL:
-					expression = queryContext.getRoot().get(sortProperty.propertyName);
+					expression = sample.get(sortProperty.propertyName);
+					break;
+				case EnvironmentSampleIndexDto.FIELD_SAMPLE_ID:
+					expression = cb.lower(sample.get(sortProperty.propertyName));
 					break;
 				case EnvironmentSampleIndexDto.ENVIRONMENT:
-					expression = queryContext.getJoins().getEnvironment().get(Environment.ENVIRONMENT_NAME);
+					expression = cb.lower(joins.getEnvironment().get(Environment.ENVIRONMENT_NAME));
 					break;
 				case EnvironmentSampleIndexDto.LOCATION:
-					Join<EnvironmentSample, Location> location = queryContext.getJoins().getLocation();
-					expression = cb.concat(
-						cb.concat(cb.concat(location.get(Location.STREET), location.get(Location.HOUSE_NUMBER)), location.get(Location.POSTAL_CODE)),
-						location.get(Location.CITY));
+					Join<EnvironmentSample, Location> location = joins.getLocation();
+					expression = cb.lower(
+						cb.concat(
+							cb.concat(
+								cb.concat(location.get(Location.STREET), location.get(Location.HOUSE_NUMBER)),
+								location.get(Location.POSTAL_CODE)),
+							location.get(Location.CITY)));
 					break;
 				case EnvironmentSampleIndexDto.DISTRICT:
-					expression = queryContext.getJoins().getLocationJoins().getDistrict().get(District.NAME);
+					expression = cb.lower(joins.getLocationJoins().getDistrict().get(District.NAME));
 					break;
 				case EnvironmentSampleIndexDto.LABORATORY:
-					expression = queryContext.getJoins().getLaboratory().get(Facility.NAME);
+					expression = cb.lower(joins.getLaboratory().get(Facility.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -360,7 +364,7 @@ public class EnvironmentSampleFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			Path<Object> changeDate = queryContext.getRoot().get(EnvironmentSample.CHANGE_DATE);
+			Path<Object> changeDate = sample.get(EnvironmentSample.CHANGE_DATE);
 			cq.orderBy(cb.desc(changeDate));
 			selections.add(changeDate);
 		}

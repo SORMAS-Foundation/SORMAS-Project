@@ -24,6 +24,8 @@ public enum DashboardType {
 	SURVEILLANCE,
 	CONTACTS,
 	CAMPAIGNS,
+
+	DISEASE,
 	SAMPLES;
 
 	@Override

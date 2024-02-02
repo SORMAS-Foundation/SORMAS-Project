@@ -16,6 +16,7 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Remote;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionFacade;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -97,4 +99,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 	boolean isEnrolledInExternalJournal(String uuid);
 
 	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
+
+    Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 }

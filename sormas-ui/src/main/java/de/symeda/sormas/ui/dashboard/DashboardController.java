@@ -21,12 +21,26 @@ import static de.symeda.sormas.ui.UiUtil.permitted;
 
 import com.vaadin.navigator.Navigator;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
+import java.util.TimeZone;
 
 public class DashboardController {
 
@@ -48,5 +62,55 @@ public class DashboardController {
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.DASHBOARD_SAMPLES_VIEW)) {
 			navigator.addView(SampleDashboardView.VIEW_NAME, SampleDashboardView.class);
 		}
+
+		//if (permitted(FeatureType.DISEASE_DETAILS,UserRight.DASHBOARD_DISEASE_DETAILS_ACCESS)) {
+			navigator.addView(DiseaseDetailsView.VIEW_NAME, DiseaseDetailsView.class);
+		//}
+	}
+
+//	public void navigateToDisease(Disease disease) {
+//		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
+//		SormasUI.get().getNavigator().navigateTo(navigationState);
+//	}
+
+	public void navigateToDisease(Disease disease,DashboardDataProvider dashboardDataProvider) {
+		Date dateFrom = dashboardDataProvider.getFromDate();
+
+		Date dateTo = dashboardDataProvider.getToDate();
+
+		NewDateFilterType type = dashboardDataProvider.getDateFilterType();
+
+		CaseClassification caseClassification= dashboardDataProvider.getCaseClassification();
+//
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); // Quoted "Z" to indicate UTC, no timezone offset
+		df.setTimeZone(tz);
+		String dateFromAsISO = df.format(dateFrom);
+		String dateToAsISO = df.format(dateTo);
+
+		NewCaseDateType newCaseDateType = dashboardDataProvider.getNewCaseDateType();
+
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
+		String regionId = null;
+		if(Objects.nonNull(region)&&region.getUuid()!=null){
+			regionId= region.getUuid();
+		}
+		System.out.println(regionId);
+
+
+//
+		String paramData = dateFromAsISO+"/"+dateToAsISO+"/"+type+"/"+caseClassification+"/"+newCaseDateType+"/"+regionId;
+//
+		DiseaseDetailsView.setData(paramData);
+		//DiseaseDetailsView.setProvider(dashboardDataProvider);
+
+		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
+		//+"/"+dateFromAsISO+"/"+dateToAsISO+"/"+type.toString();
+		//String navigationState = DiseaseDetailsView.VIEW_NAME + "/?disease=" + disease.getName();
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+
+
+
+		//SormasUI.get().getSession().setAttribute("paramdata", dateFromAsISO+"/"+dateToAsISO+"/"+type);
 	}
 }

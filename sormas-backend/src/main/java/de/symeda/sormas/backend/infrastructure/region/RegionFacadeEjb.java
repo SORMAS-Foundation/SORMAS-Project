@@ -35,6 +35,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -160,16 +161,18 @@ public class RegionFacadeEjb
 				switch (sortProperty.propertyName) {
 				case Region.NAME:
 				case Region.EPID_CODE:
-				case Region.GROWTH_RATE:
 				case Region.EXTERNAL_ID:
+					expression = cb.lower(region.get(sortProperty.propertyName));
+					break;
+				case Region.GROWTH_RATE:
 				case Region.DEFAULT_INFRASTRUCTURE:
 					expression = region.get(sortProperty.propertyName);
 					break;
 				case Region.AREA:
-					expression = area.get(Area.NAME);
+					expression = cb.lower(area.get(Area.NAME));
 					break;
 				case RegionIndexDto.COUNTRY:
-					expression = country.get(Country.DEFAULT_NAME);
+					expression = cb.lower(country.get(Country.DEFAULT_NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -178,7 +181,7 @@ public class RegionFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)));
+			cq.orderBy(cb.asc(cb.lower(region.get(Region.NAME))));
 		}
 
 		cq.select(region);
@@ -334,6 +337,54 @@ public class RegionFacadeEjb
 	@Override
 	protected void resetDefaultInfrastructure() {
 		defaultInfrastructureCache.resetDefaultRegion();
+	}
+
+	@Override
+	public List<RegionDto> getAllRegion() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<RegionDto> cq = cb.createQuery(RegionDto.class);
+		Root<Region> region = cq.from(Region.class);
+
+		selectDtoFields(cq, region);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	// Need to be in the same order as in the constructor
+//	private void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
+//
+//		cq.multiselect(
+//				root.get(Region.CREATION_DATE),
+//				root.get(Region.CHANGE_DATE),
+//				root.get(Region.UUID),
+//				root.get(Region.ARCHIVED),
+//				root.get(Region.NAME),
+//				root.get(Region.EPID_CODE),
+//				root.get(Region.GROWTH_RATE),
+//				root.get(Region.EXTERNAL_ID));
+//	}
+
+
+	protected void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
+
+		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
+		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
+		// Needs to be in the same order as in the constructor
+		cq.multiselect(
+				root.get(AbstractDomainObject.CREATION_DATE),
+				root.get(AbstractDomainObject.CHANGE_DATE),
+				root.get(AbstractDomainObject.UUID),
+				root.get(InfrastructureAdo.ARCHIVED),
+				root.get(Region.NAME),
+				root.get(Region.EPID_CODE),
+				root.get(Region.GROWTH_RATE),
+				root.get(Region.EXTERNAL_ID),
+				//root.get(Region.ID),
+				country.get(AbstractDomainObject.UUID),
+				country.get(Country.DEFAULT_NAME),
+				country.get(Country.ISO_CODE),
+				area.get(AbstractDomainObject.UUID));
 	}
 
 	@LocalBean

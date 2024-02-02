@@ -187,16 +187,18 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case Community.NAME:
-				case Community.GROWTH_RATE:
 				case Community.EXTERNAL_ID:
+					expression = cb.lower(community.get(sortProperty.propertyName));
+					break;
+				case Community.GROWTH_RATE:
 				case Community.DEFAULT_INFRASTRUCTURE:
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
-					expression = region.get(Region.NAME);
+					expression = cb.lower(region.get(Region.NAME));
 					break;
 				case Community.DISTRICT:
-					expression = district.get(District.NAME);
+					expression = cb.lower(district.get(District.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -205,7 +207,10 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)), cb.asc(community.get(Community.NAME)));
+			cq.orderBy(
+				cb.asc(cb.lower(region.get(Region.NAME))),
+				cb.asc(cb.lower(district.get(District.NAME))),
+				cb.asc(cb.lower(community.get(Community.NAME))));
 		}
 
 		cq.select(community);

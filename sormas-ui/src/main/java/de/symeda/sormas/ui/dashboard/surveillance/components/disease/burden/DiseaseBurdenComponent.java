@@ -44,7 +44,6 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 		grid = new DiseaseBurdenGrid();
 		grid.setHeightMode(HeightMode.ROW);
 		grid.setWidth(100, Unit.PERCENTAGE);
-
 		// layout
 		setWidth(100, Unit.PERCENTAGE);
 
@@ -57,8 +56,6 @@ public class DiseaseBurdenComponent extends VerticalLayout {
 
 	public void refresh(List<DiseaseBurdenDto> diseasesBurden) {
 		grid.reload(diseasesBurden);
-		if (diseasesBurden != null && diseasesBurden.size() > 0) {
-			grid.setHeightByRows(diseasesBurden.size());
-		}
+		grid.setHeightByRows(diseasesBurden.size());
 	}
 }

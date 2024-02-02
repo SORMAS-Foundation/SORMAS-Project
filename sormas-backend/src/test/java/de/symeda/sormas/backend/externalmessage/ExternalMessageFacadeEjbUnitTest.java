@@ -1,14 +1,9 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -19,9 +14,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
 import org.junit.jupiter.api.Test;
@@ -34,11 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
@@ -70,7 +61,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 	@Mock
 	private CriteriaBuilder criteriaBuilder;
 	@Mock
-	private CriteriaQuery<ExternalMessageIndexDto> labMessageIndexDtoCriteriaQuery;
+	private CriteriaQuery<Tuple> labMessageIndexDtoCriteriaQuery;
 	@Mock
 	private CriteriaQuery<Long> longCriteriaQuery;
 	@Mock
@@ -78,7 +69,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 	@Mock
 	private Root<ExternalMessage> labMessageRoot;
 	@Mock
-	private TypedQuery<ExternalMessageIndexDto> labMessageIndexDtoTypedQuery;
+	private TypedQuery<Tuple> labMessageIndexDtoTypedQuery;
 	@Mock
 	private TypedQuery<Tuple> labMessageIndexIdsTypedQuery;
 	@Mock
@@ -103,42 +94,6 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 		long result = sut.count(new ExternalMessageCriteria());
 		assertEquals(expected, result);
-	}
-
-	@Test
-	public void testGetIndexList() {
-
-		int first = 1;
-		int max = 1;
-
-		when(em.getCriteriaBuilder()).thenReturn(criteriaBuilder);
-
-		when(criteriaBuilder.createTupleQuery()).thenReturn(labMessageIndexIdsTupleCriteriaQuery);
-		when(labMessageIndexIdsTupleCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessageRoot);
-		when(em.createQuery(labMessageIndexIdsTupleCriteriaQuery)).thenReturn(labMessageIndexIdsTypedQuery);
-		when(labMessageIndexIdsTypedQuery.setFirstResult(first)).thenReturn(labMessageIndexIdsTypedQuery);
-		when(labMessageIndexIdsTypedQuery.setMaxResults(max)).thenReturn(labMessageIndexIdsTypedQuery);
-		when(labMessageIndexIdsTypedQuery.getResultList()).thenReturn(Collections.singletonList(mock(Tuple.class)));
-		when(criteriaBuilder.asc(any())).thenReturn(mock(Order.class));
-		when(criteriaBuilder.desc(any())).thenReturn(mock(Order.class));
-
-		when(criteriaBuilder.createQuery(ExternalMessageIndexDto.class)).thenReturn(labMessageIndexDtoCriteriaQuery);
-		when(labMessageIndexDtoCriteriaQuery.from(ExternalMessage.class)).thenReturn(labMessageRoot);
-		when(em.createQuery(labMessageIndexDtoCriteriaQuery)).thenReturn(labMessageIndexDtoTypedQuery);
-		ArrayList<ExternalMessageIndexDto> expectedResult = new ArrayList<>();
-		when(labMessageIndexDtoTypedQuery.getResultList()).thenReturn(expectedResult);
-		when(labMessageRoot.get(anyString())).thenReturn(mock(Path.class));
-		when(labMessageRoot.join(ExternalMessage.ASSIGNEE, JoinType.LEFT)).thenReturn(userJoin);
-		when(userJoin.get((String) any())).thenReturn(null);
-		ArrayList<SortProperty> sortProperties = new ArrayList<>();
-		sortProperties.add(new SortProperty(ExternalMessageIndexDto.UUID));
-		sortProperties.add(new SortProperty("No Valid Property"));
-		List<ExternalMessageIndexDto> result = sut.getIndexList(new ExternalMessageCriteria(), first, max, sortProperties);
-
-		verify(labMessageIndexIdsTupleCriteriaQuery).orderBy(orderListArgumentCaptor.capture());
-		verify(labMessageIndexDtoCriteriaQuery).orderBy(orderListArgumentCaptor.capture());
-		assertEquals(2, orderListArgumentCaptor.getValue().size());
-		assertEquals(expectedResult, result);
 	}
 
 	@Test

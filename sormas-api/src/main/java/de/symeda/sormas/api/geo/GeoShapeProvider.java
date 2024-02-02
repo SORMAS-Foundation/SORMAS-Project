@@ -25,24 +25,24 @@ import javax.ejb.Remote;
 @Remote
 public interface GeoShapeProvider {
 
-	/**
-	 * @return array of polygons, which are arrays of geo-points
-	 */
-	GeoLatLon[][] getRegionShape(RegionReferenceDto region);
+    /**
+     * @return array of polygons, which are arrays of geo-points
+     */
+    GeoLatLon[][] getRegionShape(RegionReferenceDto region);
 
-	RegionReferenceDto getRegionByCoord(GeoLatLon latLon);
+    RegionReferenceDto getRegionByCoord(GeoLatLon latLon);
 
-	GeoLatLon getCenterOfAllRegions();
+    GeoLatLon getCenterOfAllRegions();
 
-	GeoLatLon getCenterOfRegion(RegionReferenceDto region);
+    GeoLatLon getCenterOfRegion(RegionReferenceDto region);
 
-	GeoLatLon[][] getDistrictShape(DistrictReferenceDto district);
+    GeoLatLon[][] getDistrictShape(DistrictReferenceDto district);
 
-	DistrictReferenceDto getDistrictByCoord(GeoLatLon latLon);
+    DistrictReferenceDto getDistrictByCoord(GeoLatLon latLon);
 
-	GeoLatLon getCenterOfDistrict(DistrictReferenceDto district);
+    GeoLatLon getCenterOfDistrict(DistrictReferenceDto district);
 
-	GeoLatLon[][] getCountryShape();
+    GeoLatLon[][] getCountryShape();
 
-	String loadShapefileAttributions();
+    String loadShapefileAttributions();
 }

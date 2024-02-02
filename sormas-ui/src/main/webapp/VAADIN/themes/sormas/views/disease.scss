@@ -190,4 +190,59 @@
   		filled: #b0796b;
   	}
   }
+	.disease-detail-card-display-top{
+		display: inline-grid;
+		overflow: hidden;
+	}
+
+	.disease-detail-card-display-down{
+		display: block;
+	}
+
+	.old-disease-detail-outbreak-display{
+		text-align: center;
+		font-size: smaller;
+		font-weight: 700;
+		width: 100px;
+		background:#DE5555;
+		-ms-transform: rotate(-135deg);
+		-o-transform: rotate(-135deg);
+		-webkit-transform:rotate(45deg);
+		color: white;
+		transform-origin: bottom;
+		float: right;
+		margin-right: -57px;
+		margin-top: -7px;
+	}
+
+	.map-border-layout .leaflet-container{
+		border: 2px solid #CDD8EC;
+	}
+
+	.container-death-cfr{
+		width: 100%;
+	}
+
+	.container-float-left{
+		float: left;
+		display: inline-flex;
+	}
+	.container-float-right{
+		float: right;
+	}
+
+	.disease-detail-outbreak-display{
+		text-align: center;
+		font-size: smaller;
+		font-weight: 700;
+		width: 100px;
+		background:#e33232;
+		-ms-transform: rotate(-135deg);
+		-o-transform: rotate(-135deg);
+		-webkit-transform:rotate(45deg);
+		color: white;
+		float: right;
+		margin-right: -57px;
+		margin-top: -7px;
+	}
 }

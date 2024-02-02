@@ -218,6 +218,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
+		return sampleService.getNewTestResultCountByResultType(caseIds);
+	}
+
+	@Override
 	public List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
@@ -1125,6 +1130,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		Sample sample = sampleService.getByUuid(uuid);
 		return sampleService.isEditAllowed(sample);
 	}
+
+
 
 	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,

@@ -140,7 +140,7 @@ public class ContinentFacadeEjb
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, continent);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			cq.where(filter);
 		}
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
@@ -149,10 +149,10 @@ public class ContinentFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case ContinentIndexDto.DISPLAY_NAME:
-					expression = continent.get(Continent.DEFAULT_NAME);
+					expression = cb.lower(continent.get(Continent.DEFAULT_NAME));
 					break;
 				case ContinentDto.EXTERNAL_ID:
-					expression = continent.get(sortProperty.propertyName);
+					expression = cb.lower(continent.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -161,7 +161,7 @@ public class ContinentFacadeEjb
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(continent.get(Continent.DEFAULT_NAME)));
+			cq.orderBy(cb.asc(cb.lower(continent.get(Continent.DEFAULT_NAME))));
 		}
 
 		cq.select(continent);

@@ -46,7 +46,7 @@ public enum UserRightGroup {
 
 	EXPORT,
 	CONFIGURATION,
-	EXTERNAL;
+	EXTERNAL, DISEASE;
 
 	@Override
 	public String toString() {

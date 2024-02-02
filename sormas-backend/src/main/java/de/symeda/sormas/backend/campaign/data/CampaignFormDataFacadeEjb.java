@@ -313,19 +313,19 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					expression = root.get(sortProperty.propertyName);
 					break;
 				case CampaignFormDataIndexDto.CAMPAIGN:
-					expression = campaignJoin.get(Campaign.NAME);
+					expression = cb.lower(campaignJoin.get(Campaign.NAME));
 					break;
 				case CampaignFormDataIndexDto.FORM:
-					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME);
+					expression = cb.lower(campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
 					break;
 				case CampaignFormDataIndexDto.REGION:
-					expression = regionJoin.get(Region.NAME);
+					expression = cb.lower(regionJoin.get(Region.NAME));
 					break;
 				case CampaignFormDataIndexDto.DISTRICT:
-					expression = districtJoin.get(District.NAME);
+					expression = cb.lower(districtJoin.get(District.NAME));
 					break;
 				case CampaignFormDataIndexDto.COMMUNITY:
-					expression = communityJoin.get(Community.NAME);
+					expression = cb.lower(communityJoin.get(Community.NAME));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

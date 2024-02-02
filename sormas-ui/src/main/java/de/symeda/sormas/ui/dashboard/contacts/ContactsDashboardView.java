@@ -81,7 +81,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private Label contactsPlacedInQuarantineByDate = new Label();
 
 	public ContactsDashboardView() {
-		super(VIEW_NAME);
+		super(VIEW_NAME,DashboardType.CONTACTS);
 
 		dashboardDataProvider = new DashboardDataProvider();
 		if (dashboardDataProvider.getDashboardType() == null) {

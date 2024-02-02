@@ -13,6 +13,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -60,6 +61,11 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory;
+import org.hibernate.hql.spi.QueryTranslator;
+
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 
 @Stateless
 @LocalBean
@@ -89,7 +95,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = and(cb, filter, criteriaFilter);
 
 		List<DashboardCaseDto> result;
 		if (filter != null) {
@@ -132,7 +138,7 @@ public class DashboardService {
 		final Predicate sampleFilter = cb.and(
 			cb.isFalse(sample.get(Sample.DELETED)),
 			cb.or(cb.isNull(sample.get(Sample.SPECIMEN_CONDITION)), cb.equal(sample.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE)));
-		cq.where(CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, sampleFilter));
+		cq.where(and(cb, userFilter, criteriaFilter, sampleFilter));
 
 		final List<PathogenTestResultDto> queryResult = QueryHelper.getResultList(em, cq, null, null);
 
@@ -168,7 +174,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = and(cb, filter, criteriaFilter);
 
 		Map<CaseClassification, Integer> result;
 		if (filter != null) {
@@ -219,7 +225,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -245,7 +251,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -271,7 +277,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -312,8 +318,8 @@ public class DashboardService {
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
+		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -338,7 +344,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = and(cb, filter, criteriaFilter);
 
 		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.INNER);
 
@@ -362,7 +368,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		filter = and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -392,8 +398,8 @@ public class DashboardService {
 		Join<Location, District> eventDistrict = eventJoins.getDistrict();
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
+		filter = and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
+		filter = and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		List<DashboardEventDto> result;
 
@@ -437,8 +443,8 @@ public class DashboardService {
 		cq.groupBy(event.get(Event.EVENT_STATUS));
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
+		filter = and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
+		filter = and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		if (filter != null)
 			cq.where(filter);
@@ -461,17 +467,17 @@ public class DashboardService {
 
 		Predicate filter = null;
 		if (dashboardCriteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), dashboardCriteria.getDisease()));
+			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), dashboardCriteria.getDisease()));
 		}
 		if (dashboardCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(responsibleRegion.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
+			filter = and(cb, filter, cb.equal(responsibleRegion.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
 		}
 		if (dashboardCriteria.getDistrict() != null) {
 			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
+				and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
 		}
 		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				caseService.createNewCaseFilter(
@@ -481,12 +487,16 @@ public class DashboardService {
 					dashboardCriteria.getNewCaseDateType()));
 		}
 		if (!dashboardCriteria.shouldIncludeNotACaseClassification()) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+			filter = and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 		}
 
+		if (dashboardCriteria.getOutcome() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), dashboardCriteria.getOutcome()));
+		}
+
+
 		// Exclude deleted cases. Archived cases should stay included
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
+		filter = and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
 
 		return filter;
 	}
@@ -498,10 +508,10 @@ public class DashboardService {
 
 		Predicate filter = null;
 		if (dashboardCriteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), dashboardCriteria.getDisease()));
+			filter = and(cb, filter, cb.equal(from.get(Event.DISEASE), dashboardCriteria.getDisease()));
 		}
 		if (dashboardCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				cb.equal(
@@ -509,7 +519,7 @@ public class DashboardService {
 					dashboardCriteria.getRegion().getUuid()));
 		}
 		if (dashboardCriteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(
+			filter = and(
 				cb,
 				filter,
 				cb.equal(
@@ -517,10 +527,10 @@ public class DashboardService {
 					dashboardCriteria.getDistrict().getUuid()));
 		}
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
+		filter = and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
 
 		// Exclude deleted events. Archived events should stay included
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
+		filter = and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
 
 		return filter;
 	}
@@ -555,7 +565,7 @@ public class DashboardService {
 				cb.isNull(from.get(Event.START_DATE)),
 				cb.isNull(from.get(Event.END_DATE)),
 				cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(eventDateFilter, reportFilter));
+			filter = and(cb, filter, cb.or(eventDateFilter, reportFilter));
 		}
 
 		return filter;

@@ -103,10 +103,12 @@ public class CampaignFacadeEjb
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case CampaignIndexDto.UUID:
-				case CampaignIndexDto.NAME:
 				case CampaignIndexDto.START_DATE:
 				case CampaignIndexDto.END_DATE:
 					expression = campaign.get(sortProperty.propertyName);
+					break;
+				case CampaignIndexDto.NAME:
+					expression = cb.lower(campaign.get(sortProperty.propertyName));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.ui.dashboard.DashboardType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -57,12 +58,12 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	protected final P dashboardDataProvider;
 	protected LeafletMap map;
 	// Layouts and components
-	private final String headingStringTag;
-	private final String headingInfoTag;
-	private CssLayout overlayBackground;
-	private VerticalLayout overlayLayout;
+	private  String headingStringTag;
+	private  String headingInfoTag;
+	protected CssLayout overlayBackground;
+	protected VerticalLayout overlayLayout;
 	private Label overlayMessageLabel;
-	private PopupButton legendDropdown;
+	protected PopupButton legendDropdown;
 
 	private Label headingInfoIcon;
 
@@ -78,9 +79,22 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		setSizeFull();
 
 		this.setMargin(true);
-
-		addComponents();
+		if(!dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
+			addComponents();
+		}
 	}
+
+//	public BaseDashboardMapComponent(P dashboardDataProvider) {
+//
+//		setMargin(false);
+//		setSpacing(false);
+//		setSizeFull();
+//
+//		this.setMargin(true);
+//		this.dashboardDataProvider = dashboardDataProvider;
+//
+//	}
+
 
 	protected static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
 		return buildLegendEntry(new Label(icon.getHtmlElement("16px"), ContentMode.HTML), labelCaption);
@@ -95,6 +109,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		if (!forced && maxDisplayCount >= 0) {
 			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
 		}
+
 
 		if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
 			showMapOverlay(maxDisplayCount);

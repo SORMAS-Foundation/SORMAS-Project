@@ -18,10 +18,7 @@
 package de.symeda.sormas.api.caze;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -40,6 +37,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -231,4 +229,10 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
 
 	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
+
+    List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
+
+    String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean b, boolean b1);
+
+    Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 }

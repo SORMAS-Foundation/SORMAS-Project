@@ -16937,10 +16937,6 @@
       "EventGroupIndexDto" : {
         "type" : "object",
         "properties" : {
-          "changeDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
           "eventCount" : {
             "type" : "integer",
             "format" : "int64"

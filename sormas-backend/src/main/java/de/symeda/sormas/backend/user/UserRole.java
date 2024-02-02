@@ -54,7 +54,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserRole extends AbstractDomainObject {
 
-	private static final long serialVersionUID = 9053095630718041842L;
+    private static final long serialVersionUID = 9053095630718041842L;
 
 	public static final String TABLE_NAME = "userroles";
 	public static final String TABLE_NAME_EMAIL_NOTIFICATIONS = "userroles_emailnotificationtypes";
