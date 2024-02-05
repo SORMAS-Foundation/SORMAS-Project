@@ -109,7 +109,7 @@ public class SideCardsSteps implements En {
         "I check if handover card contains shared with {string} information",
         (String environmentIdentifier) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
-          TimeUnit.SECONDS.sleep(3);
+          TimeUnit.SECONDS.sleep(4); // waiting for page loaded
           softly.assertTrue(
               webDriverHelpers.isElementPresent(
                   checkTextInHandoverSideComponent(
