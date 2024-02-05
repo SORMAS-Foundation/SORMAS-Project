@@ -786,9 +786,7 @@ public class EditEventSteps implements En {
     When(
         "I click on save button in Add Participant form",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              EDIT_EVENT_PAGE_SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // needed for button to be available
+          webDriverHelpers.waitForElementPresent(EDIT_EVENT_PAGE_SAVE_BUTTON, 3);
           int attempts = 0;
           do {
             webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_PAGE_SAVE_BUTTON);
@@ -1714,7 +1712,7 @@ public class EditEventSteps implements En {
         "I check if editable fields are read only for an archived event",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitForElementPresent(EVENT_PARTICIPANTS_TAB, 15);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
