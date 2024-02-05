@@ -515,7 +515,7 @@ public class EditContactSteps implements En {
     When(
         "I click to accept potential duplicate in Shares Page",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACTION_CONFIRM);
+          webDriverHelpers.waitForElementPresent(ACTION_CONFIRM, 2);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
     When(
