@@ -327,36 +327,42 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			updateFacilityFields(facility, healthFacilityDetails);
 		});
 		district.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
-			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper.removeItems(community);
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			if (districtDto != null && facilityType.getValue() != null) {
-				FieldHelper.updateItems(
-					facility,
-					FacadeProvider.getFacilityFacade()
-						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+				FieldHelper.removeItems(facility);
+				if (districtDto != null && facilityType.getValue() != null) {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+				}
 			}
 		});
 		community.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
-			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			if (facilityType.getValue() != null) {
-				FieldHelper.updateItems(
-					facility,
-					communityDto != null
-						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
-						: district.getValue() != null
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+				FieldHelper.removeItems(facility);
+
+				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+				if (facilityType.getValue() != null) {
+					FieldHelper.updateItems(
+						facility,
+						communityDto != null
 							? FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) district.getValue(),
-									(FacilityType) facilityType.getValue(),
-									true,
-									false)
-							: null);
+								.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
+							: district.getValue() != null
+								? FacadeProvider.getFacilityFacade()
+									.getActiveFacilitiesByDistrictAndType(
+										(DistrictReferenceDto) district.getValue(),
+										(FacilityType) facilityType.getValue(),
+										true,
+										false)
+								: null);
+				}
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(e -> {
