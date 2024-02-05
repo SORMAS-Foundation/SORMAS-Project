@@ -202,6 +202,7 @@ public class SideCardsSteps implements En {
     Then(
         "^I check that the number of added samples on the Edit case page is (\\d+)$",
         (Integer numberOfSamples) -> {
+          webDriverHelpers.waitForElementPresent(ADDED_SAMPLES_IN_SAMPLE_CARD, 2);
           Integer actualNumberOfSamples =
               webDriverHelpers.getNumberOfElements(ADDED_SAMPLES_IN_SAMPLE_CARD);
           softly.assertEquals(
