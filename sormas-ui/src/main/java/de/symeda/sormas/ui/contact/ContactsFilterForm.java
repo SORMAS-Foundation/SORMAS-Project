@@ -321,8 +321,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
 				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
-				CHECKBOX_STYLE))
-			.setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
+				CHECKBOX_STYLE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
@@ -587,4 +586,5 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		Disease selectedDisease = (Disease) getField(ContactIndexDto.DISEASE).getValue();
 		return FacadeProvider.getUserFacade().getUsersByRegionAndRights(regionReferenceDto, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
 	}
+
 }

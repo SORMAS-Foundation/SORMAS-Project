@@ -1136,8 +1136,13 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
-			CriteriaBuilderHelper
-				.limitedDiseasePredicate(cb, currentUser, contactRoot.get(Contact.DISEASE), cb.isNull(contactRoot.get(Contact.DISEASE))));
+			CriteriaBuilderHelper.limitedDiseasePredicate(
+				cb,
+				currentUser,
+				contactRoot.get(Contact.DISEASE),
+				cb.or(
+					cb.isNull(contactRoot.get(Contact.DISEASE)),
+					cb.equal(contactRoot.get(Contact.REPORTING_USER).get(User.ID), currentUser.getId()))));
 
 		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade

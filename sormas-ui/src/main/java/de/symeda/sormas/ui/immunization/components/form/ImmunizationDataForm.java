@@ -588,15 +588,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		}
 	}
 
-	private void hideAndFillJurisdictionFields() {
+	private void hideJurisdictionFields() {
 
 		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
 		responsibleRegion.setVisible(false);
-		responsibleRegion.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
 		responsibleDistrict.setVisible(false);
-		responsibleDistrict.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 		responsibleCommunity.setVisible(false);
-		responsibleCommunity.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
 	@Override
@@ -607,7 +604,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideAndFillJurisdictionFields();
+			hideJurisdictionFields();
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
