@@ -108,7 +108,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 		doneListeners.remove(listener);
 	}
 
-	protected void onDone() {
+	public void onDone() {
 		for (DoneListener listener : doneListeners)
 			listener.onDone();
 	}

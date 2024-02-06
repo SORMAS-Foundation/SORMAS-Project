@@ -12,6 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package de.symeda.sormas.backend.user;
 
 import static java.util.Objects.isNull;
@@ -51,6 +52,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.task.TaskContextIndex;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -887,7 +889,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	}
 
-	@Override
+
 	
 	@Override
 	@PermitAll
@@ -907,14 +909,17 @@ public class UserFacadeEjb implements UserFacade {
 		return null;
 	}
 
-	public Set<UserRole> getValidLoginRoles(String userName, String password) {
+	@Override
+	public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
 		User user = userService.getByUserName(userName);
-		if (user != null && user.isActive() && DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-			return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
+		if (user != null && user.isActive()) {
+			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
+				return getUserRoles(toDto(user));
+			}
 		}
-
 		return null;
 	}
+
 
 	@Override
 	@RightsAllowed(UserRight._USER_EDIT)
@@ -1202,6 +1207,7 @@ public class UserFacadeEjb implements UserFacade {
 			throw new EntityNotFoundException(I18nProperties.getString(Strings.errorNotFound));
 		}
 	}
+
 
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
 

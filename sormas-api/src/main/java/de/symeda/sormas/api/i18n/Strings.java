@@ -1393,6 +1393,7 @@ public interface Strings {
 	String messageOtherDeleteReasonNotFilled = "messageOtherDeleteReasonNotFilled";
 	String messageOutbreakSaved = "messageOutbreakSaved";
 	String messagePasswordReset = "messagePasswordReset";
+	String messagePasswordChange = "messagePasswordChange";
 	String messagePasswordResetEmailLink = "messagePasswordResetEmailLink";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";

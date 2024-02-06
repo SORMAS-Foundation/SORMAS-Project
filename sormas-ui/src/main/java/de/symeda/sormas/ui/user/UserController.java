@@ -73,6 +73,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
 
+	private Window popUpWindow;
+
 	public void create() {
 		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
 		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
@@ -235,11 +237,11 @@ public class UserController {
 		}
 	}
 
-	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword) {
-		String newPassword = FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
+	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword ) {
+		FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
 
 		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-			showPasswordResetInternalSuccessPopup(newPassword);
+			showPasswordChangeInternalSuccessPopup(I18nProperties.getString(Strings.messagePasswordChange));
 		} else {
 			showPasswordResetExternalSuccessPopup();
 		}
@@ -254,6 +256,21 @@ public class UserController {
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);
+	}
+
+	private void showPasswordChangeInternalSuccessPopup(String passwordSuccessMessage) {
+		VerticalLayout layout = new VerticalLayout();
+		Label passwordLabel = new Label(passwordSuccessMessage);
+		passwordLabel.addStyleName(CssStyles.H2);
+		layout.addComponent(passwordLabel);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
+
+		layout.setMargin(true);
+		popupWindow.addCloseListener(event -> {
+			System.out.println("closed");
+			popUpWindow.close();
+		});
 	}
 
 	private void showAccountCreatedSuccessful() {
@@ -331,8 +348,8 @@ public class UserController {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Window popupWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
+				popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
+				popUpWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
 			}
 		}, ValoTheme.BUTTON_LINK);
 	}
@@ -421,8 +438,7 @@ public class UserController {
 							I18nProperties.getString(Strings.messageNewPasswordFailed),
 							Notification.Type.WARNING_MESSAGE));
 				} else {
-					FacadeProvider.getUserFacade()
-						.updateUserPassword(user.getUuid(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
+
 					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
 				}
 			}

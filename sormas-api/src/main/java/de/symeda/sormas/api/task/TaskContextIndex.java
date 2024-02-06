@@ -18,16 +18,38 @@
 
 package de.symeda.sormas.api.task;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum TaskAssignee {
+import java.io.Serializable;
 
-	ALL,
-	CURRENT_USER,
-	OTHER_USERS;
+public class TaskContextIndex implements Serializable, Cloneable {
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+    private TaskContext taskContext;
+    private String uuid;
+
+    public TaskContextIndex() {
+    }
+
+    public TaskContextIndex(TaskContext taskContext) {
+        this.taskContext = taskContext;
+    }
+
+    public TaskContext getTaskContext() {
+        return taskContext;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    @Override
+    public TaskContextIndex clone() {
+        try {
+            TaskContextIndex clone = (TaskContextIndex) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
+
