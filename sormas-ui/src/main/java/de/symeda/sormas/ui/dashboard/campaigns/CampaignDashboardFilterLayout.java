@@ -232,9 +232,9 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setEnabled(true);
+			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 			campaignJurisdictionGroupByFilter.setValue(REGION);
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
-			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 		} else {
 			regionFilter.clear();
 			regionFilter.removeAllItems();
@@ -249,10 +249,10 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void updateFiltersBasedOnDistrict(Object value) {
 		if (value != null) {
-			campaignJurisdictionGroupByFilter.removeItem(AREA);
-			campaignJurisdictionGroupByFilter.removeItem(REGION);
 			campaignJurisdictionGroupByFilter.addItems(DISTRICT, COMMUNITY);
 			campaignJurisdictionGroupByFilter.setValue(COMMUNITY);
+			campaignJurisdictionGroupByFilter.removeItem(AREA);
+			campaignJurisdictionGroupByFilter.removeItem(REGION);
 		} else {
 			campaignJurisdictionGroupByFilter.removeItem(AREA);
 			campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);
