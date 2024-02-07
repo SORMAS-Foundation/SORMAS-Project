@@ -8,10 +8,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -41,8 +46,7 @@
             android:screenOrientation="portrait"
             android:exported="true"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/LoginActivityTheme" >
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -471,8 +475,8 @@
         </activity>
 
         <!-- Only needed for androidTest - found no other way to manifest this -->
-        <activity
-            android:name=".TestBackendActivity" />
+<!--        <activity-->
+<!--            android:name=".TestBackendActivity" />-->
 
         <activity
             android:name=".barcode.BarcodeActivity" />

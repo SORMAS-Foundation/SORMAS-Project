@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.login;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -39,7 +40,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
     private boolean isAtLeast8 = false, hasUppercase = false, hasNumber = false, hasSymbol = false, isGood = false;
 
     private ActivityChangePasswordLayoutBinding binding;
-    private ProgressDialog progressDialog = null;
+    private AlertDialog dialog;
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
@@ -49,6 +50,11 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         LoginViewModel loginViewModel = new LoginViewModel();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_change_password_layout);
         binding.setData(loginViewModel);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false); 
+        builder.setView(R.layout.layout_loading_dialog);
+        dialog = builder.create();
     }
 
     @Override
@@ -60,8 +66,8 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
     @Override
     protected void onDestroy() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
         }
 
         super.onDestroy();
@@ -173,16 +179,22 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
     private void executeSaveNewPasswordCall(Call<String> call){
         try {
+            dialog.show();
+
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.code() != 200) {
                         NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_could_not_save_password);
+                        dialog.dismiss();
                     }else {
-                        Toast.makeText(getApplicationContext(), "Password Saved", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Password Saved", Toast.LENGTH_LONG).show();
                         NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_password_changed);
                         finish();
+                        dialog.dismiss();
                     }
+
+
                 }
 
                 @Override
@@ -228,6 +240,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
                 }
             });
         }
+
 
     }
 }
