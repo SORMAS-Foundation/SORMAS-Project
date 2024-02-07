@@ -207,10 +207,12 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 			addLayerOptions(layersLayout);
 		}
 
-		PopupButton layersDropdown = ButtonHelper.createPopupButton(Captions.dashboardMapLayers, layersLayout, CssStyles.BUTTON_SUBTLE);
+		if (layersLayout.getComponentCount() > 0) {
+			PopupButton layersDropdown = ButtonHelper.createPopupButton(Captions.dashboardMapLayers, layersLayout, CssStyles.BUTTON_SUBTLE);
 
-		mapFooterLayout.addComponent(layersDropdown);
-		mapFooterLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
+			mapFooterLayout.addComponent(layersDropdown);
+			mapFooterLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
+		}
 
 		return mapFooterLayout;
 	}
