@@ -52,7 +52,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         binding.setData(loginViewModel);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false); 
+        builder.setCancelable(false);
         builder.setView(R.layout.layout_loading_dialog);
         dialog = builder.create();
     }

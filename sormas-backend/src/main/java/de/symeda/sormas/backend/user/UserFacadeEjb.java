@@ -874,9 +874,10 @@ public class UserFacadeEjb implements UserFacade {
 		return updatePassword;
 	}
 
+
 	@Override
 	public String updateUserPassword(String uuid, String password, String currentPassword) {
-		String updatePassword = userService.updatePassword(uuid, password);
+		String updatePassword = updatePassword(uuid, password);
 		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
 
 		return updatePassword;
@@ -922,7 +923,8 @@ public class UserFacadeEjb implements UserFacade {
 
 
 	@Override
-	@RightsAllowed(UserRight._USER_EDIT)
+	@PermitAll
+	//@RightsAllowed(UserRight._USER_EDIT)
 	public boolean validatePassword(String uuid, String password) {
 		User user = userService.getCurrentUser();
 		if (user != null) {
