@@ -57,6 +57,7 @@ import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.lbds.LbdsIntentSender;
+import de.symeda.sormas.app.login.ChangePasswordActivity;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -89,6 +90,7 @@ public class SettingsFragment extends BaseLandingFragment {
 
 		binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
 		binding.changePin.setOnClickListener(v -> changePIN());
+		binding.changePassword.setOnClickListener(v -> changePassword());
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
@@ -157,6 +159,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrlInfo.setVisibility(!hasServerUrl() ? View.VISIBLE : View.GONE);
 		binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
 		binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+		binding.changePassword.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
@@ -183,6 +186,12 @@ public class SettingsFragment extends BaseLandingFragment {
 		intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
 		startActivity(intent);
 	}
+	public void changePassword() {
+		Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+		startActivity(intent);
+	}
+
+
 
 	private void repullData() {
 		checkAndShowUnsynchronizedChangesDialog(() -> showRepullDataConfirmationDialog(), "SYNC");

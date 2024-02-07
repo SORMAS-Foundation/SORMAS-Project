@@ -2625,11 +2625,16 @@ public interface Captions {
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
+	String updatePassword = "updatePassword";
+	String currentPassword = "currentPassword";
+	String confirmPassword = "confirmPassword";
+	String passwordStrength = "passwordStrength";
 	String User_uuid = "User.uuid";
 	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRestrictDiseases = "userRestrictDiseases";
+	String userGeneratePassword = "userGeneratePassword";
 	String userRight = "userRight";
 	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";

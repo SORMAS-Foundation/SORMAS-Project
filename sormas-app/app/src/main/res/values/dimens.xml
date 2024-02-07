@@ -424,5 +424,7 @@
 
     <dimen name="dashboardPreloaderWidth">50dp</dimen>
     <dimen name="dashboardPreloaderHeight">50dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
 
 </resources>

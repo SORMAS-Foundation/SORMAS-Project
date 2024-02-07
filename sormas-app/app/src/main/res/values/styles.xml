@@ -413,6 +413,15 @@
         <item name="android:background">@drawable/selector_button_primary</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+    <style name="GenerateButtonStyle">
+        <item name="android:layout_height">@dimen/primaryButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">@dimen/buttonHorizontalPadding</item>
+        <item name="android:paddingRight">@dimen/buttonHorizontalPadding</item>
+        <item name="android:textColor">@color/lightBlue</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:elevation">@dimen/primaryButtonElevation</item>
+    </style>
 
     <style name="EmptyListHintStyle">
         <item name="android:paddingTop">@dimen/parentLayoutVerticalPadding</item>

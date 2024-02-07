@@ -68,6 +68,10 @@ public class UserDto extends EntityDto {
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String PASSWORD = "currentPassword";
+	public static final String NEW_PASSWORD = "updatePassword";
+	public static final String CONFIRM_PASSWORD = "confirmPassword";
+	public static final String PASSWORD_STRENGTH = "passwordStrength";
 
 	private boolean active = true;
 
@@ -106,6 +110,10 @@ public class UserDto extends EntityDto {
 	private Language language;
 
 	private boolean hasConsentedToGdpr;
+	private String currentPassword;
+	private String updatePassword;
+	private String confirmPassword;
+	private String passwordStrength;
 
 	private JurisdictionLevel jurisdictionLevel;
 
@@ -158,6 +166,38 @@ public class UserDto extends EntityDto {
 
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
+	}
+
+	public void setCurrentPassword(String currentPassword) {
+		this.currentPassword = currentPassword;
+	}
+
+	public String getCurrentPassword() {
+		return currentPassword;
+	}
+
+	public void setUpdatePassword(String updatePassword) {
+		this.updatePassword = updatePassword;
+	}
+
+	public String getUpdatePassword() {
+		return updatePassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void PasswordStrength(String passwordStrength) {
+		this.passwordStrength = passwordStrength;
+	}
+
+	public String getPasswordStrength() {
+		return passwordStrength;
 	}
 
 	public String getPhone() {

@@ -17,8 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import com.vaadin.event.ContextClickEvent;
-import com.vaadin.event.MouseEvents;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -36,10 +41,12 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.user.UserSettingsForm;
@@ -47,12 +54,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.lang3.StringUtils;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -68,6 +69,7 @@ public class Menu extends CssLayout {
 
 	private CssLayout menuItemsLayout;
 	private CssLayout menuPart;
+	private UserDto user;
 
 	public Menu(Navigator navigator) {
 
@@ -75,7 +77,7 @@ public class Menu extends CssLayout {
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
 		menuPart = new CssLayout();
 		menuPart.addStyleName(ValoTheme.MENU_PART);
-
+		user = UserProvider.getCurrent().getUser();
 		// header of the menu
 		final HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
@@ -117,7 +119,7 @@ public class Menu extends CssLayout {
 		// settings menu item
 		MenuBar settingsMenu = new MenuBar();
 		settingsMenu.setId(Captions.actionSettings);
-		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, (Command) selectedItem -> showSettingsPopup());
+		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, (Command) selectedItem -> showSettingsPopup(user));
 
 		settingsMenu.addStyleNames("user-menu", "settings-menu");
 		menuPart.addComponent(settingsMenu);
@@ -136,7 +138,7 @@ public class Menu extends CssLayout {
 		addComponent(menuPart);
 	}
 
-	private void showSettingsPopup() {
+	private void showSettingsPopup(UserDto user) {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
@@ -144,7 +146,8 @@ public class Menu extends CssLayout {
 
 		CommitDiscardWrapperComponent<UserSettingsForm> component =
 			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
-
+		Button resetPasswordButton = ControllerProvider.getUserController().createUpdatePasswordButton();
+		component.getButtonsPanel().addComponent(resetPasswordButton, 0);
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
 	}
