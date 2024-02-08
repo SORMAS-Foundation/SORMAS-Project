@@ -86,6 +86,7 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 		if (record.getRelatedCase() == null) {
 			contentBinding.openLinkedCase.setVisibility(View.GONE);
 		}
+		contentBinding.immunizationReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	private void setUpControlListeners(FragmentImmunizationReadLayoutBinding contentBinding) {

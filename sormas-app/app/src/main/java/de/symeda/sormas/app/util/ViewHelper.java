@@ -82,7 +82,7 @@ public class ViewHelper {
 		}
 	}
 
-	public static void showUserContactInfo(User user, Resources resource, Context context) {
+	public static void showUserContactInfo(User user, Resources resource, Context context, boolean isPseudonymized) {
 		StringBuilder sb = new StringBuilder();
 		String userPhone = null;
 		String userEmail = null;
@@ -93,21 +93,50 @@ public class ViewHelper {
 
 		sb.append("<b><h2>" + resource.getString(R.string.heading_contact_information) + "</h2></b>");
 
-		if (user == null) {
+//		if (user == null) {
+//			sb.append(resource.getString(R.string.message_no_user_selected));
+//		} else {
+//			sb.append("<b>").append(resource.getString(R.string.caption_phone_number)).append("</b>");
+//			if (userPhone == null || userPhone.isEmpty()) {
+//				sb.append(resource.getString(R.string.message_not_specified));
+//			} else {
+//				sb.append("<a href=\"tel:" + userPhone + "\">" + userPhone + "</a>");
+//			}
+//			sb.append("<br>");
+//			sb.append("<b>").append(resource.getString(R.string.caption_email)).append("</b>");
+//			if (userEmail == null || userEmail.isEmpty()) {
+//				sb.append(resource.getString(R.string.message_not_specified));
+//			} else {
+//				sb.append("<a href=\"mailto:" + userEmail + "\">" + userEmail + "</a>");
+//			}
+//		}
+
+		if (user == null && !isPseudonymized) {
 			sb.append(resource.getString(R.string.message_no_user_selected));
 		} else {
-			sb.append("<b>").append(resource.getString(R.string.caption_phone_number)).append("</b>");
-			if (userPhone == null || userPhone.isEmpty()) {
-				sb.append(resource.getString(R.string.message_not_specified));
+
+			if (isPseudonymized) {
+				sb.append("<b>").append(resource.getString(R.string.caption_phone_number)).append("</b>");
+				String inaccessibleValue = I18nProperties.getCaption(Captions.inaccessibleValue);
+				sb.append("<i>").append(inaccessibleValue).append("<i>");
+				sb.append("<br>");
+				sb.append("<b>").append(resource.getString(R.string.caption_email)).append("</b>");
+				sb.append("<i>").append(inaccessibleValue).append("<i>");
+
 			} else {
-				sb.append("<a href=\"tel:" + userPhone + "\">" + userPhone + "</a>");
-			}
-			sb.append("<br>");
-			sb.append("<b>").append(resource.getString(R.string.caption_email)).append("</b>");
-			if (userEmail == null || userEmail.isEmpty()) {
-				sb.append(resource.getString(R.string.message_not_specified));
-			} else {
-				sb.append("<a href=\"mailto:" + userEmail + "\">" + userEmail + "</a>");
+				sb.append("<b>").append(resource.getString(R.string.caption_phone_number)).append("</b>");
+				if (userPhone == null || userPhone.isEmpty()) {
+					sb.append(resource.getString(R.string.message_not_specified));
+				} else {
+					sb.append("<a href=\"tel:" + userPhone + "\">" + userPhone + "</a>");
+				}
+				sb.append("<br>");
+				sb.append("<b>").append(resource.getString(R.string.caption_email)).append("</b>");
+				if (userEmail == null || userEmail.isEmpty()) {
+					sb.append(resource.getString(R.string.message_not_specified));
+				} else {
+					sb.append("<a href=\"mailto:" + userEmail + "\">" + userEmail + "</a>");
+				}
 			}
 		}
 
