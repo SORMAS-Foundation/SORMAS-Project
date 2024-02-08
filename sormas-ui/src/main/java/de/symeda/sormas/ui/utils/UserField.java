@@ -1,11 +1,11 @@
 package de.symeda.sormas.ui.utils;
 
+import static de.symeda.sormas.ui.utils.CssStyles.INACCESSIBLE_LABEL;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.function.Supplier;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -20,6 +20,7 @@ import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
@@ -31,6 +32,8 @@ public class UserField extends CustomField<UserReferenceDto> {
 	private boolean readOnly;
 	private boolean enabled;
 	private List<UserReferenceDto> items = new ArrayList<>();
+	private boolean parentPseudonymizedFlag;
+	private Supplier<Boolean> parentPseudonymizedSupplier;
 
 	public UserField() {
 	}
@@ -50,6 +53,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 		}
 		userCombo.setNullSelectionAllowed(true);
 		userCombo.setValue(getValue());
+		parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
 		userCombo.setEnabled(enabled);
 		userCombo.setReadOnly(readOnly);
 		userLayout.addComponent(userCombo);
@@ -67,6 +71,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 
 		addValueChangeListener(c -> {
 			userCombo.setValue(c.getProperty().getValue());
+			parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
 		});
 
 		return userLayout;
@@ -132,58 +137,41 @@ public class UserField extends CustomField<UserReferenceDto> {
 
 		VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setMargin(false);
-		if (userDto != null) {
-			if (userCombo.isReadOnly()) {
-				HorizontalLayout reportingUserLayout = new HorizontalLayout();
-				Label reportingUserLabel = new Label(I18nProperties.getString(Strings.reportingUser));
-				reportingUserLabel.addStyleName(LABEL_BOLD);
-				reportingUserLayout.addComponent(reportingUserLabel);
-
-				Label reportingUser = new Label(getValue().getCaption());
-				reportingUserLayout.addComponent(reportingUser);
-
-				verticalLayout.addComponent(reportingUserLayout);
-			}
-
-			HorizontalLayout telephoneNumberLayout = new HorizontalLayout();
-			Label telephoneLabel = new Label(I18nProperties.getString(Strings.promptTelephoneNumber));
-			telephoneLabel.addStyleName(LABEL_BOLD);
-			telephoneNumberLayout.addComponent(telephoneLabel);
-
-			final String phone = userDto.getPhone();
-			if (StringUtils.isBlank(phone)) {
-				Label telephoneNumber = new Label();
-				telephoneNumber.setValue(I18nProperties.getString(Strings.notSpecified));
-				telephoneNumberLayout.addComponent(telephoneNumber);
+		if (userCombo.isReadOnly()) {
+			if (userDto == null) {
+				verticalLayout.addComponent(createFieldLayout(I18nProperties.getCaption(Captions.User_userName), null, null, true));
+				verticalLayout.addComponent(createFieldLayout(I18nProperties.getCaption(Captions.User_phone), null, LinkType.PHONE, true));
+				verticalLayout.addComponent(createFieldLayout(I18nProperties.getCaption(Captions.User_userEmail), null, LinkType.EMAIL, true));
 			} else {
-				Link telephoneNumber = new Link(phone, new ExternalResource("tel:" + phone));
-				telephoneNumberLayout.addComponent(telephoneNumber);
+				verticalLayout.addComponent(createFieldLayout(I18nProperties.getCaption(Captions.User_userName), userDto.getUserName(), null, false));
+				verticalLayout
+					.addComponent(createFieldLayout(I18nProperties.getCaption(Captions.User_phone), userDto.getPhone(), LinkType.PHONE, false));
+				verticalLayout.addComponent(
+					createFieldLayout(I18nProperties.getCaption(Captions.User_userEmail), userDto.getUserEmail(), LinkType.EMAIL, false));
 			}
-
-			verticalLayout.addComponent(telephoneNumberLayout);
-
-			HorizontalLayout emailLayout = new HorizontalLayout();
-			Label emailLabel = new Label(I18nProperties.getString(Strings.promptEmail));
-			emailLabel.addStyleName(LABEL_BOLD);
-			emailLayout.addComponent(emailLabel);
-			final String userEmail = userDto.getUserEmail();
-			if (StringUtils.isBlank(userEmail)) {
-				Label email = new Label();
-				email.setValue(I18nProperties.getString(Strings.notSpecified));
-				emailLayout.addComponent(email);
-			} else {
-				Link email = new Link(userEmail, new ExternalResource("mailto:" + userEmail));
-				emailLayout.addComponent(email);
-			}
-
-			verticalLayout.addComponent(emailLayout);
 		} else {
-			HorizontalLayout labelLayout = new HorizontalLayout();
-			Label noUserMessageLabel = new Label();
-			final String noUSerMessage = I18nProperties.getString(Strings.messageNoUserSelected);
-			noUserMessageLabel.setValue(noUSerMessage);
-			labelLayout.addComponent(noUserMessageLabel);
-			verticalLayout.addComponent(labelLayout);
+			if (userDto == null && !parentPseudonymizedFlag) {
+				HorizontalLayout labelLayout = new HorizontalLayout();
+				Label noUserMessageLabel = new Label();
+				final String noUserMessage;
+				noUserMessage = I18nProperties.getString(Strings.messageNoUserSelected);
+				noUserMessageLabel.setValue(noUserMessage);
+				labelLayout.addComponent(noUserMessageLabel);
+				verticalLayout.addComponent(labelLayout);
+			} else {
+				verticalLayout.addComponent(
+					createFieldLayout(
+						I18nProperties.getCaption(Captions.User_phone),
+						userDto != null ? userDto.getPhone() : null,
+						LinkType.PHONE,
+						parentPseudonymizedFlag));
+				verticalLayout.addComponent(
+					createFieldLayout(
+						I18nProperties.getCaption(Captions.User_userEmail),
+						userDto != null ? userDto.getUserEmail() : null,
+						LinkType.EMAIL,
+						parentPseudonymizedFlag));
+			}
 		}
 
 		VaadinUiUtil.showConfirmationPopup(
@@ -195,6 +183,53 @@ public class UserField extends CustomField<UserReferenceDto> {
 			confirmed -> {
 				return true;
 			});
+	}
+
+	private static HorizontalLayout createFieldLayout(String fieldLabelCaption, String fieldValue, LinkType linkType, boolean inaccessible) {
+		HorizontalLayout fieldLayout = new HorizontalLayout();
+		Label fieldLabel = new Label(fieldLabelCaption + ":");
+		fieldLabel.addStyleName(LABEL_BOLD);
+		fieldLayout.addComponent(fieldLabel);
+
+		if (inaccessible) {
+			Label fieldValueLabel = new Label(fieldValue != null ? fieldValue : I18nProperties.getCaption(Captions.inaccessibleValue));
+			fieldValueLabel.addStyleName(INACCESSIBLE_LABEL);
+			fieldLayout.addComponent(fieldValueLabel);
+		} else {
+			if (fieldValue == null || fieldValue.isEmpty()) {
+				Label valueLabel = new Label(I18nProperties.getString(Strings.notSpecified));
+				fieldLayout.addComponent(valueLabel);
+			} else {
+				if (linkType != null) {
+					Link fieldLink = new Link(fieldValue, new ExternalResource(linkType.getLinkType() + fieldValue));
+					fieldLayout.addComponent(fieldLink);
+				} else {
+					Label valueLabel = new Label(fieldValue);
+					fieldLayout.addComponent(valueLabel);
+				}
+			}
+		}
+		return fieldLayout;
+	}
+
+	public void setParentPseudonymizedSupplier(Supplier<Boolean> parentPseudonymizedSupplier) {
+		this.parentPseudonymizedSupplier = parentPseudonymizedSupplier;
+	}
+
+	private enum LinkType {
+
+		PHONE("tel:"),
+		EMAIL("mailto:");
+
+		private final String linkType;
+
+		LinkType(String linkType) {
+			this.linkType = linkType;
+		}
+
+		public String getLinkType() {
+			return linkType;
+		}
 	}
 
 	@Override

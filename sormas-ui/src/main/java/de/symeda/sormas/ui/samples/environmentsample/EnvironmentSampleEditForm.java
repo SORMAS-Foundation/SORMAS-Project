@@ -250,7 +250,9 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			true,
 			true);
 
-		addField(EnvironmentSampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
+		UserField reportingUser = addField(EnvironmentSampleDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUser.setReadOnly(true);
 
 		addField(EnvironmentSampleDto.SPECIMEN_CONDITION);
 
@@ -270,7 +272,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
 		boolean canEditDispatchField =
-				isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
+			isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {

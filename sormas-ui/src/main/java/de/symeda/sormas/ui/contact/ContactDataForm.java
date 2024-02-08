@@ -240,7 +240,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
 		addField(ContactDto.INTERNAL_TOKEN, TextField.class);
-		addField(ContactDto.REPORTING_USER, UserField.class);
+
+		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+
 		multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
 		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
@@ -466,6 +469,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		contactOfficerField = addField(ContactDto.CONTACT_OFFICER, UserField.class);
 		contactOfficerField.setEnabled(true);
+		contactOfficerField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
 		region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
