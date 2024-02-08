@@ -1543,7 +1543,6 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
-	String hiddenValue = "hiddenValue";
 	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
@@ -1991,7 +1990,6 @@ public interface Captions {
 	String regionName = "regionName";
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
-	String reportingUser = "reportingUser";
 	String requiredUserRights = "requiredUserRights";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";

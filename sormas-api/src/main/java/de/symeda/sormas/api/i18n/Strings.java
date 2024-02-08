@@ -1686,6 +1686,7 @@ public interface Strings {
 	String reloadPageToSeeChanges = "reloadPageToSeeChanges";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String reportingUser = "reportingUser";
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";
