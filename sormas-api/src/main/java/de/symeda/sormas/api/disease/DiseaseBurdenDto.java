@@ -21,10 +21,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
+@AuditedClass
 public class DiseaseBurdenDto implements Serializable {
 
 	private static final long serialVersionUID = 2430932452606853497L;
@@ -38,7 +40,8 @@ public class DiseaseBurdenDto implements Serializable {
 	public static final String CASES_DIFFERENCE_PERCENTAGE = "casesDifferencePercentage";
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
-	public static final String CASE_DEATH_COUNT = "caseDeathCount";
+	public static final String
+			CASE_DEATH_COUNT = "caseDeathCount";
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
 	public static final String LAST_REPORTED_DISTRICT_NAME = "lastReportedDistrictName";
 

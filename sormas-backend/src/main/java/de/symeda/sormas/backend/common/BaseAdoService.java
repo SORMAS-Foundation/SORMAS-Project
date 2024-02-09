@@ -604,4 +604,5 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 		return query;
 	}
+
 }

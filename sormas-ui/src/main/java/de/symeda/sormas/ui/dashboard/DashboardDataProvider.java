@@ -116,17 +116,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	protected DashboardCriteria newCriteria() {
 		return new DashboardCriteria(newCaseDateType);
 	}
-//	public void refreshDiseaseData() {
-//		setDiseaseBurdenDetail(
-//			FacadeProvider.getDiseaseFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate));
-//
-//		setOutbreakDistrictCount(
-//			FacadeProvider.getOutbreakFacade()
-//				.getOutbreakDistrictCount(
-//					new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
-//
-//		this.refreshDataForSelectedDisease();
-//	}
+
 
 	public void refreshDiseaseData() {
 		DiseaseBurdenDto dbd= FacadeProvider.getDiseaseFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate

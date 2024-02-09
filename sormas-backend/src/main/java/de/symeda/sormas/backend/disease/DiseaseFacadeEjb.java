@@ -235,44 +235,35 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 
 		//new cases
-		//CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, newCaseDateType).region(regionRef).district(districtRef).disease(disease).caseClassification(caseClassification);
-
 		DashboardCriteria dashboardCriteria =
 				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
 
 
-		//Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(caseCriteria);
 
 		//Load count all dead/ fatalities
-		//Map<Disease, Long> allCasesFetched = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 		Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 
-		//Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(d, true, true);
 		Map<Disease, Long> caseFatalities = dashboardService.getDeathCountByDisease(dashboardCriteria);
 
 
 		dashboardCriteria.setOutcome(CaseOutcome.NO_OUTCOME);
 		//caseCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-//		Map<Disease, Long> archievedCase = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 		Map<Disease, Long> archievedCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 		//dashboardCriteria.relevanceStatus(null);
 
 
 		dashboardCriteria.setOutcome(CaseOutcome.RECOVERED);
-		//Map<Disease, Long> recoveredCase =  caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 		Map<Disease, Long> recoveredCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 
 		dashboardCriteria.setOutcome(CaseOutcome.UNKNOWN);
 
-		//Map<Disease, Long> unknown =  caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 		Map<Disease, Long> unknown = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 		dashboardCriteria.setOutcome(CaseOutcome.OTHER);
 
-		//Map<Disease, Long> other =  caseFacade.getCaseCountByDisease(caseCriteria, true, true);
 		Map<Disease, Long> other = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 		//build diseasesBurden

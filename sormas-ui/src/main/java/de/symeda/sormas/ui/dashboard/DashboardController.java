@@ -68,10 +68,7 @@ public class DashboardController {
 		//}
 	}
 
-//	public void navigateToDisease(Disease disease) {
-//		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
-//		SormasUI.get().getNavigator().navigateTo(navigationState);
-//	}
+
 
 	public void navigateToDisease(Disease disease,DashboardDataProvider dashboardDataProvider) {
 		Date dateFrom = dashboardDataProvider.getFromDate();
@@ -105,12 +102,10 @@ public class DashboardController {
 		//DiseaseDetailsView.setProvider(dashboardDataProvider);
 
 		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
-		//+"/"+dateFromAsISO+"/"+dateToAsISO+"/"+type.toString();
-		//String navigationState = DiseaseDetailsView.VIEW_NAME + "/?disease=" + disease.getName();
+
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 
 
 
-		//SormasUI.get().getSession().setAttribute("paramdata", dateFromAsISO+"/"+dateToAsISO+"/"+type);
 	}
 }
