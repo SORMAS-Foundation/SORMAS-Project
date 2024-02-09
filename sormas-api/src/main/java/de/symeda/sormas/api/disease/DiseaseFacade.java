@@ -41,14 +41,6 @@ public interface DiseaseFacade {
             Date previousFromDate,
             Date previousToDate);
 
-//	DiseaseBurdenDto diseaseForDashboard(
-//			RegionReferenceDto regionRef,
-//			DistrictReferenceDto districtRef,
-//			Disease disease,
-//			Date from,
-//			Date to,
-//			Date previousFromDate,
-//			Date previousToDate);
 
     DiseaseBurdenDto getDiseaseForDashboard(
             RegionReferenceDto regionRef,

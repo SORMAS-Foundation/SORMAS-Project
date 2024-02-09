@@ -206,12 +206,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		if (!DashboardType.DISEASE.equals(dashboardDataProvider.getDashboardType())) {
 			refreshDashboard();
-		}
-//			refreshDiseaseData();
-//		else
-			//refreshDashboard();
 	}
 
 	//public abstract void refreshDashboard();

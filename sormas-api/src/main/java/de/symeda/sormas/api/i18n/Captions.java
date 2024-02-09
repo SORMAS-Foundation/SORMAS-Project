@@ -851,12 +851,11 @@ public interface Captions {
 	String dashboardDead = "dashboardDead";
 	String dashboardDiscarded = "dashboardDiscarded";
 	String dashboardDiseaseBurdenInfo = "dashboardDiseaseBurdenInfo";
-	String dashboardRegionalDiseaseBurden = "dashboardRegionalDiseaseBurden";
-	String diseaseDetailMap = "diseaseDetailMap";
 	String dashboardDiseaseBurdenOutbreakDistricts = "dashboardDiseaseBurdenOutbreakDistricts";
 	String dashboardDiseaseCarouselSlideShow = "dashboardDiseaseCarouselSlideShow";
 	String dashboardDiseaseDifference = "dashboardDiseaseDifference";
 	String dashboardDiseaseDifferenceYAxisLabel = "dashboardDiseaseDifferenceYAxisLabel";
+	String dashboardDistrictDiseaseBurden = "dashboardDistrictDiseaseBurden";
 	String dashboardDone = "dashboardDone";
 	String dashboardFacilities = "dashboardFacilities";
 	String dashboardFatalities = "dashboardFatalities";
@@ -875,6 +874,7 @@ public interface Captions {
 	String dashboardIndeterminate = "dashboardIndeterminate";
 	String dashboardInvestigated = "dashboardInvestigated";
 	String dashboardLastReport = "dashboardLastReport";
+	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	String dashboardLastVisitLt48 = "dashboardLastVisitLt48";
@@ -915,6 +915,7 @@ public interface Captions {
 	String dashboardProbable = "dashboardProbable";
 	String dashboardProportion = "dashboardProportion";
 	String dashboardReceived = "dashboardReceived";
+	String dashboardRegionalDiseaseBurden = "dashboardRegionalDiseaseBurden";
 	String dashboardRemoved = "dashboardRemoved";
 	String dashboardRumor = "dashboardRumor";
 	String dashboardSameDayLastYear = "dashboardSameDayLastYear";
@@ -1022,6 +1023,7 @@ public interface Captions {
 	String DiseaseBurden_eventCount = "DiseaseBurden.eventCount";
 	String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
+	String diseaseDetailMap = "diseaseDetailMap";
 	String diseaseVariantDetails = "diseaseVariantDetails";
 	String District = "District";
 	String District_archived = "District.archived";
@@ -2759,10 +2761,10 @@ public interface Captions {
 	String View_contacts_visits = "View.contacts.visits";
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
+	String View_dashboard_disease = "View.dashboard.disease";
 	String View_dashboard_samples = "View.dashboard.samples";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_environments = "View.environments";
-	String View_dashboard_disease = "View.dashboard.disease";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
@@ -2792,6 +2794,7 @@ public interface Captions {
 	String View_user_users = "View.user.users";
 	String View_users_sub = "View.users.sub";
 	String viewMessage = "viewMessage";
+	String viewMore = "viewMore";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
 	String Visit_origin = "Visit.origin";
@@ -2804,7 +2807,6 @@ public interface Captions {
 	String Visit_visitStatus = "Visit.visitStatus";
 	String Visit_visitUser = "Visit.visitUser";
 	String visitNewVisit = "visitNewVisit";
-	String viewMore = "viewMore";
 	String WeeklyReport_epiWeek = "WeeklyReport.epiWeek";
 	String WeeklyReport_year = "WeeklyReport.year";
 	String WeeklyReportEntry_numberOfCases = "WeeklyReportEntry.numberOfCases";
@@ -2836,7 +2838,4 @@ public interface Captions {
 	String WeeklyReportRegionSummary_region = "WeeklyReportRegionSummary.region";
 	String weeklyReportsInDistrict = "weeklyReportsInDistrict";
 	String years = "years";
-	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
-
-	String dashboardDistrictDiseaseBurden="dashboardDistrictDiseaseBurden";
 }
