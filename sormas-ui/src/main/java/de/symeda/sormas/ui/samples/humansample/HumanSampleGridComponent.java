@@ -180,7 +180,7 @@ public class HumanSampleGridComponent extends SampleGridComponent<SampleIndexDto
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {

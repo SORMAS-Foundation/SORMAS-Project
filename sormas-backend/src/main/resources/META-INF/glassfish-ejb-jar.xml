@@ -513,11 +513,6 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</role-name>
-        <group-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
         <group-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</group-name>
     </security-role-mapping>
