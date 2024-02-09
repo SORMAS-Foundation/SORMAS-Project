@@ -93,8 +93,11 @@ public class TaskManagementSteps implements En {
 
     When(
         "^I click on the NEW TASK button$",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
+        () ->{
+            webDriverHelpers.waitForSpinnerNotVisible(10);
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX);
+        });
+
     And(
         "I click on SHOW MORE FILTERS BUTTON on Task directory page",
         () -> {
