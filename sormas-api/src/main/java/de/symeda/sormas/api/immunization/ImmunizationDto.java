@@ -50,7 +50,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
-public class ImmunizationDto extends SormasToSormasShareableDto {
+public class ImmunizationDto extends SormasToSormasShareableDto implements IImmunization {
 
 	private static final long serialVersionUID = -6538566879882613529L;
 
@@ -109,12 +109,11 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	@NotNull(message = Validations.requiredField)
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	@SensitiveData(mandatoryField = true)
+	@SensitiveData
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
 	@NotNull(message = Validations.validResponsibleRegion)

@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable, HasUuid {
+public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable, HasUuid, ICase {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 

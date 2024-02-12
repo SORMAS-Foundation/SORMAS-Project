@@ -110,7 +110,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
-import de.symeda.sormas.api.utils.pseudonymization.DtoPseudonymizer;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
@@ -1393,6 +1392,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> casePath = caseQueryContext.getRoot();
+		CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filterResponsible = null;
 		Predicate filter = null;
@@ -1463,14 +1463,16 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				case LABORATORY:
 					final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
 					final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-					final SampleJoins joins = new SampleJoins(sampleRoot);
-					final Join cazeJoin = joins.getCaze();
-					sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+					final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+					final Join cazeJoin = sampleJoins.getCaze();
+					sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, sampleJoins)));
 					sampleSubQuery.select(sampleRoot.get(Sample.ID));
 					filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 					break;
 				default:
 				}
+
+				filter = CriteriaBuilderHelper.or(cb, filter, specialCaseAccessService.createSpecialCaseAccessFilter(cb, joins.getSpecialCaseAccesses()));
 			}
 
 			// get all cases based on the user's contact association
@@ -1478,7 +1480,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				ContactQueryContext contactQueryContext =
-					new ContactQueryContext(cb, cq, new ContactJoins(caseQueryContext.getJoins().getContacts()));
+					new ContactQueryContext(cb, cq, new ContactJoins(joins.getContacts()));
 				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterWithoutCase(contactQueryContext));
 			}
 
@@ -2357,9 +2359,5 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 		return caseUuids.size() == 1 ? caseUuids.get(0) : null;
-	}
-
-	public DtoPseudonymizer.RightCheck createPseudonymizationRightChecker(CaseReferenceDto caze) {
-		return r -> userService.hasRight(r) || specialCaseAccessService.isGrantedToCurrentUser(caze);
 	}
 }

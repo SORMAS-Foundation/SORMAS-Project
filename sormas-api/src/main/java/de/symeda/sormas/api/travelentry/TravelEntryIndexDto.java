@@ -8,7 +8,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class TravelEntryIndexDto extends PseudonymizableIndexDto implements ITravelEntry, Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "TravelEntry";
 

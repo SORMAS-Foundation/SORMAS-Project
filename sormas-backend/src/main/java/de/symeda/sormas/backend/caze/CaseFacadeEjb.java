@@ -111,6 +111,7 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.caze.ICase;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -210,6 +211,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -321,6 +323,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoSe
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -497,6 +500,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private UserRoleService userRoleService;
 	@EJB
 	private CustomizableEnumFacadeEjbLocal customizableEnumFacade;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -510,8 +515,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	protected Pseudonymizer<CaseDataDto> createPseudonymizer() {
-		return getPseudonymizerForDtoWithClinician("");
+	protected Pseudonymizer<CaseDataDto> createPseudonymizer(List<Case> cases) {
+		return createPseudonymizerForDtoWithClinician("", cases);
 	}
 
 	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -594,7 +599,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
-		Pseudonymizer<CaseIndexDto> pseudonymizer = createSimplePseudonymizer();
+		Pseudonymizer<CaseIndexDto> pseudonymizer = createSimplePlaceholderPseudonymizer(cases);
 		for (CaseIndexDto caze : cases) {
 			if (survToolShareCountAndDates != null) {
 				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
@@ -649,7 +654,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
-		Pseudonymizer<CaseIndexDetailedDto> pseudonymizer = createSimplePseudonymizer();
+		Pseudonymizer<CaseIndexDetailedDto> pseudonymizer = createSimplePlaceholderPseudonymizer(cases);
 		for (CaseIndexDetailedDto caze : cases) {
 			if (survToolShareCountAndDates != null) {
 				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
@@ -698,7 +703,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria) {
 		List<CaseSelectionDto> entries = service.getCaseSelectionList(caseCriteria);
 
-		Pseudonymizer<CaseSelectionDto> pseudonymizer = createSimplePseudonymizer();
+		Pseudonymizer<CaseSelectionDto> pseudonymizer = createSimplePlaceholderPseudonymizer(entries);
 		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
 
 		return entries;
@@ -710,7 +715,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Long personId = personFacade.getPersonIdByUuid(personUuid);
 		List<CaseListEntryDto> entries = service.getEntriesList(personId, first, max);
 
-		Pseudonymizer<CaseListEntryDto> pseudonymizer = createSimplePseudonymizer();
+		Pseudonymizer<CaseListEntryDto> pseudonymizer = createSimplePlaceholderPseudonymizer(entries);
 		pseudonymizer.pseudonymizeDtoCollection(CaseListEntryDto.class, entries, CaseListEntryDto::isInJurisdiction, null);
 
 		return entries;
@@ -1054,7 +1059,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
 
-			Pseudonymizer<CaseExportDto> pseudonymizer = getPseudonymizerForDtoWithClinician(I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer<CaseExportDto> pseudonymizer =
+				createPseudonymizerForDtoWithClinician(I18nProperties.getCaption(Captions.inaccessibleValue), resultList);
 
 			for (CaseExportDto exportDto : resultList) {
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
@@ -1343,7 +1349,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		List<MapCaseDto> cases = service.getCasesForMap(region, district, disease, from, to, dateType);
 
-		Pseudonymizer<MapCaseDto> pseudonymizer = createSimplePseudonymizer();
+		Pseudonymizer<MapCaseDto> pseudonymizer = createSimplePlaceholderPseudonymizer(cases);
 		pseudonymizer.pseudonymizeDtoCollection(MapCaseDto.class, cases, MapCaseDto::getInJurisdiction, null);
 
 		return cases;
@@ -1387,7 +1393,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		List<CaseSelectionDto> entries = service.getSimilarCases(criteria);
 
-		Pseudonymizer<CaseSelectionDto> pseudonymizer = createSimplePseudonymizer();
+		Pseudonymizer<CaseSelectionDto> pseudonymizer = createSimplePlaceholderPseudonymizer(entries);
 		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
 
 		return entries;
@@ -1434,20 +1440,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<CaseMergeIndexDto[]> cases =
 			service.getCasesForDuplicateMerging(criteria, limit, showDuplicatesWithDifferentRegion, configFacade.getNameSimilarityThreshold());
 
-		for (CaseMergeIndexDto[] caze : cases) {
-			pseudonymizeCasePairs(caze);
+		// pseudonymize cases
+		List<CaseMergeIndexDto> flatCaseList = cases.stream().flatMap(Stream::of).collect(Collectors.toList());
+		Pseudonymizer<CaseMergeIndexDto> pseudonymizer = createSimplePlaceholderPseudonymizer(flatCaseList);
+		for (CaseMergeIndexDto caze : flatCaseList) {
+			pseudonymizer.pseudonymizeDto(CaseMergeIndexDto.class, caze, caze.getInJurisdiction(), null);
 		}
 
 		return cases;
-	}
-
-	public void pseudonymizeCasePairs(CaseMergeIndexDto[] cazePair) {
-		Pseudonymizer<CaseMergeIndexDto> pseudonymizer = createSimplePseudonymizer();
-
-		Arrays.stream(cazePair).forEach(caze -> {
-			Boolean isInJurisdiction = caze.getInJurisdiction();
-			pseudonymizer.pseudonymizeDto(CaseMergeIndexDto.class, caze, isInJurisdiction, null);
-		});
 	}
 
 	@RightsAllowed(UserRight._CASE_EDIT)
@@ -1457,8 +1457,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		// todo this plainly duplicates getByUuid from AbstractCoreFacade
-		return toPseudonymizedDto(service.getByUuid(uuid, true));
+		return getByUuid(uuid);
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1709,7 +1708,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		Pseudonymizer<CaseDataDto> pseudonymizer = createPseudonymizer();
+		Pseudonymizer<CaseDataDto> pseudonymizer = createPseudonymizer(existingCaze);
 
 		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, pseudonymizer);
 
@@ -2958,7 +2957,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		if (dto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
-			this.<CaseReferenceDto> createSimplePseudonymizer().pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
+			createSimplePlaceholderPseudonymizer(Collections.singleton(dto)).pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
 		}
 
 		return dto;
@@ -4101,7 +4100,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, CaseFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
 
-			Pseudonymizer<CaseFollowUpDto> pseudonymizer = createSimplePseudonymizer();
+			Pseudonymizer<CaseFollowUpDto> pseudonymizer = createSimplePlaceholderPseudonymizer(resultList);
 
 			for (CaseFollowUpDto caseFollowUpDto : resultMap.values()) {
 				caseFollowUpDto.initVisitSize(interval + 1);
@@ -4118,8 +4117,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return resultList;
 	}
 
-	private <T> Pseudonymizer<T> getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
-		Pseudonymizer<T> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
+	private <T extends ICase> Pseudonymizer<T> createPseudonymizerForDtoWithClinician(
+		@Nullable String pseudonymizedValue,
+		Collection<? extends ICase> cases) {
+		Pseudonymizer<T> pseudonymizer = Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), pseudonymizedValue);
 
 		UserRightFieldAccessChecker<T> clinicianViewRightChecker =
 			new UserRightFieldAccessChecker<>(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
@@ -4128,8 +4129,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return pseudonymizer;
 	}
 
-	private <T> Pseudonymizer<T> createSimplePseudonymizer() {
-		return Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+	@PermitAll
+	public <T extends ICase> Pseudonymizer<T> createSimplePseudonymizer(Collection<? extends ICase> cases) {
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases));
+	}
+
+	@PermitAll
+	public <T extends ICase> Pseudonymizer<T> createSimplePlaceholderPseudonymizer(Collection<T> cases) {
+		return Pseudonymizer.getDefaultWithPlaceHolder(userService, createSpecialAccessChecker(cases));
+	}
+
+	private <T extends ICase> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends ICase> cases) {
+		List<String> withSpecialAccess = specialCaseAccessService.getCaseUuidsWithSpecialAccess(cases);
+
+		return caze -> withSpecialAccess.contains(caze.getUuid());
 	}
 
 	@Override

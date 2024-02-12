@@ -20,7 +20,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
 @DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
-public class ImmunizationReferenceDto extends ReferenceDto {
+public class ImmunizationReferenceDto extends ReferenceDto implements IImmunization {
 
 	private String externalId;
 

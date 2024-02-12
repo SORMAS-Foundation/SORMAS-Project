@@ -51,13 +51,13 @@ import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.ISample;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -121,7 +121,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -361,7 +360,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
-		return convertToDto(sampleService.getByUuid(uuid), createPseudonymizer());
+		Sample sample = sampleService.getByUuid(uuid);
+		return convertToDto(sample, createPseudonymizer(sample));
 	}
 
 	@Override
@@ -654,6 +654,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<SampleExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
+		SamplePseudonymizer<SampleExportDto> pseudonymizer = createPseudonymizer(true, resultList);
+
 		for (SampleExportDto exportDto : resultList) {
 			Sample sampleFromExportDto = sampleService.getById(exportDto.getId());
 			List<PathogenTest> pathogenTests = sampleFromExportDto.getPathogenTests();
@@ -702,8 +704,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
 
-			Pseudonymizer<SampleExportDto> pseudonymizer =
-				Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			boolean isInJurisdiction = exportDto.getSampleJurisdictionFlagsDto().getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(
 				SampleExportDto.class,
@@ -875,19 +875,19 @@ public class SampleFacadeEjb implements SampleFacade {
 		return target;
 	}
 
-	public SampleDto convertToDto(Sample source, Pseudonymizer<SampleDto> pseudonymizer) {
+	public SampleDto convertToDto(Sample source, SamplePseudonymizer<SampleDto> pseudonymizers) {
 
 		if (source == null) {
 			return null;
 		}
 
-		return convertToDto(source, pseudonymizer, sampleService.getJurisdictionFlags(source));
+		return convertToDto(source, pseudonymizers, sampleService.getJurisdictionFlags(source));
 	}
 
-	private SampleDto convertToDto(Sample source, Pseudonymizer<SampleDto> pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
+	private SampleDto convertToDto(Sample source, SamplePseudonymizer<SampleDto> pseudonymizers, SampleJurisdictionFlagsDto jurisdictionFlags) {
 
 		SampleDto dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer, jurisdictionFlags);
+		pseudonymizeDto(source, dto, pseudonymizers, jurisdictionFlags);
 
 		return dto;
 	}
@@ -895,18 +895,24 @@ public class SampleFacadeEjb implements SampleFacade {
 	private List<SampleDto> toPseudonymizedDtos(List<Sample> entities) {
 
 		Map<Long, SampleJurisdictionFlagsDto> jurisdictionFlags = sampleService.getJurisdictionsFlags(entities);
-		Pseudonymizer<SampleDto> pseudonymizer = createPseudonymizer();
+		SamplePseudonymizer<SampleDto> pseudonymizer = createPseudonymizer(false, entities);
 
-		List<SampleDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		return entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
-	private Pseudonymizer<SampleDto> createPseudonymizer() {
-		return Pseudonymizer.getDefault(userService::hasRight);
+	private SamplePseudonymizer<SampleDto> createPseudonymizer(ISample sample) {
+		return createPseudonymizer(false, sample != null ? Collections.singleton(sample) : Collections.emptyList());
 	}
 
-	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer<SampleDto> pseudonymizer, SampleJurisdictionFlagsDto jurisdictionFlags) {
+	private <T extends ISample> SamplePseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends ISample> samples) {
+		return sampleService.createPseudonymizer(withPlaceHolder, samples);
+	}
+
+	private void pseudonymizeDto(
+		Sample source,
+		SampleDto dto,
+		SamplePseudonymizer<SampleDto> pseudonymizer,
+		SampleJurisdictionFlagsDto jurisdictionFlags) {
 
 		if (dto != null) {
 			User currentUser = userService.getCurrentUser();
@@ -914,7 +920,6 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, jurisdictionFlags.getInJurisdiction(), s -> {
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser, s);
 				pseudonymizeAssociatedObjects(
-					s,
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),
 					s.getAssociatedEventParticipant(),
@@ -930,47 +935,39 @@ public class SampleFacadeEjb implements SampleFacade {
 			boolean inJurisdiction = sampleService.getJurisdictionFlags(existingSample).getInJurisdiction();
 			User currentUser = userService.getCurrentUser();
 
-			Pseudonymizer<SampleDto> pseudonymizer = createPseudonymizer();
+			SamplePseudonymizer<SampleDto> pseudonymizer = createPseudonymizer(existingSample);
 			pseudonymizer.restoreUser(existingSample.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(SampleDto.class, dto, existingSampleDto, inJurisdiction);
 		}
 	}
 
 	private void pseudonymizeAssociatedObjects(
-		SampleDto sample,
 		CaseReferenceDto sampleCase,
 		ContactReferenceDto sampleContact,
 		EventParticipantReferenceDto sampleEventParticipant,
-		Pseudonymizer<SampleDto> pseudonymizer,
+		SamplePseudonymizer<SampleDto> pseudonymizer,
 		SampleJurisdictionFlagsDto jurisdictionFlagsDto) {
 
 		if (sampleCase != null) {
-
-			casePseudonymizer.pseudonymizeDto(CaseReferenceDto.class, sampleCase, jurisdictionFlagsDto.getCaseInJurisdiction(), null);
+			pseudonymizer.pseudonymizeCaseReference(sampleCase, jurisdictionFlagsDto.getCaseInJurisdiction());
 		}
 
 		if (sampleContact != null) {
-			pseudonymizer.pseudonymizeEmbeddedDto(
+			pseudonymizer.pseudonymizeAssociatedDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getContactName(),
-				jurisdictionFlagsDto.getContactInJurisdiction(),
-				sample);
+				jurisdictionFlagsDto.getContactInJurisdiction());
 
-			if (sampleContact.getCaseName() != null) {
-				pseudonymizer.pseudonymizeEmbeddedDto(
-					ContactReferenceDto.PersonName.class,
-					sampleContact.getCaseName(),
-					jurisdictionFlagsDto.getContactCaseInJurisdiction(),
-					sample);
+			if (sampleContact.getCaze() != null) {
+				pseudonymizer.pseudonymizeCaseReference(sampleContact.getCaze(), jurisdictionFlagsDto.getContactCaseInJurisdiction());
 			}
 		}
 
 		if (sampleEventParticipant != null) {
-			pseudonymizer.pseudonymizeEmbeddedDto(
+			pseudonymizer.pseudonymizeAssociatedDto(
 				EventParticipantReferenceDto.class,
 				sampleEventParticipant,
-				jurisdictionFlagsDto.getEvenParticipantInJurisdiction(),
-				sample);
+				jurisdictionFlagsDto.getEvenParticipantInJurisdiction());
 		}
 	}
 
@@ -1038,11 +1035,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return new SampleReferenceDto(
 			entity.getUuid(),
-			SampleReferenceDto.buildCaption(
-				entity.getSampleMaterial(),
-				entity.getAssociatedCase() != null ? entity.getAssociatedCase().getUuid() : null,
-				entity.getAssociatedContact() != null ? entity.getAssociatedContact().getUuid() : null,
-				entity.getAssociatedEventParticipant() != null ? entity.getAssociatedEventParticipant().getUuid() : null));
+			entity.getSampleMaterial(),
+			entity.getAssociatedCase() != null ? entity.getAssociatedCase().getUuid() : null,
+			entity.getAssociatedContact() != null ? entity.getAssociatedContact().getUuid() : null,
+			entity.getAssociatedEventParticipant() != null ? entity.getAssociatedEventParticipant().getUuid() : null);
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {

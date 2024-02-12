@@ -65,8 +65,8 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal externalMessageFacade;
 
-	public Pseudonymizer createPseudonymizer(ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
+	public SormasToSormasPseudonymizer createPseudonymizer(ShareRequestInfo requestInfo) {
+		Pseudonymizer<?> pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
 
 		if (requestInfo.isPseudonymizedPersonalData()) {
 			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess(), PersonalDataFieldAccessChecker.forcedNoAccess());
@@ -75,11 +75,11 @@ public class ShareDataBuilderHelper {
 			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess(), SensitiveDataFieldAccessChecker.forcedNoAccess());
 		}
 
-		return pseudonymizer;
+		return new SormasToSormasPseudonymizer(pseudonymizer);
 	}
 
-	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, ShareRequestInfo requestInfo) {
-		PersonDto personDto = personFacade.toPseudonymizedDto(person, pseudonymizer, true);
+	public PersonDto getPersonDto(Person person, SormasToSormasPseudonymizer pseudonymizer, ShareRequestInfo requestInfo) {
+		PersonDto personDto = personFacade.toPseudonymizedDto(person, pseudonymizer.getPseudonymizer(), true);
 
 		pseudonymizePerson(personDto, requestInfo);
 		clearIgnoredProperties(personDto);

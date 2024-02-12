@@ -60,7 +60,7 @@ public final class PseudonymizedFieldAccessChecker<T> implements FieldAccessChec
 			Class<? extends Annotation> annotation,
 			Class<? extends Annotation> embeddedAnnotation,
 			boolean isPseudonymized) {
-			super(annotation, embeddedAnnotation, !isPseudonymized);
+			super(annotation, embeddedAnnotation, !isPseudonymized, t -> false);
 		}
 
 		@Override

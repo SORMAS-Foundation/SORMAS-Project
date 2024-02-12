@@ -31,8 +31,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
@@ -80,7 +78,7 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 		List<ExternalShareInfo> shareInfoList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<ExternalShareInfoDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
 		return shareInfoList.stream().map(i -> convertToDto(i, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -124,11 +122,10 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 		return ExternalShareStatus.SHARED.equals(externalShareStatus);
 	}
 
-	private ExternalShareInfoDto convertToDto(ExternalShareInfo source, Pseudonymizer pseudonymizer) {
+	private ExternalShareInfoDto convertToDto(ExternalShareInfo source, Pseudonymizer<ExternalShareInfoDto> pseudonymizer) {
 		ExternalShareInfoDto dto = toDto(source);
 
-		boolean pseudonymized = pseudonymizer
-			.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender);
+		boolean pseudonymized = pseudonymizer.pseudonymizeUser(source.getSender(), userService.getCurrentUser(), dto::setSender, dto);
 		if (pseudonymized) {
 			dto.setPseudonymized(true);
 		}

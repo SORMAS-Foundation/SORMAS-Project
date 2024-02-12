@@ -41,7 +41,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 @DependingOnFeatureType(featureType = {
 	FeatureType.CONTACT_TRACING,
 	FeatureType.CASE_FOLLOWUP })
-public class VisitDto extends PseudonymizableDto {
+public class VisitDto extends PseudonymizableDto implements IVisit {
 
 	private static final long serialVersionUID = -441664767075414789L;
 

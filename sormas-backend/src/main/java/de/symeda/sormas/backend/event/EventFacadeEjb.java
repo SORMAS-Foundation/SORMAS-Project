@@ -85,7 +85,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -257,9 +256,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
+		Event event = service.getByUuid(uuid);
 		return (detailedReferences)
-			? convertToDetailedReferenceDto(service.getByUuid(uuid), createPseudonymizer())
-			: toPseudonymizedDto(service.getByUuid(uuid));
+			? convertToDetailedReferenceDto(event, createPseudonymizer(event))
+			: toPseudonymizedDto(event);
 	}
 
 	@Override
@@ -294,7 +294,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		EventDto existingDto = toDto(existingEvent);
 
-		Pseudonymizer<EventDto> pseudonymizer = createPseudonymizer();
+		Pseudonymizer<EventDto> pseudonymizer = createPseudonymizer(existingEvent);
 		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
 		validate(dto);
@@ -673,7 +673,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			}
 		}
 
-		Pseudonymizer<EventIndexDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<EventIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
 		pseudonymizer.pseudonymizeDtoCollection(EventIndexDto.class, indexList, EventIndexDto::getInJurisdictionOrOwned, (c, isInJurisdiction) -> {
 		});
 
@@ -1284,8 +1284,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	protected void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer<EventDto> pseudonymizer, boolean inJurisdiction) {
 
 		if (dto != null) {
-			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, e ->
-					pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser, dto));
+			pseudonymizer.pseudonymizeDto(
+				EventDto.class,
+				dto,
+				inJurisdiction,
+				e -> pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser, dto));
 		}
 	}
 

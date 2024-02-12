@@ -34,7 +34,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
+public class SampleIndexDto extends PseudonymizableIndexDto implements ISample, Serializable {
 
 	private static final long serialVersionUID = -6298614717044087479L;
 
@@ -120,8 +120,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
 		}
 		if (associatedContactUuid != null) {
-			this.associatedContact =
-				new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
+			this.associatedContact = new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null);
 		}
 		if (associatedEventParticipantUuid != null) {
 			this.associatedEventParticipant = new EventParticipantReferenceDto(

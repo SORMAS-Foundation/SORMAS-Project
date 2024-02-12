@@ -19,8 +19,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionExportDto;
@@ -89,8 +87,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer<PrescriptionIndexDto> pseudonymizer =
-			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<PrescriptionIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
 		pseudonymizer.pseudonymizeDtoCollection(PrescriptionIndexDto.class, indexList, PrescriptionIndexDto::getInJurisdiction, null);
 
 		return indexList;
@@ -98,7 +95,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@Override
 	public PrescriptionDto getPrescriptionByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService));
 	}
 
 	@Override
@@ -117,7 +114,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		service.ensurePersisted(entity);
 
-		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(entity, Pseudonymizer.getDefault(userService));
 	}
 
 	@Override
@@ -146,7 +143,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	private List<PrescriptionDto> toPseudonymizedDtos(List<Prescription> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer<PrescriptionDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer<PrescriptionDto> pseudonymizer = Pseudonymizer.getDefault(userService);
 
 		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
@@ -205,8 +202,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<PrescriptionExportDto> pseudonymizer =
-			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<PrescriptionExportDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
 		pseudonymizer.pseudonymizeDtoCollection(PrescriptionExportDto.class, exportList, PrescriptionExportDto::getInJurisdiction, null);
 
 		return exportList;
@@ -237,7 +233,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	private void restorePseudonymizedDto(PrescriptionDto prescription, Prescription existingPrescription, PrescriptionDto existingPrescriptionDto) {
 		if (existingPrescription != null) {
-			Pseudonymizer<PrescriptionDto> pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			Pseudonymizer<PrescriptionDto> pseudonymizer = Pseudonymizer.getDefault(userService);
 			pseudonymizer.restorePseudonymizedValues(
 				PrescriptionDto.class,
 				prescription,

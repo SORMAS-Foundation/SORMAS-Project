@@ -11,6 +11,7 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
@@ -22,6 +23,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 
 	@EJB
 	protected UserService userService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	protected BaseTravelEntryService() {
 		super(TravelEntry.class, DeletableEntityType.TRAVEL_ENTRY);
@@ -63,6 +66,15 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 		Predicate filter = null;
 		if (checkJurisdictionAndLimitedDisease) {
 			filter = inJurisdictionOrOwned(qc);
+
+			if (filter != null) {
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					specialCaseAccessService
+						.createSpecialCaseAccessFilter(cb, qc.getJoins().getPersonJoins().getCaseJoins().getSpecialCaseAccesses()));
+			}
+
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(TravelEntry.DISEASE)));
 		}

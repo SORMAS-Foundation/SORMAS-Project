@@ -55,6 +55,7 @@ import de.symeda.sormas.api.caze.ContactTracingContactType;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
+import de.symeda.sormas.api.caze.ICase;
 import de.symeda.sormas.api.caze.InfectionSetting;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -94,6 +95,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -102,7 +104,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
-public class Case extends CoreAdo implements SormasToSormasShareable, HasExternalData {
+public class Case extends CoreAdo implements ICase, SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -240,6 +242,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String CREATION_VERSION = "creationVersion";
+	public static final String SPECIAL_CASE_ACCESSES = "specialCaseAccesses";
 
 	private Person person;
 	private String description;
@@ -417,6 +420,8 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private Long personId;
 
 	private Map<String, String> externalData;
+
+	private List<SpecialCaseAccess> specialCaseAccesses = new ArrayList<>(0);
 
 	public static Case build() {
 		Case caze = new Case();
@@ -1738,5 +1743,14 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
+	}
+
+	@OneToMany(mappedBy = SpecialCaseAccess.CAZE, fetch = FetchType.LAZY)
+	public List<SpecialCaseAccess> getSpecialCaseAccesses() {
+		return specialCaseAccesses;
+	}
+
+	public void setSpecialCaseAccesses(List<SpecialCaseAccess> specialCaseAccesses) {
+		this.specialCaseAccesses = specialCaseAccesses;
 	}
 }

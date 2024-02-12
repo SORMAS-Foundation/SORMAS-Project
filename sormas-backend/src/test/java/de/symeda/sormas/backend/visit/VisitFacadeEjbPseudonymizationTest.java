@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.visit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -36,6 +38,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -185,6 +188,25 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updated.getReportLat(), is(46.432));
 		assertThat(updated.getReportLon(), is(23.234));
 		assertThat(updated.getReportLatLonAccuracy(), is(20f));
+	}
+
+	@Test
+	public void testGetVisitOnCaseWithSpecialAccess() {
+		CaseDataDto caze = creator.createCase(user1.toReference(), person.toReference(), rdcf1);
+		VisitDto visit = creator.createVisit(caze.getDisease(), person.toReference());
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		assertThat(getVisitFacade().getByUuid(visit.getUuid()).isPseudonymized(), is(false));
+		assertThat(getVisitFacade().getByUuids(Collections.singletonList(visit.getUuid())).get(0).isPseudonymized(), is(false));
+		assertThat(getVisitFacade().getIndexList(new VisitCriteria().caze(caze.toReference()), null, null, null).get(0).isPseudonymized(), is(false));
+		assertThat(
+			getVisitFacade().getVisitsExportList(new VisitCriteria().caze(caze.toReference()), null, null, 0, Integer.MAX_VALUE, null)
+				.get(0)
+				.getFirstName(),
+			is(person.getFirstName()));
+		// user filter for case visits is not implemented
+		assertThat(getVisitFacade().getAllActiveVisitsAfter(new Date(0)), hasSize(0));
+		assertThat(getVisitFacade().getAllAfter(new Date(0)), hasSize(0));
 	}
 
 	private ContactVisit createVisit(UserDto visitUser, PersonDto person) {

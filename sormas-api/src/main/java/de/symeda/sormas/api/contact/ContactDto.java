@@ -149,7 +149,6 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
-	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caseIdExternalSystem;
@@ -612,12 +611,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	}
 
 	public ContactReferenceDto toReference() {
-		return new ContactReferenceDto(
-			getUuid(),
-			getPerson().getFirstName(),
-			getPerson().getLastName(),
-			getCaze() != null ? getCaze().getFirstName() : null,
-			getCaze() != null ? getCaze().getLastName() : null);
+		return new ContactReferenceDto(getUuid(), getPerson().getFirstName(), getPerson().getLastName(), getCaze());
 	}
 
 	public UserReferenceDto getResultingCaseUser() {

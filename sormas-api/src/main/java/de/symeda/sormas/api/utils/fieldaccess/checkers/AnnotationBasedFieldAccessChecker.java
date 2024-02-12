@@ -25,14 +25,17 @@ public abstract class AnnotationBasedFieldAccessChecker<T> implements FieldAcces
 	private final Class<? extends Annotation> fieldAnnotation;
 	private final Class<? extends Annotation> embeddedAnnotation;
 	private final boolean hasRight;
+	private final SpecialAccessCheck<T> specialAccessCheck;
 
 	protected AnnotationBasedFieldAccessChecker(
 		Class<? extends Annotation> fieldAnnotation,
 		Class<? extends Annotation> embeddedAnnotation,
-		boolean hasRight) {
+		final boolean hasRight,
+		SpecialAccessCheck<T> specialAccessCheck) {
 		this.fieldAnnotation = fieldAnnotation;
 		this.embeddedAnnotation = embeddedAnnotation;
 		this.hasRight = hasRight;
+		this.specialAccessCheck = specialAccessCheck;
 	}
 
 	@Override
@@ -55,6 +58,11 @@ public abstract class AnnotationBasedFieldAccessChecker<T> implements FieldAcces
 
 	@Override
 	public boolean hasRight(T object) {
-		return hasRight;
+		return hasRight || specialAccessCheck.hasSpecialAccess(object);
+	}
+
+	public interface SpecialAccessCheck<T> {
+
+		boolean hasSpecialAccess(T object);
 	}
 }

@@ -71,6 +71,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -93,6 +94,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public ImmunizationService() {
 		super(Immunization.class, DeletableEntityType.IMMUNIZATION);
@@ -560,8 +563,18 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		Predicate filter = inJurisdictionOrOwned(qc);
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		From<?, Immunization> immunization = qc.getRoot();
+		ImmunizationJoins joins = qc.getJoins();
+
+		if (filter != null) {
+			filter = CriteriaBuilderHelper.or(
+				cb,
+				filter,
+				specialCaseAccessService.createSpecialCaseAccessFilter(cb, joins.getPersonJoins().getCaseJoins().getSpecialCaseAccesses()));
+		}
+
 		filter = CriteriaBuilderHelper
-			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));
+			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, immunization.get(Immunization.DISEASE)));
 
 		return filter;
 	}

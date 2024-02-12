@@ -10,7 +10,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class CaseSelectionDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class CaseSelectionDto extends PseudonymizableIndexDto implements Serializable, Cloneable, ICase {
 
 	public static final String I18N_PREFIX = "CaseData";
 

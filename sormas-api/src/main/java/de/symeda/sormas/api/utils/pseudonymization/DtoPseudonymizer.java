@@ -173,7 +173,7 @@ public class DtoPseudonymizer<T> {
 		for (Field pseudonymizedField : pseudonymizableFields) {
 			try {
 				if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, rootDto, pseudonymizeMandatoryFields)
-					|| isPseudonymized(dto) && isFieldValuePseudonymized(pseudonymizedField, rootDto)) {
+					|| isPseudonymized(dto) && isFieldValuePseudonymized(pseudonymizedField, dto)) {
 					restoreOriginalValue(dto, pseudonymizedField, originalDto);
 				}
 			} catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
@@ -207,7 +207,7 @@ public class DtoPseudonymizer<T> {
 		return Pseudonymizable.class.isAssignableFrom(dto.getClass()) && ((Pseudonymizable) dto).isPseudonymized();
 	}
 
-	private boolean isFieldValuePseudonymized(Field pseudonymizedField, T dto)
+	private <X> boolean isFieldValuePseudonymized(Field pseudonymizedField, X dto)
 		throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 
 		ValuePseudonymizer<Object> pseudonymizer = (ValuePseudonymizer<Object>) getPseudonymizer(pseudonymizedField, null);

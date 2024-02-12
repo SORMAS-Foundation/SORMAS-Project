@@ -83,7 +83,6 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -485,7 +484,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		onPersonChanged(existingPerson, person, syncShares);
 
-		return toPseudonymizedDto(person, createPseudonymizer(), existingPerson == null || isAdoInJurisdiction(person));
+		return toPseudonymizedDto(person, createPseudonymizer(person), existingPerson == null || isAdoInJurisdiction(person));
 	}
 
 	/**
@@ -1386,8 +1385,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			persons.addAll(QueryHelper.getResultList(em, cq, new PersonIndexDtoResultTransformer(), null, null));
 		});
 
-		Pseudonymizer<PersonIndexDto> pseudonymizer =
-			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<PersonIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
 		pseudonymizer.pseudonymizeDtoCollection(PersonIndexDto.class, persons, PersonIndexDto::getInJurisdiction, null);
 
 		logger.debug(
@@ -1576,8 +1574,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		List<PersonExportDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<PersonExportDto> pseudonymizer =
-			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<PersonExportDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
 		pseudonymizer.pseudonymizeDtoCollection(PersonExportDto.class, persons, PersonExportDto::getInJurisdiction, null);
 
 		logger.debug(

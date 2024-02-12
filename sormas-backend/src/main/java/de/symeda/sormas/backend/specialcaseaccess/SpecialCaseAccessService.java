@@ -15,25 +15,50 @@
 
 package de.symeda.sormas.backend.specialcaseaccess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.immunization.IImmunization;
+import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
+import de.symeda.sormas.api.sample.ISample;
+import de.symeda.sormas.api.task.ITask;
+import de.symeda.sormas.api.travelentry.ITravelEntry;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.uuid.HasUuid;
+import de.symeda.sormas.api.visit.IVisit;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Stateless
 @LocalBean
@@ -78,12 +103,85 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 			.forEach(this::deletePermanent);
 	}
 
-	public boolean isGrantedToCurrentUser(CaseReferenceDto caze) {
+	public <T extends ICase> List<String> getCaseUuidsWithSpecialAccess(Collection<T> cases) {
+		return getUuidsWithSpecialAccess(Case.class, r -> r, cases);
+	}
 
-		return exists(
-			(cb, from, cq) -> cb.and(
-				cb.equal(from.join(SpecialCaseAccess.CAZE, JoinType.LEFT).get(Case.UUID), caze.getUuid()),
-				cb.equal(from.get(SpecialCaseAccess.ASSIGNED_TO), getCurrentUser()),
-				cb.greaterThanOrEqualTo(from.get(SpecialCaseAccess.END_DATE_TIME), new Date())));
+	public List<String> getSurveillanceReportUuidsWithSpecialAccess(Collection<SurveillanceReport> cases) {
+		return getUuidsWithSpecialAccess(SurveillanceReport.class, r -> r.join(SurveillanceReport.CAZE), cases);
+	}
+
+	public List<String> getImmunizationUuidsWithSpecialAccess(Collection<? extends IImmunization> immunizations) {
+		return getUuidsWithSpecialAccess(Immunization.class, r -> r.join(Immunization.PERSON).join(Person.CASES), immunizations);
+	}
+
+	public List<String> getSampleUuidsWithSpecialAccess(Collection<? extends ISample> samples) {
+		return getUuidsWithSpecialAccess(Sample.class, r -> r.join(Sample.ASSOCIATED_CASE), samples);
+	}
+
+	public List<String> getPathogenTestUuidsWithSpecialAccess(Collection<? extends PathogenTest> tests) {
+		return getUuidsWithSpecialAccess(PathogenTest.class, r -> r.join(PathogenTest.SAMPLE).join(Sample.ASSOCIATED_CASE), tests);
+	}
+
+	public List<String> getTaskUuidsWithSpecialAccess(Collection<? extends ITask> tasks) {
+		return getUuidsWithSpecialAccess(Task.class, r -> r.join(Task.CAZE), tasks);
+	}
+
+	public List<String> getTravelEntryUuidsWithSpecialAccess(Collection<? extends ITravelEntry> entries) {
+		return getUuidsWithSpecialAccess(TravelEntry.class, r -> r.join(TravelEntry.PERSON).join(Person.CASES), entries);
+	}
+
+	public List<String> getVaccinationUuidsWithSpecialAccess(List<Vaccination> vaccinations) {
+		return getUuidsWithSpecialAccess(
+			Vaccination.class,
+			r -> r.join(Vaccination.IMMUNIZATION).join(Immunization.PERSON).join(Person.CASES),
+			vaccinations);
+	}
+
+	public List<String> getVisitUuidsWithSpecialAccess(Collection<? extends IVisit> visits) {
+		return getUuidsWithSpecialAccess(Visit.class, r -> r.join(Visit.CAZE), visits);
+	}
+
+	public List<String> getManualMessageLogUuidsWithSpecialAccess(Collection<ManualMessageLogIndexDto> manualMessageLogs) {
+		return getUuidsWithSpecialAccess(
+			ManualMessageLog.class,
+			r -> r.join(ManualMessageLog.RECIPIENT_PERSON).join(Person.CASES),
+			manualMessageLogs);
+	}
+
+	private <T extends AbstractDomainObject> List<String> getUuidsWithSpecialAccess(
+		Class<T> entityType,
+		Function<Root<T>, From<?, Case>> joinCase,
+		Collection<? extends HasUuid> entities) {
+
+		if (entities.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<String> result = new ArrayList<>(entities.size());
+
+		IterableHelper.executeBatched(entities, ModelConstants.PARAMETER_LIMIT, batch -> {
+			final CriteriaBuilder cb = em.getCriteriaBuilder();
+			final CriteriaQuery<String> cq = cb.createQuery(String.class);
+			final Root<T> from = cq.from(entityType);
+
+			Join<Case, SpecialCaseAccess> specialCaseAccess = joinCase.apply(from).join(Case.SPECIAL_CASE_ACCESSES, JoinType.LEFT);
+
+			cq.select(from.get(AbstractDomainObject.UUID));
+			cq.where(
+				cb.and(
+					from.get(AbstractDomainObject.UUID).in(batch.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
+					createSpecialCaseAccessFilter(cb, specialCaseAccess)));
+
+			result.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return result;
+	}
+
+	public Predicate createSpecialCaseAccessFilter(CriteriaBuilder cb, From<?, SpecialCaseAccess> from) {
+		return cb.and(
+			cb.equal(from.get(SpecialCaseAccess.ASSIGNED_TO), getCurrentUser()),
+			cb.greaterThanOrEqualTo(from.get(SpecialCaseAccess.END_DATE_TIME), new Date()));
 	}
 }

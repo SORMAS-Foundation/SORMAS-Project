@@ -43,7 +43,7 @@ public class TaskIndexDtoResultTransformer implements ResultTransformer {
                 (String) tuple[++index], (String) tuple[++index], (Disease) tuple[++index], (String) tuple[++index],
                 (EventStatus) tuple[++index], (EventInvestigationStatus) tuple[++index], (Date) tuple[++index], 
                 (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], 
-                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], 
+                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], 
                 (String) tuple[++index], (String) tuple[++index],
                 (TaskType) tuple[++index], (TaskPriority) tuple[++index], (Date) tuple[++index], (Date) tuple[++index],
                 (TaskStatus) tuple[++index], (Disease) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],

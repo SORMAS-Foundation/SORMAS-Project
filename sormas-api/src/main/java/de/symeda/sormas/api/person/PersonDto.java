@@ -352,7 +352,6 @@ public class PersonDto extends PseudonymizableDto {
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
-	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

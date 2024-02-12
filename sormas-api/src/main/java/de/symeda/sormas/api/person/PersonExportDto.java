@@ -143,7 +143,6 @@ public class PersonExportDto extends AbstractUuidDto {
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
-	@SensitiveData
 	private String externalId;
 	private String externalToken;
 	private String internalToken;

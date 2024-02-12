@@ -22,28 +22,25 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.CONTACT_TRACING)
-public class ContactReferenceDto extends ReferenceDto {
+public class ContactReferenceDto extends ReferenceDto implements IContact {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	@EmbeddedPersonalData
-	@EmbeddedSensitiveData
 	private PersonName contactName;
-	@EmbeddedPersonalData
-	@EmbeddedSensitiveData
-	private PersonName caseName;
+	private CaseReferenceDto caze;
 
 	public ContactReferenceDto() {
 
@@ -53,14 +50,11 @@ public class ContactReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
+	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName, CaseReferenceDto caze) {
 
 		setUuid(uuid);
 		this.contactName = new PersonName(contactFirstName, contactLastName);
-
-		if (caseFirstName != null && caseLastName != null) {
-			this.caseName = new PersonName(caseFirstName, caseLastName);
-		}
+		this.caze = caze;
 	}
 
 	@Override
@@ -68,8 +62,8 @@ public class ContactReferenceDto extends ReferenceDto {
 		return buildCaption(
 			contactName.firstName,
 			contactName.lastName,
-			caseName != null ? caseName.firstName : null,
-			caseName != null ? caseName.lastName : null,
+			caze != null ? caze.getFirstName() : null,
+			caze != null ? caze.getLastName() : null,
 			getUuid(),
 			true);
 	}
@@ -79,8 +73,8 @@ public class ContactReferenceDto extends ReferenceDto {
 		return buildCaption(
 			contactName.firstName,
 			contactName.lastName,
-			caseName != null ? caseName.firstName : null,
-			caseName != null ? caseName.lastName : null,
+			caze != null ? caze.getFirstName() : null,
+			caze != null ? caze.getLastName() : null,
 			getUuid(),
 			true);
 	}
@@ -89,8 +83,8 @@ public class ContactReferenceDto extends ReferenceDto {
 		return contactName;
 	}
 
-	public PersonName getCaseName() {
-		return caseName;
+	public CaseReferenceDto getCaze() {
+		return caze;
 	}
 
 	public static String buildCaption(
@@ -163,11 +157,7 @@ public class ContactReferenceDto extends ReferenceDto {
 		}
 	}
 
-	public void setContactName(PersonName contactName) {
-		this.contactName = contactName;
-	}
-
-	public void setCaseName(PersonName caseName) {
-		this.caseName = caseName;
+	public static CaseReferenceDto getCazeNullable(ContactReferenceDto contactReference) {
+		return contactReference != null ? contactReference.getCaze() : null;
 	}
 }

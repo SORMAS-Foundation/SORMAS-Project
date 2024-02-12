@@ -51,6 +51,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -351,6 +352,21 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedContact.getReportLon(), is(23.234));
 
 		assertThat(updatedContact.getReportLatLonAccuracy(), is(20F));
+	}
+
+	@Test
+	public void testGetContactOfCaseWithSpecialAccess() {
+
+		CaseDataDto caze = createCase(user1, rdcf1);
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		// contact of case on other jurisdiction --> should be pseudonymized
+		ContactDto contact = createContact(user1, caze, rdcf1);
+
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
+		assertThat(savedContact.isPseudonymized(), is(true));
+		assertThat(savedContact.getCaze().getName(), is("James SMITH"));
+		assertThat(getContactFacade().getByUuids(Collections.singletonList(contact.getUuid())).get(0).getCaze().getName(), is("James SMITH"));
 	}
 
 	private void assertNotPseudonymized(ContactDto contact, boolean caseInJurisdiction) {

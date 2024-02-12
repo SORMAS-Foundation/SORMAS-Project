@@ -34,6 +34,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.task.ITask;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -48,7 +49,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-public class Task extends AbstractDomainObject {
+public class Task extends AbstractDomainObject implements ITask {
 
 	private static final long serialVersionUID = -4754578341242164661L;
 

@@ -39,6 +39,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.visit.IVisit;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -48,7 +49,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-public class Visit extends AbstractDomainObject {
+public class Visit extends AbstractDomainObject implements IVisit {
 
 	private static final long serialVersionUID = -5731538672268784234L;
 

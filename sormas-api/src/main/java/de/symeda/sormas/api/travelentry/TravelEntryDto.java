@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.TRAVEL_ENTRIES)
-public class TravelEntryDto extends PseudonymizableDto {
+public class TravelEntryDto extends PseudonymizableDto implements ITravelEntry{
 
 	private static final long serialVersionUID = 4503438472222204446L;
 
@@ -98,9 +98,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private String diseaseVariantDetails;
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
+	@SensitiveData
 	private CommunityReferenceDto responsibleCommunity;
 	private RegionReferenceDto pointOfEntryRegion;
 	private DistrictReferenceDto pointOfEntryDistrict;
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)

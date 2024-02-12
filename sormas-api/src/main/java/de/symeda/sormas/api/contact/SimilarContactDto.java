@@ -140,6 +140,6 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 	}
 
 	public ContactReferenceDto toReference() {
-		return new ContactReferenceDto(getUuid(), getFirstName(), getLastName(), null, null);
+		return new ContactReferenceDto(getUuid(), getFirstName(), getLastName(), getCaze());
 	}
 }

@@ -36,7 +36,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class VisitExportDto extends AbstractUuidDto {
+public class VisitExportDto extends AbstractUuidDto implements IVisit {
 
 	private static final long serialVersionUID = 6432390815000039126L;
 

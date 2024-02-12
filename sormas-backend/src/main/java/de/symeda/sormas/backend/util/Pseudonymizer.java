@@ -24,34 +24,68 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.pseudonymization.DtoPseudonymizer;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
-public class Pseudonymizer<T> extends DtoPseudonymizer<T> {
+public final class Pseudonymizer<T> extends DtoPseudonymizer<T> {
 
-	public static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck) {
-		return new Pseudonymizer<>(createDefaultFieldAccessCheckers(true, rightCheck), createDefaultFieldAccessCheckers(false, rightCheck), "", true);
+	public static <T> Pseudonymizer<T> getDefault(UserService userService) {
+		return getDefault(userService::hasRight, noopSpecialAccessCheck());
 	}
 
-	public static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck, String stringValuePlaceholder) {
+	public static <T> Pseudonymizer<T> getDefault(UserService userService, SpecialAccessCheck<T> specialAccessCheck) {
+		return getDefault(userService::hasRight, specialAccessCheck);
+	}
+
+	public static <T> Pseudonymizer<T> getDefault(UserService userService, SpecialAccessCheck<T> specialAccessCheck, String stringValuePlaceholder) {
+		return getDefault(userService::hasRight, specialAccessCheck, stringValuePlaceholder);
+	}
+
+	public static <T> Pseudonymizer<T> getDefault(UserService userService, String stringValuePlaceholder) {
+		return getDefault(userService::hasRight, noopSpecialAccessCheck(), stringValuePlaceholder);
+	}
+
+	private static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
 		return new Pseudonymizer<>(
-			createDefaultFieldAccessCheckers(true, rightCheck),
-			createDefaultFieldAccessCheckers(false, rightCheck),
+			createDefaultFieldAccessCheckers(true, rightCheck, specialAccessCheck),
+			createDefaultFieldAccessCheckers(false, rightCheck, specialAccessCheck),
+			"",
+			true);
+	}
+
+	private static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck, String stringValuePlaceholder) {
+		return new Pseudonymizer<>(
+			createDefaultFieldAccessCheckers(true, rightCheck, specialAccessCheck),
+			createDefaultFieldAccessCheckers(false, rightCheck, specialAccessCheck),
 			stringValuePlaceholder,
 			true);
 	}
 
-	public static <T> Pseudonymizer<T> getDefaultWithInaccessibleValuePlaceHolder(RightCheck rightCheck) {
-		return getDefault(rightCheck, I18nProperties.getCaption(Captions.inaccessibleValue));
+	public static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(UserService userService) {
+		return getDefaultWithPlaceHolder(userService, noopSpecialAccessCheck());
+	}
+
+	public static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(UserService userService, SpecialAccessCheck<T> specialAccessCheck) {
+		return getDefaultWithPlaceHolder(userService::hasRight, specialAccessCheck);
+	}
+
+	private static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
+		return getDefault(rightCheck, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue));
 	}
 
 	public static <T> Pseudonymizer<T> getDefaultNoCheckers(boolean pseudonymizeMandatoryFields) {
-		return new Pseudonymizer<>(new FieldAccessCheckers<T>(), new FieldAccessCheckers<T>(), "", pseudonymizeMandatoryFields);
+		return new Pseudonymizer<>(new FieldAccessCheckers<>(), new FieldAccessCheckers<>(), "", pseudonymizeMandatoryFields);
 	}
 
-	public Pseudonymizer(
+	private static <T> SpecialAccessCheck<T> noopSpecialAccessCheck() {
+		return t -> false;
+	}
+
+	private Pseudonymizer(
 		FieldAccessCheckers<T> inJurisdictionCheckers,
 		FieldAccessCheckers<T> outsideJurisdictionCheckers,
 		String stringValuePlaceholder,
@@ -124,13 +158,16 @@ public class Pseudonymizer<T> extends DtoPseudonymizer<T> {
 		return true;
 	}
 
-	private static <T> FieldAccessCheckers<T> createDefaultFieldAccessCheckers(boolean inJurisdiction, final RightCheck rightCheck) {
+	private static <T> FieldAccessCheckers<T> createDefaultFieldAccessCheckers(
+		boolean inJurisdiction,
+		final RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck) {
 		PersonalDataFieldAccessChecker<T> personalFieldAccessChecker = inJurisdiction
-			? PersonalDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight)
-			: PersonalDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight);
+			? PersonalDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight, specialAccessCheck)
+			: PersonalDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight, specialAccessCheck);
 		SensitiveDataFieldAccessChecker<T> sensitiveFieldAccessChecker = inJurisdiction
-			? SensitiveDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight)
-			: SensitiveDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight);
+			? SensitiveDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight, specialAccessCheck)
+			: SensitiveDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight, specialAccessCheck);
 
 		return FieldAccessCheckers.withCheckers(Arrays.asList(personalFieldAccessChecker, sensitiveFieldAccessChecker));
 	}

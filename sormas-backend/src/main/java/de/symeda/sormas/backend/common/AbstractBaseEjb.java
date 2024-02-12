@@ -16,7 +16,10 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -92,7 +95,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	public DTO toPseudonymizedDto(ADO source) {
-		return toPseudonymizedDto(source, createPseudonymizer());
+		return toPseudonymizedDto(source, createPseudonymizer(source));
 	}
 
 	public DTO toPseudonymizedDto(ADO source, Pseudonymizer<DTO> pseudonymizer) {
@@ -121,7 +124,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer<DTO> pseudonymizer = createPseudonymizer();
+		Pseudonymizer<DTO> pseudonymizer = createPseudonymizer(adoList);
 		List<Long> jurisdictionIds = service.getInJurisdictionIds(adoList);
 
 		return adoList.stream()
@@ -130,11 +133,27 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity) {
-		restorePseudonymizedDto(dto, existingDto, entity, createPseudonymizer());
+		restorePseudonymizedDto(dto, existingDto, entity, createPseudonymizer(entity));
 	}
 
-	protected Pseudonymizer<DTO> createPseudonymizer() {
-		return Pseudonymizer.getDefault(userService::hasRight);
+	protected Pseudonymizer<DTO> createPseudonymizer(ADO ado) {
+		return createPseudonymizer(ado != null ? Collections.singletonList(ado) : Collections.emptyList());
+	}
+
+	protected Pseudonymizer<DTO> createPseudonymizer(List<ADO> adoList) {
+		return Pseudonymizer.getDefault(userService);
+	}
+
+	protected <T> Pseudonymizer<T> createGenericPseudonymizer() {
+		return Pseudonymizer.getDefault(userService);
+	}
+
+	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer() {
+		return Pseudonymizer.getDefault(userService, I18nProperties.getCaption(Captions.inaccessibleValue));
+	}
+
+	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer(SpecialAccessCheck<T> specialAccessCheck) {
+		return Pseudonymizer.getDefault(userService, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue));
 	}
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);

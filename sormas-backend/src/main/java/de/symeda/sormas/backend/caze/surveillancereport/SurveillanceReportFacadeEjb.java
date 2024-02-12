@@ -63,6 +63,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseF
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -99,6 +100,8 @@ public class SurveillanceReportFacadeEjb
 	private ManagedScheduledExecutorService executorService;
 	@EJB
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public SurveillanceReportFacadeEjb() {
 		super();
@@ -193,14 +196,24 @@ public class SurveillanceReportFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(SurveillanceReport source, SurveillanceReportDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected Pseudonymizer<SurveillanceReportDto> createPseudonymizer(List<SurveillanceReport> surveillanceReports) {
+		List<String> withSpecialAccess = specialCaseAccessService.getSurveillanceReportUuidsWithSpecialAccess(surveillanceReports);
+		return Pseudonymizer.getDefault(userService, r -> withSpecialAccess.contains(r.getUuid()));
+	}
+
+	@Override
+	protected void pseudonymizeDto(
+		SurveillanceReport source,
+		SurveillanceReportDto dto,
+		Pseudonymizer<SurveillanceReportDto> pseudonymizer,
+		boolean inJurisdiction) {
 		User currentUser = userService.getCurrentUser();
 
 		pseudonymizer.pseudonymizeDto(
 			SurveillanceReportDto.class,
 			dto,
 			inJurisdiction,
-			(reportDto) -> pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, reportDto::setReportingUser));
+			reportDto -> pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, reportDto::setReportingUser, reportDto));
 	}
 
 	@Override
@@ -208,7 +221,7 @@ public class SurveillanceReportFacadeEjb
 		SurveillanceReportDto dto,
 		SurveillanceReportDto existingDto,
 		SurveillanceReport existingReport,
-		Pseudonymizer pseudonymizer) {
+		Pseudonymizer<SurveillanceReportDto> pseudonymizer) {
 		if (existingDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(existingReport);
 			User currentUser = userService.getCurrentUser();
@@ -271,7 +284,7 @@ public class SurveillanceReportFacadeEjb
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSurveillanceReportNotEditable));
 		}
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<SurveillanceReportDto> pseudonymizer = createPseudonymizer(existingReport);
 		restorePseudonymizedDto(dto, existingReportDto, existingReport, pseudonymizer);
 
 		validate(dto);

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.manualmessagelog;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -27,12 +28,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
+import org.jetbrains.annotations.NotNull;
+
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogCriteria;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -50,10 +53,12 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	@RightsAllowed({
-			UserRight._SEND_MANUAL_EXTERNAL_MESSAGES,
-			UserRight._EXTERNAL_EMAIL_SEND})
+		UserRight._SEND_MANUAL_EXTERNAL_MESSAGES,
+		UserRight._EXTERNAL_EMAIL_SEND })
 	public List<ManualMessageLogIndexDto> getIndexList(ManualMessageLogCriteria criteria) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -63,17 +68,17 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 		ManualMessageLogJoins joins = new ManualMessageLogJoins(root);
 
 		cq.multiselect(
-				root.get(ManualMessageLog.UUID),
-				root.get(ManualMessageLog.MESSAGE_TYPE),
-				root.get(ManualMessageLog.SENT_DATE),
-				joins.getSendingUser().get(User.UUID),
-				joins.getSendingUser().get(User.FIRST_NAME),
-				joins.getSendingUser().get(User.LAST_NAME),
-				root.get(ManualMessageLog.EMAIL_ADDRESS),
-				root.get(ManualMessageLog.USED_TEMPLATE),
-				root.get(ManualMessageLog.ATTACHED_DOCUMENTS),
-				JurisdictionHelper.booleanSelector(cb, manualMessageLogService.inJurisdictionOrOwned(cq, cb, root)),
-				JurisdictionHelper.booleanSelector(cb, userService.inJurisdictionOrOwned(cb, joins.getSendungUserJoins())));
+			root.get(ManualMessageLog.UUID),
+			root.get(ManualMessageLog.MESSAGE_TYPE),
+			root.get(ManualMessageLog.SENT_DATE),
+			joins.getSendingUser().get(User.UUID),
+			joins.getSendingUser().get(User.FIRST_NAME),
+			joins.getSendingUser().get(User.LAST_NAME),
+			root.get(ManualMessageLog.EMAIL_ADDRESS),
+			root.get(ManualMessageLog.USED_TEMPLATE),
+			root.get(ManualMessageLog.ATTACHED_DOCUMENTS),
+			JurisdictionHelper.booleanSelector(cb, manualMessageLogService.inJurisdictionOrOwned(cq, cb, root)),
+			JurisdictionHelper.booleanSelector(cb, userService.inJurisdictionOrOwned(cb, joins.getSendungUserJoins())));
 
 		Predicate filter = manualMessageLogService.buildCriteriaFilter(criteria, root, cb);
 		if (filter != null) {
@@ -87,17 +92,27 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 
 		List<ManualMessageLogIndexDto> resultList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<ManualMessageLogIndexDto> pseudonymizer = createPseudonymizerWithPlaceholder(resultList);
 		pseudonymizer.pseudonymizeDtoCollection(
-				ManualMessageLogIndexDto.class,
-				resultList,
-				ManualMessageLogIndexDto::isInJurisdiction,
-				(m, inJurisdiction) -> {
-					pseudonymizer.pseudonymizeUser(m.isSenderInJurisdiction(), m::setSendingUser);
-				});
+			ManualMessageLogIndexDto.class,
+			resultList,
+			ManualMessageLogIndexDto::isInJurisdiction,
+			(m, inJurisdiction) -> pseudonymizer.pseudonymizeUser(m.isSenderInJurisdiction(), m::setSendingUser, m));
 
 		return resultList;
 	}
+
+	@NotNull
+	private Pseudonymizer<ManualMessageLogIndexDto> createPseudonymizerWithPlaceholder(Collection<ManualMessageLogIndexDto> manualMessageLogs) {
+		return Pseudonymizer.getDefaultWithPlaceHolder(userService, getSpecialAccessChecker(manualMessageLogs));
+	}
+
+	private SpecialAccessCheck<ManualMessageLogIndexDto> getSpecialAccessChecker(Collection<ManualMessageLogIndexDto> manualMessageLogs) {
+		List<String> specialAccessUuids = specialCaseAccessService.getManualMessageLogUuidsWithSpecialAccess(manualMessageLogs);
+
+		return i -> specialAccessUuids.contains(i.getUuid());
+	}
+
 
 	@LocalBean
 	@Stateless

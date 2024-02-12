@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +36,8 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -233,6 +236,21 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 		assertThat(updatedTest.getLabUser().getUuid(), is(user2.getUuid()));
 	}
 
+	@Test
+	public void testPathogenTestOnSampleOfCasWithSpecialAccess() {
+		Facility lab = getFacilityService().getByUuid(creator.createFacility("Lab", rdcf1.region, rdcf1.district, rdcf1.community).getUuid());
+		loginWith(user2);
+		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+		SampleDto sample = creator.createSample(caze.toReference(), user1.toReference(), lab);
+
+		PathogenTestDto pathogenTest = createPathogenTest(lab, sample, user1);
+
+		assertNotPseudonymized(getPathogenTestFacade().getByUuid(pathogenTest.getUuid()), user1.toReference());
+		assertNotPseudonymized(getPathogenTestFacade().getByUuids(Collections.singletonList(pathogenTest.getUuid())).get(0), user1.toReference());
+		assertNotPseudonymized(getPathogenTestFacade().getAllActivePathogenTestsAfter(new Date(0)).get(0), user1.toReference());
+	}
+
 	private PathogenTestDto createPathogenTest(Facility lab, SampleDto sample, UserDto labUser) {
 		return creator.createPathogenTest(
 			sample.toReference(),
@@ -250,11 +268,15 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 			});
 	}
 
-	private void assertNotPseudonymized(PathogenTestDto pathogenTes) {
+	private void assertNotPseudonymized(PathogenTestDto pathogenTes, UserReferenceDto labUser) {
 		assertThat(pathogenTes.getLab().getCaption(), is("Lab"));
 		assertThat(pathogenTes.getLabDetails(), is("Test lab details"));
-		assertThat(pathogenTes.getLabUser().getUuid(), is(user2.getUuid()));
+		assertThat(pathogenTes.getLabUser().getUuid(), is(labUser.getUuid()));
 		assertThat(pathogenTes.getTestTypeText(), is("Test type text"));
+	}
+
+	private void assertNotPseudonymized(PathogenTestDto pathogenTes) {
+		assertNotPseudonymized(pathogenTes, user2.toReference());
 	}
 
 	private void assertPseudonymized(PathogenTestDto pathogenTes) {

@@ -28,7 +28,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudeP
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class MapCaseDto extends AbstractUuidDto {
+public class MapCaseDto extends AbstractUuidDto implements ICase {
 
 	private static final long serialVersionUID = -3021332968056368431L;
 

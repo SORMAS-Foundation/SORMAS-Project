@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.travelentry;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -28,11 +29,11 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
+import de.symeda.sormas.api.travelentry.ITravelEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -58,6 +60,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryListService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
@@ -91,6 +94,8 @@ public class TravelEntryFacadeEjb
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public TravelEntryFacadeEjb() {
 	}
@@ -208,18 +213,33 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected Pseudonymizer<TravelEntryDto> createPseudonymizer(List<TravelEntry> travelEntries) {
+		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(travelEntries));
+	}
+
+	private <T extends ITravelEntry> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends ITravelEntry> entries) {
+		List<String> specialAccessUuids = specialCaseAccessService.getTravelEntryUuidsWithSpecialAccess(entries);
+
+		return t -> specialAccessUuids.contains(t.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer<TravelEntryDto> pseudonymizer, boolean inJurisdiction) {
 
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser, dto);
 			});
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry entity, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(
+		TravelEntryDto dto,
+		TravelEntryDto existingDto,
+		TravelEntry entity,
+		Pseudonymizer<TravelEntryDto> pseudonymizer) {
 		if (existingDto != null) {
 			final boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
 			final User currentUser = userService.getCurrentUser();
@@ -232,7 +252,7 @@ public class TravelEntryFacadeEjb
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		List<TravelEntryIndexDto> resultList = service.getIndexList(criteria, first, max, sortProperties);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<TravelEntryIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(getSpecialAccessChecker(resultList));
 		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, resultList, TravelEntryIndexDto::isInJurisdiction, null);
 
 		return resultList;
@@ -288,7 +308,7 @@ public class TravelEntryFacadeEjb
 		}
 		List<TravelEntryListEntryDto> entries = travelEntryListService.getEntriesList(personId, caseId, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<TravelEntryListEntryDto> pseudonymizer = createGenericPlaceholderPseudonymizer(getSpecialAccessChecker(entries));
 		pseudonymizer.pseudonymizeDtoCollection(TravelEntryListEntryDto.class, entries, TravelEntryListEntryDto::isInJurisdiction, null);
 
 		return entries;

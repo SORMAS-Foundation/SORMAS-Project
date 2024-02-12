@@ -29,6 +29,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ICase;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -48,7 +49,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class SampleExportDto extends AbstractUuidDto {
+public class SampleExportDto extends AbstractUuidDto implements ISample {
 
 	private static final long serialVersionUID = -3027326087594387560L;
 
@@ -175,7 +176,7 @@ public class SampleExportDto extends AbstractUuidDto {
 				caseFacilityDetails);
 		}
 		if (contactUuid != null) {
-			this.associatedContact = new ContactReferenceDto(contactUuid, contactPersonFirstName, contactPersonLastName, null, null);
+			this.associatedContact = new ContactReferenceDto(contactUuid, contactPersonFirstName, contactPersonLastName, null);
 			this.contactRegion = contactRegion;
 			this.contactDistrict = contactDistrict;
 			this.contactCommunity = contactCommunity;
@@ -851,6 +852,11 @@ public class SampleExportDto extends AbstractUuidDto {
 
 	public SampleJurisdictionFlagsDto getSampleJurisdictionFlagsDto() {
 		return sampleJurisdictionFlagsDto;
+	}
+
+	@Override
+	public ICase getAssociatedCase() {
+		return new CaseReferenceDto(caseUuid);
 	}
 
 	public static class SampleExportMaterial implements Serializable {
