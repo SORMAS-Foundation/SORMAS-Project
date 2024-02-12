@@ -18,9 +18,10 @@ package de.symeda.sormas.api;
 import java.util.Arrays;
 import java.util.List;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
-
+@AuditedClass
 public enum Disease
 	implements
 	StatisticsGroupingKey {
