@@ -66,6 +66,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;

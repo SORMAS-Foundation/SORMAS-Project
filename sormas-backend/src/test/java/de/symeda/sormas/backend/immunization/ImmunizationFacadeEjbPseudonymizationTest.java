@@ -12,9 +12,6 @@ import java.util.HashMap;
 
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.immunization.ImmunizationCriteria;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.utils.DateHelper;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -22,14 +19,17 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
@@ -224,30 +224,39 @@ public class ImmunizationFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 
     @Test
     public void testGetImmunizationOutsideJurisdiction() {
-        CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson().toReference(), rdcf1);
-        ImmunizationDto immunization = createImmunization(caze, user1, rdcf1);
+		loginWith(nationalAdmin);
 
-        assertPseudonymized(getImmunizationFacade().getByUuid(immunization.getUuid()), rdcf1);
-        assertPseudonymized(getImmunizationFacade().getByUuids(Collections.singletonList(immunization.getUuid())).get(0), rdcf1);
+		CaseDataDto caze = creator.createCase(nationalUser.toReference(), creator.createPerson().toReference(), rdcf2);
+		ImmunizationDto immunization = createImmunization(caze, nationalUser, rdcf2);
+
+		loginWith(districtUser1);
+
+		assertPseudonymized(getImmunizationFacade().getByUuid(immunization.getUuid()), rdcf2);
+		assertPseudonymized(getImmunizationFacade().getByUuids(Collections.singletonList(immunization.getUuid())).get(0), rdcf2);
         assertThat(getImmunizationFacade().getAllAfter(new Date(0)), hasSize(0));
         assertThat(getImmunizationFacade().getIndexList(new ImmunizationCriteria(), null, null, null), hasSize(0));
     }
 
     @Test
-    public void testGetReportOfCaseWithSpecialAccess() {
-        CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson().toReference(), rdcf1);
-        ImmunizationDto immunization = createImmunization(caze, user1, rdcf1);
-        creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+	public void testGetImmuniztionOfCaseWithSpecialAccess() {
+		loginWith(nationalAdmin);
 
-        assertNotPseudonymized(getImmunizationFacade().getByUuid(immunization.getUuid()), user1, rdcf1);
-        assertNotPseudonymized(getImmunizationFacade().getByUuids(Collections.singletonList(immunization.getUuid())).get(0), user1, rdcf1);
-        assertNotPseudonymized(getImmunizationFacade().getAllAfter(new Date(0)).get(0), user1, rdcf1);
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf2);
+		ImmunizationDto immunization = createImmunization(caze, nationalAdmin, rdcf2);
+		creator
+			.createSpecialCaseAccess(caze.toReference(), nationalUser.toReference(), districtUser1.toReference(), DateHelper.addDays(new Date(), 1));
+
+		loginWith(districtUser1);
+
+		assertNotPseudonymized(getImmunizationFacade().getByUuid(immunization.getUuid()), nationalAdmin, rdcf2);
+		assertNotPseudonymized(getImmunizationFacade().getByUuids(Collections.singletonList(immunization.getUuid())).get(0), nationalAdmin, rdcf2);
+		assertNotPseudonymized(getImmunizationFacade().getAllAfter(new Date(0)).get(0), nationalAdmin, rdcf2);
         assertThat(getImmunizationFacade().getIndexList(new ImmunizationCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
     }
 
     private void assertPseudonymized(ImmunizationDto immunization, TestDataCreator.RDCF rdcf) {
         assertThat(immunization.isPseudonymized(), is(true));
-        assertThat(immunization.getReportingUser(), is(nullValue()));
+		assertThat(immunization.getReportingUser(), is(nationalUser));
         assertThat(immunization.getDisease(), is(Disease.CORONAVIRUS));
         assertThat(immunization.getMeansOfImmunization(), is(MeansOfImmunization.OTHER));
         assertThat(immunization.getMeansOfImmunizationDetails(), is(""));
@@ -260,6 +269,7 @@ public class ImmunizationFacadeEjbPseudonymizationTest extends AbstractBeanTest 
     }
 
     private void assertNotPseudonymized(ImmunizationDto immunization, UserDto user, TestDataCreator.RDCF rdcf) {
+		assertThat(immunization.isPseudonymized(), is(false));
         assertThat(immunization.getReportingUser(), is(user.toReference()));
         assertThat(immunization.getDisease(), is(Disease.CORONAVIRUS));
         assertThat(immunization.getMeansOfImmunization(), is(MeansOfImmunization.OTHER));

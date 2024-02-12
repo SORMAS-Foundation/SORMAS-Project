@@ -12,21 +12,21 @@ import java.util.HashMap;
 
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
-import de.symeda.sormas.api.utils.DateHelper;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
@@ -37,6 +37,8 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 
 	private UserDto nationalUser;
+
+	private UserDto districtUser1;
 
 	@Override
 	public void init() {
@@ -51,6 +53,14 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			"Nat",
 			"User",
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		districtUser1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 	}
 
 	@Test
@@ -74,23 +84,17 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		// travel entry within limited user's jurisdiction
 		PersonDto person1 = creator.createPerson("John", "Doe");
-		TravelEntryDto travelEntry1 = creator.createTravelEntry(
-				person1.toReference(),
-				nationalUser.toReference(), rdcf1, v ->{
-					v.setDisease(Disease.CORONAVIRUS);
-					v.setQuarantineHomePossibleComment("pacient can stay home");
-				}
-		);
+		TravelEntryDto travelEntry1 = creator.createTravelEntry(person1.toReference(), nationalUser.toReference(), rdcf1, v -> {
+			v.setDisease(Disease.CORONAVIRUS);
+			v.setQuarantineHomePossibleComment("pacient can stay home");
+		});
 
 		// travel entry outside limited user's jurisdiction
 		PersonDto person2 = creator.createPerson("John", "Doe");
-		TravelEntryDto travelEntry2 = creator.createTravelEntry(
-				person2.toReference(),
-				nationalUser.toReference(),rdcf2, v -> {
-					v.setDisease(Disease.CORONAVIRUS);
-					v.setQuarantineHomePossibleComment("pacient can stay home second");
-				}
-		);
+		TravelEntryDto travelEntry2 = creator.createTravelEntry(person2.toReference(), nationalUser.toReference(), rdcf2, v -> {
+			v.setDisease(Disease.CORONAVIRUS);
+			v.setQuarantineHomePossibleComment("pacient can stay home second");
+		});
 
 		loginWith(nationalAdmin);
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
@@ -98,23 +102,17 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		// travel entry created by limited user within limited user's jurisdiction
 		PersonDto person3 = creator.createPerson("John", "Doe");
-		TravelEntryDto travelEntry3 = creator.createTravelEntry(
-				person3.toReference(),
-				nationalUser.toReference(), rdcf1, v -> {
-					v.setDisease(Disease.CORONAVIRUS);
-					v.setQuarantineHomePossibleComment("pacient can stay home");
-				}
-		);
+		TravelEntryDto travelEntry3 = creator.createTravelEntry(person3.toReference(), nationalUser.toReference(), rdcf1, v -> {
+			v.setDisease(Disease.CORONAVIRUS);
+			v.setQuarantineHomePossibleComment("pacient can stay home");
+		});
 
 		// travel entry created by limited user outside limited user's jurisdiction
 		PersonDto person4 = creator.createPerson("John", "Doe");
-		TravelEntryDto travelEntry4 = creator.createTravelEntry(
-				person4.toReference(),
-				nationalUser.toReference(), rdcf2, v-> {
-					v.setDisease(Disease.CORONAVIRUS);
-					v.setQuarantineHomePossibleComment("pacient can stay home second");
-				}
-		);
+		TravelEntryDto travelEntry4 = creator.createTravelEntry(person4.toReference(), nationalUser.toReference(), rdcf2, v -> {
+			v.setDisease(Disease.CORONAVIRUS);
+			v.setQuarantineHomePossibleComment("pacient can stay home second");
+		});
 
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
 		TravelEntryDto testTravelEntry = getTravelEntryFacade().getByUuid(travelEntry1.getUuid());
@@ -160,71 +158,80 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(testTravelEntry3Fourth.getQuarantineHomePossibleComment(), is(emptyString()));
 	}
 
-    @Test
-    public void testGetTravelEntryOutsideJurisdiction() {
-        TravelEntryDto travelEntry = createTravelEntry(user1, rdcf1, null);
+	@Test
+	public void testGetTravelEntryOutsideJurisdiction() {
+		loginWith(nationalAdmin);
 
-        assertPseudonymized(getTravelEntryFacade().getByUuid(travelEntry.getUuid()), rdcf1);
-        assertPseudonymized(getTravelEntryFacade().getByUuids(Collections.singletonList(travelEntry.getUuid())).get(0), rdcf1);
-        assertThat(getTravelEntryFacade().getAllAfter(new Date(0)), hasSize(0));
-        assertThat(getTravelEntryFacade().getIndexList(new TravelEntryCriteria(), null, null, null), hasSize(0));
-    }
+		TravelEntryDto travelEntry = createTravelEntry(nationalUser, rdcf2, null);
 
-    @Test
-    public void testGetReportOfCaseWithSpecialAccess() {
-        CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson().toReference(), rdcf1);
-        TravelEntryDto travelEntry = createTravelEntry(user1, rdcf1, caze);
-        creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+		loginWith(districtUser1);
 
-        assertNotPseudonymized(getTravelEntryFacade().getByUuid(travelEntry.getUuid()), user1, rdcf1);
-        assertNotPseudonymized(getTravelEntryFacade().getByUuids(Collections.singletonList(travelEntry.getUuid())).get(0), user1, rdcf1);
-        assertNotPseudonymized(getTravelEntryFacade().getAllAfter(new Date(0)).get(0), user1, rdcf1);
-        assertThat(getTravelEntryFacade().getIndexList(new TravelEntryCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
-    }
+		assertPseudonymized(getTravelEntryFacade().getByUuid(travelEntry.getUuid()), rdcf2);
+		assertPseudonymized(getTravelEntryFacade().getByUuids(Collections.singletonList(travelEntry.getUuid())).get(0), rdcf2);
+		assertThat(getTravelEntryFacade().getAllAfter(new Date(0)), hasSize(0));
+		assertThat(getTravelEntryFacade().getIndexList(new TravelEntryCriteria(), null, null, null), hasSize(0));
+	}
 
-    private void assertPseudonymized(TravelEntryDto travelEntry, TestDataCreator.RDCF rdcf) {
-        assertThat(travelEntry.isPseudonymized(), is(true));
-        assertThat(travelEntry.getReportingUser(), is(nullValue()));
-        assertThat(travelEntry.getDisease(), is(Disease.CORONAVIRUS));
-        assertThat(travelEntry.getResponsibleRegion(), is(rdcf.region));
-        assertThat(travelEntry.getResponsibleDistrict(), is(rdcf.district));
-        assertThat(travelEntry.getResponsibleCommunity(), is(nullValue()));
-        assertThat(travelEntry.getPointOfEntry(), is(nullValue()));
-        assertThat(travelEntry.getPointOfEntryDetails(), is(""));
-        assertThat(travelEntry.getQuarantine(), is(QuarantineType.OTHER));
-        assertThat(travelEntry.getQuarantineTypeDetails(), is(""));
-        assertThat(travelEntry.getQuarantineHelpNeeded(), is(""));
-    }
+	@Test
+	public void testGetReportOfCaseWithSpecialAccess() {
+		loginWith(nationalAdmin);
 
-    private void assertNotPseudonymized(TravelEntryDto travelEntry, UserDto user, TestDataCreator.RDCF rdcf) {
-        assertThat(travelEntry.isPseudonymized(), is(false));
-        assertThat(travelEntry.getReportingUser(), is(user.toReference()));
-        assertThat(travelEntry.getDisease(), is(Disease.CORONAVIRUS));
-        assertThat(travelEntry.getResponsibleRegion(), is(rdcf.region));
-        assertThat(travelEntry.getResponsibleDistrict(), is(rdcf.district));
-        assertThat(travelEntry.getResponsibleCommunity(), is(rdcf.community));
-        assertThat(travelEntry.getPointOfEntry(), is(rdcf.pointOfEntry));
-        assertThat(travelEntry.getPointOfEntryDetails(), is("Test point of entry details"));
-        assertThat(travelEntry.getQuarantine(), is(QuarantineType.OTHER));
-        assertThat(travelEntry.getQuarantineTypeDetails(), is("Test quarantine type details"));
-        assertThat(travelEntry.getQuarantineHelpNeeded(), is("Test quarantine help needed"));
-    }
+		CaseDataDto caze = creator.createCase(nationalUser.toReference(), creator.createPerson().toReference(), rdcf2);
+		TravelEntryDto travelEntry = createTravelEntry(nationalUser, rdcf2, caze);
+		creator
+			.createSpecialCaseAccess(caze.toReference(), nationalUser.toReference(), districtUser1.toReference(), DateHelper.addDays(new Date(), 1));
 
-    private TravelEntryDto createTravelEntry(UserDto user, TestDataCreator.RDCF rdcf, CaseDataDto caze) {
-        TravelEntryDto travelEntry = TravelEntryDto.build(caze == null ? creator.createPerson().toReference() : caze.getPerson());
-        travelEntry.setReportDate(new Date());
-        travelEntry.setDateOfArrival(new Date());
-        travelEntry.setReportingUser(user.toReference());
-        travelEntry.setDisease(Disease.CORONAVIRUS);
-        travelEntry.setResponsibleRegion(rdcf.region);
-        travelEntry.setResponsibleDistrict(rdcf.district);
-        travelEntry.setResponsibleCommunity(rdcf.community);
-        travelEntry.setPointOfEntry(rdcf.pointOfEntry);
-        travelEntry.setPointOfEntryDetails("Test point of entry details");
-        travelEntry.setQuarantine(QuarantineType.OTHER);
-        travelEntry.setQuarantineTypeDetails("Test quarantine type details");
-        travelEntry.setQuarantineHelpNeeded("Test quarantine help needed");
+		loginWith(districtUser1);
 
-        return getTravelEntryFacade().save(travelEntry);
-    }
+		assertNotPseudonymized(getTravelEntryFacade().getByUuid(travelEntry.getUuid()), nationalUser, rdcf2);
+		assertNotPseudonymized(getTravelEntryFacade().getByUuids(Collections.singletonList(travelEntry.getUuid())).get(0), nationalUser, rdcf2);
+		assertNotPseudonymized(getTravelEntryFacade().getAllAfter(new Date(0)).get(0), nationalUser, rdcf2);
+		assertThat(getTravelEntryFacade().getIndexList(new TravelEntryCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
+	}
+
+	private void assertPseudonymized(TravelEntryDto travelEntry, TestDataCreator.RDCF rdcf) {
+		assertThat(travelEntry.isPseudonymized(), is(true));
+		assertThat(travelEntry.getReportingUser(), is(nationalUser));
+		assertThat(travelEntry.getDisease(), is(Disease.CORONAVIRUS));
+		assertThat(travelEntry.getResponsibleRegion(), is(rdcf.region));
+		assertThat(travelEntry.getResponsibleDistrict(), is(rdcf.district));
+		assertThat(travelEntry.getResponsibleCommunity(), is(nullValue()));
+		assertThat(travelEntry.getPointOfEntry(), is(nullValue()));
+		assertThat(travelEntry.getPointOfEntryDetails(), is(""));
+		assertThat(travelEntry.getQuarantine(), is(QuarantineType.OTHER));
+		assertThat(travelEntry.getQuarantineTypeDetails(), is(""));
+		assertThat(travelEntry.getQuarantineHelpNeeded(), is(""));
+	}
+
+	private void assertNotPseudonymized(TravelEntryDto travelEntry, UserDto user, TestDataCreator.RDCF rdcf) {
+		assertThat(travelEntry.isPseudonymized(), is(false));
+		assertThat(travelEntry.getReportingUser(), is(user.toReference()));
+		assertThat(travelEntry.getDisease(), is(Disease.CORONAVIRUS));
+		assertThat(travelEntry.getResponsibleRegion(), is(rdcf.region));
+		assertThat(travelEntry.getResponsibleDistrict(), is(rdcf.district));
+		assertThat(travelEntry.getResponsibleCommunity(), is(rdcf.community));
+		assertThat(travelEntry.getPointOfEntry(), is(rdcf.pointOfEntry));
+		assertThat(travelEntry.getPointOfEntryDetails(), is("Test point of entry details"));
+		assertThat(travelEntry.getQuarantine(), is(QuarantineType.OTHER));
+		assertThat(travelEntry.getQuarantineTypeDetails(), is("Test quarantine type details"));
+		assertThat(travelEntry.getQuarantineHelpNeeded(), is("Test quarantine help needed"));
+	}
+
+	private TravelEntryDto createTravelEntry(UserDto user, TestDataCreator.RDCF rdcf, CaseDataDto caze) {
+		TravelEntryDto travelEntry = TravelEntryDto.build(caze == null ? creator.createPerson().toReference() : caze.getPerson());
+		travelEntry.setReportDate(new Date());
+		travelEntry.setDateOfArrival(new Date());
+		travelEntry.setReportingUser(user.toReference());
+		travelEntry.setDisease(Disease.CORONAVIRUS);
+		travelEntry.setResponsibleRegion(rdcf.region);
+		travelEntry.setResponsibleDistrict(rdcf.district);
+		travelEntry.setResponsibleCommunity(rdcf.community);
+		travelEntry.setPointOfEntry(rdcf.pointOfEntry);
+		travelEntry.setPointOfEntryDetails("Test point of entry details");
+		travelEntry.setQuarantine(QuarantineType.OTHER);
+		travelEntry.setQuarantineTypeDetails("Test quarantine type details");
+		travelEntry.setQuarantineHelpNeeded("Test quarantine help needed");
+
+		return getTravelEntryFacade().save(travelEntry);
+	}
 }
