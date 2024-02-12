@@ -1,13 +1,14 @@
 package de.symeda.sormas.api.dashboard;
 
 import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
 import java.util.Date;
-
+@AuditedClass
 public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> {
 
 	private CriteriaDateType newCaseDateType;

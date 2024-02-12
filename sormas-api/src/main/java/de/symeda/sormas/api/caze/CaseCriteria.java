@@ -22,6 +22,7 @@ import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -42,7 +43,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaWithDateType;
-
+@AuditedClass
 public class CaseCriteria extends CriteriaWithDateType implements ExternalShareCriteria, Cloneable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
