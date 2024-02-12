@@ -19,11 +19,17 @@
 package de.symeda.sormas.api.task;
 
 
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
+import de.symeda.sormas.api.audit.AuditedClass;
+
 import java.io.Serializable;
 
+@AuditedClass
 public class TaskContextIndex implements Serializable, Cloneable {
 
+    @AuditIncludeProperty
     private TaskContext taskContext;
+    @AuditIncludeProperty
     private String uuid;
 
     public TaskContextIndex() {

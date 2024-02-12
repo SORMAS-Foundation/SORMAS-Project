@@ -184,6 +184,8 @@ public interface Strings {
 	String confirmationVaccinationStatusUpdate = "confirmationVaccinationStatusUpdate";
 	String confirmExternalMessageCorrectionThrough = "confirmExternalMessageCorrectionThrough";
 	String confirmNetworkDiagramTooManyContacts = "confirmNetworkDiagramTooManyContacts";
+	String confirmPassword = "confirmPassword";
+	String currentPassword = "currentPassword";
 	String date = "date";
 	String day = "day";
 	String DefaultPassword_newPassword = "DefaultPassword.newPassword";
@@ -444,6 +446,7 @@ public interface Strings {
 	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
+	String headingChangePassword = "headingChangePassword";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
 	String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
@@ -667,7 +670,6 @@ public interface Strings {
 	String headingLineListingImport = "headingLineListingImport";
 	String headingLocation = "headingLocation";
 	String headingLoginFailed = "headingLoginFailed";
-	String headingUpdatePasswordFailed = "headingUpdatePasswordFailed";
 	String headingMaternalHistory = "headingMaternalHistory";
 	String headingMedicalInformation = "headingMedicalInformation";
 	String headingMergeDuplicateEventParticipantSamePersonSameEvent = "headingMergeDuplicateEventParticipantSamePersonSameEvent";
@@ -709,10 +711,6 @@ public interface Strings {
 	String headingPaperFormDates = "headingPaperFormDates";
 	String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
 	String headingPersonData = "headingPersonData";
-	String currentPassword = "currentPassword";
-	String updatePassword = "updatePassword";
-	String confirmPassword = "confirmPassword";
-	String passwordStrength = "passwordStrength";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
 	String headingPickEventGroup = "headingPickEventGroup";
@@ -821,7 +819,7 @@ public interface Strings {
 	String headingUpdatedPersonInformation = "headingUpdatedPersonInformation";
 	String headingUpdatedSampleInformation = "headingUpdatedSampleInformation";
 	String headingUpdatePassword = "headingUpdatePassword";
-	String headingChangePassword = "headingChangePassword";
+	String headingUpdatePasswordFailed = "headingUpdatePasswordFailed";
 	String headingUpdatePersonContactDetails = "headingUpdatePersonContactDetails";
 	String headingUploadSuccess = "headingUploadSuccess";
 	String headingUserData = "headingUserData";
@@ -1349,13 +1347,12 @@ public interface Strings {
 	String messageLineListingDisabled = "messageLineListingDisabled";
 	String messageLineListingSaved = "messageLineListingSaved";
 	String messageLoginFailed = "messageLoginFailed";
-	String messageNewPasswordDoesNotMatchFailed = "messageNewPasswordDoesNotMatchFailed";
-	String messagePasswordFailed = "messagePasswordFailed";
-	String messageNewPasswordFailed = "messageNewPasswordFailed";
 	String messageMissingCases = "messageMissingCases";
 	String messageMissingDateFilter = "messageMissingDateFilter";
 	String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
 	String messageMultipleSampleReports = "messageMultipleSampleReports";
+	String messageNewPasswordDoesNotMatchFailed = "messageNewPasswordDoesNotMatchFailed";
+	String messageNewPasswordFailed = "messageNewPasswordFailed";
 	String messageNoCaseFound = "messageNoCaseFound";
 	String messageNoCaseFoundToLinkImmunization = "messageNoCaseFoundToLinkImmunization";
 	String messageNoCasesSelected = "messageNoCasesSelected";
@@ -1392,8 +1389,9 @@ public interface Strings {
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOtherDeleteReasonNotFilled = "messageOtherDeleteReasonNotFilled";
 	String messageOutbreakSaved = "messageOutbreakSaved";
-	String messagePasswordReset = "messagePasswordReset";
 	String messagePasswordChange = "messagePasswordChange";
+	String messagePasswordFailed = "messagePasswordFailed";
+	String messagePasswordReset = "messagePasswordReset";
 	String messagePasswordResetEmailLink = "messagePasswordResetEmailLink";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
@@ -1563,6 +1561,7 @@ public interface Strings {
 	String of = "of";
 	String on = "on";
 	String or = "or";
+	String passwordStrength = "passwordStrength";
 	String pathogenTestDeletedDuringLabMessageConversion = "pathogenTestDeletedDuringLabMessageConversion";
 	String pleaseSpecify = "pleaseSpecify";
 	String populationDataByArea = "populationDataByArea";
@@ -1710,6 +1709,7 @@ public interface Strings {
 	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
+	String updatePassword = "updatePassword";
 	String uuidOf = "uuidOf";
 	String warningDashboardMapTooManyMarkers = "warningDashboardMapTooManyMarkers";
 	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
