@@ -214,53 +214,53 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
-			bulkActions
-				.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
-					grid.bulkActionHandler(items -> {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
-						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
-					}, true);
-				}));
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+				bulkActions
+					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
+						grid.bulkActionHandler(items -> {
+							EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+							ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
+						}, true);
+					}));
+				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 						grid.bulkActionHandler(items -> {
 							ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, grid, () -> grid.reload());
 						}, true);
 					}));
-				} else {
-					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
-						grid.bulkActionHandler(items -> {
-							ControllerProvider.getEventParticipantController().restoreSelectedEventParticipants(items, grid, () -> grid.reload());
-						}, true);
-					}));
 				}
-			}
-			if (isDocGenerationAllowed()) {
-				bulkActions
-					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
-						grid.bulkActionHandler(items -> {
-							List<EventParticipantReferenceDto> references = grid.asMultiSelect()
-								.getSelectedItems()
-								.stream()
-								.map(EventParticipantIndexDto::toReference)
-								.collect(Collectors.toList());
-							if (references.size() == 0) {
-								new Notification(
-									I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
-									I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
-									Notification.Type.WARNING_MESSAGE,
-									false).show(Page.getCurrent());
+				if (isDocGenerationAllowed()) {
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+							grid.bulkActionHandler(items -> {
+								List<EventParticipantReferenceDto> references = grid.asMultiSelect()
+									.getSelectedItems()
+									.stream()
+									.map(EventParticipantIndexDto::toReference)
+									.collect(Collectors.toList());
+								if (references.size() == 0) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+										I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
 
-								return;
-							}
+									return;
+								}
 
-							EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+								EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
 
-							ControllerProvider.getDocGenerationController()
-								.showBulkEventParticipantQuarantineOrderDocumentDialog(references, eventDto.getDisease());
-						});
-					}));
+								ControllerProvider.getDocGenerationController()
+									.showBulkEventParticipantQuarantineOrderDocumentDialog(references, eventDto.getDisease());
+							});
+						}));
+				}
+			} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
+					grid.bulkActionHandler(items -> {
+						ControllerProvider.getEventParticipantController().restoreSelectedEventParticipants(items, grid, () -> grid.reload());
+					}, true);
+				}));
 			}
 
 			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);

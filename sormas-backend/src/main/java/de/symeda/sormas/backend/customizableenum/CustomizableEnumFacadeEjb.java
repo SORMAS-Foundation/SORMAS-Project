@@ -81,21 +81,21 @@ public class CustomizableEnumFacadeEjb
 	/**
 	 * Maps a customizable enum type to all enum value entities of that type in the database.
 	 */
-	private final EnumMap<CustomizableEnumType, List<CustomizableEnumValue>> enumValueEntities = new EnumMap<>(CustomizableEnumType.class);
+	private static final EnumMap<CustomizableEnumType, List<CustomizableEnumValue>> enumValueEntities = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type to all enum value strings of that type in the database.
 	 */
-	private final EnumMap<CustomizableEnumType, List<String>> enumValues = new EnumMap<>(CustomizableEnumType.class);
+	private static final EnumMap<CustomizableEnumType, List<String>> enumValues = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type to a map with all enum values of this type as its keys and info, e.g. properties and active status,
 	 * defined for these enum values as its values.
 	 */
-	private final EnumMap<CustomizableEnumType, Map<String, CustomizableEnumCacheInfo>> enumInfo = new EnumMap<>(CustomizableEnumType.class);
+	private static final EnumMap<CustomizableEnumType, Map<String, CustomizableEnumCacheInfo>> enumInfo = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type (defined by its class) to a map which in turn maps all languages for which translations exist to
 	 * the possible enum values of this type, which then finally map to their translated captions.
 	 */
-	private final Map<Class<? extends CustomizableEnum>, Map<Language, Map<String, String>>> enumValuesByLanguage = new HashMap<>();
+	private static final Map<Class<? extends CustomizableEnum>, Map<Language, Map<String, String>>> enumValuesByLanguage = new HashMap<>();
 	/**
 	 * Maps a customizable enum type (defined by its class) to a map which in turn maps all diseases that are relevant for this enum type
 	 * to all enum values that are used for the disease.

@@ -677,10 +677,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				cb,
 				filter,
 				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
-				RequestContextHolder.isMobileSync()
+				RequestContextHolder.isMobileSync() && !isRestrictedToAssignedEntities()
 					? null
 					: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
-				RequestContextHolder.isMobileSync()
+				RequestContextHolder.isMobileSync() && !isRestrictedToAssignedEntities()
 					? null
 					: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 		}

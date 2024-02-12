@@ -1117,7 +1117,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public boolean isDeleted(String sampleUuid) {
-		return caseService.isDeleted(sampleUuid);
+		return sampleService.isDeleted(sampleUuid);
 	}
 
 	@Override

@@ -27,10 +27,12 @@ import com.vaadin.v7.ui.Grid;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.contact.ContactCaseConversionSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantCaseConversionSelectionGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -94,15 +96,17 @@ public class ConvertToCaseSelectionField extends VerticalLayout {
 		lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 		contactDetailsLayout.addComponent(lblLastName);
 
-		final Label lblRegion = new Label(caseDataDto.getResponsibleRegion().buildCaption());
-		lblRegion.setWidthUndefined();
-		lblRegion.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
-		contactDetailsLayout.addComponent(lblRegion);
+		if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			final Label lblRegion = new Label(caseDataDto.getResponsibleRegion().buildCaption());
+			lblRegion.setWidthUndefined();
+			lblRegion.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
+			contactDetailsLayout.addComponent(lblRegion);
 
-		final Label lblDistrict = new Label(caseDataDto.getResponsibleDistrict().buildCaption());
-		lblDistrict.setWidthUndefined();
-		lblDistrict.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
-		contactDetailsLayout.addComponent(lblDistrict);
+			final Label lblDistrict = new Label(caseDataDto.getResponsibleDistrict().buildCaption());
+			lblDistrict.setWidthUndefined();
+			lblDistrict.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
+			contactDetailsLayout.addComponent(lblDistrict);
+		}
 
 		addComponent(new Panel(contactDetailsLayout));
 	}

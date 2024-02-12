@@ -24,11 +24,13 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -75,7 +77,9 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		setWidth(100, Unit.PERCENTAGE);
 
 		addFirstRowLayout();
-		addSecondRowLayout();
+		if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			addSecondRowLayout();
+		}
 		addThirdRowLayout();
 
 		setValue(criteria, queryDetails);

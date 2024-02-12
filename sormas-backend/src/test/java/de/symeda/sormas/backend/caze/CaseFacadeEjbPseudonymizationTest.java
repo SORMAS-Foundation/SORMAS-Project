@@ -29,7 +29,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import javax.persistence.Query;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +47,9 @@ import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -63,6 +69,7 @@ import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 
 public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
@@ -128,6 +135,71 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		CaseDataDto caze = createCase(rdcf1, user1);
 		assertPseudonymized(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
+	}
+
+	@Test
+	public void testPseudonymizedGetByUuidWithLimitedUser() {
+		// deactivate AUTOMATIC_RESPONSIBILITY_ASSIGNMENT in order to assign the limited user to a case from outside jurisdiction
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_SURVEILANCE);
+
+		executeInTransaction(em -> {
+			Query query = em.createQuery("select f from featureconfiguration f");
+			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+			properties.put(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false);
+			singleResult.setProperties(properties);
+			em.persist(singleResult);
+		});
+
+		loginWith(nationalAdmin);
+
+		//case with same jurisdiction as limitedUser's
+		CaseDataDto caze1 = createCase(rdcf1, user1);
+
+		//case with different jurisdiction from limited User's
+		CaseDataDto caze2 = createCase(rdcf2, user2);
+
+		loginWith(nationalAdmin);
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		CaseDataDto testCase = getCaseFacade().getCaseDataByUuid(caze1.getUuid());
+		assertThat(testCase.isPseudonymized(), is(true));
+		assertThat(testCase.getPerson().getFirstName(), is(emptyString()));
+		CaseDataDto testCase2 = getCaseFacade().getCaseDataByUuid(caze2.getUuid());
+		assertThat(testCase2.isPseudonymized(), is(true));
+		assertThat(testCase2.getPerson().getFirstName(), is(emptyString()));
+
+		//case created by limited user in the same jurisdiction
+		CaseDataDto caze3 = createCase(rdcf1, surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		//case created by limited user outside limited user's jurisdiction
+		CaseDataDto caze4 = createCase(rdcf2, surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+
+		loginWith(nationalAdmin);
+		caze1.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(caze1);
+		caze2.setSurveillanceOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getCaseFacade().save(caze2);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		CaseDataDto testForCase1 = getCaseFacade().getCaseDataByUuid(caze1.getUuid());
+		assertThat(testForCase1.isPseudonymized(), is(false));
+		assertThat(testForCase1.getPerson().getFirstName(), is("James"));
+
+		CaseDataDto testForCase2 = getCaseFacade().getCaseDataByUuid(caze2.getUuid());
+		assertThat(testForCase2.isPseudonymized(), is(false));
+		assertThat(testForCase2.getPerson().getFirstName(), is("James"));
+
+		CaseDataDto testForCase3 = getCaseFacade().getCaseDataByUuid(caze3.getUuid());
+		assertThat(testForCase3.isPseudonymized(), is(false));
+		assertThat(testForCase3.getPerson().getFirstName(), is("James"));
+
+		CaseDataDto testForCase4 = getCaseFacade().getCaseDataByUuid(caze4.getUuid());
+		assertThat(testForCase4.isPseudonymized(), is(false));
+		assertThat(testForCase4.getPerson().getFirstName(), is("James"));
 	}
 
 	@Test

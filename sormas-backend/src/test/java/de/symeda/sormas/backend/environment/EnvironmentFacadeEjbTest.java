@@ -128,7 +128,7 @@ class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 		assertEquals(0, getEnvironmentFacade().getIndexList(new EnvironmentCriteria(), 0, 100, null).size());
 
 		loginWith(user);

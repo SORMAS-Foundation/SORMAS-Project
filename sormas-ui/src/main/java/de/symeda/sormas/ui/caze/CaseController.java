@@ -958,7 +958,7 @@ public class CaseController {
 		}
 
 		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| caze.getSurveillanceOfficer().equals(UserProvider.getCurrent().getUserReference())) {
+			|| DataHelper.isSame(caze.getSurveillanceOfficer(), UserProvider.getCurrent().getUserReference())) {
 			appendSpecialCommands(caze, editView);
 		}
 

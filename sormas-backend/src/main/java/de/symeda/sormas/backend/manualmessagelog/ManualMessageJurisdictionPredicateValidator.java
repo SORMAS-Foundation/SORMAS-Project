@@ -56,9 +56,14 @@ public class ManualMessageJurisdictionPredicateValidator extends PredicateJurisd
         throw new UnsupportedOperationException("Jurisdiction validation should woprk through person");
     }
 
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+        throw new UnsupportedOperationException("Jurisdiction validation should work through person");
+	}
+
     @Override
     protected Predicate whenNotAllowed() {
-        throw new UnsupportedOperationException("Jurisdiction validation should woprk through person");
+        throw new UnsupportedOperationException("Jurisdiction validation should work through person");
     }
 
     @Override

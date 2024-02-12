@@ -343,10 +343,9 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (UserProvider.getCurrent().hasConfigurationAccess()) {
-			AbstractConfigurationView.registerViews(navigator);
+			Class<? extends AbstractConfigurationView> firstAccessibleView = AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
-					&& UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW) ? OutbreaksView.class : RegionsView.class,
+				firstAccessibleView,
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COGS);

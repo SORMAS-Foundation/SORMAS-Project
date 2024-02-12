@@ -303,6 +303,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
+	private ComboBox regionCombo;
 	private ComboBox districtCombo;
 	private ComboBox communityCombo;
 	private OptionGroup facilityOrHome;
@@ -780,7 +781,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
 
-		ComboBox regionCombo = addInfrastructureField(CaseDataDto.REGION);
+		regionCombo = addInfrastructureField(CaseDataDto.REGION);
 		districtCombo = addInfrastructureField(CaseDataDto.DISTRICT);
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
@@ -1416,21 +1417,21 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
-
-		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			hideJurisdictionFields();
-		}
 	}
 
 	private void hideJurisdictionFields() {
-
 		getField(CaseDataDto.CASE_ORIGIN).setVisible(false);
 		getContent().getComponent(RESPONSIBLE_JURISDICTION_HEADING_LOC).setVisible(false);
 		getContent().getComponent(PLACE_OF_STAY_HEADING_LOC).setVisible(false);
 		differentPlaceOfStayJurisdiction.setVisible(false);
+
 		responsibleRegion.setVisible(false);
 		responsibleDistrict.setVisible(false);
 		responsibleCommunity.setVisible(false);
+
+		regionCombo.setVisible(false);
+		districtCombo.setVisible(false);
+		communityCombo.setVisible(false);
 	}
 
 	private void updateFacilityOrHome() {
@@ -1715,6 +1716,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideJurisdictionFields();
+		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

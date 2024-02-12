@@ -514,9 +514,10 @@ public class ContactsView extends AbstractView implements HasName {
 
 				boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
-				List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>(
-					Arrays
-						.asList(
+				List<MenuBarHelper.MenuBarItem> bulkActions;
+				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+					bulkActions = new ArrayList<>(
+						Arrays.asList(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkEdit),
 								VaadinIcons.ELLIPSIS_H,
@@ -538,23 +539,13 @@ public class ContactsView extends AbstractView implements HasName {
 									items -> ControllerProvider.getContactController()
 										.setAllSelectedItemsToLostToFollowUp(items, null, (AbstractContactGrid<?>) grid)),
 								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
-							criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED
-								? new MenuBarHelper.MenuBarItem(
-									I18nProperties.getCaption(Captions.bulkDelete),
-									VaadinIcons.TRASH,
-									mi -> grid.bulkActionHandler(
-										items -> ControllerProvider.getContactController()
-											.deleteAllSelectedItems(items, (AbstractContactGrid<?>) grid),
-										true),
-									hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE))
-								: new MenuBarHelper.MenuBarItem(
-									I18nProperties.getCaption(Captions.bulkRestore),
-									VaadinIcons.ARROW_BACKWARD,
-									mi -> grid.bulkActionHandler(
-										items -> ControllerProvider.getContactController()
-											.restoreSelectedContacts(items, (AbstractContactGrid<?>) grid),
-										true),
-									hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)),
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkDelete),
+								VaadinIcons.TRASH,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, (AbstractContactGrid<?>) grid),
+									true),
+								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 								VaadinIcons.ARCHIVE,
@@ -568,8 +559,7 @@ public class ContactsView extends AbstractView implements HasName {
 								I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
 								VaadinIcons.ARCHIVE,
 								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider
-										.getContactController()
+									items -> ControllerProvider.getContactController()
 										.dearchiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight
@@ -585,41 +575,51 @@ public class ContactsView extends AbstractView implements HasName {
 									.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
 									&& FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser())));
 
-				if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
-					bulkActions.add(
+					if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
+						bulkActions.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkActionCreatDocuments),
+								VaadinIcons.FILE_TEXT,
+								mi -> grid.bulkActionHandler(items -> {
+									List<ReferenceDto> references = ((AbstractContactGrid<?>) grid).asMultiSelect()
+										.getSelectedItems()
+										.stream()
+										.map(ContactIndexDto::toReference)
+										.collect(Collectors.toList());
+
+									if (references.size() == 0) {
+										new Notification(
+											I18nProperties.getString(Strings.headingNoContactsSelected),
+											I18nProperties.getString(Strings.messageNoContactsSelected),
+											Notification.Type.WARNING_MESSAGE,
+											false).show(Page.getCurrent());
+
+										return;
+									}
+
+									ControllerProvider.getDocGenerationController()
+										.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
+								})));
+					}
+
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+						bulkActions.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkLinkToEvent),
+								VaadinIcons.PHONE,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getContactController()
+										.linkSelectedContactsToEvent(items, (AbstractContactGrid<?>) grid))));
+					}
+				} else {
+					bulkActions = List.of(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkActionCreatDocuments),
-							VaadinIcons.FILE_TEXT,
-							mi -> grid.bulkActionHandler(items -> {
-								List<ReferenceDto> references = ((AbstractContactGrid<?>) grid).asMultiSelect()
-									.getSelectedItems()
-									.stream()
-									.map(ContactIndexDto::toReference)
-									.collect(Collectors.toList());
-
-								if (references.size() == 0) {
-									new Notification(
-										I18nProperties.getString(Strings.headingNoContactsSelected),
-										I18nProperties.getString(Strings.messageNoContactsSelected),
-										Notification.Type.WARNING_MESSAGE,
-										false).show(Page.getCurrent());
-
-									return;
-								}
-
-								ControllerProvider.getDocGenerationController()
-									.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
-							})));
-				}
-
-				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
-					bulkActions.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkLinkToEvent),
-							VaadinIcons.PHONE,
+							I18nProperties.getCaption(Captions.bulkRestore),
+							VaadinIcons.ARROW_BACKWARD,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getContactController()
-									.linkSelectedContactsToEvent(items, (AbstractContactGrid<?>) grid))));
+								items -> ControllerProvider.getContactController().restoreSelectedContacts(items, (AbstractContactGrid<?>) grid),
+								true),
+							hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)));
 				}
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);

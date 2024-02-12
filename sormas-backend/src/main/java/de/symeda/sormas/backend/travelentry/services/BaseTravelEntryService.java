@@ -8,9 +8,13 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -23,6 +27,8 @@ public abstract class BaseTravelEntryService extends AbstractCoreAdoService<Trav
 
 	@EJB
 	protected UserService userService;
+	@EJB
+	private PersonService personService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
 

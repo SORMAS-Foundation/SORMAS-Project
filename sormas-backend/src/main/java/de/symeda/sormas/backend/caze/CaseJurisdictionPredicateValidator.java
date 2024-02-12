@@ -80,13 +80,26 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		return cb.or(reportedByCurrentUser, this.isRootInJurisdiction());
+	}
+
+	private Predicate getReportedByCurrentUser() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Case.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Case.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
+		return reportedByCurrentUser;
+	}
 
-		return cb.or(reportedByCurrentUser, this.isRootInJurisdiction());
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		final Predicate restrictedAccess = user != null
+			? cb.equal(joins.getRoot().get(Case.SURVEILLANCE_OFFICER).get(User.ID), user.getId())
+			: cb.equal(joins.getRoot().get(Case.SURVEILLANCE_OFFICER).get(User.ID), userPath.get(User.ID));
+		return cb.or(reportedByCurrentUser, restrictedAccess);
 	}
 
 	@Override

@@ -466,7 +466,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		final EventJoins eventJoins = queryContext.getJoins();
 		final From<?, Event> eventJoin = queryContext.getRoot();
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (isRestrictedToAssignedEntities()) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
 		} else {
 			if (jurisdictionLevel != JurisdictionLevel.NATION) {
@@ -1065,10 +1065,6 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 
 		if (!inJurisdictionOrOwned(event)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
-		}
-
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(event.getResponsibleUser(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
 		}
 
 		if (sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)

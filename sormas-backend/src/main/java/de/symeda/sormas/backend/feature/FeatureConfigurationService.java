@@ -162,7 +162,7 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilterAndJuri
 			FeatureConfiguration configuration = configs.get(featureType);
 			boolean persistingNeeded = false;
 
-			if (featureType.isServerFeature() && featureType.isDependent()) {
+			if (featureType.isServerFeature() && featureType.isDependent() && configuration.isEnabled()) {
 				boolean hasEnabledDependentFeature = hasEnabledDependentFeature(featureType, configs);
 				if (!hasEnabledDependentFeature) {
 					configuration.setEnabled(false);

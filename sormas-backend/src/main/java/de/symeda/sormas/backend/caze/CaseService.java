@@ -1399,7 +1399,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		final boolean restrictedToAssignedEntities = isRestrictedToAssignedEntities();
+		if (restrictedToAssignedEntities) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
 		}
 
@@ -1414,7 +1415,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filterResponsible = cb.disjunction();
 			}
 
-			if (!currentUserHasRestrictedAccessToAssignedEntities()) {
+			if (!restrictedToAssignedEntities) {
 				switch (jurisdictionLevel) {
 				case REGION:
 					final Region region = currentUser.getRegion();
@@ -1496,7 +1497,14 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		}
 
 		// only show cases of a specific disease if a limited disease is set
-		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, casePath.get(Case.DISEASE)));
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			CriteriaBuilderHelper.limitedDiseasePredicate(
+				cb,
+				currentUser,
+				casePath.get(Case.DISEASE),
+				cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId())));
 
 		// port health users can only see port health cases
 		if (currentUser.getUserRoles().stream().anyMatch(userRole -> userRole.isPortHealthUser())) {
@@ -1693,19 +1701,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			return EditPermissionType.REFUSED;
 		}
 
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(caze.getSurveillanceOfficer(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
-		}
-
 		return super.getEditPermissionType(caze);
 	}
 
 	@Override
 	public EditPermissionType getEditPermissionType(Case caze) {
-
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(caze.getSurveillanceOfficer(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
-		}
 
 		if (!inJurisdictionOrOwned(caze)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;

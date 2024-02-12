@@ -16,6 +16,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 
@@ -93,6 +95,10 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 					value.getDateOfBirthMM(),
 					value.getDateOfBirthYYYY()),
 			new TextRenderer());
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(MergeContactIndexDto.DISTRICT_NAME).setHidden(true);
+		}
 	}
 
 	@Override

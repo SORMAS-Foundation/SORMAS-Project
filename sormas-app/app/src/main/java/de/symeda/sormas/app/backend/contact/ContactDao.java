@@ -196,6 +196,17 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		}
 	}
 
+	public List<Contact> getByPerson(Person person) {
+		try {
+			QueryBuilder qb = queryBuilder();
+			qb.where().eq(Contact.PERSON, person);
+			return qb.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform queryByCriteria on Contact");
+			throw new RuntimeException(e);
+		}
+	}
+
 	private QueryBuilder<Contact, Long> buildQueryBuilder(ContactCriteria contactCriteria) throws SQLException {
 		QueryBuilder<Contact, Long> queryBuilder = queryBuilder();
 

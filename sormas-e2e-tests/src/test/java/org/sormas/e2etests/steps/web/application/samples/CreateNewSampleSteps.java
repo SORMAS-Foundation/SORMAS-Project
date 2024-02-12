@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CANCEL_ACTION;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COLLECTED_DATE_TIME_COMBOBOX;
@@ -486,6 +487,13 @@ public class CreateNewSampleSteps implements En {
         "^I save the created sample with pathogen test",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_WITH_PATHOGEN_TEST_BUTTON);
+        });
+
+    When(
+        "I reject the crete Case from event participant with positive test results popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CANCEL_ACTION);
+          webDriverHelpers.clickOnWebElementBySelector(CANCEL_ACTION);
         });
 
     When(

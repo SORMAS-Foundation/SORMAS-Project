@@ -128,6 +128,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -178,6 +179,8 @@ public class UserFacadeEjb implements UserFacade {
 	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private UserRoleService userRoleService;
+	@EJB
+	private PersonService personService;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -953,6 +956,7 @@ public class UserFacadeEjb implements UserFacade {
 				Arrays.asList(UserRight.CASE_RESPONSIBLE))
 			.stream()
 			.map(userReference -> userService.getByUuid(userReference.getUuid()))
+			.filter(user -> !UserHelper.isRestrictedToAssignEntities(user))
 			.collect(Collectors.toList());
 		return possibleUserForReplacement;
 	}
