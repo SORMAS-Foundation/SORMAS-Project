@@ -620,6 +620,7 @@ public interface Captions {
 	String Configuration_LineListing = "Configuration.LineListing";
 	String Configuration_Outbreaks = "Configuration.Outbreaks";
 	String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
+	String confirmPassword = "confirmPassword";
 	String Contact = "Contact";
 	String Contact_additionalDetails = "Contact.additionalDetails";
 	String Contact_ageAndBirthDate = "Contact.ageAndBirthDate";
@@ -816,6 +817,7 @@ public interface Captions {
 	String countryArchivedCountries = "countryArchivedCountries";
 	String createSymptomJournalAccountButton = "createSymptomJournalAccountButton";
 	String creationDate = "creationDate";
+	String currentPassword = "currentPassword";
 	String CustomizableEnum_hasDetails = "CustomizableEnum.hasDetails";
 	String CustomizableEnum_hasDetails_short = "CustomizableEnum.hasDetails.short";
 	String CustomizableEnumValue_active = "CustomizableEnumValue.active";
@@ -1753,6 +1755,7 @@ public interface Captions {
 	String outbreakNormal = "outbreakNormal";
 	String outbreakOutbreak = "outbreakOutbreak";
 	String passportNumber = "passportNumber";
+	String passwordStrength = "passwordStrength";
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
 	String PathogenTest_ctValueE = "PathogenTest.ctValueE";
@@ -2609,6 +2612,7 @@ public interface Captions {
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
 	String unassigned = "unassigned";
 	String unknown = "unknown";
+	String updatePassword = "updatePassword";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";
@@ -2625,16 +2629,12 @@ public interface Captions {
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
-	String updatePassword = "updatePassword";
-	String currentPassword = "currentPassword";
-	String confirmPassword = "confirmPassword";
-	String passwordStrength = "passwordStrength";
 	String User_uuid = "User.uuid";
+	String userGeneratePassword = "userGeneratePassword";
 	String userMyUserId = "userMyUserId";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRestrictDiseases = "userRestrictDiseases";
-	String userGeneratePassword = "userGeneratePassword";
 	String userRight = "userRight";
 	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
