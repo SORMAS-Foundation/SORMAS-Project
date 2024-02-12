@@ -116,9 +116,6 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 				this::showUnsavedChangesPopup,
 				editAllowed,
 				SampleAssociationType.EVENT_PARTICIPANT);
-//			SampleListComponentLayout sampleListComponentLayout =
-//				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
-//				editAllowed);
 			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}

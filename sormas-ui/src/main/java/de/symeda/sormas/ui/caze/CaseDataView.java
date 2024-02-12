@@ -140,9 +140,6 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 				this::showUnsavedChangesPopup,
 				isEditAllowed,
 				SampleAssociationType.CASE);
-//			SampleListComponentLayout sampleListComponentLayout =
-//				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase), isEditAllowed);
-//				isEditAllowed);
 			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
