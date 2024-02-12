@@ -1575,7 +1575,7 @@ public class CaseDirectorySteps implements En {
     And(
         "^I check that Relevance Status Filter is set to \"([^\"]*)\" on Case Directory page$",
         (String relevanceStatus) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(300);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(400);
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(RELEVANT_STATUS_INPUT),
               relevanceStatus,
