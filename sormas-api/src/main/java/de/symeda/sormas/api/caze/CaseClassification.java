@@ -21,9 +21,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
+@AuditedClass
 public enum CaseClassification
 	implements
 	StatisticsGroupingKey {
