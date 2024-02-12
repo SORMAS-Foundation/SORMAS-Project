@@ -68,7 +68,6 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -332,7 +331,7 @@ public class EditSampleSteps implements En {
     And(
         "I check if editable fields are read only for a sample",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // waiting for page sample loaded
+          webDriverHelpers.waitForElementPresent(DATE_SAMPLE_COLLECTED, 2);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DATE_SAMPLE_COLLECTED),
               false,

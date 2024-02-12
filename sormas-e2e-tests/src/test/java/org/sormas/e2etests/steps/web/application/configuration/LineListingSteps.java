@@ -114,7 +114,6 @@ public class LineListingSteps implements En {
               NOTIFICATION_LINE_LISTING_CONFIGURATION);
           String notificationText =
               webDriverHelpers.getTextFromWebElement(NOTIFICATION_LINE_LISTING_CONFIGURATION);
-          System.out.println(notificationText);
           softly.assertEquals(notificationText, "Line listing has been disabled");
           softly.assertAll();
         });

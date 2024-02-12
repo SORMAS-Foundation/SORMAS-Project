@@ -218,8 +218,10 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				this::showUnsavedChangesPopup,
 				editAllowed,
 				SampleAssociationType.CONTACT);
-			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
+//			SampleListComponentLayout sampleListComponentLayout =
+//				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
+//				editAllowed);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 

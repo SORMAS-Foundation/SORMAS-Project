@@ -176,6 +176,14 @@ public class SampleJoins extends QueryJoins<Sample> implements ISampleJoins {
 		this.eventParticipantJoins = eventParticipantJoins;
 	}
 
+	public Join<EventParticipant, Region> getEventParticipantRegion() {
+		return getEventParticipantJoins().getEventParticipantResponsibleRegion();
+	}
+
+	public Join<EventParticipant, District> getEventParticipantDistrict() {
+		return getEventParticipantJoins().getEventParticipantResponsibleDistrict();
+	}
+
 	public Join<Sample, PathogenTest> getPathogenTest() {
 		return getOrCreate(pathogenTest, Sample.PATHOGENTESTS, JoinType.LEFT, this::setPathogenTest);
 	}
