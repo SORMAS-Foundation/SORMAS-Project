@@ -1568,15 +1568,14 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEND_TO_REPORTING_TOOL_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SEND_TO_REPORTING_TOOL_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
-          webDriverHelpers.waitForSpinnerNotVisible(20);
-          TimeUnit.SECONDS.sleep(4); //waiting for page is loaded
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORTING_TOOL_MESSAGE);
+          webDriverHelpers.waitForSpinnerNotVisible(30);
+          webDriverHelpers.waitForElementPresent(REPORTING_TOOL_MESSAGE, 30);
         });
 
     And(
         "^I check that Relevance Status Filter is set to \"([^\"]*)\" on Case Directory page$",
         (String relevanceStatus) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(300);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(400);
           softly.assertEquals(
               webDriverHelpers.getValueFromWebElement(RELEVANT_STATUS_INPUT),
               relevanceStatus,

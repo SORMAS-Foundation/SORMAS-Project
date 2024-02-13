@@ -46,17 +46,6 @@ public final class EnvironmentSampleJurisdictionValidator extends PredicateJuris
 		return new EnvironmentSampleJurisdictionValidator(qc.getCriteriaBuilder(), user, qc.getJoins(), null);
 	}
 
-	public Predicate isRootInJurisdictionOrOwned(boolean currentHasUserRestrictedAccess) {
-		if (currentHasUserRestrictedAccess) {
-			final Predicate reportedByCurrentUser = getReportedByCurrentUserPredicate();
-			final Predicate restrictedAccess =
-				cb.equal(joins.getEnvironment().get(Environment.RESPONSIBLE_USER).get(User.ID), user.getChangeUser().getId());
-			return cb.or(reportedByCurrentUser, restrictedAccess);
-		} else {
-			return isRootInJurisdictionOrOwned();
-		}
-	}
-
 	private Predicate getReportedByCurrentUserPredicate() {
 		return cb.and(
 			cb.isNotNull(joins.getRoot().get(EnvironmentSample.REPORTING_USER)),
@@ -69,6 +58,15 @@ public final class EnvironmentSampleJurisdictionValidator extends PredicateJuris
 	public Predicate isRootInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = getReportedByCurrentUserPredicate();
 		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUserPredicate();
+		final Predicate restrictedAccess = user != null
+			? cb.equal(joins.getEnvironment().get(Environment.RESPONSIBLE_USER).get(User.ID), user.getId())
+			: cb.equal(joins.getEnvironment().get(Environment.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID));
+		return cb.or(reportedByCurrentUser, restrictedAccess);
 	}
 
 	@Override

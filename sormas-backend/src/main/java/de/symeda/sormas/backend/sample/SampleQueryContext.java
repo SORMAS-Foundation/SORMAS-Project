@@ -59,6 +59,7 @@ public class SampleQueryContext extends QueryContext<Sample, SampleJoins> {
 		final Join<Case, District> caseDistrict = joins.getCaseResponsibleDistrict();
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
 		final Join<Case, District> contactCaseDistrict = joins.getContactCaseResponsibleDistrict();
+		final Join<EventParticipant, District> eventParticipantDistrict = joins.getEventParticipantDistrict();
 		final Join<Location, District> eventDistrict = joins.getEventDistrict();
 
 		return criteriaBuilder.<String> selectCase()
@@ -69,7 +70,10 @@ public class SampleQueryContext extends QueryContext<Sample, SampleJoins> {
 					.otherwise(
 						criteriaBuilder.<String> selectCase()
 							.when(criteriaBuilder.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.NAME))
-							.otherwise(eventDistrict.get(District.NAME))));
+							.otherwise(
+								criteriaBuilder.<String> selectCase()
+									.when(criteriaBuilder.isNotNull(eventParticipantDistrict), eventParticipantDistrict.get(District.NAME))
+									.otherwise(eventDistrict.get(District.NAME)))));
 
 	}
 }

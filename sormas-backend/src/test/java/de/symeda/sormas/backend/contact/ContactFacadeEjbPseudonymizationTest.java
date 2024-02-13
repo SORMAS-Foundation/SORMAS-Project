@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
@@ -125,6 +126,65 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			Disease.CORONAVIRUS,
 			rdcf2);
 		assertPseudonymized(getContactFacade().getByUuid(contact.getUuid()));
+	}
+
+	@Test
+	public void testPseudonymizedGetByUuidWithLimitedUser() {
+
+		// contact & case within limited user's jurisdiction
+		CaseDataDto caze1 = createCase(user1, rdcf1);
+		ContactDto contact1 = createContact(user1, caze1, rdcf1);
+
+		// contact & case outside limited user's jurisdiction
+		CaseDataDto caze2 = createCase(user2, rdcf2);
+		ContactDto contact2 = createContact(user2, caze2, rdcf2);
+
+		loginWith(nationalAdmin);
+		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
+			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf1);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		ContactDto testContact1 = getContactFacade().getByUuid(contact1.getUuid());
+		assertThat(testContact1.isPseudonymized(), is(true));
+		assertThat(testContact1.getPerson().getFirstName(), is(emptyString()));
+
+		ContactDto testContact2 = getContactFacade().getByUuid(contact2.getUuid());
+		assertThat(testContact2.isPseudonymized(), is(true));
+		assertThat(testContact2.getPerson().getFirstName(), is(emptyString()));
+
+		//contact created by limited user in the same jurisdiction
+		ContactDto contact3 = createContact(surveillanceOfficerWithRestrictedAccessToAssignedEntities, null, rdcf1);
+		//contact created by limited user outside limited user's jurisdiction
+		ContactDto contact4 = createContact(surveillanceOfficerWithRestrictedAccessToAssignedEntities, null, rdcf2);
+
+		loginWith(nationalAdmin);
+		contact1.setContactOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getContactFacade().save(contact1);
+		contact2.setContactOfficer(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
+		getContactFacade().save(contact2);
+
+		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
+		ContactDto testForContact1 = getContactFacade().getByUuid(contact1.getUuid());
+		assertThat(testForContact1.isPseudonymized(), is(false));
+		assertThat(testForContact1.getPerson().getFirstName(), is("James"));
+		CaseDataDto testForCase1 = getCaseFacade().getCaseDataByUuid(caze1.getUuid());
+		assertThat(testForCase1.isPseudonymized(), is(true));
+		assertThat(testForCase1.getPerson().getFirstName(), is(emptyString()));
+
+		ContactDto testForContact2 = getContactFacade().getByUuid(contact2.getUuid());
+		assertThat(testForContact2.isPseudonymized(), is(false));
+		assertThat(testForContact2.getPerson().getFirstName(), is("James"));
+		CaseDataDto testForCase2 = getCaseFacade().getCaseDataByUuid(caze2.getUuid());
+		assertThat(testForCase2.isPseudonymized(), is(true));
+		assertThat(testForCase2.getPerson().getFirstName(), is(emptyString()));
+
+		ContactDto testForContact3 = getContactFacade().getByUuid(contact3.getUuid());
+		assertThat(testForContact3.isPseudonymized(), is(false));
+		assertThat(testForContact3.getPerson().getFirstName(), is("James"));
+
+		ContactDto testForContact4 = getContactFacade().getByUuid(contact4.getUuid());
+		assertThat(testForContact4.isPseudonymized(), is(false));
+		assertThat(testForContact4.getPerson().getFirstName(), is("James"));
 	}
 
 	@Test

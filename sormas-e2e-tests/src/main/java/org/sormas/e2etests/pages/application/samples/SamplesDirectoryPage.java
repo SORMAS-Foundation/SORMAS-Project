@@ -22,12 +22,15 @@ import org.openqa.selenium.By;
 
 public class SamplesDirectoryPage {
   public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
+  public static final By TOTAL_SAMPLE_COUNTER = By.cssSelector(".badge");
   public static final By SAMPLE_EDIT_PURPOSE_OPTIONS =
       By.cssSelector("#samplePurpose .v-select-option");
   public static final By TEST_RESULTS_SEARCH_COMBOBOX =
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
   public static final By SAMPLE_GRID_RESULTS_ROWS =
       By.cssSelector("[class='v-grid-tablewrapper'] tbody>tr");
+  public static final By RELEVANCE_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_SEARCH_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
   public static final By LABORATORY_SEARCH_COMBOBOX =
@@ -67,4 +70,6 @@ public class SamplesDirectoryPage {
   public static final By BASIC_EXPORT_SAMPLE_BUTTON = By.id("exportBasic");
   public static final By DETAILED_EXPORT_SAMPLE_BUTTON = By.id("exportDetailed");
   public static final By COMMIT_BUTTON = By.cssSelector("#commit");
+  public static final By PENDING_TEST_TABLE_RESULTS = By.xpath("//td[text()='Pending']");
+  public static final By POSITIVE_TEST_TABLE_RESULTS = By.xpath("//td[text()='Positive']");
 }

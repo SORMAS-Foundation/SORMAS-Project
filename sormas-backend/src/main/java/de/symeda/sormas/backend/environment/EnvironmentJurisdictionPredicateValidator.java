@@ -51,14 +51,26 @@ public final class EnvironmentJurisdictionPredicateValidator extends PredicateJu
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
+	}
 
+	private Predicate getReportedByCurrentUser() {
 		final Predicate reportedByCurrentUser = cb.and(
 			cb.isNotNull(joins.getRoot().get(Environment.REPORTING_USER)),
 			user != null
 				? cb.equal(joins.getRoot().get(Environment.REPORTING_USER).get(User.ID), user.getId())
 				: cb.equal(joins.getRoot().get(Environment.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
+		return reportedByCurrentUser;
+	}
 
-		return cb.or(reportedByCurrentUser, isRootInJurisdiction());
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		final Predicate reportedByCurrentUser = getReportedByCurrentUser();
+		final Predicate restrictedAccess = user != null
+			? cb.equal(joins.getRoot().get(Environment.RESPONSIBLE_USER).get(User.ID), user.getId())
+			: cb.equal(joins.getRoot().get(Environment.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID));
+		return cb.or(reportedByCurrentUser, restrictedAccess);
 	}
 
 	@Override

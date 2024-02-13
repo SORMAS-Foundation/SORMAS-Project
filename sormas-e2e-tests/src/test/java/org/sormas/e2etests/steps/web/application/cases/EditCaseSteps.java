@@ -1203,7 +1203,7 @@ public class EditCaseSteps implements En {
     When(
         "I check if ([^\"]*) quarantine popup is displayed",
         (String option) -> {
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForElementPresent(QUARANTINE_COMBOBOX, 2);
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
@@ -1537,8 +1537,7 @@ public class EditCaseSteps implements En {
     When(
         "I check that text appearing in hover over Expected Follow-up is based on Report date",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.waitForElementPresent(EXPECTED_FOLLOWUP_LABEL, 2);
           webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
@@ -1576,7 +1575,7 @@ public class EditCaseSteps implements En {
     When(
         "I check that text appearing in hover based over Symptoms onset date over Expected Follow-up consists of date days is equal to symptoms onset date",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForElementPresent(EXPECTED_FOLLOWUP_LABEL, 2);
           webDriverHelpers.scrollToElement(EXPECTED_FOLLOWUP_LABEL);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
           webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
@@ -1818,10 +1817,8 @@ public class EditCaseSteps implements En {
     When(
         "I check that case classification is set to one of the confirmed classifications in German on Edit case page",
         () -> {
-          TimeUnit.SECONDS.sleep(
-              3); // Required to ensure that the value we're asserting is refreshed after saving
-          // sample
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForElementPresent(CASE_CLASSIFICATION_COMBOBOX, 3);
           String caseClassification =
               webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
           softly.assertTrue(
@@ -2205,8 +2202,7 @@ public class EditCaseSteps implements En {
         "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          TimeUnit.SECONDS.sleep(3);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(BACK_TO_CASES_LIST_BUTTON);
+          webDriverHelpers.waitForElementPresent(BACK_TO_CASES_LIST_BUTTON, 3);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
               true,
@@ -3001,7 +2997,7 @@ public class EditCaseSteps implements En {
     And(
         "^I check if editable fields are read only for shared case/contact$",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
+          webDriverHelpers.waitForElementPresent(EditCasePage.UUID_INPUT, 15);
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
@@ -3088,7 +3084,7 @@ public class EditCaseSteps implements En {
     When(
         "I check if Follow up until date is ([^\"]*) days after last created API case report date",
         (Integer days) -> {
-          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForElementPresent(FOLLOW_UP_UNTIL_DATE, 3);
           String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
           softly.assertEquals(
               DateTimeFormatter.ofPattern("dd.MM.yyyy")

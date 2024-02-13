@@ -528,6 +528,7 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListWithRestrictedAccessToAssignedEntities() {
+		loginWith(nationalAdmin);
 		EnvironmentSampleDto environmentSample =
 			creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), s -> {
 				s.setFieldSampleId("field_sample-1");
@@ -543,6 +544,9 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 				s.setSampleMaterial(EnvironmentSampleMaterial.OTHER);
 				s.setOtherSampleMaterial("Other sample material");
 			});
+		environment.setResponsibleUser(reportingUser.toReference());
+		getEnvironmentFacade().save(environment);
+
 		Pathogen positivePathogen = creator.createPathogen("TEST_PATHOGEN", "Test pathogen");
 		PathogenTestDto positiveTest = creator.createPathogenTest(
 			environmentSample.toReference(),
@@ -554,10 +558,12 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			null);
 		assertThat(getEnvironmentSampleFacade().getIndexList(null, null, null, null), hasSize(1));
 
+		loginWith(nationalAdmin);
 		UserDto surveillanceOfficerWithRestrictedAccessToAssignedEntities =
 			creator.createSurveillanceOfficerWithRestrictedAccessToAssignedEntities(rdcf);
+
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 		assertThat(getEnvironmentSampleFacade().getIndexList(null, null, null, null), hasSize(0));
 
 	}

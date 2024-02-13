@@ -701,6 +701,17 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		deleteCascade(caze);
 	}
 
+	public List<Case> getByPerson(Person person) {
+		try {
+			QueryBuilder qb = queryBuilder();
+			qb.where().eq(Case.PERSON, person);
+			return qb.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform queryByCriteria on Contact");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public List<Case> getSimilarCases(CaseSimilarityCriteria criteria) {
 		try {
 			QueryBuilder<Case, Long> queryBuilder = queryBuilder();

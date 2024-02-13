@@ -717,16 +717,109 @@ public class CasesView extends AbstractView implements HasName {
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
-					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, mi -> {
-						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items, (AbstractCaseGrid<?>) grid));
-					}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)));
 					if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, mi -> {
+							grid.bulkActionHandler(
+								items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items, (AbstractCaseGrid<?>) grid));
+						}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)));
 						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 							grid.bulkActionHandler(
 								items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
 						}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
+
+						final boolean externalMessagesEnabled =
+							FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
+						final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
+						if (isSmsServiceSetUp
+							&& externalMessagesEnabled
+							&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+							menuBarItems.add(
+								new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.messagesSendSMS), VaadinIcons.MOBILE_RETRO, mi -> {
+									grid.bulkActionHandler(
+										items -> ControllerProvider.getCaseController().sendSmsToAllSelectedItems(items, () -> navigateTo(criteria)));
+								}, hasBulkOperationsRight));
+						}
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
+									true);
+							},
+								hasBulkOperationsRight
+									&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
+									&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
+									true);
+							},
+								hasBulkOperationsRight
+									&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
+									&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+						menuBarItems
+							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getSormasToSormasController().shareSelectedCases(items, () -> navigateTo(criteria)));
+							},
+								FacadeProvider.getFeatureConfigurationFacade()
+									.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
+									&& FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser()));
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+								VaadinIcons.SHARE,
+								mi -> {
+									grid.bulkActionHandler(items -> {
+										if (getSelectedCases(caseGrid).isEmpty()) {
+											showNoCasesSelectedWarning(caseGrid);
+											return;
+										}
+
+										ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, (AbstractCaseGrid<?>) grid);
+									});
+								},
+								UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
+									&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+
+						if (isDocGenerationAllowed()) {
+							menuBarItems.add(
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkActionCreatDocuments),
+									VaadinIcons.FILE_TEXT,
+									mi -> {
+										grid.bulkActionHandler(items -> {
+											List<ReferenceDto> references = caseGrid.asMultiSelect()
+												.getSelectedItems()
+												.stream()
+												.map(CaseIndexDto::toReference)
+												.collect(Collectors.toList());
+
+											if (references.size() == 0) {
+												new Notification(
+													I18nProperties.getString(Strings.headingNoCasesSelected),
+													I18nProperties.getString(Strings.messageNoCasesSelected),
+													Notification.Type.WARNING_MESSAGE,
+													false).show(Page.getCurrent());
+												return;
+											}
+
+											ControllerProvider.getDocGenerationController()
+												.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
+										});
+									}));
+						}
+
+						if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+							menuBarItems.add(
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkLinkToEvent),
+									VaadinIcons.PHONE,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getCaseController()
+											.linkSelectedCasesToEvent(items, (AbstractCaseGrid<?>) grid))));
+						}
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
@@ -734,93 +827,6 @@ public class CasesView extends AbstractView implements HasName {
 									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
 							}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
-					}
-					final boolean externalMessagesEnabled =
-						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
-					final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
-					if (isSmsServiceSetUp
-						&& externalMessagesEnabled
-						&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
-						menuBarItems
-							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.messagesSendSMS), VaadinIcons.MOBILE_RETRO, mi -> {
-								grid.bulkActionHandler(
-									items -> ControllerProvider.getCaseController().sendSmsToAllSelectedItems(items, () -> navigateTo(criteria)));
-							}, hasBulkOperationsRight));
-					}
-					menuBarItems
-						.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
-							grid.bulkActionHandler(
-								items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
-								true);
-						},
-							hasBulkOperationsRight
-								&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
-								&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
-					menuBarItems
-						.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
-							grid.bulkActionHandler(
-								items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
-								true);
-						},
-							hasBulkOperationsRight
-								&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
-								&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
-					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
-						grid.bulkActionHandler(
-							items -> ControllerProvider.getSormasToSormasController().shareSelectedCases(items, () -> navigateTo(criteria)));
-					},
-						FacadeProvider.getFeatureConfigurationFacade()
-							.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
-							&& FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser()));
-					menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-							VaadinIcons.SHARE,
-							mi -> {
-								grid.bulkActionHandler(items -> {
-									if (getSelectedCases(caseGrid).isEmpty()) {
-										showNoCasesSelectedWarning(caseGrid);
-										return;
-									}
-
-									ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, (AbstractCaseGrid<?>) grid);
-								});
-							},
-							UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
-								&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
-
-					if (isDocGenerationAllowed()) {
-						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
-								grid.bulkActionHandler(items -> {
-									List<ReferenceDto> references = caseGrid.asMultiSelect()
-										.getSelectedItems()
-										.stream()
-										.map(CaseIndexDto::toReference)
-										.collect(Collectors.toList());
-
-									if (references.size() == 0) {
-										new Notification(
-											I18nProperties.getString(Strings.headingNoCasesSelected),
-											I18nProperties.getString(Strings.messageNoCasesSelected),
-											Notification.Type.WARNING_MESSAGE,
-											false).show(Page.getCurrent());
-										return;
-									}
-
-									ControllerProvider.getDocGenerationController()
-										.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
-								});
-							}));
-					}
-
-					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
-						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.bulkLinkToEvent),
-								VaadinIcons.PHONE,
-								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getCaseController().linkSelectedCasesToEvent(items, (AbstractCaseGrid<?>) grid))));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
