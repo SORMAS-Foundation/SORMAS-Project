@@ -53,7 +53,6 @@ public class UserField extends CustomField<UserReferenceDto> {
 		}
 		userCombo.setNullSelectionAllowed(true);
 		userCombo.setValue(getValue());
-		parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
 		userCombo.setEnabled(enabled);
 		userCombo.setReadOnly(readOnly);
 		userLayout.addComponent(userCombo);
@@ -71,7 +70,6 @@ public class UserField extends CustomField<UserReferenceDto> {
 
 		addValueChangeListener(c -> {
 			userCombo.setValue(c.getProperty().getValue());
-			parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
 		});
 
 		return userLayout;
@@ -150,6 +148,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 					createFieldLayout(I18nProperties.getCaption(Captions.User_userEmail), userDto.getUserEmail(), LinkType.EMAIL, false));
 			}
 		} else {
+			parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
 			if (userDto == null && !parentPseudonymizedFlag) {
 				HorizontalLayout labelLayout = new HorizontalLayout();
 				Label noUserMessageLabel = new Label();
