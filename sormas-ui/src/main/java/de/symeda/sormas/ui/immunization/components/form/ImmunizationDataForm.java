@@ -162,7 +162,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		addField(ImmunizationDto.REPORT_DATE, DateField.class);
-		addField(ImmunizationDto.REPORTING_USER, UserField.class);
+		UserField reportingUser = addField(ImmunizationDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
 		ComboBox cbDisease = addDiseaseField(ImmunizationDto.DISEASE, false);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);

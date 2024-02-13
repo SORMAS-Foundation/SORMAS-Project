@@ -150,5 +150,7 @@ public class EnvironmentEditFragment extends BaseEditFragment<FragmentEnvironmen
 				contentBinding.environmentOtherWaterUse.setValue(null);
 			}
 		});
+
+		contentBinding.environmentResponsibleUser.setPseudonymized(record.isPseudonymized());
 	}
 }

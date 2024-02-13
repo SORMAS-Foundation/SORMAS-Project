@@ -95,7 +95,9 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addField(EnvironmentDto.REPORTING_USER, UserField.class).setReadOnly(true);
+		UserField reportingUser = addField(EnvironmentDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUser.setReadOnly(true);
 
 		addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
 		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
@@ -151,6 +153,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
 		UserField responsibleUserField = addField(EnvironmentDto.RESPONSIBLE_USER, UserField.class);
+		responsibleUserField.setParentPseudonymizedSupplier(()-> getValue().isPseudonymized());
 		responsibleUserField.setEnabled(true);
 
 		addField(EnvironmentDto.DELETION_REASON);

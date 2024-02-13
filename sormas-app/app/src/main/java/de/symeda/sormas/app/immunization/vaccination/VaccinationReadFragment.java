@@ -57,6 +57,11 @@ public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinatio
 	}
 
 	@Override
+	public void onAfterLayoutBinding(FragmentVaccinationReadLayoutBinding contentBinding) {
+		contentBinding.immunizationReportingUser.setPseudonymized(record.isPseudonymized());
+	}
+
+	@Override
 	protected String getSubHeadingTitle() {
 		return getResources().getString(R.string.heading_vaccination);
 	}

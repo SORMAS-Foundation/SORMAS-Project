@@ -39,6 +39,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.component.controls.ControlUserReadField;
 import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
 
 public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutBinding, Event, Event> {
@@ -131,6 +132,7 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 		if (isVisibleAllowed(EventDto.class, contentBinding.eventSpecificRisk)) {
 			contentBinding.eventSpecificRisk.setVisibility(record.getSpecificRisk() != null ? VISIBLE : GONE);
 		}
+		contentBinding.eventResponsibleUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

@@ -1993,7 +1993,6 @@ public interface Captions {
 	String regionName = "regionName";
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
-	String reportingUser = "reportingUser";
 	String requiredUserRights = "requiredUserRights";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
