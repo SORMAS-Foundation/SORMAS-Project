@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.TRAVEL_ENTRIES)
-public class TravelEntryDto extends PseudonymizableDto implements ITravelEntry{
+public class TravelEntryDto extends PseudonymizableDto implements IsTravelEntry {
 
 	private static final long serialVersionUID = 4503438472222204446L;
 

@@ -57,7 +57,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.sample.ISample;
+import de.symeda.sormas.api.sample.IsSample;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -902,11 +902,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		return entities.stream().map(p -> convertToDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
-	private SamplePseudonymizer<SampleDto> createPseudonymizer(ISample sample) {
+	private SamplePseudonymizer<SampleDto> createPseudonymizer(IsSample sample) {
 		return createPseudonymizer(false, sample != null ? Collections.singleton(sample) : Collections.emptyList());
 	}
 
-	private <T extends ISample> SamplePseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends ISample> samples) {
+	private <T extends IsSample> SamplePseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends IsSample> samples) {
 		return sampleService.createPseudonymizer(withPlaceHolder, samples);
 	}
 

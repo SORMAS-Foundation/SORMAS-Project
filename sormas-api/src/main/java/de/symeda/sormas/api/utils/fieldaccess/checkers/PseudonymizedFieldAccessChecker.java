@@ -51,7 +51,7 @@ public final class PseudonymizedFieldAccessChecker<T> implements FieldAccessChec
 
 	@Override
 	public boolean hasRight(T object) {
-		throw new UnsupportedOperationException();
+		return hasRight();
 	}
 
 	private final class WrappedFieldAccessChecker extends AnnotationBasedFieldAccessChecker<T> {

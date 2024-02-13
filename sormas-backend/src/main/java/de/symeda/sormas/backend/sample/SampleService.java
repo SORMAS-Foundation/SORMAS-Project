@@ -58,7 +58,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -67,7 +67,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.sample.ISample;
+import de.symeda.sormas.api.sample.IsSample;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -320,20 +320,20 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return samples;
 	}
 
-	public <T extends ISample> SamplePseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends ISample> samples) {
+	public <T extends IsSample> SamplePseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends IsSample> samples) {
 
 		AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> specialAccessChecker = createSpecialAccessChecker(samples);
 		Pseudonymizer<T> rootPseudonymizer = withPlaceHolder
 			? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessChecker)
 			: Pseudonymizer.getDefault(userService, specialAccessChecker);
 
-		Collection<ICase> cases = samples.stream().map(ISample::getAssociatedCase).filter(Objects::nonNull).collect(Collectors.toList());
+		Collection<IsCase> cases = samples.stream().map(IsSample::getAssociatedCase).filter(Objects::nonNull).collect(Collectors.toList());
 
 		return new SamplePseudonymizer<>(rootPseudonymizer, caseFacade.createSimplePseudonymizer(cases), Pseudonymizer.getDefault(userService));
 	}
 
-	private <T extends ISample> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(
-		Collection<? extends ISample> samples) {
+	private <T extends IsSample> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(
+		Collection<? extends IsSample> samples) {
 		List<String> withSpecialAccess = specialCaseAccessService.getSampleUuidsWithSpecialAccess(samples);
 
 		return sample -> withSpecialAccess.contains(sample.getUuid());

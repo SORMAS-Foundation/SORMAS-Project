@@ -33,7 +33,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
-import de.symeda.sormas.api.travelentry.ITravelEntry;
+import de.symeda.sormas.api.travelentry.IsTravelEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
@@ -217,7 +217,7 @@ public class TravelEntryFacadeEjb
 		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(travelEntries));
 	}
 
-	private <T extends ITravelEntry> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends ITravelEntry> entries) {
+	private <T extends IsTravelEntry> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsTravelEntry> entries) {
 		List<String> specialAccessUuids = specialCaseAccessService.getTravelEntryUuidsWithSpecialAccess(entries);
 
 		return t -> specialAccessUuids.contains(t.getUuid());

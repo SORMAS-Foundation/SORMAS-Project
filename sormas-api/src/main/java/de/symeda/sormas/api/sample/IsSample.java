@@ -13,9 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-public interface ICase extends HasUuid {
+public interface IsSample extends HasUuid {
+
+	IsCase getAssociatedCase();
 }

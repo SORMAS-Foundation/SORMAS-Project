@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
-public class SampleDto extends SormasToSormasShareableDto implements ISample {
+public class SampleDto extends SormasToSormasShareableDto implements IsSample {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 

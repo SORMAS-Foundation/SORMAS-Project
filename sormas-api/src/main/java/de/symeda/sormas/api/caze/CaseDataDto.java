@@ -86,7 +86,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudeP
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
-public class CaseDataDto extends SormasToSormasShareableDto implements ICase {
+public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 	private static final long MILLISECONDS_30_DAYS = 30L * 24L * 60L * 60L * 1000L;

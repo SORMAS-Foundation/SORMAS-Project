@@ -34,7 +34,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class SampleIndexDto extends PseudonymizableIndexDto implements ISample, Serializable {
+public class SampleIndexDto extends PseudonymizableIndexDto implements IsSample, Serializable {
 
 	private static final long serialVersionUID = -6298614717044087479L;
 

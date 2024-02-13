@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
@@ -62,7 +62,7 @@ import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.task.ITask;
+import de.symeda.sormas.api.task.IsTask;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -338,19 +338,19 @@ public class TaskFacadeEjb implements TaskFacade {
 		return entities.stream().map(p -> toDto(p, pseudonymizer, jurisdictionFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
-	private <T extends ITask> TaskPseudonymizer<T> createPseudonymizer(ITask task) {
+	private <T extends IsTask> TaskPseudonymizer<T> createPseudonymizer(IsTask task) {
 		return createPseudonymizer(false, task != null ? Collections.singletonList(task) : Collections.emptyList());
 	}
 
-	private <T extends ITask> TaskPseudonymizer<T> createPseudonymizer(Collection<? extends ITask> tasks) {
+	private <T extends IsTask> TaskPseudonymizer<T> createPseudonymizer(Collection<? extends IsTask> tasks) {
 		return createPseudonymizer(false, tasks);
 	}
 
-	private <T extends ITask> TaskPseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends ITask> tasks) {
+	private <T extends IsTask> TaskPseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends IsTask> tasks) {
 		List<String> uuidsWithSpecialAccess = specialCaseAccessService.getTaskUuidsWithSpecialAccess(tasks);
 		SpecialAccessCheck<T> specialAccessCheck = t -> uuidsWithSpecialAccess.contains(t.getUuid());
 
-		List<ICase> associatedCases = tasks.stream()
+		List<IsCase> associatedCases = tasks.stream()
 			.flatMap(t -> Stream.of(t.getCaze(), t.getContact() != null ? t.getContact().getCaze() : null))
 			.filter(Objects::nonNull)
 			.collect(Collectors.toList());

@@ -16,10 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.contact;
+package de.symeda.sormas.api.travelentry;
 
-import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.uuid.HasUuid;
 
-public interface IContact {
-    ICase getCaze();
+public interface IsTravelEntry extends HasUuid {
 }

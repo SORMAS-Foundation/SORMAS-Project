@@ -20,9 +20,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.IContact;
+import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
@@ -36,7 +36,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
-public class TaskExportDto extends PseudonymizableIndexDto implements ITask, Serializable {
+public class TaskExportDto extends PseudonymizableIndexDto implements IsTask, Serializable {
 
 	private static final long serialVersionUID = 4762759594879661318L;
 
@@ -435,12 +435,12 @@ public class TaskExportDto extends PseudonymizableIndexDto implements ITask, Ser
 	}
 
 	@Override
-	public ICase getCaze() {
+	public IsCase getCaze() {
 		return new CaseReferenceDto(cazeUuid);
 	}
 
 	@Override
-	public IContact getContact() {
+	public IsContact getContact() {
 		return new ContactReferenceDto(contactUuid);
 	}
 }

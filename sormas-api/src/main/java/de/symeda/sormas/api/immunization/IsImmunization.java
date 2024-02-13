@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.travelentry;
+package de.symeda.sormas.api.immunization;
 
 import de.symeda.sormas.api.uuid.HasUuid;
 
-public interface ITravelEntry extends HasUuid {
+public interface IsImmunization extends HasUuid {
 }

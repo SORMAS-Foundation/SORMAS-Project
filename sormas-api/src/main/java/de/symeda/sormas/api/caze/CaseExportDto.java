@@ -81,7 +81,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
  * recommended to remove properties that are removed from this file from existing export configurations.
  */
 @ExportEntity(CaseDataDto.class)
-public class CaseExportDto extends AbstractUuidDto implements ICase {
+public class CaseExportDto extends AbstractUuidDto implements IsCase {
 
 	private static final long serialVersionUID = 8581579464816945555L;
 

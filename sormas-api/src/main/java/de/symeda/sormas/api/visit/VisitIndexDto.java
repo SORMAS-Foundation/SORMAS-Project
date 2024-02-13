@@ -10,7 +10,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class VisitIndexDto extends PseudonymizableIndexDto implements IVisit, Serializable {
+public class VisitIndexDto extends PseudonymizableIndexDto implements IsVisit, Serializable {
 
 	private static final long serialVersionUID = -2707325548819626469L;
 

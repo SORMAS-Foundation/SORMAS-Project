@@ -57,7 +57,6 @@ import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.immunization.IImmunization;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
@@ -68,6 +67,7 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -434,7 +434,7 @@ public class ImmunizationFacadeEjb
 		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(immunizations));
 	}
 
-	private <T extends IImmunization> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IImmunization> immunizations) {
+	private <T extends IsImmunization> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsImmunization> immunizations) {
 		List<String> specialAccessUuids = specialCaseAccessService.getImmunizationUuidsWithSpecialAccess(immunizations);
 
 		return i -> specialAccessUuids.contains(i.getUuid());

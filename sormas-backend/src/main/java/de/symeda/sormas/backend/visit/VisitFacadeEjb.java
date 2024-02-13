@@ -73,7 +73,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
-import de.symeda.sormas.api.visit.IVisit;
+import de.symeda.sormas.api.visit.IsVisit;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -590,7 +590,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(visits));
 	}
 
-	private <T extends IVisit> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IVisit> visits) {
+	private <T extends IsVisit> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsVisit> visits) {
 		List<String> specialAccessUuids = specialCaseAccessService.getVisitUuidsWithSpecialAccess(visits);
 
 		return t -> specialAccessUuids.contains(t.getUuid());

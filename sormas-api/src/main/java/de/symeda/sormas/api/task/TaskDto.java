@@ -42,7 +42,7 @@ import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 @DependingOnFeatureType(featureType = FeatureType.TASK_MANAGEMENT)
-public class TaskDto extends EntityDto implements ITask {
+public class TaskDto extends EntityDto implements IsTask {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 

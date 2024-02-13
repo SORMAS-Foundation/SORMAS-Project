@@ -111,8 +111,8 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
-import de.symeda.sormas.api.caze.ICase;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -4123,9 +4123,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return resultList;
 	}
 
-	private <T extends ICase> Pseudonymizer<T> createPseudonymizerForDtoWithClinician(
+	private <T extends IsCase> Pseudonymizer<T> createPseudonymizerForDtoWithClinician(
 		@Nullable String pseudonymizedValue,
-		Collection<? extends ICase> cases) {
+		Collection<? extends IsCase> cases) {
 		Pseudonymizer<T> pseudonymizer = Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), pseudonymizedValue);
 
 		UserRightFieldAccessChecker<T> clinicianViewRightChecker =
@@ -4136,16 +4136,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@PermitAll
-	public <T extends ICase> Pseudonymizer<T> createSimplePseudonymizer(Collection<? extends ICase> cases) {
+	public <T extends IsCase> Pseudonymizer<T> createSimplePseudonymizer(Collection<? extends IsCase> cases) {
 		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases));
 	}
 
 	@PermitAll
-	public <T extends ICase> Pseudonymizer<T> createSimplePlaceholderPseudonymizer(Collection<T> cases) {
+	public <T extends IsCase> Pseudonymizer<T> createSimplePlaceholderPseudonymizer(Collection<T> cases) {
 		return Pseudonymizer.getDefaultWithPlaceHolder(userService, createSpecialAccessChecker(cases));
 	}
 
-	private <T extends ICase> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends ICase> cases) {
+	private <T extends IsCase> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(
+		Collection<? extends IsCase> cases) {
 		List<String> withSpecialAccess = specialCaseAccessService.getCaseUuidsWithSpecialAccess(cases);
 
 		return caze -> withSpecialAccess.contains(caze.getUuid());

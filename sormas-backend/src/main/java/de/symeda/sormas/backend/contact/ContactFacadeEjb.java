@@ -77,7 +77,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
-import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -1700,7 +1700,7 @@ public class ContactFacadeEjb
 		return adoList.stream().map(p -> toPseudonymizedDto(p, pseudonymizer, jurisdictionsFlags.get(p.getId()))).collect(Collectors.toList());
 	}
 
-	private <T> ContactPseudonymizer<T> createContactPseudonymizer(Pseudonymizer<T> pseudonymizer, Stream<? extends ICase> associatedCases) {
+	private <T> ContactPseudonymizer<T> createContactPseudonymizer(Pseudonymizer<T> pseudonymizer, Stream<? extends IsCase> associatedCases) {
 		return new ContactPseudonymizer<>(
 			pseudonymizer,
 			caseFacade.createSimplePseudonymizer(associatedCases.filter(Objects::nonNull).collect(Collectors.toSet())),

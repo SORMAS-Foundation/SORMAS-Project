@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.api.task;
 
-import de.symeda.sormas.api.caze.ICase;
-import de.symeda.sormas.api.contact.IContact;
+import de.symeda.sormas.api.caze.IsCase;
+import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-public interface ITask extends HasUuid {
-    ICase getCaze();
-    IContact getContact();
+public interface IsTask extends HasUuid {
+
+	IsCase getCaze();
+
+	IsContact getContact();
 }

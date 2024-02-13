@@ -34,15 +34,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ICase;
-import de.symeda.sormas.api.immunization.IImmunization;
+import de.symeda.sormas.api.caze.IsCase;
+import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
-import de.symeda.sormas.api.sample.ISample;
-import de.symeda.sormas.api.task.ITask;
-import de.symeda.sormas.api.travelentry.ITravelEntry;
+import de.symeda.sormas.api.sample.IsSample;
+import de.symeda.sormas.api.task.IsTask;
+import de.symeda.sormas.api.travelentry.IsTravelEntry;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.uuid.HasUuid;
-import de.symeda.sormas.api.visit.IVisit;
+import de.symeda.sormas.api.visit.IsVisit;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -103,7 +103,7 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 			.forEach(this::deletePermanent);
 	}
 
-	public <T extends ICase> List<String> getCaseUuidsWithSpecialAccess(Collection<T> cases) {
+	public <T extends IsCase> List<String> getCaseUuidsWithSpecialAccess(Collection<T> cases) {
 		return getUuidsWithSpecialAccess(Case.class, r -> r, cases);
 	}
 
@@ -111,11 +111,11 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 		return getUuidsWithSpecialAccess(SurveillanceReport.class, r -> r.join(SurveillanceReport.CAZE), cases);
 	}
 
-	public List<String> getImmunizationUuidsWithSpecialAccess(Collection<? extends IImmunization> immunizations) {
+	public List<String> getImmunizationUuidsWithSpecialAccess(Collection<? extends IsImmunization> immunizations) {
 		return getUuidsWithSpecialAccess(Immunization.class, r -> r.join(Immunization.PERSON).join(Person.CASES), immunizations);
 	}
 
-	public List<String> getSampleUuidsWithSpecialAccess(Collection<? extends ISample> samples) {
+	public List<String> getSampleUuidsWithSpecialAccess(Collection<? extends IsSample> samples) {
 		return getUuidsWithSpecialAccess(Sample.class, r -> r.join(Sample.ASSOCIATED_CASE), samples);
 	}
 
@@ -123,11 +123,11 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 		return getUuidsWithSpecialAccess(PathogenTest.class, r -> r.join(PathogenTest.SAMPLE).join(Sample.ASSOCIATED_CASE), tests);
 	}
 
-	public List<String> getTaskUuidsWithSpecialAccess(Collection<? extends ITask> tasks) {
+	public List<String> getTaskUuidsWithSpecialAccess(Collection<? extends IsTask> tasks) {
 		return getUuidsWithSpecialAccess(Task.class, r -> r.join(Task.CAZE), tasks);
 	}
 
-	public List<String> getTravelEntryUuidsWithSpecialAccess(Collection<? extends ITravelEntry> entries) {
+	public List<String> getTravelEntryUuidsWithSpecialAccess(Collection<? extends IsTravelEntry> entries) {
 		return getUuidsWithSpecialAccess(TravelEntry.class, r -> r.join(TravelEntry.PERSON).join(Person.CASES), entries);
 	}
 
@@ -138,7 +138,7 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 			vaccinations);
 	}
 
-	public List<String> getVisitUuidsWithSpecialAccess(Collection<? extends IVisit> visits) {
+	public List<String> getVisitUuidsWithSpecialAccess(Collection<? extends IsVisit> visits) {
 		return getUuidsWithSpecialAccess(Visit.class, r -> r.join(Visit.CAZE), visits);
 	}
 

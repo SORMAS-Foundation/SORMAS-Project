@@ -42,7 +42,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class TaskIndexDto extends PseudonymizableIndexDto implements ITask {
+public class TaskIndexDto extends PseudonymizableIndexDto implements IsTask {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 

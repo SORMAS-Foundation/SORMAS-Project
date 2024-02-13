@@ -29,7 +29,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ICase;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -49,7 +49,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class SampleExportDto extends AbstractUuidDto implements ISample {
+public class SampleExportDto extends AbstractUuidDto implements IsSample {
 
 	private static final long serialVersionUID = -3027326087594387560L;
 
@@ -878,7 +878,7 @@ public class SampleExportDto extends AbstractUuidDto implements ISample {
 	}
 
 	@Override
-	public ICase getAssociatedCase() {
+	public IsCase getAssociatedCase() {
 		return new CaseReferenceDto(caseUuid);
 	}
 

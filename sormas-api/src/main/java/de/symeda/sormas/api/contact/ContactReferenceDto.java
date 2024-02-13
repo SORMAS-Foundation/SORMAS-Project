@@ -34,7 +34,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.CONTACT_TRACING)
-public class ContactReferenceDto extends ReferenceDto implements IContact {
+public class ContactReferenceDto extends ReferenceDto implements IsContact {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 

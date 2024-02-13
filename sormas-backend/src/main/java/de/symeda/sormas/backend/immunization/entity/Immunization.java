@@ -18,13 +18,13 @@ package de.symeda.sormas.backend.immunization.entity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import de.symeda.sormas.api.immunization.IImmunization;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.IsImmunization;
 
 @Entity(name = "immunization")
 @Table(name = "immunization")
-public class Immunization extends BaseImmunization implements IImmunization {
+public class Immunization extends BaseImmunization implements IsImmunization {
 
 	public static final String TABLE_NAME = "immunization";
 
