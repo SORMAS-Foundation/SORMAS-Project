@@ -77,7 +77,9 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 	protected void addFields() {
 		addField(VaccinationDto.REPORT_DATE).setRequired(true);
 
-		addField(VaccinationDto.REPORTING_USER, UserField.class).setReadOnly(true);
+		UserField reportingUser = addField(VaccinationDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUser.setReadOnly(true);
 
 		addField(VaccinationDto.VACCINATION_DATE);
 		Field vaccineName = addField(VaccinationDto.VACCINE_NAME);

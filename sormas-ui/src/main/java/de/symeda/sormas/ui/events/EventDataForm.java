@@ -362,7 +362,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		});
 
 		DateField reportDate = addField(EventDto.REPORT_DATE_TIME, DateField.class);
-		addField(EventDto.REPORTING_USER, UserField.class);
+
+		UserField reportingUser = addField(EventDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+
 		addField(EventDto.TRANSREGIONAL_OUTBREAK, NullableOptionGroup.class);
 
 		ComboBox srcType = addField(EventDto.SRC_TYPE);
@@ -405,6 +408,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
 		UserField responsibleUserField = addField(EventDto.RESPONSIBLE_USER, UserField.class);
+		responsibleUserField.setParentPseudonymizedSupplier(()-> getValue().isPseudonymized());
 		responsibleUserField.setEnabled(true);
 
 		addField(EventDto.DELETION_REASON);

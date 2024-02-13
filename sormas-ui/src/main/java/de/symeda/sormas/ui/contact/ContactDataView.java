@@ -216,7 +216,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
 				this::showUnsavedChangesPopup,
-				editAllowed);
+				editAllowed,
+				SampleAssociationType.CONTACT);
 			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}

@@ -111,6 +111,7 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 		contentBinding.vaccinationVaccinationInfoSource.initializeSpinner(vaccineInfoSourceList);
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
 		contentBinding.vaccinationVaccinationDate.initializeDateField(getFragmentManager());
+		contentBinding.immunizationReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override
