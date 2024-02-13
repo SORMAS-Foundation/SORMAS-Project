@@ -734,11 +734,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		// Disable fields according to user & jurisdiction
 		if (userJurisdictionLevel == JurisdictionLevel.DISTRICT) {
-			clearAndDisableFields(districtField);
+			disableFields(districtField);
 		} else if (userJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
-			clearAndDisableFields(districtField, communityField);
+			disableFields(districtField, communityField);
 		} else if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			clearAndDisableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
+			disableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
