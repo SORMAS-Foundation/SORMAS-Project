@@ -32,7 +32,6 @@ public class UserField extends CustomField<UserReferenceDto> {
 	private boolean readOnly;
 	private boolean enabled;
 	private List<UserReferenceDto> items = new ArrayList<>();
-	private boolean parentPseudonymizedFlag;
 	private Supplier<Boolean> parentPseudonymizedSupplier;
 
 	public UserField() {
@@ -148,7 +147,7 @@ public class UserField extends CustomField<UserReferenceDto> {
 					createFieldLayout(I18nProperties.getCaption(Captions.User_userEmail), userDto.getUserEmail(), LinkType.EMAIL, false));
 			}
 		} else {
-			parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
+			boolean parentPseudonymizedFlag = parentPseudonymizedSupplier.get();
 			if (userDto == null && !parentPseudonymizedFlag) {
 				HorizontalLayout labelLayout = new HorizontalLayout();
 				Label noUserMessageLabel = new Label();
