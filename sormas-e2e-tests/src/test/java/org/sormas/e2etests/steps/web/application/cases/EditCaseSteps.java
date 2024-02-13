@@ -2997,7 +2997,7 @@ public class EditCaseSteps implements En {
     And(
         "^I check if editable fields are read only for shared case/contact$",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditCasePage.UUID_INPUT);
+          webDriverHelpers.waitForElementPresent(EditCasePage.UUID_INPUT, 15);
           webDriverHelpers.isElementGreyedOut(EditCasePage.UUID_INPUT);
           webDriverHelpers.isElementGreyedOut(EditCasePage.SAVE_BUTTON);
         });
