@@ -515,7 +515,7 @@ public class EditContactSteps implements En {
     When(
         "I click to accept potential duplicate in Shares Page",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACTION_CONFIRM);
+          webDriverHelpers.waitForElementPresent(ACTION_CONFIRM, 2);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
         });
     When(
@@ -804,8 +804,7 @@ public class EditContactSteps implements En {
     When(
         "^I click Link Event button on Edit Contact Page$",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.waitForElementPresent(LINK_EVENT_BUTTON, 2);
           webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
         });
     When(
@@ -1102,8 +1101,7 @@ public class EditContactSteps implements En {
     When(
         "I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.waitForElementPresent(EXPECTED_FOLLOWUP_LABEL, 2);
           webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
@@ -1124,8 +1122,7 @@ public class EditContactSteps implements En {
     When(
         "I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.waitForElementPresent(EXPECTED_FOLLOWUP_LABEL, 2);
           webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
@@ -1405,7 +1402,7 @@ public class EditContactSteps implements En {
     When(
         "I check if Follow up until date is ([^\"]*) days after last created API contact report date",
         (Integer days) -> {
-          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForElementPresent(FOLLOW_UP_UNTIL_DATE, 3);
           String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
           softly.assertEquals(
               DateTimeFormatter.ofPattern("dd.MM.yyyy")

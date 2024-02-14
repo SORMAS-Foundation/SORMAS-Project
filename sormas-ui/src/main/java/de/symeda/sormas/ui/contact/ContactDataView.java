@@ -216,9 +216,9 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
 				this::showUnsavedChangesPopup,
-				editAllowed);
-			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
+				editAllowed,
+				SampleAssociationType.CONTACT);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
@@ -294,7 +294,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forContact(contactDto, editAllowed, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forContact(contactDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

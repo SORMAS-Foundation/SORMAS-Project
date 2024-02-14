@@ -21,7 +21,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public class EventParticipantsFilterForm extends AbstractFilterForm<EventParticipantCriteria> {
 
 	protected EventParticipantsFilterForm() {
-		super(EventParticipantCriteria.class, EventParticipantIndexDto.I18N_PREFIX);
+		super(EventParticipantCriteria.class, EventParticipantIndexDto.I18N_PREFIX, null);
 	}
 
 	@Override
@@ -39,7 +39,11 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 	@Override
 	protected void addFields() {
 
-		addBirthDateFields(getContent(), EventParticipantCriteria.BIRTHDATE_YYYY, EventParticipantCriteria.BIRTHDATE_MM, EventParticipantCriteria.BIRTHDATE_DD);
+		addBirthDateFields(
+			getContent(),
+			EventParticipantCriteria.BIRTHDATE_YYYY,
+			EventParticipantCriteria.BIRTHDATE_MM,
+			EventParticipantCriteria.BIRTHDATE_DD);
 
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(

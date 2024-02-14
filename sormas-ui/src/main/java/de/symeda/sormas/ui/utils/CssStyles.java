@@ -56,6 +56,7 @@ public final class CssStyles {
 	public static final String VSPACE_TOP_3 = "vspace-top-3";
 	public static final String VSPACE_TOP_4 = "vspace-top-4";
 	public static final String VSPACE_TOP_5 = "vspace-top-5";
+	public static final String VSPACE_TOP_6 = "vspace-top-6";
 	public static final String VSPACE_TOP_NONE = "vspace-top-none";
 
 	// Horizontal space

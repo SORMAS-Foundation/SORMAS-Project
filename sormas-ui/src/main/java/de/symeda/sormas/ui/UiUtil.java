@@ -24,7 +24,11 @@ public class UiUtil {
 	}
 
 	public static boolean enabled(FeatureType featureType) {
-		return !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(featureType);
+		return !disabled(featureType);
+	}
+
+	public static boolean disabled(FeatureType featureType) {
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(featureType);
 	}
 
 	public static boolean enabled(Set<FeatureType> features) {

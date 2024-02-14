@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -135,19 +136,20 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		HorizontalLayout personDetailsLayout2 = new HorizontalLayout();
 		personDetailsLayout2.setSpacing(true);
 
-		addLabelIfVisible(
-			personDetailsLayout2,
-			referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().buildCaption() : "",
-			LocationDto.I18N_PREFIX,
-			LocationDto.DISTRICT,
-			LocationDto.class);
-
-		addLabelIfVisible(
-			personDetailsLayout2,
-			referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().buildCaption() : "",
-			LocationDto.I18N_PREFIX,
-			LocationDto.COMMUNITY,
-			LocationDto.class);
+		if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			addLabelIfVisible(
+				personDetailsLayout2,
+				referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().buildCaption() : "",
+				LocationDto.I18N_PREFIX,
+				LocationDto.DISTRICT,
+				LocationDto.class);
+			addLabelIfVisible(
+				personDetailsLayout2,
+				referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().buildCaption() : "",
+				LocationDto.I18N_PREFIX,
+				LocationDto.COMMUNITY,
+				LocationDto.class);
+		}
 
 		addLabelIfVisible(
 			personDetailsLayout2,

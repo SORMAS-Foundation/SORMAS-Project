@@ -29,6 +29,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -54,6 +55,8 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 	private boolean jurisdictionFieldsRequired;
 	private boolean personDetailsAlwaysEditable;
 	private Button searchPersonButton;
+	private ComboBox region;
+	private ComboBox district;
 
 	public EventParticipantCreateForm(boolean jurisdictionFieldsRequired) {
 
@@ -82,9 +85,9 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		ComboBox sex = addCustomField(PERSON_SEX, Sex.class, ComboBox.class);
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
 
-		ComboBox region = addInfrastructureField(EventParticipantDto.REGION);
+		region = addInfrastructureField(EventParticipantDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(EventParticipantDto.I18N_PREFIX, EventParticipantDto.REGION));
-		ComboBox district = addInfrastructureField(EventParticipantDto.DISTRICT);
+		district = addInfrastructureField(EventParticipantDto.DISTRICT);
 		district.setDescription(I18nProperties.getPrefixDescription(EventParticipantDto.I18N_PREFIX, EventParticipantDto.DISTRICT));
 
 		region.addValueChangeListener(e -> {
@@ -131,6 +134,13 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		}
 
 		setRequired(jurisdictionFieldsRequired, EventParticipantDto.REGION, EventParticipantDto.DISTRICT);
+	}
+
+	private void hideAndFillJurisdictionFields() {
+		region.setVisible(false);
+		region.setValue(FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		district.setVisible(false);
+		district.setValue(FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
 	}
 
 	/**
@@ -180,5 +190,14 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		getField(PersonDto.FIRST_NAME).setEnabled(enable);
 		getField(PersonDto.LAST_NAME).setEnabled(enable);
 		getField(PersonDto.SEX).setEnabled(enable);
+	}
+
+	@Override
+	protected void setInternalValue(EventParticipantDto newValue) {
+		super.setInternalValue(newValue);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFields();
+		}
 	}
 }

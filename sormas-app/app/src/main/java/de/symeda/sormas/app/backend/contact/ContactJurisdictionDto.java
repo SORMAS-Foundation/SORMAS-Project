@@ -45,6 +45,8 @@ public class ContactJurisdictionDto implements Serializable {
 
 	private CaseJurisdictionDto caseJurisdiction;
 
+	private String contactOfficerUuid;
+
 	public ContactJurisdictionDto() {
 
 	}
@@ -109,5 +111,14 @@ public class ContactJurisdictionDto implements Serializable {
 
 	public void setSampleLabUuids(List<String> sampleLabUuids) {
 		this.sampleLabUuids = sampleLabUuids;
+	}
+
+	public String getContactOfficerUuid() {
+		return contactOfficerUuid;
+	}
+
+	public ContactJurisdictionDto setContactOfficerUuid(String contactOfficerUuid) {
+		this.contactOfficerUuid = contactOfficerUuid;
+		return this;
 	}
 }

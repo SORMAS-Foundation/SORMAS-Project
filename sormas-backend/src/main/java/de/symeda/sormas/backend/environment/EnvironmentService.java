@@ -90,7 +90,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		final EnvironmentJoins environmentJoins = queryContext.getJoins();
 		final From<?, Environment> environmentJoin = queryContext.getRoot();
 
-		if (currentUserHasRestrictedAccessToAssignedEntities()) {
+		if (isRestrictedToAssignedEntities()) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(environmentJoin.get(Environment.RESPONSIBLE_USER).get(User.ID), currentUser.getId()));
 		} else {
@@ -401,10 +401,6 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 	public EditPermissionType getEditPermissionType(Environment environment) {
 		if (!inJurisdictionOrOwned(environment)) {
 			return EditPermissionType.OUTSIDE_JURISDICTION;
-		}
-
-		if (currentUserHasRestrictedAccessToAssignedEntities() && !DataHelper.equal(environment.getResponsibleUser(), getCurrentUser())) {
-			return EditPermissionType.REFUSED;
 		}
 
 		return super.getEditPermissionType(environment);

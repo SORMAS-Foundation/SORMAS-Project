@@ -22,8 +22,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -140,9 +138,9 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE).disease(caze.getDisease()),
 				this::showUnsavedChangesPopup,
-				isEditAllowed);
-			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase), isEditAllowed);
+				isEditAllowed,
+				SampleAssociationType.CASE);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
@@ -225,7 +223,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forCase(caze, isEditAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forCase(caze, isEditAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

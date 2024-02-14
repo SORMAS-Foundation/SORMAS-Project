@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class EventParticipantsPage {
   public static final By ADD_PARTICIPANT_BUTTON = By.cssSelector("div#eventParticipantAddPerson");
+  public static final By EVENT_PARTICIPANT_UUID_INPUT = By.cssSelector("input#uuid");
   public static final By PARTICIPANT_FIRST_NAME_INPUT = By.cssSelector(".popupContent #firstName");
   public static final By PARTICIPANT_LAST_NAME_INPUT = By.cssSelector(".popupContent #lastName");
   public static final By PARTICIPANT_REGION_COMBOBOX = By.cssSelector(".popupContent #region div");
@@ -31,14 +32,19 @@ public class EventParticipantsPage {
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
   public static final By SEX_COMBOBOX_REQUIRED =
       By.xpath("//div[@id='sex' and contains(@class, 'v-required v-filterselect-required')]");
+  public static final By PICK_OR_CASE_PERSON_POPUP =
+      By.xpath("//*[contains(text(),'Pick or Create a Case')]");
   public static final By PICK_OR_CREATE_PERSON_POPUP =
       By.xpath("//*[contains(text(),'Pick or create person')]");
   public static final By PICK_OR_CREATE_CONTACT_POPUP =
       By.xpath("//*[contains(text(),'Pick or create contact')]");
   public static final By CREATE_NEW_PERSON_RADIO_BUTTON =
       By.xpath("//label[contains(text(),'Create a new person')]");
+  public static final By CREATE_NEW_CASE_RADIO_BUTTON =
+      By.xpath("//label[contains(text(),'Create a new case')]");
   public static final By EVENT_PARTICIPANTS_TAB = By.id("tab-events-eventparticipants");
   public static final By PICK_OR_CREATE_POPUP_SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By PICK_OR_CASE_POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By ERROR_MESSAGE_TEXT = By.cssSelector("p.v-Notification-description");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
@@ -72,6 +78,8 @@ public class EventParticipantsPage {
   public static final By ENTER_BULK_EDIT_MODE_BUTTON = By.id("actionEnterBulkEditMode");
   public static final By EVENT_PARTICIPANTS_GRID =
       By.xpath("//div[@class='v-grid v-widget v-has-width v-has-height']");
+  public static final By EVENT_PARTICIPANTS =
+      By.cssSelector(".v-tabsheet-tabitem.v-layout.v-widget.back");
   public static final By EVENT_PARTICIPANT_PERSON_TAB =
       By.cssSelector("#tab-events-eventparticipants-person");
   public static final By EVENT_PARTICIPANT_DATA_TAB =

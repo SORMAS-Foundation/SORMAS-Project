@@ -75,7 +75,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	//@formatter:off
     protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-            fluidRowLocs(SampleDto.UUID, REPORT_INFO_LABEL_LOC, SampleDto.REPORTING_USER) +
+            fluidRowLocs(4, SampleDto.UUID, 4, REPORT_INFO_LABEL_LOC, 3,SampleDto.REPORTING_USER, 1, "") +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
@@ -245,8 +245,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LABEL_LOC);
-		addField(SampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
-
+		UserField reportingUserField = addField(SampleDto.REPORTING_USER, UserField.class);
+		reportingUserField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUserField.setReadOnly(true);
 	}
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {

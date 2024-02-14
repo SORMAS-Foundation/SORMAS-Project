@@ -3,7 +3,9 @@ package de.symeda.sormas.backend.immunization;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -33,6 +36,8 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -143,7 +148,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	private List<Long> getIndexListIds(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();;
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<DirectoryImmunization> immunization = cq.from(DirectoryImmunization.class);
 
 		DirectoryImmunizationQueryContext directoryImmunizationQueryContext = new DirectoryImmunizationQueryContext(cb, cq, immunization);
@@ -396,8 +401,9 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			return null;
 		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		Predicate filter = null;
 
-		Predicate filter = isInJurisdictionOrOwned(qc);
+			filter = isInJurisdictionOrOwned(qc);
 
 		filter = CriteriaBuilderHelper
 			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));
@@ -417,7 +423,12 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 				cb,
 				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
-					.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, personService.getPermittedAssociations())
+					.of(
+						qc.getQuery(),
+						cb,
+						new PersonJoins(qc.getJoins().getPerson()),
+						currentUser,
+						new HashSet<>(Arrays.asList(PersonAssociation.CASE, PersonAssociation.CONTACT, PersonAssociation.EVENT_PARTICIPANT)))
 					.inJurisdictionOrOwned());
 		}
 		return filter;

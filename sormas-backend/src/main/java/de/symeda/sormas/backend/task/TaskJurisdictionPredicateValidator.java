@@ -21,12 +21,15 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventQueryContext;
+import de.symeda.sormas.backend.immunization.ImmunizationJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
@@ -61,16 +64,36 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
-		final Predicate createdByCurrentUser = cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), user.getUuid()));
+		final Predicate createdByCurrentUser = getCreatedByCurrentUser();
+		final Predicate assignedToCurrentUser = getAssignedToCurrentUser();
+		return cb.or(createdByCurrentUser, assignedToCurrentUser, isRootInJurisdiction());
+	}
 
+	private Predicate getAssignedToCurrentUser() {
 		final Predicate assignedToCurrentUser =
 			cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), user.getUuid()));
-		return cb.or(createdByCurrentUser, assignedToCurrentUser, isRootInJurisdiction());
+		return assignedToCurrentUser;
+	}
+
+	private Predicate getCreatedByCurrentUser() {
+		return cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), user.getUuid()));
 	}
 
 	@Override
 	public Predicate isRootInJurisdiction() {
 		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		final Predicate createdByCurrentUser = getCreatedByCurrentUser();
+		final Predicate assignedToCurrentUser = getAssignedToCurrentUser();
+
+		List<Predicate> associationPredicates = new ArrayList<>(associatedJurisdictionValidators.size());
+		for (JurisdictionValidator<Predicate> associatedJurisdictionValidator : associatedJurisdictionValidators) {
+				associationPredicates.add(associatedJurisdictionValidator.isRootInJurisdictionForRestrictedAccess());
+		}
+		return cb.or(createdByCurrentUser, assignedToCurrentUser, or(associationPredicates));
 	}
 
 	@Override

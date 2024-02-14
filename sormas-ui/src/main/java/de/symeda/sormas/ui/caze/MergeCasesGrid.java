@@ -15,11 +15,13 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseMergeIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 
 public class MergeCasesGrid extends AbstractMergeGrid<CaseMergeIndexDto, CaseCriteria> {
@@ -78,6 +80,10 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseMergeIndexDto, CaseCri
 					value.getDateOfBirthMM(),
 					value.getDateOfBirthYYYY()),
 			new TextRenderer());
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME).setHidden(true);
+		}
 	}
 
 	@Override

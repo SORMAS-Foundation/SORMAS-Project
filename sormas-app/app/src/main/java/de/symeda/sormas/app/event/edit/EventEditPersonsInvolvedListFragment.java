@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.event.edit;
 
+import java.util.List;
+
 import android.os.Bundle;
 import android.view.View;
 
@@ -23,10 +25,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
@@ -35,6 +37,7 @@ import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
 import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListAdapter;
 import de.symeda.sormas.app.event.eventparticipant.list.EventParticipantListViewModel;
+import de.symeda.sormas.app.event.eventparticipant.read.EventParticipantReadActivity;
 
 public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<EventParticipant>, Event>
 	implements OnListItemClickListener {
@@ -106,8 +109,13 @@ public class EventEditPersonsInvolvedListFragment extends BaseEditFragment<Fragm
 
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
+
 		EventParticipant o = (EventParticipant) item;
-		EventParticipantEditActivity
-			.startActivity(getContext(), o.getUuid(), getActivityRootData().getUuid(), EventParticipantSection.EVENT_PARTICIPANT_INFO);
+		if (ConfigProvider.hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+			EventParticipantEditActivity
+				.startActivity(getContext(), o.getUuid(), getActivityRootData().getUuid(), EventParticipantSection.EVENT_PARTICIPANT_INFO);
+		} else {
+			EventParticipantReadActivity.startActivity(getContext(), o.getUuid(), getActivityRootData().getUuid());
+		}
 	}
 }

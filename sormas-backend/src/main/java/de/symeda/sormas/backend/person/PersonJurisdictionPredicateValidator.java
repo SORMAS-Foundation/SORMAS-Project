@@ -24,6 +24,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
@@ -99,6 +100,19 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 		// Fallback if no associatedJurisdictionValidator was linked: No persons can to be identified by permitted explicit associations
 		return cb.disjunction();
+	}
+
+	@Override
+	public Predicate isRootInJurisdictionForRestrictedAccess() {
+		List<Predicate> associationPredicates = new ArrayList<>(associatedJurisdictionValidators.size());
+		for (JurisdictionValidator<Predicate> associatedJurisdictionValidator : associatedJurisdictionValidators) {
+			if (!TravelEntryJurisdictionPredicateValidator.class.isAssignableFrom(associatedJurisdictionValidator.getClass())
+				&& !ImmunizationJurisdictionPredicateValidator.class.isAssignableFrom(associatedJurisdictionValidator.getClass())) {
+				associationPredicates.add(associatedJurisdictionValidator.isRootInJurisdictionForRestrictedAccess());
+			}
+		}
+		return or(associationPredicates);
+
 	}
 
 	@Override

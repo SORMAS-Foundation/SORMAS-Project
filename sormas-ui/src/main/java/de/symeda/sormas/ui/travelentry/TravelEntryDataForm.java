@@ -69,7 +69,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(TRAVEL_ENTRY_HEADING_LOC) +
-					fluidRowLocs(4, TravelEntryDto.UUID, 3, TravelEntryDto.REPORT_DATE, 5, TravelEntryDto.REPORTING_USER) +
+					fluidRowLocs(4, TravelEntryDto.UUID, 3, TravelEntryDto.REPORT_DATE, 3, TravelEntryDto.REPORTING_USER, 2, "") +
 					fluidRowLocs(4, TravelEntryDto.EXTERNAL_ID)
 			+ fluidRow(
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
@@ -144,13 +144,15 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		addField(TravelEntryDto.REPORT_DATE, DateField.class);
 
 		addFields(TravelEntryDto.UUID);
-		addField(TravelEntryDto.REPORTING_USER, UserField.class);
+
+		UserField reportingUser = addField(TravelEntryDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseVariantField = addCustomizableEnumField(TravelEntryDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);

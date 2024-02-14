@@ -21,12 +21,13 @@ package de.symeda.sormas.app.backend.immunization;
 import java.io.Serializable;
 
 import de.symeda.sormas.app.backend.caze.ResponsibleJurisdictionDto;
+import de.symeda.sormas.app.backend.person.PersonJurisdictionDto;
 
 public class ImmunizationJurisdictionDto implements Serializable {
 
     private String reportingUserUuid;
     private ResponsibleJurisdictionDto responsibleJurisdiction;
-
+	private PersonJurisdictionDto personJurisdiction;
     public ImmunizationJurisdictionDto() {
     }
 
@@ -52,4 +53,12 @@ public class ImmunizationJurisdictionDto implements Serializable {
     public void setResponsibleJurisdiction(ResponsibleJurisdictionDto responsibleJurisdiction) {
         this.responsibleJurisdiction = responsibleJurisdiction;
     }
+
+	public PersonJurisdictionDto getPersonJurisdiction() {
+		return personJurisdiction;
+	}
+
+	public void setPersonJurisdiction(PersonJurisdictionDto personJurisdiction) {
+		this.personJurisdiction = personJurisdiction;
+	}
 }

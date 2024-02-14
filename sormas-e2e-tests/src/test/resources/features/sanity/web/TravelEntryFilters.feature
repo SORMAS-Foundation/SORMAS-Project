@@ -72,11 +72,11 @@ Scenario: Check Travel Entry filters
     And I click APPLY BUTTON in Travel Entry Directory Page
     And I check that number of displayed Travel Entry results is 0
     And I apply "Nach Epi Woche" to data filter option combobox on Travel Entry directory page
-    And I apply the last epi week for week from combobox on Travel Entry directory page
-    And I apply the last epi week for week to combobox on Travel Entry directory page
+    And I set the last epi week date in week from combobox field on Travel Entry directory page
+    And I set the last epi week date in week to combobox field on Travel Entry directory page
     And I click APPLY BUTTON in Travel Entry Directory Page
     And I check that number of displayed Travel Entry results is 1
-    Then I apply the week before the last epi week for week to combobox on Travel Entry directory page
+    Then I set the last epi week before date in week to combobox field on Travel Entry directory page
     And I click APPLY BUTTON in Travel Entry Directory Page
     And I check that number of displayed Travel Entry results is 0
 

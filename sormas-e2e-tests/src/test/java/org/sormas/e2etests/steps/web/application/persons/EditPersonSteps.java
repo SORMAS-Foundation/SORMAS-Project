@@ -70,6 +70,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAG
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MAP_CONTAINER_EDIT_PERSON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NEW_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT;
@@ -85,6 +86,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_C
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CONTACTS_FOR_PERSON_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CONTACTS_FOR_PERSON_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_SAMPLES_FOR_PERSON_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEX_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STREET_INPUT;
@@ -199,8 +201,8 @@ public class EditPersonSteps implements En {
     When(
         "I check that new edited person is correctly displayed in Edit Person page",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForElementPresent(PRESENT_CONDITION_INPUT, 2);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(PRESENT_CONDITION_INPUT);
           collectedPerson = collectPersonData();
           TimeUnit.SECONDS.sleep(2); // wait for reaction
@@ -271,6 +273,12 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
+        });
+    Then(
+        "I click on See Samples for this Person button from Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_PERSON_BUTTON);
         });
     Then(
         "I check if data of created immunization is in Immunization tab on Edit Person Page",
@@ -394,6 +402,13 @@ public class EditPersonSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON_BUTTON);
           //    webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
           //    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+
+    Then(
+        "I click on NEW CASE button from Edit Person page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_CASE_BUTTON);
         });
 
     Then(

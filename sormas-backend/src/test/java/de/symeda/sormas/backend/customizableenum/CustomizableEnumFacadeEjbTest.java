@@ -29,12 +29,14 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 			diseases.add(Disease.CORONAVIRUS);
 			entry.setDiseases(diseases);
 			entry.setCaption("BF.1.2 variant");
+			entry.setActive(true);
 			getCustomizableEnumValueService().ensurePersisted(entry);
 
 			entry = new CustomizableEnumValue();
 			entry.setDataType(CustomizableEnumType.DISEASE_VARIANT);
 			entry.setValue("GENERIC");
 			entry.setCaption("Variant 2");
+			entry.setActive(true);
 			getCustomizableEnumValueService().ensurePersisted(entry);
 
 			getCustomizableEnumFacade().loadData();
