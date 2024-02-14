@@ -72,7 +72,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
@@ -128,6 +128,7 @@ import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -178,6 +179,8 @@ public class UserFacadeEjb implements UserFacade {
 	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private UserRoleService userRoleService;
+	@EJB
+	private PersonService personService;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -953,24 +956,20 @@ public class UserFacadeEjb implements UserFacade {
 				Arrays.asList(UserRight.CASE_RESPONSIBLE))
 			.stream()
 			.map(userReference -> userService.getByUuid(userReference.getUuid()))
+			.filter(user -> !UserHelper.isRestrictedToAssignEntities(user))
 			.collect(Collectors.toList());
 		return possibleUserForReplacement;
 	}
 
 	private Set<User> getPossibleUsersBasedOnCasesFacility(List<Case> cases) {
-		Set<Facility> possibleFacilities = cases.stream().map(Case::getHealthFacility).collect(Collectors.toSet());
-
-		Set<User> possibleUsersForAvailableFacilities = new HashSet<>();
-
-		possibleFacilities.forEach(facility -> {
-			if (facility != null
-				&& !FacilityDto.NONE_FACILITY_UUID.equals(facility.getUuid())
-				&& !FacilityDto.OTHER_FACILITY_UUID.equals(facility.getUuid())) {
-				possibleUsersForAvailableFacilities.addAll(userService.getFacilityUsersOfHospital(facility));
-			}
-		});
-
-		return possibleUsersForAvailableFacilities;
+		return cases.stream()
+			.map(Case::getHealthFacility)
+			.filter(Objects::nonNull)
+			.filter(f -> f.getType() == FacilityType.HOSPITAL)
+			.distinct()
+			.map(userService::getFacilityUsersOfHospital)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toSet());
 	}
 
 	@Override

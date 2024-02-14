@@ -2200,6 +2200,7 @@ public class TestDataCreator {
 		diseases.add(disease);
 		diseaseVariant.setDiseases(diseases);
 		diseaseVariant.setCaption(name + " variant");
+		diseaseVariant.setActive(true);
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(diseaseVariant);
 
@@ -2212,6 +2213,7 @@ public class TestDataCreator {
 		pathogen.setDataType(CustomizableEnumType.PATHOGEN);
 		pathogen.setValue(value);
 		pathogen.setCaption(caption);
+		pathogen.setActive(true);
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(pathogen);
 

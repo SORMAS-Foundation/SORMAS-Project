@@ -350,6 +350,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserHelper;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleService;
@@ -2442,7 +2443,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				Random rand = new Random();
 
 				if (!hospitalUsers.isEmpty()) {
-					caze.setSurveillanceOfficer(hospitalUsers.get(rand.nextInt(hospitalUsers.size())).getAssociatedOfficer());
+					caze.setSurveillanceOfficer(
+						hospitalUsers.stream()
+							.filter(user -> !UserHelper.isRestrictedToAssignEntities(user))
+							.collect(Collectors.toList())
+							.get(rand.nextInt(hospitalUsers.size()))
+							.getAssociatedOfficer());
 				}
 
 				else {

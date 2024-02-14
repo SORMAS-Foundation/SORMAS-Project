@@ -27,7 +27,11 @@ import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAN_BE_R
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAN_BE_RESPONSIBLE_FOR_A_CASE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CAPTION_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.CREATE_NEW_USERS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_ACTIONS_FROM_THE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_ACTIONS_FROM_THE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_EVENTS_FROM_THE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_EVENTS_FROM_THE_CHECKBOX_VALUE;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLES_FROM_THE_SYSTEM_CHECKBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DELETE_USER_ROLE_BUTTON;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.DISCARD_BUTTON;
@@ -188,6 +192,31 @@ public class UserRolesSteps implements En {
               3);
         });
 
+    Then(
+        "I check that checkbox \"([^\"]*)\" is \"([^\"]*)\"",
+        (String checkboxName, String option) -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.scrollToElement(
+              By.xpath(String.format("//label[text()='%s']", checkboxName)));
+
+          Boolean checkboxValue =
+              webDriverHelpers.isElementChecked(
+                  By.xpath(
+                      String.format(
+                          "//label[text()='%s']/preceding-sibling::input", checkboxName)));
+          System.out.print(checkboxValue);
+          switch (option) {
+            case "checked":
+              softly.assertTrue(checkboxValue, "Right is not checked");
+              softly.assertAll();
+              break;
+            case "unchecked":
+              softly.assertFalse(checkboxValue, "Right is checked");
+              softly.assertAll();
+              break;
+          }
+        });
+
     And(
         "^I click checkbox to uncheck \"([^\"]*)\"$",
         (String checkboxLabel) -> {
@@ -290,6 +319,21 @@ public class UserRolesSteps implements En {
               webDriverHelpers.waitUntilIdentifiedElementIsPresent(WORK_WITH_MESSAGES_CHECKBOX);
               checkboxState = webDriverHelpers.isElementChecked(WORK_WITH_MESSAGES_CHECKBOX_VALUE);
               uncheckCheckbox(checkboxState, WORK_WITH_MESSAGES_CHECKBOX);
+              break;
+            case "Delete actions from the system":
+              webDriverHelpers.scrollToElement(DELETE_ACTIONS_FROM_THE_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                  DELETE_ACTIONS_FROM_THE_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(DELETE_ACTIONS_FROM_THE_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, DELETE_ACTIONS_FROM_THE_CHECKBOX);
+              break;
+            case "Delete events from the system":
+              webDriverHelpers.scrollToElement(DELETE_EVENTS_FROM_THE_CHECKBOX);
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_EVENTS_FROM_THE_CHECKBOX);
+              checkboxState =
+                  webDriverHelpers.isElementChecked(DELETE_EVENTS_FROM_THE_CHECKBOX_VALUE);
+              uncheckCheckbox(checkboxState, DELETE_EVENTS_FROM_THE_CHECKBOX);
               break;
           }
         });

@@ -29,7 +29,8 @@ public enum FeatureTypeProperty {
 	SHARE_SAMPLES(Boolean.class),
 	SHARE_IMMUNIZATIONS(Boolean.class),
 	SHARE_REPORTS(Boolean.class),
-	FETCH_MODE(Boolean.class);
+	FETCH_MODE(Boolean.class),
+	FORCE_AUTOMATIC_PROCESSING(Boolean.class);
 
 	private final Class<?> returnType;
 

@@ -94,8 +94,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUserService.getCurrentUser();
 	}
 
-	public boolean currentUserHasRestrictedAccessToAssignedEntities() {
-		return currentUserService.hasRestrictedAccessToAssignedEntities();
+	public boolean isRestrictedToAssignedEntities() {
+		return currentUserService.isRestrictedToAssignedEntities();
 	}
 
 	public boolean hasRight(UserRight right) {

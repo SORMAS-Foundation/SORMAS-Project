@@ -21,11 +21,13 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -159,38 +161,40 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 		secondRowLayout.setMargin(false);
 		secondRowLayout.setWidth(100, Unit.PERCENTAGE);
 
-		cbRegion = new ComboBox<>();
-		cbDistrict = new ComboBox<>();
-		cbRegion.setItemCaptionGenerator(item -> item.buildCaption());
-		cbDistrict.setItemCaptionGenerator(item -> item.buildCaption());
+		if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			cbRegion = new ComboBox<>();
+			cbDistrict = new ComboBox<>();
+			cbRegion.setItemCaptionGenerator(item -> item.buildCaption());
+			cbDistrict.setItemCaptionGenerator(item -> item.buildCaption());
 
-		cbRegion.setId(ContactDto.REGION);
-		cbRegion.setWidth(200, Unit.PIXELS);
-		CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
-		cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REGION));
-		cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		criteriaBinder.bind(cbRegion, ContactDto.REGION);
-		cbRegion.addValueChangeListener(e -> {
-			RegionReferenceDto region = e.getValue();
-			cbDistrict.clear();
-			if (region != null) {
-				cbDistrict.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-				cbDistrict.setEnabled(true);
-			} else {
-				cbDistrict.setEnabled(false);
+			cbRegion.setId(ContactDto.REGION);
+			cbRegion.setWidth(200, Unit.PIXELS);
+			CssStyles.style(cbRegion, CssStyles.FORCE_CAPTION);
+			cbRegion.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REGION));
+			cbRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			criteriaBinder.bind(cbRegion, ContactDto.REGION);
+			cbRegion.addValueChangeListener(e -> {
+				RegionReferenceDto region = e.getValue();
+				cbDistrict.clear();
+				if (region != null) {
+					cbDistrict.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+					cbDistrict.setEnabled(true);
+				} else {
+					cbDistrict.setEnabled(false);
+				}
+			});
+			secondRowLayout.addComponent(cbRegion);
+			if (UserProvider.getCurrent().getUser().getRegion() != null) {
+				cbRegion.setEnabled(false);
 			}
-		});
-		secondRowLayout.addComponent(cbRegion);
-		if (UserProvider.getCurrent().getUser().getRegion() != null) {
-			cbRegion.setEnabled(false);
-		}
 
-		cbDistrict.setId(ContactDto.DISTRICT);
-		cbDistrict.setWidth(200, Unit.PIXELS);
-		CssStyles.style(cbDistrict, CssStyles.FORCE_CAPTION);
-		cbDistrict.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
-		criteriaBinder.bind(cbDistrict, ContactDto.DISTRICT);
-		secondRowLayout.addComponent(cbDistrict);
+			cbDistrict.setId(ContactDto.DISTRICT);
+			cbDistrict.setWidth(200, Unit.PIXELS);
+			CssStyles.style(cbDistrict, CssStyles.FORCE_CAPTION);
+			cbDistrict.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
+			criteriaBinder.bind(cbDistrict, ContactDto.DISTRICT);
+			secondRowLayout.addComponent(cbDistrict);
+		}
 
 		ComboBox<Integer> cbResultLimit = new ComboBox<>();
 		cbResultLimit.setId(QueryDetails.RESULT_LIMIT);

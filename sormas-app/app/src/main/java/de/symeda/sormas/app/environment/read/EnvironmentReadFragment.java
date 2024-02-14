@@ -5,6 +5,7 @@ import static android.view.View.GONE;
 import android.os.Bundle;
 import android.view.View;
 
+import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -47,8 +48,10 @@ public class EnvironmentReadFragment extends BaseReadFragment<FragmentEnvironmen
 	@Override
 	public void onAfterLayoutBinding(FragmentEnvironmentReadLayoutBinding contentBinding) {
 		super.onAfterLayoutBinding(contentBinding);
-		setFieldVisibilitiesAndAccesses(ImmunizationDto.class, contentBinding.mainContent);
+		setFieldVisibilitiesAndAccesses(EnvironmentDto.class, contentBinding.mainContent);
 
+		contentBinding.environmentReportingUser.setPseudonymized(record.isPseudonymized());
+		contentBinding.environmentResponsibleUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

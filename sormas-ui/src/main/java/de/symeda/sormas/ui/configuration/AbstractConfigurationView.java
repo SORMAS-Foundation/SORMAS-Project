@@ -61,11 +61,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		super(viewName);
 	}
 
-	public static void registerViews(Navigator navigator) {
+	public static Class<? extends AbstractConfigurationView> registerViews(Navigator navigator) {
+
+		Class<? extends AbstractConfigurationView> firstAccessibleView = null;
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW)) {
 			navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
+			firstAccessibleView = OutbreaksView.class;
 		}
 
 		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
@@ -81,6 +84,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				navigator.addView(CountriesView.VIEW_NAME, CountriesView.class);
 			}
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : RegionsView.class;
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
 			if (isAnySurveillanceEnabled) {
@@ -101,23 +105,30 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : LineListingConfigurationView.class;
 		}
 
 		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DocumentTemplatesView.class;
 		}
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EMAIL_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(EmailTemplatesView.VIEW_NAME, EmailTemplatesView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : EmailTemplatesView.class;
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
 			navigator.addView(CustomizableEnumValuesView.VIEW_NAME, CustomizableEnumValuesView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : CustomizableEnumValuesView.class;
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DevModeView.class;
 		}
+
+		return firstAccessibleView;
 	}
 
 	@Override

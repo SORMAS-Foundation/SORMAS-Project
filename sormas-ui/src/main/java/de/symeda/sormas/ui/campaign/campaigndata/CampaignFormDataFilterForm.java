@@ -44,13 +44,14 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
 	private ComboBox cbCampaignForm;
-	private ComboBox regionFilter;
-	private ComboBox districtFilter;
-	private ComboBox communityFilter;
 
 	protected CampaignFormDataFilterForm() {
 
-		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		super(
+			CampaignFormDataCriteria.class,
+			CampaignFormDataDto.I18N_PREFIX,
+			JurisdictionFieldConfig
+				.of(CampaignFormDataCriteria.REGION, CampaignFormDataCriteria.DISTRICT, CampaignFormDataCriteria.COMMUNITY));
 		formActionButtonsComponent.style(CssStyles.FORCE_CAPTION);
 		formActionButtonsComponent.setSpacing(false);
 		formActionButtonsComponent.setSizeFull();
@@ -84,17 +85,17 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			});
 		}
 
-		regionFilter = addField(
+		ComboBox regionFilter = addField(
 			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		districtFilter = addField(
+		ComboBox districtFilter = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(CampaignFormDataCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 
-		communityFilter = addField(
+		ComboBox communityFilter = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(CampaignFormDataCriteria.COMMUNITY, I18nProperties.getCaption(Captions.Campaign_community), 200));
 		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));

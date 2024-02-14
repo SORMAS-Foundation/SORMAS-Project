@@ -222,6 +222,9 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
 		}
+
+		contentBinding.caseDataReportingUser.setPseudonymized(record.isPseudonymized());
+		contentBinding.caseDataSurveillanceOfficer.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

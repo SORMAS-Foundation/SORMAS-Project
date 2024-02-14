@@ -61,6 +61,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -1031,88 +1032,97 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			refreshMapDashboard(true);
 		});
 
-		HorizontalLayout showCasesLayout = new HorizontalLayout();
-		{
-			showCasesLayout.setMargin(false);
-			showCasesLayout.setSpacing(false);
-			CheckBox showCasesCheckBox = new CheckBox();
-			showCasesCheckBox.setId(Captions.dashboardShowCases);
-			showCasesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowCases));
-			showCasesCheckBox.setValue(showCases);
-			showCasesCheckBox.addValueChangeListener(e -> {
-				showCases = (boolean) e.getProperty().getValue();
-				mapCaseDisplayModeSelect.setEnabled(showCases);
-				mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
-				caseClassificationOptions.setEnabled(showCases);
-				refreshMapDashboard(true);
-			});
-			showCasesLayout.addComponent(showCasesCheckBox);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			HorizontalLayout showCasesLayout = new HorizontalLayout();
+			{
+				showCasesLayout.setMargin(false);
+				showCasesLayout.setSpacing(false);
+				CheckBox showCasesCheckBox = new CheckBox();
+				showCasesCheckBox.setId(Captions.dashboardShowCases);
+				showCasesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowCases));
+				showCasesCheckBox.setValue(showCases);
+				showCasesCheckBox.addValueChangeListener(e -> {
+					showCases = (boolean) e.getProperty().getValue();
+					mapCaseDisplayModeSelect.setEnabled(showCases);
+					mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
+					caseClassificationOptions.setEnabled(showCases);
+					refreshMap(true);
+				});
+				showCasesLayout.addComponent(showCasesCheckBox);
 
-			Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-			infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseMap));
-			CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY, CssStyles.HSPACE_LEFT_3);
-			infoLabel.setHeightUndefined();
-			showCasesLayout.addComponent(infoLabel);
-			showCasesLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
+				Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+				infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseMap));
+				CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY, CssStyles.HSPACE_LEFT_3);
+				infoLabel.setHeightUndefined();
+				showCasesLayout.addComponent(infoLabel);
+				showCasesLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
+			}
+			layersLayout.addComponent(showCasesLayout);
+
+			layersLayout.addComponent(mapCaseDisplayModeSelect);
+			mapCaseDisplayModeSelect.setEnabled(showCases);
+
+			layersLayout.addComponent(caseClassificationOptions);
+			caseClassificationOptions.setEnabled(showCases);
 		}
-		layersLayout.addComponent(showCasesLayout);
 
-		layersLayout.addComponent(mapCaseDisplayModeSelect);
-		mapCaseDisplayModeSelect.setEnabled(showCases);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			CheckBox showConfirmedContactsCheckBox = new CheckBox();
+			showConfirmedContactsCheckBox.setId(Captions.dashboardShowConfirmedContacts);
+			CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
+			showUnconfirmedContactsCheckBox.setId(Captions.dashboardShowUnconfirmedContacts);
 
-		layersLayout.addComponent(caseClassificationOptions);
-		caseClassificationOptions.setEnabled(showCases);
+			CheckBox showContactsCheckBox = new CheckBox();
+			showContactsCheckBox.setId(Captions.dashboardShowContacts);
+			showContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowContacts));
+			showContactsCheckBox.setValue(showContacts);
+			showContactsCheckBox.addValueChangeListener(e -> {
+				showContacts = (boolean) e.getProperty().getValue();
+				showConfirmedContactsCheckBox.setEnabled(showContacts);
+				showConfirmedContactsCheckBox.setValue(true);
+				showUnconfirmedContactsCheckBox.setEnabled(showContacts);
+				showUnconfirmedContactsCheckBox.setValue(true);
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showContactsCheckBox);
 
-		CheckBox showConfirmedContactsCheckBox = new CheckBox();
-		showConfirmedContactsCheckBox.setId(Captions.dashboardShowConfirmedContacts);
-		CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
-		showUnconfirmedContactsCheckBox.setId(Captions.dashboardShowUnconfirmedContacts);
+			showConfirmedContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowConfirmedContacts));
+			showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
+			showConfirmedContactsCheckBox.addValueChangeListener(e -> {
+				showConfirmedContacts = (boolean) e.getProperty().getValue();
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showConfirmedContactsCheckBox);
 
-		CheckBox showContactsCheckBox = new CheckBox();
-		showContactsCheckBox.setId(Captions.dashboardShowContacts);
-		showContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowContacts));
-		showContactsCheckBox.setValue(showContacts);
-		showContactsCheckBox.addValueChangeListener(e -> {
-			showContacts = (boolean) e.getProperty().getValue();
+			CssStyles.style(showUnconfirmedContactsCheckBox, CssStyles.VSPACE_3);
+			showUnconfirmedContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowUnconfirmedContacts));
+			showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
+			showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
+				showUnconfirmedContacts = (boolean) e.getProperty().getValue();
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showUnconfirmedContactsCheckBox);
+
 			showConfirmedContactsCheckBox.setEnabled(showContacts);
-			showConfirmedContactsCheckBox.setValue(true);
 			showUnconfirmedContactsCheckBox.setEnabled(showContacts);
-			showUnconfirmedContactsCheckBox.setValue(true);
-			refreshMapDashboard(true);
-		});
-		layersLayout.addComponent(showContactsCheckBox);
+		}
 
-		showConfirmedContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowConfirmedContacts));
-		showConfirmedContactsCheckBox.setValue(showConfirmedContacts);
-		showConfirmedContactsCheckBox.addValueChangeListener(e -> {
-			showConfirmedContacts = (boolean) e.getProperty().getValue();
-			refreshMapDashboard(true);
-		});
-		layersLayout.addComponent(showConfirmedContactsCheckBox);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+			CheckBox showEventsCheckBox = new CheckBox();
+			showEventsCheckBox.setId(Captions.dashboardShowEvents);
+			CssStyles.style(showEventsCheckBox, CssStyles.VSPACE_3);
+			showEventsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowEvents));
+			showEventsCheckBox.setValue(showEvents);
+			showEventsCheckBox.addValueChangeListener(e -> {
+				showEvents = (boolean) e.getProperty().getValue();
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showEventsCheckBox);
+		}
 
-		CssStyles.style(showUnconfirmedContactsCheckBox, CssStyles.VSPACE_3);
-		showUnconfirmedContactsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowUnconfirmedContacts));
-		showUnconfirmedContactsCheckBox.setValue(showUnconfirmedContacts);
-		showUnconfirmedContactsCheckBox.addValueChangeListener(e -> {
-			showUnconfirmedContacts = (boolean) e.getProperty().getValue();
-			refreshMapDashboard(true);
-		});
-		layersLayout.addComponent(showUnconfirmedContactsCheckBox);
-
-		showConfirmedContactsCheckBox.setEnabled(showContacts);
-		showUnconfirmedContactsCheckBox.setEnabled(showContacts);
-
-		CheckBox showEventsCheckBox = new CheckBox();
-		showEventsCheckBox.setId(Captions.dashboardShowEvents);
-		CssStyles.style(showEventsCheckBox, CssStyles.VSPACE_3);
-		showEventsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowEvents));
-		showEventsCheckBox.setValue(showEvents);
-		showEventsCheckBox.addValueChangeListener(e -> {
-			showEvents = (boolean) e.getProperty().getValue();
-			refreshMapDashboard(true);
-		});
-		layersLayout.addComponent(showEventsCheckBox);
-		if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasNationJurisdictionLevel()) {
+		if (nonNull(UserProvider.getCurrent())
+			&& UserProvider.getCurrent().hasNationJurisdictionLevel()
+			&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			OptionGroup regionMapVisualizationSelect = new OptionGroup();
 			regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 			regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

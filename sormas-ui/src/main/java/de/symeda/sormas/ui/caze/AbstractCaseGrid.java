@@ -36,7 +36,6 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -45,6 +44,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -105,7 +105,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
 			Integer numberOfVisits = entry.getVisitCount();
 			Integer numberOfMissedVisits = entry.getMissedVisitsCount();
-			if (numberOfVisits != null && numberOfMissedVisits != null ) {
+			if (numberOfVisits != null && numberOfMissedVisits != null) {
 				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
 			} else {
 				return "-";
@@ -199,6 +199,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					PersonDto.I18N_PREFIX,
 					LocationDto.I18N_PREFIX));
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+		}
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME).setHidden(true);
 		}
 	}
 

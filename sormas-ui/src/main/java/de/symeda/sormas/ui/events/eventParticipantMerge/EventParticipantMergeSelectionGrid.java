@@ -11,11 +11,13 @@ import com.vaadin.ui.Link;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantSelectionDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -83,6 +85,10 @@ public class EventParticipantMergeSelectionGrid extends Grid<EventParticipantSel
 		getColumn(EventParticipantSelectionDto.LAST_NAME).setMinimumWidth(150);
 		((Column<EventParticipantSelectionDto, String>) getColumn(EventParticipantSelectionDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 		getColumn(EventParticipantSelectionDto.CONTACT_COUNT).setSortable(false);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(EventParticipantSelectionDto.DISTRICT_NAME).setHidden(true);
+		}
 	}
 
 	/**

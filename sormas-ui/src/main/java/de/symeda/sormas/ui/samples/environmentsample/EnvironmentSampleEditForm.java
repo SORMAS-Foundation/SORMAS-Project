@@ -76,7 +76,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	private static final String SAMPLE_MANAGEMENT_HEADING_LOC = "sampleManagementHeadingLoc";
 	private static final String REQUESTED_PATHOGENS_SUBHEADING_LOC = "requestedPathogensSubheadingLoc";
 	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC)
-		+ fluidRowLocs(3, EnvironmentSampleDto.UUID, 2, EnvironmentSampleDto.ENVIRONMENT, 3, REPORT_INFO_LOC, 4, EnvironmentSampleDto.REPORTING_USER)
+		+ fluidRowLocs(4, EnvironmentSampleDto.UUID, 2, EnvironmentSampleDto.ENVIRONMENT, 3, REPORT_INFO_LOC, 3, EnvironmentSampleDto.REPORTING_USER)
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_DATE_TIME, "")
 		+ fluidRowLocs(EnvironmentSampleDto.SAMPLE_MATERIAL, EnvironmentSampleDto.OTHER_SAMPLE_MATERIAL)
 		+ fluidRowLocs(EnvironmentSampleDto.FIELD_SAMPLE_ID, "")
@@ -250,7 +250,9 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			true,
 			true);
 
-		addField(EnvironmentSampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
+		UserField reportingUser = addField(EnvironmentSampleDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUser.setReadOnly(true);
 
 		addField(EnvironmentSampleDto.SPECIMEN_CONDITION);
 
@@ -270,7 +272,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
 		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
 		boolean canEditDispatchField =
-				isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
+			isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
 
 		getFieldGroup().getFields().forEach(f -> {
 			if (f.isEnabled()) {

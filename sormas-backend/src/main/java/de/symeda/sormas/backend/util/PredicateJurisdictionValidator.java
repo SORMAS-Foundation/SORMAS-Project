@@ -25,6 +25,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserHelper;
 
 public abstract class PredicateJurisdictionValidator extends JurisdictionValidator<Predicate> {
 
@@ -33,7 +34,7 @@ public abstract class PredicateJurisdictionValidator extends JurisdictionValidat
 	protected final Path userPath;
 
 	public PredicateJurisdictionValidator(CriteriaBuilder cb, User user, Path userPath, List<PredicateJurisdictionValidator> jurisdictionValidators) {
-		super(jurisdictionValidators);
+		super(jurisdictionValidators, UserHelper.isRestrictedToAssignEntities(user));
 		this.cb = cb;
 		this.user = user;
 		this.userPath = userPath;

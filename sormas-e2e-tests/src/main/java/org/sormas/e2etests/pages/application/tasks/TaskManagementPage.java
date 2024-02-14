@@ -43,6 +43,7 @@ public class TaskManagementPage {
   public static final By CHANGE_STATUS_CHECKBOX = By.xpath("//label[text()='Change task status']");
   public static final By TASK_ASSIGNEE_COMBOBOX = By.cssSelector("#assigneeUser div");
   public static final By TASK_RADIOBUTTON = By.cssSelector(".v-radiobutton");
+  public static final By EDIT_TASK_MODAL_FORM = By.xpath("//*[@aria-modal='true']");
   public static final By EDIT_FIRST_SEARCH_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
   public static final By TASK_CONTEXT_FIRST_RESULT = By.xpath("//td[3]");
   public static final By ASSOCIATED_LINK_FIRST_RESULT = By.xpath("//td/a");

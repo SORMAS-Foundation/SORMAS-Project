@@ -44,7 +44,7 @@ public class CustomizableEnumValueService extends AdoServiceWithUserFilterAndJur
 
 	public Predicate buildCriteriaFilter(CustomizableEnumCriteria criteria, CriteriaBuilder cb, Root<CustomizableEnumValue> from) {
 
-		Predicate filter = null;
+		Predicate filter = cb.equal(from.get(CustomizableEnumValue.ACTIVE), criteria.getActive());
 
 		if (criteria.getFreeTextFilter() != null) {
 			String[] textFilters = criteria.getFreeTextFilter().split("\\s+");

@@ -125,7 +125,7 @@ public enum FeatureType {
 		new FeatureType[] {
 			SAMPLES_LAB },
 		null,
-		ImmutableMap.of(FeatureTypeProperty.FETCH_MODE, Boolean.FALSE)),
+		ImmutableMap.of(FeatureTypeProperty.FETCH_MODE, Boolean.FALSE, FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING, false)),
 	MANUAL_EXTERNAL_MESSAGES(true,
 		true,
 		new FeatureType[] {

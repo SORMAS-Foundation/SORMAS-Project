@@ -27,8 +27,6 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -116,9 +114,9 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 					.disease(event.getDisease())
 					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
 				this::showUnsavedChangesPopup,
-				editAllowed);
-			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
+				editAllowed,
+				SampleAssociationType.EVENT_PARTICIPANT);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
@@ -190,7 +188,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forEventParticipant(eventParticipant, editAllowed, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forEventParticipant(eventParticipant, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

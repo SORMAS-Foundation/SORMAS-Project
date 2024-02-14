@@ -4,7 +4,6 @@ Feature: Event Directory filters check
   @tmsLink=SORDEV-5915 @env_main
   Scenario: Check all filters are working properly in Event directory
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -46,7 +45,6 @@ Feature: Event Directory filters check
   @tmsLink=SORDEV-5917 @env_de
   Scenario: Check all filters are working properly in Event directory for DE version
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -85,10 +83,8 @@ Feature: Event Directory filters check
   @tmsLink=SORQA-77 @env_main
   Scenario: Filters for Region, District, Community, Reporting user and Event statuses on Event Directory Page
     Given API: I create a new person
-
     And API: I check that POST call status code is 200
     When API: I create a new event
-
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I open the last created event via api
@@ -135,7 +131,6 @@ Feature: Event Directory filters check
   @tmsLink=SORQA-77 @env_main
   Scenario: Date filters and aggregation buttons in Event Directory
     Given API: I create a new event
-
     And API: I check that POST call status code is 200
     When I log in as a National User
     And I click on the Events button from navbar
@@ -195,3 +190,86 @@ Feature: Event Directory filters check
       | Geimpft   |
       | Ungeimpft |
       | Unbekannt |
+
+  @tmsLink=HSP-6550 @env_main
+  Scenario: [Event participants] Filtering event participants based on 'Final laboratory result' [1]
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with the new person data
+    And I save Add participant form
+    And I collect event participant uuid
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Pending" on Create new Sample page
+    And I save the created sample
+    Then I click on Event Participants tab
+    And I click on Add Participant button
+    And I add Participant to an Event with the new person data
+    And I save Add participant form
+    Then I collect event participant uuid
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample with pathogen test
+    And I reject the crete Case from event participant with positive test results popup
+    And I click on the Sample button from navbar
+    Then I filter the Sample for "First" event participant by "Positive" Final laboratory result
+    And I check that all Sample has "Positive" result in in Sample directory
+    Then I filter the Sample for "Second" event participant by "Positive" Final laboratory result
+    And I check that all Sample has "Positive" result in in Sample directory
+
+  @tmsLink=HSP-6550 @env_main
+  Scenario: [Event participants] Filtering event participants based on 'Final laboratory result' [2]
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with the new person data
+    And I save Add participant form
+    And I collect event participant uuid
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Pending" on Create new Sample page
+    And I save the created sample
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Pending" on Create new Sample page
+    And I save the created sample
+    Then I click on Event Participants tab
+    And I click on Add Participant button
+    And I add Participant to an Event with the new person data
+    And I save Add participant form
+    Then I collect event participant uuid
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Pending" on Create new Sample page
+    And I save the created sample
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I set Final Laboratory Result to "Positive" on Create new Sample page
+    And I save the created sample
+    And I click on the Sample button from navbar
+    Then I filter the Sample for "First" event participant by "Pending" Final laboratory result
+    And I check that all Sample has "Pending" result in in Sample directory
+    Then I filter the Sample for "Second" event participant by "Pending" Final laboratory result
+    And I check that all Sample has "Pending" result in in Sample directory

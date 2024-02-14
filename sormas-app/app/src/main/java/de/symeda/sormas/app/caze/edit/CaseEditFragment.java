@@ -21,12 +21,13 @@ import static de.symeda.sormas.api.caze.CaseConfirmationBasis.CLINICAL_CONFIRMAT
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION;
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
-
-import java.util.Date;
-import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -48,6 +49,7 @@ import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -340,8 +342,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (record.getDisease() != null && !diseases.contains(record.getDisease())) {
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
-		List<DiseaseVariant> diseaseVariants =
-			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao()
+			.getEnumValues(
+				CustomizableEnumType.DISEASE_VARIANT,
+				Optional.ofNullable(record.getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
+				record.getDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
@@ -671,7 +676,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
 		}
 
-		if(!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)){
+		if (!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)) {
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityOrHome);
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		} else if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
@@ -707,11 +712,17 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		// reinfection
 		contentBinding.caseDataPreviousInfectionDate.initializeDateField(getChildFragmentManager());
+
+		contentBinding.caseDataReportingUser.setPseudonymized(record.isPseudonymized());
+		contentBinding.caseDataSurveillanceOfficer.setPseudonymized(record.isPseudonymized());
 	}
 
 	private void updateDiseaseVariantsField(FragmentCaseEditLayoutBinding contentBinding) {
-		List<DiseaseVariant> diseaseVariants =
-			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+		List<DiseaseVariant> diseaseVariants = DatabaseHelper.getCustomizableEnumValueDao()
+			.getEnumValues(
+				CustomizableEnumType.DISEASE_VARIANT,
+				Optional.ofNullable(record.getDiseaseVariant()).map(CustomizableEnum::getValue).orElse(null),
+				record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);

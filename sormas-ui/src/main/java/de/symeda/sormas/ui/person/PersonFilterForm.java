@@ -24,7 +24,10 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 
 	protected PersonFilterForm() {
-		super(PersonCriteria.class, PersonDto.I18N_PREFIX);
+		super(
+			PersonCriteria.class,
+			PersonDto.I18N_PREFIX,
+			JurisdictionFieldConfig.withNoPrefillOnHide(PersonCriteria.REGION, PersonCriteria.DISTRICT, PersonCriteria.COMMUNITY));
 	}
 
 	@Override

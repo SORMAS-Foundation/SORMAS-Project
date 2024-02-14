@@ -20,6 +20,7 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.CampaignPhase;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -151,17 +153,6 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		addComponent(districtFilter);
 		dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 
-		if (userRegion != null) {
-			areaFilter.setValue(userArea);
-			regionFilter.setValue(userRegion);
-			areaFilter.setEnabled(false);
-			regionFilter.setEnabled(false);
-			if (userDistrict != null) {
-				districtFilter.setValue(userDistrict);
-				districtFilter.setEnabled(false);
-			}
-		}
-
 		campaignJurisdictionGroupByFilter.setCaption(I18nProperties.getCaption(Captions.campaignDiagramGroupBy));
 		campaignJurisdictionGroupByFilter.setWidth(200, Unit.PIXELS);
 
@@ -188,6 +179,22 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignJurisdictionGroupByFilter);
+
+		if (userRegion != null) {
+			areaFilter.setValue(userArea);
+			regionFilter.setValue(userRegion);
+			areaFilter.setEnabled(false);
+			regionFilter.setEnabled(false);
+			if (userDistrict != null) {
+				districtFilter.setValue(userDistrict);
+				districtFilter.setEnabled(false);
+			}
+		} else if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			areaFilter.setVisible(false);
+			regionFilter.setVisible(false);
+			districtFilter.setVisible(false);
+			campaignJurisdictionGroupByFilter.setVisible(false);
+		}
 	}
 
 	private CampaignJurisdictionLevel getJurisdictionBelow(CampaignJurisdictionLevel campaignJurisdictionLevel) {
@@ -225,9 +232,9 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			regionFilter.removeAllItems();
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setEnabled(true);
+			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 			campaignJurisdictionGroupByFilter.setValue(REGION);
 			campaignJurisdictionGroupByFilter.removeItem(COMMUNITY);
-			campaignJurisdictionGroupByFilter.addItems(AREA, REGION, DISTRICT);
 		} else {
 			regionFilter.clear();
 			regionFilter.removeAllItems();
@@ -242,10 +249,10 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void updateFiltersBasedOnDistrict(Object value) {
 		if (value != null) {
-			campaignJurisdictionGroupByFilter.removeItem(AREA);
-			campaignJurisdictionGroupByFilter.removeItem(REGION);
 			campaignJurisdictionGroupByFilter.addItems(DISTRICT, COMMUNITY);
 			campaignJurisdictionGroupByFilter.setValue(COMMUNITY);
+			campaignJurisdictionGroupByFilter.removeItem(AREA);
+			campaignJurisdictionGroupByFilter.removeItem(REGION);
 		} else {
 			campaignJurisdictionGroupByFilter.removeItem(AREA);
 			campaignJurisdictionGroupByFilter.addItems(REGION, DISTRICT, COMMUNITY);

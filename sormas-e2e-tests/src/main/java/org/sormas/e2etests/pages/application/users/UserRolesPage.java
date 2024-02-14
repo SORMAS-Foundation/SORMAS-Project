@@ -96,7 +96,16 @@ public class UserRolesPage {
       By.xpath("//label[contains(text(),'Work with messages')]");
   public static By WORK_WITH_MESSAGES_CHECKBOX_VALUE =
       By.xpath("//label[contains(text(),'Work with messages')]/preceding-sibling::input");
-
+  public static By DELETE_ACTIONS_FROM_THE_CHECKBOX =
+      By.xpath("//label[contains(text(),'Delete actions from the system')]");
+  public static By DELETE_ACTIONS_FROM_THE_CHECKBOX_VALUE =
+      By.xpath(
+          "//label[contains(text(),'Delete actions from the system')]/preceding-sibling::input");
+  public static By DELETE_EVENTS_FROM_THE_CHECKBOX =
+      By.xpath("//label[contains(text(),'Delete events from the system')]");
+  public static By DELETE_EVENTS_FROM_THE_CHECKBOX_VALUE =
+      By.xpath(
+          "//label[contains(text(),'Delete events from the system')]/preceding-sibling::input");
   public static final By GRID_RESULTS_FIRST_UUID =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(1)");
 

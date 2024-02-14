@@ -21,6 +21,8 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationJurisdictionDto;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonJurisdictionDto;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -93,6 +95,9 @@ public class JurisdictionHelper {
 			dto.setSampleLabUuids(
 				samples.stream().filter(sample -> sample.getLab() != null).map(sample -> sample.getLab().getUuid()).collect(Collectors.toList()));
 		}
+		if (caze.getSurveillanceOfficer() != null) {
+			dto.setSurveillanceOfficerUuid(caze.getSurveillanceOfficer().getUuid());
+		}
 
 		return dto;
 	}
@@ -118,6 +123,9 @@ public class JurisdictionHelper {
 			dto.setCaseJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(caseOfContact));
 		}
 
+		if (contact.getContactOfficer() != null) {
+			dto.setContactOfficerUuid(contact.getContactOfficer().getUuid());
+		}
 		return dto;
 	}
 
@@ -139,7 +147,41 @@ public class JurisdictionHelper {
 			immunization.getHealthFacility());
 		immunizationJurisdictionDto.setResponsibleJurisdiction(responsibleJurisdiction);
 
+		Person immunizationPerson = immunization.getPerson();
+		immunizationJurisdictionDto.setPersonJurisdiction(createPersonJurisdictionDto(immunizationPerson));
+
 		return immunizationJurisdictionDto;
+	}
+
+	public static PersonJurisdictionDto createPersonJurisdictionDto(Person person) {
+		if (person == null) {
+			return null;
+		}
+
+		PersonJurisdictionDto personJurisdiction = new PersonJurisdictionDto();
+
+		personJurisdiction.setCaseJurisdictions(
+			DatabaseHelper.getCaseDao()
+				.getByPerson(person)
+				.stream()
+				.map(surveillanceOfficer -> new CaseJurisdictionDto().setSurveillanceOfficerUuid(surveillanceOfficer.getUuid()))
+				.collect(Collectors.toList()));
+
+		personJurisdiction.setContactJurisdictions(
+			DatabaseHelper.getContactDao()
+				.getByPerson(person)
+				.stream()
+				.map(contactOfficer -> new ContactJurisdictionDto().setContactOfficerUuid(contactOfficer.getUuid()))
+				.collect(Collectors.toList()));
+
+		personJurisdiction.setEventJurisdictions(
+			DatabaseHelper.getEventDao()
+				.getByEventParticipantPerson(person)
+				.stream()
+				.map(responsibleUser -> new EventJurisdictionDto().setResponsibleUserUuid(responsibleUser.getUuid()))
+				.collect(Collectors.toList()));
+
+		return personJurisdiction;
 	}
 
 	public static EventJurisdictionDto createEventJurisdictionDto(Event event) {
@@ -197,6 +239,10 @@ public class JurisdictionHelper {
 		Event event = eventParticipant.getEvent();
 		if (event != null) {
 			jurisdiction.setEventJurisdictionDto(JurisdictionHelper.createEventJurisdictionDto(event));
+		}
+
+		if (event.getResponsibleUser() != null) {
+			jurisdiction.setEventResponsibleUserUuid(event.getResponsibleUser().getUuid());
 		}
 
 		return jurisdiction;
@@ -259,6 +305,10 @@ public class JurisdictionHelper {
 			if (environmentLocation.getCommunity() != null) {
 				environmentSampleJurisdiction.setCommunityUuid(environmentLocation.getCommunity().getUuid());
 			}
+		}
+
+		if (sample.getEnvironment().getResponsibleUser() != null) {
+			environmentSampleJurisdiction.setEnvironmentResponsibleUser(sample.getEnvironment().getResponsibleUser().getUuid());
 		}
 
 		return environmentSampleJurisdiction;

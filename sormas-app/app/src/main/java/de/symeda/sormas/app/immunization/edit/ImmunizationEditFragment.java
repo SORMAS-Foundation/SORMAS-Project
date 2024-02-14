@@ -255,6 +255,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		if(!isFieldAccessible(ImmunizationDto.class, contentBinding.immunizationHealthFacility)){
 			FieldVisibilityAndAccessHelper.setFieldInaccessibleValue(contentBinding.facilityTypeGroup);
 		}
+		contentBinding.immunizationReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

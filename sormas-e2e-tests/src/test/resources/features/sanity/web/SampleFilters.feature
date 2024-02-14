@@ -107,3 +107,40 @@ Feature: Sample filter functionality
     And I select "Erhalten" filter from quick filter for DE version
     And I select "An ein anderes Labor weitergeleitet" filter from quick filter for DE version
     And I click on reset filters button from Sample Directory
+
+  @tmsLink=HSP-6554 @env_main
+  Scenario: [Samples] Filter for 'Person samples' with 'All active and archived samples' and 'Deleted samples' filters
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I save the created sample
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I save the created sample
+    Then I click on the Archive case button and confirm popup
+    And I navigate to case person tab
+    Then I collect person UUID from Edit Case Person page
+    And I click on NEW CASE button from Edit Person page
+    When I create a new case for the same person
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I save the created sample
+    And I click on New Sample
+    And I create a new Sample with alternate purpose
+    And I save the created sample
+    When I click on edit Sample
+    Then I delete the sample
+    When I click on the Persons button from navbar
+    And I open the last new created person by UI in person directory
+    Then I click on See Samples for this Person button from Edit Person page
+    And I select "Active samples" Relevance Status option among the filter options
+    And I check that number of displayed sample results is 1
+    And I select "Archived samples" Relevance Status option among the filter options
+    And I check that number of displayed sample results is 2
+    And I select "Deleted samples" Relevance Status option among the filter options
+    And I check that number of displayed sample results is 1
+    And I select "All active and archived samples" Relevance Status option among the filter options
+    And I check that number of displayed sample results is 3

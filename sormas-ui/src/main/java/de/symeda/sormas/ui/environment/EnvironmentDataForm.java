@@ -49,7 +49,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.UUID, EnvironmentDto.EXTERNAL_ID) +
-			fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.REPORTING_USER) +
+			fluidRowLocs(6, EnvironmentDto.REPORT_DATE, 3, EnvironmentDto.REPORTING_USER, 3, "") +
 			fluidRowLocs(EnvironmentDto.INVESTIGATION_STATUS, "") +
 			fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") +
 			fluidRowLocs(EnvironmentDto.WATER_TYPE, EnvironmentDto.OTHER_WATER_TYPE) +
@@ -95,7 +95,9 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addField(EnvironmentDto.REPORTING_USER, UserField.class).setReadOnly(true);
+		UserField reportingUser = addField(EnvironmentDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUser.setReadOnly(true);
 
 		addField(EnvironmentDto.INVESTIGATION_STATUS, ComboBox.class);
 		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
@@ -151,6 +153,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
 		UserField responsibleUserField = addField(EnvironmentDto.RESPONSIBLE_USER, UserField.class);
+		responsibleUserField.setParentPseudonymizedSupplier(()-> getValue().isPseudonymized());
 		responsibleUserField.setEnabled(true);
 
 		addField(EnvironmentDto.DELETION_REASON);

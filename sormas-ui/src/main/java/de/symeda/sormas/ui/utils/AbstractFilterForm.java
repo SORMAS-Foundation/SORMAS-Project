@@ -2,10 +2,13 @@ package de.symeda.sormas.ui.utils;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -20,12 +23,15 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.components.FormActionButtonsComponent;
 
@@ -44,16 +50,33 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	protected FormActionButtonsComponent formActionButtonsComponent;
 
-	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
-		this(type, propertyI18nPrefix, null);
+	private JurisdictionFieldConfig jurisdictionFieldConfig;
+
+	protected ComboBox regionFilter;
+	protected ComboBox districtFilter;
+	protected ComboBox communityFilter;
+
+	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, JurisdictionFieldConfig jurisdictionFieldConfig) {
+		this(type, propertyI18nPrefix, null, jurisdictionFieldConfig);
 	}
 
-	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, boolean addFields) {
-		this(type, propertyI18nPrefix, null, Captions.actionApplyFilters, Captions.actionResetFilters, addFields);
+	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, JurisdictionFieldConfig jurisdictionFieldConfig, boolean addFields) {
+		this(type, propertyI18nPrefix, null, Captions.actionApplyFilters, Captions.actionResetFilters, jurisdictionFieldConfig, addFields);
 	}
 
-	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters, true);
+	protected AbstractFilterForm(
+		Class<T> type,
+		String propertyI18nPrefix,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		JurisdictionFieldConfig jurisdictionFieldConfig) {
+		this(
+			type,
+			propertyI18nPrefix,
+			fieldVisibilityCheckers,
+			Captions.actionApplyFilters,
+			Captions.actionResetFilters,
+			jurisdictionFieldConfig,
+			true);
 	}
 
 	protected AbstractFilterForm(
@@ -62,9 +85,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		String applyCaptionTag,
 		String resetCaptionTag,
+		JurisdictionFieldConfig jurisdictionFieldConfig,
 		boolean addFields) {
 
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), addFields);
+		this.jurisdictionFieldConfig = jurisdictionFieldConfig;
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -88,6 +113,22 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		});
 
 		addStyleName(CssStyles.FILTER_FORM);
+
+		if (addFields) {
+			initJurisdictionFields(jurisdictionFieldConfig);
+		}
+	}
+
+	protected void initJurisdictionFields(JurisdictionFieldConfig jurisdictionFieldConfig) {
+		if (jurisdictionFieldConfig != null) {
+			regionFilter = jurisdictionFieldConfig.region != null ? getField(jurisdictionFieldConfig.region) : null;
+			districtFilter = jurisdictionFieldConfig.district != null ? getField(jurisdictionFieldConfig.district) : null;
+			communityFilter = jurisdictionFieldConfig.community != null ? getField(jurisdictionFieldConfig.community) : null;
+		} else {
+			regionFilter = null;
+			districtFilter = null;
+			communityFilter = null;
+		}
 	}
 
 	public void onChange() {
@@ -163,10 +204,33 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			applyDependenciesOnNewValue(newFieldValue);
 
 			if (moreFiltersLayout != null) {
-				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
+				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty() && f.isVisible());
 				formActionButtonsComponent.toggleMoreFilters(hasExpandedFilter);
 			}
 		});
+
+		if (newFieldValue != null && getJurisdictionFields().anyMatch(Field::isVisible) && UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			hideAndFillJurisdictionFilters();
+		}
+	}
+
+	protected Stream<ComboBox> getJurisdictionFields() {
+		return Stream.of(regionFilter, districtFilter, communityFilter).filter(Objects::nonNull);
+	}
+
+	private void hideAndFillJurisdictionFilters() {
+		hideAndFillJurisdictionField(regionFilter, () -> FacadeProvider.getRegionFacade().getDefaultInfrastructureReference());
+		hideAndFillJurisdictionField(districtFilter, () -> FacadeProvider.getDistrictFacade().getDefaultInfrastructureReference());
+		hideAndFillJurisdictionField(communityFilter, () -> FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
+	}
+
+	private void hideAndFillJurisdictionField(@Nullable ComboBox field, Supplier<ReferenceDto> defaultValueGetter) {
+		if (field != null) {
+			field.setVisible(false);
+			if (jurisdictionFieldConfig.prefillOnHide) {
+				field.setValue(defaultValueGetter.get());
+			}
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -313,5 +377,33 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	interface Callable {
 
 		void call();
+	}
+
+	protected static class JurisdictionFieldConfig {
+
+		private final String region;
+		private final String district;
+		private final String community;
+
+		private boolean prefillOnHide;
+
+		private JurisdictionFieldConfig(String region, String district, String community) {
+			this.region = region;
+			this.district = district;
+			this.community = community;
+		}
+
+		public static JurisdictionFieldConfig of(String region, String district, String community) {
+			JurisdictionFieldConfig names = new JurisdictionFieldConfig(region, district, community);
+			names.prefillOnHide = true;
+			return names;
+		}
+
+		public static JurisdictionFieldConfig withNoPrefillOnHide(String region, String district, String community) {
+			JurisdictionFieldConfig names = new JurisdictionFieldConfig(region, district, community);
+			names.prefillOnHide = false;
+			return names;
+		}
+
 	}
 }

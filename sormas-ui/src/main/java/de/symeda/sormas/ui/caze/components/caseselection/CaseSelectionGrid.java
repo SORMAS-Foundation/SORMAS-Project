@@ -12,8 +12,10 @@ import com.vaadin.v7.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AgeAndBirthDateDtoConverterV7;
 import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
@@ -66,6 +68,10 @@ public class CaseSelectionGrid extends Grid {
 		getColumn(CaseSelectionDto.UUID).setRenderer(new V7UuidRenderer());
 		getColumn(CaseSelectionDto.AGE_AND_BIRTH_DATE).setConverter(new AgeAndBirthDateDtoConverterV7());
 		getColumn(CaseSelectionDto.REPORT_DATE).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(CaseSelectionDto.RESPONSIBLE_DISTRICT_NAME).setHidden(true);
+		}
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(

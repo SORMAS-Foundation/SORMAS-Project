@@ -33,6 +33,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.events.EventGrid;
+import de.symeda.sormas.ui.events.EventIndexLocationRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridHeightResizer;
@@ -74,6 +75,8 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<EventIndexDto, EventIndexDto.EventIndexLocation>) getColumn(EventIndexDto.EVENT_LOCATION))
+			.setRenderer(new EventIndexLocationRenderer());
 	}
 
 	@Override
