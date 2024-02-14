@@ -68,6 +68,9 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	private String propertiesJson;
 	private Map<String, Object> properties;
 
+	@DatabaseField
+	private boolean active;
+
 	public CustomizableEnumType getDataType() {
 		return dataType;
 	}
@@ -230,6 +233,14 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	public void setDefaultValue(boolean defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	@Override

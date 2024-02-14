@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.externalmessage;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
@@ -63,6 +63,8 @@ import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -86,6 +88,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessagePr
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -105,19 +108,6 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-
-	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
-		ExternalMessageIndexDto.UUID,
-		ExternalMessageIndexDto.TYPE,
-		ExternalMessageIndexDto.PERSON_FIRST_NAME,
-		ExternalMessageIndexDto.PERSON_LAST_NAME,
-		ExternalMessageIndexDto.PERSON_POSTAL_CODE,
-		ExternalMessageIndexDto.REPORTER_NAME,
-		ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
-		ExternalMessageIndexDto.MESSAGE_DATE_TIME,
-		ExternalMessageIndexDto.STATUS,
-		ExternalMessageIndexDto.DISEASE,
-		ExternalMessageIndexDto.DISEASE_VARIANT);
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -147,6 +137,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private AutomaticLabMessageProcessor automaticLabMessageProcessor;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -229,7 +221,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto labMessage) {
-		if (!labMessage.isAutomaticProcessingPossible()) {
+		if (!labMessage.isAutomaticProcessingPossible() || !checkAutomaticProcessingAllowed()) {
 			return save(labMessage);
 		}
 
@@ -249,6 +241,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 
 		return getByUuid(labMessage.getUuid());
+	}
+
+	private boolean checkAutomaticProcessingAllowed() {
+		return featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING)
+			|| !featureConfigurationFacade.isAnyFeatureEnabled(FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE);
 	}
 
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
@@ -471,34 +468,41 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		IterableHelper.executeBatched(indexListIds, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<ExternalMessageIndexDto> cq = cb.createQuery(ExternalMessageIndexDto.class);
+			CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
 			Root<ExternalMessage> externalMessage = cq.from(ExternalMessage.class);
 			Join<ExternalMessage, User> userJoin = externalMessage.join(ExternalMessage.ASSIGNEE, JoinType.LEFT);
 
+			List<Order> orderList = getOrderList(sortProperties, cb, externalMessage);
+
 			cq.multiselect(
-				externalMessage.get(ExternalMessage.UUID),
-				externalMessage.get(ExternalMessage.TYPE),
-				externalMessage.get(ExternalMessage.MESSAGE_DATE_TIME),
-				externalMessage.get(ExternalMessage.REPORTER_NAME),
-				externalMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
-				externalMessage.get(ExternalMessage.DISEASE),
-				externalMessage.get(ExternalMessage.DISEASE_VARIANT),
-				externalMessage.get(ExternalMessage.PERSON_FIRST_NAME),
-				externalMessage.get(ExternalMessage.PERSON_LAST_NAME),
-				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
-				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_MM),
-				externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_DD),
-				externalMessage.get(ExternalMessage.PERSON_POSTAL_CODE),
-				externalMessage.get(ExternalMessage.STATUS),
-				userJoin.get(User.UUID),
-				userJoin.get(User.FIRST_NAME),
-				userJoin.get(User.LAST_NAME));
+				Stream
+					.concat(
+						Stream.of(
+							externalMessage.get(ExternalMessage.UUID),
+							externalMessage.get(ExternalMessage.TYPE),
+							externalMessage.get(ExternalMessage.MESSAGE_DATE_TIME),
+							externalMessage.get(ExternalMessage.REPORTER_NAME),
+							externalMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
+							externalMessage.get(ExternalMessage.DISEASE),
+							externalMessage.get(ExternalMessage.DISEASE_VARIANT),
+							externalMessage.get(ExternalMessage.PERSON_FIRST_NAME),
+							externalMessage.get(ExternalMessage.PERSON_LAST_NAME),
+							externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
+							externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_MM),
+							externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_DD),
+							externalMessage.get(ExternalMessage.PERSON_POSTAL_CODE),
+							externalMessage.get(ExternalMessage.STATUS),
+							userJoin.get(User.UUID),
+							userJoin.get(User.FIRST_NAME),
+							userJoin.get(User.LAST_NAME)),
+						orderList.stream().map(Order::getExpression))
+					.collect(toList()));
 
 			cq.where(externalMessage.get(ExternalMessage.ID).in(batchedIds));
-			cq.orderBy(getOrderList(sortProperties, cb, externalMessage));
+			cq.orderBy(orderList);
 			cq.distinct(true);
 
-			messages.addAll(QueryHelper.getResultList(em, cq, null, null));
+			messages.addAll(QueryHelper.getResultList(em, cq, new ExternalMessageIndexDtoResultTransformer(), null, null));
 		});
 
 		return messages;
@@ -540,16 +544,36 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 		if (!CollectionUtils.isEmpty(sortProperties)) {
 			for (SortProperty sortProperty : sortProperties) {
-				if (ExternalMessageIndexDto.PERSON_BIRTH_DATE.equals(sortProperty.propertyName)) {
-					Expression<?> birthdateYYYY = externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY);
-					order.add(sortProperty.ascending ? cb.asc(birthdateYYYY) : cb.desc(birthdateYYYY));
-					Expression<?> birthdateMM = externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_MM);
-					order.add(sortProperty.ascending ? cb.asc(birthdateMM) : cb.desc(birthdateMM));
-					Expression<?> birthdateDD = externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_DD);
-					order.add(sortProperty.ascending ? cb.asc(birthdateDD) : cb.desc(birthdateDD));
-				} else if (VALID_SORT_PROPERTY_NAMES.contains(sortProperty.propertyName)) {
-					Expression<?> expression = externalMessageRoot.get(sortProperty.propertyName);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				switch (sortProperty.propertyName) {
+				case ExternalMessageIndexDto.PERSON_BIRTH_DATE:
+					order.addAll(
+						orderBuilder.build(
+							externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),
+							externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_MM),
+							externalMessageRoot.get(ExternalMessage.PERSON_BIRTH_DATE_DD)));
+					break;
+				case ExternalMessageIndexDto.ASSIGNEE:
+					Join<ExternalMessage, User> userJoin = externalMessageRoot.join(ExternalMessage.ASSIGNEE, JoinType.LEFT);
+					order.addAll(orderBuilder.build(cb.lower(userJoin.get(User.FIRST_NAME)), cb.lower(userJoin.get(User.LAST_NAME))));
+					break;
+				case ExternalMessageIndexDto.UUID:
+				case ExternalMessageIndexDto.TYPE:
+				case ExternalMessageIndexDto.MESSAGE_DATE_TIME:
+				case ExternalMessageIndexDto.STATUS:
+				case ExternalMessageIndexDto.DISEASE:
+				case ExternalMessageIndexDto.DISEASE_VARIANT:
+					order.addAll(orderBuilder.build(externalMessageRoot.get(sortProperty.propertyName)));
+					break;
+				case ExternalMessageIndexDto.PERSON_FIRST_NAME:
+				case ExternalMessageIndexDto.PERSON_LAST_NAME:
+				case ExternalMessageIndexDto.PERSON_POSTAL_CODE:
+				case ExternalMessageIndexDto.REPORTER_NAME:
+				case ExternalMessageIndexDto.REPORTER_POSTAL_CODE:
+					order.addAll(orderBuilder.build(cb.lower(externalMessageRoot.get(sortProperty.propertyName))));
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown sort property: " + sortProperty.propertyName);
 				}
 			}
 		}

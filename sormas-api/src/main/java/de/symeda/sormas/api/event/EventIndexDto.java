@@ -163,7 +163,6 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		String responsibleUserFirstName,
 		String responsibleUserLastName,
 		boolean isInJurisdictionOrOwned,
-		Date changeDate,
 		EventIdentificationSource eventIdentificationSource,
 		DeletionReason deletionReason,
 		String otherDeletionReason) {

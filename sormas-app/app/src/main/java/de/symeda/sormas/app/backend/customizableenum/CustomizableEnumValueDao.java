@@ -15,17 +15,17 @@
 
 package de.symeda.sormas.app.backend.customizableenum;
 
-import com.j256.ormlite.dao.Dao;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -53,10 +53,10 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 	 */
 	private final Map<Class<? extends CustomizableEnum>, Map<Disease, List<String>>> enumValuesByDisease = new HashMap<>();
 	/**
-	 * Maps a customizable enum type to a map with all enum values of this type as its keys and the properties defined for these
-	 * enum values as its values.
+	 * Maps a customizable enum type to a map with all enum values of this type as its keys and and info, e.g. properties and active status,
+	 * defined for these enum values as its values.
 	 */
-	private final Map<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new HashMap<>();
+	private final Map<CustomizableEnumType, Map<String, CustomizableEnumCacheInfo>> enumInfo = new HashMap<>();
 
 	public CustomizableEnumValueDao(Dao<CustomizableEnumValue, Long> innerDao) {
 		super(innerDao);
@@ -87,15 +87,19 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 			T enumValue = enumClass.newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
-			enumValue.setProperties(enumProperties.get(type).get(value));
+			enumValue.setProperties(getEnumInfo(type, value).getProperties());
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
+		return getEnumValues(type, null, disease);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, String selectedValue, Disease disease) {
 
 		if (customizableEnumsByType.isEmpty() || (long) customizableEnumsByType.values().stream().mapToInt(i -> i.size()).sum() != countOf()) {
 			loadData();
@@ -122,7 +126,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 				enumValue = enumClass.newInstance();
 				enumValue.setValue(value);
 				enumValue.setCaption(caption);
-				enumValue.setProperties(enumProperties.get(type).get(value));
+				enumValue.setProperties(getEnumInfo(type, value).getProperties());
 				enumValues.add(enumValue);
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new RuntimeException(e);
@@ -131,13 +135,17 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 
 		return enumValues.stream()
 			.filter(
-				e -> enumValuesByDisease.get(enumClass).get(disease).contains(e.getValue())
-					|| enumValuesByDisease.get(enumClass).get(null).contains(e.getValue()))
+				e -> (getEnumInfo(type, e.getValue()).isActive() || (selectedValue != null && selectedValue.equals(e.getValue())))
+					&& (enumValuesByDisease.get(enumClass).get(disease).contains(e.getValue())
+						|| enumValuesByDisease.get(enumClass).get(null).contains(e.getValue())))
 			.collect(Collectors.toList());
 	}
 
-	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
-		return !getEnumValues(type, disease).isEmpty();
+	public void clearCache() {
+		customizableEnumsByType.clear();
+		enumValuesByLanguage.clear();
+		enumValuesByDisease.clear();
+		enumInfo.clear();
 	}
 
 	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
@@ -200,10 +208,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 	}
 
 	private void loadData() {
-		customizableEnumsByType.clear();
-		enumValuesByLanguage.clear();
-		enumValuesByDisease.clear();
-		enumProperties.clear();
+		clearCache();
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			customizableEnumsByType.putIfAbsent(enumType, new ArrayList<>());
@@ -212,9 +217,16 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 		for (CustomizableEnumValue customizableEnumValue : queryForAll()) {
 			CustomizableEnumType enumType = customizableEnumValue.getDataType();
 			customizableEnumsByType.get(enumType).add(customizableEnumValue);
-			enumProperties.putIfAbsent(enumType, new HashMap<>());
-			enumProperties.get(enumType).putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
+			enumInfo.putIfAbsent(enumType, new HashMap<>());
+			enumInfo.get(enumType)
+				.putIfAbsent(
+					customizableEnumValue.getValue(),
+					new CustomizableEnumCacheInfo(customizableEnumValue.getProperties(), customizableEnumValue.isActive()));
 		}
+	}
+
+	private CustomizableEnumCacheInfo getEnumInfo(CustomizableEnumType type, String value) {
+		return enumInfo.get(type).get(value);
 	}
 
 }

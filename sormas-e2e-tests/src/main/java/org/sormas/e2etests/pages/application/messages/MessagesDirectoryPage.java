@@ -76,7 +76,7 @@ public class MessagesDirectoryPage {
   public static final By POPUP_WINDOW_CANCEL_BUTTON = By.xpath("(//*[@id='discard'])[1]");
   public static final By POPUP_WINDOW_SAVE_AND_OPEN_CASE_BUTTON =
       By.cssSelector("#saveAndOpenEntryButton");
-  public static final By POPUP_WINDOW_DISCARD_BUTTON = By.xpath("(//*[@id='discard'])[2]");
+  public static final By POPUP_WINDOW_DISCARD_BUTTON = By.xpath("//*[@id='discard']");
   public static final By POPUP_WINDOW_SAVE_BUTTON = By.cssSelector("#commit");
   public static final By MESSAGE_DIRECTORY_HEADER_DE =
       By.xpath("//div[@class='v-slot v-slot-view-header']//div[text()='Meldungsverzeichnis']");

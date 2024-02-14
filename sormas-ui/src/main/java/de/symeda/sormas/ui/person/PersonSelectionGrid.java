@@ -25,9 +25,11 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.CustomizableGrid;
 
 @SuppressWarnings("serial")
@@ -76,6 +78,11 @@ public class PersonSelectionGrid extends CustomizableGrid {
 
 		getColumn(SimilarPersonDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(SimilarPersonDto.LAST_NAME).setMinimumWidth(150);
+
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			getColumn(SimilarPersonDto.DISTRICT_NAME).setHidden(true);
+			getColumn(SimilarPersonDto.COMMUNITY_NAME).setHidden(true);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

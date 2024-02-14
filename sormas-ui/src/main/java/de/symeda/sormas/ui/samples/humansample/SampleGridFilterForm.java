@@ -50,7 +50,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 	private static final long serialVersionUID = 829016959284536683L;
 
 	public SampleGridFilterForm() {
-		super(SampleCriteria.class, SampleIndexDto.I18N_PREFIX);
+		super(SampleCriteria.class, SampleIndexDto.I18N_PREFIX, JurisdictionFieldConfig.of(SampleCriteria.REGION, SampleCriteria.DISTRICT, null));
 	}
 
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";

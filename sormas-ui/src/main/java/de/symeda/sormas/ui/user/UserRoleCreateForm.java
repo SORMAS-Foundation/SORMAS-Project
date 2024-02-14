@@ -47,8 +47,8 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
 		+ fluidRowLocs(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER)
-		+ fluidRowLocs(UserRoleDto.PORT_HEALTH_USER);
-//		+ fluidRowLocs(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES);
+		+ fluidRowLocs(UserRoleDto.PORT_HEALTH_USER)
+		+ fluidRowLocs(UserRoleDto.RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES);
 
 	protected UserRoleCreateForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);

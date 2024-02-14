@@ -196,8 +196,8 @@ public class EventDirectorySteps implements En {
     When(
         "I fill EVENT ID filter by API",
         () -> {
-          TimeUnit.SECONDS.sleep(5); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitForElementPresent(APPLY_FILTER, 5);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTER);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_EVENT_BY_FREE_TEXT);

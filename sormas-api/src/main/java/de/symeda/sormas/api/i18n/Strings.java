@@ -906,7 +906,6 @@ public interface Strings {
 	String infoCountryNotEditableEventParticipantsWithoutJurisdiction = "infoCountryNotEditableEventParticipantsWithoutJurisdiction";
 	String infoCreateEntry = "infoCreateEntry";
 	String infoCreateNewContactDiscardsChanges = "infoCreateNewContactDiscardsChanges";
-	String infoCreateNewSampleDiscardsChangesCase = "infoCreateNewSampleDiscardsChangesCase";
 	String infoCreateNewSampleDiscardsChangesContact = "infoCreateNewSampleDiscardsChangesContact";
 	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomExport = "infoCustomExport";
@@ -1405,6 +1404,7 @@ public interface Strings {
 	String messagePersonListAddedAsEventPerticipants = "messagePersonListAddedAsEventPerticipants";
 	String messagePersonMergedAddressDescription = "messagePersonMergedAddressDescription";
 	String messagePersonMergeNoEventParticipantRights = "messagePersonMergeNoEventParticipantRights";
+	String messagePersonNationalHealthIdInvalid = "messagePersonNationalHealthIdInvalid";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePickEventParticipantsIncompleteSelection = "messagePickEventParticipantsIncompleteSelection";
@@ -1602,7 +1602,6 @@ public interface Strings {
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";
-	String promptEmail = "promptEmail";
 	String promptEnvironmentDateFrom = "promptEnvironmentDateFrom";
 	String promptEnvironmentDateTo = "promptEnvironmentDateTo";
 	String promptEnvironmentEpiWeekFrom = "promptEnvironmentEpiWeekFrom";
@@ -1679,7 +1678,6 @@ public interface Strings {
 	String promptTaskEpiWeekFrom = "promptTaskEpiWeekFrom";
 	String promptTaskEpiWeekTo = "promptTaskEpiWeekTo";
 	String promptTaskSearchField = "promptTaskSearchField";
-	String promptTelephoneNumber = "promptTelephoneNumber";
 	String promptTravelEntryDateFrom = "promptTravelEntryDateFrom";
 	String promptTravelEntryDateTo = "promptTravelEntryDateTo";
 	String promptTravelEntryEpiWeekFrom = "promptTravelEntryEpiWeekFrom";
@@ -1696,6 +1694,7 @@ public interface Strings {
 	String reloadPageToSeeChanges = "reloadPageToSeeChanges";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String reportingUser = "reportingUser";
 	String setTo = "setTo";
 	String sormasToSormasLoadingShares = "sormasToSormasLoadingShares";
 	String step = "step";

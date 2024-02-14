@@ -278,7 +278,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setResponsibleUser(surveillanceOfficerWithRestrictedAccessToAssignedEntities.toReference());
 		getEventFacade().save(event);
 		loginWith(surveillanceOfficerWithRestrictedAccessToAssignedEntities);
-		assertTrue(getCurrentUserService().hasRestrictedAccessToAssignedEntities());
+		assertTrue(getCurrentUserService().isRestrictedToAssignedEntities());
 		List<EventIndexDto> results3 = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results3.size());
 	}

@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class CreateNewSamplePage {
   public static final By SAMPLE_PURPOSE_OPTIONS =
       By.cssSelector(".popupContent #samplePurpose .v-select-option");
+  public static final By CANCEL_ACTION = By.id("actionCancel");
   public static final By SAMPLE_UUID = By.cssSelector("[class='popupContent'] [id='uuid']");
   public static final By DATE_SAMPLE_COLLECTED = By.cssSelector("[id='sampleDateTime_date'] input");
   public static final By COLLECTED_DATE_TIME_INPUT =

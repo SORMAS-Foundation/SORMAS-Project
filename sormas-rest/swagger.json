@@ -7,7 +7,7 @@
       "url" : "https://www.gnu.org/licenses/gpl-3.0.html"
     },
     "title" : "SORMAS REST API",
-    "version" : "1.94.0-SNAPSHOT"
+    "version" : "1.95.0-SNAPSHOT"
   },
   "servers" : [ {
     "url" : "/sormas-rest"
@@ -15096,6 +15096,9 @@
       "CustomizableEnumValueDto" : {
         "type" : "object",
         "properties" : {
+          "active" : {
+            "type" : "boolean"
+          },
           "caption" : {
             "type" : "string",
             "maxLength" : 1000000,
@@ -16937,10 +16940,6 @@
       "EventGroupIndexDto" : {
         "type" : "object",
         "properties" : {
-          "changeDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
           "eventCount" : {
             "type" : "integer",
             "format" : "int64"

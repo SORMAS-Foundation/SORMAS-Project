@@ -12,6 +12,8 @@ import de.symeda.sormas.app.util.ViewHelper;
 
 public class ControlUserEditField extends ControlSpinnerField {
 
+	boolean pseudonymized = false;
+
 	public ControlUserEditField(Context context) {
 		super(context);
 	}
@@ -40,8 +42,15 @@ public class ControlUserEditField extends ControlSpinnerField {
 		userContactButton.setOnClickListener(click -> {
 			User user = (User) getValue();
 			Resources resources = getResources();
-			ViewHelper.showUserContactInfo(user, resources, getContext());
+			ViewHelper.showUserContactInfo(user, resources, getContext(), pseudonymized);
 		});
 	}
 
+	public boolean isPseudonymized() {
+		return pseudonymized;
+	}
+
+	public void setPseudonymized(boolean pseudonymized) {
+		this.pseudonymized = pseudonymized;
+	}
 }

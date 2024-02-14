@@ -69,6 +69,8 @@ public class UserRole extends AbstractDomainObject {
 	private JurisdictionLevel jurisdictionLevel;
 	@Enumerated(EnumType.STRING)
 	private DefaultUserRole linkedDefaultUserRole;
+	@Column
+	private boolean restrictAccessToAssignedEntities;
 
 	public String getUserRightsJson() {
 		return userRightsJson;
@@ -145,6 +147,14 @@ public class UserRole extends AbstractDomainObject {
 
 	public void setPortHealthUser(boolean portHealthUser) {
 		this.portHealthUser = portHealthUser;
+	}
+
+	public boolean isRestrictAccessToAssignedEntities() {
+		return restrictAccessToAssignedEntities;
+	}
+
+	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
+		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
 	}
 
 	public JurisdictionLevel getJurisdictionLevel() {

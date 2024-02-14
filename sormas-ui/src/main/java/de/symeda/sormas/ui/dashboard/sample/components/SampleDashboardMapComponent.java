@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.map.BaseDashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardDataProvider;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -120,70 +121,74 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 
 	@Override
 	protected void addLayerOptions(VerticalLayout layersLayout) {
-		CheckBox showCaseSamplesCheckBox = new CheckBox();
-		showCaseSamplesCheckBox.setId(Captions.sampleDashboardShowCaseSamples);
-		showCaseSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowCaseSamples));
-		showCaseSamplesCheckBox.setValue(shouldShowCaseSamples());
-		showCaseSamplesCheckBox.addValueChangeListener(e -> {
-			if ((boolean) e.getProperty().getValue()) {
-				displayedHumanSamples.add(SampleAssociationType.CASE);
-			} else {
-				displayedHumanSamples.remove(SampleAssociationType.CASE);
-			}
 
-			refreshMap(true);
-		});
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			CheckBox showCaseSamplesCheckBox = new CheckBox();
+			showCaseSamplesCheckBox.setId(Captions.sampleDashboardShowCaseSamples);
+			showCaseSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowCaseSamples));
+			showCaseSamplesCheckBox.setValue(shouldShowCaseSamples());
+			showCaseSamplesCheckBox.addValueChangeListener(e -> {
+				if ((boolean) e.getProperty().getValue()) {
+					displayedHumanSamples.add(SampleAssociationType.CASE);
+				} else {
+					displayedHumanSamples.remove(SampleAssociationType.CASE);
+				}
 
-		layersLayout.addComponent(showCaseSamplesCheckBox);
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showCaseSamplesCheckBox);
+		}
 
-		CheckBox showContactSamplesCheckBox = new CheckBox();
-		showContactSamplesCheckBox.setId(Captions.sampleDashboardShowContactSamples);
-		showContactSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowContactSamples));
-		showContactSamplesCheckBox.setValue(shouldShowContactSamples());
-		showContactSamplesCheckBox.addValueChangeListener(e -> {
-			if ((boolean) e.getProperty().getValue()) {
-				displayedHumanSamples.add(SampleAssociationType.CONTACT);
-			} else {
-				displayedHumanSamples.remove(SampleAssociationType.CONTACT);
-			}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			CheckBox showContactSamplesCheckBox = new CheckBox();
+			showContactSamplesCheckBox.setId(Captions.sampleDashboardShowContactSamples);
+			showContactSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowContactSamples));
+			showContactSamplesCheckBox.setValue(shouldShowContactSamples());
+			showContactSamplesCheckBox.addValueChangeListener(e -> {
+				if ((boolean) e.getProperty().getValue()) {
+					displayedHumanSamples.add(SampleAssociationType.CONTACT);
+				} else {
+					displayedHumanSamples.remove(SampleAssociationType.CONTACT);
+				}
 
-			refreshMap(true);
-		});
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showContactSamplesCheckBox);
+		}
 
-		layersLayout.addComponent(showContactSamplesCheckBox);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+			CheckBox showEventParticipantSamplesCheckBox = new CheckBox();
+			showEventParticipantSamplesCheckBox.setId(Captions.sampleDashboardShowEventParticipantSamples);
+			showEventParticipantSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEventParticipantSamples));
+			showEventParticipantSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
+			showEventParticipantSamplesCheckBox.addValueChangeListener(e -> {
+				if ((boolean) e.getProperty().getValue()) {
+					displayedHumanSamples.add(SampleAssociationType.EVENT_PARTICIPANT);
+				} else {
+					displayedHumanSamples.remove(SampleAssociationType.EVENT_PARTICIPANT);
+				}
 
-		CheckBox showEventParticipantSamplesCheckBox = new CheckBox();
-		showEventParticipantSamplesCheckBox.setId(Captions.sampleDashboardShowEventParticipantSamples);
-		showEventParticipantSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEventParticipantSamples));
-		showEventParticipantSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
-		showEventParticipantSamplesCheckBox.addValueChangeListener(e -> {
-			if ((boolean) e.getProperty().getValue()) {
-				displayedHumanSamples.add(SampleAssociationType.EVENT_PARTICIPANT);
-			} else {
-				displayedHumanSamples.remove(SampleAssociationType.EVENT_PARTICIPANT);
-			}
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showEventParticipantSamplesCheckBox);
+		}
 
-			refreshMap(true);
-		});
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_VIEW)) {
+			CheckBox showEnvironmentSamplesCheckBox = new CheckBox();
+			showEnvironmentSamplesCheckBox.setId(Captions.sampleDashboardShowEnvironmentSamples);
+			showEnvironmentSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEnvironmentSamples));
+			showEnvironmentSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
+			showEnvironmentSamplesCheckBox.addValueChangeListener(e -> {
+				if ((boolean) e.getProperty().getValue()) {
+					showEnvironmentalSamples = true;
+				} else {
+					showEnvironmentalSamples = false;
+				}
 
-		layersLayout.addComponent(showEventParticipantSamplesCheckBox);
-
-		CheckBox showEnvironmentSamplesCheckBox = new CheckBox();
-		showEnvironmentSamplesCheckBox.setId(Captions.sampleDashboardShowEnvironmentSamples);
-		showEnvironmentSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEnvironmentSamples));
-		showEnvironmentSamplesCheckBox.setValue(shouldShowEventParticipantSamples());
-		showEnvironmentSamplesCheckBox.addValueChangeListener(e -> {
-			if ((boolean) e.getProperty().getValue()) {
-				showEnvironmentalSamples = true;
-			} else {
-				showEnvironmentalSamples = false;
-			}
-
-			refreshMap(true);
-		});
-
-		layersLayout.addComponent(showEnvironmentSamplesCheckBox);
-
+				refreshMap(true);
+			});
+			layersLayout.addComponent(showEnvironmentSamplesCheckBox);
+		}
 	}
 
 	@Override

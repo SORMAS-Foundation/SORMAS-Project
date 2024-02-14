@@ -93,8 +93,11 @@ public class TaskManagementSteps implements En {
 
     When(
         "^I click on the NEW TASK button$",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
+        () ->{
+            webDriverHelpers.waitForSpinnerNotVisible(10);
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX);
+        });
+
     And(
         "I click on SHOW MORE FILTERS BUTTON on Task directory page",
         () -> {
@@ -116,9 +119,9 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
           webDriverHelpers.scrollToElement(CreateNewTaskSteps.task.getCommentsOnExecution());
-          webDriverHelpers.clickOnWebElementBySelector(
-              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+          webDriverHelpers.ClickAndWaitForNewFormLoaded(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()),
+              EDIT_TASK_MODAL_FORM);
         });
     When(
         "^I filter out last created task from Tasks Directory$",
@@ -691,9 +694,9 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
-          webDriverHelpers.clickOnWebElementBySelector(
-              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.ClickAndWaitForNewFormLoaded(
+              getLastCreatedEditTaskButton(CreateNewTaskSteps.task.getCommentsOnExecution()),
+              EDIT_TASK_MODAL_FORM);
         });
 
     When(
