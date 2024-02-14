@@ -36,6 +36,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
+import static org.sormas.e2etests.steps.web.application.events.EventDirectorySteps.eventsUUID;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -64,11 +65,14 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.pages.application.tasks.TaskManagementPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.sormas.e2etests.steps.web.application.events.EventsTableColumnsHeaders;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -87,15 +91,17 @@ public class TaskManagementSteps implements En {
       ApiState apiState,
       AssertHelpers assertHelpers,
       SoftAssert softly,
-      Properties properties) {
+      Properties properties,
+      RestAssuredClient restAssuredClient) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
+    EnvironmentManager manager = new EnvironmentManager(restAssuredClient);
 
     When(
         "^I click on the NEW TASK button$",
         () ->{
-            webDriverHelpers.waitForSpinnerNotVisible(10);
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX);
+          webDriverHelpers.waitForSpinnerNotVisible(10);
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX);
         });
 
     And(
@@ -181,6 +187,16 @@ public class TaskManagementSteps implements En {
         });
 
     When(
+        "^I am search the last created event by API in task management directory$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
+          webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventsUUID.get(0));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(eventsUUID.get(0)));
+        });
+
+    When(
         "^I filter Task context by ([^\"]*)$",
         (String filterType) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -199,6 +215,23 @@ public class TaskManagementSteps implements En {
               webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_DESCRIPTION_MESSAGE_POPUP),
               expectedText,
               "Bulk action went wrong");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check that region and district are correct displayed for the last created event by API in task management$",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertEquals(
+              manager.getRegionName(
+                  apiState.getCreatedEvent().getEventLocation().getRegion().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.REGION_HEADER.toString()),
+              "Regions are not equal");
+          softly.assertEquals(
+              manager.getDistrictName(
+                  apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISTRICT_HEADER.toString()),
+              "Districts are not equal");
           softly.assertAll();
         });
 
