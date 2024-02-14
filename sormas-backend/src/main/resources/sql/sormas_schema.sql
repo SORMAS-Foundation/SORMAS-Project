@@ -12880,4 +12880,38 @@ ALTER TABLE customizableenumvalue_history ADD COLUMN active boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (539, 'Add active column to customizable enum values #12804');
 
+-- 2024-02-14 Update environment sample deletion dependencies #12887
+DO
+$$
+    DECLARE
+        user_role_id BIGINT;
+    BEGIN
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE urur.userright = 'ENVIRONMENT_DELETE'
+                            AND urur.userright != 'ENVIRONMENT_SAMPLE_DELETE'
+            LOOP
+                INSERT INTO userroles_userrights (userrole_id, userright)
+                VALUES (user_role_id, 'ENVIRONMENT_SAMPLE_DELETE');
+
+                UPDATE userroles set changedate = now() WHERE id = user_role_id;
+            END LOOP;
+
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE urur.userright = 'ENVIRONMENT_SAMPLE_DELETE'
+                              AND urur.userright != 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
+            LOOP
+                INSERT INTO userroles_userrights (userrole_id, userright)
+                VALUES (user_role_id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE');
+
+                UPDATE userroles set changedate = now() WHERE id = user_role_id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (540, 'Update environment sample deletion dependencies #12887');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
