@@ -28,7 +28,7 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class MergeContactIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
+public class MergeContactIndexDto extends PseudonymizableIndexDto implements IsContact, MergeableIndexDto, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7147772346906228533L;
 
@@ -59,6 +59,7 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;

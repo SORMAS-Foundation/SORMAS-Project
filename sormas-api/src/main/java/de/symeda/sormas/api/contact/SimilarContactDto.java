@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class SimilarContactDto extends PseudonymizableIndexDto implements Serializable {
+public class SimilarContactDto extends PseudonymizableIndexDto implements IsContact, Serializable {
 
 	private static final long serialVersionUID = -7290520732250426907L;
 
@@ -28,6 +29,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 	private String firstName;
 	@PersonalData
 	private String lastName;
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
 	private Date lastContactDate;

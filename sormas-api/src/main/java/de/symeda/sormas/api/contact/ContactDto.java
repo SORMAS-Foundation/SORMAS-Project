@@ -61,7 +61,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudeP
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 @DependingOnFeatureType(featureType = FeatureType.CONTACT_TRACING)
-public class ContactDto extends SormasToSormasShareableDto {
+public class ContactDto extends SormasToSormasShareableDto implements IsContact {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -149,6 +149,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caseIdExternalSystem;
@@ -254,6 +255,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	private UserReferenceDto contactOfficer;
 
+	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
 	@SensitiveData
 	private UserReferenceDto resultingCaseUser;

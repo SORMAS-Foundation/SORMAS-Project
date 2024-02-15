@@ -40,6 +40,7 @@ public class ContactReferenceDto extends ReferenceDto implements IsContact {
 
 	@EmbeddedPersonalData
 	private PersonName contactName;
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 
 	public ContactReferenceDto() {

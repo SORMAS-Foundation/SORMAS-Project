@@ -439,6 +439,26 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			is(person.getFirstName()));
 	}
 
+	@Test
+	public void tesGetContactPersonOfCaseWithSpecialAccess() {
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), creator.createPerson().toReference(), rdcf1);
+		creator
+			.createSpecialCaseAccess(caze.toReference(), nationalAdmin.toReference(), districtUser2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		person = createPerson();
+		creator.createContact(districtUser1.toReference(), person.toReference(), caze, rdcf1);
+
+		loginWith(districtUser2);
+
+		assertNotPseudonymized(getPersonFacade().getByUuid(person.getUuid()));
+		assertNotPseudonymized(getPersonFacade().getByUuids(Collections.singletonList(person.getUuid())).get(0));
+		assertNotPseudonymized(
+			getPersonFacade().getAllAfter(new Date(0)).stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
+		assertThat(
+			getPersonFacade().getIndexList(new PersonCriteria().personAssociation(PersonAssociation.CASE), null, null, null).get(0).isPseudonymized(),
+			is(false));
+	}
+
 	private PersonDto createPerson() {
 
 		LocationDto address = LocationDto.build();

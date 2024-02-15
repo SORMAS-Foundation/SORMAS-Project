@@ -15,21 +15,23 @@
 
 package de.symeda.sormas.api.visit;
 
-import de.symeda.sormas.api.uuid.AbstractUuidDto;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class VisitSummaryExportDto extends AbstractUuidDto
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IsCase;
+import de.symeda.sormas.api.contact.IsContact;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-{
+public class VisitSummaryExportDto extends AbstractUuidDto implements IsContact {
 
 	private static final long serialVersionUID = 7066530434713936967L;
 
 	public static final String I18N_PREFIX = "ContactVisitExport";
 
 	private Long contactId;
+	private String caseUuid;
 	private Integer maximumFollowUpVisits;
 
 	private String firstName;
@@ -38,9 +40,17 @@ public class VisitSummaryExportDto extends AbstractUuidDto
 	private Date followUpUntil;
 	private List<VisitSummaryExportDetailsDto> visitDetails = new ArrayList<>();
 
-	public VisitSummaryExportDto(String uuid, Long contactId, String firstName, String lastName, Date lastContactDate, Date followUpUntil) {
+	public VisitSummaryExportDto(
+		String uuid,
+		Long contactId,
+		String caseUuid,
+		String firstName,
+		String lastName,
+		Date lastContactDate,
+		Date followUpUntil) {
 		super(uuid);
 		this.contactId = contactId;
+		this.caseUuid = caseUuid;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.lastContactDate = lastContactDate;
@@ -89,5 +99,10 @@ public class VisitSummaryExportDto extends AbstractUuidDto
 
 	public void setVisitDetails(List<VisitSummaryExportDetailsDto> visitDetails) {
 		this.visitDetails = visitDetails;
+	}
+
+	@Override
+	public IsCase getCaze() {
+		return new CaseReferenceDto(caseUuid);
 	}
 }

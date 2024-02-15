@@ -28,13 +28,13 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.IsCase;
+import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.event.IsEventParticipant;
 import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
@@ -49,6 +49,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
@@ -107,63 +109,72 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 	}
 
 	public <T extends IsCase> List<String> getCaseUuidsWithSpecialAccess(Collection<T> cases) {
-		return getUuidsWithSpecialAccess(Case.class, r -> r, cases);
+		return getUuidsWithSpecialAccess(Case.class, cases, r -> r);
 	}
 
 	public List<String> getSurveillanceReportUuidsWithSpecialAccess(Collection<SurveillanceReport> cases) {
-		return getUuidsWithSpecialAccess(SurveillanceReport.class, r -> r.join(SurveillanceReport.CAZE), cases);
+		return getUuidsWithSpecialAccess(SurveillanceReport.class, cases, r -> r.join(SurveillanceReport.CAZE));
 	}
 
 	public List<String> getImmunizationUuidsWithSpecialAccess(Collection<? extends IsImmunization> immunizations) {
-		return getUuidsWithSpecialAccess(Immunization.class, r -> r.join(Immunization.PERSON).join(Person.CASES), immunizations);
+		return getUuidsWithSpecialAccess(Immunization.class, immunizations, r -> r.join(Immunization.PERSON).join(Person.CASES));
 	}
 
 	public List<String> getSampleUuidsWithSpecialAccess(Collection<? extends IsSample> samples) {
-		return getUuidsWithSpecialAccess(Sample.class, r -> r.join(Sample.ASSOCIATED_CASE), samples);
+		return getUuidsWithSpecialAccess(Sample.class, samples, r -> r.join(Sample.ASSOCIATED_CASE));
 	}
 
 	public List<String> getPathogenTestUuidsWithSpecialAccess(Collection<? extends PathogenTest> tests) {
-		return getUuidsWithSpecialAccess(PathogenTest.class, r -> r.join(PathogenTest.SAMPLE).join(Sample.ASSOCIATED_CASE), tests);
+		return getUuidsWithSpecialAccess(PathogenTest.class, tests, r -> r.join(PathogenTest.SAMPLE).join(Sample.ASSOCIATED_CASE));
 	}
 
 	public List<String> getTaskUuidsWithSpecialAccess(Collection<? extends IsTask> tasks) {
-		return getUuidsWithSpecialAccess(Task.class, r -> r.join(Task.CAZE), tasks);
+		return getUuidsWithSpecialAccess(Task.class, tasks, r -> r.join(Task.CAZE));
 	}
 
 	public List<String> getTravelEntryUuidsWithSpecialAccess(Collection<? extends IsTravelEntry> entries) {
-		return getUuidsWithSpecialAccess(TravelEntry.class, r -> r.join(TravelEntry.PERSON).join(Person.CASES), entries);
+		return getUuidsWithSpecialAccess(TravelEntry.class, entries, r -> r.join(TravelEntry.PERSON).join(Person.CASES));
 	}
 
 	public List<String> getVaccinationUuidsWithSpecialAccess(List<Vaccination> vaccinations) {
 		return getUuidsWithSpecialAccess(
 			Vaccination.class,
-			r -> r.join(Vaccination.IMMUNIZATION).join(Immunization.PERSON).join(Person.CASES),
-			vaccinations);
+			vaccinations,
+			r -> r.join(Vaccination.IMMUNIZATION).join(Immunization.PERSON).join(Person.CASES));
 	}
 
 	public List<String> getVisitUuidsWithSpecialAccess(Collection<? extends IsVisit> visits) {
-		return getUuidsWithSpecialAccess(Visit.class, r -> r.join(Visit.CAZE), visits);
+		return getUuidsWithSpecialAccess(Visit.class, visits, r -> r.join(Visit.CAZE));
 	}
 
 	public List<String> getPersonUuidsWithSpecialAccess(Collection<? extends IsPerson> persons) {
-		return getUuidsWithSpecialAccess(Person.class, r -> r.join(Person.CASES), persons);
+		return getUuidsWithSpecialAccess(
+			Person.class,
+			persons,
+			r -> r.join(Person.CASES, JoinType.LEFT),
+			r -> r.join(Person.CONTACTS, JoinType.LEFT).join(Contact.CAZE, JoinType.LEFT));
 	}
 
 	public List<String> getEventParticipantUuidsWithSpecialAccess(Collection<? extends IsEventParticipant> eventParticipants) {
-		return getUuidsWithSpecialAccess(EventParticipant.class, r -> r.join(EventParticipant.PERSON).join(Person.CASES), eventParticipants);
+		return getUuidsWithSpecialAccess(EventParticipant.class, eventParticipants, r -> r.join(EventParticipant.PERSON).join(Person.CASES));
+	}
+
+	public List<String> getContactUuidsWithSpecialAccess(Collection<? extends IsContact> contacts) {
+		return getUuidsWithSpecialAccess(Contact.class, contacts, r -> r.join(Contact.CAZE));
 	}
 
 	public List<String> getManualMessageLogUuidsWithSpecialAccess(Collection<ManualMessageLogIndexDto> manualMessageLogs) {
 		return getUuidsWithSpecialAccess(
 			ManualMessageLog.class,
-			r -> r.join(ManualMessageLog.RECIPIENT_PERSON).join(Person.CASES),
-			manualMessageLogs);
+			manualMessageLogs,
+			r -> r.join(ManualMessageLog.RECIPIENT_PERSON).join(Person.CASES));
 	}
 
+	@SafeVarargs
 	private <T extends AbstractDomainObject> List<String> getUuidsWithSpecialAccess(
 		Class<T> entityType,
-		Function<Root<T>, From<?, Case>> joinCase,
-		Collection<? extends HasUuid> entities) {
+		Collection<? extends HasUuid> entities,
+		Function<Root<T>, From<?, Case>>... caseJoins) {
 
 		if (entities.isEmpty()) {
 			return Collections.emptyList();
@@ -176,13 +187,19 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 			final CriteriaQuery<String> cq = cb.createQuery(String.class);
 			final Root<T> from = cq.from(entityType);
 
-			Join<Case, SpecialCaseAccess> specialCaseAccess = joinCase.apply(from).join(Case.SPECIAL_CASE_ACCESSES, JoinType.LEFT);
+			Predicate specialAccessPredicate = null;
+			for (Function<Root<T>, From<?, Case>> caseJoin : caseJoins) {
+				specialAccessPredicate = CriteriaBuilderHelper.or(
+					cb,
+					specialAccessPredicate,
+					createSpecialCaseAccessFilter(cb, caseJoin.apply(from).join(Case.SPECIAL_CASE_ACCESSES, JoinType.LEFT)));
+			}
 
 			cq.select(from.get(AbstractDomainObject.UUID));
 			cq.where(
 				cb.and(
 					from.get(AbstractDomainObject.UUID).in(batch.stream().map(HasUuid::getUuid).collect(Collectors.toList())),
-					createSpecialCaseAccessFilter(cb, specialCaseAccess)));
+					specialAccessPredicate));
 
 			result.addAll(em.createQuery(cq).getResultList());
 		});
