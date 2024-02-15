@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -93,6 +94,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.IsPerson;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonAssociation;
@@ -121,6 +123,7 @@ import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -174,6 +177,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
@@ -252,6 +256,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private EventService eventService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public PersonFacadeEjb() {
 	}
@@ -1385,7 +1391,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			persons.addAll(QueryHelper.getResultList(em, cq, new PersonIndexDtoResultTransformer(), null, null));
 		});
 
-		Pseudonymizer<PersonIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
+		Pseudonymizer<PersonIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(persons));
 		pseudonymizer.pseudonymizeDtoCollection(PersonIndexDto.class, persons, PersonIndexDto::getInJurisdiction, null);
 
 		logger.debug(
@@ -1574,7 +1580,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		List<PersonExportDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<PersonExportDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
+		Pseudonymizer<PersonExportDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(persons));
 		pseudonymizer.pseudonymizeDtoCollection(PersonExportDto.class, persons, PersonExportDto::getInJurisdiction, null);
 
 		logger.debug(
@@ -1603,6 +1609,17 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		List<PersonIndexDto> personIndexList = getIndexList(personCriteria, offset, size, sortProperties);
 		long totalElementCount = count(personCriteria);
 		return new Page<>(personIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	protected Pseudonymizer<PersonDto> createPseudonymizer(List<Person> persons) {
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(persons));
+	}
+
+	private <T extends IsPerson> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends IsPerson> persons) {
+		List<String> withSpecialAccess = specialCaseAccessService.getPersonUuidsWithSpecialAccess(persons);
+
+		return p -> withSpecialAccess.contains(p.getUuid());
 	}
 
 	@Override

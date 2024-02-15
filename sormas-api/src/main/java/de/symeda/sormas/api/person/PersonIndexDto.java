@@ -11,7 +11,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
-public class PersonIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class PersonIndexDto extends PseudonymizableIndexDto implements IsPerson, Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "Person";
 

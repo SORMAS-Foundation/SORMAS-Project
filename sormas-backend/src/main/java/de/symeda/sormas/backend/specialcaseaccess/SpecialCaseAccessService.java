@@ -35,8 +35,10 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.IsCase;
+import de.symeda.sormas.api.event.IsEventParticipant;
 import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
+import de.symeda.sormas.api.person.IsPerson;
 import de.symeda.sormas.api.sample.IsSample;
 import de.symeda.sormas.api.task.IsTask;
 import de.symeda.sormas.api.travelentry.IsTravelEntry;
@@ -47,6 +49,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.person.Person;
@@ -140,6 +143,14 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 
 	public List<String> getVisitUuidsWithSpecialAccess(Collection<? extends IsVisit> visits) {
 		return getUuidsWithSpecialAccess(Visit.class, r -> r.join(Visit.CAZE), visits);
+	}
+
+	public List<String> getPersonUuidsWithSpecialAccess(Collection<? extends IsPerson> persons) {
+		return getUuidsWithSpecialAccess(Person.class, r -> r.join(Person.CASES), persons);
+	}
+
+	public List<String> getEventParticipantUuidsWithSpecialAccess(Collection<? extends IsEventParticipant> eventParticipants) {
+		return getUuidsWithSpecialAccess(EventParticipant.class, r -> r.join(EventParticipant.PERSON).join(Person.CASES), eventParticipants);
 	}
 
 	public List<String> getManualMessageLogUuidsWithSpecialAccess(Collection<ManualMessageLogIndexDto> manualMessageLogs) {

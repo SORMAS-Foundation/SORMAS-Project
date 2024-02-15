@@ -62,7 +62,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING,
 	FeatureType.EVENT_SURVEILLANCE })
-public class PersonDto extends PseudonymizableDto {
+public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 42953;
 

@@ -51,6 +51,7 @@ import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
+import de.symeda.sormas.api.person.IsPerson;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -73,7 +74,7 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 @Entity
-public class Person extends AbstractDomainObject implements HasExternalData {
+public class Person extends AbstractDomainObject implements IsPerson, HasExternalData {
 
 	private static final long serialVersionUID = -1735038738114840087L;
 

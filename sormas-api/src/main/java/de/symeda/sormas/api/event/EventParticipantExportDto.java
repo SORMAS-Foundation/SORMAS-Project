@@ -59,7 +59,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCod
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(EventParticipantDto.class)
-public class EventParticipantExportDto implements Serializable {
+public class EventParticipantExportDto implements IsEventParticipant, Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipantExport";
 
@@ -80,6 +80,7 @@ public class EventParticipantExportDto implements Serializable {
 	public static final String AGE_GROUP = "ageGroup";
 
 	private long id;
+	private String uuid;
 	private long personId;
 	private long personAddressId;
 
@@ -183,8 +184,7 @@ public class EventParticipantExportDto implements Serializable {
 	private long contactCount;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid, Date eventReportDateTime,
-
+    public EventParticipantExportDto(long id, String uuid, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid, Date eventReportDateTime,
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
 									 String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
@@ -197,6 +197,7 @@ public class EventParticipantExportDto implements Serializable {
     	//@formatter:on
 
 		this.id = id;
+		this.uuid = uuid;
 		this.personId = personId;
 		this.personUuid = personUuid;
 		this.eventParticipantUuid = eventParticipantUuid;
@@ -828,6 +829,11 @@ public class EventParticipantExportDto implements Serializable {
 
 	public long getId() {
 		return id;
+	}
+
+	@Override
+	public String getUuid() {
+		return uuid;
 	}
 
 	public long getPersonId() {

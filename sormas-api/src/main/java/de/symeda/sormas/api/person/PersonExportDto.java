@@ -36,7 +36,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class PersonExportDto extends AbstractUuidDto {
+public class PersonExportDto extends AbstractUuidDto implements IsPerson {
 
 	private static final long serialVersionUID = -6902138630884671263L;
 

@@ -148,6 +148,10 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 		return Pseudonymizer.getDefault(userService);
 	}
 
+	protected <T> Pseudonymizer<T> createGenericPseudonymizer(SpecialAccessCheck<T> specialAccessCheck) {
+		return Pseudonymizer.getDefault(userService, specialAccessCheck);
+	}
+
 	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer() {
 		return Pseudonymizer.getDefault(userService, I18nProperties.getCaption(Captions.inaccessibleValue));
 	}
