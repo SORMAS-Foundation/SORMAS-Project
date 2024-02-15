@@ -56,10 +56,11 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(EventParticipantDto.class)
-public class EventParticipantExportDto implements IsEventParticipant, Serializable {
+public class EventParticipantExportDto extends AbstractUuidDto implements IsEventParticipant, Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipantExport";
 
@@ -80,7 +81,6 @@ public class EventParticipantExportDto implements IsEventParticipant, Serializab
 	public static final String AGE_GROUP = "ageGroup";
 
 	private long id;
-	private String uuid;
 	private long personId;
 	private long personAddressId;
 
@@ -195,9 +195,8 @@ public class EventParticipantExportDto implements IsEventParticipant, Serializab
 									 VaccinationStatus vaccinationStatus
 									 ) {
     	//@formatter:on
-
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.personId = personId;
 		this.personUuid = personUuid;
 		this.eventParticipantUuid = eventParticipantUuid;
@@ -829,11 +828,6 @@ public class EventParticipantExportDto implements IsEventParticipant, Serializab
 
 	public long getId() {
 		return id;
-	}
-
-	@Override
-	public String getUuid() {
-		return uuid;
 	}
 
 	public long getPersonId() {
