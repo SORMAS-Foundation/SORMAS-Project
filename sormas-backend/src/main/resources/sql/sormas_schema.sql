@@ -12891,9 +12891,16 @@ DO $$
              count_perform_bulk_actions_right = (SELECT count(*) FROM userroles_userrights WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS');
              IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES')) = true) THEN
 			     IF count_perform_bulk_actions_right = 0 THEN
-                   UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
+                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
                  END IF;
              DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
+             END IF;
+
+             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT')) = true) THEN
+                 IF count_perform_bulk_actions_right = 0 THEN
+                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
+                 END IF;
+             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
              END IF;
           END LOOP;
   END;
