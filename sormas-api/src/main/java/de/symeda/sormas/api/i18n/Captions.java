@@ -549,6 +549,7 @@ public interface Captions {
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
 	String caseJurisdictionType = "caseJurisdictionType";
+	String caseLinkToSamples = "caseLinkToSamples";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
@@ -766,6 +767,7 @@ public interface Captions {
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	String contactIncludeContactsFromOtherJurisdictions = "contactIncludeContactsFromOtherJurisdictions";
+	String contactLinkToSamples = "contactLinkToSamples";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMergeDuplicates = "contactMergeDuplicates";
 	String contactMinusDays = "contactMinusDays";
@@ -1322,6 +1324,7 @@ public interface Captions {
 	String EventParticipantExport_eventTypeOfPlace = "EventParticipantExport.eventTypeOfPlace";
 	String EventParticipantExport_personNationalHealthId = "EventParticipantExport.personNationalHealthId";
 	String EventParticipantExport_sampleInformation = "EventParticipantExport.sampleInformation";
+	String eventParticipantLinkToSamples = "eventParticipantLinkToSamples";
 	String eventParticipantSelect = "eventParticipantSelect";
 	String EventParticipantSelection_eventParticipantUuidLink = "EventParticipantSelection.eventParticipantUuidLink";
 	String EventParticipantSelection_eventUuidLink = "EventParticipantSelection.eventUuidLink";
@@ -1990,7 +1993,6 @@ public interface Captions {
 	String regionName = "regionName";
 	String registerInPatientDiaryButton = "registerInPatientDiaryButton";
 	String remove = "remove";
-	String reportingUser = "reportingUser";
 	String requiredUserRights = "requiredUserRights";
 	String Sample = "Sample";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
@@ -2094,6 +2096,9 @@ public interface Captions {
 	String SampleExport_contactReportDate = "SampleExport.contactReportDate";
 	String SampleExport_contactUuid = "SampleExport.contactUuid";
 	String SampleExport_creatinine = "SampleExport.creatinine";
+	String SampleExport_eventParticipantCommunity = "SampleExport.eventParticipantCommunity";
+	String SampleExport_eventParticipantDistrict = "SampleExport.eventParticipantDistrict";
+	String SampleExport_eventParticipantRegion = "SampleExport.eventParticipantRegion";
 	String SampleExport_gasOxygenTherapy = "SampleExport.gasOxygenTherapy";
 	String SampleExport_haemoglobin = "SampleExport.haemoglobin";
 	String SampleExport_haemoglobinuria = "SampleExport.haemoglobinuria";

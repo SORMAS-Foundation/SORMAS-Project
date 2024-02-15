@@ -97,7 +97,10 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		district.setRequired(shouldBeRequired);
 
 		addField(EventParticipantDto.UUID, TextField.class);
-		addField(EventParticipantDto.REPORTING_USER, UserField.class);
+
+		UserField reportingUser = addField(EventParticipantDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+
 		setReadOnly(true, EventParticipantDto.UUID, EventParticipantDto.REPORTING_USER);
 
 		initializeVisibilitiesAndAllowedVisibilities();

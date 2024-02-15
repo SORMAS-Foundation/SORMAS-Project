@@ -127,6 +127,9 @@ public class SampleExportDto extends AbstractUuidDto {
 	private final Date lastContactDate;
 	private final ContactClassification contactClassification;
 	private final ContactStatus contactStatus;
+	private String eventParticipantRegion;
+	private String eventParticipantDistrict;
+	private String eventParticipantCommunity;
 	private String caseResponsibleRegion;
 	private String caseResponsibleDistrict;
 	private String caseResponsibleCommunity;
@@ -152,8 +155,8 @@ public class SampleExportDto extends AbstractUuidDto {
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
-						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid,
-						   String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
+						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String eventParticipantRegion, String eventParticipantDistrict,
+                           String labUuid, String caseHealthFacilityUuid, String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
 						   boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 		super(uuid);
@@ -183,6 +186,11 @@ public class SampleExportDto extends AbstractUuidDto {
 		if (eventParticipantUuid != null) {
 			this.associatedEventParticipant =
 				new EventParticipantReferenceDto(eventParticipantUuid, eventParticipantFirstName, eventParticipantLastName);
+
+			boolean isEventParticipantJurisdictionDataFilled = eventParticipantRegion != null;
+			this.eventParticipantRegion = isEventParticipantJurisdictionDataFilled ? eventParticipantRegion : eventAddressRegion;
+			this.eventParticipantDistrict = isEventParticipantJurisdictionDataFilled ? eventParticipantDistrict : eventAddressDistrict;
+			this.eventParticipantCommunity = isEventParticipantJurisdictionDataFilled ? null : eventAddressCommunity;
 		}
 
 		this.disease = caseUuid != null
@@ -686,6 +694,21 @@ public class SampleExportDto extends AbstractUuidDto {
 	@Order(67)
 	public String getContactCommunity() {
 		return contactCommunity;
+	}
+
+	@Order(68)
+	public String getEventParticipantRegion() {
+		return eventParticipantRegion;
+	}
+
+	@Order(69)
+	public String getEventParticipantDistrict() {
+		return eventParticipantDistrict;
+	}
+
+	@Order(70)
+	public String getEventParticipantCommunity() {
+		return eventParticipantCommunity;
 	}
 
 	@Order(71)

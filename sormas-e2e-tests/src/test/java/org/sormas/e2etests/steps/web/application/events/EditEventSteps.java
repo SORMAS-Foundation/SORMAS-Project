@@ -51,6 +51,7 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.ST
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COMPLIANT_PATHOGEN_FINE_TYPING_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CONFIRM_EVENT_DELETE_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX;
@@ -64,13 +65,16 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT_BY_TEXT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DEFAULT_COMBOBOX_VALUE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BULK_EDIT_BUTTON_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_EVENT_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_ACTION;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_PAGE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_FIRST_TASK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EPIDEMIOLOGICAL_EVIDENCE_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENTS_ACTIONS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ACTIONS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_CLUSTER_EDIT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_DATA_SAVED_MESSAGE;
@@ -113,6 +117,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GRO
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_IMMUNIZATION_CARD_WITH_COVID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NO_EVENT_ACTION_CAPTION;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -1367,6 +1372,51 @@ public class EditEventSteps implements En {
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               EditEventPage.UUID_INPUT);
+        });
+
+    When(
+        "I navigate to Event Actions tab from Event tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENTS_ACTIONS_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENTS_ACTIONS_TAB);
+        });
+
+    When(
+        "I click on to Edit Event Actions from Event Actions tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_ACTION);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_EVENT_ACTION);
+        });
+
+    And(
+        "^I check that the Delete button is not available from Edit Event Actions page$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(DELETE_EVENT_ACTION_BUTTON, 2),
+              "Delete event action button is visible!");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on DELETE button from Edit Event Actions page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_EVENT_ACTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_EVENT_ACTION_BUTTON);
+        });
+
+    When(
+        "I click on Confirm DELETE button Edit Event Actions",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONFIRM_EVENT_DELETE_ACTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_EVENT_DELETE_ACTION_BUTTON);
+        });
+
+    When(
+        "I check that Event Actions hasn't got any actions on Event Action page",
+        () -> {
+          String caption = webDriverHelpers.getTextFromWebElement(NO_EVENT_ACTION_CAPTION);
+          softly.assertEquals(caption, "There are no actions for this Event");
+          softly.assertAll();
         });
 
     When(

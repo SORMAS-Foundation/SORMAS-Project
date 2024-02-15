@@ -245,8 +245,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LABEL_LOC);
-		addField(SampleDto.REPORTING_USER, UserField.class).setReadOnly(true);
-
+		UserField reportingUserField = addField(SampleDto.REPORTING_USER, UserField.class);
+		reportingUserField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
+		reportingUserField.setReadOnly(true);
 	}
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {

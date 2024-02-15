@@ -424,6 +424,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
 		contentBinding.contactProhibitionToWorkFrom.initializeDateField(getChildFragmentManager());
 		contentBinding.contactProhibitionToWorkUntil.initializeDateField(getChildFragmentManager());
+
+		contentBinding.contactReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

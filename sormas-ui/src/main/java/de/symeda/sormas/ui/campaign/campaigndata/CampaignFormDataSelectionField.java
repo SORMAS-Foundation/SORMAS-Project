@@ -23,9 +23,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -119,20 +121,22 @@ public class CampaignFormDataSelectionField extends VerticalLayout {
 		HorizontalLayout formDataLayout = new HorizontalLayout();
 		formDataLayout.setSpacing(true);
 		{
-			Label fdRegion = new Label(formData.getRegion() != null ? formData.getRegion().buildCaption() : "");
-			fdRegion.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.REGION));
-			fdRegion.setWidthUndefined();
-			formDataLayout.addComponent(fdRegion);
+			if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+				Label fdRegion = new Label(formData.getRegion() != null ? formData.getRegion().buildCaption() : "");
+				fdRegion.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.REGION));
+				fdRegion.setWidthUndefined();
+				formDataLayout.addComponent(fdRegion);
 
-			Label fdDistrict = new Label(formData.getDistrict() != null ? formData.getDistrict().buildCaption() : "");
-			fdDistrict.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.DISTRICT));
-			fdDistrict.setWidthUndefined();
-			formDataLayout.addComponent(fdDistrict);
+				Label fdDistrict = new Label(formData.getDistrict() != null ? formData.getDistrict().buildCaption() : "");
+				fdDistrict.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.DISTRICT));
+				fdDistrict.setWidthUndefined();
+				formDataLayout.addComponent(fdDistrict);
 
-			Label fdCommunity = new Label(formData.getCommunity() != null ? formData.getCommunity().buildCaption() : "");
-			fdCommunity.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.COMMUNITY));
-			fdCommunity.setWidthUndefined();
-			formDataLayout.addComponent(fdCommunity);
+				Label fdCommunity = new Label(formData.getCommunity() != null ? formData.getCommunity().buildCaption() : "");
+				fdCommunity.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.COMMUNITY));
+				fdCommunity.setWidthUndefined();
+				formDataLayout.addComponent(fdCommunity);
+			}
 
 			Label fdFormDate = new Label(DateFormatHelper.formatDate(formData.getFormDate()));
 			fdFormDate.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.FORM_DATE));

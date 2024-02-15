@@ -72,6 +72,7 @@ public class EnvironmentSampleReadFragment
 			contentBinding.environmentSampleRequestedPathogenTestsTags.setVisibility(GONE);
 			contentBinding.environmentSampleOtherRequestedPathogenTests.setVisibility(GONE);
 		}
+		contentBinding.environmentSampleReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

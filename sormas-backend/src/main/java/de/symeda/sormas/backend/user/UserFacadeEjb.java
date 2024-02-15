@@ -72,7 +72,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
@@ -962,19 +962,14 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	private Set<User> getPossibleUsersBasedOnCasesFacility(List<Case> cases) {
-		Set<Facility> possibleFacilities = cases.stream().map(Case::getHealthFacility).collect(Collectors.toSet());
-
-		Set<User> possibleUsersForAvailableFacilities = new HashSet<>();
-
-		possibleFacilities.forEach(facility -> {
-			if (facility != null
-				&& !FacilityDto.NONE_FACILITY_UUID.equals(facility.getUuid())
-				&& !FacilityDto.OTHER_FACILITY_UUID.equals(facility.getUuid())) {
-				possibleUsersForAvailableFacilities.addAll(userService.getFacilityUsersOfHospital(facility));
-			}
-		});
-
-		return possibleUsersForAvailableFacilities;
+		return cases.stream()
+			.map(Case::getHealthFacility)
+			.filter(Objects::nonNull)
+			.filter(f -> f.getType() == FacilityType.HOSPITAL)
+			.distinct()
+			.map(userService::getFacilityUsersOfHospital)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toSet());
 	}
 
 	@Override
