@@ -520,7 +520,6 @@ public class CaseDirectorySteps implements En {
         () -> {
           String languageSample =
               webDriverHelpers.getTextFromWebElement(By.cssSelector(".v-label.v-widget.h1"));
-          System.out.print(languageSample);
           if (languageSample.equalsIgnoreCase("Fallverzeichnis")) {
             webDriverHelpers.clickOnWebElementBySelector(BULK_CREATE_QUARANTINE_ORDER_DE);
           } else if (languageSample.equalsIgnoreCase("Case Directory")) {
