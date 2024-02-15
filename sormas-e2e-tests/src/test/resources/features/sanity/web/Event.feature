@@ -1487,4 +1487,3 @@ Feature: Create events
     And I click on the Tasks button from navbar
     And I am search the last created event by API in task management directory
     And I check that region and district are correct displayed for the last created event by API in task management
-    ### Przed zakomitowaniem rozkmiń krok po kroku ostatni setep z testu dotyczacy !!!!!
