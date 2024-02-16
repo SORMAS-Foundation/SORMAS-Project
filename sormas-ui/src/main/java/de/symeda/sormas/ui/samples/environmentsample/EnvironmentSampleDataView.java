@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.ui.samples.environmentsample;
 
+import java.util.Arrays;
+import java.util.List;
+
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -27,6 +31,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.environment.EnvironmentDataView;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.samples.pathogentestlink.PathogenTestListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
@@ -44,6 +49,7 @@ public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSam
 	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
 
 	private CommitDiscardWrapperComponent<EnvironmentSampleEditForm> editComponent;
+	private String oldViewName = null;
 
 	public EnvironmentSampleDataView() {
 		super(VIEW_NAME);
@@ -51,8 +57,14 @@ public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSam
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-
 		super.enter(event);
+		View oldView = event.getOldView();
+		if (oldView != null) {
+			List<Class<?>> interfaces = Arrays.asList(oldView.getClass().getInterfaces());
+			if (interfaces.contains(HasName.class)) {
+				oldViewName = ((HasName) oldView).getName();
+			}
+		}
 		initOrRedirect(event);
 	}
 
@@ -79,7 +91,7 @@ public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSam
 		String sampleUuid = getReference().getUuid();
 		EnvironmentSampleDto sample = FacadeProvider.getEnvironmentSampleFacade().getByUuid(sampleUuid);
 		EditPermissionType editPermission = FacadeProvider.getEnvironmentSampleFacade().getEditPermissionType(sampleUuid);
-		editComponent = ControllerProvider.getEnvironmentSampleController().getEditComponent(sample);
+		editComponent = ControllerProvider.getEnvironmentSampleController().getEditComponent(sample, getOldViewName());
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -116,6 +128,10 @@ public class EnvironmentSampleDataView extends AbstractDetailView<EnvironmentSam
 
 	private boolean isEditAllowed() {
 		return FacadeProvider.getEnvironmentSampleFacade().isEditAllowed(getReference().getUuid());
+	}
+
+	private String getOldViewName() {
+		return oldViewName;
 	}
 
 }
