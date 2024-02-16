@@ -305,14 +305,14 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
 				.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
 			addHeaderComponent(lineListingButton);
-			lineListingButton.setEnabled(isGridEnabled());
+			lineListingButton.setEnabled(allowActions());
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
 	}
 
-	private boolean isGridEnabled() {
+	private boolean allowActions() {
 		return !isEventDeleted() && isEditAllowed();
 	}
 
@@ -346,13 +346,13 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			gridLayout.setMargin(true);
 			gridLayout.setSpacing(false);
 			gridLayout.addComponent(createTopBar());
-			gridLayout.addComponent(createStatusFilterBar());
+			gridLayout.addComponent(createStatusFilterBar(isEditAllowed()));
 			gridLayout.addComponent(grid);
 			gridLayout.setExpandRatio(grid, 1);
 			gridLayout.setStyleName("crud-main-layout");
 			grid.addDataSizeChangeListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout.setEnabled(isGridEnabled());
+			gridLayout.setEnabled(allowActions() || FacadeProvider.getEventFacade().hasParticipantWithSpecialAccess(eventRef));
 		}
 
 		if (params.startsWith("?")) {
@@ -362,7 +362,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		updateFilterComponents();
 	}
 
-	public HorizontalLayout createStatusFilterBar() {
+	private HorizontalLayout createStatusFilterBar(boolean isEditAllowed) {
 
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
@@ -420,12 +420,14 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			actionButtonsLayout.addComponent(eventParticipantRelevanceStatusFilter);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
-			}, ValoTheme.BUTTON_PRIMARY);
+		if (isEditAllowed) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+				addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
+					ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
+				}, ValoTheme.BUTTON_PRIMARY);
 
-			actionButtonsLayout.addComponent(addButton);
+				actionButtonsLayout.addComponent(addButton);
+			}
 		}
 
 		statusFilterLayout.addComponent(actionButtonsLayout);

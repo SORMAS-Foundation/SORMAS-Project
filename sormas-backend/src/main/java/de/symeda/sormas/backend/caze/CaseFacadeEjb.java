@@ -4440,6 +4440,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caseSave(cazeDto, true, visit.getCaze(), cazeDto, true, true);
 	}
 
+	@Override
+	public boolean hasCurrentUserSpecialAccess(CaseReferenceDto caze) {
+		return specialCaseAccessService.hasCurrentUserSpecialAccess(caze);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
