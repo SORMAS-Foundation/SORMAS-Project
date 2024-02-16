@@ -83,6 +83,7 @@ import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
@@ -827,6 +828,16 @@ public class CasesView extends AbstractView implements HasName {
 									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
 							}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
+					}
+
+					if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkSpecialCaseAccess),
+								VaadinIcons.RASTER_LOWER_LEFT,
+								mi -> grid.bulkActionHandler(
+									items -> ControllerProvider.getSpecialCaseAccessController()
+										.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);

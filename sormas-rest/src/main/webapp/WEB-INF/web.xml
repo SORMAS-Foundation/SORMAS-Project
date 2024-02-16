@@ -781,6 +781,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>GRANT_SPECIAL_CASE_ACCESS</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CONTACT_RESPONSIBLE</role-name>
 	</security-role>
 

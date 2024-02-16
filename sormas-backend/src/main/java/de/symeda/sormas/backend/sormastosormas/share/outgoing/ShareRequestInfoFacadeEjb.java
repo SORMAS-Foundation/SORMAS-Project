@@ -53,11 +53,11 @@ import de.symeda.sormas.backend.sormastosormas.entities.contact.ContactShareData
 import de.symeda.sormas.backend.sormastosormas.entities.event.EventShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.EventParticipantShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.share.SormasToSormasPseudonymizer;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -197,7 +197,7 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		details.setDataType(requestInfo.getDataType());
 		details.setStatus(requestInfo.getRequestStatus());
 
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		details.setCases(
 			requestInfo.getShares()
 				.stream()

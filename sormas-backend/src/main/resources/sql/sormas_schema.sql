@@ -12880,6 +12880,41 @@ ALTER TABLE customizableenumvalue_history ADD COLUMN active boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (539, 'Add active column to customizable enum values #12804');
 
+-- 2024-01-18 Grant users special access to specific cases' personal data for a limited time #12758
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'GRANT_SPECIAL_CASE_ACCESS' FROM userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+
+CREATE TABLE IF NOT EXISTS specialcaseaccesses
+(
+    id                          bigint       not null,
+    uuid                        varchar(36)  not null unique,
+    changedate                  timestamp    not null,
+    creationdate                timestamp    not null,
+    change_user_id              bigint,
+    sys_period                  tstzrange    not null,
+    caze_id                     bigint       not null,
+    assignedto_id               bigint       not null,
+    assignedby_id               bigint       not null,
+    enddatetime                 timestamp    not null,
+    assignmentdate              timestamp    not null,
+    primary key (id)
+);
+
+ALTER TABLE specialcaseaccesses OWNER TO sormas_user;
+ALTER TABLE specialcaseaccesses ADD CONSTRAINT fk_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+ALTER TABLE specialcaseaccesses ADD CONSTRAINT fk_assignedto_id FOREIGN KEY (assignedto_id) REFERENCES users (id);
+ALTER TABLE specialcaseaccesses ADD CONSTRAINT fk_assignedby_id FOREIGN KEY (assignedby_id) REFERENCES users (id);
+
+CREATE TABLE specialcaseaccesses_history (LIKE specialcaseaccesses);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON specialcaseaccesses
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'specialcaseaccesses_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON specialcaseaccesses
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('specialcaseaccesses_history', 'id');
+ALTER TABLE specialcaseaccesses_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (540, 'Grant users special access to specific cases'' personal data for a limited time #12758');
+
 -- 2024-02-09 Remove entity specific PERFORM_BULK_OPERATIONS user rights #10994
 DO $$
   DECLARE
@@ -12906,14 +12941,15 @@ DO $$
              IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
                  IF count_perform_bulk_actions_right = 0 THEN
                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
-                 END IF;
+             END IF;
              DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
              END IF;
-          END LOOP;
-  END;
+         END LOOP;
+ END;
 
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (540, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
+INSERT INTO schema_version (version_number, comment) VALUES (541, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

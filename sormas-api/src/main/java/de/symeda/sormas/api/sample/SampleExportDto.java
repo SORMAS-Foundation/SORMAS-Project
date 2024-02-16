@@ -29,6 +29,7 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -48,7 +49,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class SampleExportDto extends AbstractUuidDto {
+public class SampleExportDto extends AbstractUuidDto implements IsSample {
 
 	private static final long serialVersionUID = -3027326087594387560L;
 
@@ -127,6 +128,9 @@ public class SampleExportDto extends AbstractUuidDto {
 	private final Date lastContactDate;
 	private final ContactClassification contactClassification;
 	private final ContactStatus contactStatus;
+	private String eventParticipantRegion;
+	private String eventParticipantDistrict;
+	private String eventParticipantCommunity;
 	private String caseResponsibleRegion;
 	private String caseResponsibleDistrict;
 	private String caseResponsibleCommunity;
@@ -152,8 +156,8 @@ public class SampleExportDto extends AbstractUuidDto {
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
-						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid,
-						   String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
+						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String eventParticipantRegion, String eventParticipantDistrict,
+                           String labUuid, String caseHealthFacilityUuid, String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
 						   boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 		super(uuid);
@@ -175,7 +179,7 @@ public class SampleExportDto extends AbstractUuidDto {
 				caseFacilityDetails);
 		}
 		if (contactUuid != null) {
-			this.associatedContact = new ContactReferenceDto(contactUuid, contactPersonFirstName, contactPersonLastName, null, null);
+			this.associatedContact = new ContactReferenceDto(contactUuid, contactPersonFirstName, contactPersonLastName, null);
 			this.contactRegion = contactRegion;
 			this.contactDistrict = contactDistrict;
 			this.contactCommunity = contactCommunity;
@@ -183,6 +187,11 @@ public class SampleExportDto extends AbstractUuidDto {
 		if (eventParticipantUuid != null) {
 			this.associatedEventParticipant =
 				new EventParticipantReferenceDto(eventParticipantUuid, eventParticipantFirstName, eventParticipantLastName);
+
+			boolean isEventParticipantJurisdictionDataFilled = eventParticipantRegion != null;
+			this.eventParticipantRegion = isEventParticipantJurisdictionDataFilled ? eventParticipantRegion : eventAddressRegion;
+			this.eventParticipantDistrict = isEventParticipantJurisdictionDataFilled ? eventParticipantDistrict : eventAddressDistrict;
+			this.eventParticipantCommunity = isEventParticipantJurisdictionDataFilled ? null : eventAddressCommunity;
 		}
 
 		this.disease = caseUuid != null
@@ -688,6 +697,21 @@ public class SampleExportDto extends AbstractUuidDto {
 		return contactCommunity;
 	}
 
+	@Order(68)
+	public String getEventParticipantRegion() {
+		return eventParticipantRegion;
+	}
+
+	@Order(69)
+	public String getEventParticipantDistrict() {
+		return eventParticipantDistrict;
+	}
+
+	@Order(70)
+	public String getEventParticipantCommunity() {
+		return eventParticipantCommunity;
+	}
+
 	@Order(71)
 	public String getPathogenTestType1() {
 		return pathogenTest1.formatType();
@@ -851,6 +875,11 @@ public class SampleExportDto extends AbstractUuidDto {
 
 	public SampleJurisdictionFlagsDto getSampleJurisdictionFlagsDto() {
 		return sampleJurisdictionFlagsDto;
+	}
+
+	@Override
+	public IsCase getAssociatedCase() {
+		return new CaseReferenceDto(caseUuid);
 	}
 
 	public static class SampleExportMaterial implements Serializable {

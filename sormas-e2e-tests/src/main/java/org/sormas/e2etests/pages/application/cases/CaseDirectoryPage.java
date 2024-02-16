@@ -111,9 +111,13 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='ownershipStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
-  public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
-  public static final By BULK_ACTIONS_DE_ARCHIVE = By.id("bulkActions-6");
-  public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-9");
+  public static final By BULK_ACTIONS_ARCHIVE = By.xpath("//span[contains(text(),'Archive')]");
+  public static final By BULK_ACTIONS_DE_ARCHIVE =
+      By.xpath("//span[contains(text(),'De-Archive')]\n");
+  public static final By BULK_CREATE_QUARANTINE_ORDER =
+      By.xpath("//span[contains(text(),'Create quarantine order documents')]");
+  public static final By BULK_CREATE_QUARANTINE_ORDER_DE =
+      By.xpath("//span[contains(text(),'Dokumente erstellen')]");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
@@ -314,7 +318,7 @@ public class CaseDirectoryPage {
   public static final By PROGRESSBAR_TOTAL_NUMBER_OF_SKIPPED_CASES_LABEL =
       By.xpath("//div[contains(text(), 'Skipped')]");
   public static final By BULK_MODE_SUCCESS_IMAGE = By.cssSelector(".popupContent .v-image");
-  public static final By BULK_RESTORE_BUTTON = By.id("bulkActions-4");
+  public static final By BULK_RESTORE_BUTTON = By.xpath("//span[contains(text(),'Restore')]");
   public static final By CONFIRM_RESTORATION_WINDOWS_HEADER =
       By.xpath("//div[contains(text(), 'Confirm restoration')]");
 }

@@ -2,8 +2,12 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.persistence.Query;
@@ -15,14 +19,17 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
@@ -214,4 +221,83 @@ public class ImmunizationFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 		assertThat(testImmunization3Fourth.isPseudonymized(), is(true));
 		assertThat(testImmunization3Fourth.getAdditionalDetails(), is(emptyString()));
 	}
+
+    @Test
+    public void testGetImmunizationOutsideJurisdiction() {
+		loginWith(nationalAdmin);
+
+		CaseDataDto caze = creator.createCase(nationalUser.toReference(), creator.createPerson().toReference(), rdcf2);
+		ImmunizationDto immunization = createImmunization(caze, nationalUser, rdcf2);
+
+		loginWith(districtUser1);
+
+		assertPseudonymized(getImmunizationFacade().getByUuid(immunization.getUuid()), rdcf2);
+		assertPseudonymized(getImmunizationFacade().getByUuids(Collections.singletonList(immunization.getUuid())).get(0), rdcf2);
+        assertThat(getImmunizationFacade().getAllAfter(new Date(0)), hasSize(0));
+        assertThat(getImmunizationFacade().getIndexList(new ImmunizationCriteria(), null, null, null), hasSize(0));
+    }
+
+    @Test
+	public void testGetImmuniztionOfCaseWithSpecialAccess() {
+		loginWith(nationalAdmin);
+
+		CaseDataDto caze = creator.createCase(nationalAdmin.toReference(), creator.createPerson().toReference(), rdcf2);
+		ImmunizationDto immunization = createImmunization(caze, nationalAdmin, rdcf2);
+		creator
+			.createSpecialCaseAccess(caze.toReference(), nationalUser.toReference(), districtUser1.toReference(), DateHelper.addDays(new Date(), 1));
+
+		loginWith(districtUser1);
+
+		assertNotPseudonymized(getImmunizationFacade().getByUuid(immunization.getUuid()), nationalAdmin, rdcf2);
+		assertNotPseudonymized(getImmunizationFacade().getByUuids(Collections.singletonList(immunization.getUuid())).get(0), nationalAdmin, rdcf2);
+		assertNotPseudonymized(getImmunizationFacade().getAllAfter(new Date(0)).get(0), nationalAdmin, rdcf2);
+        assertThat(getImmunizationFacade().getIndexList(new ImmunizationCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
+    }
+
+    private void assertPseudonymized(ImmunizationDto immunization, TestDataCreator.RDCF rdcf) {
+        assertThat(immunization.isPseudonymized(), is(true));
+		assertThat(immunization.getReportingUser(), is(nationalUser));
+        assertThat(immunization.getDisease(), is(Disease.CORONAVIRUS));
+        assertThat(immunization.getMeansOfImmunization(), is(MeansOfImmunization.OTHER));
+        assertThat(immunization.getMeansOfImmunizationDetails(), is(""));
+        assertThat(immunization.getResponsibleRegion(), is(rdcf.region));
+        assertThat(immunization.getResponsibleDistrict(), is(rdcf.district));
+        assertThat(immunization.getResponsibleCommunity(), is(nullValue()));
+        assertThat(immunization.getHealthFacility(), is(nullValue()));
+        assertThat(immunization.getHealthFacilityDetails(), is(""));
+        assertThat(immunization.getAdditionalDetails(), is(""));
+    }
+
+    private void assertNotPseudonymized(ImmunizationDto immunization, UserDto user, TestDataCreator.RDCF rdcf) {
+		assertThat(immunization.isPseudonymized(), is(false));
+        assertThat(immunization.getReportingUser(), is(user.toReference()));
+        assertThat(immunization.getDisease(), is(Disease.CORONAVIRUS));
+        assertThat(immunization.getMeansOfImmunization(), is(MeansOfImmunization.OTHER));
+        assertThat(immunization.getMeansOfImmunizationDetails(), is("Test means of immunization details"));
+        assertThat(immunization.getResponsibleRegion(), is(rdcf.region));
+        assertThat(immunization.getResponsibleDistrict(), is(rdcf.district));
+        assertThat(immunization.getResponsibleCommunity(), is(rdcf.community));
+        assertThat(immunization.getHealthFacility(), is(rdcf.facility));
+        assertThat(immunization.getHealthFacilityDetails(), is("Test facility details"));
+        assertThat(immunization.getAdditionalDetails(), is("Test additional details"));
+    }
+
+    private ImmunizationDto createImmunization(CaseDataDto caze, UserDto user, TestDataCreator.RDCF rdcf) {
+        ImmunizationDto immunization = ImmunizationDto.build(caze.getPerson());
+        immunization.setRelatedCase(caze.toReference());
+        immunization.setReportDate(new Date());
+        immunization.setReportingUser(user.toReference());
+        immunization.setDisease(Disease.CORONAVIRUS);
+        immunization.setMeansOfImmunization(MeansOfImmunization.OTHER);
+        immunization.setMeansOfImmunizationDetails("Test means of immunization details");
+        immunization.setResponsibleRegion(rdcf.region);
+        immunization.setResponsibleDistrict(rdcf.district);
+        immunization.setResponsibleCommunity(rdcf.community);
+        immunization.setFacilityType(FacilityType.HOSPITAL);
+        immunization.setHealthFacility(rdcf.facility);
+        immunization.setHealthFacilityDetails("Test facility details");
+        immunization.setAdditionalDetails("Test additional details");
+
+        return getImmunizationFacade().save(immunization);
+    }
 }

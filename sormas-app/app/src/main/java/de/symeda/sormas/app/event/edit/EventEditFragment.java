@@ -308,6 +308,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 				contentBinding.eventParenteralTransmissionMode,
 				ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
 		}
+		contentBinding.eventResponsibleUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	private void updateCustomizableEnumFields(FragmentEventEditLayoutBinding contentBinding) {

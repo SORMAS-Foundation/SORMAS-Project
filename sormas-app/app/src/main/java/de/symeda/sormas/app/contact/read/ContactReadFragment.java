@@ -109,6 +109,7 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 	@Override
 	public void onAfterLayoutBinding(FragmentContactReadLayoutBinding contentBinding) {
 		setUpFieldVisibilities(contentBinding);
+		contentBinding.contactReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	@Override

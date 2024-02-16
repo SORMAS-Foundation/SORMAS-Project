@@ -16,9 +16,15 @@ import de.symeda.sormas.app.util.ViewHelper;
 @BindingMethods({
 	@BindingMethod(type = ControlUserReadField.class, attribute = "valueFormat", method = "setValueFormat") })
 public class ControlUserReadField extends ControlTextReadField {
+	boolean pseudonymized = false;
 
 	public ControlUserReadField(Context context) {
 		super(context);
+	}
+
+	public ControlUserReadField(Context context, boolean pseudonymized) {
+		super(context);
+		this.pseudonymized = pseudonymized;
 	}
 
 	public ControlUserReadField(Context context, AttributeSet attrs) {
@@ -44,8 +50,15 @@ public class ControlUserReadField extends ControlTextReadField {
 		userContactButton.setOnClickListener(click -> {
 			User user = (User) getValue();
 			Resources resources = getResources();
-			ViewHelper.showUserContactInfo(user, resources, getContext());
+			ViewHelper.showUserContactInfo(user, resources, getContext(), pseudonymized);
 		});
 	}
 
+	public boolean isPseudonymized() {
+		return pseudonymized;
+	}
+
+	public void setPseudonymized(boolean pseudonymized) {
+		this.pseudonymized = pseudonymized;
+	}
 }

@@ -144,7 +144,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		addField(TravelEntryDto.REPORT_DATE, DateField.class);
 
 		addFields(TravelEntryDto.UUID);
-		addField(TravelEntryDto.REPORTING_USER, UserField.class);
+
+		UserField reportingUser = addField(TravelEntryDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);

@@ -18,6 +18,7 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
@@ -32,9 +33,11 @@ public class TreatmentIndexDto extends AbstractUuidDto {
 	public static final String DOSE = "dose";
 	public static final String TREATMENT_ROUTE = "treatmentRoute";
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
+	@EmbeddedSensitiveData
 	private TreatmentIndexType treatmentIndexType;
 	private Date treatmentDateTime;
 	private String dose;
+	@EmbeddedSensitiveData
 	private TreatmentIndexRoute treatmentIndexRoute;
 	@SensitiveData
 	private String executingClinician;

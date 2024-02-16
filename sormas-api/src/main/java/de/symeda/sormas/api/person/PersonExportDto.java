@@ -25,6 +25,7 @@ import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -35,7 +36,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class PersonExportDto extends AbstractUuidDto {
+public class PersonExportDto extends AbstractUuidDto implements IsPerson {
 
 	private static final long serialVersionUID = -6902138630884671263L;
 
@@ -56,6 +57,7 @@ public class PersonExportDto extends AbstractUuidDto {
 	@SensitiveData
 	private String otherSalutation;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private BirthDateDto birthdate;
 	private String approximateAge;
 	private String ageGroup;
@@ -141,7 +143,6 @@ public class PersonExportDto extends AbstractUuidDto {
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
-	@SensitiveData
 	private String externalId;
 	private String externalToken;
 	private String internalToken;

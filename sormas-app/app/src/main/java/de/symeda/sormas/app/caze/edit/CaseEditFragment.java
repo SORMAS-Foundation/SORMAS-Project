@@ -712,6 +712,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		// reinfection
 		contentBinding.caseDataPreviousInfectionDate.initializeDateField(getChildFragmentManager());
+
+		contentBinding.caseDataReportingUser.setPseudonymized(record.isPseudonymized());
+		contentBinding.caseDataSurveillanceOfficer.setPseudonymized(record.isPseudonymized());
 	}
 
 	private void updateDiseaseVariantsField(FragmentCaseEditLayoutBinding contentBinding) {

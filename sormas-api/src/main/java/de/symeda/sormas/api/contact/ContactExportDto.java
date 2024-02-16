@@ -25,6 +25,8 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -49,6 +51,7 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -60,7 +63,7 @@ import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(ContactDto.class)
-public class ContactExportDto extends AbstractUuidDto {
+public class ContactExportDto extends AbstractUuidDto implements IsContact {
 
 	private static final long serialVersionUID = 2054231712903661096L;
 
@@ -102,6 +105,7 @@ public class ContactExportDto extends AbstractUuidDto {
 	@SensitiveData
 	private String otherSalutation;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private BirthDateDto birthdate;
 	private String approximateAge;
 	private Date reportDate;
@@ -1473,5 +1477,10 @@ public class ContactExportDto extends AbstractUuidDto {
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	@Override
+	public IsCase getCaze() {
+		return new CaseReferenceDto(sourceCaseUuid);
 	}
 }

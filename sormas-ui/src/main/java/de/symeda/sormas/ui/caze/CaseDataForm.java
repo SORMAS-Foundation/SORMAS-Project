@@ -405,7 +405,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLINICIAN_PHONE,
 			CaseDataDto.CLINICIAN_EMAIL);
 
-		addField(CaseDataDto.REPORTING_USER, UserField.class);
+		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
+		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
@@ -775,8 +776,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		final UserField surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, UserField.class);
+		UserField surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, UserField.class);
 		surveillanceOfficerField.setEnabled(true);
+		surveillanceOfficerField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);

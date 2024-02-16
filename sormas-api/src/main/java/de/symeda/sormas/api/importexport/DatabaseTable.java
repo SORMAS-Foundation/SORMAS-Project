@@ -39,6 +39,7 @@ public enum DatabaseTable {
 	PORT_HEALTH_INFO(DatabaseTableType.SORMAS, CASES, "port_health_info"),
 	MATERNAL_HISTORIES(DatabaseTableType.SORMAS, CASES, "maternal_histories"),
 	SURVEILLANCE_REPORTS(DatabaseTableType.SORMAS, CASES, "surveillance_reports", dependingOnFeature(FeatureType.SURVEILLANCE_REPORTS)),
+	SPECIAL_CASE_ACCESSES(DatabaseTableType.SORMAS, CASES, "special_case_accesses"),
 
 	EPIDATA(DatabaseTableType.SORMAS, "epidemiological_data", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING)),
 	EXPOSURES(DatabaseTableType.SORMAS, EPIDATA, "exposures"),

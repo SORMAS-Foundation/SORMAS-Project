@@ -4,6 +4,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -245,16 +246,20 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final ComboBox districtField = getField(districtFieldId);
-		if (user.getRegion() != null && user.getDistrict() == null) {
+		DistrictReferenceDto userDistrict = user.getDistrict();
+
+		if (user.getRegion() != null && userDistrict == null) {
 			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtField.setEnabled(true);
 		} else if (region != null) {
 			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-			if (user.getDistrict() == null) {
+			if (userDistrict == null) {
 				districtField.setEnabled(true);
 			}
 		} else {
 			districtField.setEnabled(false);
+			FieldHelper.updateItems(districtField, Collections.singletonList(userDistrict));
+			districtField.setValue(userDistrict);
 		}
 	}
 

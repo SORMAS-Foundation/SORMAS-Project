@@ -56,6 +56,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -76,6 +77,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -116,6 +118,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private NotificationService notificationService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -146,10 +150,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private List<PathogenTestDto> toPseudonymizedDtos(List<PathogenTest> entities) {
 
 		List<Long> inJurisdictionIds = pathogenTestService.getInJurisdictionIds(entities);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<PathogenTestDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		Pseudonymizer<PathogenTestDto> pseudonymizer = createPseudonymizer(entities);
+
+		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
 
 	public List<PathogenTestDto> getIndexList(
@@ -199,8 +202,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return QueryHelper.getFirstResult(em, cq, t -> convertToDto(t, pseudonymizer));
+		return QueryHelper.getFirstResult(em, cq, this::convertToDto);
 	}
 
 	@Override
@@ -242,7 +244,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public PathogenTestDto getByUuid(String uuid) {
-		return convertToDto(pathogenTestService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(pathogenTestService.getByUuid(uuid));
 	}
 
 	@Override
@@ -375,7 +377,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 		handleAssociatedEntityChanges(pathogenTest, syncShares);
 
-		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(pathogenTest);
 	}
 
 	@Override
@@ -450,7 +452,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 	}
 
-	public PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer pseudonymizer) {
+	private PathogenTestDto convertToDto(PathogenTest source) {
+		return convertToDto(source, createPseudonymizer(Collections.singletonList(source)));
+	}
+
+	public PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer<PathogenTestDto> pseudonymizer) {
 
 		if (source == null) {
 			return null;
@@ -460,25 +466,39 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return convertToDto(source, pseudonymizer, inJurisdiction);
 	}
 
-	private PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer<PathogenTestDto> pseudonymizer, boolean inJurisdiction) {
 
 		PathogenTestDto target = toDto(source);
 		pseudonymizeDto(source, target, pseudonymizer, inJurisdiction);
 		return target;
 	}
 
-	private void pseudonymizeDto(PathogenTest source, PathogenTestDto target, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private static void pseudonymizeDto(
+		PathogenTest source,
+		PathogenTestDto target,
+		Pseudonymizer<PathogenTestDto> pseudonymizer,
+		boolean inJurisdiction) {
 
 		if (source != null && target != null) {
 			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, inJurisdiction, null);
 		}
 	}
 
+	private Pseudonymizer<PathogenTestDto> createPseudonymizer(Collection<PathogenTest> tests) {
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(tests));
+	}
+
+	private <T extends PathogenTestDto> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<PathogenTest> tests) {
+		List<String> withSpecialAccess = specialCaseAccessService.getPathogenTestUuidsWithSpecialAccess(tests);
+
+		return test -> withSpecialAccess.contains(test.getUuid());
+	}
+
 	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
 
 		if (existingSampleTestDto != null) {
 			boolean isInJurisdiction = pathogenTestService.inJurisdictionOrOwned(existingSampleTest);
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			Pseudonymizer<PathogenTestDto> pseudonymizer = createPseudonymizer(Collections.singletonList(existingSampleTest));
 
 			pseudonymizer.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
 		}

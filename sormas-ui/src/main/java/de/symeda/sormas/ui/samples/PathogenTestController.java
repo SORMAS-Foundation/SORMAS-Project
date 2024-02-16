@@ -405,12 +405,10 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		final boolean isCaseSurveillanceFeatureEnabled =
-			FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		final boolean caseCreationPossible = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE);
 		if (positiveWithSameDisease.isPresent()) {
-			if (contact.getResultingCase() == null
-				&& !ContactStatus.CONVERTED.equals(contact.getContactStatus())
-				&& isCaseSurveillanceFeatureEnabled) {
+			if (contact.getResultingCase() == null && !ContactStatus.CONVERTED.equals(contact.getContactStatus()) && caseCreationPossible) {
 				showConvertContactToCaseDialog(
 					contact,
 					converted -> handleCaseCreationFromContactOrEventParticipant(converted, positiveWithSameDisease.get()));
@@ -421,7 +419,7 @@ public class PathogenTestController {
 			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), null);
 		}
 
-		if (isCaseSurveillanceFeatureEnabled) {
+		if (caseCreationPossible) {
 			testsByDisease.keySet().stream().filter(disease -> disease != contact.getDisease()).forEach((disease) -> {
 				List<PathogenTestDto> tests = testsByDisease.get(disease);
 
@@ -471,11 +469,11 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		final boolean isCaseSurveillanceFeatureEnabled =
-			FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		final boolean caseCreationPossible = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE);
 
 		if (positiveWithSameDisease.isPresent()) {
-			if (eventParticipant.getResultingCase() == null && isCaseSurveillanceFeatureEnabled) {
+			if (eventParticipant.getResultingCase() == null && caseCreationPossible) {
 				showConvertEventParticipantToCaseDialog(eventParticipant, positiveWithSameDisease.get().getTestedDisease(), caseCreated -> {
 					handleCaseCreationFromContactOrEventParticipant(caseCreated, positiveWithSameDisease.get());
 				});
@@ -486,7 +484,7 @@ public class PathogenTestController {
 			showChangeAssociatedSampleResultDialog(negativeWithSameDisease.get(), null);
 		}
 
-		if (isCaseSurveillanceFeatureEnabled) {
+		if (caseCreationPossible) {
 			testsByDisease.keySet().stream().filter(disease -> disease != eventDisease).forEach((disease) -> {
 				List<PathogenTestDto> tests = testsByDisease.get(disease);
 

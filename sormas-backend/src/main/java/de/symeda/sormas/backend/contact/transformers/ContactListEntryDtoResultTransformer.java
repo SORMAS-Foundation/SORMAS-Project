@@ -19,13 +19,14 @@ public class ContactListEntryDtoResultTransformer implements ResultTransformer {
 	public Object transformTuple(Object[] objects, String[] strings) {
 		return new ContactListEntryDto(
 			(String) objects[0],
-			(ContactStatus) objects[1],
-			(Disease) objects[2],
-			(ContactClassification) objects[3],
-			(ContactCategory) objects[4],
-			(Date) objects[5],
+			(String) objects[1],
+			(ContactStatus) objects[2],
+			(Disease) objects[3],
+			(ContactClassification) objects[4],
+			(ContactCategory) objects[5],
 			(Date) objects[6],
-			(boolean) objects[7]);
+			(Date) objects[7],
+			(boolean) objects[8]);
 	}
 
 	@Override

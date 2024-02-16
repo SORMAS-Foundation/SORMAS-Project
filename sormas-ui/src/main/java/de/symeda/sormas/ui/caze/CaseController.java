@@ -1079,7 +1079,7 @@ public class CaseController {
 		editView.addDiscardListener(popupWindow::close);
 	}
 
-	private <T extends CaseIndexDto> Consumer<List<T>> bulkOperationCallback(AbstractCaseGrid<?> caseGrid, Window popupWindow) {
+	public <T extends CaseIndexDto> Consumer<List<T>> bulkOperationCallback(AbstractCaseGrid<?> caseGrid, Window popupWindow) {
 		return remainingCases -> {
 			if (popupWindow != null) {
 				popupWindow.close();
