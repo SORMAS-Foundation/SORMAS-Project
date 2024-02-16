@@ -75,7 +75,6 @@ public enum UserRight {
 	SAMPLE_EXPORT(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
 	SAMPLE_TRANSFER(UserRightGroup.SAMPLE, UserRight._SAMPLE_EDIT),
 	SAMPLE_EDIT_NOT_OWNED(UserRightGroup.SAMPLE, UserRight._SAMPLE_EDIT),
-    //TODO: check in mobile app and check in the webapp where should be checked the SAMPLE_EDIT right too besides the PERFORM_BULK_OPERATIONS
 	PATHOGEN_TEST_CREATE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
 	PATHOGEN_TEST_EDIT(UserRightGroup.SAMPLE, UserRight._SAMPLE_EDIT),
 	PATHOGEN_TEST_DELETE(UserRightGroup.SAMPLE, UserRight._SAMPLE_VIEW),
