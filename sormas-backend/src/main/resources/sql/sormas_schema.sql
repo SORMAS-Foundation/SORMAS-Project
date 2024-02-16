@@ -12902,6 +12902,13 @@ DO $$
                  END IF;
              DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
              END IF;
+
+             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
+                 IF count_perform_bulk_actions_right = 0 THEN
+                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
+                 END IF;
+             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
+             END IF;
           END LOOP;
   END;
 

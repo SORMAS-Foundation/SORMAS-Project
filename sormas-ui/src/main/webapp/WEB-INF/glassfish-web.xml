@@ -486,11 +486,6 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT</role-name>
-        <group-name>PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>MANAGE_PUBLIC_EXPORT_CONFIGURATION</role-name>
         <group-name>MANAGE_PUBLIC_EXPORT_CONFIGURATION</group-name>
     </security-role-mapping>
