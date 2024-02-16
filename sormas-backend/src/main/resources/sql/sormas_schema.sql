@@ -12920,29 +12920,38 @@ DO
 $$
     DECLARE
         user_role_id BIGINT;
+        user_role_ur_id BIGINT;
     BEGIN
         FOR user_role_id IN SELECT DISTINCT(ur.id)
                             FROM userroles ur
                                      JOIN userroles_userrights urur ON ur.id = urur.userrole_id
                             WHERE urur.userright = 'ENVIRONMENT_DELETE'
-                            AND urur.userright != 'ENVIRONMENT_SAMPLE_DELETE'
             LOOP
-                INSERT INTO userroles_userrights (userrole_id, userright)
-                VALUES (user_role_id, 'ENVIRONMENT_SAMPLE_DELETE');
+                SELECT 1 FROM userroles_userrights
+                    WHERE userrole_id = user_role_id AND userright = 'ENVIRONMENT_SAMPLE_DELETE'
+                    INTO user_role_ur_id;
 
-                UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                IF NOT FOUND THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright)
+                    VALUES (user_role_id, 'ENVIRONMENT_SAMPLE_DELETE');
+                    UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                END IF;
             END LOOP;
 
         FOR user_role_id IN SELECT DISTINCT(ur.id)
                             FROM userroles ur
                                      JOIN userroles_userrights urur ON ur.id = urur.userrole_id
                             WHERE urur.userright = 'ENVIRONMENT_SAMPLE_DELETE'
-                              AND urur.userright != 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
             LOOP
-                INSERT INTO userroles_userrights (userrole_id, userright)
-                VALUES (user_role_id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE');
+                SELECT DISTINCT(userrole_id) FROM userroles_userrights
+                    WHERE userrole_id = user_role_id AND userright = 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
+                    INTO user_role_ur_id;
 
-                UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                IF NOT FOUND THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright)
+                    VALUES (user_role_id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE');
+                    UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                END IF;
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
