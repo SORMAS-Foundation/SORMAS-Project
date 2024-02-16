@@ -148,7 +148,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
-		TravelEntryJoins joins = travelEntryQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(travelEntry.get(Person.ID));

@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ContactListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class ContactListEntryDto extends PseudonymizableIndexDto implements IsContact, Serializable, Cloneable {
 
 	private static final long serialVersionUID = -3753167578595277556L;
+	private String caseUuid;
 	private ContactStatus contactStatus;
 	private Disease disease;
 	private ContactClassification contactClassification;
@@ -20,6 +23,7 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 
 	public ContactListEntryDto(
 		String uuid,
+		String caseUuid,
 		ContactStatus contactStatus,
 		Disease disease,
 		ContactClassification contactClassification,
@@ -28,6 +32,7 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 		Date lastContactDate,
 		boolean isInJurisdiction) {
 		super(uuid);
+		this.caseUuid = caseUuid;
 		this.contactStatus = contactStatus;
 		this.disease = disease;
 		this.contactClassification = contactClassification;
@@ -93,5 +98,10 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 	@Override
 	public void setInJurisdiction(boolean inJurisdiction) {
 		isInJurisdiction = inJurisdiction;
+	}
+
+	@Override
+	public IsCase getCaze() {
+		return new CaseReferenceDto(caseUuid);
 	}
 }

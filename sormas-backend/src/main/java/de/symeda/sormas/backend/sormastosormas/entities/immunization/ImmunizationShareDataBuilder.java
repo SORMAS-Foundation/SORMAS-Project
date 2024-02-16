@@ -28,8 +28,8 @@ import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationF
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.share.SormasToSormasPseudonymizer;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
@@ -52,15 +52,15 @@ public class ImmunizationShareDataBuilder
 
 	@Override
 	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		ImmunizationDto immunizationDto = getDto(immunization, pseudonymizer);
 		return new SormasToSormasImmunizationDto(immunizationDto);
 	}
 
 	@Override
-	protected ImmunizationDto getDto(Immunization immunization, Pseudonymizer pseudonymizer) {
+	protected ImmunizationDto getDto(Immunization immunization, SormasToSormasPseudonymizer pseudonymizer) {
 
-		ImmunizationDto immunizationDto = immunizationFacade.toPseudonymizedDto(immunization, pseudonymizer);
+		ImmunizationDto immunizationDto = immunizationFacade.toPseudonymizedDto(immunization, pseudonymizer.getPseudonymizer());
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		immunizationDto.setSormasToSormasOriginInfo(null);

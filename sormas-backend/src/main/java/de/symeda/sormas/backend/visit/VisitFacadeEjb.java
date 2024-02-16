@@ -58,12 +58,10 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -73,7 +71,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
+import de.symeda.sormas.api.visit.IsVisit;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -97,6 +97,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -134,6 +135,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
 	private NotificationService notificationService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public VisitFacadeEjb() {
 	}
@@ -283,7 +286,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 		onVisitChanged(existingDto, entity);
 
-		return toPseudonymizedDto(entity, createPseudonymizer());
+		return toPseudonymizedDto(entity, createPseudonymizer(existingVisit));
 	}
 
 	@Override
@@ -400,8 +403,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		List<VisitIndexDto> indexList = QueryHelper.getResultList(em, cq, new VisitIndexDtoResultTransformer(), first, max);
 
 		if (!indexList.isEmpty()) {
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-			indexList.forEach(visitIndex -> pseudonymizer.pseudonymizeDto(VisitIndexDto.class, visitIndex, visitIndex.getInJurisdiction(), null));
+			Pseudonymizer<VisitIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(getSpecialAccessChecker(indexList));
+			pseudonymizer.pseudonymizeDtoCollection(VisitIndexDto.class, indexList, VisitIndexDto::getInJurisdiction, null);
 		}
 
 		return indexList;
@@ -525,7 +528,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 			if (!resultList.isEmpty()) {
 
-				Pseudonymizer pseudonymizer = createPseudonymizer();
+				Pseudonymizer<VisitExportDto> pseudonymizer = Pseudonymizer.getDefault(userService, getSpecialAccessChecker(resultList));
 				Set<Long> userIds = resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet());
 				Map<Long, UserReference> visitUsers = userIds.isEmpty()
 					? null
@@ -540,11 +543,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 						exportDto.setVisitUserRoles(user.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
 					}
 
-					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
-						if (v.getSymptoms() != null) {
-							pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
-						}
-					});
+					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
 
 					if (symptoms != null) {
 						Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
@@ -587,24 +586,31 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	}
 
 	@Override
-	protected void pseudonymizeDto(Visit source, VisitDto visitDto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected Pseudonymizer<VisitDto> createPseudonymizer(List<Visit> visits) {
+		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(visits));
+	}
+
+	private <T extends IsVisit> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsVisit> visits) {
+		List<String> specialAccessUuids = specialCaseAccessService.getVisitUuidsWithSpecialAccess(visits);
+
+		return t -> specialAccessUuids.contains(t.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(Visit source, VisitDto visitDto, Pseudonymizer<VisitDto> pseudonymizer, boolean inJurisdiction) {
 
 		if (visitDto != null) {
-			pseudonymizer.pseudonymizeDto(VisitDto.class, visitDto, inJurisdiction, v -> {
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, visitDto.getPerson(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitDto.getSymptoms(), inJurisdiction, null);
-			});
+			pseudonymizer.pseudonymizeDto(VisitDto.class, visitDto, inJurisdiction, null);
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(VisitDto dto, VisitDto existingDto, Visit existingVisit, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(VisitDto dto, VisitDto existingDto, Visit existingVisit, Pseudonymizer<VisitDto> pseudonymizer) {
 
 		if (existingDto != null) {
 			boolean isInJurisdiction = service.inJurisdictionOrOwned(existingVisit);
 
 			pseudonymizer.restorePseudonymizedValues(VisitDto.class, dto, existingDto, isInJurisdiction);
-			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingDto.getSymptoms(), isInJurisdiction);
 		}
 	}
 

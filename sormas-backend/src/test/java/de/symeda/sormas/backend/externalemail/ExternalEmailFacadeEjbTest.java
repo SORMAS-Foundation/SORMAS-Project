@@ -513,7 +513,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			p.setNationalHealthId("1234567890");
 		});
 
-		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze	 = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		DocumentDto document =
 			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CONTACT, "mock-uuid", "Some content".getBytes(StandardCharsets.UTF_8));

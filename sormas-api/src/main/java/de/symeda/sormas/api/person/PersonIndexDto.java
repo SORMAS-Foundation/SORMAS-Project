@@ -4,15 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
-import org.apache.commons.lang3.StringUtils;
 
-public class PersonIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class PersonIndexDto extends PseudonymizableIndexDto implements IsPerson, Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "Person";
 
@@ -35,6 +34,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	@PersonalData
 	@SensitiveData
 	private String lastName;
+	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
 	private String district;

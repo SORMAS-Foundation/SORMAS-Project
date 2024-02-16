@@ -21,22 +21,22 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class SensitiveDataFieldAccessChecker extends AnnotationBasedFieldAccessChecker {
+public final class SensitiveDataFieldAccessChecker<T> extends AnnotationBasedFieldAccessChecker<T> {
 
-	private SensitiveDataFieldAccessChecker(final boolean hasRight) {
-		super(SensitiveData.class, EmbeddedSensitiveData.class, hasRight);
+	private SensitiveDataFieldAccessChecker(final boolean hasRight, SpecialAccessCheck<T> specialAccessCheck) {
+		super(SensitiveData.class, EmbeddedSensitiveData.class, hasRight, specialAccessCheck);
 	}
 
-	public static SensitiveDataFieldAccessChecker inJurisdiction(RightCheck rightCheck) {
-		return new SensitiveDataFieldAccessChecker(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION));
+	public static <T> SensitiveDataFieldAccessChecker<T> inJurisdiction(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
+		return new SensitiveDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION), specialAccessCheck);
 	}
 
-	public static SensitiveDataFieldAccessChecker outsideJurisdiction(RightCheck rightCheck) {
-		return new SensitiveDataFieldAccessChecker(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION));
+	public static <T> SensitiveDataFieldAccessChecker<T> outsideJurisdiction(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
+		return new SensitiveDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION), specialAccessCheck);
 	}
 
-	public static SensitiveDataFieldAccessChecker forcedNoAccess() {
-		return new SensitiveDataFieldAccessChecker(false);
+	public static <T> SensitiveDataFieldAccessChecker<T> forcedNoAccess() {
+		return new SensitiveDataFieldAccessChecker<>(false, t -> false);
 	}
 
 	@Override

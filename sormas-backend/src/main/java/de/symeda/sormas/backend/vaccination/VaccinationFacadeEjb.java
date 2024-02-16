@@ -59,6 +59,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
@@ -80,6 +81,7 @@ import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -109,6 +111,8 @@ public class VaccinationFacadeEjb
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public VaccinationFacadeEjb() {
 	}
@@ -126,7 +130,7 @@ public class VaccinationFacadeEjb
 		Vaccination existingVaccination = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<VaccinationDto> pseudonymizer = createPseudonymizer(existingVaccination);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
 
 		validate(dto);
@@ -388,19 +392,32 @@ public class VaccinationFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Vaccination source, VaccinationDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected Pseudonymizer<VaccinationDto> createPseudonymizer(List<Vaccination> vaccinations) {
+		List<String> specialAccessUuids = specialCaseAccessService.getVaccinationUuidsWithSpecialAccess(vaccinations);
+
+		SpecialAccessCheck<VaccinationDto> specialAccessCheck = t -> specialAccessUuids.contains(t.getUuid());
+
+		return Pseudonymizer.getDefault(userService, specialAccessCheck);
+	}
+
+	@Override
+	protected void pseudonymizeDto(Vaccination source, VaccinationDto dto, Pseudonymizer<VaccinationDto> pseudonymizer, boolean inJurisdiction) {
 
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(VaccinationDto.class, dto, inJurisdiction, c -> {
 
 				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser, dto);
 			});
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(VaccinationDto dto, VaccinationDto existingDto, Vaccination vaccination, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(
+		VaccinationDto dto,
+		VaccinationDto existingDto,
+		Vaccination vaccination,
+		Pseudonymizer<VaccinationDto> pseudonymizer) {
 
 		if (existingDto != null) {
 			final boolean inJurisdiction = service.inJurisdictionOrOwned(vaccination);
@@ -675,10 +692,12 @@ public class VaccinationFacadeEjb
 	}
 
 	public Map<String, VaccinationDto> getLatestByPersons(List<PersonReferenceDto> persons, Disease disease) {
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		List<Vaccination> vaccinations =
+			service.getVaccinationsByCriteria(new VaccinationCriteria.Builder(persons).withDisease(disease).build(), null, null, null);
 
-		return service.getVaccinationsByCriteria(new VaccinationCriteria.Builder(persons).withDisease(disease).build(), null, null, null)
-			.stream()
+		Pseudonymizer<VaccinationDto> pseudonymizer = createPseudonymizer(vaccinations);
+
+		return vaccinations.stream()
 			.collect(Collectors.toMap(v -> v.getImmunization().getPerson().getUuid(), v -> toPseudonymizedDto(v, pseudonymizer), (v1, v2) -> {
 				Date v1Date = v1.getVaccinationDate() != null ? v1.getVaccinationDate() : v1.getReportDate();
 				Date v2Date = v2.getVaccinationDate() != null ? v2.getVaccinationDate() : v2.getReportDate();
