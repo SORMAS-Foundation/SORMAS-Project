@@ -12915,48 +12915,90 @@ ALTER TABLE specialcaseaccesses_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (540, 'Grant users special access to specific cases'' personal data for a limited time #12758');
 
+-- 2024-02-14 Update environment sample deletion dependencies #12887
+DO
+$$
+    DECLARE
+        user_role_id BIGINT;
+        user_role_ur_id BIGINT;
+    BEGIN
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE urur.userright = 'ENVIRONMENT_DELETE'
+            LOOP
+                SELECT 1 FROM userroles_userrights
+                    WHERE userrole_id = user_role_id AND userright = 'ENVIRONMENT_SAMPLE_DELETE'
+                    INTO user_role_ur_id;
+
+                IF NOT FOUND THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright)
+                    VALUES (user_role_id, 'ENVIRONMENT_SAMPLE_DELETE');
+                    UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                END IF;
+            END LOOP;
+
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE urur.userright = 'ENVIRONMENT_SAMPLE_DELETE'
+            LOOP
+                SELECT DISTINCT(userrole_id) FROM userroles_userrights
+                    WHERE userrole_id = user_role_id AND userright = 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
+                    INTO user_role_ur_id;
+
+                IF NOT FOUND THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright)
+                    VALUES (user_role_id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE');
+                    UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                END IF;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (541, 'Update environment sample deletion dependencies #12887');
+
 -- 2024-02-09 Remove entity specific PERFORM_BULK_OPERATIONS user rights #10994
 DO $$
   DECLARE
      rec RECORD;
 	 count_perform_bulk_actions_right integer;
   BEGIN
-      FOR rec IN SELECT id FROM userroles
-          LOOP
-             count_perform_bulk_actions_right = (SELECT count(*) FROM userroles_userrights WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS');
-             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES')) = true) THEN
-			     IF count_perform_bulk_actions_right = 0 THEN
-                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
-                 END IF;
-             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
-             END IF;
+       FOR rec IN SELECT id FROM userroles
+           LOOP
+               count_perform_bulk_actions_right = (SELECT count(*) FROM userroles_userrights WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS');
+               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES')) = true) THEN
+			       IF count_perform_bulk_actions_right = 0 THEN
+                      UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
+                   END IF;
+               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
+               END IF;
 
-             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT')) = true) THEN
-                 IF count_perform_bulk_actions_right = 0 THEN
-                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
-                 END IF;
-             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
-             END IF;
+               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT')) = true) THEN
+                  IF count_perform_bulk_actions_right = 0 THEN
+                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
+                  END IF;
+               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
+               END IF;
 
-             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
-                 IF count_perform_bulk_actions_right = 0 THEN
-                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
-             END IF;
-             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
-             END IF;
+               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
+                  IF count_perform_bulk_actions_right = 0 THEN
+                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
+                  END IF;
+               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
+               END IF;
 
-             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES')) = true) THEN
-                 IF count_perform_bulk_actions_right = 0 THEN
-                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
-                 END IF;
-             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
-             END IF;
-         END LOOP;
- END;
+               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES')) = true) THEN
+                  IF count_perform_bulk_actions_right = 0 THEN
+                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+                  END IF;
+               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+               END IF;
+          END LOOP;
+   END;
 
 $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
-
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
