@@ -12944,12 +12944,19 @@ DO $$
              END IF;
              DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
              END IF;
+
+             IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES')) = true) THEN
+                 IF count_perform_bulk_actions_right = 0 THEN
+                    UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+                 END IF;
+             DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+             END IF;
          END LOOP;
  END;
 
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (541, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
+INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
 
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -491,11 +491,6 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</role-name>
-        <group-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
         <group-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</group-name>
     </security-role-mapping>

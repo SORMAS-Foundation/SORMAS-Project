@@ -408,7 +408,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES)
+	@RightsAllowed(UserRight._PERFORM_BULK_OPERATIONS)
 	public void bulkAssignExternalMessages(List<String> uuids, UserReferenceDto userRef) {
 		List<ExternalMessage> externalMessages = externalMessageService.getByUuids(uuids);
 		User user = userService.getByReferenceDto(userRef);
