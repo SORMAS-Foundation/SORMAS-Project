@@ -30,12 +30,13 @@ import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class VisitExportDto extends AbstractUuidDto {
+public class VisitExportDto extends AbstractUuidDto implements IsVisit {
 
 	private static final long serialVersionUID = 6432390815000039126L;
 
@@ -55,6 +56,7 @@ public class VisitExportDto extends AbstractUuidDto {
 	private VisitStatus visitStatus;
 	@SensitiveData
 	private String visitRemarks;
+	@EmbeddedSensitiveData
 	private SymptomsDto symptoms;
 
 	@SensitiveData

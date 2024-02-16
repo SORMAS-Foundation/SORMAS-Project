@@ -62,7 +62,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 	FeatureType.CASE_SURVEILANCE,
 	FeatureType.CONTACT_TRACING,
 	FeatureType.EVENT_SURVEILLANCE })
-public class PersonDto extends PseudonymizableDto {
+public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 42953;
 
@@ -352,7 +352,6 @@ public class PersonDto extends PseudonymizableDto {
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;
-	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_ID)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

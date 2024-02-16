@@ -32,6 +32,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.event.IsEventParticipant;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -44,7 +45,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 
 @Entity
-public class EventParticipant extends CoreAdo implements SormasToSormasShareable {
+public class EventParticipant extends CoreAdo implements IsEventParticipant, SormasToSormasShareable {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
@@ -151,10 +152,10 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 
 	@Override
 	@ManyToOne(cascade = {
-			CascadeType.PERSIST,
-			CascadeType.MERGE,
-			CascadeType.DETACH,
-			CascadeType.REFRESH })
+		CascadeType.PERSIST,
+		CascadeType.MERGE,
+		CascadeType.DETACH,
+		CascadeType.REFRESH })
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}

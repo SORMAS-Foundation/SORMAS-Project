@@ -47,6 +47,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -54,10 +56,11 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 @ExportEntity(EventParticipantDto.class)
-public class EventParticipantExportDto implements Serializable {
+public class EventParticipantExportDto extends AbstractUuidDto implements IsEventParticipant, Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipantExport";
 
@@ -117,11 +120,14 @@ public class EventParticipantExportDto implements Serializable {
 	private Sex sex;
 	private String approximateAge;
 	private String ageGroup;
+	@EmbeddedPersonalData
 	private BirthDateDto birthdate;
+	@SensitiveData
 	private String nationalHealthId;
 
 	private PresentCondition presentCondition;
 	private Date deathDate;
+	@EmbeddedSensitiveData
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
@@ -178,8 +184,7 @@ public class EventParticipantExportDto implements Serializable {
 	private long contactCount;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid, Date eventReportDateTime,
-
+    public EventParticipantExportDto(long id, String uuid, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid, Date eventReportDateTime,
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
 									 String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType,
@@ -190,7 +195,7 @@ public class EventParticipantExportDto implements Serializable {
 									 VaccinationStatus vaccinationStatus
 									 ) {
     	//@formatter:on
-
+		super(uuid);
 		this.id = id;
 		this.personId = personId;
 		this.personUuid = personUuid;

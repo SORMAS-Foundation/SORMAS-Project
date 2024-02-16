@@ -493,7 +493,11 @@ public class CustomizableEnumFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(CustomizableEnumValue source, CustomizableEnumValueDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(
+		CustomizableEnumValue source,
+		CustomizableEnumValueDto dto,
+		Pseudonymizer<CustomizableEnumValueDto> pseudonymizer,
+		boolean inJurisdiction) {
 		// Customizable enum values don't need to be pseudonymized
 	}
 
@@ -502,7 +506,7 @@ public class CustomizableEnumFacadeEjb
 		CustomizableEnumValueDto dto,
 		CustomizableEnumValueDto existingDto,
 		CustomizableEnumValue entity,
-		Pseudonymizer pseudonymizer) {
+		Pseudonymizer<CustomizableEnumValueDto> pseudonymizer) {
 		// Customizable enum values don't need to be pseudonymized
 	}
 

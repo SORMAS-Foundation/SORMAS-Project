@@ -37,7 +37,6 @@ import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -164,7 +163,7 @@ public class EnvironmentFacadeEjb
 			environments.addAll(QueryHelper.getResultList(em, cq, null, null));
 		});
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<EnvironmentIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
 		pseudonymizer.pseudonymizeDtoCollection(EnvironmentIndexDto.class, environments, EnvironmentIndexDto::isInJurisdiction, null);
 
 		return environments;
@@ -394,16 +393,20 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Environment source, EnvironmentDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(Environment source, EnvironmentDto dto, Pseudonymizer<EnvironmentDto> pseudonymizer, boolean inJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(EnvironmentDto.class, dto, inJurisdiction, e -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser, dto);
 			});
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(EnvironmentDto dto, EnvironmentDto existingDto, Environment entity, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(
+		EnvironmentDto dto,
+		EnvironmentDto existingDto,
+		Environment entity,
+		Pseudonymizer<EnvironmentDto> pseudonymizer) {
 		if (existingDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
 			pseudonymizer.restorePseudonymizedValues(EnvironmentDto.class, dto, existingDto, inJurisdiction);

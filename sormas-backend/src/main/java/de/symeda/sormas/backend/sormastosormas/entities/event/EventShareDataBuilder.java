@@ -29,8 +29,8 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.share.SormasToSormasPseudonymizer;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
@@ -52,7 +52,7 @@ public class EventShareDataBuilder
 
 	@Override
 	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		EventDto eventDto = getDto(data, pseudonymizer);
 		return new SormasToSormasEventDto(eventDto);
 	}
@@ -64,14 +64,14 @@ public class EventShareDataBuilder
 
 	@Override
 	public SormasToSormasEventPreview doBuildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		return getEventPreview(event, pseudonymizer);
 	}
 
 	@Override
-	protected EventDto getDto(Event event, Pseudonymizer pseudonymizer) {
+	protected EventDto getDto(Event event, SormasToSormasPseudonymizer pseudonymizer) {
 
-		EventDto eventDto = eventFacade.toPseudonymizedDto(event, pseudonymizer);
+		EventDto eventDto = eventFacade.toPseudonymizedDto(event, pseudonymizer.getPseudonymizer());
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventDto.setSormasToSormasOriginInfo(null);
@@ -79,7 +79,7 @@ public class EventShareDataBuilder
 		return eventDto;
 	}
 
-	public SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
+	public SormasToSormasEventPreview getEventPreview(Event event, SormasToSormasPseudonymizer pseudonymizer) {
 		SormasToSormasEventPreview preview = new SormasToSormasEventPreview();
 
 		preview.setUuid(event.getUuid());
@@ -90,7 +90,7 @@ public class EventShareDataBuilder
 		preview.setDiseaseDetails(event.getDiseaseDetails());
 		preview.setEventLocation(LocationFacadeEjb.toDto(event.getEventLocation()));
 
-		pseudonymizer.pseudonymizeDto(SormasToSormasEventPreview.class, preview, false, null);
+		pseudonymizer.<SormasToSormasEventPreview> getPseudonymizer().pseudonymizeDto(SormasToSormasEventPreview.class, preview, false, null);
 
 		return preview;
 	}

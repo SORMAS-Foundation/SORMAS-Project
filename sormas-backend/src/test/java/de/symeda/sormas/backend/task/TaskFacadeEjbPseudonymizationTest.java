@@ -43,6 +43,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -385,6 +386,20 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		List<TaskDto> contact2Tasks = getTaskFacade().getAllByContact(contact2.toReference());
 		TaskDto active2 = contact2Tasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active2.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
+	}
+
+	@Test
+	public void testGetTaskOfCaseWithSpecialAccess() {
+
+		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+		TaskDto task = createCaseTask(caze);
+
+		assertNotPseudonymized(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotPseudonymized(getTaskFacade().getByUuids(Collections.singletonList(task.getUuid())).get(0));
+		assertNotPseudonymized(getTaskFacade().getAllActiveTasksAfter(new Date(0)).get(0));
+		assertThat(getTaskFacade().getIndexList(new TaskCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
+		assertThat(getTaskFacade().getExportList(new TaskCriteria(), null, 0, Integer.MAX_VALUE).get(0).isPseudonymized(), is(false));
 	}
 
 	private TaskDto createCaseTask(CaseDataDto caze) {

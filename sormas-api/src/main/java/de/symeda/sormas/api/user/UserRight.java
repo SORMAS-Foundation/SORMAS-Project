@@ -53,6 +53,7 @@ public enum UserRight {
 	CASE_MERGE(UserRightGroup.CASE, UserRight._CASE_EDIT),
 	CASE_SHARE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_RESPONSIBLE(UserRightGroup.CASE, UserRight._CASE_EDIT),
+	GRANT_SPECIAL_CASE_ACCESS(UserRightGroup.CASE, UserRight._CASE_VIEW),
 
 	IMMUNIZATION_VIEW(UserRightGroup.IMMUNIZATION, UserRight._PERSON_VIEW),
 	IMMUNIZATION_CREATE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
@@ -299,6 +300,7 @@ public enum UserRight {
 	public static final String _CASE_SHARE = "CASE_SHARE";
 	public static final String _CASE_ARCHIVE = "CASE_ARCHIVE";
 	public static final String _CASE_MERGE = "CASE_MERGE";
+	public static final String _GRANT_SPECIAL_CASE_ACCESS = "GRANT_SPECIAL_CASE_ACCESS";
 	public static final String _IMMUNIZATION_VIEW = "IMMUNIZATION_VIEW";
 	public static final String _IMMUNIZATION_CREATE = "IMMUNIZATION_CREATE";
 	public static final String _IMMUNIZATION_EDIT = "IMMUNIZATION_EDIT";

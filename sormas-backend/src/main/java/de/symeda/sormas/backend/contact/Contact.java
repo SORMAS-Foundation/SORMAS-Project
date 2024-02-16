@@ -52,6 +52,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.externaldata.HasExternalData;
@@ -75,7 +76,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "contact")
-public class Contact extends CoreAdo implements SormasToSormasShareable, HasExternalData {
+public class Contact extends CoreAdo implements IsContact, SormasToSormasShareable, HasExternalData {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -515,8 +516,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 			getUuid(),
 			contactPerson.getFirstName(),
 			contactPerson.getLastName(),
-			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
-			getCaze() != null ? getCaze().getPerson().getLastName() : null);
+			getCaze() != null ? getCaze().toReference() : null);
 	}
 
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)

@@ -25,7 +25,7 @@ public class SideComponent extends VerticalLayout {
 	protected Button createButton;
 
 	public SideComponent(String heading) {
-		this(heading, null);
+		this(heading, Runnable::run);
 	}
 
 	public SideComponent(String heading, Consumer<Runnable> actionCallback) {

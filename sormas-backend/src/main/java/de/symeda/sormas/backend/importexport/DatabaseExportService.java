@@ -99,6 +99,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequest;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -139,6 +140,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CLINICAL_VISITS, ClinicalVisit.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.PORT_HEALTH_INFO, PortHealthInfo.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.MATERNAL_HISTORIES, MaternalHistory.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SPECIAL_CASE_ACCESSES, SpecialCaseAccess.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CONTACTS, Contact.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.VISITS, Visit.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CONTACTS_VISITS, Visit.CONTACTS_VISITS_TABLE_NAME);
