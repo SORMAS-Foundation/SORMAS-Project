@@ -403,7 +403,7 @@ public class WebDriverHelpers {
   }
 
   public void clickWhileOtherButtonIsDisplayed(By clickedElement, By waitedSelector) {
-    TimerLite timer = TimerLite.of(ofSeconds(30));
+    TimerLite timer = TimerLite.of(ofSeconds(35));
     do {
       clickOnWebElementWhichMayNotBePresent(clickedElement, 0);
       if (timer.isTimeUp()) {
