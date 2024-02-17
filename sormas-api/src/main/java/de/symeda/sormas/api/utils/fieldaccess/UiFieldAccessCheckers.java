@@ -18,16 +18,16 @@ package de.symeda.sormas.api.utils.fieldaccess;
 import de.symeda.sormas.api.user.PseudonymizableDataAccessLevel;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PseudonymizedFieldAccessChecker;
 
-public class UiFieldAccessCheckers {
+public final class UiFieldAccessCheckers<T> {
 
-	private final FieldAccessCheckers fieldAccessCheckers;
+	private final FieldAccessCheckers<T> fieldAccessCheckers;
 
 	private UiFieldAccessCheckers() {
-		fieldAccessCheckers = new FieldAccessCheckers();
+		fieldAccessCheckers = new FieldAccessCheckers<>();
 	}
 
-	public boolean isAccessible(Class<?> parentType, String fieldName) {
-		return fieldAccessCheckers.isAccessible(parentType, fieldName, true);
+	public boolean isAccessible(Class<T> parentType, String fieldName) {
+		return fieldAccessCheckers.isAccessible(parentType, null, fieldName, true);
 	}
 
 	public boolean isEmbedded(Class<?> parentType, String fieldName) {
@@ -35,45 +35,45 @@ public class UiFieldAccessCheckers {
 	}
 
 	public boolean hasRight() {
-		return fieldAccessCheckers.hasRights();
+		return fieldAccessCheckers.hasRights(null);
 	}
 
-	public UiFieldAccessCheckers add(FieldAccessChecker accessChecker) {
+	private UiFieldAccessCheckers<T> add(PseudonymizedFieldAccessChecker<T> accessChecker) {
 		fieldAccessCheckers.add(accessChecker);
 
 		return this;
 	}
 
-	public static UiFieldAccessCheckers getNoop() {
-		return new UiFieldAccessCheckers();
+	public static <T> UiFieldAccessCheckers<T> getNoop() {
+		return new UiFieldAccessCheckers<>();
 	}
 
-	public static UiFieldAccessCheckers getDefault(boolean isPseudonymized) {
-		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
+	public static <T> UiFieldAccessCheckers<T> getDefault(boolean isPseudonymized) {
+		UiFieldAccessCheckers<T> fieldAccessCheckers = new UiFieldAccessCheckers<>();
+
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized))
+			.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
+
+		return fieldAccessCheckers;
+	}
+
+	public static <T> UiFieldAccessCheckers<T> forPersonalData(boolean isPseudonymized) {
+		UiFieldAccessCheckers<T> fieldAccessCheckers = new UiFieldAccessCheckers<>();
 
 		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized));
+
+		return fieldAccessCheckers;
+	}
+
+	public static <T> UiFieldAccessCheckers<T> forSensitiveData(boolean isPseudonymized) {
+		UiFieldAccessCheckers<T> fieldAccessCheckers = new UiFieldAccessCheckers<>();
+
 		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
 
 		return fieldAccessCheckers;
 	}
 
-	public static UiFieldAccessCheckers forPersonalData(boolean isPseudonymized) {
-		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
-
-		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized));
-
-		return fieldAccessCheckers;
-	}
-
-	public static UiFieldAccessCheckers forSensitiveData(boolean isPseudonymized) {
-		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
-
-		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
-
-		return fieldAccessCheckers;
-	}
-
-	public static UiFieldAccessCheckers forDataAccessLevel(PseudonymizableDataAccessLevel accessLevel, boolean isPseudonymized) {
+	public static <T> UiFieldAccessCheckers<T> forDataAccessLevel(PseudonymizableDataAccessLevel accessLevel, boolean isPseudonymized) {
 
 		switch (accessLevel) {
 		case ALL:

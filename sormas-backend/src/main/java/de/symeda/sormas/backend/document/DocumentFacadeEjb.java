@@ -98,7 +98,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
-		return convertToDto(documentService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(documentService.getByUuid(uuid), Pseudonymizer.getDefault(userService));
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			documentService.persist(document);
 			documentService.doFlush();
 
-			return convertToDto(document, Pseudonymizer.getDefault(userService::hasRight));
+			return convertToDto(document, Pseudonymizer.getDefault(userService));
 		} catch (Throwable t) {
 			try {
 				documentStorageService.delete(storageReference);
@@ -181,18 +181,18 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
 		return documentService.getRelatedToEntity(type, uuid).stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.toList());
 	}
 
-    @Override
-    public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
-        return documentService.getReferencesRelatedToEntity(type, uuid, fileExtensions);
-    }
+	@Override
+	public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
+		return documentService.getReferencesRelatedToEntity(type, uuid, fileExtensions);
+	}
 
 	@Override
 	public Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
 		List<Document> allDocuments =
 			documentService.getRelatedToEntities(criteria.getDocumentRelatedEntityType(), criteria.getEntityUuids(), sortProperties);
 		return allDocuments.stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.groupingBy(DocumentDto::getRelatedEntityUuid));
@@ -236,7 +236,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		return target;
 	}
 
-	public DocumentDto convertToDto(Document source, Pseudonymizer pseudonymizer) {
+	public DocumentDto convertToDto(Document source, Pseudonymizer<DocumentDto> pseudonymizer) {
 		DocumentDto documentDto = toDto(source);
 
 		pseudonymizeDto(source, documentDto, pseudonymizer);
@@ -244,14 +244,14 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		return documentDto;
 	}
 
-	private void pseudonymizeDto(Document document, DocumentDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(Document document, DocumentDto dto, Pseudonymizer<DocumentDto> pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = isInJurisdiction(dto);
 			pseudonymizer.pseudonymizeDto(
 				DocumentDto.class,
 				dto,
 				inJurisdiction,
-				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
+				e -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser, dto));
 		}
 	}
 

@@ -981,6 +981,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>GRANT_SPECIAL_CASE_ACCESS</role-name>
+        <group-name>GRANT_SPECIAL_CASE_ACCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CONTACT_RESPONSIBLE</role-name>
         <group-name>CONTACT_RESPONSIBLE</group-name>
     </security-role-mapping>

@@ -1474,3 +1474,16 @@ Feature: Create events
     And I create New Action from event tab
     Then I click on to Edit Event Actions from Event Actions tab
     And I check that the Delete button is not available from Edit Event Actions page
+
+  @tmsLink=HSP-6587 @env_main
+  Scenario: Check that Event tasks display the correct region and district in Task Management Directory
+    Given API: I create a new event
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    When I am accessing the event tab using the created event via api
+    And I collect uuid of the event
+    Then I click on New Task from event tab
+    And I create a new task with specific data for an event
+    And I click on the Tasks button from navbar
+    And I am search the last created event by API in task management directory
+    And I check that region and district are correct displayed for the last created event by API in task management

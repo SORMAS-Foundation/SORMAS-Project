@@ -6,7 +6,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class EventParticipantListEntryDto extends PseudonymizableIndexDto implements Serializable {
+public class EventParticipantListEntryDto extends PseudonymizableIndexDto implements IsEventParticipant, Serializable {
 
 	private static final long serialVersionUID = 725252055850399647L;
 	private String eventUuid;

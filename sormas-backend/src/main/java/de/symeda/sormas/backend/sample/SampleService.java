@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +61,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -71,10 +72,20 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.IsSample;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -101,6 +112,7 @@ import de.symeda.sormas.backend.sample.transformers.SampleListEntryDtoResultTran
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -139,6 +151,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	private ExternalMessageService externalMessageService;
 	@EJB
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public SampleService() {
 		super(Sample.class, DeletableEntityType.SAMPLE);
@@ -281,43 +295,56 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			}
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		SamplePseudonymizer<SampleIndexDto> pseudonymizer = createPseudonymizer(true, samples);
+
 		pseudonymizer
 			.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> s.getSampleJurisdictionFlagsDto().getInJurisdiction(), (s, ignored) -> {
 				final SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto = s.getSampleJurisdictionFlagsDto();
 				if (s.getAssociatedCase() != null) {
-					emptyValuePseudonymizer
-						.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), sampleJurisdictionFlagsDto.getCaseInJurisdiction(), null);
+					pseudonymizer.pseudonymizeCaseReference(s.getAssociatedCase(), sampleJurisdictionFlagsDto.getCaseInJurisdiction());
 				}
 
 				ContactReferenceDto associatedContact = s.getAssociatedContact();
 				if (associatedContact != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						ContactReferenceDto.PersonName.class,
-						associatedContact.getContactName(),
-						sampleJurisdictionFlagsDto.getContactInJurisdiction(),
-						null);
+					pseudonymizer.pseudonymizeAssociatedDto(
+						ContactReferenceDto.class,
+						associatedContact,
+						sampleJurisdictionFlagsDto.getContactInJurisdiction());
 
-					if (associatedContact.getCaseName() != null) {
-						pseudonymizer.pseudonymizeDto(
-							ContactReferenceDto.PersonName.class,
-							associatedContact.getCaseName(),
-							sampleJurisdictionFlagsDto.getContactCaseInJurisdiction(),
-							null);
+					if (associatedContact.getCaze() != null) {
+						pseudonymizer
+							.pseudonymizeCaseReference(associatedContact.getCaze(), sampleJurisdictionFlagsDto.getContactCaseInJurisdiction());
 					}
 				}
 
 				if (s.getAssociatedEventParticipant() != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
+					pseudonymizer.pseudonymizeAssociatedDto(
 						EventParticipantReferenceDto.class,
 						s.getAssociatedEventParticipant(),
-						sampleJurisdictionFlagsDto.getEvenParticipantInJurisdiction(),
-						null);
+						sampleJurisdictionFlagsDto.getEvenParticipantInJurisdiction());
 				}
 			}, true);
 
 		return samples;
+	}
+
+	public <T extends IsSample> SamplePseudonymizer<T> createPseudonymizer(boolean withPlaceHolder, Collection<? extends IsSample> samples) {
+
+		AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> specialAccessChecker = createSpecialAccessChecker(samples);
+		Pseudonymizer<T> rootPseudonymizer = withPlaceHolder
+			? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessChecker)
+			: Pseudonymizer.getDefault(userService, specialAccessChecker);
+
+		Collection<IsCase> cases = samples.stream().map(IsSample::getAssociatedCase).filter(Objects::nonNull).collect(Collectors.toList());
+
+		return new SamplePseudonymizer<>(rootPseudonymizer, caseFacade.createSimplePseudonymizer(cases), Pseudonymizer.getDefault(userService));
+	}
+
+	private <T extends IsSample> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(
+		Collection<? extends IsSample> samples) {
+		List<String> withSpecialAccess = specialCaseAccessService.getSampleUuidsWithSpecialAccess(samples);
+
+		return sample -> withSpecialAccess.contains(sample.getUuid());
 	}
 
 	public List<Long> getIndexListIds(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {

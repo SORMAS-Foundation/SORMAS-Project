@@ -54,7 +54,6 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -68,9 +67,9 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
@@ -81,6 +80,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -111,6 +111,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -167,6 +168,8 @@ public class ImmunizationFacadeEjb
 	private SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacadeEjbLocal;
 	@EJB
 	private VaccinationService vaccinationService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public ImmunizationFacadeEjb() {
 	}
@@ -396,7 +399,7 @@ public class ImmunizationFacadeEjb
 
 		ImmunizationDto existingDto = toDto(existingImmunization);
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<ImmunizationDto> pseudonymizer = createPseudonymizer(existingImmunization);
 		restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
 
 		validate(dto);
@@ -427,18 +430,31 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected Pseudonymizer<ImmunizationDto> createPseudonymizer(List<Immunization> immunizations) {
+		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(immunizations));
+	}
+
+	private <T extends IsImmunization> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsImmunization> immunizations) {
+		List<String> specialAccessUuids = specialCaseAccessService.getImmunizationUuidsWithSpecialAccess(immunizations);
+
+		return i -> specialAccessUuids.contains(i.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer<ImmunizationDto> pseudonymizer, boolean inJurisdiction) {
 
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
-				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser, dto);
 			});
 		}
 	}
 
-	protected void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization entity, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(
+		ImmunizationDto dto,
+		ImmunizationDto existingDto,
+		Immunization entity,
+		Pseudonymizer<ImmunizationDto> pseudonymizer) {
 		if (existingDto != null) {
 			final boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
 			final User currentUser = userService.getCurrentUser();
@@ -483,7 +499,7 @@ public class ImmunizationFacadeEjb
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		List<ImmunizationIndexDto> resultsList = directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<ImmunizationIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(getSpecialAccessChecker(resultsList));
 		pseudonymizer.pseudonymizeDtoCollection(ImmunizationIndexDto.class, resultsList, ImmunizationIndexDto::isInJurisdiction, null);
 		return resultsList;
 	}

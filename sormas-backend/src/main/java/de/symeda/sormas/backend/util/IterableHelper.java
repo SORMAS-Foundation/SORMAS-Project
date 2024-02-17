@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,7 +32,7 @@ public final class IterableHelper {
 	 * @param batchFunction
 	 *            The function to call for a batch.
 	 */
-	public static <E> void executeBatched(List<E> entries, int batchSize, Consumer<List<E>> batchFunction) {
+	public static <E> void executeBatched(Collection<E> entries, int batchSize, Consumer<List<E>> batchFunction) {
 
 		if (CollectionUtils.isNotEmpty(entries)) {
 			for (List<E> batch : ListUtils.partition(new ArrayList<>(entries), batchSize)) {

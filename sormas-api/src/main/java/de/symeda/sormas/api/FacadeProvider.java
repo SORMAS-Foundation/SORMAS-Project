@@ -98,6 +98,7 @@ import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSorm
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoFacade;
+import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
@@ -530,6 +531,11 @@ public class FacadeProvider {
 	}
 
     @SuppressWarnings("unchecked")
+	public static SpecialCaseAccessFacade getSpecialCaseAccessFacade() {
+		return get().lookupEjbRemote(SpecialCaseAccessFacade.class);
+	}
+
+	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {
 			return (P) get().ic.lookup(buildJndiLookupName(clazz));

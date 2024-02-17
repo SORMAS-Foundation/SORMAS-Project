@@ -265,7 +265,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
-				} else if (source instanceof EventDataForm) {
+				}
+				else if (source instanceof EventDataForm) {
 					final EventDataForm eventDataForm = (EventDataForm) source;
 					final LocationEditForm locationEditForm = eventDataForm.getField(EventDto.EVENT_LOCATION);
 					if (atLeastOneFieldModified(
@@ -286,7 +287,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
-				} else if (source instanceof LocationEditForm) {
+				}
+				else if (source instanceof LocationEditForm) {
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
 					if (atLeastOneFieldModified(
 						locationEditForm.getField(LocationDto.LATITUDE),
@@ -300,12 +302,14 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
-				} else if (source instanceof AccessibleTextField) {
+				}
+				else if (source instanceof AccessibleTextField) {
 					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
 					if (accessibleTextField.isModified()) {
 						dirty = true;
 					}
-				} else {
+				}
+				else {
 					dirty = true;
 				}
 			})));

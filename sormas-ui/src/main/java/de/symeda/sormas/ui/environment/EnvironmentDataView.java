@@ -8,13 +8,14 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 
-public class EnvironmentDataView extends AbstractEnvironmentView {
+public class EnvironmentDataView extends AbstractEnvironmentView implements HasName {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 
@@ -77,5 +78,10 @@ public class EnvironmentDataView extends AbstractEnvironmentView {
 	@Override
 	protected boolean isEditAllowed() {
 		return FacadeProvider.getEnvironmentFacade().isEditAllowed(environment.getUuid());
+	}
+
+	@Override
+	public String getName() {
+		return VIEW_NAME;
 	}
 }

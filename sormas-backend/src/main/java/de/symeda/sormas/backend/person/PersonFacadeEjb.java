@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -72,8 +73,6 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -87,7 +86,6 @@ import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -98,6 +96,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
+import de.symeda.sormas.api.person.IsPerson;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonAssociation;
@@ -126,6 +125,7 @@ import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -173,6 +173,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
@@ -251,6 +252,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private EventService eventService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public PersonFacadeEjb() {
 	}
@@ -483,7 +486,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		onPersonChanged(existingPerson, person, syncShares);
 
-		return toPseudonymizedDto(person, createPseudonymizer(), existingPerson == null || isAdoInJurisdiction(person));
+		return toPseudonymizedDto(person, createPseudonymizer(person), existingPerson == null || isAdoInJurisdiction(person));
 	}
 
 	/**
@@ -1383,12 +1386,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			persons.addAll(QueryHelper.getResultList(em, cq, new PersonIndexDtoResultTransformer(), null, null));
 		});
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PersonIndexDto.class,
-			persons,
-			PersonIndexDto::getInJurisdiction,
-			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+		Pseudonymizer<PersonIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(persons));
+		pseudonymizer.pseudonymizeDtoCollection(PersonIndexDto.class, persons, PersonIndexDto::getInJurisdiction, null);
 
 		logger.debug(
 			"getIndexList() finished. association={}, count={}, {}ms",
@@ -1576,12 +1575,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		List<PersonExportDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PersonExportDto.class,
-			persons,
-			PersonExportDto::getInJurisdiction,
-			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(BirthDateDto.class, p.getBirthdate(), isInJurisdiction, null));
+		Pseudonymizer<PersonExportDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(persons));
+		pseudonymizer.pseudonymizeDtoCollection(PersonExportDto.class, persons, PersonExportDto::getInJurisdiction, null);
 
 		logger.debug(
 			"getExportList() finished. association={}, count={}, {}ms",
@@ -1612,35 +1607,46 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	protected void pseudonymizeDto(Person source, PersonDto dto, Pseudonymizer pseudonymizer, boolean isInJurisdiction) {
+	protected Pseudonymizer<PersonDto> createPseudonymizer(List<Person> persons) {
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(persons));
+	}
+
+	private <T extends IsPerson> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends IsPerson> persons) {
+		List<String> withSpecialAccess = specialCaseAccessService.getPersonUuidsWithSpecialAccess(persons);
+
+		return p -> withSpecialAccess.contains(p.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(Person source, PersonDto dto, Pseudonymizer<PersonDto> pseudonymizer, boolean isInJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
-				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
-				p.getPersonContactDetails().forEach(pcd -> pseudonymizer.pseudonymizeDto(PersonContactDetailDto.class, pcd, isInJurisdiction, null));
+				pseudonymizer.pseudonymizeEmbeddedDtoCollection(LocationDto.class, p.getAddresses(), isInJurisdiction, p);
+				pseudonymizer.pseudonymizeEmbeddedDtoCollection(PersonContactDetailDto.class, p.getPersonContactDetails(), isInJurisdiction, p);
 			});
 		}
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(PersonDto source, PersonDto existingPerson, Person person, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(PersonDto source, PersonDto existingPerson, Person person, Pseudonymizer<PersonDto> pseudonymizer) {
 		if (person != null && existingPerson != null) {
 			boolean isInJurisdiction = isAdoInJurisdiction(person);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
 			source.getAddresses()
 				.forEach(
-					l -> pseudonymizer.restorePseudonymizedValues(
+					l -> pseudonymizer.restoreEmbeddedPseudonymizedValues(
 						LocationDto.class,
 						l,
 						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
+						existingPerson,
 						isInJurisdiction));
 			source.getPersonContactDetails()
 				.forEach(
-					pcd -> pseudonymizer.restorePseudonymizedValues(
+					pcd -> pseudonymizer.restoreEmbeddedPseudonymizedValues(
 						PersonContactDetailDto.class,
 						pcd,
 						existingPerson.getPersonContactDetails().stream().filter(a -> a.getUuid().equals(pcd.getUuid())).findFirst().orElse(null),
+						existingPerson,
 						isInJurisdiction));
 		}
 	}
