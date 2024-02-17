@@ -280,22 +280,59 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		addCustomComponent(dateFilterLayout, DATE_FILTER);
 
 		btnCurrentPeriod = ButtonHelper.createIconPopupButton(
-			"currentPeriod",
-			null,
-			new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
-			CssStyles.BUTTON_FILTER,
-			CssStyles.BUTTON_FILTER_LIGHT);
+				"currentPeriod",
+				null,
+				new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
 
 		Label lblComparedTo = new Label(I18nProperties.getCaption(Captions.dashboardComparedTo));
 		CssStyles.style(lblComparedTo, CssStyles.VSPACE_TOP_4, CssStyles.LABEL_BOLD);
 
 		btnComparisonPeriod = ButtonHelper.createIconPopupButton(
-			"comparisonPeriod",
-			null,
-			createDateComparisonButtonsLayout(),
-			ValoTheme.BUTTON_BORDERLESS,
-			CssStyles.BUTTON_FILTER,
-			CssStyles.BUTTON_FILTER_LIGHT);
+				"comparisonPeriod",
+				null,
+				createDateComparisonButtonsLayout(),
+				ValoTheme.BUTTON_BORDERLESS,
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
+
+		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
+
+		// Set initial date filter
+		CssStyles.style(btnThisWeek, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(btnThisWeek, CssStyles.BUTTON_FILTER_LIGHT);
+		CssStyles.style(btnPeriodBefore, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(btnPeriodBefore, CssStyles.BUTTON_FILTER_LIGHT);
+		activeComparisonButton = btnPeriodBefore;
+		currentDateFilterType = DateFilterType.THIS_WEEK;
+		setDateFilter(DateHelper.getStartOfWeek(new Date()), new Date());
+		updateComparisonButtons(NewDateFilterType.THIS_WEEK, DateHelper.getStartOfWeek(new Date()), new Date(), false);
+		btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
+	}
+	public void createDateFilters2() {
+		HorizontalLayout dateFilterLayout = new HorizontalLayout();
+		dateFilterLayout.setSpacing(true);
+		CssStyles.style(dateFilterLayout, CssStyles.VSPACE_3);
+		addCustomComponent(dateFilterLayout, DATE_FILTER);
+
+		btnCurrentPeriod = ButtonHelper.createIconPopupButton(
+				"currentPeriod",
+				null,
+				new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
+
+		Label lblComparedTo = new Label(I18nProperties.getCaption(Captions.dashboardComparedTo));
+		CssStyles.style(lblComparedTo, CssStyles.VSPACE_TOP_4, CssStyles.LABEL_BOLD);
+
+		btnComparisonPeriod = ButtonHelper.createIconPopupButton(
+				"comparisonPeriod",
+				null,
+				createDateComparisonButtonsLayout(),
+				ValoTheme.BUTTON_BORDERLESS,
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
 
 		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
 
@@ -780,48 +817,4 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		component.addStyleName(FILTER_ITEM_STYLE);
 	}
 
-
-	public void reload(ViewChangeListener.ViewChangeEvent event) {
-		DashboardCriteria criteria = dashboardDataProvider.getCriteria();
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-
-			criteria.fromUrlParams(params);
-			updateFilterDates(criteria);
-		}
-		setCriteria(criteria);
-
-	}
-
-	public void updateFilterDates(DashboardCriteria criteria) {
-		NewDateFilterType dateFilterType = criteria.getDateFilterType();
-		if (dateFilterType == NewDateFilterType.TODAY) {
-			criteria.dateFrom(DateHelper.getStartOfDay(new Date()));
-			criteria.dateTo(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.YESTERDAY) {
-			criteria.dateFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1)));
-			criteria.dateTo(DateHelper.getEndOfDay(DateHelper.subtractDays(new Date(), 1)));
-		}
-		if (dateFilterType == NewDateFilterType.THIS_WEEK) {
-			criteria.dateFrom(DateHelper.getStartOfWeek(new Date()));
-			criteria.dateTo(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.LAST_WEEK) {
-			criteria.dateFrom(DateHelper.getStartOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
-			criteria.dateTo(DateHelper.getEndOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
-		}
-		if (dateFilterType == NewDateFilterType.THIS_YEAR) {
-			criteria.dateFrom(DateHelper.getStartOfWeek(DateHelper.getStartOfYear(new Date())));
-			criteria.dateTo(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.CUSTOM) {
-			criteria.dateFrom(criteria.getDateFrom());
-			criteria.dateTo(criteria.getDateTo());
-		}
-
-
-
-	}
 }

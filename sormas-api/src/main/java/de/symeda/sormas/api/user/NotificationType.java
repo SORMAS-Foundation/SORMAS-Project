@@ -20,6 +20,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum NotificationType {
 
+
 	CASE_CLASSIFICATION_CHANGED(NotificationTypeGroup.CASES),
 	CASE_INVESTIGATION_DONE(NotificationTypeGroup.CASES),
 	CASE_LAB_RESULT_ARRIVED(NotificationTypeGroup.CASES),

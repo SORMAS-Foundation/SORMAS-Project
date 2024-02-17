@@ -110,8 +110,6 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		this.refreshDataForSelectedDisease();
 	}
 
-
-
 	@Override
 	protected DashboardCriteria newCriteria() {
 		return new DashboardCriteria(newCaseDateType);
@@ -122,7 +120,6 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		DiseaseBurdenDto dbd= FacadeProvider.getDiseaseFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate
 				,newCaseDateType
 				,caseClassification);
-
 
 		setDiseaseBurdenDetail(dbd);
 
@@ -224,6 +221,57 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 		if (getDashboardType() == DashboardType.CONTACTS) {
 			// Contacts
+			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate));
+			setPreviousContacts(
+					FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate));
+
+			this.refreshDataForQuarantinedContacts();
+		}
+
+		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
+			DashboardCriteria caseDashboardCriteria = buildDashboardCriteria(fromDate, toDate);
+
+			// Cases
+			setCases(FacadeProvider.getDashboardFacade().getCases(caseDashboardCriteria));
+			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(caseDashboardCriteria));
+			setCasesCountByClassification(
+					FacadeProvider.getDashboardFacade()
+							.getCasesCountByClassification(buildDashboardCriteria(fromDate, toDate).includeNotACaseClassification(true)));
+
+			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(buildDashboardCriteria(previousFromDate, previousToDate)));
+
+			// test results
+			if (getDashboardType() != DashboardType.CONTACTS) {
+				setNewCasesFinalLabResultCountByResultType(
+						FacadeProvider.getDashboardFacade().getNewCasesFinalLabResultCountByResultType(caseDashboardCriteria));
+			}
+		}
+
+		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
+			return;
+		}
+
+		// Events
+		DashboardCriteria eventDashboardCriteria = buildDashboardCriteriaWithDates();
+		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria));
+		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventDashboardCriteria));
+
+		setOutbreakDistrictCount(
+				FacadeProvider.getOutbreakFacade()
+						.getOutbreakDistrictCount(
+								new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
+
+		refreshDataForQuarantinedCases();
+		refreshDataForConvertedContactsToCase();
+		refreshDataForCasesWithReferenceDefinitionFulfilled();
+	}
+
+	public void refreshDataForSelectedDisease2() {
+
+		// Update the entities lists according to the filters
+
+		if (getDashboardType() == DashboardType.CONTACTS) {
+			// Contacts
 			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate, caseClassification));
 			setPreviousContacts(
 					FacadeProvider.getContactFacade()
@@ -232,13 +280,9 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 			this.refreshDataForQuarantinedContacts();
 		}
 
-//		if (getDashboardType() == DashboardType.SAMPLES) {
-//			//Samples counts
-//			setSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, fromDate, toDate));
-//			setPreviousSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, previousFromDate, previousToDate));
-//		}
 
-		if (getDashboardType() == DashboardType.CONTACTS || getDashboardType() == DashboardType.SAMPLES || this.disease != null) {
+
+		if (getDashboardType() == DashboardType.CONTACTS || getDashboardType() == DashboardType.SAMPLES ||getDashboardType() == DashboardType.DISEASE|| this.disease != null) {
 			// Cases
 			DashboardCriteria dashboardCriteria = new DashboardCriteria(dateTypeClass).region(region)
 					.district(district)
@@ -261,28 +305,9 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
 
-			System.out.println("===dashboardCriteria===");
-
-			System.out.println(dashboardCriteria);
-
 		}
 
-
-
 		if (getDashboardType() == DashboardType.DISEASE || this.disease != null) {
-			// Cases
-			CaseCriteria caseCriteria = new CaseCriteria();
-			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, newCaseDateType);
-			//setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
-			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, true, true));
-
-			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, newCaseDateType);
-			caseCriteria.setCaseClassification(caseClassification);
-			caseCriteria.setNewCaseDateType(newCaseDateType);
-
-			//setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
-
-			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 
 			if (getCases().size() > 0) {
 				setTestResultCountByResultType(

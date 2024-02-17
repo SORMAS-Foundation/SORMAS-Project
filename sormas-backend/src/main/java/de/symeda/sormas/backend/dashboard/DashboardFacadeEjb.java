@@ -778,7 +778,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			Long outbreakDistrictCount = outbreakDistrictsCount.getOrDefault(disease, 0L);
 			Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
 			District lastReportedDistrict = lastReportedDistricts.getOrDefault(disease, null);
-
 			String lastReportedDistrictName = lastReportedDistrict == null ? "" : lastReportedDistrict.getName();
 
 			return new DiseaseBurdenDto(
