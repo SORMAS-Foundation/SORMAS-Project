@@ -55,6 +55,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
@@ -377,6 +378,19 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export4.getAssociatedContact().getContactName().getFirstName(), is("Confidential"));
 		assertThat(export4.getAssociatedContact().getContactName().getLastName(), is("Confidential"));
 		assertThat(export4.getLab(), is("Lab"));
+	}
+
+	@Test
+	public void testGetSampleOfCaseWithSpecialAccess() {
+		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+		SampleDto sample = createCaseSample(caze, user1);
+
+		SampleDto sampleByUuid = getSampleFacade().getSampleByUuid(sample.getUuid());
+		assertNotPseudonymized(sampleByUuid, user1.getUuid());
+		assertNotPseudonymized(getSampleFacade().getByUuids(Collections.singletonList(sample.getUuid())).get(0), user1.getUuid());
+		assertThat(getSampleFacade().getIndexList(new SampleCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
+		assertThat(getSampleFacade().getExportList(new SampleCriteria(), null, 0, Integer.MAX_VALUE).get(0).getShipmentDetails(), is("Test shipment details"));
 	}
 
 	private void createPathogenTest(SampleDto sample, UserDto user) {

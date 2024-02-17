@@ -34,7 +34,7 @@ public class ContactFollowUpDtoResultTransformer implements ResultTransformer {
 
 		//@formatter:off
         return new ContactFollowUpDto(
-                (String) tuple[++index], (Date) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
+                (String) tuple[++index], (String) tuple[++index], (Date) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (String) tuple[++index], (String) tuple[++index], (Date) tuple[++index], (Date) tuple[++index],
                 (Date) tuple[++index], (SymptomJournalStatus) tuple[++index], (Disease) tuple[++index],
                 (Boolean) tuple[++index]

@@ -24,10 +24,11 @@ import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class MergeContactIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
+public class MergeContactIndexDto extends PseudonymizableIndexDto implements IsContact, MergeableIndexDto, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7147772346906228533L;
 
@@ -55,8 +56,10 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	private String firstName;
 	@PersonalData
 	private String lastName;
+	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;

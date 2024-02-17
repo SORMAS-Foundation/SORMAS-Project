@@ -34,8 +34,8 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.share.SormasToSormasPseudonymizer;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
@@ -61,7 +61,7 @@ public class ContactShareDataBuilder
 
 	@Override
 	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo);
 		ContactDto contactDto = getDto(contact, pseudonymizer);
@@ -70,9 +70,9 @@ public class ContactShareDataBuilder
 	}
 
 	@Override
-	protected ContactDto getDto(Contact contact, Pseudonymizer pseudonymizer) {
+	protected ContactDto getDto(Contact contact, SormasToSormasPseudonymizer pseudonymizer) {
 
-		ContactDto contactDto = contactFacade.toPseudonymizedDto(contact, pseudonymizer);
+		ContactDto contactDto = contactFacade.toPseudonymizedDto(contact, pseudonymizer.getPseudonymizer());
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		contactDto.setContactOfficer(null);
@@ -91,13 +91,13 @@ public class ContactShareDataBuilder
 
 	@Override
 	public SormasToSormasContactPreview doBuildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		return getContactPreview(contact, pseudonymizer);
 
 	}
 
-	public SormasToSormasContactPreview getContactPreview(Contact contact, Pseudonymizer pseudonymizer) {
+	public SormasToSormasContactPreview getContactPreview(Contact contact, SormasToSormasPseudonymizer pseudonymizer) {
 		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
 
 		contactPreview.setUuid(contact.getUuid());
@@ -117,7 +117,7 @@ public class ContactShareDataBuilder
 
 		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
 
-		pseudonymizer.pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
+		pseudonymizer.<SormasToSormasContactPreview>getPseudonymizer().pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
 
 		return contactPreview;
 	}

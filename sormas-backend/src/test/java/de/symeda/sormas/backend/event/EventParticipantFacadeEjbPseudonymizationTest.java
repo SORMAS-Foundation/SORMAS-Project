@@ -23,13 +23,18 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,6 +44,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -234,6 +240,35 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(saved.getPerson().getAddress().getHouseNumber(), is("Test Number"));
 		assertThat(saved.getPerson().getAddress().getAdditionalInformation(), is("Test Information"));
 		assertThat(saved.getPerson().getAddress().getCity(), is("Test City"));
+	}
+
+	@Test
+	public void testEventParticipantCasePersonWithSpecialAccess() {
+		loginWith(user1);
+
+		EventParticipantDto eventParticipant = createEventParticipant(user1, rdcf1);
+		CaseDataDto caze = creator.createCase(user1.toReference(), eventParticipant.getPerson().toReference(), rdcf1);
+		creator.createSpecialCaseAccess(caze.toReference(), nationalAdmin.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		eventParticipant.setResultingCase(caze.toReference());
+		getEventParticipantFacade().save(eventParticipant);
+
+		loginWith(user2);
+
+		assertNotPseudonymized(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		assertNotPseudonymized(getEventParticipantFacade().getByUuid(eventParticipant.getUuid()));
+		assertNotPseudonymized(getEventParticipantFacade().getByUuids(Collections.singletonList(eventParticipant.getUuid())).get(0));
+		assertNotPseudonymized(getEventParticipantFacade().getAllAfter(new Date(0)).get(0));
+		assertThat(
+			getEventParticipantFacade().getIndexList(new EventParticipantCriteria().withEvent(eventParticipant.getEvent()), null, null, null)
+				.get(0)
+				.isPseudonymized(),
+			is(false));
+		assertThat(
+			getEventParticipantFacade().getExportList(new EventParticipantCriteria(), null, 0, Integer.MAX_VALUE, Language.EN, null)
+				.get(0)
+				.getFirstName(),
+			is(eventParticipant.getPerson().getFirstName()));
 	}
 
 	private EventParticipantDto createEventParticipant(UserDto user, TestDataCreator.RDCF rdcf) {

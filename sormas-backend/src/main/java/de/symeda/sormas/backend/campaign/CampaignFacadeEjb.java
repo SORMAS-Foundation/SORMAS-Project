@@ -380,12 +380,12 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(Campaign source, CampaignDto dto, Pseudonymizer<CampaignDto> pseudonymizer, boolean inJurisdiction) {
 		// No pseudonymization for Campaign entities
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(CampaignDto dto, CampaignDto existingDto, Campaign entity, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(CampaignDto dto, CampaignDto existingDto, Campaign entity, Pseudonymizer<CampaignDto> pseudonymizer) {
 		// No pseudonymization for Campaign entities
 	}
 

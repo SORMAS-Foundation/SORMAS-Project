@@ -55,6 +55,7 @@ import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -75,6 +76,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	private UserService userService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public DirectoryImmunizationService() {
 		super(DirectoryImmunization.class, DeletableEntityType.IMMUNIZATION);
@@ -405,8 +408,18 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 			filter = isInJurisdictionOrOwned(qc);
 
-		filter = CriteriaBuilderHelper
-			.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, qc.getRoot().get(Immunization.DISEASE)));
+		From<?, DirectoryImmunization> root = qc.getRoot();
+		DirectoryImmunizationJoins joins = qc.getJoins();
+
+		if (filter != null) {
+			filter = CriteriaBuilderHelper.or(
+				cb,
+				filter,
+				specialCaseAccessService.createSpecialCaseAccessFilter(cb, joins.getPersonJoins().getCaseJoins().getSpecialCaseAccesses()));
+		}
+
+		filter =
+			CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, root.get(Immunization.DISEASE)));
 
 		return filter;
 	}

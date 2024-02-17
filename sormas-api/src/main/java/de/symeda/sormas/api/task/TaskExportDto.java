@@ -19,11 +19,16 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.IsCase;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.IsContact;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -31,7 +36,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
-public class TaskExportDto extends PseudonymizableIndexDto implements Serializable {
+public class TaskExportDto extends PseudonymizableIndexDto implements IsTask, Serializable {
 
 	private static final long serialVersionUID = 4762759594879661318L;
 
@@ -93,6 +98,7 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 
 	private final Sex personSex;
 
+	@EmbeddedPersonalData
 	private final BirthDateDto personBirthDate;
 
 	private final String personAddressRegion;
@@ -426,5 +432,15 @@ public class TaskExportDto extends PseudonymizableIndexDto implements Serializab
 
 	public boolean isInJurisdiction() {
 		return inJurisdiction;
+	}
+
+	@Override
+	public IsCase getCaze() {
+		return new CaseReferenceDto(cazeUuid);
+	}
+
+	@Override
+	public IsContact getContact() {
+		return new ContactReferenceDto(contactUuid);
 	}
 }

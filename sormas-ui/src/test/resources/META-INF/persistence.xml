@@ -86,7 +86,7 @@
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
 		<class>de.symeda.sormas.backend.environment.Environment</class>
 		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
-
+		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
