@@ -10,6 +10,9 @@ public interface Validations {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String aefiWithoutAdverseEvents = "aefiWithoutAdverseEvents";
+	String aefiWithoutPrimarySuspectVaccine = "aefiWithoutPrimarySuspectVaccine";
+	String aefiWithoutSuspectVaccine = "aefiWithoutSuspectVaccine";
 	String afterDate = "afterDate";
 	String afterDateSoft = "afterDateSoft";
 	String afterDateWithDate = "afterDateWithDate";

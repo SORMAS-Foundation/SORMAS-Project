@@ -53,6 +53,7 @@ public interface Strings {
 	String close = "close";
 	String comparedTo = "comparedTo";
 	String confirmationAlsoAdjustQuarantine = "confirmationAlsoAdjustQuarantine";
+	String confirmationArchiveAdverseEvent = "confirmationArchiveAdverseEvent";
 	String confirmationArchiveArea = "confirmationArchiveArea";
 	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
@@ -96,6 +97,7 @@ public interface Strings {
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
+	String confirmationDearchiveAdverseEvent = "confirmationDearchiveAdverseEvent";
 	String confirmationDearchiveArea = "confirmationDearchiveArea";
 	String confirmationDearchiveAreas = "confirmationDearchiveAreas";
 	String confirmationDearchiveCampaign = "confirmationDearchiveCampaign";
@@ -217,6 +219,8 @@ public interface Strings {
 	String entityActivityAsCase = "entityActivityAsCase";
 	String entityAdditionalTest = "entityAdditionalTest";
 	String entityAdditionalTests = "entityAdditionalTests";
+	String entityAdverseEvent = "entityAdverseEvent";
+	String entityAdverseEvents = "entityAdverseEvents";
 	String entityAggregateReports = "entityAggregateReports";
 	String entityAreas = "entityAreas";
 	String entityAutomaticSoftDeletion = "entityAutomaticSoftDeletion";
@@ -298,6 +302,7 @@ public interface Strings {
 	String entityWeeklyReports = "entityWeeklyReports";
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
+	String errorAdverseEventNotEditable = "errorAdverseEventNotEditable";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCampaignNotEditable = "errorCampaignNotEditable";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
@@ -412,9 +417,21 @@ public interface Strings {
 	String headingActivityAsCaseDetails = "headingActivityAsCaseDetails";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAdjustQuarantine = "headingAdjustQuarantine";
+	String headingAefiAdverseEvents = "headingAefiAdverseEvents";
+	String headingAefiDashboardEpiCurve = "headingAefiDashboardEpiCurve";
+	String headingAefiDashboardMap = "headingAefiDashboardMap";
+	String headingAefiFirstDecisionLevel = "headingAefiFirstDecisionLevel";
+	String headingAefiNationalDecisionLevel = "headingAefiNationalDecisionLevel";
+	String headingAefiPatientsAgeAtOnset = "headingAefiPatientsAgeAtOnset";
+	String headingAefiPatientsIdentification = "headingAefiPatientsIdentification";
+	String headingAefiPickPrimarySuspectVaccine = "headingAefiPickPrimarySuspectVaccine";
+	String headingAefiReportersInformation = "headingAefiReportersInformation";
+	String headingAefiReportingInformation = "headingAefiReportingInformation";
+	String headingAefiVaccinations = "headingAefiVaccinations";
 	String headingAllContacts = "headingAllContacts";
 	String headingAnimalContactDetails = "headingAnimalContactDetails";
 	String headingAnimalContacts = "headingAnimalContacts";
+	String headingArchiveAdverseEvent = "headingArchiveAdverseEvent";
 	String headingArchiveCampaign = "headingArchiveCampaign";
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveContact = "headingArchiveContact";
@@ -535,6 +552,7 @@ public interface Strings {
 	String headingCustomizableEnumConfigurationInfo = "headingCustomizableEnumConfigurationInfo";
 	String headingDatabaseExportFailed = "headingDatabaseExportFailed";
 	String headingDataImport = "headingDataImport";
+	String headingDearchiveAdverseEvent = "headingDearchiveAdverseEvent";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveContact = "headingDearchiveContact";
@@ -644,6 +662,7 @@ public interface Strings {
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
 	String headingHowToMergeContacts = "headingHowToMergeContacts";
+	String headingImmunizationAdverseEvents = "headingImmunizationAdverseEvents";
 	String headingImmunizationsDeleted = "headingImmunizationsDeleted";
 	String headingImmunizationsNotDeleted = "headingImmunizationsNotDeleted";
 	String headingImmunizationsNotRestored = "headingImmunizationsNotRestored";
@@ -874,6 +893,8 @@ public interface Strings {
 	String inColumn = "inColumn";
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
 	String infoAddTestsToSample = "infoAddTestsToSample";
+	String infoAefiSelectPrimarySuspectVaccine = "infoAefiSelectPrimarySuspectVaccine";
+	String infoArchivedAefiEntries = "infoArchivedAefiEntries";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedContacts = "infoArchivedContacts";
 	String infoArchivedEventParticipants = "infoArchivedEventParticipants";
@@ -967,6 +988,7 @@ public interface Strings {
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
+	String infoHeadingAefiDashboardMap = "infoHeadingAefiDashboardMap";
 	String infoHeadingEnvironmentSampleDashboardMap = "infoHeadingEnvironmentSampleDashboardMap";
 	String infoHeadingSampleDashboardMap = "infoHeadingSampleDashboardMap";
 	String infoHowToMergeCases = "infoHowToMergeCases";
@@ -998,6 +1020,7 @@ public interface Strings {
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
+	String infoNoImmunizationAdverseEvents = "infoNoImmunizationAdverseEvents";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCase = "infoNoSourceCase";
@@ -1095,6 +1118,9 @@ public interface Strings {
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
+	String messageAdverseEventArchived = "messageAdverseEventArchived";
+	String messageAdverseEventDearchived = "messageAdverseEventDearchived";
+	String messageAdverseEventSaved = "messageAdverseEventSaved";
 	String messageAggregatedReportEpiWeekFilterNotFilled = "messageAggregatedReportEpiWeekFilterNotFilled";
 	String messageAggregateReportDelete = "messageAggregateReportDelete";
 	String messageAggregateReportExpiredAgeGroups = "messageAggregateReportExpiredAgeGroups";
@@ -1618,6 +1644,13 @@ public interface Strings {
 	String promptActionDateTo = "promptActionDateTo";
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
 	String promptActionEpiWeekTo = "promptActionEpiWeekTo";
+	String promptAefiDashboardFilterDateType = "promptAefiDashboardFilterDateType";
+	String promptAefiDateFrom = "promptAefiDateFrom";
+	String promptAefiDateTo = "promptAefiDateTo";
+	String promptAefiDateType = "promptAefiDateType";
+	String promptAefiEpiWeekFrom = "promptAefiEpiWeekFrom";
+	String promptAefiEpiWeekTo = "promptAefiEpiWeekTo";
+	String promptAefiValidFrom = "promptAefiValidFrom";
 	String promptAllAreas = "promptAllAreas";
 	String promptAllCommunities = "promptAllCommunities";
 	String promptAllDistricts = "promptAllDistricts";

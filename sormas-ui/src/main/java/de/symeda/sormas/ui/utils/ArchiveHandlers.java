@@ -30,6 +30,8 @@ import de.symeda.sormas.api.ArchivableFacade;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDto;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiFacade;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -91,6 +93,10 @@ public final class ArchiveHandlers {
 
 	public static CoreEntityArchiveHandler<ImmunizationDto, ImmunizationFacade> forImmunization() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getImmunizationFacade(), ArchiveMessages.IMMUNIZATION);
+	}
+
+	public static CoreEntityArchiveHandler<AefiDto, AefiFacade> forAefi() {
+		return new CoreEntityArchiveHandler<>(FacadeProvider.getAefiFacade(), ArchiveMessages.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION);
 	}
 
 	public static CoreEntityArchiveHandler<TravelEntryDto, TravelEntryFacade> forTravelEntry() {
