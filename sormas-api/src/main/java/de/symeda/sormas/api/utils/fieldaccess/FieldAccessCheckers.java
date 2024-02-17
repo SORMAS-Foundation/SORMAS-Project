@@ -18,30 +18,28 @@ package de.symeda.sormas.api.utils.fieldaccess;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FieldAccessCheckers {
+public class FieldAccessCheckers<T> {
 
-	private List<FieldAccessChecker> checkers = new ArrayList<>();
+	private final List<FieldAccessChecker<T>> checkers = new ArrayList<>();
 
-	public FieldAccessCheckers() {
-	}
-
-	public boolean isAccessible(Class<?> parentType, String fieldName, boolean withMandatoryFields) {
+	public boolean isAccessible(Class<T> parentType, T dto, String fieldName, boolean withMandatoryFields) {
 
 		Field declaredField = getDeclaredField(parentType, fieldName);
 		if (declaredField == null) {
 			return true;
 		}
 
-		return isAccessible(declaredField, withMandatoryFields);
+		return isAccessible(declaredField, dto, withMandatoryFields);
 	}
 
-	public boolean isAccessible(Field field, boolean withMandatoryFields) {
+	public boolean isAccessible(Field field, T object, boolean withMandatoryFields) {
 
-		for (FieldAccessChecker checker : checkers) {
-			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight()) {
+		for (FieldAccessChecker<T> checker : checkers) {
+			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight(object)) {
 				return false;
 			}
 		}
@@ -50,12 +48,16 @@ public class FieldAccessCheckers {
 	}
 
 	@SafeVarargs
-	public final boolean isAccessibleBy(Field field, boolean withMandatoryFields, Class<? extends FieldAccessChecker>... checkerTypes) {
+	public final boolean isAccessibleBy(
+		Field field,
+		T object,
+		boolean withMandatoryFields,
+		@SuppressWarnings("rawtypes") Class<? extends FieldAccessChecker>... checkerTypes) {
 
-		List<FieldAccessChecker> filteredCheckers =
+		List<FieldAccessChecker<T>> filteredCheckers =
 			checkers.stream().filter(c -> Arrays.stream(checkerTypes).anyMatch(t -> c.getClass().isAssignableFrom(t))).collect(Collectors.toList());
-		for (FieldAccessChecker checker : filteredCheckers) {
-			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight()) {
+		for (FieldAccessChecker<T> checker : filteredCheckers) {
+			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight(object)) {
 				return false;
 			}
 		}
@@ -65,7 +67,7 @@ public class FieldAccessCheckers {
 
 	public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
 
-		for (FieldAccessChecker checker : checkers) {
+		for (FieldAccessChecker<T> checker : checkers) {
 			if (checker.isConfiguredForCheck(field, withMandatory)) {
 				return true;
 			}
@@ -86,7 +88,7 @@ public class FieldAccessCheckers {
 
 	public boolean isEmbedded(Field field) {
 
-		for (FieldAccessChecker checker : checkers) {
+		for (FieldAccessChecker<T> checker : checkers) {
 			if (checker.isEmbedded(field)) {
 				return true;
 			}
@@ -95,10 +97,10 @@ public class FieldAccessCheckers {
 		return false;
 	}
 
-	public boolean hasRights() {
+	public boolean hasRights(T object) {
 
-		for (FieldAccessChecker checker : checkers) {
-			if (!checker.hasRight()) {
+		for (FieldAccessChecker<T> checker : checkers) {
+			if (!checker.hasRight(object)) {
 				return false;
 			}
 		}
@@ -106,17 +108,15 @@ public class FieldAccessCheckers {
 		return true;
 	}
 
-	public FieldAccessCheckers add(FieldAccessChecker checker) {
+	public FieldAccessCheckers<T> add(FieldAccessChecker<T> checker) {
 		checkers.add(checker);
 		return this;
 	}
 
-	private Field getDeclaredField(Class<?> parentType, String propertyId) {
+	private static Field getDeclaredField(Class<?> parentType, String propertyId) {
 
 		try {
-			Field declaredField = parentType.getDeclaredField(propertyId);
-
-			return declaredField;
+			return parentType.getDeclaredField(propertyId);
 		} catch (NoSuchFieldException e) {
 			if (parentType.getSuperclass() != null) {
 				return getDeclaredField(parentType.getSuperclass(), propertyId);
@@ -126,20 +126,21 @@ public class FieldAccessCheckers {
 		}
 	}
 
-	public static FieldAccessCheckers withCheckers(FieldAccessChecker... checkers) {
+	public static <T> FieldAccessCheckers<T> withCheckers(Collection<FieldAccessChecker<T>> checkers) {
 
-		FieldAccessCheckers ret = new FieldAccessCheckers();
-		for (FieldAccessChecker checker : checkers) {
+		FieldAccessCheckers<T> ret = new FieldAccessCheckers<>();
+		for (FieldAccessChecker<T> checker : checkers) {
 			ret.add(checker);
 		}
 
 		return ret;
 	}
 
-	public <T extends FieldAccessChecker> T getCheckerByType(Class<T> checkerType) {
-		for (FieldAccessChecker checker : checkers) {
+	public <F extends FieldAccessChecker<T>> F getCheckerByType(Class<F> checkerType) {
+		for (FieldAccessChecker<T> checker : checkers) {
 			if (checkerType.isAssignableFrom(checker.getClass())) {
-				return (T) checker;
+				//noinspection unchecked
+				return (F) checker;
 			}
 		}
 

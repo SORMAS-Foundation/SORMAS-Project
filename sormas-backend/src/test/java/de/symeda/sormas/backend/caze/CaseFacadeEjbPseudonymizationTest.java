@@ -67,6 +67,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
@@ -460,6 +461,20 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedCase.getReportLon(), is(22.234));
 	}
 
+	@Test
+	public void testSpecialCaseAccessOutsideJurisdiction() {
+
+		CaseDataDto caze = createCase(rdcf1, user1);
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		assertNotPseudonymized(getCaseFacade().getCaseDataByUuid(caze.getUuid()), rdcf1, user1);
+		assertNotPseudonymized(getCaseFacade().getByUuid(caze.getUuid()), rdcf1, user1);
+		assertNotPseudonymized(getCaseFacade().getByUuids(Collections.singletonList(caze.getUuid())).get(0), rdcf1, user1);
+		assertNotPseudonymized(getCaseFacade().getAllAfter(new Date(0)).get(0), rdcf1, user1);
+		assertThat(getCaseFacade().getIndexList(new CaseCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
+		assertThat(getCaseFacade().getExportList(new CaseCriteria(), null, null, 0, Integer.MAX_VALUE, null, Language.EN).get(0).getHealthFacilityDetails(), is("Test Facility details"));
+	}
+
 	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {
 		return createCase(rdcf, createPerson().toReference(), reportingUser);
 	}
@@ -533,24 +548,28 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertNotPseudonymized(CaseDataDto caze) {
+		assertNotPseudonymized(caze, rdcf2, user2);
+	}
+
+	private void assertNotPseudonymized(CaseDataDto caze, TestDataCreator.RDCF rdfc, UserDto user) {
 		assertThat(caze.isPseudonymized(), is(false));
-		assertThat(caze.getResponsibleRegion(), is(rdcf2.region));
-		assertThat(caze.getResponsibleDistrict(), is(rdcf2.district));
-		assertThat(caze.getResponsibleCommunity(), is(rdcf2.community));
-		assertThat(caze.getRegion(), is(rdcf2.region));
-		assertThat(caze.getDistrict(), is(rdcf2.district));
-		assertThat(caze.getCommunity(), is(rdcf2.community));
-		assertThat(caze.getHealthFacility(), is(rdcf2.facility));
+		assertThat(caze.getResponsibleRegion(), is(rdfc.region));
+		assertThat(caze.getResponsibleDistrict(), is(rdfc.district));
+		assertThat(caze.getResponsibleCommunity(), is(rdfc.community));
+		assertThat(caze.getRegion(), is(rdfc.region));
+		assertThat(caze.getDistrict(), is(rdfc.district));
+		assertThat(caze.getCommunity(), is(rdfc.community));
+		assertThat(caze.getHealthFacility(), is(rdfc.facility));
 		assertThat(caze.getHealthFacilityDetails(), is("Test Facility details"));
-		assertThat(caze.getPointOfEntry(), is(rdcf2.pointOfEntry));
+		assertThat(caze.getPointOfEntry(), is(rdfc.pointOfEntry));
 		assertThat(caze.getPointOfEntryDetails(), is("Test point of entry details"));
 		assertThat(caze.getPerson().getFirstName(), is("James"));
 		assertThat(caze.getPerson().getLastName(), is("Smith"));
 
 		//sensitive data
-		assertThat(caze.getReportingUser().getUuid(), is(user2.getUuid()));
-		assertThat(caze.getSurveillanceOfficer().getUuid(), is(user2.getUuid()));
-		assertThat(caze.getClassificationUser().getUuid(), is(user2.getUuid()));
+		assertThat(caze.getReportingUser().getUuid(), is(user.getUuid()));
+		assertThat(caze.getSurveillanceOfficer().getUuid(), is(user.getUuid()));
+		assertThat(caze.getClassificationUser().getUuid(), is(user.getUuid()));
 
 		assertThat(caze.getFollowUpComment(), is("Test comment"));
 //		assertThat(caze.getReportLat(), is(46.432));

@@ -14,19 +14,21 @@
  */
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class SampleReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
+
+	private String associatedCaseUuid;
 
 	public SampleReferenceDto() {
 
@@ -36,14 +38,14 @@ public class SampleReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public SampleReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
-	}
-
 	public SampleReferenceDto(String uuid, SampleMaterial sampleMaterial, String caseUuid, String contactUuid, String eventParticipantUuid) {
 		setUuid(uuid);
 		setCaption(buildCaption(sampleMaterial, caseUuid, contactUuid, eventParticipantUuid));
+		this.associatedCaseUuid = caseUuid;
+	}
+
+	public String getAssociatedCaseUuid() {
+		return associatedCaseUuid;
 	}
 
 	public static String buildCaption(SampleMaterial sampleMaterial, String caseUuid, String contactUuid, String eventParticipantUuid) {

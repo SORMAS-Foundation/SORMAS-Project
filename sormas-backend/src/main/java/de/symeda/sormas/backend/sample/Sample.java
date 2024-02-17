@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.IsSample;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -65,7 +66,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "samples")
-public class Sample extends DeletableAdo implements SormasToSormasShareable {
+public class Sample extends DeletableAdo implements IsSample, SormasToSormasShareable {
 
 	private static final long serialVersionUID = -7196712070188634978L;
 

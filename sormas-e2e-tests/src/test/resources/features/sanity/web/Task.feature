@@ -179,7 +179,6 @@ Feature: Tasks functionalities
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
-  #  And I click on the Tasks button from navbar
     And I filter out last created task from Tasks Directory
     And I click Export button in Task Directory
     When I click on the Custom Event Export button

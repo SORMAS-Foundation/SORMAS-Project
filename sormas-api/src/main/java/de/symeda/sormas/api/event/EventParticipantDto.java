@@ -38,7 +38,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 @DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
-public class EventParticipantDto extends SormasToSormasShareableDto {
+public class EventParticipantDto extends SormasToSormasShareableDto implements IsEventParticipant {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 

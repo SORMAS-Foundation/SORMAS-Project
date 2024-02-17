@@ -39,9 +39,9 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 	private static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forFieldAccessCheckers(
 		Class<T> beanType,
 		String columnId,
-		UiFieldAccessCheckers psuedonymizedDataFieldChecker) {
+		UiFieldAccessCheckers<T> psuedonymizedDataFieldChecker) {
 
-		return new FieldAccessColumnStyleGenerator<>((t) -> {
+		return new FieldAccessColumnStyleGenerator<>(t -> {
 			if (t.isPseudonymized()) {
 				return psuedonymizedDataFieldChecker.isEmbedded(beanType, columnId)
 					? psuedonymizedDataFieldChecker.hasRight()
@@ -52,7 +52,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 		});
 	}
 
-	private Function<T, Boolean> accessCheck;
+	private final Function<T, Boolean> accessCheck;
 
 	public FieldAccessColumnStyleGenerator(Function<T, Boolean> accessCheck) {
 		this.accessCheck = accessCheck;
@@ -60,7 +60,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 
 	@Override
 	public String apply(T dto) {
-		if (!accessCheck.apply(dto)) {
+		if (Boolean.FALSE.equals(accessCheck.apply(dto))) {
 			return CssStyles.INACCESSIBLE_COLUMN;
 		}
 

@@ -52,6 +52,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -107,7 +108,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		CaseDataDto caze = createCase(user2, rdcf2);
 		ContactDto contact = createContact(user2, caze, rdcf2);
-		assertNotPseudonymized(getContactFacade().getByUuid(contact.getUuid()), true);
+		assertNotPseudonymized(getContactFacade().getByUuid(contact.getUuid()), user2, true);
 	}
 
 	@Test
@@ -195,7 +196,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactDto contact2 = createContact(user1, caze, rdcf2);
 
 		List<ContactDto> contacts = getContactFacade().getByUuids(Arrays.asList(contact1.getUuid(), contact2.getUuid()));
-		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), false);
+		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), user2, false);
 		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
 	}
 
@@ -213,9 +214,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		calendar.set(Calendar.YEAR, 2019);
 		List<ContactDto> contacts = getContactFacade().getAllAfter(calendar.getTime());
 
-		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), true);
+		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), user2, true);
 		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
-		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact3.getUuid())).findFirst().get(), false);
+		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact3.getUuid())).findFirst().get(), user2, false);
 	}
 
 	@Test
@@ -413,7 +414,28 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedContact.getReportLatLonAccuracy(), is(20F));
 	}
 
-	private void assertNotPseudonymized(ContactDto contact, boolean caseInJurisdiction) {
+	@Test
+	public void testGetContactOfCaseWithSpecialAccess() {
+
+		CaseDataDto caze = createCase(user1, rdcf1);
+		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		ContactDto contact = createContact(user1, caze, rdcf1);
+
+		assertNotPseudonymized(getContactFacade().getByUuid(contact.getUuid()), user1, true);
+		assertNotPseudonymized(getContactFacade().getByUuids(Collections.singletonList(contact.getUuid())).get(0), user1, true);
+		assertNotPseudonymized(getContactFacade().getAllAfter(new Date(0)).get(0), user1, true);
+		assertThat(getContactFacade().getIndexList(new ContactCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
+		assertThat(
+			getContactFacade().getExportList(new ContactCriteria(), null, 0, Integer.MAX_VALUE, null, Language.EN).get(0).getFirstName(),
+			is(contact.getPerson().getFirstName()));
+		assertThat(getContactFacade().getEntriesList(contact.getPerson().getUuid(), null, null).get(0).isPseudonymized(), is(false));
+		assertThat(
+			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 100, null, null, null).get(0).isPseudonymized(),
+			is(false));
+	}
+
+	private void assertNotPseudonymized(ContactDto contact, UserDto user, boolean caseInJurisdiction) {
 		assertThat(contact.getPerson().getFirstName(), is("James"));
 		assertThat(contact.getPerson().getLastName(), is("Smith"));
 
@@ -421,8 +443,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getCaze().getLastName(), caseInJurisdiction ? is("Smith") : isEmptyString());
 
 		// sensitive data
-		assertThat(contact.getReportingUser().getUuid(), is(user2.getUuid()));
-		assertThat(contact.getContactOfficer().getUuid(), is(user2.getUuid()));
+		assertThat(contact.getReportingUser().getUuid(), is(user.getUuid()));
+		assertThat(contact.getContactOfficer().getUuid(), is(user.getUuid()));
 		assertThat(contact.getResultingCaseUser(), is(nullValue()));
 
 		assertThat(contact.getReportLat(), is(46.432));

@@ -7033,6 +7033,7 @@ paths:
                   - CASE_MERGE
                   - CASE_SHARE
                   - CASE_RESPONSIBLE
+                  - GRANT_SPECIAL_CASE_ACCESS
                   - IMMUNIZATION_VIEW
                   - IMMUNIZATION_CREATE
                   - IMMUNIZATION_EDIT
@@ -7253,6 +7254,7 @@ paths:
                   - CASE_MERGE
                   - CASE_SHARE
                   - CASE_RESPONSIBLE
+                  - GRANT_SPECIAL_CASE_ACCESS
                   - IMMUNIZATION_VIEW
                   - IMMUNIZATION_CREATE
                   - IMMUNIZATION_EDIT
@@ -10823,6 +10825,8 @@ components:
           type: string
         lastName:
           type: string
+        name:
+          type: string
         uuid:
           type: string
           pattern: "^[0-9a-zA-Z-]*$"
@@ -12392,8 +12396,8 @@ components:
       properties:
         caption:
           type: string
-        caseName:
-          $ref: '#/components/schemas/PersonName'
+        caze:
+          $ref: '#/components/schemas/CaseReferenceDto'
         contactName:
           $ref: '#/components/schemas/PersonName'
         uuid:
@@ -21743,6 +21747,8 @@ components:
     SampleReferenceDto:
       type: object
       properties:
+        associatedCaseUuid:
+          type: string
         caption:
           type: string
         uuid:
@@ -25323,6 +25329,7 @@ components:
             - CASE_MERGE
             - CASE_SHARE
             - CASE_RESPONSIBLE
+            - GRANT_SPECIAL_CASE_ACCESS
             - IMMUNIZATION_VIEW
             - IMMUNIZATION_CREATE
             - IMMUNIZATION_EDIT

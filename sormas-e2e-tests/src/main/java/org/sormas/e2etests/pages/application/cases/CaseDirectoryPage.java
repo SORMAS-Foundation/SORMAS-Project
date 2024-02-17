@@ -116,6 +116,8 @@ public class CaseDirectoryPage {
       By.xpath("//span[contains(text(),'De-Archive')]\n");
   public static final By BULK_CREATE_QUARANTINE_ORDER =
       By.xpath("//span[contains(text(),'Create quarantine order documents')]");
+  public static final By BULK_CREATE_QUARANTINE_ORDER_DE =
+      By.xpath("//span[contains(text(),'Dokumente erstellen')]");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");

@@ -89,6 +89,7 @@ public interface Strings {
 	String confirmationArchiveTask = "confirmationArchiveTask";
 	String confirmationArchiveTasks = "confirmationArchiveTasks";
 	String confirmationArchiveTravelEntry = "confirmationArchiveTravelEntry";
+	String confirmationBulkGrantSpecialAccess = "confirmationBulkGrantSpecialAccess";
 	String confirmationCancelBulkAction = "confirmationCancelBulkAction";
 	String confirmationCancelExternalFollowUpPopup = "confirmationCancelExternalFollowUpPopup";
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
@@ -419,6 +420,8 @@ public interface Strings {
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
 	String headingBulkOperationProgress = "headingBulkOperationProgress";
+	String headingBulkSpecialCaseAccessNoneProcessed = "headingBulkSpecialCaseAccessNoneProcessed";
+	String headingBulkSpecialCaseAccessSomeNotProcessed = "headingBulkSpecialCaseAccessSomeNotProcessed";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
 	String headingCampaignDashboard = "headingCampaignDashboard";
@@ -454,6 +457,7 @@ public interface Strings {
 	String headingCompleteness = "headingCompleteness";
 	String headingComplications = "headingComplications";
 	String headingConfirmArchiving = "headingConfirmArchiving";
+	String headingConfirmBulkGrantSpecialAccess = "headingConfirmBulkGrantSpecialAccess";
 	String headingConfirmChoice = "headingConfirmChoice";
 	String headingConfirmDearchiving = "headingConfirmDearchiving";
 	String headingConfirmDeletion = "headingConfirmDeletion";
@@ -515,6 +519,7 @@ public interface Strings {
 	String headingCreateNewUserRole = "headingCreateNewUserRole";
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
+	String headingCreateSpecailCaseAccess = "headingCreateSpecailCaseAccess";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
 	String headingCurrentHospitalization = "headingCurrentHospitalization";
 	String headingCustomizableEnumConfigurationInfo = "headingCustomizableEnumConfigurationInfo";
@@ -559,6 +564,7 @@ public interface Strings {
 	String headingEditPathogenTestResult = "headingEditPathogenTestResult";
 	String headingEditPrescription = "headingEditPrescription";
 	String headingEditSample = "headingEditSample";
+	String headingEditSpecailCaseAccess = "headingEditSpecailCaseAccess";
 	String headingEditSubcontinent = "headingEditSubcontinent";
 	String headingEditSurveillanceReport = "headingEditSurveillanceReport";
 	String headingEditTask = "headingEditTask";
@@ -795,6 +801,7 @@ public interface Strings {
 	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingSormasToSormasDuplicateDetection = "headingSormasToSormasDuplicateDetection";
 	String headingSormasToSormasShareRequestNotFound = "headingSormasToSormasShareRequestNotFound";
+	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
@@ -1095,6 +1102,7 @@ public interface Strings {
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
+	String messageBulkSpecialCaseAccessAllProcessed = "messageBulkSpecialCaseAccessAllProcessed";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -1164,6 +1172,7 @@ public interface Strings {
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageConvertEventParticipantToCaseNoDisease = "messageConvertEventParticipantToCaseNoDisease";
 	String messageCopyPassword = "messageCopyPassword";
+	String messageCountAccessesNotGrantedDueToError = "messageCountAccessesNotGrantedDueToError";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotArchivedExternalReason = "messageCountCasesNotArchivedExternalReason";
 	String messageCountCasesNotDearchivedExternalReason = "messageCountCasesNotDearchivedExternalReason";
