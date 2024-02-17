@@ -19,8 +19,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
@@ -88,11 +86,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, indexList, t -> t.getInJurisdiction(), (t, inJurisdiction) -> {
-			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
-			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
-		});
+		Pseudonymizer<TreatmentIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, indexList, TreatmentIndexDto::getInJurisdiction, null);
 
 		return indexList;
 	}
@@ -127,18 +122,15 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> treatmentIndexDtos = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, treatmentIndexDtos, t -> t.getInJurisdiction(), (t, inJurisdiction) -> {
-			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
-			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
-		});
+		Pseudonymizer<TreatmentIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, treatmentIndexDtos, TreatmentIndexDto::getInJurisdiction, null);
 
 		return treatmentIndexDtos;
 	}
 
 	@Override
 	public TreatmentDto getTreatmentByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService));
 	}
 
 	@Override
@@ -203,10 +195,9 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private List<TreatmentDto> toPseudonymizedDtos(List<Treatment> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<TreatmentDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		Pseudonymizer<TreatmentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+
+		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
@@ -254,13 +245,13 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(TreatmentExportDto.class, exportList, t -> t.getInJurisdiction(), null);
+		Pseudonymizer<TreatmentExportDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		pseudonymizer.pseudonymizeDtoCollection(TreatmentExportDto.class, exportList, TreatmentExportDto::getInJurisdiction, null);
 
 		return exportList;
 	}
 
-	private TreatmentDto convertToDto(Treatment source, Pseudonymizer pseudonymizer) {
+	private TreatmentDto convertToDto(Treatment source, Pseudonymizer<TreatmentDto> pseudonymizer) {
 
 		if (source == null) {
 			return null;
@@ -270,14 +261,14 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		return convertToDto(source, pseudonymizer, inJurisdiction);
 	}
 
-	private TreatmentDto convertToDto(Treatment source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private TreatmentDto convertToDto(Treatment source, Pseudonymizer<TreatmentDto> pseudonymizer, boolean inJurisdiction) {
 
 		TreatmentDto dto = toDto(source);
 		pseudonymizeDto(source, dto, pseudonymizer, inJurisdiction);
 		return dto;
 	}
 
-	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer<TreatmentDto> pseudonymizer, boolean inJurisdiction) {
 		if (source != null && dto != null) {
 			pseudonymizer.pseudonymizeDto(TreatmentDto.class, dto, inJurisdiction, null);
 		}
@@ -285,7 +276,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	private void restorePseudonymizedDto(TreatmentDto source, Treatment existingTreatment, TreatmentDto existingDto) {
 		if (existingTreatment != null) {
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+			Pseudonymizer<TreatmentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
 			pseudonymizer.restorePseudonymizedValues(TreatmentDto.class, source, existingDto, service.inJurisdictionOrOwned(existingTreatment));
 		}
 	}

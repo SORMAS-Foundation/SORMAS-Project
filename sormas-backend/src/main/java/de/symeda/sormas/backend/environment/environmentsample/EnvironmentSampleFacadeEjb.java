@@ -57,7 +57,6 @@ import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleFacad
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleIndexDto;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleReferenceDto;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -128,7 +127,7 @@ public class EnvironmentSampleFacadeEjb
 		validateUserRights(dto, existingSample);
 
 		EnvironmentSampleDto existingDto = toDto(existingSample);
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<EnvironmentSampleDto> pseudonymizer = createPseudonymizer(existingSample);
 		restorePseudonymizedDto(dto, existingDto, existingSample, pseudonymizer);
 
 		validate(dto);
@@ -224,7 +223,7 @@ public class EnvironmentSampleFacadeEjb
 			indexList.addAll(samples);
 		});
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<EnvironmentSampleIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
 		pseudonymizer.pseudonymizeDtoCollection(EnvironmentSampleIndexDto.class, indexList, EnvironmentSampleIndexDto::isInJurisdiction, null);
 
 		return indexList;
@@ -633,11 +632,15 @@ public class EnvironmentSampleFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(EnvironmentSample source, EnvironmentSampleDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(
+		EnvironmentSample source,
+		EnvironmentSampleDto dto,
+		Pseudonymizer<EnvironmentSampleDto> pseudonymizer,
+		boolean inJurisdiction) {
 		if (dto != null) {
 			pseudonymizer.pseudonymizeDto(EnvironmentSampleDto.class, dto, inJurisdiction, e -> {
-				pseudonymizer.pseudonymizeDto(EnvironmentReferenceDto.class, e.getEnvironment(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+				pseudonymizer.pseudonymizeEmbeddedDto(EnvironmentReferenceDto.class, e.getEnvironment(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser, dto);
 			});
 		}
 	}
@@ -647,7 +650,7 @@ public class EnvironmentSampleFacadeEjb
 		EnvironmentSampleDto dto,
 		EnvironmentSampleDto existingDto,
 		EnvironmentSample entity,
-		Pseudonymizer pseudonymizer) {
+		Pseudonymizer<EnvironmentSampleDto> pseudonymizer) {
 		if (existingDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
 			pseudonymizer.restorePseudonymizedValues(EnvironmentSampleDto.class, dto, existingDto, inJurisdiction);

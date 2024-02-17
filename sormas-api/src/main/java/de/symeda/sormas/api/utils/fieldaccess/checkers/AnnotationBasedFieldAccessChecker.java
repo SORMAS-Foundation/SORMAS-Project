@@ -20,19 +20,22 @@ import java.lang.reflect.Field;
 
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 
-public abstract class AnnotationBasedFieldAccessChecker implements FieldAccessChecker {
+public abstract class AnnotationBasedFieldAccessChecker<T> implements FieldAccessChecker<T> {
 
-	private Class<? extends Annotation> fieldAnnotation;
-	private Class<? extends Annotation> embeddedAnnotation;
+	private final Class<? extends Annotation> fieldAnnotation;
+	private final Class<? extends Annotation> embeddedAnnotation;
 	private final boolean hasRight;
+	private final SpecialAccessCheck<T> specialAccessCheck;
 
 	protected AnnotationBasedFieldAccessChecker(
 		Class<? extends Annotation> fieldAnnotation,
 		Class<? extends Annotation> embeddedAnnotation,
-		boolean hasRight) {
+		final boolean hasRight,
+		SpecialAccessCheck<T> specialAccessCheck) {
 		this.fieldAnnotation = fieldAnnotation;
 		this.embeddedAnnotation = embeddedAnnotation;
 		this.hasRight = hasRight;
+		this.specialAccessCheck = specialAccessCheck;
 	}
 
 	@Override
@@ -54,12 +57,12 @@ public abstract class AnnotationBasedFieldAccessChecker implements FieldAccessCh
 	}
 
 	@Override
-	public boolean hasRight() {
-		return hasRight;
+	public boolean hasRight(T object) {
+		return hasRight || specialAccessCheck.hasSpecialAccess(object);
 	}
 
-	public interface RightCheck {
+	public interface SpecialAccessCheck<T> {
 
-		boolean check(boolean inJurisdiction);
+		boolean hasSpecialAccess(T object);
 	}
 }

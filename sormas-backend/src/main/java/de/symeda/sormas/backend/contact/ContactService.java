@@ -2030,6 +2030,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		cq.multiselect(
 			contact.get(Contact.UUID),
+			contactQueryContext.getJoins().getCaze().get(Case.UUID),
 			contact.get(Contact.CONTACT_STATUS),
 			contact.get(Contact.DISEASE),
 			contact.get(Contact.CONTACT_CLASSIFICATION),

@@ -124,6 +124,7 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -2420,6 +2421,18 @@ public class TestDataCreator {
 		}
 
 		return beanTest.getEnvironmentSampleFacade().save(sample);
+	}
+
+	public SpecialCaseAccessDto createSpecialCaseAccess(
+		CaseReferenceDto caze,
+		UserReferenceDto assignedBy,
+		UserReferenceDto assignedTo,
+		Date endDateTime) {
+		SpecialCaseAccessDto specialCaseAccess = SpecialCaseAccessDto.build(caze, assignedBy);
+		specialCaseAccess.setAssignedTo(assignedTo);
+		specialCaseAccess.setEndDateTime(endDateTime);
+
+		return beanTest.getSpecialCaseAccessFacade().save(specialCaseAccess);
 	}
 
 	/**

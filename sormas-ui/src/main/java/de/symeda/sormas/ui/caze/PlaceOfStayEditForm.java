@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -190,6 +191,14 @@ public class PlaceOfStayEditForm extends AbstractEditForm<CaseDataDto> {
 		} else {
 			FieldHelper.removeItems(facilityCombo);
 			facilityCombo.setEnabled(false);
+		}
+	}
+
+	@Override
+	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		if (newFieldValue.getRegion() != null && newFieldValue.getRegion().getUuid() != newFieldValue.getResponsibleRegion().getUuid()) {
+			differentPlaceOfStayJurisdiction.setValue(true);
 		}
 	}
 }

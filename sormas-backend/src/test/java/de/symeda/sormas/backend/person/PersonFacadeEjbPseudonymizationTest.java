@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonExportDto;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -413,6 +416,47 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(exportedPerson.getBirthdate().getDateOfBirthDD(), is(1));
 
 		assertEquals(Optional.empty(), exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst());
+	}
+
+	@Test
+	public void tesGetPersonOfCaseWithSpecialAccess() {
+		person = createPerson();
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1);
+		creator
+			.createSpecialCaseAccess(caze.toReference(), nationalAdmin.toReference(), districtUser2.toReference(), DateHelper.addDays(new Date(), 1));
+		loginWith(districtUser2);
+
+		assertNotPseudonymized(getPersonFacade().getByUuid(person.getUuid()));
+		assertNotPseudonymized(getPersonFacade().getByUuids(Collections.singletonList(person.getUuid())).get(0));
+		assertNotPseudonymized(getPersonFacade().getAllAfter(new Date(0)).get(0));
+		assertThat(
+			getPersonFacade().getIndexList(new PersonCriteria().personAssociation(PersonAssociation.CASE), null, null, null).get(0).isPseudonymized(),
+			is(false));
+		assertThat(
+			getPersonFacade().getExportList(new PersonCriteria().personAssociation(PersonAssociation.CASE), 0, Integer.MAX_VALUE)
+				.get(0)
+				.getFirstName(),
+			is(person.getFirstName()));
+	}
+
+	@Test
+	public void tesGetContactPersonOfCaseWithSpecialAccess() {
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), creator.createPerson().toReference(), rdcf1);
+		creator
+			.createSpecialCaseAccess(caze.toReference(), nationalAdmin.toReference(), districtUser2.toReference(), DateHelper.addDays(new Date(), 1));
+
+		person = createPerson();
+		creator.createContact(districtUser1.toReference(), person.toReference(), caze, rdcf1);
+
+		loginWith(districtUser2);
+
+		assertNotPseudonymized(getPersonFacade().getByUuid(person.getUuid()));
+		assertNotPseudonymized(getPersonFacade().getByUuids(Collections.singletonList(person.getUuid())).get(0));
+		assertNotPseudonymized(
+			getPersonFacade().getAllAfter(new Date(0)).stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
+		assertThat(
+			getPersonFacade().getIndexList(new PersonCriteria().personAssociation(PersonAssociation.CASE), null, null, null).get(0).isPseudonymized(),
+			is(false));
 	}
 
 	private PersonDto createPerson() {

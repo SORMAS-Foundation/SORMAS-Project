@@ -168,6 +168,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -251,6 +252,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public CaseService() {
 		super(Case.class, DeletableEntityType.CASE);
@@ -1381,6 +1384,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> casePath = caseQueryContext.getRoot();
+		CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filterResponsible = null;
 		Predicate filter = null;
@@ -1450,14 +1454,16 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				case LABORATORY:
 					final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
 					final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
-					final SampleJoins joins = new SampleJoins(sampleRoot);
-					final Join cazeJoin = joins.getCaze();
-					sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+					final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+					final Join cazeJoin = sampleJoins.getCaze();
+					sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, sampleJoins)));
 					sampleSubQuery.select(sampleRoot.get(Sample.ID));
 					filter = or(cb, filter, cb.exists(sampleSubQuery));
 					break;
 				default:
 				}
+
+				filter = CriteriaBuilderHelper.or(cb, filter, specialCaseAccessService.createSpecialCaseAccessFilter(cb, joins.getSpecialCaseAccesses()));
 			}
 
 			// get all cases based on the user's contact association
@@ -1465,8 +1471,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				ContactQueryContext contactQueryContext =
-					new ContactQueryContext(cb, cq, new ContactJoins(caseQueryContext.getJoins().getContacts()));
-				filter = or(cb, filter, contactService.createUserFilterWithoutCase(contactQueryContext));
+					new ContactQueryContext(cb, cq, new ContactJoins(joins.getContacts()));
+				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterWithoutCase(contactQueryContext));
 			}
 
 			// users can only be assigned to a task when they have also access to the case

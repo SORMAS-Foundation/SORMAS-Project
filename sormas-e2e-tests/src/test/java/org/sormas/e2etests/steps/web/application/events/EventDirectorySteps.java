@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.LINKED_CASES_TO_THE_SELECTED_EVENT_POPUP;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.LINKED_CONTACTS_TO_THE_SELECTED_EVENT_POPUP;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
@@ -177,6 +178,7 @@ public class EventDirectorySteps implements En {
   private final List<String> oldEventUUIDs = new ArrayList<>();
   static Map<String, Integer> headersMap;
   public String createdEventUUID;
+  public static List<String> eventsUUID = new ArrayList<>();
 
   @Inject
   public EventDirectorySteps(
@@ -957,6 +959,12 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX);
           webDriverHelpers.clickWebElementByText(EVENT_MANAGEMENT_STATUS_COMBOBOX, "PENDING");
+        });
+
+    When(
+        "I collect uuid of the event",
+        () -> {
+          eventsUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
         });
     When(
         "I check if Event Management Status is set to {string}",

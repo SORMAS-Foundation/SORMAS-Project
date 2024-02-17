@@ -32,12 +32,13 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.uuid.HasUuid;
 
-public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable, HasUuid {
+public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable, HasUuid, IsCase {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -110,6 +111,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
 	private Sex sex;
+	@EmbeddedPersonalData
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Float completeness;
 	private Date quarantineTo;

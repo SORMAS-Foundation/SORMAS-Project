@@ -29,8 +29,8 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.share.SormasToSormasPseudonymizer;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
@@ -56,7 +56,7 @@ public class EventParticipantShareDataBuilder
 		EventParticipant eventParticipant,
 		ShareRequestInfo requestInfo,
 		boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		EventParticipantDto eventParticipantDto = getDto(eventParticipant, pseudonymizer);
 		dataBuilderHelper.pseudonymizePerson(eventParticipantDto.getPerson(), requestInfo);
@@ -65,9 +65,9 @@ public class EventParticipantShareDataBuilder
 	}
 
 	@Override
-	protected EventParticipantDto getDto(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
+	protected EventParticipantDto getDto(EventParticipant eventParticipant, SormasToSormasPseudonymizer pseudonymizer) {
 
-		EventParticipantDto eventParticipantDto = eventParticipantFacade.toPseudonymizedDto(eventParticipant, pseudonymizer);
+		EventParticipantDto eventParticipantDto = eventParticipantFacade.toPseudonymizedDto(eventParticipant, pseudonymizer.getPseudonymizer());
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventParticipantDto.setSormasToSormasOriginInfo(null);
@@ -83,19 +83,22 @@ public class EventParticipantShareDataBuilder
 
 	@Override
 	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		return getEventParticipantPreview(eventParticipant, pseudonymizer);
 	}
 
-	public SormasToSormasEventParticipantPreview getEventParticipantPreview(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
+	public SormasToSormasEventParticipantPreview getEventParticipantPreview(
+		EventParticipant eventParticipant,
+		SormasToSormasPseudonymizer pseudonymizer) {
 		SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
 
 		preview.setUuid(eventParticipant.getUuid());
 		preview.setPerson(dataBuilderHelper.getPersonPreview(eventParticipant.getPerson()));
 		preview.setEvent(EventFacadeEjb.toReferenceDto(eventParticipant.getEvent()));
 
-		pseudonymizer.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false, null);
+		pseudonymizer.<SormasToSormasEventParticipantPreview> getPseudonymizer()
+			.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false, null);
 
 		return preview;
 	}

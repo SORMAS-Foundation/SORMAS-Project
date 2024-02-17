@@ -11,7 +11,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class EventParticipantIndexDto extends PseudonymizableIndexDto implements Serializable {
+public class EventParticipantIndexDto extends PseudonymizableIndexDto implements IsEventParticipant, Serializable {
 
 	private static final long serialVersionUID = 1136399297437006739L;
 
@@ -35,6 +35,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	@PersonalData
 	@SensitiveData
 	private String firstName;
+	@PersonalData
 	@SensitiveData
 	private String lastName;
 	private Sex sex;
