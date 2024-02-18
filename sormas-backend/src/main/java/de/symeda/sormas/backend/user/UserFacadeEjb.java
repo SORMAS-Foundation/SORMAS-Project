@@ -926,20 +926,7 @@ public class UserFacadeEjb implements UserFacade {
 		}
 		return null;
 	}
-
-
-	@Override
-	public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
-		User user = userService.getByUserName(userName);
-		if (user != null && user.isActive()) {
-			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return getUserRoles(toDto(user));
-			}
-		}
-		return null;
-	}
-
-
+	
 	@Override
 	@PermitAll
 	//@RightsAllowed(UserRight._USER_EDIT)
