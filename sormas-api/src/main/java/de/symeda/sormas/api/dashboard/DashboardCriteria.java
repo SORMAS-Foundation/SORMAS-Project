@@ -97,7 +97,7 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 
 	public void setDateTo(Date dateTo) {
 		this.dateTo = dateTo;
-  	}
+  }
 
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
