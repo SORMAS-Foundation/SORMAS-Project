@@ -825,40 +825,9 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 			params = params.substring(1);
 
 			criteria.fromUrlParams(params);
-			updateFilterDates(criteria);
 		}
 		setCriteria(criteria);
 
 	}
 
-	public void updateFilterDates(DashboardCriteria criteria) {
-		NewDateFilterType dateFilterType = criteria.getDateFilterType();
-		if (dateFilterType == NewDateFilterType.TODAY) {
-			criteria.dateFrom(DateHelper.getStartOfDay(new Date()));
-			criteria.dateTo(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.YESTERDAY) {
-			criteria.dateFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1)));
-			criteria.dateTo(DateHelper.getEndOfDay(DateHelper.subtractDays(new Date(), 1)));
-		}
-		if (dateFilterType == NewDateFilterType.THIS_WEEK) {
-			criteria.dateFrom(DateHelper.getStartOfWeek(new Date()));
-			criteria.dateTo(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.LAST_WEEK) {
-			criteria.dateFrom(DateHelper.getStartOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
-			criteria.dateTo(DateHelper.getEndOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
-		}
-		if (dateFilterType == NewDateFilterType.THIS_YEAR) {
-			criteria.dateFrom(DateHelper.getStartOfWeek(DateHelper.getStartOfYear(new Date())));
-			criteria.dateTo(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.CUSTOM) {
-			criteria.dateFrom(criteria.getDateFrom());
-			criteria.dateTo(criteria.getDateTo());
-		}
-
-
-
-	}
 }

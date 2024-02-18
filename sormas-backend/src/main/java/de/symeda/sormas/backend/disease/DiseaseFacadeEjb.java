@@ -157,8 +157,8 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 		DashboardCriteria dashboardCriteria =
 				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType);
-		dashboardCriteria.setDateTo(toDate);
-		dashboardCriteria.setDateFrom(fromDate);
+				dashboardCriteria.setDateTo(toDate);
+				dashboardCriteria.setDateFrom(fromDate);
 
 		Map<Disease, Long> newCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
