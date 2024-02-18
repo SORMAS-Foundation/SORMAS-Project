@@ -879,7 +879,7 @@ public class UserFacadeEjb implements UserFacade {
 		return updatePassword;
 	}
 
-
+	@PermitAll
 	@Override
 	public String updateUserPassword(String uuid, String password, String currentPassword) {
 		String updatePassword = updatePassword(uuid, password);
@@ -888,7 +888,7 @@ public class UserFacadeEjb implements UserFacade {
 		return updatePassword;
 
 	}
-
+	@PermitAll
 	@Override
 	public String generatePassword() {
 		return userService.generatePassword();
@@ -914,6 +914,19 @@ public class UserFacadeEjb implements UserFacade {
 
 		return null;
 	}
+  
+	@PermitAll
+	@Override
+	public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
+		User user = userService.getByUserName(userName);
+		if (user != null && user.isActive()) {
+			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
+				return getUserRoles(toDto(user));
+			}
+		}
+		return null;
+	}
+
 
 	@Override
 	public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
@@ -937,7 +950,8 @@ public class UserFacadeEjb implements UserFacade {
 		}
 		return false;
 	}
-
+  
+	@PermitAll
 	@Override
 	public String checkPasswordStrength(String password) {
 		//Password must be between 8 and
@@ -1004,7 +1018,8 @@ public class UserFacadeEjb implements UserFacade {
 		} else
 			return passStrength;
 	};
-
+  
+	@PermitAll
 	@Override
 	public void removeUserAsSurveillanceAndContactOfficer(String userUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
