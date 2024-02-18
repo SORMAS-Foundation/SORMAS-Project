@@ -240,6 +240,30 @@ public class DashboardService {
 		return resultMap;
 	}
 
+	public Map<Disease, Long> getCaseCountByDisease2(DashboardCriteria dashboardCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+
+		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.groupBy(caze.get(Case.DISEASE));
+		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Long> resultMap = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+
+		return resultMap;
+	}
+
 	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

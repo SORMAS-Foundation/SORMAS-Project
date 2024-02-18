@@ -576,7 +576,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	public interface PredicateBuilder<ADO extends AbstractDomainObject> {
-
 		Predicate buildPredicate(CriteriaBuilder cb, Root<ADO> root, CriteriaQuery<?> cq);
 	}
 

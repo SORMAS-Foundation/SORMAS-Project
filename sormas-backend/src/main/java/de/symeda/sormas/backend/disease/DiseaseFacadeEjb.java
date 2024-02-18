@@ -156,7 +156,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 
 		DashboardCriteria dashboardCriteria =
-				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType);
+		dashboardCriteria.setDateTo(toDate);
+		dashboardCriteria.setDateFrom(fromDate);
 
 		Map<Disease, Long> newCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
@@ -236,9 +238,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 		//new cases
 		DashboardCriteria dashboardCriteria =
-				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
-
-
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType);
+		dashboardCriteria.setDateTo(toDate);
+		dashboardCriteria.setDateFrom(fromDate);
 
 		//Load count all dead/ fatalities
 		Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(dashboardCriteria);

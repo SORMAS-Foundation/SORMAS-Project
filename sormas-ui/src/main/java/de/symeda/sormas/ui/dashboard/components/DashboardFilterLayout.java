@@ -280,22 +280,59 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		addCustomComponent(dateFilterLayout, DATE_FILTER);
 
 		btnCurrentPeriod = ButtonHelper.createIconPopupButton(
-			"currentPeriod",
-			null,
-			new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
-			CssStyles.BUTTON_FILTER,
-			CssStyles.BUTTON_FILTER_LIGHT);
+				"currentPeriod",
+				null,
+				new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
 
 		Label lblComparedTo = new Label(I18nProperties.getCaption(Captions.dashboardComparedTo));
 		CssStyles.style(lblComparedTo, CssStyles.VSPACE_TOP_4, CssStyles.LABEL_BOLD);
 
 		btnComparisonPeriod = ButtonHelper.createIconPopupButton(
-			"comparisonPeriod",
-			null,
-			createDateComparisonButtonsLayout(),
-			ValoTheme.BUTTON_BORDERLESS,
-			CssStyles.BUTTON_FILTER,
-			CssStyles.BUTTON_FILTER_LIGHT);
+				"comparisonPeriod",
+				null,
+				createDateComparisonButtonsLayout(),
+				ValoTheme.BUTTON_BORDERLESS,
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
+
+		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
+
+		// Set initial date filter
+		CssStyles.style(btnThisWeek, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(btnThisWeek, CssStyles.BUTTON_FILTER_LIGHT);
+		CssStyles.style(btnPeriodBefore, CssStyles.BUTTON_FILTER_DARK);
+		CssStyles.removeStyles(btnPeriodBefore, CssStyles.BUTTON_FILTER_LIGHT);
+		activeComparisonButton = btnPeriodBefore;
+		currentDateFilterType = DateFilterType.THIS_WEEK;
+		setDateFilter(DateHelper.getStartOfWeek(new Date()), new Date());
+		updateComparisonButtons(NewDateFilterType.THIS_WEEK, DateHelper.getStartOfWeek(new Date()), new Date(), false);
+		btnCurrentPeriod.setCaption(btnThisWeek.getCaption());
+	}
+	public void createDateFilters2() {
+		HorizontalLayout dateFilterLayout = new HorizontalLayout();
+		dateFilterLayout.setSpacing(true);
+		CssStyles.style(dateFilterLayout, CssStyles.VSPACE_3);
+		addCustomComponent(dateFilterLayout, DATE_FILTER);
+
+		btnCurrentPeriod = ButtonHelper.createIconPopupButton(
+				"currentPeriod",
+				null,
+				new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
+
+		Label lblComparedTo = new Label(I18nProperties.getCaption(Captions.dashboardComparedTo));
+		CssStyles.style(lblComparedTo, CssStyles.VSPACE_TOP_4, CssStyles.LABEL_BOLD);
+
+		btnComparisonPeriod = ButtonHelper.createIconPopupButton(
+				"comparisonPeriod",
+				null,
+				createDateComparisonButtonsLayout(),
+				ValoTheme.BUTTON_BORDERLESS,
+				CssStyles.BUTTON_FILTER,
+				CssStyles.BUTTON_FILTER_LIGHT);
 
 		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
 

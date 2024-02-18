@@ -92,6 +92,15 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 	}
 
 
+
+	public void setDateFrom(Date dateFrom) {
+		this.dateFrom = dateFrom;
+	}
+
+	public void setDateTo(Date dateTo) {
+		this.dateTo = dateTo;
+  }
+  
 	public Date getDateFrom() {
 		return dateFrom;
 	}
@@ -100,15 +109,6 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 		return dateTo;
 	}
 
-	public DashboardCriteria dateFrom(Date dateFrom) {
-		this.dateFrom = dateFrom;
-		return this;
-	}
-
-	public DashboardCriteria dateTo(Date dateTo) {
-		this.dateTo = dateTo;
-		return this;
-	}
 
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;
