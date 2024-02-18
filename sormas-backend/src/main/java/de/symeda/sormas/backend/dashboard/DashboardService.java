@@ -225,7 +225,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);

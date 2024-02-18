@@ -242,7 +242,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		dashboardCriteria.setDateTo(toDate);
 		dashboardCriteria.setDateFrom(fromDate);
 
-
 		//Load count all dead/ fatalities
 		Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
