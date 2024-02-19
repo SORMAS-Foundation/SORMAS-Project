@@ -27,11 +27,12 @@ Feature: Sharing cases between environments tests
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
+    And I fill case UUID field for the last created case
     And I apply "Alle" to ownership combobox on Case Directory Page
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then Total number of read only fields should be 13
+    Then Total number of read only fields should be 14
     And I check if handover card contains shared with "s2s_2" information
     And I check if handover card contains "Geteilt von: S2S USER" information
     And I check if handover card contains "shared to be deleted after" information
@@ -1188,12 +1189,13 @@ Feature: Sharing cases between environments tests
     And I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
+    And I fill case UUID field for the last created case
     And I apply "Zum Besitz" to ownership combobox on Case Directory Page
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     And I click APPLY BUTTON in Case Directory Page
     And I select first created case for person from Cases list
     Then I check if editable fields are enabled for the case in view
-    And Total number of read only fields should be 21
+    And Total number of read only fields should be 22
     When I back to tab number 2
     And I click on "accept" shared case button with copied case description
     Then I check if Share request not found popup message appeared for DE
