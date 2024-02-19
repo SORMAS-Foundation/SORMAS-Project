@@ -36,6 +36,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
+import static org.sormas.e2etests.steps.api.TravelEntrySteps.travelEntriesUUID;
 import static org.sormas.e2etests.steps.web.application.events.EventDirectorySteps.eventsUUID;
 
 import com.opencsv.CSVParser;
@@ -193,6 +194,17 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getByEventUuid(eventsUUID.get(0)));
+        });
+
+    When(
+        "^I am search the last created travel Entry by API in task management directory$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT, travelEntriesUUID.get(0));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(travelEntriesUUID.get(0)));
         });
 
     When(

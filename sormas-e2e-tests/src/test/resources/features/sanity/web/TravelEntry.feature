@@ -196,6 +196,7 @@ Feature: Create travel entries
     When I fill the required fields in a new travel entry form with same person data
     And I click on Save button from the new travel entry form
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
     @tmsLink=SORDEV-7166 @env_de
     Scenario: Test Link DEA TravelEntries to cases
       Given I log in as a Admin User
@@ -401,6 +402,7 @@ Feature: Create travel entries
       When I back to deleted travel entry by url
       Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
       And I check if External ID input on travel entry edit page is disabled
+
   @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry
     Given I log in as a National User
@@ -468,10 +470,8 @@ Feature: Create travel entries
     @tmsLink=SORQA-669 @env_de @oldfake
     Scenario: Check automatic deletion of TRAVEL_ENTRY origin 16 days ago
       Given API: I create a new person
-
       And API: I check that POST call status code is 200
       Then API: I create a new travel entry with creation date 16 days ago
-
       And API: I check that POST call status code is 200
       Then I log in as a Admin User
       And I open the last created travel entry via api
@@ -490,7 +490,6 @@ Feature: Create travel entries
     Given API: I create a new person
     And API: I check that POST call status code is 200
     Then API: I create a new travel entry with creation date 13 days ago
-
     And API: I check that POST call status code is 200
     Then I log in as a Admin User
     And I open the last created travel entry via api
@@ -503,3 +502,19 @@ Feature: Create travel entries
     Then I click on the Entries button from navbar
     And I filter by last created travel entry via API
     And I check that number of displayed Travel Entry results is 1
+
+  @tmsLink=HSP-6605 @env_de
+  Scenario: Check that Travel Entry tasks display the correct region and district in Task Management Directory
+    Given API: I create a new person
+    And API: I check that POST call status code is 200
+    Then API: I create a new travel entry with creation date 2 days ago
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    And I open the last created travel entry via api
+    And I collect uuid of the new travel entry
+    And I click NEW TASK in Edit Travel Entry page
+    Then I fill a new task form with specific data for DE version
+    And I click on Save button in New Task form
+    Then I check if new task is displayed in Task tab on Edit Travel Entry page
+    And I click on the Tasks button from navbar
+    And I am search the last created travel Entry by API in task management directory
