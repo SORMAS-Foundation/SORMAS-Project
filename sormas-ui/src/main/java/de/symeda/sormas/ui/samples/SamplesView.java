@@ -111,7 +111,7 @@ public class SamplesView extends AbstractView implements HasName {
 			fileDownloader.extend(exportButton);
 		}
 
-		if ((isHumanSampleView() || isEnvironmentSampleView()) && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			addBulkModeButtons();
 		}
 	}
