@@ -12962,38 +12962,24 @@ INSERT INTO schema_version (version_number, comment) VALUES (541, 'Update enviro
 DO $$
   DECLARE
      rec RECORD;
-	 count_perform_bulk_actions_right integer;
   BEGIN
        FOR rec IN SELECT id FROM userroles
            LOOP
-               count_perform_bulk_actions_right = (SELECT count(*) FROM userroles_userrights WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS');
-               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES')) = true) THEN
-			       IF count_perform_bulk_actions_right = 0 THEN
-                      UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
-                   END IF;
-               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
-               END IF;
-
-               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT')) = true) THEN
-                  IF count_perform_bulk_actions_right = 0 THEN
-                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
+               IF NOT EXISTS (SELECT 1 FROM userroles_userrights WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS') THEN
+                  IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES')) = true) THEN
+                      UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS_CASE_SAMPLES';
                   END IF;
-               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT';
-               END IF;
-
-               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
-                  IF count_perform_bulk_actions_right = 0 THEN
-                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
+                  IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENT')) = true) THEN
+                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS_EVENT';
                   END IF;
-               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
-               END IF;
-
-               IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES')) = true) THEN
-                  IF count_perform_bulk_actions_right = 0 THEN
-                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+                  IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
+                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT';
                   END IF;
-               DELETE from userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+                  IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES')) = true) THEN
+                     UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS' WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES';
+                  END IF;
                END IF;
+               DELETE from userroles_userrights WHERE userrole_id = rec.id AND userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES', 'PERFORM_BULK_OPERATIONS_EVENT', 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES');
           END LOOP;
    END;
 
