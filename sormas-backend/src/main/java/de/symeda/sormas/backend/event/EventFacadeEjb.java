@@ -126,6 +126,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -180,6 +181,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public EventFacadeEjb() {
 	}
@@ -1541,6 +1544,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public boolean isInJurisdictionOrOwned(String uuid) {
 		return service.inJurisdictionOrOwned(service.getByUuid(uuid));
+	}
+
+	@Override
+	public boolean hasParticipantWithSpecialAccess(EventReferenceDto eventRef) {
+		return specialCaseAccessService.hasEventParticipantWithSpecialAccess(eventRef);
 	}
 
 	@LocalBean

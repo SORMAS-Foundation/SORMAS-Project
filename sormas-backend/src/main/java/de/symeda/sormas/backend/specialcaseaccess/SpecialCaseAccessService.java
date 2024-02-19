@@ -25,16 +25,21 @@ import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.contact.IsContact;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.IsEventParticipant;
 import de.symeda.sormas.api.immunization.IsImmunization;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
@@ -211,5 +216,39 @@ public class SpecialCaseAccessService extends BaseAdoService<SpecialCaseAccess> 
 		return cb.and(
 			cb.equal(from.get(SpecialCaseAccess.ASSIGNED_TO), getCurrentUser()),
 			cb.greaterThanOrEqualTo(from.get(SpecialCaseAccess.END_DATE_TIME), new Date()));
+	}
+
+	public boolean hasCurrentUserSpecialAccess(CaseReferenceDto caze) {
+		return exists(
+			(cb, from, cq) -> cb
+				.and(cb.equal(from.join(SpecialCaseAccess.CAZE).get(Case.UUID), caze.getUuid()), createSpecialCaseAccessFilter(cb, from)));
+	}
+
+	public boolean hasEventParticipantWithSpecialAccess(EventReferenceDto eventRef) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object> query = cb.createQuery(Object.class);
+		final Root<EventParticipant> from = query.from(EventParticipant.class);
+
+		final Subquery<EventParticipant> subquery = query.subquery(EventParticipant.class);
+		final Root<EventParticipant> subRootEntity = subquery.from(EventParticipant.class);
+		subquery.select(subRootEntity);
+		subquery.where(
+			cb.equal(subRootEntity.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventRef.getUuid()),
+			createSpecialCaseAccessFilter(cb, subRootEntity.join(EventParticipant.PERSON).join(Person.CASES).join(Case.SPECIAL_CASE_ACCESSES)));
+
+		final Predicate exists = cb.exists(subquery);
+		final Expression<Boolean> trueExpression = cb.literal(true);
+		final Expression<Boolean> falseExpression = cb.literal(false);
+		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
+
+		final TypedQuery<Object> typedQuery = em.createQuery(query);
+		typedQuery.setMaxResults(1);
+
+		try {
+			return (Boolean) typedQuery.getSingleResult();
+		} catch (NoResultException e) {
+			// h2 database entity manager throws "NoResultException" if the entity not found
+			return false;
+		}
 	}
 }

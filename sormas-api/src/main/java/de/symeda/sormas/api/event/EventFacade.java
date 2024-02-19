@@ -86,4 +86,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 		boolean eventManagementStatusChange);
 
 	boolean isInJurisdictionOrOwned(String uuid);
+
+	boolean hasParticipantWithSpecialAccess(EventReferenceDto eventRef);
 }
