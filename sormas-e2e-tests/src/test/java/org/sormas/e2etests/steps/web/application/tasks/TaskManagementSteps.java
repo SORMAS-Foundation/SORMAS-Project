@@ -99,8 +99,7 @@ public class TaskManagementSteps implements En {
 
     When(
         "^I click on the NEW TASK button$",
-        () ->{
-          webDriverHelpers.waitForSpinnerNotVisible(10);
+        () -> {
           webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX);
         });
 

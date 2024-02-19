@@ -211,7 +211,7 @@ public class CaseContactsView extends AbstractCaseView {
 		return topLayout;
 	}
 
-	public HorizontalLayout createStatusFilterBar() {
+	public HorizontalLayout createStatusFilterBar(boolean isEditAllowed) {
 
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
@@ -243,113 +243,115 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 		statusFilterLayout.setExpandRatio(statusFilterLayout.getComponent(statusFilterLayout.getComponentCount() - 1), 1);
 
-		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		if (isEditAllowed) {
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
-				Captions.bulkActions,
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-					ControllerProvider.getContactController()
-						.showBulkContactDataEditComponent(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, selectedItem -> {
-					ControllerProvider.getContactController()
-						.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, selectedItem -> {
-					ControllerProvider.getContactController()
-						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
-				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getContactController()
-						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), (AbstractContactGrid<?>) grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)));
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
+						ControllerProvider.getContactController()
+							.showBulkContactDataEditComponent(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
+					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, selectedItem -> {
+						ControllerProvider.getContactController()
+							.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
+					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, selectedItem -> {
+						ControllerProvider.getContactController()
+							.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
+					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getContactController()
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), (AbstractContactGrid<?>) grid);
+					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)));
 
-			statusFilterLayout.addComponent(bulkOperationsDropdown);
-			statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
-			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
-				Window popupWindow = VaadinUiUtil
-					.showPopupWindow(new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
-				popupWindow.addCloseListener(c -> {
-					grid.reload();
-				});
-			}, ValoTheme.BUTTON_PRIMARY);
-
-			statusFilterLayout.addComponent(importButton);
-			statusFilterLayout.setComponentAlignment(importButton, Alignment.MIDDLE_RIGHT);
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				statusFilterLayout.setExpandRatio(importButton, 1);
+				statusFilterLayout.addComponent(bulkOperationsDropdown);
+				statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
+				statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 			}
-		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
-			VerticalLayout exportLayout = new VerticalLayout();
-			exportLayout.setSpacing(true);
-			exportLayout.setMargin(true);
-			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			exportLayout.setWidth(200, Unit.PIXELS);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+				Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
+					Window popupWindow = VaadinUiUtil.showPopupWindow(
+						new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
+					popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
+					popupWindow.addCloseListener(c -> {
+						grid.reload();
+					});
+				}, ValoTheme.BUTTON_PRIMARY);
 
-			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
-
-			statusFilterLayout.addComponent(exportButton);
-			statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				statusFilterLayout.setExpandRatio(exportButton, 1);
+				statusFilterLayout.addComponent(importButton);
+				statusFilterLayout.setComponentAlignment(importButton, Alignment.MIDDLE_RIGHT);
+				if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					statusFilterLayout.setExpandRatio(importButton, 1);
+				}
 			}
-			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
-				grid,
-				() -> viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : null,
-				ExportEntityName.CONTACTS);
-			addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
-			StreamResource extendedExportStreamResource =
-				ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
-			addExportButton(
-				extendedExportStreamResource,
-				exportButton,
-				exportLayout,
-				VaadinIcons.FILE_TEXT,
-				Captions.exportDetailed,
-				Descriptions.descDetailedExportButton);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+				VerticalLayout exportLayout = new VerticalLayout();
+				exportLayout.setSpacing(true);
+				exportLayout.setMargin(true);
+				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+				exportLayout.setWidth(200, Unit.PIXELS);
 
-			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
-				ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria(), this::getSelectedRows);
-			}, ValoTheme.BUTTON_PRIMARY);
-			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
-			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(btnCustomExport);
+				PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 
-			// Warning if no filters have been selected
-			Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
-			warningLabel.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(warningLabel);
-			warningLabel.setVisible(false);
+				statusFilterLayout.addComponent(exportButton);
+				statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+				if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					statusFilterLayout.setExpandRatio(exportButton, 1);
+				}
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+					grid,
+					() -> viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : null,
+					ExportEntityName.CONTACTS);
+				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
-			exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
-		}
+				StreamResource extendedExportStreamResource =
+					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
+				addExportButton(
+					extendedExportStreamResource,
+					exportButton,
+					exportLayout,
+					VaadinIcons.FILE_TEXT,
+					Captions.exportDetailed,
+					Descriptions.descDetailedExportButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(this.getCaseRef().getUuid());
-			final ExpandableButton lineListingButton =
-				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow(caseDto));
+				Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+					ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria(), this::getSelectedRows);
+				}, ValoTheme.BUTTON_PRIMARY);
+				btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+				btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(btnCustomExport);
 
-			statusFilterLayout.addComponent(lineListingButton);
+				// Warning if no filters have been selected
+				Label warningLabel = new Label(I18nProperties.getString(Strings.infoExportNoFilters));
+				warningLabel.setWidth(100, Unit.PERCENTAGE);
+				exportLayout.addComponent(warningLabel);
+				warningLabel.setVisible(false);
 
-			final Button newButton = ButtonHelper.createIconButtonWithCaption(
-				Captions.contactNewContact,
-				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getContactController().create(this.getCaseRef()),
-				ValoTheme.BUTTON_PRIMARY);
+				exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
+			}
 
-			statusFilterLayout.addComponent(newButton);
-			statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+				final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(this.getCaseRef().getUuid());
+				final ExpandableButton lineListingButton =
+					new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow(caseDto));
+
+				statusFilterLayout.addComponent(lineListingButton);
+
+				final Button newButton = ButtonHelper.createIconButtonWithCaption(
+					Captions.contactNewContact,
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
+					VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getContactController().create(this.getCaseRef()),
+					ValoTheme.BUTTON_PRIMARY);
+
+				statusFilterLayout.addComponent(newButton);
+				statusFilterLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
+			}
 		}
 
 		statusFilterLayout.addStyleName("top-bar");
@@ -372,7 +374,7 @@ public class CaseContactsView extends AbstractCaseView {
 			grid = new ContactGrid(criteria, getClass(), ViewConfiguration.class);
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.addComponent(createFilterBar());
-			gridLayout.addComponent(createStatusFilterBar());
+			gridLayout.addComponent(createStatusFilterBar(isEditAllowed()));
 			gridLayout.addComponent(grid);
 			gridLayout.setMargin(true);
 			gridLayout.setSpacing(false);
@@ -395,7 +397,9 @@ public class CaseContactsView extends AbstractCaseView {
 		updateFilterComponents();
 
 		grid.reload();
-		setEditPermission(gridLayout);
+		if (!FacadeProvider.getCaseFacade().hasCurrentUserSpecialAccess(getCaseRef())) {
+			setEditPermission(gridLayout);
+		}
 	}
 
 	@Override
