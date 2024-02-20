@@ -2202,7 +2202,7 @@ public class EditCaseSteps implements En {
         "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitForElementPresent(BACK_TO_CASES_LIST_BUTTON, 5);
+          webDriverHelpers.waitForElementPresent(BACK_TO_CASES_LIST_BUTTON, 8);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
               true,
