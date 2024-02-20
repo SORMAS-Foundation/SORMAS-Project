@@ -287,7 +287,7 @@ public class EventsView extends AbstractView {
 
 		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT) && isDefaultViewType()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			{
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
@@ -536,7 +536,7 @@ public class EventsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT) && isDefaultViewType()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
 				EventGrid eventGrid = (EventGrid) grid;
 				List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
 				if (eventCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {

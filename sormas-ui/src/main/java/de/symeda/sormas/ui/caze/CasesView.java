@@ -714,7 +714,7 @@ public class CasesView extends AbstractView implements HasName {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
 				if (isBulkEditAllowed()) {
-					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -921,7 +921,7 @@ public class CasesView extends AbstractView implements HasName {
 
 	private boolean isBulkEditAllowed() {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
+			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
 				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser());
 	}
 

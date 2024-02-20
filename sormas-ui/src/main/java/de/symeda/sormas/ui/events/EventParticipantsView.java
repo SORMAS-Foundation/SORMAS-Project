@@ -210,7 +210,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		topLayout.addComponent(filterForm);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
