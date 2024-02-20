@@ -52,7 +52,6 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPL
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAVE_SAMPLE_BUTTON;
-import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SEE_SAMPLES_FOR_THIS_PERSON_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIFY_TEST_DETAILS_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIMEN_CONDITION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SPECIMEN_CONDITION_INPUT;
@@ -366,10 +365,6 @@ public class EditSampleSteps implements En {
               webDriverHelpers.getValueFromCombobox(SAMPLE_TYPE_COMBOBOX), option);
           softly.assertAll();
         });
-
-    When(
-        "I click on See samples for this person button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_PERSON_BUTTON_DE));
 
     When(
         "I set date sample was collected minus (\\d+) days ago on Sample Edit page",
