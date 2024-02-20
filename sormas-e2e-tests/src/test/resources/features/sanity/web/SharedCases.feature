@@ -112,7 +112,7 @@ Feature: Sharing cases between environments tests
     And I refresh current page
     Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
+    And I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 2
 
   @tmsLink=SORDEV-12095 @env_s2s_1
@@ -226,7 +226,7 @@ Feature: Sharing cases between environments tests
     And I check that number of displayed cases results is 1
     Then I click on the first Case ID from Case Directory
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
+    And I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 1
 
   @tmsLink=SORDEV-12095 @env_s2s_1
@@ -318,7 +318,7 @@ Feature: Sharing cases between environments tests
     And I refresh current page
     Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
+    Then I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 2
 
   @tmsLink=SORDEV-12095 @env_s2s_1

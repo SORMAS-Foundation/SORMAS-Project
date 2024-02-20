@@ -2328,6 +2328,12 @@ public class EditCaseSteps implements En {
                   SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
               break;
+            case "See samples for this case":
+              webDriverHelpers.scrollToElement(SEE_SAMPLES_FOR_THIS_CASE_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SEE_SAMPLES_FOR_THIS_CASE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_CASE_BUTTON);
+              break;
           }
         });
 
