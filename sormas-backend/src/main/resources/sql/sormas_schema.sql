@@ -12970,8 +12970,8 @@ DO $$
                       INSERT INTO userroles_userrights(userrole_id, userright, sys_period) values (rec.id, 'PERFORM_BULK_OPERATIONS', tstzrange(now(), null));
                   END IF;
                END IF;
-               DELETE from userroles_userrights WHERE userrole_id = rec.id AND userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES', 'PERFORM_BULK_OPERATIONS_EVENT', 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES');
-          END LOOP;
+           END LOOP;
+       DELETE from userroles_userrights WHERE userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES', 'PERFORM_BULK_OPERATIONS_EVENT', 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES');
    END;
 
 $$ LANGUAGE plpgsql;
