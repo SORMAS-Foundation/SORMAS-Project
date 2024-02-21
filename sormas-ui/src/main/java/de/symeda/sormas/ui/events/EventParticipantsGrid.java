@@ -59,7 +59,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {

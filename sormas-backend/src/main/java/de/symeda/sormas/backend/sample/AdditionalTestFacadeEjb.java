@@ -118,10 +118,9 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	private List<AdditionalTestDto> toPseudonymizedDtos(List<AdditionalTest> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		List<AdditionalTestDto> dtos =
-			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
-		return dtos;
+		Pseudonymizer<AdditionalTestDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+
+		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return service.getAllActiveUuids(user);
 	}
 
-	public AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer) {
+	public AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer<AdditionalTestDto> pseudonymizer) {
 
 		if (source == null) {
 			return null;
@@ -149,7 +148,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return convertToDto(source, pseudonymizer, service.inJurisdictionOrOwned(source));
 	}
 
-	private AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	private static AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer<AdditionalTestDto> pseudonymizer, boolean inJurisdiction) {
 
 		AdditionalTestDto dto = toDto(source);
 		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, inJurisdiction, null);

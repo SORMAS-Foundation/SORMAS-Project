@@ -73,6 +73,7 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
@@ -85,7 +86,7 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudeP
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
-public class CaseDataDto extends SormasToSormasShareableDto {
+public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 	private static final long MILLISECONDS_30_DAYS = 30L * 24L * 60L * 60L * 1000L;
@@ -342,6 +343,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private String healthFacilityDetails;
 
 	@Valid
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private HealthConditionsDto healthConditions;
 
 	private YesNoUnknown pregnant;
@@ -408,6 +411,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Valid
 	private HospitalizationDto hospitalization;
 	@Valid
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SymptomsDto symptoms;
 	@Valid
 	private EpiDataDto epiData;
@@ -416,6 +421,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Valid
 	private ClinicalCourseDto clinicalCourse;
 	@Valid
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private MaternalHistoryDto maternalHistory;
 	@Size(max = 32, message = Validations.textTooLong)
 	private String creationVersion;

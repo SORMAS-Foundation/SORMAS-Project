@@ -72,7 +72,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		DTO existingDto = toDto(existingAdo);
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<DTO> pseudonymizer = createPseudonymizer(existingAdo);
 		restorePseudonymizedDto(dto, existingDto, existingAdo, pseudonymizer);
 
 		validate(dto);

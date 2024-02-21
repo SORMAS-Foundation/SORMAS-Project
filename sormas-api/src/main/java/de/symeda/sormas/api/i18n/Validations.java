@@ -184,6 +184,7 @@ public interface Validations {
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyIntegerNumbersAllowed = "onlyIntegerNumbersAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
+	String pastDate = "pastDate";
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";

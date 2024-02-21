@@ -208,6 +208,9 @@ public interface Captions {
 	String areaAllAreas = "areaAllAreas";
 	String areaArchivedAreas = "areaArchivedAreas";
 	String assign = "assign";
+	String assignedBy = "assignedBy";
+	String assignedTo = "assignedTo";
+	String assignmentDate = "assignmentDate";
 	String assignToMe = "assignToMe";
 	String BAGExport = "BAGExport";
 	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
@@ -235,6 +238,7 @@ public interface Captions {
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkRestore = "bulkRestore";
 	String bulkSkipped = "bulkSkipped";
+	String bulkSpecialCaseAccess = "bulkSpecialCaseAccess";
 	String bulkSuccessful = "bulkSuccessful";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
@@ -588,6 +592,7 @@ public interface Captions {
 	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String caze = "caze";
 	String changeDate = "changeDate";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
@@ -1066,6 +1071,7 @@ public interface Captions {
 	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
 	String edit = "edit";
+	String endDateTime = "endDateTime";
 	String endOfProcessingDate = "endOfProcessingDate";
 	String Environment = "Environment";
 	String Environment_description = "Environment.description";
@@ -1111,6 +1117,7 @@ public interface Captions {
 	String EnvironmentSample_positivePathogenTests = "EnvironmentSample.positivePathogenTests";
 	String EnvironmentSample_receivalDate = "EnvironmentSample.receivalDate";
 	String EnvironmentSample_received = "EnvironmentSample.received";
+	String EnvironmentSample_reportingUser = "EnvironmentSample.reportingUser";
 	String EnvironmentSample_requestedPathogenTests = "EnvironmentSample.requestedPathogenTests";
 	String EnvironmentSample_sampleDateTime = "EnvironmentSample.sampleDateTime";
 	String EnvironmentSample_sampleMaterial = "EnvironmentSample.sampleMaterial";
@@ -1289,6 +1296,7 @@ public interface Captions {
 	String EventParticipant_person = "EventParticipant.person";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String EventParticipant_region = "EventParticipant.region";
+	String EventParticipant_reportingUser = "EventParticipant.reportingUser";
 	String EventParticipant_responsibleDistrict = "EventParticipant.responsibleDistrict";
 	String EventParticipant_responsibleRegion = "EventParticipant.responsibleRegion";
 	String EventParticipant_sex = "EventParticipant.sex";
@@ -1583,6 +1591,7 @@ public interface Captions {
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_region = "Immunization.region";
 	String Immunization_reportDate = "Immunization.reportDate";
+	String Immunization_reportingUser = "Immunization.reportingUser";
 	String Immunization_responsibleCommunity = "Immunization.responsibleCommunity";
 	String Immunization_responsibleDistrict = "Immunization.responsibleDistrict";
 	String Immunization_responsibleRegion = "Immunization.responsibleRegion";
@@ -2216,6 +2225,9 @@ public interface Captions {
 	String SormasToSormasShareRequestIndex_organizationName = "SormasToSormasShareRequestIndex.organizationName";
 	String SormasToSormasShareRequestIndex_uuid = "SormasToSormasShareRequestIndex.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
+	String specailCaseAccessNoAccessGranted = "specailCaseAccessNoAccessGranted";
+	String SpecialCaseAccess = "SpecialCaseAccess";
+	String specialCaseAccessNew = "specialCaseAccessNew";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";
@@ -2575,6 +2587,7 @@ public interface Captions {
 	String TravelEntry_quarantineTypeDetails = "TravelEntry.quarantineTypeDetails";
 	String TravelEntry_recovered = "TravelEntry.recovered";
 	String TravelEntry_reportDate = "TravelEntry.reportDate";
+	String TravelEntry_reportingUser = "TravelEntry.reportingUser";
 	String TravelEntry_responsibleCommunity = "TravelEntry.responsibleCommunity";
 	String TravelEntry_responsibleDistrict = "TravelEntry.responsibleDistrict";
 	String TravelEntry_responsibleRegion = "TravelEntry.responsibleRegion";

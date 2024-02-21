@@ -340,12 +340,12 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
-	protected void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected void pseudonymizeDto(ADO source, DTO dto, Pseudonymizer<DTO> pseudonymizer, boolean inJurisdiction) {
 		// we do not pseudonymize infra data
 	}
 
 	@Override
-	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer<DTO> pseudonymizer) {
 		// we do not pseudonymize infra data
 	}
 

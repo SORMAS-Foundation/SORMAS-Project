@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
@@ -90,6 +91,8 @@ public class CronService {
 	private CentralInfraSyncFacade centralInfraSyncFacade;
 	@EJB
 	private CoreEntityDeletionService coreEntityDeletionService;
+	@EJB
+	private SpecialCaseAccessFacadeEjbLocal specialCaseAccessFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -270,7 +273,7 @@ public class CronService {
 		if (daysAfterImmunizationsGetsArchived >= 1) {
 			immunizationFacade.archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived);
 		}
-	}
+}
 
 	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void archiveTravelEntry() {
@@ -282,4 +285,8 @@ public class CronService {
 		}
 	}
 
+	@Schedule(hour = "2", minute = "30", persistent = false)
+	public void deleteExpiredSpecialCaseAccesses() {
+		specialCaseAccessFacade.deleteExpiredSpecialCaseAccesses();
+	}
 }

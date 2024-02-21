@@ -59,16 +59,6 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 
 	private String externalId;
 
-	public static SurveillanceReportDto build(CaseReferenceDto caze, UserReferenceDto reportingUser) {
-		SurveillanceReportDto surveillanceReport = new SurveillanceReportDto();
-
-		surveillanceReport.setUuid(DataHelper.createUuid());
-		surveillanceReport.setCaze(caze);
-		surveillanceReport.setReportingUser(reportingUser);
-
-		return surveillanceReport;
-	}
-
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 
@@ -91,6 +81,16 @@ public class SurveillanceReportDto extends SormasToSormasShareableDto {
 	private String notificationDetails;
 
 	private CaseReferenceDto caze;
+
+	public static SurveillanceReportDto build(CaseReferenceDto caze, UserReferenceDto reportingUser) {
+		SurveillanceReportDto surveillanceReport = new SurveillanceReportDto();
+
+		surveillanceReport.setUuid(DataHelper.createUuid());
+		surveillanceReport.setCaze(caze);
+		surveillanceReport.setReportingUser(reportingUser);
+
+		return surveillanceReport;
+	}
 
 	public ReportingType getReportingType() {
 		return reportingType;

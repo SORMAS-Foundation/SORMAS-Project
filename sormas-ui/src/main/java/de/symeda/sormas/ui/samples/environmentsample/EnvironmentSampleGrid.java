@@ -157,7 +157,7 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 				EnvironmentSampleIndexDto.UUID,
 				e -> ControllerProvider.getEnvironmentSampleController().navigateToSample(e.getUuid())));
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {

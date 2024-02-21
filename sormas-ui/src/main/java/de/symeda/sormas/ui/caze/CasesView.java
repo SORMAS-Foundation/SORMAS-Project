@@ -83,6 +83,7 @@ import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
@@ -713,7 +714,7 @@ public class CasesView extends AbstractView implements HasName {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
 				if (isBulkEditAllowed()) {
-					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -820,6 +821,16 @@ public class CasesView extends AbstractView implements HasName {
 										items -> ControllerProvider.getCaseController()
 											.linkSelectedCasesToEvent(items, (AbstractCaseGrid<?>) grid))));
 						}
+
+						if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
+							menuBarItems.add(
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkSpecialCaseAccess),
+									VaadinIcons.RASTER_LOWER_LEFT,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getSpecialCaseAccessController()
+											.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
+						}
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
@@ -910,7 +921,7 @@ public class CasesView extends AbstractView implements HasName {
 
 	private boolean isBulkEditAllowed() {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
+			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
 				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser());
 	}
 

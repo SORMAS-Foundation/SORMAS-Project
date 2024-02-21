@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_DE_ARCHIVE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_EDIT_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_MODE_SUCCESS_IMAGE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_OPERATION_PROGRESS_BAR;
@@ -516,7 +517,15 @@ public class CaseDirectorySteps implements En {
 
     And(
         "I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_CREATE_QUARANTINE_ORDER));
+        () -> {
+          String languageSample =
+              webDriverHelpers.getTextFromWebElement(By.cssSelector(".v-label.v-widget.h1"));
+          if (languageSample.equalsIgnoreCase("Fallverzeichnis")) {
+            webDriverHelpers.clickOnWebElementBySelector(BULK_CREATE_QUARANTINE_ORDER_DE);
+          } else if (languageSample.equalsIgnoreCase("Case Directory")) {
+            webDriverHelpers.clickOnWebElementBySelector(BULK_CREATE_QUARANTINE_ORDER);
+          }
+        });
 
     And(
         "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory",
@@ -796,9 +805,18 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) ->
             webDriverHelpers.selectFromCombobox(
                 CASE_DISEASE_VARIANT_FILTER_COMBOBOX, diseaseFilterOption));
+
     And(
         "I click SHOW MORE FILTERS button on Case directory page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
+        () -> {
+          String showMoreLessFilterCaption =
+              webDriverHelpers.getTextFromWebElement(
+                  By.cssSelector("#showHideMoreFilters > span > .v-button-caption"));
+
+          if (showMoreLessFilterCaption.equalsIgnoreCase("Mehr Filter anzeigen")
+              || showMoreLessFilterCaption.equalsIgnoreCase("Show More Filters"))
+            webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS);
+        });
 
     Then(
         "I apply Outcome of case filter {string} on Case directory page",

@@ -6,7 +6,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements IsImmunization, Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "Immunization";
 

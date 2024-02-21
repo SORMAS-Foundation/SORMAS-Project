@@ -62,8 +62,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.BirthDateDto;
-import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -81,9 +79,9 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.IsEventParticipant;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -99,6 +97,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -133,6 +132,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -178,6 +178,8 @@ public class EventParticipantFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -314,12 +316,10 @@ public class EventParticipantFacadeEjb
 
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
-		User user = userService.getCurrentUser();
-
 		EventReferenceDto eventReferenceDto = dto.getEvent();
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<EventParticipantDto> pseudonymizer = createPseudonymizer(existingParticipant);
 		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
 		validate(dto);
@@ -668,8 +668,8 @@ public class EventParticipantFacadeEjb
 			}
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdictionOrOwned(), null);
+		Pseudonymizer<EventParticipantIndexDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(indexList));
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, EventParticipantIndexDto::getInJurisdictionOrOwned, null);
 
 		return indexList;
 	}
@@ -792,8 +792,8 @@ public class EventParticipantFacadeEjb
 
 		List<EventParticipantListEntryDto> result = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
+		Pseudonymizer<EventParticipantListEntryDto> pseudonymizer = createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(result));
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, EventParticipantListEntryDto::getInJurisdiction, null);
 
 		return result;
 	}
@@ -828,6 +828,7 @@ public class EventParticipantFacadeEjb
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.ID),
+			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.ID),
 			person.get(Person.UUID),
 			eventParticipant.get(EventParticipant.UUID),
@@ -949,7 +950,8 @@ public class EventParticipantFacadeEjb
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer<EventParticipantExportDto> pseudonymizer =
+				createGenericPlaceholderPseudonymizer(createSpecialAccessChecker(eventParticipantResultList));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
@@ -1015,9 +1017,7 @@ public class EventParticipantFacadeEjb
 				Optional.ofNullable(eventParticipantContactCount.get(exportDto.getEventParticipantUuid())).ifPresent(exportDto::setContactCount);
 
 				pseudonymizer.pseudonymizeDto(EventParticipantExportDto.class, exportDto, inJurisdiction, (c) -> {
-					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDtoCollection(EmbeddedSampleExportDto.class, c.getEventParticipantSamples(), s -> inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(BurialInfoDto.class, c.getBurialInfo(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeEmbeddedDtoCollection(EmbeddedSampleExportDto.class, c.getEventParticipantSamples(), inJurisdiction, c);
 				});
 			}
 		}
@@ -1112,9 +1112,7 @@ public class EventParticipantFacadeEjb
 			return null;
 		}
 
-		return service.getFirst(criteria)
-			.map(e -> toPseudonymizedDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
-			.orElse(null);
+		return service.getFirst(criteria).map(e -> toPseudonymizedDto(e, createGenericPlaceholderPseudonymizer())).orElse(null);
 	}
 
 	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
@@ -1143,15 +1141,31 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer, boolean inJurisdiction) {
+	protected Pseudonymizer<EventParticipantDto> createPseudonymizer(List<EventParticipant> eventParticipants) {
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(eventParticipants));
+	}
+
+	private <T extends IsEventParticipant> SpecialAccessCheck<T> createSpecialAccessChecker(
+		Collection<? extends IsEventParticipant> eventParticipants) {
+		List<String> withSpecialAccess = specialCaseAccessService.getEventParticipantUuidsWithSpecialAccess(eventParticipants);
+
+		return ep -> withSpecialAccess.contains(ep.getUuid());
+	}
+
+	@Override
+	protected void pseudonymizeDto(
+		EventParticipant source,
+		EventParticipantDto dto,
+		Pseudonymizer<EventParticipantDto> pseudonymizer,
+		boolean inJurisdiction) {
 
 		if (source != null) {
 			validate(dto);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, (ep) -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), ep::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), userService.getCurrentUser(), ep::setReportingUser, ep);
 			});
-			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
+			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeEmbeddedDto(LocationDto.class, l, inJurisdiction, dto));
 		}
 	}
 
@@ -1159,7 +1173,7 @@ public class EventParticipantFacadeEjb
 		EventParticipantDto dto,
 		EventParticipantDto originalDto,
 		EventParticipant originalEventParticipant,
-		Pseudonymizer pseudonymizer) {
+		Pseudonymizer<EventParticipantDto> pseudonymizer) {
 
 		if (originalDto != null) {
 			pseudonymizer
@@ -1267,7 +1281,7 @@ public class EventParticipantFacadeEjb
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = createPseudonymizer();
+		Pseudonymizer<SimilarEventParticipantDto> pseudonymizer = createGenericPseudonymizer(createSpecialAccessChecker(participants));
 		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, SimilarEventParticipantDto::getInJurisdiction, null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {

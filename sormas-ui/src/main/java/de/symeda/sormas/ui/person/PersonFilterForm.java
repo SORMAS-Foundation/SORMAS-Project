@@ -154,11 +154,11 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 
 		// Disable fields according to user & jurisdiction
 		if (userJurisdictionLevel == JurisdictionLevel.DISTRICT) {
-			clearAndDisableFields(districtFilter);
+			disableFields(districtFilter);
 		} else if (userJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
-			clearAndDisableFields(districtFilter, communityFilter);
+			disableFields(districtFilter, communityFilter);
 		} else if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			clearAndDisableFields(districtFilter, communityFilter);
+			disableFields(districtFilter, communityFilter);
 		}
 
 		ComboBox birthDateDD = getField(PersonCriteria.BIRTHDATE_DD);

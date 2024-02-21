@@ -29,8 +29,8 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.share.SormasToSormasPseudonymizer;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
-import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
@@ -56,7 +56,7 @@ public class SurveillanceReportShareDataBuilder
 		SurveillanceReport report,
 		ShareRequestInfo requestInfo,
 		boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		SormasToSormasPseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		SurveillanceReportDto reportDto = getDto(report, pseudonymizer);
 
 		SormasToSormasExternalMessageDto externalMessage = null;
@@ -68,8 +68,8 @@ public class SurveillanceReportShareDataBuilder
 	}
 
 	@Override
-	protected SurveillanceReportDto getDto(SurveillanceReport surveillanceReport, Pseudonymizer pseudonymizer) {
-		SurveillanceReportDto report = surveillanceReportFacade.toPseudonymizedDto(surveillanceReport, pseudonymizer);
+	protected SurveillanceReportDto getDto(SurveillanceReport surveillanceReport, SormasToSormasPseudonymizer pseudonymizer) {
+		SurveillanceReportDto report = surveillanceReportFacade.toPseudonymizedDto(surveillanceReport, pseudonymizer.getPseudonymizer());
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		report.setSormasToSormasOriginInfo(null);
