@@ -22,7 +22,6 @@ import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerat
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -78,6 +77,7 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.MenuBarHelper.MenuBarItem;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
@@ -93,7 +93,6 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 
 	private EventParticipantsGrid grid;
 	private Button addButton;
-	private Button btnEnterBulkEditMode;
 	private MenuBar bulkOperationsDropdown;
 	private DetailSubComponentWrapper gridLayout;
 	private Button activeStatusButton;
@@ -117,84 +116,6 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		topLayout.setSpacing(true);
 		topLayout.setWidth("100%");
 
-		VerticalLayout exportLayout = new VerticalLayout();
-		{
-			exportLayout.setSpacing(true);
-			exportLayout.setMargin(true);
-			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			exportLayout.setWidth(250, Unit.PIXELS);
-		}
-
-		// import
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
-			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
-				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventParticipantImportLayout(getEventRef()));
-				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
-				popupWindow.addCloseListener(c -> this.grid.reload());
-			}, ValoTheme.BUTTON_PRIMARY);
-			if (shouldDisableButton()) {
-				importButton.setEnabled(false);
-			}
-
-			addHeaderComponent(importButton);
-		}
-
-		// export
-		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
-		if (shouldDisableButton()) {
-			exportPopupButton.setEnabled(false);
-		}
-		addHeaderComponent(exportPopupButton);
-
-		{
-			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
-				grid,
-				() -> this.grid.getSelectionModel() instanceof MultiSelectionModelImpl ? this.grid.asMultiSelect().getSelectedItems() : null,
-				ExportEntityName.EVENT_PARTICIPANTS);
-			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
-		}
-
-		{
-			StreamResource extendedExportStreamResource =
-				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, null);
-
-			addExportButton(
-				extendedExportStreamResource,
-				exportPopupButton,
-				exportLayout,
-				VaadinIcons.FILE_TEXT,
-				Captions.exportDetailed,
-				Descriptions.descDetailedExportButton);
-		}
-
-		{
-			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
-				Window customExportWindow = VaadinUiUtil.createPopupWindow();
-
-				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
-					ExportType.EVENT_PARTICIPANTS,
-					ImportExportUtils.getEventParticipantExportProperties(
-						EventParticipantDownloadUtil::getPropertyCaption,
-						FacadeProvider.getConfigFacade().getCountryLocale()),
-					customExportWindow::close);
-				customExportsLayout.setExportCallback(
-					(exportConfig) -> Page.getCurrent()
-						.open(
-							EventParticipantDownloadUtil
-								.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, exportConfig),
-							null,
-							true));
-				customExportWindow.setWidth(1024, Unit.PIXELS);
-				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
-				customExportWindow.setContent(customExportsLayout);
-				UI.getCurrent().addWindow(customExportWindow);
-				exportPopupButton.setPopupVisible(false);
-			}, ValoTheme.BUTTON_PRIMARY);
-			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
-			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
-			exportLayout.addComponent(btnCustomExport);
-		}
-
 		filterForm = new EventParticipantsFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!filterForm.hasFilter()) {
@@ -209,106 +130,6 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 
 		topLayout.addComponent(filterForm);
 
-		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			topLayout.setWidth(100, Unit.PERCENTAGE);
-
-			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
-			if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
-				bulkActions
-					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
-						grid.bulkActionHandler(items -> {
-							EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
-							ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
-						}, true);
-					}));
-				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
-						grid.bulkActionHandler(items -> {
-							ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, grid, () -> grid.reload());
-						}, true);
-					}));
-				}
-				if (isDocGenerationAllowed()) {
-					bulkActions.add(
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
-							grid.bulkActionHandler(items -> {
-								List<EventParticipantReferenceDto> references = grid.asMultiSelect()
-									.getSelectedItems()
-									.stream()
-									.map(EventParticipantIndexDto::toReference)
-									.collect(Collectors.toList());
-								if (references.size() == 0) {
-									new Notification(
-										I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
-										I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
-										Notification.Type.WARNING_MESSAGE,
-										false).show(Page.getCurrent());
-
-									return;
-								}
-
-								EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
-
-								ControllerProvider.getDocGenerationController()
-									.showBulkEventParticipantQuarantineOrderDocumentDialog(references, eventDto.getDisease());
-							});
-						}));
-				}
-			} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
-					grid.bulkActionHandler(items -> {
-						ControllerProvider.getEventParticipantController().restoreSelectedEventParticipants(items, grid, () -> grid.reload());
-					}, true);
-				}));
-			}
-
-			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
-			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
-
-			topLayout.addComponent(bulkOperationsDropdown);
-			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-
-			btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-			addHeaderComponent(btnEnterBulkEditMode);
-
-			Button btnLeaveBulkEditMode =
-				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-
-			if (shouldDisableButton()) {
-				btnEnterBulkEditMode.setEnabled(false);
-				btnLeaveBulkEditMode.setEnabled(false);
-				bulkOperationsDropdown.setEnabled(false);
-			}
-			addHeaderComponent(btnLeaveBulkEditMode);
-
-			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
-				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setInEagerMode(true);
-				btnEnterBulkEditMode.setVisible(false);
-				btnLeaveBulkEditMode.setVisible(true);
-				grid.reload();
-			});
-			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
-				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setInEagerMode(false);
-				btnLeaveBulkEditMode.setVisible(false);
-				btnEnterBulkEditMode.setVisible(true);
-				navigateTo(criteria);
-			});
-
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
-				.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
-			addHeaderComponent(lineListingButton);
-			lineListingButton.setEnabled(allowActions());
-		}
-
-		topLayout.addStyleName(CssStyles.VSPACE_3);
 		return topLayout;
 	}
 
@@ -380,59 +201,98 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		actionButtonsLayout.setSpacing(true);
 
 		// Show active/archived/all dropdown
-		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
-
-			if (FacadeProvider.getFeatureConfigurationFacade()
-				.isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT_PARTICIPANT)) {
-				int daysAfterEventParticipantGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-					.getProperty(
-						FeatureType.AUTOMATIC_ARCHIVING,
-						DeletableEntityType.EVENT_PARTICIPANT,
-						FeatureTypeProperty.THRESHOLD_IN_DAYS,
-						Integer.class);
-				if (daysAfterEventParticipantGetsArchived > 0) {
-					relevanceStatusInfoLabel =
-						new Label(
-							VaadinIcons.INFO_CIRCLE.getHtml() + " "
-								+ String
-									.format(I18nProperties.getString(Strings.infoArchivedEventParticipants), daysAfterEventParticipantGetsArchived),
-							ContentMode.HTML);
-					relevanceStatusInfoLabel.setVisible(false);
-					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
-				}
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT_PARTICIPANT)) {
+			int daysAfterEventParticipantGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+				.getProperty(
+					FeatureType.AUTOMATIC_ARCHIVING,
+					DeletableEntityType.EVENT_PARTICIPANT,
+					FeatureTypeProperty.THRESHOLD_IN_DAYS,
+					Integer.class);
+			if (daysAfterEventParticipantGetsArchived > 0) {
+				relevanceStatusInfoLabel = new Label(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " "
+						+ String.format(I18nProperties.getString(Strings.infoArchivedEventParticipants), daysAfterEventParticipantGetsArchived),
+					ContentMode.HTML);
+				relevanceStatusInfoLabel.setVisible(false);
+				relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+				actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+				actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
 			}
-
-			eventParticipantRelevanceStatusFilter = buildRelevanceStatusFilter(
-				Captions.eventParticipantActiveEventParticipants,
-				Captions.eventParticipantArchivedEventParticipants,
-				Captions.eventParticipantActiveAndArchivedEventParticipants);
-
-			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
-				viewConfiguration.setRelevanceStatusChangedEvent(getEventRef().getUuid());
-				if (relevanceStatusInfoLabel != null) {
-					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
-				}
-				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-				navigateTo(criteria);
-			});
-			actionButtonsLayout.addComponent(eventParticipantRelevanceStatusFilter);
 		}
 
+		eventParticipantRelevanceStatusFilter = buildRelevanceStatusFilter(
+			Captions.eventParticipantActiveEventParticipants,
+			Captions.eventParticipantArchivedEventParticipants,
+			Captions.eventParticipantActiveAndArchivedEventParticipants);
+
+		eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
+			viewConfiguration.setRelevanceStatusChangedEvent(getEventRef().getUuid());
+			if (relevanceStatusInfoLabel != null) {
+				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+			}
+			criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		actionButtonsLayout.addComponent(eventParticipantRelevanceStatusFilter);
+
 		if (isEditAllowed) {
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			actionButtonsLayout.addComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+
+			if (shouldDisableButton()) {
+				btnEnterBulkEditMode.setEnabled(false);
+				btnLeaveBulkEditMode.setEnabled(false);
+				bulkOperationsDropdown.setEnabled(false);
+			}
+			actionButtonsLayout.addComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				grid.reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class).setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
+
+			// Bulk operation dropdown
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, getBulkActions());
+				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
+
+				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			}
+
+			addImportExportButtons(actionButtonsLayout);
+
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+				final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
+					.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
+				actionButtonsLayout.addComponent(lineListingButton);
+				lineListingButton.setEnabled(allowActions());
+
 				addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
 					ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
 				}, ValoTheme.BUTTON_PRIMARY);
 
 				actionButtonsLayout.addComponent(addButton);
 			}
-		}
 
-		statusFilterLayout.addComponent(actionButtonsLayout);
-		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.MIDDLE_RIGHT);
-		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+			statusFilterLayout.addComponent(actionButtonsLayout);
+			statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.MIDDLE_RIGHT);
+			statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+		}
 
 		return statusFilterLayout;
 	}
@@ -459,6 +319,133 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		}
 
 		return relevanceStatusFilter;
+	}
+
+	private List<MenuBarItem> getBulkActions() {
+		List<MenuBarItem> bulkActions = new ArrayList<>();
+		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
+			bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
+				grid.bulkActionHandler(items -> {
+					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+					ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
+				}, true);
+			}));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+				bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+					grid.bulkActionHandler(items -> {
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, grid, () -> grid.reload());
+					}, true);
+				}));
+			}
+			if (isDocGenerationAllowed()) {
+				bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+					grid.bulkActionHandler(items -> {
+						List<EventParticipantReferenceDto> references =
+							grid.asMultiSelect().getSelectedItems().stream().map(EventParticipantIndexDto::toReference).collect(Collectors.toList());
+						if (references.size() == 0) {
+							new Notification(
+								I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+								I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+								Notification.Type.WARNING_MESSAGE,
+								false).show(Page.getCurrent());
+
+							return;
+						}
+
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+
+						ControllerProvider.getDocGenerationController()
+							.showBulkEventParticipantQuarantineOrderDocumentDialog(references, eventDto.getDisease());
+					});
+				}));
+			}
+		} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
+				grid.bulkActionHandler(items -> {
+					ControllerProvider.getEventParticipantController().restoreSelectedEventParticipants(items, grid, () -> grid.reload());
+				}, true);
+			}));
+		}
+		return bulkActions;
+	}
+
+	private void addImportExportButtons(HorizontalLayout actionButtonsLayout) {
+		VerticalLayout exportLayout = new VerticalLayout();
+		{
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(250, Unit.PIXELS);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
+			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventParticipantImportLayout(getEventRef()));
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
+				popupWindow.addCloseListener(c -> this.grid.reload());
+			}, ValoTheme.BUTTON_PRIMARY);
+			if (shouldDisableButton()) {
+				importButton.setEnabled(false);
+			}
+
+			actionButtonsLayout.addComponent(importButton);
+		}
+
+		// export
+		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+		if (shouldDisableButton()) {
+			exportPopupButton.setEnabled(false);
+		}
+		actionButtonsLayout.addComponent(exportPopupButton);
+
+		{
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				grid,
+				() -> this.grid.getSelectionModel() instanceof MultiSelectionModelImpl ? this.grid.asMultiSelect().getSelectedItems() : null,
+				ExportEntityName.EVENT_PARTICIPANTS);
+			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
+		}
+
+		{
+			StreamResource extendedExportStreamResource =
+				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, null);
+
+			addExportButton(
+				extendedExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Descriptions.descDetailedExportButton);
+		}
+
+		{
+			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+				Window customExportWindow = VaadinUiUtil.createPopupWindow();
+
+				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
+					ExportType.EVENT_PARTICIPANTS,
+					ImportExportUtils.getEventParticipantExportProperties(
+						EventParticipantDownloadUtil::getPropertyCaption,
+						FacadeProvider.getConfigFacade().getCountryLocale()),
+					customExportWindow::close);
+				customExportsLayout.setExportCallback(
+					(exportConfig) -> Page.getCurrent()
+						.open(
+							EventParticipantDownloadUtil
+								.createExtendedEventParticipantExportResource(grid.getCriteria(), this::getSelectedRows, exportConfig),
+							null,
+							true));
+				customExportWindow.setWidth(1024, Unit.PIXELS);
+				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
+				customExportWindow.setContent(customExportsLayout);
+				UI.getCurrent().addWindow(customExportWindow);
+				exportPopupButton.setPopupVisible(false);
+			}, ValoTheme.BUTTON_PRIMARY);
+			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(btnCustomExport);
+		}
 	}
 
 	public void updateFilterComponents() {
