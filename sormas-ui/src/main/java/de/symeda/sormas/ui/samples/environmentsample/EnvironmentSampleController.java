@@ -25,6 +25,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.environment.EnvironmentDataView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -89,7 +91,7 @@ public class EnvironmentSampleController {
 		};
 	}
 
-	public CommitDiscardWrapperComponent<EnvironmentSampleEditForm> getEditComponent(EnvironmentSampleDto sample) {
+	public CommitDiscardWrapperComponent<EnvironmentSampleEditForm> getEditComponent(EnvironmentSampleDto sample, String oldViewName) {
 
 		EnvironmentSampleFacade environmentSampleFacade = FacadeProvider.getEnvironmentSampleFacade();
 		String sampleUuid = sample.getUuid();
@@ -128,12 +130,13 @@ public class EnvironmentSampleController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_DELETE)) {
-			editComponent.addDeleteWithReasonOrRestoreListener(
-				SamplesView.VIEW_NAME,
-				null,
-				I18nProperties.getString(Strings.entityEnvironmentSample),
-				sampleUuid,
-				FacadeProvider.getEnvironmentSampleFacade());
+			editComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
+				FacadeProvider.getEnvironmentSampleFacade().delete(sample.getUuid(), deleteDetails);
+				redirectToOldNavigationState(sample, oldViewName);
+			}, (deletionDetails) -> {
+				FacadeProvider.getEnvironmentSampleFacade().restore(sample.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityEnvironmentSample), FacadeProvider.getEnvironmentSampleFacade().isDeleted(sample.getUuid()));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -184,5 +187,22 @@ public class EnvironmentSampleController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewEnvironmentSample));
+	}
+
+	private void redirectToOldNavigationState(EnvironmentSampleDto dto, String oldViewName) {
+
+		if (oldViewName != null) {
+			String navigationState;
+			if (oldViewName.equals(EnvironmentDataView.VIEW_NAME)) {
+				navigationState = oldViewName + "/" + dto.getEnvironment().getUuid();
+			} else {
+				// Environment sample accessed from samples directory
+				navigationState = oldViewName;
+			}
+			UI.getCurrent().getNavigator().navigateTo(navigationState);
+		} else {
+			// Environment sample accessed by URL from any other view
+			UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
+		}
 	}
 }

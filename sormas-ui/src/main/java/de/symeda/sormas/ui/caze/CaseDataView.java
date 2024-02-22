@@ -22,8 +22,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -47,6 +45,7 @@ import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
+import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessSideComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -75,6 +74,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String SURVEILLANCE_REPORTS_LOC = "surveillanceReports";
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
+	public static final String SPECIAL_ACCESSES_LOC = "specialAccesses";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -110,7 +110,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			SURVEILLANCE_REPORTS_LOC,
 			DOCUMENTS_LOC,
 			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
-			EXTERNAL_EMAILS_LOC);
+			EXTERNAL_EMAILS_LOC,
+			SPECIAL_ACCESSES_LOC);
 
 		container.addComponent(layout);
 
@@ -140,9 +141,9 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE).disease(caze.getDisease()),
 				this::showUnsavedChangesPopup,
-				isEditAllowed);
-			SampleListComponentLayout sampleListComponentLayout =
-				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase), isEditAllowed);
+				isEditAllowed,
+				SampleAssociationType.CASE);
+			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null, isEditAllowed);
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
@@ -225,8 +226,13 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forCase(caze, isEditAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forCase(caze, isEditAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
+		}
+
+		if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
+			SpecialCaseAccessSideComponent specialAccessListComponent = new SpecialCaseAccessSideComponent(getCaseRef());
+			layout.addSidePanelComponent(new SideComponentLayout(specialAccessListComponent), SPECIAL_ACCESSES_LOC);
 		}
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);

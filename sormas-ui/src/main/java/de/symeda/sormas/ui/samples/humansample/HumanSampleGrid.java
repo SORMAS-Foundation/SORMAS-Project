@@ -62,7 +62,7 @@ public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriter
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(SamplesViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {

@@ -54,21 +54,21 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	@EJB
 	private UserService userService;
 
-	private List<Disease> activeDiseases = new ArrayList<>();
-	private List<Disease> inactiveDiseases = new ArrayList<>();
-	private List<Disease> primaryDiseases = new ArrayList<>();
-	private List<Disease> nonPrimaryDiseases = new ArrayList<>();
-	private List<Disease> caseSurveillanceDiseases = new ArrayList<>();
-	private List<Disease> aggregateReportingDiseases = new ArrayList<>();
-	private List<Disease> followUpEnabledDiseases = new ArrayList<>();
+	private static final List<Disease> activeDiseases = new ArrayList<>();
+	private static final List<Disease> inactiveDiseases = new ArrayList<>();
+	private static final List<Disease> primaryDiseases = new ArrayList<>();
+	private static final List<Disease> nonPrimaryDiseases = new ArrayList<>();
+	private static final List<Disease> caseSurveillanceDiseases = new ArrayList<>();
+	private static final List<Disease> aggregateReportingDiseases = new ArrayList<>();
+	private static final List<Disease> followUpEnabledDiseases = new ArrayList<>();
 
-	private Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
-	private Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Boolean> extendedClassificationDiseases = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Boolean> extendedClassificationMultiDiseases = new EnumMap<>(Disease.class);
 
-	private Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
-	private Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
-	private Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
-	private Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> followUpDurations = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> caseFollowUpDurations = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> eventParticipantFollowUpDurations = new EnumMap<>(Disease.class);
+	private static final Map<Disease, Integer> automaticSampleAssignmentThresholds = new EnumMap<>(Disease.class);
 
 	@Override
 	@PermitAll

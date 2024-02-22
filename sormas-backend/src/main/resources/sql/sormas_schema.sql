@@ -12880,4 +12880,102 @@ ALTER TABLE customizableenumvalue_history ADD COLUMN active boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (539, 'Add active column to customizable enum values #12804');
 
+-- 2024-01-18 Grant users special access to specific cases' personal data for a limited time #12758
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'GRANT_SPECIAL_CASE_ACCESS' FROM userroles WHERE userroles.linkeddefaultuserrole = 'ADMIN';
+
+CREATE TABLE IF NOT EXISTS specialcaseaccesses
+(
+    id                          bigint       not null,
+    uuid                        varchar(36)  not null unique,
+    changedate                  timestamp    not null,
+    creationdate                timestamp    not null,
+    change_user_id              bigint,
+    sys_period                  tstzrange    not null,
+    caze_id                     bigint       not null,
+    assignedto_id               bigint       not null,
+    assignedby_id               bigint       not null,
+    enddatetime                 timestamp    not null,
+    assignmentdate              timestamp    not null,
+    primary key (id)
+);
+
+ALTER TABLE specialcaseaccesses OWNER TO sormas_user;
+ALTER TABLE specialcaseaccesses ADD CONSTRAINT fk_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id);
+ALTER TABLE specialcaseaccesses ADD CONSTRAINT fk_assignedto_id FOREIGN KEY (assignedto_id) REFERENCES users (id);
+ALTER TABLE specialcaseaccesses ADD CONSTRAINT fk_assignedby_id FOREIGN KEY (assignedby_id) REFERENCES users (id);
+
+CREATE TABLE specialcaseaccesses_history (LIKE specialcaseaccesses);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON specialcaseaccesses
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'specialcaseaccesses_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON specialcaseaccesses
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('specialcaseaccesses_history', 'id');
+ALTER TABLE specialcaseaccesses_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (540, 'Grant users special access to specific cases'' personal data for a limited time #12758');
+
+-- 2024-02-14 Update environment sample deletion dependencies #12887
+DO
+$$
+    DECLARE
+        user_role_id BIGINT;
+        user_role_ur_id BIGINT;
+    BEGIN
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE urur.userright = 'ENVIRONMENT_DELETE'
+            LOOP
+                SELECT 1 FROM userroles_userrights
+                    WHERE userrole_id = user_role_id AND userright = 'ENVIRONMENT_SAMPLE_DELETE'
+                    INTO user_role_ur_id;
+
+                IF NOT FOUND THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright)
+                    VALUES (user_role_id, 'ENVIRONMENT_SAMPLE_DELETE');
+                    UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                END IF;
+            END LOOP;
+
+        FOR user_role_id IN SELECT DISTINCT(ur.id)
+                            FROM userroles ur
+                                     JOIN userroles_userrights urur ON ur.id = urur.userrole_id
+                            WHERE urur.userright = 'ENVIRONMENT_SAMPLE_DELETE'
+            LOOP
+                SELECT DISTINCT(userrole_id) FROM userroles_userrights
+                    WHERE userrole_id = user_role_id AND userright = 'ENVIRONMENT_PATHOGEN_TEST_DELETE'
+                    INTO user_role_ur_id;
+
+                IF NOT FOUND THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright)
+                    VALUES (user_role_id, 'ENVIRONMENT_PATHOGEN_TEST_DELETE');
+                    UPDATE userroles set changedate = now() WHERE id = user_role_id;
+                END IF;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (541, 'Update environment sample deletion dependencies #12887');
+
+-- 2024-02-09 Remove entity specific PERFORM_BULK_OPERATIONS user rights #10994
+DO $$
+  DECLARE
+     rec RECORD;
+  BEGIN
+       FOR rec IN SELECT id FROM userroles
+           LOOP
+               IF NOT EXISTS (SELECT 1 FROM userroles_userrights WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS') THEN
+                  IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES','PERFORM_BULK_OPERATIONS_EVENT','PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES'))) = true) THEN
+                      INSERT INTO userroles_userrights(userrole_id, userright, sys_period) values (rec.id, 'PERFORM_BULK_OPERATIONS', tstzrange(now(), null));
+                  END IF;
+               END IF;
+           END LOOP;
+       DELETE from userroles_userrights WHERE userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES', 'PERFORM_BULK_OPERATIONS_EVENT', 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES');
+   END;
+
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

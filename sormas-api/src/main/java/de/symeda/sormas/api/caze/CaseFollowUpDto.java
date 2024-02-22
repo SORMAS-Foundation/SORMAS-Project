@@ -23,7 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 
-public class CaseFollowUpDto extends FollowUpDto {
+public class CaseFollowUpDto extends FollowUpDto implements IsCase {
 
 	private static final long serialVersionUID = -7782443664670559221L;
 

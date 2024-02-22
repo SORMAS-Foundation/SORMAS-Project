@@ -168,6 +168,7 @@ public class EnvironmentSampleEditFragment
 		} else {
 			contentBinding.environmentSampleRequestedPathogenTestsTags.setVisibility(GONE);
 		}
+		contentBinding.environmentSampleReportingUser.setPseudonymized(record.isPseudonymized());
 	}
 
 	private void openAddressPopup(FragmentEnvironmentSampleEditLayoutBinding contentBinding) {

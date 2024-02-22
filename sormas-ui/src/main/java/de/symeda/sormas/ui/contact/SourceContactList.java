@@ -82,13 +82,7 @@ public class SourceContactList extends PaginationList<ContactIndexDto> {
 
 	public List<ContactReferenceDto> getSourceContacts() {
 		return getEntries().stream()
-			.map(
-				c -> new ContactReferenceDto(
-					c.getUuid(),
-					c.getFirstName(),
-					c.getLastName(),
-					c.getCaze() != null ? c.getCaze().getFirstName() : null,
-					c.getCaze() != null ? c.getCaze().getLastName() : null))
+			.map(c -> new ContactReferenceDto(c.getUuid(), c.getFirstName(), c.getLastName(), c.getCaze()))
 			.collect(Collectors.toList());
 	}
 }

@@ -42,7 +42,7 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class TaskIndexDto extends PseudonymizableIndexDto {
+public class TaskIndexDto extends PseudonymizableIndexDto implements IsTask {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
@@ -117,7 +117,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
 			String eventUuid, String eventTitle, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Date eventDate,
-			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
+			String contactUuid, String contactFirstName, String contactLastName, String contactCaseUuid, String contactCaseFirstName, String contactCaseLastName,
 			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName, String environmentUuid, String environmentName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus, Disease disease,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
@@ -126,7 +126,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 			String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid, String communityName,
 			String facilityUuid, String facilityName, String pointOfEntryUuid, String pointOfEntryName,
 			boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, 
-						boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction, boolean isEnvironmentInJurisdiction) {
+			boolean isEventInJurisdiction, boolean isTravelEntryInJurisdiction, boolean isEnvironmentInJurisdiction) {
 	//@formatter:on
 
 		super(uuid);
@@ -145,7 +145,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto {
 		}
 
 		if (contactUuid != null) {
-			this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
+			this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, new CaseReferenceDto(contactCaseUuid, contactCaseFirstName, contactCaseLastName));
 		}
 
 		if (travelEntryUuid != null) {

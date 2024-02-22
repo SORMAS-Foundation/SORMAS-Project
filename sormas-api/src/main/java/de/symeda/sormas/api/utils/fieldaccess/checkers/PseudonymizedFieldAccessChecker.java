@@ -22,26 +22,58 @@ import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 
-public class PseudonymizedFieldAccessChecker extends AnnotationBasedFieldAccessChecker {
+public final class PseudonymizedFieldAccessChecker<T> implements FieldAccessChecker<T> {
 
-	private PseudonymizedFieldAccessChecker(
+	private final WrappedFieldAccessChecker wrapped;
+
+	public PseudonymizedFieldAccessChecker(
 		Class<? extends Annotation> annotation,
 		Class<? extends Annotation> embeddedAnnotation,
 		boolean isPseudonymized) {
-		super(annotation, embeddedAnnotation, !isPseudonymized);
+		this.wrapped = new WrappedFieldAccessChecker(annotation, embeddedAnnotation, isPseudonymized);
 	}
 
 	@Override
-	protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
-		return false;
+	public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
+		return wrapped.isConfiguredForCheck(field, withMandatory);
 	}
 
-	public static PseudonymizedFieldAccessChecker forPersonalData(boolean isPseudonymized) {
-		return new PseudonymizedFieldAccessChecker(PersonalData.class, EmbeddedPersonalData.class, isPseudonymized);
+	@Override
+	public boolean isEmbedded(Field field) {
+		return wrapped.isEmbedded(field);
 	}
 
-	public static PseudonymizedFieldAccessChecker forSensitiveData(boolean isPseudonymized) {
-		return new PseudonymizedFieldAccessChecker(SensitiveData.class, EmbeddedSensitiveData.class, isPseudonymized);
+	public boolean hasRight() {
+		return wrapped.hasRight(null);
+	}
+
+	@Override
+	public boolean hasRight(T object) {
+		return hasRight();
+	}
+
+	private final class WrappedFieldAccessChecker extends AnnotationBasedFieldAccessChecker<T> {
+
+		private WrappedFieldAccessChecker(
+			Class<? extends Annotation> annotation,
+			Class<? extends Annotation> embeddedAnnotation,
+			boolean isPseudonymized) {
+			super(annotation, embeddedAnnotation, !isPseudonymized, t -> false);
+		}
+
+		@Override
+		protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
+			return false;
+		}
+	}
+
+	public static <T> PseudonymizedFieldAccessChecker<T> forPersonalData(boolean isPseudonymized) {
+		return new PseudonymizedFieldAccessChecker<>(PersonalData.class, EmbeddedPersonalData.class, isPseudonymized);
+	}
+
+	public static <T> PseudonymizedFieldAccessChecker<T> forSensitiveData(boolean isPseudonymized) {
+		return new PseudonymizedFieldAccessChecker<>(SensitiveData.class, EmbeddedSensitiveData.class, isPseudonymized);
 	}
 }

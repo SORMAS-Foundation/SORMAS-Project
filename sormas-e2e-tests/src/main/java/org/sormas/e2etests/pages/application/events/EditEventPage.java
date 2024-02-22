@@ -56,11 +56,17 @@ public class EditEventPage {
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
+  public static final By EVENTS_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions");
+  public static final By EDIT_EVENT_ACTION = By.cssSelector("div[id^='edit-action']");
   public static final By NEW_TASK_BUTTON = By.cssSelector("[id='New task']");
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit0");
   public static final By DELETE_BUTTON_DISABLED =
       By.xpath("//div[@id='delete' and @aria-disabled='true']");
   public static final By UNDO_DELETION_BUTTON = By.id("deleteRestore");
+  public static final By DELETE_EVENT_ACTION_BUTTON = By.cssSelector("#deleteRestore");
+  public static final By CONFIRM_EVENT_DELETE_ACTION_BUTTON = By.cssSelector("#actionConfirm");
+  public static final By NO_EVENT_ACTION_CAPTION =
+      By.xpath("//div[contains(text(), 'There are no actions for this Event')]");
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");

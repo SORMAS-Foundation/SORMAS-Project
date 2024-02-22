@@ -6,7 +6,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class CaseListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class CaseListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable, IsCase {
 
 	private static final long serialVersionUID = -8812926682263746469L;
 	private Date reportDate;

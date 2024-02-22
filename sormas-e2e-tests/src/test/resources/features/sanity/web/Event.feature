@@ -1414,3 +1414,76 @@ Feature: Create events
       | user                      |
       | Contact Supervisor        |
       | Surveillance Supervisor   |
+
+  @tmsLink=HSP-6576 @env_main
+  Scenario: [Event Actions] Error appears when clicking on 'Actions' if the user does not have 'Delete events from the system' right [1]
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "EventUserWithDeleteActionRights" role and change his role
+    And I click on User roles tab from Users Page
+    And I check if the "EventUserWithDeleteActionRights" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "EventUserWithDeleteActionRights" on Create New User Role form
+    And I click SAVE button on User Role Page
+    And I check that checkbox "Delete actions from the system" is "checked"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    Then I click on User Management tab from Users directory Page
+    And I click on the NEW USER button
+    And I create new "EventUserWithDeleteActionRights" with english language for test
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    Then I navigate to Event Actions tab from Event tab
+    And I click on New Action from Event Actions tab
+    And I create New Action from event tab
+    Then I click on to Edit Event Actions from Event Actions tab
+    And I click on DELETE button from Edit Event Actions page
+    And I click on Confirm DELETE button Edit Event Actions
+    Then I check that Event Actions hasn't got any actions on Event Action page
+
+  @tmsLink=HSP-6576 @env_main
+  Scenario: [Event Actions] Error appears when clicking on 'Actions' if the user does not have 'Delete events from the system' right [2]
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I check if there is any user with the "EventUserWithoutDeleteActionRights" role and change his role
+    And I click on User roles tab from Users Page
+    And I check if the "EventUserWithoutDeleteActionRights" user role exist and delete it
+    And I click on New user role button on User Roles Page
+    And I choose "National User" as the user role template
+    And I fill caption input as "EventUserWithoutDeleteActionRights" on Create New User Role form
+    And I click SAVE button on User Role Page
+    Then I click checkbox to uncheck "Delete actions from the system"
+    And I check that checkbox "Delete actions from the system" is "unchecked"
+    And I click checkbox to uncheck "Delete events from the system"
+    And I click SAVE button on User Role Page
+    And I back to the User role list
+    Then I click on User Management tab from Users directory Page
+    And I click on the NEW USER button
+    And I create new "EventUserWithoutDeleteActionRights" with english language for test
+    Then I click on logout button from navbar
+    And I login with new created user with chosen new role
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    Then I navigate to Event Actions tab from Event tab
+    And I click on New Action from Event Actions tab
+    And I create New Action from event tab
+    Then I click on to Edit Event Actions from Event Actions tab
+    And I check that the Delete button is not available from Edit Event Actions page
+
+  @tmsLink=HSP-6587 @env_main
+  Scenario: Check that Event tasks display the correct region and district in Task Management Directory
+    Given API: I create a new event
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    When I am accessing the event tab using the created event via api
+    And I collect uuid of the event
+    Then I click on New Task from event tab
+    And I create a new task with specific data for an event
+    And I click on the Tasks button from navbar
+    And I am search the last created event by API in task management directory
+    And I check that region and district are correct displayed for the last created event by API in task management

@@ -109,7 +109,7 @@ public class SideCardsSteps implements En {
         "I check if handover card contains shared with {string} information",
         (String environmentIdentifier) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(HANDOVER_SIDE_CARD);
-          TimeUnit.SECONDS.sleep(3);
+          TimeUnit.SECONDS.sleep(4); // waiting for page loaded
           softly.assertTrue(
               webDriverHelpers.isElementPresent(
                   checkTextInHandoverSideComponent(
@@ -167,6 +167,7 @@ public class SideCardsSteps implements En {
     When(
         "I check if Immunization area contains {string}",
         (String name) -> {
+            TimeUnit.SECONDS.sleep(2); //waiting for page loaded
           softly.assertTrue(
               webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
               "Element is not present");
@@ -202,6 +203,7 @@ public class SideCardsSteps implements En {
     Then(
         "^I check that the number of added samples on the Edit case page is (\\d+)$",
         (Integer numberOfSamples) -> {
+          webDriverHelpers.waitForElementPresent(ADDED_SAMPLES_IN_SAMPLE_CARD, 2);
           Integer actualNumberOfSamples =
               webDriverHelpers.getNumberOfElements(ADDED_SAMPLES_IN_SAMPLE_CARD);
           softly.assertEquals(

@@ -63,6 +63,8 @@ import de.symeda.sormas.api.externalmessage.NewMessagesState;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -86,6 +88,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessagePr
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
@@ -134,6 +137,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private AutomaticLabMessageProcessor automaticLabMessageProcessor;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	ExternalMessage fillOrBuildEntity(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
 
@@ -216,7 +221,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public ExternalMessageDto saveAndProcessLabmessage(@Valid ExternalMessageDto labMessage) {
-		if (!labMessage.isAutomaticProcessingPossible()) {
+		if (!labMessage.isAutomaticProcessingPossible() || !checkAutomaticProcessingAllowed()) {
 			return save(labMessage);
 		}
 
@@ -236,6 +241,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 
 		return getByUuid(labMessage.getUuid());
+	}
+
+	private boolean checkAutomaticProcessingAllowed() {
+		return featureConfigurationFacade.isPropertyValueTrue(FeatureType.EXTERNAL_MESSAGES, FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING)
+			|| !featureConfigurationFacade.isAnyFeatureEnabled(FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE);
 	}
 
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
@@ -398,7 +408,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES)
+	@RightsAllowed(UserRight._PERFORM_BULK_OPERATIONS)
 	public void bulkAssignExternalMessages(List<String> uuids, UserReferenceDto userRef) {
 		List<ExternalMessage> externalMessages = externalMessageService.getByUuids(uuids);
 		User user = userService.getByReferenceDto(userRef);
