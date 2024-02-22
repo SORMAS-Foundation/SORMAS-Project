@@ -311,7 +311,9 @@ public class PathogenTestController {
 			handleAssociatedCase(pathogenTests, associatedCase, suppressNavigateToCase);
 		}
 
-		Notification.show(I18nProperties.getString(Strings.messagePathogenTestsSavedShort), TRAY_NOTIFICATION);
+		Notification.show(
+			I18nProperties.getString(pathogenTests.size() == 1 ? Strings.messagePathogenTestSavedShort : Strings.messagePathogenTestsSavedShort),
+			TRAY_NOTIFICATION);
 	}
 
 	private void handleAssociatedCase(List<PathogenTestDto> pathogenTests, CaseReferenceDto associatedCase, boolean suppressNavigateToCase) {
