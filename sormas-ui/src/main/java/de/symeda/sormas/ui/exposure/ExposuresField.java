@@ -234,7 +234,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 	}
 
 	private static String getContactCaseName(ContactReferenceDto contactToCase) {
-		return contactToCase.getCaze() != null ? contactToCase.getCaze().getName() : null;
+		return contactToCase.getCaze() != null ? contactToCase.getCaze().buildNameCaption() : null;
 	}
 
 	@Override
