@@ -318,19 +318,19 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
-		if (associatedCase != null && userService.hasRight(UserRight.CASE_EDIT)) {
-			caseFacade.onCaseChanged(caseFacade.toDto(associatedCase), associatedCase, syncShares);
+		if (associatedCase != null) {
+			caseFacade.onCaseSampleChanged(associatedCase, syncShares);
 		}
 
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
-		if (associatedContact != null && userService.hasRight(UserRight.CONTACT_EDIT)) {
+		if (associatedContact != null) {
 			contactFacade.onContactChanged(contactFacade.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
-		if (associatedEventParticipant != null && userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
 				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				eventParticipantFacade.toDto(associatedEventParticipant),
