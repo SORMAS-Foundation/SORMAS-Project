@@ -36,6 +36,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
+import static org.sormas.e2etests.steps.api.TravelEntrySteps.travelEntriesUUID;
 import static org.sormas.e2etests.steps.web.application.events.EventDirectorySteps.eventsUUID;
 
 import com.opencsv.CSVParser;
@@ -196,6 +197,17 @@ public class TaskManagementSteps implements En {
         });
 
     When(
+        "^I am search the last created travel Entry by API in task management directory$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT, travelEntriesUUID.get(0));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getByEventUuid(travelEntriesUUID.get(0)));
+        });
+
+    When(
         "^I filter Task context by ([^\"]*)$",
         (String filterType) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -230,6 +242,22 @@ public class TaskManagementSteps implements En {
               manager.getDistrictName(
                   apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid()),
               tableRowsData.get(0).get(EventsTableColumnsHeaders.DISTRICT_HEADER.toString()),
+              "Districts are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check that region and district are correct displayed for the last created travel entry by API in task management$",
+        () -> {
+          softly.assertEquals(
+              manager.getRegionName(
+                  apiState.getCreatedTravelEntry().getResponsibleRegion().getUuid()),
+              webDriverHelpers.getTextFromWebElement(FIRST_GRID_REGION_VALUE),
+              "Regions are not equal");
+          softly.assertEquals(
+              manager.getDistrictName(
+                  apiState.getCreatedTravelEntry().getResponsibleDistrict().getUuid()),
+              webDriverHelpers.getTextFromWebElement(FIRST_GRID_DISTRICT_VALUE),
               "Districts are not equal");
           softly.assertAll();
         });
