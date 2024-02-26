@@ -12887,9 +12887,6 @@
           "lastName" : {
             "type" : "string"
           },
-          "name" : {
-            "type" : "string"
-          },
           "uuid" : {
             "type" : "string",
             "pattern" : "^[0-9a-zA-Z-]*$"
