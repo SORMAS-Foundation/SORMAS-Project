@@ -82,7 +82,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -644,24 +643,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		responsibleUsers.addAll(districtEventResponsibles);
 
 		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
-	}
-
-	private CheckBoxTree.CheckBoxElement<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceDetailToCheckBoxElement(
-		EpidemiologicalEvidenceDetail epidemiologicalEvidenceDetail) {
-		return new CheckBoxTree.CheckBoxElement<>(
-			epidemiologicalEvidenceDetail.getParent() != null
-				? epidemiologicalEvidenceDetailToCheckBoxElement(epidemiologicalEvidenceDetail.getParent())
-				: null,
-			epidemiologicalEvidenceDetail);
-	}
-
-	private CheckBoxTree.CheckBoxElement<LaboratoryDiagnosticEvidenceDetail> laboratoryDiagnosticEvidenceDetailToCheckBoxElement(
-		LaboratoryDiagnosticEvidenceDetail laboratoryDiagnosticEvidenceDetail) {
-		return new CheckBoxTree.CheckBoxElement<>(
-			laboratoryDiagnosticEvidenceDetail.getParent() != null
-				? laboratoryDiagnosticEvidenceDetailToCheckBoxElement(laboratoryDiagnosticEvidenceDetail.getParent())
-				: null,
-			laboratoryDiagnosticEvidenceDetail);
 	}
 
 	private void initEventDateValidation(DateTimeField startDate, DateTimeField endDate, CheckBox multiDayCheckbox) {

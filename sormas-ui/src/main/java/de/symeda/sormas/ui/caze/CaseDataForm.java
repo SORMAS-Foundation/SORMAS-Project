@@ -36,9 +36,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +85,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
-import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -127,7 +124,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibil
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.caze.surveillancereport.CaseReinfectionCheckBoxTree;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -312,7 +308,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 
-	private final Map<ReinfectionDetailGroup, CaseReinfectionCheckBoxTree> reinfectionTrees = new EnumMap<>(ReinfectionDetailGroup.class);
 	private CheckBoxTreeUpdated<ReinfectionDetail> reinfectionDetailGroupCheckBoxTreeUpdated;
 
 	public CaseDataForm(
@@ -1624,16 +1619,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getContent().addComponent(resumeButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 			}
 		}
-	}
-
-	private Map<ReinfectionDetail, Boolean> mergeReinfectionTrees() {
-		Map<ReinfectionDetail, Boolean> reinfectionDetails = new EnumMap<>(ReinfectionDetail.class);
-		reinfectionTrees.values().forEach(t -> {
-			if (t.getValues() != null) {
-				reinfectionDetails.putAll(t.getValues());
-			}
-		});
-		return reinfectionDetails;
 	}
 
 	@Override
