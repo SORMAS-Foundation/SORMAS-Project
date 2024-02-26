@@ -518,3 +518,4 @@ Feature: Create travel entries
     Then I check if new task is displayed in Task tab on Edit Travel Entry page
     And I click on the Tasks button from navbar
     And I am search the last created travel Entry by API in task management directory
+    And I check that region and district are correct displayed for the last created travel entry by API in task management
