@@ -304,6 +304,8 @@ public class SampleController {
 				if (callback != null) {
 					callback.run();
 				}
+
+				Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 			}
 		});
 
@@ -360,6 +362,8 @@ public class SampleController {
 				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(existingSample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
 				FacadeProvider.getSampleFacade().saveSample(updatedSample);
+
+				Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 			}
 		});
 		return createView;

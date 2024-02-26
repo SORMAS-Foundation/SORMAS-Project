@@ -361,7 +361,7 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES);
+		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 	}
 
 	private void enterBulkEditMode() {

@@ -714,7 +714,7 @@ public class CasesView extends AbstractView implements HasName {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
 				if (isBulkEditAllowed()) {
-					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -821,6 +821,16 @@ public class CasesView extends AbstractView implements HasName {
 										items -> ControllerProvider.getCaseController()
 											.linkSelectedCasesToEvent(items, (AbstractCaseGrid<?>) grid))));
 						}
+
+						if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
+							menuBarItems.add(
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkSpecialCaseAccess),
+									VaadinIcons.RASTER_LOWER_LEFT,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getSpecialCaseAccessController()
+											.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
+						}
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
@@ -828,16 +838,6 @@ public class CasesView extends AbstractView implements HasName {
 									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
 							}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
-					}
-
-					if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
-						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.bulkSpecialCaseAccess),
-								VaadinIcons.RASTER_LOWER_LEFT,
-								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getSpecialCaseAccessController()
-										.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
@@ -921,7 +921,7 @@ public class CasesView extends AbstractView implements HasName {
 
 	private boolean isBulkEditAllowed() {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
+			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
 				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser());
 	}
 
