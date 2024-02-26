@@ -8,14 +8,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.environment.EnvironmentDto;
@@ -36,7 +35,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CheckBoxTree;
+import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
@@ -45,7 +44,7 @@ import de.symeda.sormas.ui.utils.UserField;
 public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
-	private static final String WATER_USE_LOC = "waterUseLoc";
+	private static final String WATER_USE_HEADING_LOC = "waterUseHeadingLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.UUID, EnvironmentDto.EXTERNAL_ID) +
@@ -54,7 +53,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") +
 			fluidRowLocs(EnvironmentDto.WATER_TYPE, EnvironmentDto.OTHER_WATER_TYPE) +
 			fluidRowLocs(EnvironmentDto.INFRASTUCTURE_DETAILS, EnvironmentDto.OTHER_INFRASTRUCTUIRE_DETAILS) +
-			fluidRowLocs(WATER_USE_LOC) +
+			fluidRowLocs(WATER_USE_HEADING_LOC) +
 			fluidRowLocs(EnvironmentDto.WATER_USE) +
 			fluidRowLocs(EnvironmentDto.OTHER_WATER_USE) +
 			fluidRowLocs(EnvironmentDto.ENVIRONMENT_NAME, "")+
@@ -66,7 +65,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			fluidRowLocs(EnvironmentDto.OTHER_DELETION_REASON);
     //@formatter:on
 
-	private WaterUseCheckBoxTree waterUseCheckBoxTree;
+	CheckBoxTreeUpdated<WaterUse> waterUseCheckBoxTreeUpdated;
 
 	public EnvironmentDataForm(boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
 		super(
@@ -110,30 +109,26 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		TextField otherInfrastructureDetails = addField(EnvironmentDto.OTHER_INFRASTRUCTUIRE_DETAILS, TextField.class);
 		otherInfrastructureDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
-		final VerticalLayout useOfWaterLayout = new VerticalLayout();
-		CssStyles.style(useOfWaterLayout, CssStyles.VSPACE_3);
-
 		Label useOfWaterHeading = new Label(I18nProperties.getString(Strings.headingWaterUse));
 		CssStyles.style(useOfWaterHeading, CssStyles.LABEL_XLARGE, CssStyles.VSPACE_TOP_3);
-		useOfWaterLayout.addComponent(useOfWaterHeading);
-
-		getContent().addComponent(useOfWaterLayout, WATER_USE_LOC);
+		getContent().addComponent(useOfWaterHeading, WATER_USE_HEADING_LOC);
 
 		TextField otherWaterUse = addField(EnvironmentDto.OTHER_WATER_USE, TextField.class);
 		otherWaterUse.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
-		waterUseCheckBoxTree = new WaterUseCheckBoxTree(
-			Arrays.stream(WaterUse.values()).map(this::environmentEvidenceDetailToCheckBoxElement).collect(Collectors.toList()),
-			() -> {
-				if (isWaterUseOtherChecked()) {
+		waterUseCheckBoxTreeUpdated = addField(EnvironmentDto.WATER_USE, CheckBoxTreeUpdated.class);
+		waterUseCheckBoxTreeUpdated.setEnumType(WaterUse.class, WaterUse::getParent);
+
+		waterUseCheckBoxTreeUpdated.addValueChangeListener((e) -> {
+			if (e.getProperty().getValue() != null) {
+				if (Boolean.TRUE.equals(((Map<WaterUse, Boolean>) e.getProperty().getValue()).get(WaterUse.OTHER))) {
 					otherWaterUse.setVisible(true);
 				} else {
 					otherWaterUse.setVisible(false);
 					otherWaterUse.clear();
 				}
-			});
-
-		useOfWaterLayout.addComponent(waterUseCheckBoxTree);
+			}
+		});
 
 		addField(EnvironmentDto.ENVIRONMENT_NAME, TextField.class);
 
@@ -153,7 +148,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
 		UserField responsibleUserField = addField(EnvironmentDto.RESPONSIBLE_USER, UserField.class);
-		responsibleUserField.setParentPseudonymizedSupplier(()-> getValue().isPseudonymized());
+		responsibleUserField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 		responsibleUserField.setEnabled(true);
 
 		addField(EnvironmentDto.DELETION_REASON);
@@ -209,14 +204,18 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			if (EnvironmentMedia.WATER.equals(valueChangeEvent.getProperty().getValue())) {
 				waterType.setVisible(true);
 				infrastructureDetails.setVisible(true);
-				useOfWaterLayout.setVisible(true);
+				waterUseCheckBoxTreeUpdated.setVisible(true);
+				useOfWaterHeading.setVisible(true);
 			} else {
+				useOfWaterHeading.setVisible(false);
 				waterType.setVisible(false);
 				infrastructureDetails.setVisible(false);
-				useOfWaterLayout.setVisible(false);
+				waterUseCheckBoxTreeUpdated.setVisible(false);
+				otherWaterUse.setVisible(false);
 				waterType.clear();
 				infrastructureDetails.clear();
-				waterUseCheckBoxTree.clearCheckBoxTree();
+				waterUseCheckBoxTreeUpdated.clear();
+				otherWaterUse.clear();
 			}
 		});
 
@@ -229,29 +228,25 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			true);
 
 		addValueChangeListener(e -> {
-			waterUseCheckBoxTree.initCheckboxes();
-			otherWaterUse.setVisible(isWaterUseOtherChecked());
+			if (getValue().getWaterUse() != null && Boolean.TRUE.equals((getValue().getWaterUse().get(WaterUse.OTHER)))) {
+				otherWaterUse.setVisible(true);
+			} else {
+				otherWaterUse.setVisible(false);
+				otherWaterUse.clear();
+			}
 		});
-	}
-
-	private boolean isWaterUseOtherChecked() {
-		return Boolean.TRUE.equals(waterUseCheckBoxTree.getValues().get(WaterUse.OTHER));
-	}
-
-	private CheckBoxTree.CheckBoxElement<WaterUse> environmentEvidenceDetailToCheckBoxElement(WaterUse waterUse) {
-		return new CheckBoxTree.CheckBoxElement<>(null, waterUse);
 	}
 
 	@Override
 	public void setValue(EnvironmentDto newFieldValue) throws ReadOnlyException {
-		waterUseCheckBoxTree.setValues(newFieldValue.getWaterUse());
 		super.setValue(newFieldValue);
+		waterUseCheckBoxTreeUpdated.setValue(newFieldValue.getWaterUse());
 	}
 
 	@Override
 	public EnvironmentDto getValue() {
 		final EnvironmentDto environmentDto = super.getValue();
-		environmentDto.setWaterUse(waterUseCheckBoxTree.getValues());
+		environmentDto.setWaterUse(waterUseCheckBoxTreeUpdated.getValue());
 		return environmentDto;
 	}
 }

@@ -174,6 +174,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new CustomizableEnumPropertiesComponent();
 		} else if (UserField.class.isAssignableFrom(fieldType)) {
 			return (T) new UserField();
+		}else if (CheckBoxTreeUpdated.class.isAssignableFrom(fieldType)){
+			return (T) new CheckBoxTreeUpdated<>();
 		}
 		return super.createField(type, fieldType);
 	}

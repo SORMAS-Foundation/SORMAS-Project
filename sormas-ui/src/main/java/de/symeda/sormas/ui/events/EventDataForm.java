@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +83,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
+import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -167,9 +167,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private final boolean inJurisdiction;
 	private List<UserReferenceDto> regionEventResponsibles = new ArrayList<>();
 	private List<UserReferenceDto> districtEventResponsibles = new ArrayList<>();
-	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
-	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 	private LocationEditForm locationForm;
+	private CheckBoxTreeUpdated<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceCheckBoxTreeUpdated;
+	private CheckBoxTreeUpdated<LaboratoryDiagnosticEvidenceDetail> laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated;
 
 	public EventDataForm(boolean create, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
@@ -281,19 +281,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		final NullableOptionGroup epidemiologicalEvidence = addField(EventDto.EPIDEMIOLOGICAL_EVIDENCE, NullableOptionGroup.class);
 		final NullableOptionGroup laboratoryDiagnosticEvidence = addField(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE, NullableOptionGroup.class);
 
-		epidemiologicalEvidenceCheckBoxTree = new EpidemiologicalEvidenceCheckBoxTree(
-			Arrays.stream(EpidemiologicalEvidenceDetail.values())
-				.map(epidemiologicalEvidenceDetail -> epidemiologicalEvidenceDetailToCheckBoxElement(epidemiologicalEvidenceDetail))
-				.collect(Collectors.toList()));
-		getContent().addComponent(epidemiologicalEvidenceCheckBoxTree, EventDto.EPIDEMIOLOGICAL_EVIDENCE_DETAILS);
-		epidemiologicalEvidenceCheckBoxTree.setVisible(false);
+		epidemiologicalEvidenceCheckBoxTreeUpdated = addField(EventDto.EPIDEMIOLOGICAL_EVIDENCE_DETAILS, CheckBoxTreeUpdated.class);
+		epidemiologicalEvidenceCheckBoxTreeUpdated.setEnumType(EpidemiologicalEvidenceDetail.class, EpidemiologicalEvidenceDetail::getParent);
 
-		laboratoryDiagnosticEvidenceCheckBoxTree = new LaboratoryDiagnosticEvidenceCheckBoxTree(
-			Arrays.stream(LaboratoryDiagnosticEvidenceDetail.values())
-				.map(laboratoryDiagnosticEvidenceDetail -> laboratoryDiagnosticEvidenceDetailToCheckBoxElement(laboratoryDiagnosticEvidenceDetail))
-				.collect(Collectors.toList()));
-		getContent().addComponent(laboratoryDiagnosticEvidenceCheckBoxTree, EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS);
-		laboratoryDiagnosticEvidenceCheckBoxTree.setVisible(false);
+		laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated = addField(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS, CheckBoxTreeUpdated.class);
+		laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated
+			.setEnumType(LaboratoryDiagnosticEvidenceDetail.class, LaboratoryDiagnosticEvidenceDetail::getParent);
 
 		DateField evolutionDateField = addField(EventDto.EVOLUTION_DATE, DateField.class);
 		TextField evolutionCommentField = addField(EventDto.EVOLUTION_COMMENT, TextField.class);
@@ -408,7 +401,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 
 		UserField responsibleUserField = addField(EventDto.RESPONSIBLE_USER, UserField.class);
-		responsibleUserField.setParentPseudonymizedSupplier(()-> getValue().isPseudonymized());
+		responsibleUserField.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());
 		responsibleUserField.setEnabled(true);
 
 		addField(EventDto.DELETION_REASON);
@@ -538,10 +531,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			epidemiologicalEvidence.addValueChangeListener(valueChangeEvent -> {
 				if (((NullableOptionGroup) valueChangeEvent.getProperty()).getNullableValue() == YesNoUnknown.YES) {
-					epidemiologicalEvidenceCheckBoxTree.setVisible(true);
+					epidemiologicalEvidenceCheckBoxTreeUpdated.setVisible(true);
 				} else {
-					epidemiologicalEvidenceCheckBoxTree.clearCheckBoxTree();
-					epidemiologicalEvidenceCheckBoxTree.setVisible(false);
+					epidemiologicalEvidenceCheckBoxTreeUpdated.clear();
+					epidemiologicalEvidenceCheckBoxTreeUpdated.setVisible(false);
 				}
 			});
 		}
@@ -555,10 +548,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			laboratoryDiagnosticEvidence.addValueChangeListener(valueChangeEvent -> {
 				if (((NullableOptionGroup) valueChangeEvent.getProperty()).getNullableValue() == YesNoUnknown.YES) {
-					laboratoryDiagnosticEvidenceCheckBoxTree.setVisible(true);
+					laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.setVisible(true);
 				} else {
-					laboratoryDiagnosticEvidenceCheckBoxTree.clearCheckBoxTree();
-					laboratoryDiagnosticEvidenceCheckBoxTree.setVisible(false);
+					laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.clear();
+					laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.setVisible(false);
 				}
 			});
 		}
@@ -634,9 +627,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				Validations.duplicateExternalToken,
 				externalTokenWarningLabel,
 				(externalToken) -> FacadeProvider.getEventFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
-
-			epidemiologicalEvidenceCheckBoxTree.initCheckboxes();
-			laboratoryDiagnosticEvidenceCheckBoxTree.initCheckboxes();
 
 			// Initialize specific risk field if disease is null
 			if (getValue().getDisease() == null) {
@@ -725,15 +715,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	@Override
 	public EventDto getValue() {
 		final EventDto eventDto = super.getValue();
-		eventDto.setEpidemiologicalEvidenceDetails(epidemiologicalEvidenceCheckBoxTree.getValues());
-		eventDto.setLaboratoryDiagnosticEvidenceDetails(laboratoryDiagnosticEvidenceCheckBoxTree.getValues());
+		eventDto.setEpidemiologicalEvidenceDetails(epidemiologicalEvidenceCheckBoxTreeUpdated.getValue());
+		eventDto.setLaboratoryDiagnosticEvidenceDetails(laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.getValue());
 		return eventDto;
 	}
 
 	@Override
 	public void setValue(EventDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		epidemiologicalEvidenceCheckBoxTree.setValues(newFieldValue.getEpidemiologicalEvidenceDetails());
-		laboratoryDiagnosticEvidenceCheckBoxTree.setValues(newFieldValue.getLaboratoryDiagnosticEvidenceDetails());
+		epidemiologicalEvidenceCheckBoxTreeUpdated.setValue(newFieldValue.getEpidemiologicalEvidenceDetails());
+		laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.setValue(newFieldValue.getLaboratoryDiagnosticEvidenceDetails());
 
 		if (!isCreateForm && FacadeProvider.getEventFacade().hasAnyEventParticipantWithoutJurisdiction(newFieldValue.getUuid())) {
 			locationForm.setHasEventParticipantsWithoutJurisdiction(true);
