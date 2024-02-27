@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Visit @Follow-up
 Feature: Follow-up new visit functionality
 
-  @env_main
+  @tmsLink=SORDEV-5528mk @env_main
   Scenario: Create a new visit from case follow-up
     Given API: I create a new person
     And API: I check that POST call status code is 200
