@@ -533,7 +533,7 @@
     <string name="main_menu_immunizations">Imunizace</string>
     <string name="main_menu_settings">Nastavení</string>
     <string name="main_menu_tasks">Úkoly</string>
-    <string name="main_menu_aggregate_reports">mSERS</string>
+    <string name="main_menu_aggregate_reports">Aggregate</string>
     <string name="message_already_saving">Již se ukládá..</string>
     <string name="message_aggregate_report_found">Upozornění: Pro výše uvedená kritéria byly nalezeny duplicitní zprávy. Nemoci označené červenou již mají hlášení.</string>
     <string name="message_aggregate_report_expired_age_groups">Věkové skupiny označené jako \"Vypršelo\" jsou založeny na existujících datech pro věkovou skupinu, která se již nepoužívá.</string>
