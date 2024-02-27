@@ -76,7 +76,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestService;
 
@@ -90,7 +91,7 @@ import de.symeda.sormas.backend.sample.PathogenTestService;
 public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	@EJB
-	private PersonFacadeEjbLocal personFacade;
+	private PersonService personService;
 	@EJB
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
@@ -112,7 +113,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			buildCriteria();
 		}
 
-		PersonDto person = personFacade.getByUuid(caze.getPerson().getUuid());
+		PersonDto person = PersonFacadeEjb.toPersonDto(personService.getByUuid(caze.getPerson().getUuid()));
 		List<PathogenTestDto> pathogenTests = pathogenTestService.getAllByCase(caze.getUuid())
 			.stream()
 			.map(PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal::toDto)
@@ -120,7 +121,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		List<EventDto> caseEvents = eventFacade.getAllByCase(caze);
 		Date lastVaccinationDate = null;
 		if (caze.getDisease() == Disease.YELLOW_FEVER && caze.getVaccinationStatus() == VaccinationStatus.VACCINATED) {
-			lastVaccinationDate = immunizationService.getLastVaccinationDateBefore(person.getUuid(), caze.getDisease(), CaseLogic.getStartDate(caze));
+			lastVaccinationDate =
+				immunizationService.getLastVaccinationDateBefore(caze.getPerson().getUuid(), caze.getDisease(), CaseLogic.getStartDate(caze));
 		}
 
 		DiseaseClassificationCriteriaDto criteria = criteriaMap.get(caze.getDisease());

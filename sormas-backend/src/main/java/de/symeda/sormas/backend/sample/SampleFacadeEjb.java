@@ -1098,8 +1098,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void handleAssociatedEntityChanges(Sample newSample, boolean syncShares) {
 
-		if (newSample.getAssociatedCase() != null && userService.hasRight(UserRight.CASE_EDIT)) {
-			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+		if (newSample.getAssociatedCase() != null) {
+			caseFacade.onCaseSampleChanged(newSample.getAssociatedCase(), syncShares);
 		}
 
 		if (newSample.getAssociatedContact() != null && userService.hasRight(UserRight.CONTACT_EDIT)) {
