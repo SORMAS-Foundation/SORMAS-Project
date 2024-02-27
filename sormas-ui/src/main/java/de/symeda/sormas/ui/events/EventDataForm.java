@@ -694,18 +694,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	}
 
 	@Override
-	public EventDto getValue() {
-		final EventDto eventDto = super.getValue();
-		eventDto.setEpidemiologicalEvidenceDetails(epidemiologicalEvidenceCheckBoxTreeUpdated.getValue());
-		eventDto.setLaboratoryDiagnosticEvidenceDetails(laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.getValue());
-		return eventDto;
-	}
-
-	@Override
 	public void setValue(EventDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		epidemiologicalEvidenceCheckBoxTreeUpdated.setValue(newFieldValue.getEpidemiologicalEvidenceDetails());
-		laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.setValue(newFieldValue.getLaboratoryDiagnosticEvidenceDetails());
-
 		if (!isCreateForm && FacadeProvider.getEventFacade().hasAnyEventParticipantWithoutJurisdiction(newFieldValue.getUuid())) {
 			locationForm.setHasEventParticipantsWithoutJurisdiction(true);
 			locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);

@@ -237,17 +237,4 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			}
 		});
 	}
-
-	@Override
-	public void setValue(EnvironmentDto newFieldValue) throws ReadOnlyException {
-		super.setValue(newFieldValue);
-		waterUseCheckBoxTreeUpdated.setValue(newFieldValue.getWaterUse());
-	}
-
-	@Override
-	public EnvironmentDto getValue() {
-		final EnvironmentDto environmentDto = super.getValue();
-		environmentDto.setWaterUse(waterUseCheckBoxTreeUpdated.getValue());
-		return environmentDto;
-	}
 }

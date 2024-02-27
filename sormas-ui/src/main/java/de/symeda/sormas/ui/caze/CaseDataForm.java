@@ -1623,15 +1623,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	@Override
-	public CaseDataDto getValue() {
-		final CaseDataDto caze = super.getValue();
-
-		caze.setReinfectionDetails(reinfectionDetailGroupCheckBoxTreeUpdated.getValue());
-
-		return caze;
-	}
-
-	@Override
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
 
 		reinfectionDetailGroupCheckBoxTreeUpdated.setValue(newFieldValue.getReinfectionDetails());

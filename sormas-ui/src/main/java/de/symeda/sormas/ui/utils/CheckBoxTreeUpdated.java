@@ -67,9 +67,7 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 				addGroups();
 			}
 
-			settingToggles = true;
-			setToggleValues(getValue());
-			settingToggles = false;
+			setToggleValues();
 		}
 
 		addValueChangeListener(valueChangeEvent -> {
@@ -90,6 +88,12 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 		}
 
 		return checkBoxTreeLayoutForGroups;
+	}
+
+	private void setToggleValues() {
+		settingToggles = true;
+		setToggleValues(getValue());
+		settingToggles = false;
 	}
 
 	private void addGroups() {
@@ -131,6 +135,8 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 				columnList.get(currentColumn.get()).addComponent(checkbox);
 			});
 
+			checkBoxTreeLayoutForGroups.addComponent(columnList.get(currentColumn.get()));
+
 			if (currentColumn.get() == columns - 1) {
 				currentColumn.set(0);
 			} else {
@@ -138,16 +144,10 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 			}
 		});
 
-		for (int i = 0; i < columns; i++) {
-			checkBoxTreeLayoutForGroups.addComponent(columnList.get(i));
-		}
-
 		final MarginInfo marginInfo = new MarginInfo(false, false, true, false);
 		checkBoxTreeLayoutForGroups.setMargin(marginInfo);
 
-		settingToggles = true;
-		setToggleValues(getValue());
-		settingToggles = false;
+		setToggleValues();
 	}
 
 	private void addCheckBoxes() {
@@ -175,8 +175,7 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 			parentElement = parentProvider.apply(enumElement);
 		}
 		if (parentElement != null) {
-			level++;
-			return getEnumElementLevel(parentElement, level);
+			return getEnumElementLevel(parentElement, level + 1);
 		} else {
 			return level;
 		}
@@ -185,9 +184,9 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 	@NotNull
 	private CheckBox createCheckbox(int level, ENUM element, ENUM parentElement) {
 		CheckBox elementCheckbox = new CheckBox(element.toString());
-		final int minLevel = Math.min(level - 1, INDENTATION_STYLES.length - 1);
+		final int safeLevel = Math.min(level - 1, INDENTATION_STYLES.length - 1);
 		if (level > 0) {
-			elementCheckbox.addStyleName(INDENTATION_STYLES[minLevel]);
+			elementCheckbox.addStyleName(INDENTATION_STYLES[safeLevel]);
 		}
 		if (addVerticalSpaces) {
 			CssStyles.style(elementCheckbox, CssStyles.VSPACE_4);
@@ -196,10 +195,7 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 		elementCheckbox.setWidth(100, Unit.PERCENTAGE);
 		elementCheckbox.addValueChangeListener(e -> {
 			final Boolean value = (Boolean) e.getProperty().getValue();
-			Map<ENUM, Boolean> newValue = new HashMap<>();
-			if (getValue() != null) {
-				newValue = new HashMap<>(getValue());
-			}
+			Map<ENUM, Boolean> newValue = getValue() != null ? new HashMap<>(getValue()) : new HashMap<>();
 			newValue.put(element, value);
 			setValue(newValue);
 		});
