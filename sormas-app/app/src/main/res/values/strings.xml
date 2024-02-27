@@ -547,7 +547,7 @@
     <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Settings</string>
     <string name="main_menu_tasks">Tasks</string>
-    <string name="main_menu_aggregate_reports">mSERS</string>
+    <string name="main_menu_aggregate_reports">Aggregate</string>
 
     <string name="message_already_saving">Already saving..</string>
     <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
