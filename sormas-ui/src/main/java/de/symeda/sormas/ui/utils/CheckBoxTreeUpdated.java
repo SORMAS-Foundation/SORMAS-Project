@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 	private boolean addVerticalSpaces;
 	private UnaryOperator<ENUM> parentProvider;
 	private Function<ENUM, ? extends Enum> groupProvider;
+	private Class<? extends Enum> parentGroup;
 	private boolean settingToggles = false;
 	private int columns;
 
@@ -116,12 +118,14 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 
 		AtomicInteger currentColumn = new AtomicInteger();
 		currentColumn.set(0);
-		enumGroupMap.entrySet().stream().forEach(enumListEntry -> {
-			Label heading = new Label(enumListEntry.getKey().toString());
+
+		Arrays.stream(parentGroup.getEnumConstants()).forEach(enumListEntry -> {
+			Label heading = new Label(enumListEntry.toString());
+			heading.setWidth(100, Unit.PERCENTAGE);
 			CssStyles.style(heading, CssStyles.H4);
 			columnList.get(currentColumn.get()).addComponent(heading);
 
-			enumListEntry.getValue().stream().forEach(anEnum -> {
+			enumGroupMap.get(enumListEntry).stream().forEach(anEnum -> {
 				CheckBox checkbox = createCheckbox(0, anEnum, null);
 				enumToggles.put(anEnum, checkbox);
 				columnList.get(currentColumn.get()).addComponent(checkbox);
@@ -151,7 +155,12 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 		final ENUM[] enumElements = enumType.getEnumConstants();
 
 		for (ENUM enumElement : enumElements) {
-			final ENUM parentElement = parentProvider.apply(enumElement);
+
+			ENUM parentElement = null;
+			if (parentProvider != null) {
+				parentElement = parentProvider.apply(enumElement);
+			}
+
 			int level = getEnumElementLevel(enumElement, 0);
 			CheckBox elementCheckbox = createCheckbox(level, enumElement, parentElement);
 
@@ -161,7 +170,10 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 	}
 
 	private int getEnumElementLevel(ENUM enumElement, int level) {
-		ENUM parentElement = parentProvider.apply(enumElement);
+		ENUM parentElement = null;
+		if (parentProvider != null) {
+			parentElement = parentProvider.apply(enumElement);
+		}
 		if (parentElement != null) {
 			level++;
 			return getEnumElementLevel(parentElement, level);
@@ -211,9 +223,10 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 		this.parentProvider = parentProvider;
 	}
 
-	public void setEnumType(Class<ENUM> enumType, Function<ENUM, ? extends Enum<?>> groupProvider, int columns) {
+	public void setEnumType(Class<ENUM> enumType, Function<ENUM, ? extends Enum<?>> groupProvider, Class<? extends Enum> parentGroup, int columns) {
 		this.enumType = enumType;
 		this.groupProvider = groupProvider;
+		this.parentGroup = parentGroup;
 		this.columns = columns;
 	}
 

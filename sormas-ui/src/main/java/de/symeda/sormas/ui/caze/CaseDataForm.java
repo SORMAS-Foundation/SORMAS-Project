@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -637,7 +638,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			reinfectionInfoLabel.setVisible(false);
 
 			reinfectionDetailGroupCheckBoxTreeUpdated = addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTreeUpdated.class);
-			reinfectionDetailGroupCheckBoxTreeUpdated.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, 2);
+			reinfectionDetailGroupCheckBoxTreeUpdated.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
 
 			tfReinfectionStatus.setReadOnly(false);
 			tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTreeUpdated.getValue()));

@@ -117,7 +117,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		otherWaterUse.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
 		waterUseCheckBoxTreeUpdated = addField(EnvironmentDto.WATER_USE, CheckBoxTreeUpdated.class);
-		waterUseCheckBoxTreeUpdated.setEnumType(WaterUse.class, WaterUse::getParent);
+		waterUseCheckBoxTreeUpdated.setEnumType(WaterUse.class, null);
 
 		waterUseCheckBoxTreeUpdated.addValueChangeListener((e) -> {
 			if (e.getProperty().getValue() != null) {
@@ -214,6 +214,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 				otherWaterUse.setVisible(false);
 				waterType.clear();
 				infrastructureDetails.clear();
+				waterUseCheckBoxTreeUpdated.clear();
 				waterUseCheckBoxTreeUpdated.clear();
 				otherWaterUse.clear();
 			}
