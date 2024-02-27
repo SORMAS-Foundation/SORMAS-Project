@@ -206,3 +206,10 @@ Feature: User roles checks
     And I set the Relevance Status Filter to "Active cases" on Case Directory page
     And I search for the last "restored" case on Case directory page
     And I check that number of displayed cases results is 1
+
+  @tmsLink=HSP-5532 @env_de
+  Scenario: Test user rights view in UI
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from Users Page
+    Then I get row count from User Roles tab

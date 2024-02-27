@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.EditUserPage.SAVE_BUTTON_EDIT_USER;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TABLE_GRID;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,7 @@ import org.testng.asserts.SoftAssert;
 public class UserManagementSteps implements En {
   public static int numberOfUsers;
   protected WebDriverHelpers webDriverHelpers;
+  public static int numberOfRows;
 
   @Inject
   public UserManagementSteps(
@@ -270,6 +272,16 @@ public class UserManagementSteps implements En {
                           webDriverHelpers.getTextFromPresentWebElement(TOTAL_USERS_COUNTER)),
                       number.intValue(),
                       "Number of displayed users is not correct"));
+        });
+
+    Then(
+        "I get row count from User Roles tab",
+        () -> {
+          numberOfRows =
+              Integer.parseInt(
+                  webDriverHelpers.getAttributeFromWebElement(
+                      USER_ROLE_TABLE_GRID, "aria-rowcount"));
+          System.out.print(numberOfRows);
         });
 
     And(
