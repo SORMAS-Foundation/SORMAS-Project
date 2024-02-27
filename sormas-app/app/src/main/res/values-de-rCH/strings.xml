@@ -533,7 +533,7 @@
     <string name="main_menu_immunizations">Immunisierungen</string>
     <string name="main_menu_settings">Einstellungen</string>
     <string name="main_menu_tasks">Aufgaben</string>
-    <string name="main_menu_aggregate_reports">mSERS</string>
+    <string name="main_menu_aggregate_reports">Aggregate</string>
     <string name="message_already_saving">Bereits im Speicherprozess..</string>
     <string name="message_aggregate_report_found">Achtung: Duplikat Berichte wurden für die Kriterien oben gefunden. In Rot markierte Krankheiten haben bereits Berichte.</string>
     <string name="message_aggregate_report_expired_age_groups">Altersgruppen, die als \"Verfallen\" markiert sind, basieren auf vorhandenen Daten für eine Altersgruppe, die nicht mehr verwendet wird.</string>
