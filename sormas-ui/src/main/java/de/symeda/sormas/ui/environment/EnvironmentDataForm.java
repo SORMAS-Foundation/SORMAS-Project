@@ -35,7 +35,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
@@ -64,8 +64,6 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			fluidRowLocs(EnvironmentDto.DELETION_REASON) +
 			fluidRowLocs(EnvironmentDto.OTHER_DELETION_REASON);
     //@formatter:on
-
-	CheckBoxTreeUpdated<WaterUse> waterUseCheckBoxTreeUpdated;
 
 	public EnvironmentDataForm(boolean isPseudonymized, boolean inJurisdiction, boolean isEditAllowed) {
 		super(
@@ -116,10 +114,10 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		TextField otherWaterUse = addField(EnvironmentDto.OTHER_WATER_USE, TextField.class);
 		otherWaterUse.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 
-		waterUseCheckBoxTreeUpdated = addField(EnvironmentDto.WATER_USE, CheckBoxTreeUpdated.class);
-		waterUseCheckBoxTreeUpdated.setEnumType(WaterUse.class, null);
+		CheckBoxTree<WaterUse> waterUseCheckBoxTree = addField(EnvironmentDto.WATER_USE, CheckBoxTree.class);
+		waterUseCheckBoxTree.setEnumType(WaterUse.class, null);
 
-		waterUseCheckBoxTreeUpdated.addValueChangeListener((e) -> {
+		waterUseCheckBoxTree.addValueChangeListener((e) -> {
 			if (e.getProperty().getValue() != null) {
 				if (Boolean.TRUE.equals(((Map<WaterUse, Boolean>) e.getProperty().getValue()).get(WaterUse.OTHER))) {
 					otherWaterUse.setVisible(true);
@@ -204,18 +202,18 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			if (EnvironmentMedia.WATER.equals(valueChangeEvent.getProperty().getValue())) {
 				waterType.setVisible(true);
 				infrastructureDetails.setVisible(true);
-				waterUseCheckBoxTreeUpdated.setVisible(true);
+				waterUseCheckBoxTree.setVisible(true);
 				useOfWaterHeading.setVisible(true);
 			} else {
 				useOfWaterHeading.setVisible(false);
 				waterType.setVisible(false);
 				infrastructureDetails.setVisible(false);
-				waterUseCheckBoxTreeUpdated.setVisible(false);
+				waterUseCheckBoxTree.setVisible(false);
 				otherWaterUse.setVisible(false);
 				waterType.clear();
 				infrastructureDetails.clear();
-				waterUseCheckBoxTreeUpdated.clear();
-				waterUseCheckBoxTreeUpdated.clear();
+				waterUseCheckBoxTree.clear();
+				waterUseCheckBoxTree.clear();
 				otherWaterUse.clear();
 			}
 		});

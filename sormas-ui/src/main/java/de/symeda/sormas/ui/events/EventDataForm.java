@@ -82,7 +82,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -167,8 +167,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private List<UserReferenceDto> regionEventResponsibles = new ArrayList<>();
 	private List<UserReferenceDto> districtEventResponsibles = new ArrayList<>();
 	private LocationEditForm locationForm;
-	private CheckBoxTreeUpdated<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceCheckBoxTreeUpdated;
-	private CheckBoxTreeUpdated<LaboratoryDiagnosticEvidenceDetail> laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated;
 
 	public EventDataForm(boolean create, boolean isPseudonymized, boolean inJurisdiction) {
 		super(
@@ -280,11 +278,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		final NullableOptionGroup epidemiologicalEvidence = addField(EventDto.EPIDEMIOLOGICAL_EVIDENCE, NullableOptionGroup.class);
 		final NullableOptionGroup laboratoryDiagnosticEvidence = addField(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE, NullableOptionGroup.class);
 
-		epidemiologicalEvidenceCheckBoxTreeUpdated = addField(EventDto.EPIDEMIOLOGICAL_EVIDENCE_DETAILS, CheckBoxTreeUpdated.class);
-		epidemiologicalEvidenceCheckBoxTreeUpdated.setEnumType(EpidemiologicalEvidenceDetail.class, EpidemiologicalEvidenceDetail::getParent);
+		CheckBoxTree<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceCheckBoxTree =
+			addField(EventDto.EPIDEMIOLOGICAL_EVIDENCE_DETAILS, CheckBoxTree.class);
+		epidemiologicalEvidenceCheckBoxTree.setEnumType(EpidemiologicalEvidenceDetail.class, EpidemiologicalEvidenceDetail::getParent);
 
-		laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated = addField(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS, CheckBoxTreeUpdated.class);
-		laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated
+		CheckBoxTree<LaboratoryDiagnosticEvidenceDetail> laboratoryDiagnosticEvidenceDetailCheckBoxTree =
+			addField(EventDto.LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS, CheckBoxTree.class);
+		laboratoryDiagnosticEvidenceDetailCheckBoxTree
 			.setEnumType(LaboratoryDiagnosticEvidenceDetail.class, LaboratoryDiagnosticEvidenceDetail::getParent);
 
 		DateField evolutionDateField = addField(EventDto.EVOLUTION_DATE, DateField.class);
@@ -530,10 +530,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			epidemiologicalEvidence.addValueChangeListener(valueChangeEvent -> {
 				if (((NullableOptionGroup) valueChangeEvent.getProperty()).getNullableValue() == YesNoUnknown.YES) {
-					epidemiologicalEvidenceCheckBoxTreeUpdated.setVisible(true);
+					epidemiologicalEvidenceCheckBoxTree.setVisible(true);
 				} else {
-					epidemiologicalEvidenceCheckBoxTreeUpdated.clear();
-					epidemiologicalEvidenceCheckBoxTreeUpdated.setVisible(false);
+					epidemiologicalEvidenceCheckBoxTree.clear();
+					epidemiologicalEvidenceCheckBoxTree.setVisible(false);
 				}
 			});
 		}
@@ -547,10 +547,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			laboratoryDiagnosticEvidence.addValueChangeListener(valueChangeEvent -> {
 				if (((NullableOptionGroup) valueChangeEvent.getProperty()).getNullableValue() == YesNoUnknown.YES) {
-					laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.setVisible(true);
+					laboratoryDiagnosticEvidenceDetailCheckBoxTree.setVisible(true);
 				} else {
-					laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.clear();
-					laboratoryDiagnosticEvidenceDetailCheckBoxTreeUpdated.setVisible(false);
+					laboratoryDiagnosticEvidenceDetailCheckBoxTree.clear();
+					laboratoryDiagnosticEvidenceDetailCheckBoxTree.setVisible(false);
 				}
 			});
 		}

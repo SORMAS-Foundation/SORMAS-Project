@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +22,7 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.CustomField;
 
-public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Boolean>> {
+public class CheckBoxTree<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Boolean>> {
 
 	private static final String[] INDENTATION_STYLES = new String[] {
 		CssStyles.INDENT_LEFT_1,
@@ -30,8 +30,8 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 		CssStyles.INDENT_LEFT_3 };
 
 	private Map<ENUM, CheckBox> enumToggles = new HashMap<>();
-	private VerticalLayout checkBoxTreeLayout;
-	private HorizontalLayout checkBoxTreeLayoutForGroups;
+	private VerticalLayout checkBoxLayout;
+	private HorizontalLayout groupLayout;
 	private Class<ENUM> enumType;
 	private boolean addVerticalSpaces;
 	private UnaryOperator<ENUM> parentProvider;
@@ -40,12 +40,8 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 	private boolean settingToggles = false;
 	private int columns;
 
-	public CheckBoxTreeUpdated() {
+	public CheckBoxTree() {
 
-	}
-
-	public Map<ENUM, CheckBox> getEnumToggles() {
-		return enumToggles;
 	}
 
 	@Override
@@ -53,21 +49,21 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 
 		if (enumType != null) {
 			if (groupProvider == null) {
-				checkBoxTreeLayout = new VerticalLayout();
-				checkBoxTreeLayout.setMargin(false);
-				checkBoxTreeLayout.setSpacing(false);
-				checkBoxTreeLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
+				checkBoxLayout = new VerticalLayout();
+				checkBoxLayout.setMargin(false);
+				checkBoxLayout.setSpacing(false);
+				checkBoxLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
 				addCheckBoxes();
 				final MarginInfo marginInfo = new MarginInfo(false, false, true, false);
-				checkBoxTreeLayout.setMargin(marginInfo);
+				checkBoxLayout.setMargin(marginInfo);
 			} else {
-				checkBoxTreeLayoutForGroups = new HorizontalLayout();
-				checkBoxTreeLayoutForGroups.setMargin(false);
-				checkBoxTreeLayoutForGroups.setWidth(100, Unit.PERCENTAGE);
+				groupLayout = new HorizontalLayout();
+				groupLayout.setMargin(false);
+				groupLayout.setWidth(100, Unit.PERCENTAGE);
 				addGroups();
 			}
 
-			setToggleValues();
+			setToggleValues(getValue());
 		}
 
 		addValueChangeListener(valueChangeEvent -> {
@@ -83,71 +79,47 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 			settingToggles = false;
 		});
 
-		if (checkBoxTreeLayout != null) {
-			return checkBoxTreeLayout;
+		if (checkBoxLayout != null) {
+			return checkBoxLayout;
 		}
 
-		return checkBoxTreeLayoutForGroups;
-	}
-
-	private void setToggleValues() {
-		settingToggles = true;
-		setToggleValues(getValue());
-		settingToggles = false;
+		return groupLayout;
 	}
 
 	private void addGroups() {
-		final ENUM[] enumElements = enumType.getEnumConstants();
-
-		Map<Enum, List<ENUM>> enumGroupMap = new HashMap<>();
-
-		for (ENUM enumElement : enumElements) {
-			final Enum groupElement = groupProvider.apply(enumElement);
-			if (enumGroupMap.containsKey(groupElement)) {
-				enumGroupMap.get(groupElement).add(enumElement);
-			} else {
-				enumGroupMap.put(groupElement, new ArrayList<>());
-				enumGroupMap.get(groupElement).add(enumElement);
-			}
-		}
+		Map<Enum<?>, List<ENUM>> enumGroupMap =
+			Arrays.stream(enumType.getEnumConstants()).collect(Collectors.groupingBy(anEnum -> groupProvider.apply(anEnum)));
 
 		List<VerticalLayout> columnList = new ArrayList<>();
 
 		for (int i = 0; i < columns; i++) {
-			final VerticalLayout e = new VerticalLayout();
-			e.setMargin(false);
-			e.setSpacing(false);
-			columnList.add(e);
+			final VerticalLayout columnLayout = new VerticalLayout();
+			columnLayout.setMargin(false);
+			columnLayout.setSpacing(false);
+			columnList.add(columnLayout);
+			groupLayout.addComponent(columnLayout);
 		}
 
-		AtomicInteger currentColumn = new AtomicInteger();
-		currentColumn.set(0);
-
-		Arrays.stream(parentGroup.getEnumConstants()).forEach(enumListEntry -> {
+		final Enum<?>[] enumConstants = parentGroup.getEnumConstants();
+		for (int i = 0; i < parentGroup.getEnumConstants().length; i++) {
+			final Enum<?> enumListEntry = enumConstants[i];
 			Label heading = new Label(enumListEntry.toString());
 			heading.setWidth(100, Unit.PERCENTAGE);
 			CssStyles.style(heading, CssStyles.H4);
-			columnList.get(currentColumn.get()).addComponent(heading);
+			final VerticalLayout columnLayout = columnList.get(i % columns);
+			columnLayout.addComponent(heading);
 
-			enumGroupMap.get(enumListEntry).stream().forEach(anEnum -> {
+			enumGroupMap.get(enumListEntry).forEach(anEnum -> {
 				CheckBox checkbox = createCheckbox(0, anEnum, null);
 				enumToggles.put(anEnum, checkbox);
-				columnList.get(currentColumn.get()).addComponent(checkbox);
+				columnLayout.addComponent(checkbox);
 			});
-
-			checkBoxTreeLayoutForGroups.addComponent(columnList.get(currentColumn.get()));
-
-			if (currentColumn.get() == columns - 1) {
-				currentColumn.set(0);
-			} else {
-				currentColumn.getAndIncrement();
-			}
-		});
+		}
 
 		final MarginInfo marginInfo = new MarginInfo(false, false, true, false);
-		checkBoxTreeLayoutForGroups.setMargin(marginInfo);
+		groupLayout.setMargin(marginInfo);
 
-		setToggleValues();
+		setToggleValues(getValue());
 	}
 
 	private void addCheckBoxes() {
@@ -165,7 +137,7 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 			CheckBox elementCheckbox = createCheckbox(level, enumElement, parentElement);
 
 			enumToggles.put(enumElement, elementCheckbox);
-			checkBoxTreeLayout.addComponent(elementCheckbox);
+			checkBoxLayout.addComponent(elementCheckbox);
 		}
 	}
 
@@ -236,10 +208,11 @@ public class CheckBoxTreeUpdated<ENUM extends Enum<?>> extends CustomField<Map<E
 	}
 
 	private void setToggleValues(Map<ENUM, Boolean> newFieldValue) {
+		settingToggles = true;
 		enumToggles.forEach((anEnum, checkBox) -> {
 			checkBox.setValue(newFieldValue != null && (newFieldValue.get(anEnum) != null && newFieldValue.get(anEnum)));
-			System.out.println("test");
 		});
+		settingToggles = false;
 	}
 
 	@Override

@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -57,7 +56,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -103,8 +102,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		EnvironmentSampleDto.RECEIVAL_DATE,
 		EnvironmentSampleDto.LAB_SAMPLE_ID,
 		EnvironmentSampleDto.SPECIMEN_CONDITION);
-
-	private CheckBoxTreeUpdated<WeatherCondition> weatherConditionCheckBoxTreeUpdated;
 
 	private final boolean isCreate;
 
@@ -179,8 +176,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		TextField phValueField = addField(EnvironmentSampleDto.PH_VALUE);
 		phValueField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, phValueField.getCaption()));
 
-		weatherConditionCheckBoxTreeUpdated = addField(EnvironmentSampleDto.WEATHER_CONDITIONS, CheckBoxTreeUpdated.class);
-		weatherConditionCheckBoxTreeUpdated.setEnumType(WeatherCondition.class, null);
+		CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree = addField(EnvironmentSampleDto.WEATHER_CONDITIONS, CheckBoxTree.class);
+		weatherConditionCheckBoxTree.setEnumType(WeatherCondition.class, null);
 
 		addField(EnvironmentSampleDto.HEAVY_RAIN, NullableOptionGroup.class);
 
@@ -283,22 +280,11 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 				}
 			}
 		});
-		if (!(canEditDispatchField)) {
-			weatherConditionCheckBoxTreeUpdated.setEnabled(false);
-		}
-	}
-
-	@Override
-	public void commit() throws SourceException, Validator.InvalidValueException {
-		super.commit();
-		getValue().setWeatherConditions(weatherConditionCheckBoxTreeUpdated.getValue());
 	}
 
 	@Override
 	public void setValue(EnvironmentSampleDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
-		weatherConditionCheckBoxTreeUpdated.setValue(newFieldValue.getWeatherConditions());
-
 		disableFieldsBasedOnRights(newFieldValue);
 	}
 

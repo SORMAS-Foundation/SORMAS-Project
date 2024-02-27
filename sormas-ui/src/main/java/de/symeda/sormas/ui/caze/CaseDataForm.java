@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -86,6 +85,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.ReinfectionDetail;
+import de.symeda.sormas.api.caze.ReinfectionDetailGroup;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -129,7 +129,7 @@ import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CheckBoxTreeUpdated;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -176,7 +176,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String REINFECTION_DETAILS_COL_1_LOC = "reinfectionDetailsCol1Loc";
 	private static final String REINFECTION_DETAILS_COL_2_LOC = "reinfectionDetailsCol2Loc";
 	public static final String CASE_REFER_POINT_OF_ENTRY_BTN_LOC = "caseReferFromPointOfEntryBtnLoc";
-	public static final String TEST_Heading = "testHeading";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -308,8 +307,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private TextField tfExpectedFollowUpUntilDate;
 	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
-
-	private CheckBoxTreeUpdated<ReinfectionDetail> reinfectionDetailGroupCheckBoxTreeUpdated;
 
 	public CaseDataForm(
 		String caseUuid,
@@ -637,16 +634,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().addComponent(reinfectionInfoLabel, REINFECTION_INFO_LOC);
 			reinfectionInfoLabel.setVisible(false);
 
-			reinfectionDetailGroupCheckBoxTreeUpdated = addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTreeUpdated.class);
-			reinfectionDetailGroupCheckBoxTreeUpdated.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
+			CheckBoxTree<ReinfectionDetail> reinfectionDetailGroupCheckBoxTree =
+				addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTree.class);
+			reinfectionDetailGroupCheckBoxTree
+				.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
 
 			tfReinfectionStatus.setReadOnly(false);
-			tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTreeUpdated.getValue()));
+			tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTree.getValue()));
 			tfReinfectionStatus.setReadOnly(true);
 
-			reinfectionDetailGroupCheckBoxTreeUpdated.addValueChangeListener(e->{
+			reinfectionDetailGroupCheckBoxTree.addValueChangeListener(e -> {
 				tfReinfectionStatus.setReadOnly(false);
-				tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTreeUpdated.getValue()));
+				tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTree.getValue()));
 				tfReinfectionStatus.setReadOnly(true);
 			});
 
@@ -677,11 +676,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						reinfectionInfoLabel.setDescription(null);
 						reinfectionInfoLabel.setVisible(false);
 					}
-					reinfectionDetailGroupCheckBoxTreeUpdated.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
+					reinfectionDetailGroupCheckBoxTree.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
 				} else {
 					reinfectionInfoLabel.setDescription(null);
 					reinfectionInfoLabel.setVisible(false);
-					reinfectionDetailGroupCheckBoxTreeUpdated.setVisible(false);
+					reinfectionDetailGroupCheckBoxTree.setVisible(false);
 				}
 			});
 		}
@@ -1624,8 +1623,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	@Override
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
-
-		reinfectionDetailGroupCheckBoxTreeUpdated.setValue(newFieldValue.getReinfectionDetails());
 
 		super.setValue(newFieldValue);
 
