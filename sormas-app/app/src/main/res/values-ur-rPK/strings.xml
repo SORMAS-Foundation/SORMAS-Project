@@ -533,7 +533,7 @@
     <string name="main_menu_immunizations">امیونائزیشنز</string>
     <string name="main_menu_settings">ترتیبات</string>
     <string name="main_menu_tasks">کام</string>
-    <string name="main_menu_aggregate_reports">mSERS</string>
+    <string name="main_menu_aggregate_reports">Aggregate</string>
     <string name="message_already_saving">پہلے ہی محفوظ کر رہا ہے..</string>
     <string name="message_aggregate_report_found">دھیان دیں: مندرجہ بالا معیار کے لیے ڈپلیکیٹ رپورٹس مل گئی ہیں۔ سرخ نشان زدہ بیماریوں کی رپورٹس پہلے سے موجود ہیں۔</string>
     <string name="message_aggregate_report_expired_age_groups">عمر کے گروپوں کو \"میعاد ختم\" کے طور پر نشان زد کیا گیا ہے جو عمر کے ایسے گروپ کے موجودہ ڈیٹا پر مبنی ہیں جو اب استعمال نہیں کیا جاتا ہے۔</string>
