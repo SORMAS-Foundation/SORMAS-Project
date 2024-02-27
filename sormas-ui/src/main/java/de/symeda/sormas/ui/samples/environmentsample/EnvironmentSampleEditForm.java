@@ -22,22 +22,18 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -106,8 +102,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		EnvironmentSampleDto.RECEIVAL_DATE,
 		EnvironmentSampleDto.LAB_SAMPLE_ID,
 		EnvironmentSampleDto.SPECIMEN_CONDITION);
-
-	private CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree;
 
 	private final boolean isCreate;
 
@@ -182,8 +176,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		TextField phValueField = addField(EnvironmentSampleDto.PH_VALUE);
 		phValueField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, phValueField.getCaption()));
 
-		final Component weatherConditionsLayout = buildWeatherConditionComponent();
-		getContent().addComponent(weatherConditionsLayout, EnvironmentSampleDto.WEATHER_CONDITIONS);
+		CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree = addField(EnvironmentSampleDto.WEATHER_CONDITIONS, CheckBoxTree.class);
+		weatherConditionCheckBoxTree.setEnumType(WeatherCondition.class, null);
 
 		addField(EnvironmentSampleDto.HEAVY_RAIN, NullableOptionGroup.class);
 
@@ -286,39 +280,12 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 				}
 			}
 		});
-		if (!(canEditDispatchField)) {
-			weatherConditionCheckBoxTree.setEnabled(false);
-		}
-	}
-
-	@Override
-	public void commit() throws SourceException, Validator.InvalidValueException {
-		super.commit();
-		getValue().setWeatherConditions(weatherConditionCheckBoxTree.getValues());
 	}
 
 	@Override
 	public void setValue(EnvironmentSampleDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
-		weatherConditionCheckBoxTree.setValues(newFieldValue.getWeatherConditions());
-		weatherConditionCheckBoxTree.initCheckboxes();
-
 		disableFieldsBasedOnRights(newFieldValue);
-	}
-
-	@NotNull
-	private Component buildWeatherConditionComponent() {
-		final VerticalLayout weatherConditionsLayout = new VerticalLayout();
-		CssStyles.style(weatherConditionsLayout, CssStyles.VSPACE_3);
-		Label weatherConditionsLabel =
-			new Label(I18nProperties.getPrefixCaption(EnvironmentSampleDto.I18N_PREFIX, EnvironmentSampleDto.WEATHER_CONDITIONS));
-		CssStyles.style(weatherConditionsLabel, CssStyles.VAADIN_CAPTION);
-		weatherConditionsLayout.addComponent(weatherConditionsLabel);
-		weatherConditionCheckBoxTree = new CheckBoxTree<>(
-			Arrays.stream(WeatherCondition.values()).map(c -> new CheckBoxTree.CheckBoxElement<>(null, c)).collect(Collectors.toList()));
-		weatherConditionCheckBoxTree.setValues(new EnumMap<>(WeatherCondition.class));
-		weatherConditionsLayout.addComponent(weatherConditionCheckBoxTree);
-		return weatherConditionsLayout;
 	}
 
 	protected void defaultValueChangeListener(EnvironmentSampleDto sample) {
