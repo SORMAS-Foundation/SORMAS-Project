@@ -53,7 +53,7 @@ public class EventImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_event_import_test_success.csv").toURI());
 		EventImporterExtension eventImporter = new EventImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = eventImporter.runImport();
+		ImportResultStatus importResult = eventImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, eventImporter.errors.toString());
 		assertEquals(4, getEventFacade().count(null));
@@ -77,7 +77,7 @@ public class EventImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
 			}
 		};
-		importResult = eventImporter.runImport();
+		importResult = eventImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(4, getEventFacade().count(null));
@@ -100,7 +100,7 @@ public class EventImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new PersonImportSimilarityResult(entries.get(0), ImportSimilarityResultOption.PICK));
 			}
 		};
-		importResult = eventImporter.runImport();
+		importResult = eventImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(6, getEventFacade().count(null));
@@ -115,7 +115,7 @@ public class EventImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
 			}
 		};
-		importResult = eventImporter.runImport();
+		importResult = eventImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.CANCELED, importResult);
 		assertEquals(6, getEventFacade().count(null));
@@ -130,7 +130,7 @@ public class EventImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new PersonImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
 			}
 		};
-		importResult = eventImporter.runImport();
+		importResult = eventImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(8, getEventFacade().count(null));
@@ -139,7 +139,7 @@ public class EventImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 cases from a commented CSV file
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_event_import_test_comment_success.csv").toURI());
 		eventImporter = new EventImporterExtension(csvFile, true, user);
-		importResult = eventImporter.runImport();
+		importResult = eventImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, eventImporter.errors.toString());
 		assertEquals(10, getEventFacade().count(null));
