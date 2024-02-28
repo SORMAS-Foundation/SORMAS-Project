@@ -66,6 +66,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
@@ -167,6 +168,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 		// Disease
 		diseaseCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDisease));
+		diseaseCheckBox.setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE));
 		getContent().addComponent(diseaseCheckBox, DISEASE_CHECKBOX);
 		ComboBox diseaseField = addDiseaseField(CaseBulkEditData.DISEASE, false);
 		diseaseField.setEnabled(false);
@@ -243,10 +245,13 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 		// Classification
 		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseClassification));
+		classificationCheckBox.setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY));
 		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
 		investigationStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkInvestigationStatus));
+		investigationStatusCheckBox.setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE));
 		getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
 		outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
+		outcomeCheckBox.setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY));
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
 		NullableOptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassification.setEnabled(false);
@@ -290,6 +295,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		}
 
 		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkFacility));
+		healthFacilityCheckbox.setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER));
 		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
 
 		region = addInfrastructureField(CaseBulkEditData.REGION);
