@@ -63,9 +63,7 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Bo
 				addGroups();
 			}
 
-			settingToggles = true;
 			setToggleValues(getValue());
-			settingToggles = false;
 		}
 
 		addValueChangeListener(valueChangeEvent -> {
@@ -121,9 +119,7 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Bo
 		final MarginInfo marginInfo = new MarginInfo(false, false, true, false);
 		groupLayout.setMargin(marginInfo);
 
-		settingToggles = true;
 		setToggleValues(getValue());
-		settingToggles = false;
 	}
 
 	private void addCheckBoxes() {
@@ -170,6 +166,9 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Bo
 
 		elementCheckbox.setWidth(100, Unit.PERCENTAGE);
 		elementCheckbox.addValueChangeListener(e -> {
+			if (settingToggles){
+				return;
+			}
 			final Boolean value = (Boolean) e.getProperty().getValue();
 			Map<ENUM, Boolean> newValue = getValue() != null ? new HashMap<>(getValue()) : new HashMap<>();
 			newValue.put(element, value);
@@ -212,9 +211,11 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Bo
 	}
 
 	private void setToggleValues(Map<ENUM, Boolean> newFieldValue) {
+		settingToggles = true;
 		enumToggles.forEach((anEnum, checkBox) -> {
 			checkBox.setValue(newFieldValue != null && (newFieldValue.get(anEnum) != null && newFieldValue.get(anEnum)));
 		});
+		settingToggles = false;
 	}
 
 	@Override
