@@ -188,12 +188,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		UserDto user = currentUserDto();
 
-		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
-		presentConditionField.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
+		ComboBox presentConditionField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				CaseCriteria.PRESENT_CONDITION,
+				I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION),
+				140));
 
 		if (UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
-			ComboBox jurisdictionTypeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.JURISDICTION_TYPE, 140));
-			jurisdictionTypeField.setInputPrompt(I18nProperties.getCaption(Captions.caseJurisdictionType));
+			ComboBox jurisdictionTypeField = addField(
+				moreFiltersContainer,
+				FieldConfiguration
+					.withCaptionAndPixelSized(CaseCriteria.JURISDICTION_TYPE, I18nProperties.getCaption(Captions.caseJurisdictionType), 140));
 			FieldHelper.updateEnumData(jurisdictionTypeField, Arrays.asList(CaseJurisdictionType.values()));
 		}
 
@@ -210,13 +216,19 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		if (!UserProvider.getCurrent().isPortHealthUser()) {
 
-			ComboBox typeGroup = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.FACILITY_TYPE_GROUP, 140));
-			typeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
+			ComboBox typeGroup = addField(
+				moreFiltersContainer,
+				FieldConfiguration
+					.withCaptionAndPixelSized(CaseCriteria.FACILITY_TYPE_GROUP, I18nProperties.getCaption(Captions.Facility_typeGroup), 140));
 			typeGroup.removeAllItems();
 			FieldHelper.updateEnumData(typeGroup, FacilityTypeGroup.getAccomodationGroups());
 
-			ComboBox type = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.FACILITY_TYPE, 140));
-			type.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+			ComboBox type = addField(
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+					CaseCriteria.FACILITY_TYPE,
+					I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE),
+					140));
 			type.removeAllItems();
 
 			ComboBox facilityField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.HEALTH_FACILITY, 140));
@@ -260,9 +272,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 		reportedByField.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 
-		TextField reportingUserField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
+		TextField reportingUserField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				CaseCriteria.REPORTING_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER),
+				200));
 		reportingUserField.setNullRepresentation("");
-		reportingUserField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER));
 
 		addField(
 			moreFiltersContainer,

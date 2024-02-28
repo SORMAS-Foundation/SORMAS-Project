@@ -169,6 +169,7 @@ public class UsersView extends AbstractUserView {
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
+		activeFilter.setDescription(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
 		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
 		activeFilter.addValueChangeListener(e -> {
 			criteria.active(
@@ -183,6 +184,7 @@ public class UsersView extends AbstractUserView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
+		userRolesFilter.setDescription(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
 		userRolesFilter.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRoleReferenceDto) e.getProperty().getValue());
@@ -198,6 +200,7 @@ public class UsersView extends AbstractUserView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+			regionFilter.setDescription(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -229,6 +232,7 @@ public class UsersView extends AbstractUserView {
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptUserSearch));
+		searchField.setDescription(I18nProperties.getString(Strings.promptUserSearch));
 		searchField.setImmediate(true);
 		searchField.addTextChangeListener(e -> {
 			criteria.freeText(e.getText());
