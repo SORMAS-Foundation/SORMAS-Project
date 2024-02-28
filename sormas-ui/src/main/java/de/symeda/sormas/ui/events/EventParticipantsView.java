@@ -324,12 +324,16 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 	private List<MenuBarItem> getBulkActions() {
 		List<MenuBarItem> bulkActions = new ArrayList<>();
 		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
-			bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
-				grid.bulkActionHandler(items -> {
-					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
-					ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
-				}, true);
-			}));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+				bulkActions.add(
+					new MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts),
+						VaadinIcons.HAND,
+						mi -> grid.bulkActionHandler(items -> {
+							EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
+							ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
+						}, true)));
+			}
 			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 				bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 					grid.bulkActionHandler(items -> {

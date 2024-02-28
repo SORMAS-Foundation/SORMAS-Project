@@ -602,7 +602,8 @@ public class ContactsView extends AbstractView implements HasName {
 								})));
 					}
 
-					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+						&& UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),

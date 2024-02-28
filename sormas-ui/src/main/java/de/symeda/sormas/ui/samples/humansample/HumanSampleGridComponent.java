@@ -186,17 +186,21 @@ public class HumanSampleGridComponent extends SampleGridComponent<SampleIndexDto
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getSampleController()
-								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkDelete),
+							VaadinIcons.TRASH,
+							selectedItem -> ControllerProvider.getSampleController()
+								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)));
 				} else {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
-							ControllerProvider.getSampleController()
-								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkRestore),
+							VaadinIcons.ARROW_BACKWARD,
+							selectedItem -> ControllerProvider.getSampleController()
+								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)));
 				}
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
