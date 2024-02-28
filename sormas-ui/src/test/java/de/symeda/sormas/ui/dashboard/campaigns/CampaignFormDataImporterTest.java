@@ -106,7 +106,7 @@ public class CampaignFormDataImporterTest extends AbstractUiBeanTest {
 		CampaignFormDataImporterExtension campaignFormDataImporter =
 			new CampaignFormDataImporterExtension(csvFile, false, user, campaignForm.getUuid(), new CampaignReferenceDto(campaign.getUuid()));
 
-		campaignFormDataImporter.runImport().getStatus();
+		campaignFormDataImporter.runImport();
 
 		assertTrue(campaignFormDataImporter.getErrorMessages().isEmpty());
 	}
