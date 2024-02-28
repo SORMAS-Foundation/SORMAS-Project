@@ -89,7 +89,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 case contacts
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").toURI());
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, user, caze);
-		ImportResultStatus importResult = contactImporter.runImport();
+		ImportResultStatus importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, contactFacade.count(null));
@@ -117,7 +117,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));
 			}
 		};
-		importResult = contactImporter.runImport();
+		importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(6, contactFacade.count(null));
@@ -137,7 +137,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
 			}
 		};
-		importResult = contactImporter.runImport();
+		importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(6, contactFacade.count(null));
@@ -146,7 +146,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 		// Person Similarity: create
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, user, caze);
-		importResult = contactImporter.runImport();
+		importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(7, contactFacade.count(null));
@@ -156,7 +156,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 case contacts
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_comment_success.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, user, caze);
-		importResult = contactImporter.runImport();
+		importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(12, contactFacade.count(null));
@@ -181,7 +181,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 		// 1 of those 2 still has enough details to be imported
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, user, null);
-		ImportResultStatus importResult = contactImporter.runImport();
+		ImportResultStatus importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
 		assertEquals(2, contactFacade.count(null));
@@ -199,7 +199,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, user, null);
-		importResult = contactImporter.runImport();
+		importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, contactFacade.count(null));
@@ -218,7 +218,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 		// Test import contacts from a commented CSV file
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_comment.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, user, null);
-		importResult = contactImporter.runImport();
+		importResult = contactImporter.runImport().getStatus();
 
 		InputStream errorStream =
 			new ByteArrayInputStream(((ContactImporterExtension) contactImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
@@ -258,7 +258,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 		// import of 3 contacts with different address types
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_address_types.csv").toURI());
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, user, caze);
-		ImportResultStatus importResult = contactImporter.runImport();
+		ImportResultStatus importResult = contactImporter.runImport().getStatus();
 
 		List<ContactDto> contacts = getContactFacade().getAllAfter(null);
 
@@ -305,7 +305,7 @@ public class ContactImporterTest extends AbstractUiBeanTest {
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_vaccinations.csv").toURI());
 		ContactImporterExtension contactImporter = new ContactImporterExtension(csvFile, user, null);
-		ImportResultStatus importResult = contactImporter.runImport();
+		ImportResultStatus importResult = contactImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, contactImporter.stringBuilder.toString());
 
