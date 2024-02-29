@@ -28,7 +28,7 @@
 		<payara.version>5.2022.5</payara.version>
 
 		<!-- *** Other dependency versions *** -->
-		<slf4j.version>2.0.7</slf4j.version>
+		<slf4j.version>2.0.9</slf4j.version>
 		<logback.version>1.3.5</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
