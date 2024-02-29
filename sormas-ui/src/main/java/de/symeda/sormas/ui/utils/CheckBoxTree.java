@@ -166,6 +166,9 @@ public class CheckBoxTree<ENUM extends Enum<?>> extends CustomField<Map<ENUM, Bo
 
 		elementCheckbox.setWidth(100, Unit.PERCENTAGE);
 		elementCheckbox.addValueChangeListener(e -> {
+			if (settingToggles){
+				return;
+			}
 			final Boolean value = (Boolean) e.getProperty().getValue();
 			Map<ENUM, Boolean> newValue = getValue() != null ? new HashMap<>(getValue()) : new HashMap<>();
 			newValue.put(element, value);
