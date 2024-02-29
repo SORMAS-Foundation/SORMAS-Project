@@ -154,8 +154,9 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 						   String caseAddressRegion, String caseAddressDistrict, String caseAddressCommunity, String caseAddressCity, String caseAddressStreet, String caseAddressHouseNumber, String caseAddressAdditionalInformation,
 						   String contactAddressRegion, String contactAddressDistrict, String contactAddressCommunity, String contactAddressCity, String contactAddressStreet, String contactAddressHouseNumber, String contactAddressAdditionalInformation,
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
-						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
-						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
+						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome,
+						   String caseRegion, String caseDistrict, String caseCommunity, String caseHealthFacility, String caseFacilityDetails,
+						   String contactRegion, String contactDistrict, String contactCommunity, String contactCaseRegion, String contactCaseDistrict, String contactCaseCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String eventParticipantRegion, String eventParticipantDistrict,
                            String labUuid, String caseHealthFacilityUuid, String caseResponsibleRegion, String caseResponsibleDistrict, String caseResponsibleCommunity,
 						   boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
@@ -180,9 +181,15 @@ public class SampleExportDto extends AbstractUuidDto implements IsSample {
 		}
 		if (contactUuid != null) {
 			this.associatedContact = new ContactReferenceDto(contactUuid, contactPersonFirstName, contactPersonLastName, null);
-			this.contactRegion = contactRegion;
-			this.contactDistrict = contactDistrict;
-			this.contactCommunity = contactCommunity;
+			if (contactRegion != null) {
+				this.contactRegion = contactRegion;
+				this.contactDistrict = contactDistrict;
+				this.contactCommunity = contactCommunity;
+			} else {
+				this.contactRegion = contactCaseRegion;
+				this.contactDistrict = contactCaseDistrict;
+				this.contactCommunity = contactCaseCommunity;
+			}
 		}
 		if (eventParticipantUuid != null) {
 			this.associatedEventParticipant =
