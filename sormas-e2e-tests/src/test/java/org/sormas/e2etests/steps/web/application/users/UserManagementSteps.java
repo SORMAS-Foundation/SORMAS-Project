@@ -22,12 +22,26 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CA
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.EditUserPage.SAVE_BUTTON_EDIT_USER;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.ENABLED_USER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.EXPORT_USER_ROLES;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.JURISDICTION_LEVEL_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_RIGHTS_INPUT;
 import static org.sormas.e2etests.pages.application.users.UserRolesPage.USER_ROLE_TABLE_GRID;
+import static org.sormas.e2etests.pages.application.users.UserRolesPage.getJurisdictionLevelCaptionByText;
 
 import cucumber.api.java8.En;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.users.UserManagementPage;
@@ -216,6 +230,7 @@ public class UserManagementSteps implements En {
           webDriverHelpers.scrollToElement(USER_ROLES_TAB);
           webDriverHelpers.clickOnWebElementBySelector(USER_ROLES_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_RIGHTS_INPUT);
+          TimeUnit.SECONDS.sleep(4);
         });
 
     And(
@@ -275,13 +290,93 @@ public class UserManagementSteps implements En {
         });
 
     Then(
-        "I get row count from User Roles tab",
+        "I check that all row in table has right jurisdiction level for User Roles tab",
+        () -> {
+          Integer numberOfChosenRows =
+              Integer.parseInt(
+                      webDriverHelpers.getAttributeFromWebElement(
+                          USER_ROLE_TABLE_GRID, "aria-rowcount"))
+                  - 1;
+          String jurisdictionLevel =
+              webDriverHelpers.getValueFromCombobox(JURISDICTION_LEVEL_COMBOBOX);
+          Integer jurisdictionLevelRows =
+              webDriverHelpers.getNumberOfElements(
+                  getJurisdictionLevelCaptionByText(jurisdictionLevel));
+          softly.assertEquals(numberOfChosenRows, jurisdictionLevelRows);
+          softly.assertAll();
+        });
+
+    Then(
+        "I get count for all row number for User Roles tab",
         () -> {
           numberOfRows =
               Integer.parseInt(
                   webDriverHelpers.getAttributeFromWebElement(
                       USER_ROLE_TABLE_GRID, "aria-rowcount"));
-          System.out.print(numberOfRows);
+        });
+
+    Then(
+        "I check that current row counter for chosen option is less then row number without filtering",
+        () ->
+            Assert.assertTrue(
+                Integer.parseInt(
+                        webDriverHelpers.getAttributeFromWebElement(
+                            USER_ROLE_TABLE_GRID, "aria-rowcount"))
+                    < numberOfRows,
+                "Filter do not hide mismatched values"));
+
+    Then(
+        "^I set user role filter to ([^\"]*) in User Roles tab$",
+        (String filter) -> {
+          webDriverHelpers.selectFromCombobox(USER_RIGHTS_COMBOBOX, filter);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+
+    Then(
+        "^I set jurisdiction level filter to ([^\"]*) in User Roles tab$",
+        (String filter) -> {
+          webDriverHelpers.selectFromCombobox(JURISDICTION_LEVEL_COMBOBOX, filter);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+
+    Then(
+        "I export user roles xlsx file",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EXPORT_USER_ROLES);
+          TimeUnit.SECONDS.sleep(10);
+        });
+
+    Then(
+        "^I set enabled filter to ([^\"]*) in User Roles tab$",
+        (String filter) -> {
+          webDriverHelpers.selectFromCombobox(ENABLED_USER_COMBOBOX, filter);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
+        });
+
+    When(
+        "I check if downloaded xlsx file is correct",
+        () -> {
+          String file =
+              String.format(
+                  "./downloads/sormas_benutzerrollen_%s_.xlsx", java.time.LocalDate.now());
+          System.out.println(java.time.LocalDate.now());
+          String firstRow = "";
+          FileInputStream xlsx = new FileInputStream(file);
+          Workbook document = new XSSFWorkbook(xlsx);
+          Sheet dataSheet = document.getSheetAt(0);
+          Iterator<Row> iterator = dataSheet.iterator();
+          Row currentRow = iterator.next();
+          Iterator<Cell> cellIterator = currentRow.iterator();
+          while (cellIterator.hasNext()) {
+            Cell currentCell = cellIterator.next();
+            firstRow = firstRow.concat(currentCell.getStringCellValue() + " ");
+          }
+          System.out.println(firstRow);
+          Assert.assertTrue(
+              firstRow.contains(
+                  "Benutzerrolle Zust\u00E4ndigkeitsebene Beschreibung CASE_VIEW CASE_CREATE CASE_EDIT CASE_ARCHIVE CASE_DELETE CASE_IMPORT CASE_EXPORT CASE_INVESTIGATE CASE_CLASSIFY CASE_CHANGE_DISEASE CASE_CHANGE_EPID_NUMBER CASE_TRANSFER CASE_REFER_FROM_POE CASE_MERGE CASE_SHARE CASE_RESPONSIBLE IMMUNIZATION_VIEW IMMUNIZATION_CREATE IMMUNIZATION_EDIT IMMUNIZATION_ARCHIVE IMMUNIZATION_DELETE PERSON_VIEW PERSON_EDIT PERSON_DELETE PERSON_EXPORT PERSON_CONTACT_DETAILS_DELETE SAMPLE_VIEW SAMPLE_CREATE SAMPLE_EDIT SAMPLE_DELETE SAMPLE_EXPORT SAMPLE_TRANSFER SAMPLE_EDIT_NOT_OWNED PERFORM_BULK_OPERATIONS_CASE_SAMPLES PATHOGEN_TEST_CREATE PATHOGEN_TEST_EDIT PATHOGEN_TEST_DELETE ADDITIONAL_TEST_VIEW ADDITIONAL_TEST_CREATE ADDITIONAL_TEST_EDIT ADDITIONAL_TEST_DELETE CONTACT_VIEW CONTACT_CREATE CONTACT_EDIT CONTACT_ARCHIVE CONTACT_DELETE CONTACT_IMPORT CONTACT_EXPORT CONTACT_CONVERT CONTACT_REASSIGN_CASE CONTACT_MERGE CONTACT_RESPONSIBLE VISIT_CREATE VISIT_EDIT VISIT_DELETE VISIT_EXPORT TASK_VIEW TASK_CREATE TASK_EDIT TASK_DELETE TASK_EXPORT TASK_ASSIGN ACTION_CREATE ACTION_DELETE ACTION_EDIT EVENT_VIEW EVENT_CREATE EVENT_EDIT EVENT_ARCHIVE EVENT_DELETE EVENT_IMPORT EVENT_EXPORT PERFORM_BULK_OPERATIONS_EVENT EVENT_RESPONSIBLE EVENTPARTICIPANT_VIEW EVENTPARTICIPANT_CREATE EVENTPARTICIPANT_EDIT EVENTPARTICIPANT_ARCHIVE EVENTPARTICIPANT_DELETE EVENTPARTICIPANT_IMPORT PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT EVENTGROUP_CREATE EVENTGROUP_EDIT EVENTGROUP_ARCHIVE EVENTGROUP_DELETE EVENTGROUP_LINK USER_VIEW USER_CREATE USER_EDIT USER_ROLE_VIEW USER_ROLE_EDIT USER_ROLE_DELETE STATISTICS_ACCESS STATISTICS_EXPORT INFRASTRUCTURE_VIEW INFRASTRUCTURE_CREATE INFRASTRUCTURE_EDIT INFRASTRUCTURE_ARCHIVE INFRASTRUCTURE_IMPORT INFRASTRUCTURE_EXPORT POPULATION_MANAGE DASHBOARD_SURVEILLANCE_VIEW DASHBOARD_CONTACT_VIEW DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS DASHBOARD_CAMPAIGNS_VIEW CASE_CLINICIAN_VIEW THERAPY_VIEW PRESCRIPTION_CREATE PRESCRIPTION_EDIT PRESCRIPTION_DELETE TREATMENT_CREATE TREATMENT_EDIT TREATMENT_DELETE CLINICAL_COURSE_VIEW CLINICAL_COURSE_EDIT CLINICAL_VISIT_CREATE CLINICAL_VISIT_EDIT CLINICAL_VISIT_DELETE PORT_HEALTH_INFO_VIEW PORT_HEALTH_INFO_EDIT WEEKLYREPORT_VIEW WEEKLYREPORT_CREATE AGGREGATE_REPORT_VIEW AGGREGATE_REPORT_EDIT AGGREGATE_REPORT_EXPORT SEE_PERSONAL_DATA_IN_JURISDICTION SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION SEE_SENSITIVE_DATA_IN_JURISDICTION SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION CAMPAIGN_VIEW CAMPAIGN_EDIT CAMPAIGN_ARCHIVE CAMPAIGN_DELETE CAMPAIGN_FORM_DATA_VIEW CAMPAIGN_FORM_DATA_EDIT CAMPAIGN_FORM_DATA_ARCHIVE CAMPAIGN_FORM_DATA_DELETE CAMPAIGN_FORM_DATA_EXPORT TRAVEL_ENTRY_MANAGEMENT_ACCESS TRAVEL_ENTRY_VIEW TRAVEL_ENTRY_CREATE TRAVEL_ENTRY_EDIT TRAVEL_ENTRY_ARCHIVE TRAVEL_ENTRY_DELETE DOCUMENT_VIEW DOCUMENT_UPLOAD DOCUMENT_DELETE PERFORM_BULK_OPERATIONS PERFORM_BULK_OPERATIONS_PSEUDONYM QUARANTINE_ORDER_CREATE SORMAS_REST SORMAS_UI DATABASE_EXPORT_ACCESS EXPORT_DATA_PROTECTION_DATA BAG_EXPORT SEND_MANUAL_EXTERNAL_MESSAGES MANAGE_EXTERNAL_SYMPTOM_JOURNAL EXTERNAL_VISITS SORMAS_TO_SORMAS_CLIENT SORMAS_TO_SORMAS_SHARE SORMAS_TO_SORMAS_PROCESS EXTERNAL_MESSAGE_VIEW EXTERNAL_MESSAGE_PROCESS EXTERNAL_MESSAGE_DELETE PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES OUTBREAK_VIEW OUTBREAK_EDIT MANAGE_PUBLIC_EXPORT_CONFIGURATION DOCUMENT_TEMPLATE_MANAGEMENT LINE_LISTING_CONFIGURE DEV_MODE UUID Einreise Benutzer Hat verkn\u00FCpfter Landkreisbenutzer Hat optionale Gesundheitseinrichtung Aktiviert"),
+              "XSLX file do not contains expected values");
+          Files.delete(Paths.get(file));
         });
 
     And(
