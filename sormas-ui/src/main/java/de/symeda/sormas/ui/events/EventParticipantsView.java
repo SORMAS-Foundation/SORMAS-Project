@@ -64,7 +64,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
@@ -324,7 +323,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 	private List<MenuBarItem> getBulkActions() {
 		List<MenuBarItem> bulkActions = new ArrayList<>();
 		if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			if (UiUtil.permitted(UserRight.CONTACT_CREATE)) {
 				bulkActions.add(
 					new MenuBarItem(
 						I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts),
@@ -334,7 +333,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 							ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
 						}, true)));
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 				bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 					grid.bulkActionHandler(items -> {
 						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, grid, () -> grid.reload());
