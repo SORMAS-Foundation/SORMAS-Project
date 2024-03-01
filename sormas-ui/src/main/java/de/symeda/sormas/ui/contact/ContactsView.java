@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.UiUtil.permitted;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -602,8 +604,9 @@ public class ContactsView extends AbstractView implements HasName {
 								})));
 					}
 
-					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-						&& UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE)) {
+					if (permitted(
+						EnumSet.of(FeatureType.EVENT_SURVEILLANCE),
+						EnumSet.of(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE))) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),

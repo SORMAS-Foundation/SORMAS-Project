@@ -1,8 +1,10 @@
 package de.symeda.sormas.ui;
 
+import java.util.Objects;
 import java.util.Set;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 
@@ -24,15 +26,19 @@ public class UiUtil {
 	}
 
 	public static boolean permitted(UserRight userRight) {
-		return UserProvider.getCurrent().hasUserRight(userRight);
+		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(userRight);
 	}
 
 	public static boolean permitted(Set<UserRight> userRights) {
-		return UserProvider.getCurrent().hasAllUserRights(userRights.toArray(new UserRight[] {}));
+		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasAllUserRights(userRights.toArray(new UserRight[] {}));
 	}
 
 	public static boolean enabled(FeatureType featureType) {
 		return !disabled(featureType);
+	}
+
+	public static boolean enabled(FeatureType featureType, DeletableEntityType entityType) {
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(featureType, entityType);
 	}
 
 	public static boolean disabled(FeatureType featureType) {
