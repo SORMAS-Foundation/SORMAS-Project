@@ -232,7 +232,7 @@ Feature: User roles checks
     Then I set user role filter to Falldefinitionskategorie und Verlauf der Erkrankung bearbeiten in User Roles tab
     And I check that current row counter for chosen option is less then row number without filtering
 
-  @tmsLink=SORDEV-12437mm @env_de
+  @tmsLink=SORDEV-12437 @env_de
   Scenario: Test user jurisdiction level view in UI
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -256,7 +256,7 @@ Feature: User roles checks
     Then I set jurisdiction level filter to Externes Labor in User Roles tab
     Then I check that all row in table has right jurisdiction level for User Roles tab
 
-  @tmsLink=SORDEV-12437h @env_de
+  @tmsLink=SORDEV-12437 @env_de
   Scenario: Test user enabled/disabled view in UI
     Given I log in as a Admin User
     And I click on the Users from navbar
