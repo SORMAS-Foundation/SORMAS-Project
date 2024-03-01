@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.UiUtil.permitted;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -812,8 +814,9 @@ public class CasesView extends AbstractView implements HasName {
 									}));
 						}
 
-						if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-							&& UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE)) {
+						if (permitted(
+							EnumSet.of(FeatureType.EVENT_SURVEILLANCE),
+							EnumSet.of(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE))) {
 							menuBarItems.add(
 								new MenuBarHelper.MenuBarItem(
 									I18nProperties.getCaption(Captions.bulkLinkToEvent),
