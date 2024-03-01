@@ -26,8 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -144,9 +143,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		final HorizontalLayout usageLayout = new HorizontalLayout();
 		usageLayout.setWidthFull();
-		Label usageLabel = new Label(
-				VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids),
-				ContentMode.HTML);
+		Label usageLabel =
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoUsageOfEditableCampaignGrids), ContentMode.HTML);
 		usageLabel.setWidthFull();
 		usageLayout.addComponent(usageLabel);
 		usageLayout.setSpacing(true);

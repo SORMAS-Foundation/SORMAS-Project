@@ -18,7 +18,7 @@ package de.symeda.sormas.ui.externalmessage.physiciansreport;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Window;
 
