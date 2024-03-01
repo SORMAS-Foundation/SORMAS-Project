@@ -63,6 +63,7 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
@@ -138,8 +139,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 	}
 
 	private boolean shouldDisableButton() {
-		return FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
-			&& FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
+		return UiUtil.disabled(FeatureType.EDIT_ARCHIVED_ENTITIES) && FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
 	}
 
 	private Set<String> getSelectedRows() {
@@ -201,7 +201,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		actionButtonsLayout.setSpacing(true);
 
 		// Show active/archived/all dropdown
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT_PARTICIPANT)) {
+		if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT_PARTICIPANT)) {
 			int daysAfterEventParticipantGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 				.getProperty(
 					FeatureType.AUTOMATIC_ARCHIVING,
@@ -267,7 +267,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			});
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, getBulkActions());
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 
@@ -276,7 +276,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 
 			addImportExportButtons(actionButtonsLayout);
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+			if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_CREATE)) {
 				final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
 					.expand(e -> ControllerProvider.getEventParticipantController().openLineListingWindow(getEventRef()));
 				actionButtonsLayout.addComponent(lineListingButton);
@@ -311,7 +311,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			relevanceStatusFilter
 				.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventParticipantDeletedEventParticipants));
 		} else {
@@ -363,7 +363,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 					});
 				}));
 			}
-		} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		} else if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 				grid.bulkActionHandler(items -> {
 					ControllerProvider.getEventParticipantController().restoreSelectedEventParticipants(items, grid, () -> grid.reload());
@@ -382,7 +382,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			exportLayout.setWidth(250, Unit.PIXELS);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_IMPORT)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventParticipantImportLayout(getEventRef()));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEventParticipant));
