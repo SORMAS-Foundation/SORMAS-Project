@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -603,9 +602,7 @@ public class ContactsView extends AbstractView implements HasName {
 								})));
 					}
 
-					if (permitted(
-						EnumSet.of(FeatureType.EVENT_SURVEILLANCE),
-						EnumSet.of(UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE))) {
+					if (permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),

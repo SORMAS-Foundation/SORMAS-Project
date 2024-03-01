@@ -21,16 +21,16 @@ public class UiUtil {
 		return enabled(features) && permitted(userRight);
 	}
 
-	public static boolean permitted(Set<FeatureType> features, Set<UserRight> userRights) {
-		return enabled(features) && permitted(userRights);
+	public static boolean permitted(FeatureType feature, UserRight... userRights) {
+		return enabled(feature) && permitted(userRights);
 	}
 
 	public static boolean permitted(UserRight userRight) {
 		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(userRight);
 	}
 
-	public static boolean permitted(Set<UserRight> userRights) {
-		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasAllUserRights(userRights.toArray(new UserRight[] {}));
+	public static boolean permitted(UserRight... userRights) {
+		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasAllUserRights(userRights);
 	}
 
 	public static boolean enabled(FeatureType featureType) {
