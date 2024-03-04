@@ -213,7 +213,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			suspect,
 			positiveTestResult(Disease.EVD, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
 
-		addCriteria(Disease.EVD, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.EVD));
+		addCriteria(Disease.EVD, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.EVD));
 
 		// CSM
 		suspect = allOf(
@@ -226,7 +226,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				symptom(SymptomsDto.BULGING_FONTANELLE)));
 		probable = allOf(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), suspect, epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN));
 		confirmed = allOf(suspect, positiveTestResult(Disease.CSM, PathogenTestType.ISOLATION));
-		addCriteria(Disease.CSM, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.CSM));
+		addCriteria(Disease.CSM, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.CSM));
 
 		// Lassa Fever
 		suspect = allOf(
@@ -249,7 +249,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 			suspect,
 			positiveTestResult(Disease.LASSA, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
-		addCriteria(Disease.LASSA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.LASSA));
+		addCriteria(Disease.LASSA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.LASSA));
 
 		// Yellow fever
 		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.JAUNDICE));
@@ -284,7 +284,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 							PathogenTestType.IGM_SERUM_ANTIBODY,
 							PathogenTestType.IGG_SERUM_ANTIBODY }),
 					true)));
-		addCriteria(Disease.YELLOW_FEVER, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.YELLOW_FEVER));
+		addCriteria(Disease.YELLOW_FEVER, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.YELLOW_FEVER));
 
 		// Dengue fever
 		suspect = allOf(
@@ -316,7 +316,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						new PathogenTestType[] {
 							PathogenTestType.IGG_SERUM_ANTIBODY }),
 					true)));
-		addCriteria(Disease.DENGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.DENGUE));
+		addCriteria(Disease.DENGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.DENGUE));
 
 		// Influenza (new subtype)
 		suspect = allOf(
@@ -343,7 +343,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						new PathogenTestType[] {
 							PathogenTestType.IGG_SERUM_ANTIBODY }),
 					true)));
-		addCriteria(Disease.NEW_INFLUENZA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.NEW_INFLUENZA));
+		addCriteria(Disease.NEW_INFLUENZA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.NEW_INFLUENZA));
 
 		// Measles
 		suspect = allOf(
@@ -352,7 +352,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			xOf(1, symptom(SymptomsDto.COUGH), symptom(SymptomsDto.RUNNY_NOSE), symptom(SymptomsDto.CONJUNCTIVITIS)));
 		probable = epiData(EpiDataDto.CONTACT_WITH_SOURCE_CASE_KNOWN);
 		confirmed = allOf(suspect, positiveTestResult(Disease.MEASLES, PathogenTestType.IGM_SERUM_ANTIBODY));
-		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.MEASLES));
+		addCriteria(Disease.MEASLES, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.MEASLES));
 
 		// Cholera
 		suspect = allOf(
@@ -365,7 +365,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 					oneOfCompact(caseData(CaseDataDto.OUTCOME, CaseOutcome.DECEASED), exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL)))));
 		probable = null;
 		confirmed = allOf(suspect, positiveTestResult(Disease.CHOLERA, PathogenTestType.ISOLATION));
-		addCriteria(Disease.CHOLERA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.CHOLERA));
+		addCriteria(Disease.CHOLERA, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.CHOLERA));
 
 		// Monkey pox
 		suspect = allOf(symptom(SymptomsDto.FEVER), symptom(SymptomsDto.SKIN_RASH));
@@ -373,7 +373,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 		confirmed = allOf(
 			suspect,
 			positiveTestResult(Disease.MONKEYPOX, PathogenTestType.IGM_SERUM_ANTIBODY, PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION));
-		addCriteria(Disease.MONKEYPOX, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.MONKEYPOX));
+		addCriteria(Disease.MONKEYPOX, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.MONKEYPOX));
 
 		// Plague
 		suspect = allOf(
@@ -394,7 +394,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			suspect,
 			xOf(1, exposure(ExposureDto.RISK_AREA, ExposureType.TRAVEL), positiveTestResult(Disease.PLAGUE, PathogenTestType.ANTIGEN_DETECTION)));
 		confirmed = allOf(suspect, positiveTestResult(Disease.PLAGUE, PathogenTestType.ISOLATION, PathogenTestType.PCR_RT_PCR));
-		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, extracted(Disease.PLAGUE));
+		addCriteria(Disease.PLAGUE, DateHelper.getDateZero(2020, 11, 6), suspect, probable, confirmed, notACase(Disease.PLAGUE));
 
 		// Congenital rubella
 		suspect = allOf(
@@ -457,7 +457,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			suspect,
 			probable,
 			confirmed,
-			extracted(Disease.CONGENITAL_RUBELLA));
+			notACase(Disease.CONGENITAL_RUBELLA));
 
 		// CORONAVIRUS
 		suspect = xOf(
@@ -474,15 +474,17 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 		probable = allOf(suspect, xOf(1, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES), partOfEventCluster()));
 
-		confirmed = allOf(
-			positiveTestResult(
-				Disease.CORONAVIRUS,
-				PathogenTestType.PCR_RT_PCR,
-				PathogenTestType.ANTIGEN_DETECTION,
-				PathogenTestType.ISOLATION,
-				PathogenTestType.SEQUENCING,
-				PathogenTestType.RAPID_TEST),
-			suspect);
+		confirmed = configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			? positiveTestResult(Disease.CORONAVIRUS)
+			: allOf(
+				positiveTestResult(
+					Disease.CORONAVIRUS,
+					PathogenTestType.PCR_RT_PCR,
+					PathogenTestType.ANTIGEN_DETECTION,
+					PathogenTestType.ISOLATION,
+					PathogenTestType.SEQUENCING,
+					PathogenTestType.RAPID_TEST),
+				suspect);
 
 		// confirmed_no_symptoms = positive test AND at least one symptom set to no AND all covid-relevant symptoms are anything but yes
 		confirmedNoSymptoms = allOf(
@@ -509,6 +511,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			noneOf(anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS)),
 			noneOf(suspect));
 
+		ClassificationCriteriaDto notACase = configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+			? allOf(negativeTestResult(Disease.CORONAVIRUS))
+			: notACase(Disease.CORONAVIRUS);
+
 		addCriteria(
 			Disease.CORONAVIRUS,
 			DateHelper.getDateZero(2020, 11, 6),
@@ -517,10 +523,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			confirmed,
 			confirmedNoSymptoms,
 			confirmedUnknownSymptoms,
-			extracted(Disease.CORONAVIRUS));
+			notACase);
 	}
 
-	private ClassificationAllOfCriteriaDto extracted(Disease disease) {
+	private ClassificationAllOfCriteriaDto notACase(Disease disease) {
 		return allOf(negativeTestResult(disease), otherPositiveTestResult(disease));
 	}
 

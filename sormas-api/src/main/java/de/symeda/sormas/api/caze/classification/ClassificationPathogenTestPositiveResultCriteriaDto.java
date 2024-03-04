@@ -52,7 +52,8 @@ public class ClassificationPathogenTestPositiveResultCriteriaDto extends Classif
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 
 		for (PathogenTestDto pathogenTest : pathogenTests) {
-			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE && pathogenTestTypes.contains(pathogenTest.getTestType())) {
+			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+				&& (pathogenTestTypes.isEmpty() || pathogenTestTypes.contains(pathogenTest.getTestType()))) {
 				if (testedDisease == null || pathogenTest.getTestedDisease() == testedDisease) {
 					return true;
 				}
