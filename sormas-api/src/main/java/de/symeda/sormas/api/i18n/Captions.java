@@ -1889,6 +1889,7 @@ public interface Captions {
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
+	String personCommunityPrompt = "personCommunityPrompt";
 	String PersonContactDetail = "PersonContactDetail";
 	String PersonContactDetail_additionalInformation = "PersonContactDetail.additionalInformation";
 	String PersonContactDetail_contactInformation = "PersonContactDetail.contactInformation";
@@ -1905,6 +1906,7 @@ public interface Captions {
 	String personContactDetailThirdParty = "personContactDetailThirdParty";
 	String personContactDetailThisPerson = "personContactDetailThisPerson";
 	String personCreateNew = "personCreateNew";
+	String personDistrictPrompt = "personDistrictPrompt";
 	String personFindMatching = "personFindMatching";
 	String personLinkToCases = "personLinkToCases";
 	String personLinkToContacts = "personLinkToContacts";
@@ -1914,6 +1916,7 @@ public interface Captions {
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
+	String personRegionPrompt = "personRegionPrompt";
 	String personSearchAndSelect = "personSearchAndSelect";
 	String personSelect = "personSelect";
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
