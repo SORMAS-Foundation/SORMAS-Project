@@ -363,7 +363,6 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          System.out.print(apiState.getCreatedContact().getUuid());
         });
 
     When(
