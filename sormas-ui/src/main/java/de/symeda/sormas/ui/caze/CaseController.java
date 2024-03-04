@@ -112,6 +112,7 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -174,11 +175,10 @@ public class CaseController {
 		if (userProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
 			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
 		}
-		if (userProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE)) {
+		if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
+		if (UiUtil.enabled(FeatureType.CASE_FOLLOWUP)) {
 			navigator.addView(CaseVisitsView.VIEW_NAME, CaseVisitsView.class);
 		}
 
@@ -334,7 +334,7 @@ public class CaseController {
 	public void convertSamePersonContactsAndEventParticipants(CaseDataDto caze, Runnable callback) {
 
 		List<SimilarContactDto> matchingContacts;
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 			ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
 				.withDisease(caze.getDisease())
 				.withContactClassification(ContactClassification.CONFIRMED)
@@ -346,7 +346,7 @@ public class CaseController {
 		}
 
 		List<SimilarEventParticipantDto> matchingEventParticipants;
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_EDIT)) {
 			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
 				.withDisease(caze.getDisease())
 				.withExcludePseudonymized(true)
@@ -710,10 +710,8 @@ public class CaseController {
 			createForm.setPersonalDetailsReadOnlyIfNotEmpty(true);
 		}
 
-		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<CaseCreateForm> editView =
+			new CommitDiscardWrapperComponent<CaseCreateForm>(createForm, UiUtil.permitted(UserRight.CASE_CREATE), createForm.getFieldGroup());
 		if (createForm.getHomeAddressForm() != null) {
 			editView.addFieldGroups(createForm.getHomeAddressForm().getFieldGroup());
 		}
@@ -946,7 +944,7 @@ public class CaseController {
 
 		editView.addDiscardListener(() -> caseEditForm.onDiscard());
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
+		if (UiUtil.permitted(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
 
 			Button.ClickListener clickListener = clickEvent -> {
 				editView.commit();
@@ -1099,9 +1097,9 @@ public class CaseController {
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+		if (UiUtil.permitted(UserRight.CASE_DELETE)) {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
-				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+				if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 					long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
 					if (contactCount > 0) {
 						VaadinUiUtil.showThreeOptionsPopup(
@@ -1132,7 +1130,7 @@ public class CaseController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.CASE_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(caze, ArchiveHandlers.forCase(), editView, () -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 		}
@@ -1202,7 +1200,7 @@ public class CaseController {
 				placeOfStayEditForm.setValue(cazeDto);
 				final CommitDiscardWrapperComponent<PlaceOfStayEditForm> wrapperComponent = new CommitDiscardWrapperComponent<>(
 					placeOfStayEditForm,
-					UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+					UiUtil.permitted(UserRight.CASE_EDIT),
 					placeOfStayEditForm.getFieldGroup());
 				wrapperComponent.addCommitListener(() -> {
 					final CaseDataDto dto = placeOfStayEditForm.getValue();
@@ -1251,10 +1249,8 @@ public class CaseController {
 		MaternalHistoryForm form = new MaternalHistoryForm(viewMode, maternalHistory.isPseudonymized(), maternalHistory.isInJurisdiction());
 		form.setValue(maternalHistory);
 
-		final CommitDiscardWrapperComponent<MaternalHistoryForm> component = new CommitDiscardWrapperComponent<MaternalHistoryForm>(
-			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
-			form.getFieldGroup());
+		final CommitDiscardWrapperComponent<MaternalHistoryForm> component =
+			new CommitDiscardWrapperComponent<MaternalHistoryForm>(form, UiUtil.permitted(UserRight.CASE_EDIT), form.getFieldGroup());
 		component.addCommitListener(() -> {
 			CaseDataDto caze1 = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			caze1.setMaternalHistory(form.getValue());
@@ -1277,10 +1273,8 @@ public class CaseController {
 			new PortHealthInfoForm(pointOfEntry, caze.getPointOfEntryDetails(), caze.isPseudonymized(), caze.isInJurisdiction());
 		form.setValue(getPortHealthInfo(caze));
 
-		final CommitDiscardWrapperComponent<PortHealthInfoForm> component = new CommitDiscardWrapperComponent<PortHealthInfoForm>(
-			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_EDIT),
-			form.getFieldGroup());
+		final CommitDiscardWrapperComponent<PortHealthInfoForm> component =
+			new CommitDiscardWrapperComponent<PortHealthInfoForm>(form, UiUtil.permitted(UserRight.PORT_HEALTH_INFO_EDIT), form.getFieldGroup());
 		component.addCommitListener(() -> {
 			CaseDataDto caze1 = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			caze1.setPortHealthInfo(form.getValue());
@@ -1306,10 +1300,8 @@ public class CaseController {
 				caseDataDto.isPseudonymized()));
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
-		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(
-			symptomsForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
-			symptomsForm.getFieldGroup());
+		CommitDiscardWrapperComponent<SymptomsForm> editView =
+			new CommitDiscardWrapperComponent<SymptomsForm>(symptomsForm, UiUtil.permitted(UserRight.CASE_EDIT), symptomsForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
@@ -1321,11 +1313,9 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, Consumer<Boolean> sourceContactsToggleCallback) {
-
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent =
-			getEpiDataComponent(caseUuid, sourceContactsToggleCallback, currentUserProvider.hasUserRight(UserRight.CASE_EDIT));
-		epiDataComponent.setEnabled(currentUserProvider.hasUserRight(UserRight.CASE_EDIT));
+		boolean hasCaseEditRight = UiUtil.permitted(UserRight.CASE_EDIT);
+		CommitDiscardWrapperComponent<EpiDataForm> epiDataComponent = getEpiDataComponent(caseUuid, sourceContactsToggleCallback, hasCaseEditRight);
+		epiDataComponent.setEnabled(hasCaseEditRight);
 		return epiDataComponent;
 	}
 
@@ -1344,7 +1334,6 @@ public class CaseController {
 			isEditAllowed);
 		epiDataForm.setValue(caze.getEpiData());
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<EpiDataForm> editView =
 			new CommitDiscardWrapperComponent<EpiDataForm>(epiDataForm, epiDataForm.getFieldGroup());
 
@@ -1354,7 +1343,7 @@ public class CaseController {
 			saveCase(cazeDto);
 		});
 
-		if (currentUserProvider.hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			long sourceContactCount = FacadeProvider.getContactFacade().count(new ContactCriteria().resultingCase(caze.toReference()));
 			if (sourceContactCount > 0) {
 				epiDataForm.disableContactWithSourceCaseKnownField();
@@ -1371,7 +1360,7 @@ public class CaseController {
 		form.setValue(caze.getClinicalCourse());
 
 		final CommitDiscardWrapperComponent<ClinicalCourseForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.CLINICAL_COURSE_EDIT), form.getFieldGroup());
 		view.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
@@ -1458,10 +1447,8 @@ public class CaseController {
 
 		CaseFacilityChangeForm form = new CaseFacilityChangeForm();
 		form.setValue(caze);
-		CommitDiscardWrapperComponent<CaseFacilityChangeForm> view = new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(
-			form,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE),
-			form.getFieldGroup());
+		CommitDiscardWrapperComponent<CaseFacilityChangeForm> view =
+			new CommitDiscardWrapperComponent<CaseFacilityChangeForm>(form, UiUtil.permitted(UserRight.CASE_REFER_FROM_POE), form.getFieldGroup());
 		view.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseReferFromPointOfEntry));
 
 		Window window = VaadinUiUtil.showPopupWindow(view);
@@ -1596,7 +1583,7 @@ public class CaseController {
 		LineListingLayout lineListingForm = new LineListingLayout(window);
 		lineListingForm.setSaveCallback(cases -> saveCasesFromLineListing(lineListingForm, cases));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
+		if (UiUtil.permitted(UserRight.CASE_CHANGE_EPID_NUMBER)) {
 			lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
 		} else {
 			lineListingForm.setWidth(LineListingLayout.WITDH_WITHOUT_EPID_NUMBER, Unit.PIXELS);

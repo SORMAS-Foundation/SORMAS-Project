@@ -42,7 +42,7 @@ import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -77,8 +77,7 @@ public class CaseVisitsView extends AbstractCaseView {
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		if (isEditAllowed()) {
-			if (UserProvider.getCurrent()
-				.hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.VISIT_EDIT, UserRight.VISIT_DELETE)) {
+			if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.VISIT_EDIT, UserRight.VISIT_DELETE)) {
 				topLayout.setWidth(100, Unit.PERCENTAGE);
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
@@ -91,7 +90,7 @@ public class CaseVisitsView extends AbstractCaseView {
 				topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+			if (UiUtil.permitted(UserRight.VISIT_EXPORT)) {
 				Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 				{
 					topLayout.addComponent(exportButton);
@@ -132,7 +131,7 @@ public class CaseVisitsView extends AbstractCaseView {
 				new FileDownloader(exportStreamResource).extend(exportButton);
 			}
 
-			if (UserProvider.getCurrent().hasAllUserRights(UserRight.VISIT_CREATE, UserRight.CASE_EDIT)) {
+			if (UiUtil.permitted(UserRight.VISIT_CREATE, UserRight.CASE_EDIT)) {
 				newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
 					ControllerProvider.getVisitController().createVisit(this.getCaseRef(), r -> navigateTo(criteria));
 				}, ValoTheme.BUTTON_PRIMARY);
@@ -153,8 +152,8 @@ public class CaseVisitsView extends AbstractCaseView {
 		if (grid == null) {
 			grid = new VisitGrid(
 				criteria,
-				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.VISIT_EDIT),
-				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.VISIT_DELETE));
+				UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.VISIT_EDIT),
+				UiUtil.permitted(isEditAllowed(), UserRight.VISIT_DELETE));
 
 			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();

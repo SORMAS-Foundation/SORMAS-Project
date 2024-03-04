@@ -3,6 +3,7 @@ package de.symeda.sormas.ui;
 import java.util.Objects;
 import java.util.Set;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -31,6 +32,19 @@ public class UiUtil {
 
 	public static boolean permitted(UserRight... userRights) {
 		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasAllUserRights(userRights);
+	}
+
+	public static boolean permitted(boolean isEditAllowed, UserRight userRight) {
+		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRightWithEditAllowedFlag(isEditAllowed, userRight);
+	}
+
+	public static boolean permitted(boolean isEditAllowed, UserRight... userRights) {
+		return Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, userRights);
+	}
+
+	public static boolean permitted(EditPermissionType editPermissionType, UserRight userRight) {
+		return Objects.nonNull(UserProvider.getCurrent())
+			&& UserProvider.getCurrent().hasUserRightWithEditPermissionType(editPermissionType, userRight);
 	}
 
 	public static boolean enabled(FeatureType featureType) {

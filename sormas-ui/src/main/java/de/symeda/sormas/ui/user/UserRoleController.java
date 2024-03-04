@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -56,10 +57,8 @@ public class UserRoleController {
 
 		UserRoleCreateForm createForm = new UserRoleCreateForm();
 		createForm.setValue(UserRoleDto.build());
-		final CommitDiscardWrapperComponent<UserRoleCreateForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserRoleCreateForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.USER_ROLE_EDIT), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -136,7 +135,7 @@ public class UserRoleController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_DELETE)) {
+		if (UiUtil.permitted(UserRight.USER_ROLE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				long userCountWithRole = FacadeProvider.getUserFacade().getUserCountHavingRole(userRoleRef);
 				if (userCountWithRole > 0) {
@@ -196,7 +195,7 @@ public class UserRoleController {
 		form.setValue(userRole);
 
 		final CommitDiscardWrapperComponent<UserRoleNotificationsForm> editView =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.USER_ROLE_EDIT), form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

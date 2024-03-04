@@ -57,6 +57,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.eventParticipantsLineListing.layout.LineListingLayout;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
@@ -103,10 +104,8 @@ public class EventParticipantsController {
 		EventParticipantCreateForm createForm =
 			new EventParticipantCreateForm(!FacadeProvider.getEventFacade().hasRegionAndDistrict(eventRef.getUuid()));
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.EVENTPARTICIPANT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -250,7 +249,7 @@ public class EventParticipantsController {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
 				null,
@@ -264,7 +263,7 @@ public class EventParticipantsController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					eventParticipant,

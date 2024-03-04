@@ -48,6 +48,7 @@ import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
@@ -163,10 +164,8 @@ public class VisitController {
 	}
 
 	private void createVisit(VisitEditForm createForm, Consumer<VisitReferenceDto> doneConsumer, Date allowedStartDate, Date allowedEndDate) {
-		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<VisitEditForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.VISIT_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {

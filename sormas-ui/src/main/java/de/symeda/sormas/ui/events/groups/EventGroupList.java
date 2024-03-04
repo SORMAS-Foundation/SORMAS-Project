@@ -38,6 +38,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
@@ -101,7 +102,7 @@ public class EventGroupList extends PaginationList<EventGroupIndexDto> {
 					reload();
 				});
 			}
-			if (userProvider != null && userProvider.hasUserRight(UserRight.EVENTGROUP_EDIT)) {
+			if (UiUtil.permitted(UserRight.EVENTGROUP_EDIT)) {
 				listEntry.addEditListener(i, (ClickListener) clickEvent -> {
 					ControllerProvider.getEventGroupController().navigateToData(listEntry.getEventGroup().getUuid());
 				});

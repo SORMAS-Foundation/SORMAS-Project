@@ -27,6 +27,7 @@ import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -50,10 +51,8 @@ public class ActionController {
 
 		ActionEditForm createForm = new ActionEditForm(true);
 		createForm.setValue(createNewAction(context, entityRef));
-		final CommitDiscardWrapperComponent<ActionEditForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.ACTION_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ActionEditForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ACTION_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -96,7 +95,7 @@ public class ActionController {
 		});
 
 		// Add delete button if user has role
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_DELETE)) {
+		if (UiUtil.permitted(UserRight.ACTION_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getActionFacade().deleteAction(newDto);
 				UI.getCurrent().removeWindow(popupWindow);

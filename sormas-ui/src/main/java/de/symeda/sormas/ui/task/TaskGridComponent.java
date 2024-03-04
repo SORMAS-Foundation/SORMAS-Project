@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -151,7 +152,7 @@ public class TaskGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+			if (UiUtil.permitted(UserRight.TASK_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
@@ -168,7 +169,7 @@ public class TaskGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
+			boolean hasBulkOperationsRight = UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS);
 			if (hasBulkOperationsRight) {
 				assigneeFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
@@ -180,7 +181,7 @@ public class TaskGridComponent extends VerticalLayout {
 						VaadinIcons.ELLIPSIS_H,
 						mi -> ControllerProvider.getTaskController()
 							.showBulkTaskDataEditComponent(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
-						hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT)));
+						hasBulkOperationsRight && UiUtil.permitted(UserRight.TASK_EDIT)));
 				menuBarItems.add(
 					new MenuBarHelper.MenuBarItem(
 						//here
@@ -188,7 +189,7 @@ public class TaskGridComponent extends VerticalLayout {
 						VaadinIcons.TRASH,
 						selectedItem -> ControllerProvider.getTaskController()
 							.deleteAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
-						hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)));
+						hasBulkOperationsRight && UiUtil.permitted(UserRight.TASK_DELETE)));
 				menuBarItems.add(
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
@@ -196,7 +197,7 @@ public class TaskGridComponent extends VerticalLayout {
 						mi -> ControllerProvider.getTaskController()
 							.archiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight
-							&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)
+							&& UiUtil.permitted(UserRight.TASK_ARCHIVE)
 							&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 				menuBarItems.add(
 					new MenuBarHelper.MenuBarItem(
@@ -205,7 +206,7 @@ public class TaskGridComponent extends VerticalLayout {
 						mi -> ControllerProvider.getTaskController()
 							.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight
-							&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)
+							&& UiUtil.permitted(UserRight.TASK_ARCHIVE)
 							&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
