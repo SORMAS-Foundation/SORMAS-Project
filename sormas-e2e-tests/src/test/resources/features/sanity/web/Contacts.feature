@@ -1175,7 +1175,7 @@ Feature: Contacts end to end tests
     Then I open the last created contact via API from "de"
     And I check if Follow up until date is 14 days after last created API contact report date
 
-  @tmsLink=HSP-5546 @env_main
+  @tmsLink=HSP-6646 @env_main
   Scenario: Check that Contact tasks display the correct region and district in Task Management Directory
     When API: I create a new person
     And API: I check that POST call status code is 200
