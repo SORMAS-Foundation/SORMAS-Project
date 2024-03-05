@@ -63,7 +63,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		addHeaderComponent(campaignSelector);
 		grid = new CampaignStatisticsGrid(criteria);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+		if (UiUtil.permitted(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);

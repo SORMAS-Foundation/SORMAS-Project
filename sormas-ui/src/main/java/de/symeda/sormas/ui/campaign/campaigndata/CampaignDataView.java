@@ -50,6 +50,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
@@ -124,7 +125,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		mainLayout.setExpandRatio(grid, 1);
 		mainLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+		if (UiUtil.permitted(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);

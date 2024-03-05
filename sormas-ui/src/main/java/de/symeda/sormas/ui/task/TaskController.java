@@ -46,6 +46,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
@@ -64,10 +65,8 @@ public class TaskController {
 
 		TaskEditForm createForm = new TaskEditForm(true, false, disease);
 		createForm.setValue(createNewTask(context, entityRef));
-		final CommitDiscardWrapperComponent<TaskEditForm> editView = new CommitDiscardWrapperComponent<TaskEditForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<TaskEditForm> editView =
+			new CommitDiscardWrapperComponent<TaskEditForm>(createForm, UiUtil.permitted(UserRight.TASK_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -89,10 +88,8 @@ public class TaskController {
 		taskDto.setAssigneeUser(sample.getReportingUser());
 		createForm.setValue(taskDto);
 
-		final CommitDiscardWrapperComponent<TaskEditForm> createView = new CommitDiscardWrapperComponent<TaskEditForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<TaskEditForm> createView =
+			new CommitDiscardWrapperComponent<TaskEditForm>(createForm, UiUtil.permitted(UserRight.TASK_CREATE), createForm.getFieldGroup());
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				TaskDto dto = createForm.getValue();
@@ -112,8 +109,7 @@ public class TaskController {
 		form.setValue(task);
 
 		EditPermissionType editPermissionType = FacadeProvider.getTaskFacade().getEditPermissionType(task.getUuid());
-		boolean isEditingAllowed = UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT) && editPermissionType == EditPermissionType.ALLOWED;
-		boolean isEditingOrDeletingAllowed = isEditingAllowed || UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE);
+		boolean isEditingAllowed = UiUtil.permitted(editPermissionType, UserRight.TASK_EDIT);
 
 		final CommitDiscardWrapperComponent<TaskEditForm> editView =
 			new CommitDiscardWrapperComponent<TaskEditForm>(form, true, form.getFieldGroup());
@@ -141,7 +137,7 @@ public class TaskController {
 
 		editView.addDiscardListener(popupWindow::close);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)) {
+		if (UiUtil.permitted(UserRight.TASK_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getTaskFacade().delete(task.getUuid());
 				UI.getCurrent().removeWindow(popupWindow);
@@ -150,7 +146,7 @@ public class TaskController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.TASK_ARCHIVE)) {
 			ControllerProvider.getArchiveController().addArchivingButtonWithDirtyCheck(task, ArchiveHandlers.forTask(), editView, () -> {
 				popupWindow.close();
 				callback.run();

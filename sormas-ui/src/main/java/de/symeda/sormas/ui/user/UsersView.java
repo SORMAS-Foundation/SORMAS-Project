@@ -44,6 +44,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -113,7 +114,7 @@ public class UsersView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
+		if (UiUtil.permitted(UserRight.USER_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
 				VaadinIcons.PLUS_CIRCLE,
@@ -129,7 +130,7 @@ public class UsersView extends AbstractUserView {
 			addHeaderComponent(syncButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 
@@ -263,7 +264,7 @@ public class UsersView extends AbstractUserView {
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 			actionButtonsLayout.setSpacing(true);
 
@@ -271,10 +272,10 @@ public class UsersView extends AbstractUserView {
 				Captions.bulkActions,
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
 					ControllerProvider.getUserController().enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)),
+				}, UiUtil.permitted(UserRight.USER_EDIT)),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
 					ControllerProvider.getUserController().disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)));
+				}, UiUtil.permitted(UserRight.USER_EDIT)));
 
 			bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 			actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -310,8 +311,8 @@ public class UsersView extends AbstractUserView {
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
 		regionFilter.setValue(criteria.getRegion());
-		showOnlyRestrictedAccessToAssignedEntities.setValue(
-			criteria.getShowOnlyRestrictedAccessToAssignedEntities() == null ? false : criteria.getShowOnlyRestrictedAccessToAssignedEntities());
+		showOnlyRestrictedAccessToAssignedEntities
+			.setValue(criteria.getShowOnlyRestrictedAccessToAssignedEntities() != null && criteria.getShowOnlyRestrictedAccessToAssignedEntities());
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));

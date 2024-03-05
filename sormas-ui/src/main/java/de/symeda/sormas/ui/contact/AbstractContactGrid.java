@@ -34,7 +34,6 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -42,7 +41,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -76,7 +75,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(viewConfigurationClass);
-		setInEagerMode(viewConfiguration.isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS));
+		setInEagerMode(viewConfiguration.isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS));
 
 		if (isInEagerMode()) {
 			setCriteria(criteria);
@@ -89,7 +88,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		initColumns();
 
 		addItemClickListener(new ShowDetailsListener<>(ContactIndexDto.PERSON_UUID, e -> {
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
+			if (UiUtil.enabled(FeatureType.PERSON_MANAGEMENT)) {
 				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());
 			} else {
 				ControllerProvider.getContactController().navigateToView(ContactPersonView.VIEW_NAME, e.getUuid(), false);
@@ -109,7 +108,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
 			Integer numberOfVisits = entry.getVisitCount();
 			Integer numberOfMissedVisits = entry.getMissedVisitsCount();
-			if (numberOfVisits != null && numberOfMissedVisits != null ) {
+			if (numberOfVisits != null && numberOfMissedVisits != null) {
 				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
 			} else {
 				return "-";
@@ -150,8 +149,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			Column<IndexDto, String> pendingTasksColumn = addColumn(
 				entry -> String.format(
 					I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -178,7 +176,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			getColumn(ContactIndexDto.SYMPTOM_JOURNAL_STATUS).setHidden(true);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+		if (!UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 			removeColumn(DELETE_REASON_COLUMN);
 		}
 
@@ -217,10 +215,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 					ContactIndexDto.VACCINATION_STATUS,
 					NUMBER_OF_VISITS),
-				Stream.of(NUMBER_OF_PENDING_TASKS)
-					.filter(
-						column -> FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-							&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)),
+				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)),
 				Stream.of(COLUMN_COMPLETENESS),
 				Stream.of(DELETE_REASON_COLUMN))
 			.flatMap(s -> s);

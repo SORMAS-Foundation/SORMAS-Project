@@ -42,6 +42,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
@@ -93,9 +94,7 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(prescriptionsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				&& isEditAllowed()
-				&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			if (UiUtil.permitted(isEditAllowed(), UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -111,12 +110,12 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			if (isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			if (UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT)) {
 				Button newPrescriptionButton = ButtonHelper.createButton(Captions.prescriptionNewPrescription, e -> {
 					ControllerProvider.getTherapyController()
 						.openPrescriptionCreateForm(prescriptionCriteria.getTherapy(), this::reloadPrescriptionGrid);
 				}, ValoTheme.BUTTON_PRIMARY);
-				if (!UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE)) {
+				if (!UiUtil.permitted(UserRight.PRESCRIPTION_CREATE)) {
 					newPrescriptionButton.setEnabled(false);
 				}
 				headlineRow.addComponent(newPrescriptionButton);
@@ -172,9 +171,7 @@ public class TherapyView extends AbstractCaseView {
 			headlineRow.setExpandRatio(treatmentsLabel, 1);
 
 			// Bulk operations
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				&& isEditAllowed()
-				&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			if (UiUtil.permitted(isEditAllowed(), UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT)) {
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -190,11 +187,11 @@ public class TherapyView extends AbstractCaseView {
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
-			if (isEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+			if (UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT)) {
 				Button newTreatmentButton = ButtonHelper.createButton(Captions.treatmentNewTreatment, e -> {
 					ControllerProvider.getTherapyController().openTreatmentCreateForm(treatmentCriteria.getTherapy(), this::reloadTreatmentGrid);
 				});
-				if (!UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE)) {
+				if (!UiUtil.permitted(UserRight.TREATMENT_CREATE)) {
 					newTreatmentButton.setEnabled(false);
 				}
 				headlineRow.addComponent(newTreatmentButton);

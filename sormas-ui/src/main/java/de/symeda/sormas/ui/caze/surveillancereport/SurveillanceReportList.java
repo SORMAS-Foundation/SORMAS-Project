@@ -43,6 +43,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -84,8 +85,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			SurveillanceReportDto report = displayedEntries.get(i);
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
 
-			boolean isEditable = UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
-				&& isEditAllowed
+			boolean isEditable = UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT)
 				&& !report.isOwnershipHandedOver()
 				&& (report.getSormasToSormasOriginInfo() == null || report.getSormasToSormasOriginInfo().isOwnershipHandedOver());
 
@@ -104,7 +104,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 	}
 
 	private void addViewExternalMessageButton(SurveillanceReportListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 			ExternalMessageDto externalMessage =
 				FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(listEntry.getReport().toReference());
 			if (externalMessage != null) {

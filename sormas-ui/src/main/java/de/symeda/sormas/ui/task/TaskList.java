@@ -36,7 +36,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -107,7 +107,7 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 	}
 
 	private boolean hasEditOrDeleteRights() {
-		return UserProvider.getCurrent().hasUserRight(UserRight.TASK_EDIT) || UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE);
+		return UiUtil.permitted(UserRight.TASK_EDIT) || UiUtil.permitted(UserRight.TASK_DELETE);
 	}
 
 }

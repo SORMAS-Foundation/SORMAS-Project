@@ -36,6 +36,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataEditForm;
@@ -60,7 +61,7 @@ public class CampaignController {
 				SormasUI.refreshView();
 			});
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+			if (UiUtil.permitted(UserRight.CAMPAIGN_DELETE)) {
 				campaignComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 					FacadeProvider.getCampaignFacade().delete(campaign.getUuid(), deleteDetails);
 					campaignComponent.discard();
@@ -73,7 +74,7 @@ public class CampaignController {
 			}
 
 			// Initialize 'Archive' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE)) {
+			if (UiUtil.permitted(UserRight.CAMPAIGN_ARCHIVE)) {
 				createArchiveButton(campaignComponent, campaign);
 			}
 			heading = I18nProperties.getString(Strings.headingEditCampaign);
@@ -130,7 +131,7 @@ public class CampaignController {
 				}
 			};
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
+		if (UiUtil.permitted(!isCreate, UserRight.CAMPAIGN_DELETE)) {
 			CampaignDto finalCampaignDto = campaignDto;
 			campaignComponent.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid(), deleteDetails);
@@ -143,7 +144,7 @@ public class CampaignController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE) && !isCreate) {
+		if (UiUtil.permitted(!isCreate, UserRight.CAMPAIGN_ARCHIVE)) {
 			final CampaignDto campaign = campaignDto;
 			createArchiveButton(campaignComponent, campaign);
 		}
@@ -222,7 +223,7 @@ public class CampaignController {
 		}
 
 		String campaignFormDataUuid = campaignFormData.getUuid();
-		if (!isCreate && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+		if (UiUtil.permitted(!isCreate, UserRight.CAMPAIGN_DELETE)) {
 
 			component.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);

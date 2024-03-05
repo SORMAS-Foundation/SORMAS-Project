@@ -331,7 +331,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		this.person = person;
 		this.disease = disease;
 		this.symptoms = symptoms;
-		this.caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		this.caseFollowUpEnabled = UiUtil.enabled(FeatureType.CASE_FOLLOWUP);
 
 		addFields();
 	}
@@ -503,7 +503,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 				getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
 
-				if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY)) {
+				if (!UiUtil.permitted(UserRight.CASE_CLASSIFY)) {
 					caseClassificationCalculationButton.setEnabled(false);
 				}
 			}
@@ -577,7 +577,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			setReadOnly(
-				!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
+				!UiUtil.permitted(UserRight.CASE_CLASSIFY),
 				CaseDataDto.CLINICAL_CONFIRMATION,
 				CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
 				CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
@@ -634,10 +634,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().addComponent(reinfectionInfoLabel, REINFECTION_INFO_LOC);
 			reinfectionInfoLabel.setVisible(false);
 
-			CheckBoxTree<ReinfectionDetail> reinfectionDetailGroupCheckBoxTree =
-				addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTree.class);
-			reinfectionDetailGroupCheckBoxTree
-				.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
+			CheckBoxTree<ReinfectionDetail> reinfectionDetailGroupCheckBoxTree = addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTree.class);
+			reinfectionDetailGroupCheckBoxTree.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
 
 			tfReinfectionStatus.setReadOnly(false);
 			tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTree.getValue()));
@@ -844,9 +842,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityCombo.addValueChangeListener(e -> updateFacilityDetails(facilityCombo, facilityDetails));
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+		if (UiUtil.enabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
-			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
+			setReadOnly(!UiUtil.permitted(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 
 		ComboBox pointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY, false);
@@ -1050,18 +1048,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.POINT_OF_ENTRY_DETAILS,
 			CaseDataDto.CASE_ORIGIN);
 
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!UiUtil.permitted(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!UiUtil.permitted(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
+		setReadOnly(!UiUtil.permitted(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
 		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE),
-			CaseDataDto.INVESTIGATION_STATUS,
-			CaseDataDto.INVESTIGATED_DATE);
-		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
-			CaseDataDto.CASE_CLASSIFICATION,
-			CaseDataDto.OUTCOME,
-			CaseDataDto.OUTCOME_DATE);
-		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER),
+			!UiUtil.permitted(UserRight.CASE_TRANSFER),
 			CaseDataDto.RESPONSIBLE_REGION,
 			CaseDataDto.RESPONSIBLE_DISTRICT,
 			CaseDataDto.RESPONSIBLE_COMMUNITY,
@@ -1284,8 +1275,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 				if (getValue().getPointOfEntry() != null) {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
-					btnReferFromPointOfEntry
-						.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
+					btnReferFromPointOfEntry.setVisible(UiUtil.permitted(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
 				} else if (!isEditableAllowed(CaseDataDto.POINT_OF_ENTRY)) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY_DETAILS);
 					btnReferFromPointOfEntry.setVisible(false);
@@ -1581,7 +1571,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(CaseDataDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (followUpVisible && UiUtil.permitted(UserRight.CASE_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
@@ -1638,7 +1628,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-		if (caseFollowUpEnabled && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (caseFollowUpEnabled && UiUtil.permitted(UserRight.CASE_EDIT)) {
 			expectedFollowUpPeriodDto = FacadeProvider.getCaseFacade().calculateFollowUpUntilDate(newFieldValue, true);
 			tfExpectedFollowUpUntilDate
 				.setValue(DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
