@@ -47,6 +47,7 @@ import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -103,7 +104,7 @@ public class ContactVisitsView extends AbstractContactView {
 				topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+			if (UiUtil.permitted(UserRight.VISIT_EXPORT)) {
 				Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 				{
 					topLayout.addComponent(exportButton);

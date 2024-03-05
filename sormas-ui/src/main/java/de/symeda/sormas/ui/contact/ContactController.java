@@ -81,6 +81,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -112,10 +113,8 @@ public class ContactController {
 	}
 
 	public void registerViews(Navigator navigator) {
-		UserProvider userProvider = UserProvider.getCurrent();
-
 		navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
-		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+		if (UiUtil.permitted(UserRight.CASE_MERGE)) {
 			navigator.addView(MergeContactsView.VIEW_NAME, MergeContactsView.class);
 		}
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
@@ -448,10 +447,8 @@ public class ContactController {
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
 		}
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -553,10 +550,8 @@ public class ContactController {
 		createForm.setPersonDetailsReadOnly();
 		createForm.setDiseaseReadOnly();
 
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -586,10 +581,8 @@ public class ContactController {
 		createForm.setPerson(person);
 		createForm.setPersonDetailsReadOnly();
 
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -689,7 +682,7 @@ public class ContactController {
 
 		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.equal(contact.getContactOfficer(), UserProvider.getCurrent().getUserReference())) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+			if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 				editComponent.addDeleteWithReasonOrRestoreListener(
 					ContactsView.VIEW_NAME,
 					getDeleteConfirmationDetails(Collections.singletonList(contact.getUuid())),
@@ -699,7 +692,7 @@ public class ContactController {
 			}
 
 			// Initialize 'Archive' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
+			if (UiUtil.permitted(UserRight.CONTACT_ARCHIVE)) {
 				ControllerProvider.getArchiveController()
 					.addArchivingButton(
 						contact,

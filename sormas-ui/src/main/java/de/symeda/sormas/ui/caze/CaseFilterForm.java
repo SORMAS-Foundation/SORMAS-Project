@@ -235,7 +235,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			facilityField.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			ComboBox pointOfEntryField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.POINT_OF_ENTRY, 140));
 			pointOfEntryField.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
 		}
@@ -245,7 +245,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		officerField
 			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), selectedDisease, UserRight.CASE_RESPONSIBLE));
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
+		if (UiUtil.enabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(
@@ -301,7 +301,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutGeo),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -312,8 +312,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
-			|| UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
+		if (UiUtil.permitted(UserRight.CLINICAL_COURSE_VIEW) || UiUtil.permitted(UserRight.THERAPY_VIEW)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -367,8 +366,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CASES_WITH_EVENTS,
 				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
-				CssStyles.CHECKBOX_FILTER_INLINE))
-			.setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
+				CssStyles.CHECKBOX_FILTER_INLINE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
@@ -757,7 +755,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			disableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
 		}
 

@@ -616,8 +616,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						.createLinkToData(getValue().getResultingCase().getUuid(), I18nProperties.getCaption(Captions.contactOpenContactCase));
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
-					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)
-						&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+					if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CONTACT_CONVERT)) {
 						toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase);
 						toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
@@ -772,7 +771,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (followUpVisible && UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);
 			boolean followUpCanceledOrLost = followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST;
