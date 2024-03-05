@@ -16,7 +16,6 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -93,7 +92,7 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 		setLazyDataProvider(
 			FacadeProvider.getPersonFacade()::getIndexList,
 			FacadeProvider.getPersonFacade()::count,
-			bulkEditMode && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) ? SelectionMode.MULTI : SelectionMode.NONE);
+			bulkEditMode && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) ? SelectionMode.MULTI : SelectionMode.NONE);
 	}
 
 	public void setFixDataProvider(List<PersonIndexDto> list) {
@@ -103,7 +102,7 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 
 	protected void setBulkEditMode(boolean bulkEditMode) {
 		this.bulkEditMode = bulkEditMode;
-		if (bulkEditMode && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (bulkEditMode && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);

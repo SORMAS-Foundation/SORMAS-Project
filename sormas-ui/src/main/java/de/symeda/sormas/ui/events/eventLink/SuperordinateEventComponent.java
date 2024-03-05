@@ -36,6 +36,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -72,7 +73,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 				new SuperordinateEventInfoLayout(
 					FacadeProvider.getEventFacade().getEventByUuid(subordinateEvent.getSuperordinateEvent().getUuid(), false)));
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (UiUtil.permitted(UserRight.EVENT_EDIT)) {
 				Button btnUnlinkEvent = ButtonHelper.createIconButtonWithCaption(
 					"unlinkSuperordinateEvent",
 					I18nProperties.getCaption(Captions.eventUnlinkEvent),

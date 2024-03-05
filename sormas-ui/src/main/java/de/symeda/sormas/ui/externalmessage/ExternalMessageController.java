@@ -75,6 +75,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
@@ -102,9 +103,9 @@ public class ExternalMessageController {
 			FacadeProvider.getEventParticipantFacade(),
 			FacadeProvider.getSampleFacade(),
 			FacadeProvider.getPathogenTestFacade(),
-                FacadeProvider.getRegionFacade(),
-                FacadeProvider.getDistrictFacade(),
-                FacadeProvider.getCommunityFacade(),
+			FacadeProvider.getRegionFacade(),
+			FacadeProvider.getDistrictFacade(),
+			FacadeProvider.getCommunityFacade(),
 			FacadeProvider.getFacilityFacade(),
 			FacadeProvider.getCustomizableEnumFacade(),
 			FacadeProvider.getCountryFacade(),
@@ -303,7 +304,7 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
 			Button deleteButton = ButtonHelper.createButton(
 				Captions.actionDelete,
 				I18nProperties.getCaption(Captions.actionDelete),
