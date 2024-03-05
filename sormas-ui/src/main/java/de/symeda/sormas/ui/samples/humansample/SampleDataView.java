@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
@@ -153,9 +154,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 			new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup, isEditAllowed());
 		layout.addSidePanelComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
-		if (UserProvider.getCurrent() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
+		if (UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW)) {
 
 			AdditionalTestListComponent additionalTestList =
 				new AdditionalTestListComponent(sampleReferenceDto.getUuid(), this::showUnsavedChangesPopup, isEditAllowed());

@@ -42,6 +42,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -85,7 +86,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
 						boolean styleAsButton =
 							(UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationJurisdictionLevel())
-								|| UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_EDIT)
+								|| UiUtil.permitted(UserRight.OUTBREAK_EDIT)
 									&& DataHelper.equal(UserProvider.getCurrent().getUser().getRegion(), value.getRegion());
 						boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size() >= value.getTotalDistricts() / 2.0f;
 

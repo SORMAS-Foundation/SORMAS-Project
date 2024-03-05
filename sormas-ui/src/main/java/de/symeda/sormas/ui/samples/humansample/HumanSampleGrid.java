@@ -62,7 +62,7 @@ public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriter
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(SamplesView.class).get(SamplesViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -155,20 +155,19 @@ public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriter
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (!UiUtil.permitted(UserRight.CASE_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (!UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (!UiUtil.permitted(UserRight.EVENT_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			|| !FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
+		if (!UiUtil.permitted(UserRight.ADDITIONAL_TEST_VIEW) || UiUtil.disabled(FeatureType.ADDITIONAL_TESTS)) {
 			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 		}
 

@@ -64,6 +64,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -120,10 +121,8 @@ public class PathogenTestController {
 
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created 
 		createForm.setValue(pathogenTest);
-		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -145,10 +144,8 @@ public class PathogenTestController {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 
-		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -318,7 +315,7 @@ public class PathogenTestController {
 
 	private void handleAssociatedCase(List<PathogenTestDto> pathogenTests, CaseReferenceDto associatedCase, boolean suppressNavigateToCase) {
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (!UiUtil.permitted(UserRight.CASE_EDIT)) {
 			return;
 		}
 
@@ -380,7 +377,7 @@ public class PathogenTestController {
 
 	private void handleAssociatedContact(List<PathogenTestDto> pathogenTests, ContactReferenceDto associatedContact) {
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (!UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 			return;
 		}
 
@@ -407,8 +404,7 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		final boolean caseCreationPossible = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE);
+		final boolean caseCreationPossible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
 		if (positiveWithSameDisease.isPresent()) {
 			if (contact.getResultingCase() == null && !ContactStatus.CONVERTED.equals(contact.getContactStatus()) && caseCreationPossible) {
 				showConvertContactToCaseDialog(
@@ -440,7 +436,7 @@ public class PathogenTestController {
 
 	private void handleAssociatedEventParticipant(List<PathogenTestDto> pathogenTests, EventParticipantReferenceDto associatedEventParticipant) {
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+		if (!UiUtil.permitted(UserRight.EVENTPARTICIPANT_EDIT)) {
 			return;
 		}
 
@@ -471,8 +467,7 @@ public class PathogenTestController {
 			.filter(t -> t.getTestResult() == PathogenTestResultType.NEGATIVE && t.getTestResultVerified())
 			.findFirst();
 
-		final boolean caseCreationPossible = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE);
+		final boolean caseCreationPossible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
 
 		if (positiveWithSameDisease.isPresent()) {
 			if (eventParticipant.getResultingCase() == null && caseCreationPossible) {
@@ -492,8 +487,7 @@ public class PathogenTestController {
 
 				Optional<PathogenTestDto> positiveWithOtherDisease =
 					tests.stream().filter(t -> t.getTestResult() == PathogenTestResultType.POSITIVE && t.getTestResultVerified()).findFirst();
-				if (positiveWithOtherDisease.isPresent()
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
+				if (positiveWithOtherDisease.isPresent() && UiUtil.enabled(FeatureType.CASE_SURVEILANCE)) {
 					List<CaseDataDto> duplicatedCases = FacadeProvider.getCaseFacade()
 						.getDuplicatesWithPathogenTest(eventParticipant.getPerson().toReference(), positiveWithOtherDisease.get());
 					if (CollectionUtils.isEmpty(duplicatedCases)) {

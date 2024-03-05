@@ -91,8 +91,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		boolean editAllowed = isEditAllowed();
 		DocumentListComponent documentList = null;
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.DOCUMENTS, UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.TRAVEL_ENTRY,
 				getReference(),
@@ -105,8 +104,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, travelEntryDto, documentList);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			TaskListComponent taskList = new TaskListComponent(
 				TaskContext.TRAVEL_ENTRY,
 				getTravelEntryRef(),
@@ -119,7 +117,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

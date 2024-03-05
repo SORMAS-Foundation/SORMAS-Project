@@ -52,6 +52,7 @@ import de.symeda.sormas.api.utils.DateComparator;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -100,7 +101,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
 				.add(new OutbreakFieldVisibilityChecker(viewMode)),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized), isEditAllowed);
+			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			isEditAllowed);
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();
@@ -276,7 +278,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		YesNoUnknown value = (YesNoUnknown) hospitalizedPreviouslyField.getNullableValue();
 		Collection<PreviousHospitalizationDto> previousHospitalizations = previousHospitalizationsField.getValue();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
+		if (UiUtil.permitted(UserRight.CASE_EDIT)
 			&& value == YesNoUnknown.YES
 			&& (previousHospitalizations == null || previousHospitalizations.size() == 0)) {
 			hospitalizedPreviouslyField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.softAddEntryToList)));

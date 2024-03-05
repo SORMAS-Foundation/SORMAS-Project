@@ -50,6 +50,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -177,7 +178,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			layout.addComponent(label);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_PROCESS)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_PROCESS)) {
 			Button button = new Button();
 			CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			if (externalMessage.getAssignee() == null) {
@@ -193,7 +194,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	}
 
 	private Component buildProcessComponent(ExternalMessageIndexDto indexDto) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_PROCESS)
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_PROCESS)
 			&& indexDto.getStatus().isProcessable()
 			&& (indexDto.getType() != ExternalMessageType.PHYSICIANS_REPORT
 				|| UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT))) {

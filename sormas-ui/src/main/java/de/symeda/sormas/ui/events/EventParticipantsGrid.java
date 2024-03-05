@@ -35,7 +35,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
@@ -59,7 +58,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantsViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -156,7 +155,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			}));
 		}
 		addItemClickListener(new ShowDetailsListener<>(EventParticipantIndexDto.PERSON_UUID, e -> {
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
+			if (UiUtil.enabled(FeatureType.PERSON_MANAGEMENT)) {
 				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());
 			} else {
 				ControllerProvider.getEventParticipantController().navigateToData(e.getUuid());

@@ -38,7 +38,7 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -162,9 +162,8 @@ public class SampleListEntry extends SideComponentField {
 		topLayout.addComponent(topLeftLayout);
 		topLayout.setComponentAlignment(topLeftLayout, Alignment.TOP_LEFT);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& sampleListEntryDto.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
+		if (sampleListEntryDto.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED
+			&& UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW)) {
 			Label labelAdditionalTests = new Label(
 				I18nProperties.getString(Strings.entityAdditionalTests) + " "
 					+ sampleListEntryDto.getAdditionalTestingStatus().toString().toLowerCase());

@@ -88,7 +88,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.HtmlHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -416,7 +416,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			CssStyles.style(caseIncidenceNotPossibleLabel, CssStyles.VSPACE_TOP_4);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.STATISTICS_EXPORT)) {
+		if (UiUtil.permitted(UserRight.STATISTICS_EXPORT)) {
 			exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 

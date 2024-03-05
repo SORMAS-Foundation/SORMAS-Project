@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.immunization;
 
-import java.util.Objects;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
@@ -22,7 +20,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.immunization.components.layout.directory.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.layout.directory.ImmunizationDataLayout;
@@ -66,8 +64,7 @@ public class ImmunizationsView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_CREATE)) {
 			final ExpandableButton createButton =
 				new ExpandableButton(Captions.immunizationNewImmunization).expand(e -> ControllerProvider.getImmunizationController().create());
 			addHeaderComponent(createButton);
@@ -123,9 +120,9 @@ public class ImmunizationsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 
 		// Show active/archived/all dropdown
-		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_VIEW)) {
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION)) {
+			if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION)) {
 
 				int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 					.getProperty(
@@ -158,7 +155,7 @@ public class ImmunizationsView extends AbstractView {
 				I18nProperties.getCaption(Captions.immunizationAllActiveAndArchivedImmunizations));
 			relevanceStatusFilter.setCaption("");
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
+			if (UiUtil.permitted(UserRight.IMMUNIZATION_DELETE)) {
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.immunizationDeletedImmunizations));
 			} else {
