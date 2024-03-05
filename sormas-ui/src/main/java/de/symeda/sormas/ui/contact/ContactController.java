@@ -228,7 +228,7 @@ public class ContactController {
 			LineDto<ContactDto> contactLineDto = contacts.pop();
 			ContactDto newContact = contactLineDto.getEntity();
 			if (UserProvider.getCurrent() != null) {
-				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+				newContact.setReportingUser(UiUtil.getUserReference());
 			}
 
 			newContact.setPerson(contactLineDto.getPerson().toReference());
@@ -464,7 +464,7 @@ public class ContactController {
 						if (selectedContactUuid != null) {
 							ContactDto selectedContact = FacadeProvider.getContactFacade().getByUuid(selectedContactUuid);
 							selectedContact.setResultingCase(caze.toReference());
-							selectedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+							selectedContact.setResultingCaseUser(UiUtil.getUserReference());
 							selectedContact.setContactStatus(ContactStatus.CONVERTED);
 							selectedContact.setContactClassification(ContactClassification.CONFIRMED);
 							FacadeProvider.getContactFacade().save(selectedContact);
@@ -681,7 +681,7 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| DataHelper.equal(contact.getContactOfficer(), UserProvider.getCurrent().getUserReference())) {
+			|| DataHelper.equal(contact.getContactOfficer(), UiUtil.getUserReference())) {
 			if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 				editComponent.addDeleteWithReasonOrRestoreListener(
 					ContactsView.VIEW_NAME,

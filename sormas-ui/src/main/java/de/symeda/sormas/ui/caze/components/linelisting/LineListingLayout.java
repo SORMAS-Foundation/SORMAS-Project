@@ -336,7 +336,7 @@ public class LineListingLayout extends VerticalLayout {
 				caze.getSymptoms().setOnsetDate(UtilDate.from(caseLineDto.getDateOfOnset()));
 			}
 			if (UserProvider.getCurrent() != null) {
-				caze.setReportingUser(UserProvider.getCurrent().getUserReference());
+				caze.setReportingUser(UiUtil.getUserReference());
 			}
 			result.setEntity(caze);
 
@@ -575,9 +575,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		private boolean shouldShowEpidNumber() {
 			ConfigFacade configFacade = FacadeProvider.getConfigFacade();
-			UserProvider currentUserProvider = UserProvider.getCurrent();
-			return currentUserProvider != null
-				&& currentUserProvider.hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
+			return UiUtil.permitted(UserRight.CASE_CHANGE_EPID_NUMBER)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 		}

@@ -154,7 +154,7 @@ public class LineListingLayout extends VerticalLayout {
 			LineDto<EventParticipantDto> result = new LineDto<>();
 
 			final EventParticipantDto eventParticipant =
-				EventParticipantDto.build(eventDto.toReference(), UserProvider.getCurrent().getUserReference());
+				EventParticipantDto.build(eventDto.toReference(), UiUtil.getUserReference());
 			eventParticipant.setInvolvementDescription(eventParticipantLineDto.getInvolvementDescription());
 
 			if (eventDto.getEventLocation() == null

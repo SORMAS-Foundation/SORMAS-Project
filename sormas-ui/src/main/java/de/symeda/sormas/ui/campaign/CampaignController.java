@@ -117,7 +117,7 @@ public class CampaignController {
 		if (campaignDto == null) {
 			isCreate = true;
 			campaignDto = CampaignDto.build();
-			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
+			campaignDto.setCreatingUser(UiUtil.getUserReference());
 		}
 		campaignEditForm.setValue(campaignDto);
 
@@ -186,7 +186,7 @@ public class CampaignController {
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
 			campaignFormData =
 				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
-			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
+			campaignFormData.setCreatingUser(UiUtil.getUserReference());
 		}
 		form.setValue(campaignFormData);
 

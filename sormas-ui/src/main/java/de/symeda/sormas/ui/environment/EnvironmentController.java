@@ -165,7 +165,7 @@ public class EnvironmentController {
 			.getUserRoles()
 			.stream()
 			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| DataHelper.equal(environmentDto.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
+			|| DataHelper.equal(environmentDto.getResponsibleUser(), UiUtil.getUserReference())) {
 			// Initialize 'Delete' button
 			if (UiUtil.permitted(UserRight.ENVIRONMENT_DELETE)) {
 				editComponent.addDeleteWithReasonOrRestoreListener(

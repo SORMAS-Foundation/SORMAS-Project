@@ -78,7 +78,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -332,7 +331,7 @@ public class EventController {
 								caseDataDto.toReference(),
 								personByUuid.get(caseDataDto.getPerson().getUuid()),
 								eventReferenceDto,
-								UserProvider.getCurrent().getUserReference());
+								UiUtil.getUserReference());
 							FacadeProvider.getEventParticipantFacade().save(ep);
 							processedCases.add(new ProcessedEntity(caseDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
 						} else {
@@ -376,8 +375,6 @@ public class EventController {
 		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(new ArrayList<>(contactByPersonUuid.keySet()));
 		Map<String, PersonDto> personByUuid = remainingPersons.stream().collect(Collectors.toMap(EntityDto::getUuid, Functions.identity()));
 
-		UserReferenceDto currentUser = UserProvider.getCurrent().getUserReference();
-
 		new BulkOperationHandler<ContactDto>(
 			Strings.messageAllContactsLinkedToEvent,
 			null,
@@ -396,8 +393,10 @@ public class EventController {
 					try {
 						if (!alreadyLinkedContacts.contains(contactDataDto)) {
 
-							EventParticipantDto ep = EventParticipantDto
-								.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
+							EventParticipantDto ep = EventParticipantDto.buildFromPerson(
+								personByUuid.get(contactDataDto.getPerson().getUuid()),
+								eventReferenceDto,
+								UiUtil.getUserReference());
 
 							FacadeProvider.getEventParticipantFacade().save(ep);
 							processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
@@ -625,7 +624,7 @@ public class EventController {
 		// Create new EventParticipant for this Person
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UiUtil.getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 		return false;
@@ -634,7 +633,7 @@ public class EventController {
 	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UiUtil.getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 	}
@@ -642,7 +641,7 @@ public class EventController {
 	public void createEventParticipantWithPerson(EventReferenceDto eventReferenceDto, PersonReferenceDto personReference) {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UiUtil.getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 	}
@@ -864,7 +863,7 @@ public class EventController {
 		form.getField(EventDto.DISEASE).setReadOnly(true);
 
 		final CommitDiscardWrapperComponent<EventDataForm> component =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.EVENT_CREATE), form.getFieldGroup());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -946,7 +945,7 @@ public class EventController {
 			.getUserRoles()
 			.stream()
 			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| DataHelper.equal(event.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
+			|| DataHelper.equal(event.getResponsibleUser(), UiUtil.getUserReference())) {
 			final String uuid = event.getUuid();
 			if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 				editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {

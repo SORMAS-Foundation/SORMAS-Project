@@ -84,7 +84,7 @@ public class EventParticipantsController {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UiUtil.getUserReference());
 		return createEventParticipant(eventRef, doneConsumer, eventParticipant, true);
 	}
 

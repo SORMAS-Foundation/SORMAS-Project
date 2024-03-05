@@ -47,7 +47,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
@@ -122,7 +121,7 @@ public class TaskController {
 			if (!form.getFieldGroup().isModified()) {
 				TaskDto formValue = form.getValue();
 				if (!formValue.getAssigneeUser().getUuid().equals(taskIndex.getAssigneeUser().getUuid())) {
-					formValue.setAssignedByUser(UserProvider.getCurrent().getUserReference());
+					formValue.setAssignedByUser(UiUtil.getUserReference());
 				}
 				FacadeProvider.getTaskFacade().saveTask(formValue);
 
@@ -161,8 +160,8 @@ public class TaskController {
 
 	private TaskDto createNewTask(TaskContext context, ReferenceDto entityRef) {
 		TaskDto task = TaskDto.build(context, entityRef);
-		task.setCreatorUser(UserProvider.getCurrent().getUserReference());
-		task.setAssignedByUser(UserProvider.getCurrent().getUserReference());
+		task.setCreatorUser(UiUtil.getUserReference());
+		task.setAssignedByUser(UiUtil.getUserReference());
 		return task;
 	}
 

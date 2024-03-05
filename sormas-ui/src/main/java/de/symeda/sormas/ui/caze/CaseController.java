@@ -155,24 +155,23 @@ public class CaseController {
 
 	public void registerViews(Navigator navigator) {
 
-		UserProvider userProvider = UserProvider.getCurrent();
 		navigator.addView(CasesView.VIEW_NAME, CasesView.class);
-		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+		if (UiUtil.permitted(UserRight.CASE_MERGE)) {
 			navigator.addView(MergeCasesView.VIEW_NAME, MergeCasesView.class);
 		}
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 		navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 		navigator.addView(MaternalHistoryView.VIEW_NAME, MaternalHistoryView.class);
-		if (userProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			navigator.addView(PortHealthInfoView.VIEW_NAME, PortHealthInfoView.class);
 		}
 		navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
-		if (userProvider.hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
 		}
 		navigator.addView(HospitalizationView.VIEW_NAME, HospitalizationView.class);
 		navigator.addView(CaseEpiDataView.VIEW_NAME, CaseEpiDataView.class);
-		if (userProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
+		if (UiUtil.permitted(UserRight.THERAPY_VIEW)) {
 			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
 		}
 		if (UiUtil.permitted(FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, UserRight.CLINICAL_COURSE_VIEW)) {
@@ -206,7 +205,7 @@ public class CaseController {
 		dto.setRegion(eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion());
 		dto.setDistrict(eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict());
 		dto.setCommunity(event.getEventLocation().getCommunity());
-		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		dto.setReportingUser(UiUtil.getUserReference());
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(eventParticipant.getPerson().getUuid()), uuid -> {
 			if (uuid == null) {
@@ -260,7 +259,7 @@ public class CaseController {
 		dto.setDistrict(contact.getDistrict());
 		dto.setReportDate(contact.getReportDateTime());
 		dto.setCommunity(contact.getCommunity());
-		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		dto.setReportingUser(UiUtil.getUserReference());
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
@@ -283,7 +282,7 @@ public class CaseController {
 				ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 				updatedContact.setContactStatus(ContactStatus.CONVERTED);
 				updatedContact.setResultingCase(selectedCase.toReference());
-				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+				updatedContact.setResultingCaseUser(UiUtil.getUserReference());
 				FacadeProvider.getContactFacade().save(updatedContact);
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
@@ -304,7 +303,7 @@ public class CaseController {
 		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getByUuid(travelEntryDto.getPerson().getUuid());
 		CaseDataDto dto = CaseDataDto.buildFromTravelEntry(travelEntryDto, selectedPerson);
 
-		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		dto.setReportingUser(UiUtil.getUserReference());
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
@@ -324,7 +323,7 @@ public class CaseController {
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
 		CaseDataDto dto = CaseDataDto.build(personReference, null);
 
-		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+		dto.setReportingUser(UiUtil.getUserReference());
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, person, null, false);
 		caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
@@ -460,7 +459,7 @@ public class CaseController {
 			for (ContactDto contact : contacts) {
 				contact.setContactStatus(ContactStatus.CONVERTED);
 				contact.setResultingCase(caze.toReference());
-				contact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
+				contact.setResultingCaseUser(UiUtil.getUserReference());
 				FacadeProvider.getContactFacade().save(contact);
 			}
 		}
@@ -678,7 +677,7 @@ public class CaseController {
 		}
 
 		UserDto user = UserProvider.getCurrent().getUser();
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+		UserReferenceDto userReference = UiUtil.getUserReference();
 		caze.setReportingUser(userReference);
 
 		if (UserProvider.getCurrent().isPortHealthUser()) {
@@ -956,7 +955,7 @@ public class CaseController {
 		}
 
 		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| DataHelper.isSame(caze.getSurveillanceOfficer(), UserProvider.getCurrent().getUserReference())) {
+			|| DataHelper.isSame(caze.getSurveillanceOfficer(), UiUtil.getUserReference())) {
 			appendSpecialCommands(caze, editView);
 		}
 

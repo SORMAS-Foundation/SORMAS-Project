@@ -75,7 +75,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -739,7 +738,7 @@ public class EventsView extends AbstractView {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), null);
+		ExportConfigurationDto config = ExportConfigurationDto.build(UiUtil.getUserReference(), null);
 		boolean eventGroupFeatureEnabled = UiUtil.enabled(FeatureType.EVENT_GROUPS);
 		config.setProperties(
 			ImportExportUtils

@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.importer;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isFileSizeLimitExceeded;
 
 import java.io.InputStream;
-import java.util.Objects;
 
 import com.google.common.io.ByteStreams;
 import com.vaadin.server.Page;
@@ -37,7 +36,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
 import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
@@ -188,7 +186,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 			return;
 		}
 		DocumentDto document = DocumentDto.build();
-		document.setUploadingUser(Objects.requireNonNull(UserProvider.getCurrent()).getUserReference());
+		document.setUploadingUser(UiUtil.getUserReference());
 		document.setName(fileName);
 		document.setMimeType(mimeType != null ? mimeType : DocumentDto.MIME_TYPE_DEFAULT);
 		document.setSize(length);

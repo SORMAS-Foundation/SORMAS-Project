@@ -433,8 +433,7 @@ public class ExternalMessageController {
 			components.getAssigneeComboBox().setValue(externalMessageDto.getAssignee());
 		}
 
-		components.getAssignMeButton()
-			.addClickListener(e -> saveAssignee(externalMessageDto, UserProvider.getCurrent().getUserReference(), components.getWindow()));
+		components.getAssignMeButton().addClickListener(e -> saveAssignee(externalMessageDto, UiUtil.getUserReference(), components.getWindow()));
 		components.getWrapperComponent()
 			.addCommitListener(
 				() -> saveAssignee(externalMessageDto, (UserReferenceDto) components.getAssigneeComboBox().getValue(), components.getWindow()));
@@ -450,7 +449,7 @@ public class ExternalMessageController {
 			FacadeProvider.getExternalMessageFacade()
 				.bulkAssignExternalMessages(
 					selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()),
-					UserProvider.getCurrent().getUserReference());
+					UiUtil.getUserReference());
 			components.getWindow().close();
 			Notification.show(I18nProperties.getString(Strings.messageExternalMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
 			callback.run();

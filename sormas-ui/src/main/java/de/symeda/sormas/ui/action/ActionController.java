@@ -28,7 +28,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -115,7 +114,7 @@ public class ActionController {
 
 	private ActionDto createNewAction(ActionContext context, ReferenceDto entityRef) {
 		ActionDto action = ActionDto.build(context, entityRef);
-		action.setCreatorUser(UserProvider.getCurrent().getUserReference());
+		action.setCreatorUser(UiUtil.getUserReference());
 		return action;
 	}
 }

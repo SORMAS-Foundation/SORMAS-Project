@@ -41,7 +41,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
@@ -49,7 +48,6 @@ import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -213,8 +211,7 @@ public class VisitController {
 
 	private VisitDto createNewVisit(PersonReferenceDto personRef, Disease disease) {
 		VisitDto visit = VisitDto.build(personRef, disease, VisitOrigin.USER);
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		visit.setVisitUser(userReference);
+		visit.setVisitUser(UiUtil.getUserReference());
 		return visit;
 	}
 
