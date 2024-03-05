@@ -24,8 +24,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -54,8 +52,6 @@ import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -719,31 +715,27 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 	private void setSurvReportFacility(SurveillanceReportDto surveillanceReport, ExternalMessageDto externalMessage, CaseDataDto caze) {
 		FacilityReferenceDto reporterReference = processingFacade.getFacilityReference(externalMessage.getReporterExternalIds());
-		FacilityDto reporter;
+
 		if (reporterReference != null) {
-			reporter = processingFacade.getFacilityByUuid(reporterReference.getUuid());
+			FacilityDto reporter = processingFacade.getFacilityByUuid(reporterReference.getUuid());
+
 			surveillanceReport.setFacility(reporterReference);
+
 			if (FacilityDto.OTHER_FACILITY_UUID.equals(reporter.getUuid())) {
-				surveillanceReport.setFacilityDetails(I18nProperties.getCaption(Captions.unknown));
-			}
-			surveillanceReport.setFacilityDistrict(reporter.getDistrict());
-			surveillanceReport.setFacilityRegion(reporter.getRegion());
-			surveillanceReport.setFacilityType(reporter.getType());
-		} else {
-			reporter = processingFacade.getFacilityByUuid(FacilityDto.OTHER_FACILITY_UUID);
-			surveillanceReport.setFacility(reporter != null ? reporter.toReference() : null);
-			String reporterName = externalMessage.getReporterName();
-			if (StringUtils.isNotBlank(reporterName)) {
-				surveillanceReport.setFacilityDetails(reporterName);
+				surveillanceReport.setFacilityDetails(externalMessage.getReporterName());
+
+				if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
+					surveillanceReport.setFacilityType(FacilityType.LABORATORY);
+				} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {
+					surveillanceReport.setFacilityType(FacilityType.HOSPITAL);
+				}
+
+				surveillanceReport.setFacilityRegion(caze.getResponsibleRegion());
+				surveillanceReport.setFacilityDistrict(caze.getResponsibleDistrict());
 			} else {
-				surveillanceReport.setFacilityDetails(I18nProperties.getCaption(Captions.unknown));
-			}
-			surveillanceReport.setFacilityRegion(caze.getRegion());
-			surveillanceReport.setFacilityDistrict(caze.getDistrict());
-			if (ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType())) {
-				surveillanceReport.setFacilityType(FacilityType.LABORATORY);
-			} else if (ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())) {
-				surveillanceReport.setFacilityType(FacilityType.HOSPITAL);
+				surveillanceReport.setFacilityType(reporter.getType());
+				surveillanceReport.setFacilityDistrict(reporter.getDistrict());
+				surveillanceReport.setFacilityRegion(reporter.getRegion());
 			}
 		}
 	}
