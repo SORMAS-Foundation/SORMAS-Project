@@ -34,6 +34,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -64,10 +65,8 @@ public class EnvironmentController {
 			createForm = new EnvironmentCreateForm();
 			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
 			createForm.setValue(environment);
-			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView = new CommitDiscardWrapperComponent<>(
-				createForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_CREATE),
-				createForm.getFieldGroup());
+			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
+				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
 
 			editView.addCommitListener(() -> {
 				if (!createForm.getFieldGroup().isModified()) {
@@ -113,7 +112,7 @@ public class EnvironmentController {
 		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm(
 			environmentDto.isPseudonymized(),
 			environmentDto.isInJurisdiction(),
-			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
+			UiUtil.permitted(isEditAllowed, editUserRight));
 		environmentDataForm.setValue(environmentDto);
 
 		CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent =
@@ -168,7 +167,7 @@ public class EnvironmentController {
 			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.equal(environmentDto.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
 			// Initialize 'Delete' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_DELETE)) {
+			if (UiUtil.permitted(UserRight.ENVIRONMENT_DELETE)) {
 				editComponent.addDeleteWithReasonOrRestoreListener(
 					EnvironmentsView.VIEW_NAME,
 					null,
@@ -178,7 +177,7 @@ public class EnvironmentController {
 			}
 
 			// Initialize 'Archive' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
+			if (UiUtil.permitted(UserRight.ENVIRONMENT_ARCHIVE)) {
 				ControllerProvider.getArchiveController()
 					.addArchivingButton(
 						environmentDto,

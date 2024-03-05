@@ -35,7 +35,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -114,8 +114,7 @@ public class EventDataView extends AbstractEventView {
 		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, event, isEditAllowed);
 		setExternalSurvToolLayoutVisibility(event.getEventStatus());
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
 				new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease(), this::showUnsavedChangesPopup, isEditAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
@@ -127,8 +126,7 @@ public class EventDataView extends AbstractEventView {
 		layout.addSidePanelComponent(actionList, ACTIONS_LOC);
 
 		DocumentListComponent documentList = null;
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.DOCUMENTS, UserRight.DOCUMENT_VIEW)) {
 
 			boolean isDocumentDeleteAllowed =
 				EditPermissionType.ALLOWED.equals(eventEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(eventEditAllowed);
@@ -146,7 +144,7 @@ public class EventDataView extends AbstractEventView {
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addSidePanelComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
-		boolean eventHierarchiesFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_HIERARCHIES);
+		boolean eventHierarchiesFeatureEnabled = UiUtil.enabled(FeatureType.EVENT_HIERARCHIES);
 		if (eventHierarchiesFeatureEnabled) {
 			SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, this::showUnsavedChangesPopup);
 			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
@@ -157,7 +155,7 @@ public class EventDataView extends AbstractEventView {
 			layout.addSidePanelComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 		}
 
-		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		boolean eventGroupsFeatureEnabled = UiUtil.enabled(FeatureType.EVENT_GROUPS);
 		if (eventGroupsFeatureEnabled) {
 			layout.addSidePanelComponent(
 				new SideComponentLayout(new EventGroupListComponent(event.toReference(), this::showUnsavedChangesPopup)),
@@ -181,7 +179,7 @@ public class EventDataView extends AbstractEventView {
 		shortcutLinksLayout.setMargin(false);
 		shortcutLinksLayout.setSpacing(true);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (UiUtil.permitted(UserRight.CASE_VIEW)) {
 			Button seeEventCasesBtn = ButtonHelper.createButton(
 				"eventLinkToCases",
 				I18nProperties.getCaption(Captions.eventLinkToCases),
@@ -190,7 +188,7 @@ public class EventDataView extends AbstractEventView {
 			shortcutLinksLayout.addComponent(seeEventCasesBtn);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			Button seeEventContactsBtn = ButtonHelper.createButton(
 				"eventLinkToContacts",
 				I18nProperties.getCaption(Captions.eventLinkToContacts),

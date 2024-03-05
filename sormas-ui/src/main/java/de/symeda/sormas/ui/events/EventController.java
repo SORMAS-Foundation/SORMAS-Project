@@ -85,6 +85,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
@@ -107,7 +108,7 @@ public class EventController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 			navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
 		}
 		navigator.addView(EventActionsView.VIEW_NAME, EventActionsView.class);
@@ -717,7 +718,7 @@ public class EventController {
 		}
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			UiUtil.permitted(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
 
 		CaseDataDto finalCaseDataDto = caseDataDto;
@@ -732,7 +733,7 @@ public class EventController {
 
 					linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 					SormasUI.refreshView();
-				} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+				} else if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 					navigateToParticipants(dto.getUuid());
 				} else {
 					navigateToData(dto.getUuid());
@@ -753,10 +754,8 @@ public class EventController {
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent(caseDataDtos.stream().findFirst().get().getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		List<CaseDataDto> finalCaseDataDtos = caseDataDtos;
 		editView.addCommitListener(() -> {
@@ -787,7 +786,7 @@ public class EventController {
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			UiUtil.permitted(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -811,10 +810,8 @@ public class EventController {
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent());
 
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
@@ -838,10 +835,8 @@ public class EventController {
 		eventCreateForm.setValue(createNewEvent(contact.getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
@@ -953,7 +948,7 @@ public class EventController {
 			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.equal(event.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
 			final String uuid = event.getUuid();
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+			if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 				editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 					if (!existEventParticipantsLinkedToEvent(event)) {
 						try {
@@ -979,7 +974,7 @@ public class EventController {
 			}
 
 			// Initialize 'Archive' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+			if (UiUtil.permitted(UserRight.EVENT_ARCHIVE)) {
 				ControllerProvider.getArchiveController().addArchivingButton(event, ArchiveHandlers.forEvent(), editView, () -> {
 					ViewModelProviders.of(EventParticipantsView.class)
 						.get(EventParticipantsViewConfiguration.class)

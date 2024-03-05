@@ -35,7 +35,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.environment.importer.EnvironmentImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -69,7 +69,7 @@ public class EnvironmentsView extends AbstractView {
 		});
 		addComponent(gridComponent);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_IMPORT)) {
+		if (UiUtil.permitted(UserRight.ENVIRONMENT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EnvironmentImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEnvironments));
@@ -79,7 +79,7 @@ public class EnvironmentsView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_EXPORT)) {
+		if (UiUtil.permitted(UserRight.ENVIRONMENT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
@@ -90,7 +90,7 @@ public class EnvironmentsView extends AbstractView {
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_CREATE)) {
+		if (UiUtil.permitted(UserRight.ENVIRONMENT_CREATE)) {
 			final Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.environmentNewEnvironment,
 				VaadinIcons.PLUS_CIRCLE,
