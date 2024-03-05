@@ -37,6 +37,7 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -94,7 +95,7 @@ public class PersonsView extends AbstractView {
 			gridLayout.setExpandRatio(grid, 1);
 			gridLayout.setStyleName("crud-main-layout");
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EXPORT)) {
+			if (UiUtil.permitted(UserRight.PERSON_EXPORT)) {
 				VerticalLayout exportLayout = new VerticalLayout();
 				exportLayout.setSpacing(true);
 				exportLayout.setMargin(true);
@@ -154,7 +155,7 @@ public class PersonsView extends AbstractView {
 
 		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			moreButton.addMenuEntry(btnEnterBulkEditMode);
@@ -339,9 +340,9 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.setExpandRatio(emptyLabel, 1);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERSON_MERGE)) {
+			if (UiUtil.permitted(UserRight.PERSON_MERGE)) {
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionMerge),

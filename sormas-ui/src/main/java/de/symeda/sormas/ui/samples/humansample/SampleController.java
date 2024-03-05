@@ -73,6 +73,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
@@ -263,8 +264,7 @@ public class SampleController {
 		// add delete if allowed
 		if (isNew
 			|| isNull(pathogenTest)
-			|| UserProvider.getCurrent()
-				.hasUserRight(pathogenTest.getSample() != null ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE)) {
+			|| UiUtil.permitted(pathogenTest.getSample() != null ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE)) {
 			collapsibleForm.setDeleteHandler(() -> {
 				sampleComponent.removeComponent(separator);
 				sampleComponent.removeComponent(collapsibleForm);
@@ -296,7 +296,7 @@ public class SampleController {
 		final SampleCreateForm createForm = new SampleCreateForm(disease);
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView =
-			new CommitDiscardWrapperComponent<>(createForm, UserProvider.getCurrent().hasUserRight(userRight), createForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(userRight), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -319,7 +319,7 @@ public class SampleController {
 		Runnable deleteCallback,
 		Consumer<PathogenTestDto> saveHandler) {
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+		if (!UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE)) {
 			return;
 		}
 
@@ -395,7 +395,7 @@ public class SampleController {
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
-					&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+					&& UiUtil.permitted(UserRight.TASK_CREATE)) {
 					requestSampleCollectionTaskCreation(changedDto, form);
 				} else {
 					Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
@@ -403,7 +403,7 @@ public class SampleController {
 			}
 		});
 
-		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+		if (showDeleteButton && UiUtil.permitted(UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
@@ -457,13 +457,13 @@ public class SampleController {
 
 	private void updateAssociationsForSample(SampleDto sampleDto) {
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
-		if (associatedCase != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (associatedCase != null && UiUtil.permitted(UserRight.CASE_EDIT)) {
 			final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 			FacadeProvider.getCaseFacade().save(caseDataByUuid);
 		}
 
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
-		if (associatedContact != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (associatedContact != null && UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 			final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 			FacadeProvider.getContactFacade().save(contactDataByUuid);
 		}
@@ -490,7 +490,7 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = null;
 		SampleDto sample = editForm.getWrappedComponent().getValue();
 		if (sample.getReferredTo() == null) {
-			if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+			if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && UiUtil.permitted(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton =
 					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 

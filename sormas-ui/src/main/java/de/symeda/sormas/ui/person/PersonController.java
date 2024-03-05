@@ -67,6 +67,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
@@ -235,7 +236,7 @@ public class PersonController {
 		}
 
 		if (!eventParticipantsWithSameEvent.isEmpty()) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+			if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 				selectLeadEventParticipantByEvent(
 					eventParticipantsWithSameEvent,
 					(selectedEventParticipants, mergeEventParticipantProperties) -> pickOrMergeConfirmationPopUp(
@@ -410,10 +411,8 @@ public class PersonController {
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, boolean isEditAllowed) {
 		PersonDto personDto = personFacade.getByUuid(personUuid);
 
-		PersonEditForm editForm = new PersonEditForm(
-			isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
-			personDto.isPseudonymized(),
-			personDto.isInJurisdiction());
+		PersonEditForm editForm =
+			new PersonEditForm(UiUtil.permitted(isEditAllowed, UserRight.PERSON_EDIT), personDto.isPseudonymized(), personDto.isInJurisdiction());
 		editForm.setValue(personDto);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
@@ -441,7 +440,7 @@ public class PersonController {
 		editForm.setValue(person);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView =
-			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(editForm, UiUtil.permitted(editUserRight), editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
@@ -469,7 +468,7 @@ public class PersonController {
 			viewMode,
 			person.isPseudonymized(),
 			person.isInJurisdiction(),
-			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
+			UiUtil.permitted(isEditAllowed, editUserRight));
 		editForm.setValue(person);
 
 		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
