@@ -784,8 +784,11 @@ public class EventParticipantFacadeEjb
 			event.get(Event.END_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
-		Predicate filter =
-			CriteriaBuilderHelper.and(cb, service.buildCriteriaFilter(eventParticipantCriteria, queryContext), cb.isFalse(event.get(Event.DELETED)));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			service.buildCriteriaFilter(eventParticipantCriteria, queryContext),
+			cb.isFalse(event.get(Event.DELETED)),
+			cb.isFalse(event.get(Event.ARCHIVED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
