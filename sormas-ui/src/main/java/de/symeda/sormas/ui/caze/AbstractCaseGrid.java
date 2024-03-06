@@ -45,7 +45,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -283,7 +282,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			this.getColumn(NUMBER_OF_VISITS).setHidden(hidden);
 		}
 
-		if (UserProvider.getCurrent().isPortHealthUser() && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
+		if (UiUtil.isPortHealthUser() && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 		} else {
 			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY && getColumn(CaseIndexDto.POINT_OF_ENTRY_NAME) != null) {

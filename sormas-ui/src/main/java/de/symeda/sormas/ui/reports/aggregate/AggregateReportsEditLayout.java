@@ -47,7 +47,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekFilterOption;
@@ -153,7 +152,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			if (district != null) {
 				checkForExistingData(edit);
 				comboBoxDistrict.setComponentError(null);
-				if (comboBoxFacility != null && !UserProvider.getCurrent().isPortHealthUser()) {
+				if (comboBoxFacility != null && !UiUtil.isPortHealthUser()) {
 					comboBoxFacility.setItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(district, false));
 					comboBoxFacility.setEnabled(true);
 				}
@@ -188,14 +187,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxPoe.setWidth(250, Unit.PIXELS);
 		comboBoxPoe.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.POINT_OF_ENTRY));
 		comboBoxPoe.setEnabled(false);
-		if (UserProvider.getCurrent().isPortHealthUser()) {
+		if (UiUtil.isPortHealthUser()) {
 			comboBoxPoe.setRequiredIndicatorVisible(true);
 		}
 		comboBoxPoe.addValueChangeListener(e -> {
 			if (comboBoxPoe.getValue() != null) {
 				comboBoxFacility.clear();
 			} else {
-				if (UserProvider.getCurrent().isPortHealthUser()) {
+				if (UiUtil.isPortHealthUser()) {
 					comboBoxPoe.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
 				}
 			}

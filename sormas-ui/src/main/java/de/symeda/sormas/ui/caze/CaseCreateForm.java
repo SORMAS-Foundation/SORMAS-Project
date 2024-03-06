@@ -408,7 +408,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityCombo.setReadOnly(true);
 		}
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
@@ -499,7 +499,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		addValueChangeListener(e -> {
-			if (UserProvider.getCurrent().isPortHealthUser()) {
+			if (UiUtil.isPortHealthUser()) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}

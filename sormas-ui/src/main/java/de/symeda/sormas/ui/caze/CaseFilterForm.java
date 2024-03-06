@@ -148,7 +148,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	@Override
 	protected void addFields() {
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
@@ -214,7 +214,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.COMMUNITY, 140));
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 
 			ComboBox typeGroup = addField(
 				moreFiltersContainer,

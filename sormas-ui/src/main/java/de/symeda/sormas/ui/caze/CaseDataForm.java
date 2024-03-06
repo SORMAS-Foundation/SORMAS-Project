@@ -324,7 +324,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
-				.add(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
+				.add(new UserRightFieldVisibilityChecker(UiUtil::permitted)),
 			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.caseUuid = caseUuid;
@@ -1300,7 +1300,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			// Hide case origin from port health users
-			if (UserProvider.getCurrent().isPortHealthUser()) {
+			if (UiUtil.isPortHealthUser()) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 

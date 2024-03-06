@@ -38,7 +38,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
@@ -164,7 +163,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			}
 			if (UiUtil.enabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION)
 				&& !caze.checkIsUnreferredPortHealthCase()
-				&& !UserProvider.getCurrent().isPortHealthUser()) {
+				&& !UiUtil.isPortHealthUser()) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),

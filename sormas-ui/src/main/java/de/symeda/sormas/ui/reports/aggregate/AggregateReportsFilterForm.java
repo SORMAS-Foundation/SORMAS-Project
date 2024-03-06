@@ -31,7 +31,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -86,7 +85,7 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			FieldConfiguration.withCaptionAndPixelSized(AggregateReportCriteria.DISTRICT, I18nProperties.getCaption(Captions.District), 200));
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 			facilityFilter = addField(getContent(), FieldConfiguration.pixelSized(AggregateReportCriteria.HEALTH_FACILITY, 200));
 			facilityFilter.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 		}

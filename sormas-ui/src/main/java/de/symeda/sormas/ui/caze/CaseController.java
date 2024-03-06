@@ -680,7 +680,7 @@ public class CaseController {
 		UserReferenceDto userReference = UiUtil.getUserReference();
 		caze.setReportingUser(userReference);
 
-		if (UserProvider.getCurrent().isPortHealthUser()) {
+		if (UiUtil.isPortHealthUser()) {
 			caze.setResponsibleRegion(user.getRegion());
 			caze.setResponsibleDistrict(user.getDistrict());
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
