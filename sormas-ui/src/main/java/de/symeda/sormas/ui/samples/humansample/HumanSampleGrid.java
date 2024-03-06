@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.ui.samples.humansample;
 
-import static java.util.Objects.nonNull;
-
 import java.util.Date;
 
 import com.vaadin.ui.renderers.DateRenderer;
@@ -35,7 +33,6 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.samples.SamplesViewConfiguration;
@@ -149,7 +146,7 @@ public class HumanSampleGrid extends ReloadableGrid<SampleIndexDto, SampleCriter
 		addItemClickListener(
 			new ShowDetailsListener<>(SampleIndexDto.UUID, e -> ControllerProvider.getSampleController().navigateToData(e.getUuid())));
 
-		if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasLaboratoryOrExternalLaboratoryJurisdictionLevel()) {
+		if (UiUtil.hasLaboratoryOrExternalLaboratoryJurisdictionLevel()) {
 			removeColumn(SampleIndexDto.SHIPMENT_DATE);
 		} else {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);

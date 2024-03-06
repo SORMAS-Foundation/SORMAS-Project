@@ -43,7 +43,6 @@ import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -274,8 +273,8 @@ public class TherapyView extends AbstractCaseView {
 		prescriptionGrid = new PrescriptionGrid(
 			this,
 			caze.isPseudonymized(),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
+			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
+			UiUtil.permitted(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
 
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
@@ -286,10 +285,10 @@ public class TherapyView extends AbstractCaseView {
 
 		treatmentGrid = new TreatmentGrid(
 			caze.isPseudonymized(),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.TREATMENT_DELETE),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
+			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.TREATMENT_EDIT),
+			UiUtil.permitted(isEditAllowed(), UserRight.TREATMENT_DELETE),
+			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.PRESCRIPTION_EDIT),
+			UiUtil.permitted(isEditAllowed(), UserRight.PRESCRIPTION_DELETE));
 
 		treatmentGrid.setCriteria(treatmentCriteria);
 		container.addComponent(treatmentGrid);

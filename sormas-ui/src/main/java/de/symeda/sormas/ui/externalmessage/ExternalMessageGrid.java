@@ -51,7 +51,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -196,8 +195,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	private Component buildProcessComponent(ExternalMessageIndexDto indexDto) {
 		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_PROCESS)
 			&& indexDto.getStatus().isProcessable()
-			&& (indexDto.getType() != ExternalMessageType.PHYSICIANS_REPORT
-				|| UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT))) {
+			&& (indexDto.getType() != ExternalMessageType.PHYSICIANS_REPORT || UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT))) {
 			// build process button
 			return ButtonHelper.createButton(Captions.externalMessageProcess, e -> {
 				if (ExternalMessageType.LAB_MESSAGE == indexDto.getType()) {

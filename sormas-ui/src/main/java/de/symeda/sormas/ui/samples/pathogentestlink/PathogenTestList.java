@@ -32,7 +32,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -88,15 +88,12 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest, true);
 			String pathogenTestUuid = pathogenTest.getUuid();
 			boolean forHumanSample = pathogenTest.getSample() != null;
-			boolean isEditableAndHasEditRight = UserProvider.getCurrent()
-				.hasAllUserRightsWithEditAllowedFlag(
-					isEditable,
-					forHumanSample ? UserRight.SAMPLE_EDIT : UserRight.ENVIRONMENT_SAMPLE_EDIT,
-					forHumanSample ? UserRight.PATHOGEN_TEST_EDIT : UserRight.ENVIRONMENT_PATHOGEN_TEST_EDIT);
-			boolean isEditableAndHasDeleteRight = UserProvider.getCurrent()
-				.hasAllUserRightsWithEditAllowedFlag(
-					isEditable,
-					forHumanSample ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE);
+			boolean isEditableAndHasEditRight = UiUtil.permitted(
+				isEditable,
+				forHumanSample ? UserRight.SAMPLE_EDIT : UserRight.ENVIRONMENT_SAMPLE_EDIT,
+				forHumanSample ? UserRight.PATHOGEN_TEST_EDIT : UserRight.ENVIRONMENT_PATHOGEN_TEST_EDIT);
+			boolean isEditableAndHasDeleteRight =
+				UiUtil.permitted(isEditable, forHumanSample ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE);
 
 			listEntry.addActionButton(
 				pathogenTestUuid,

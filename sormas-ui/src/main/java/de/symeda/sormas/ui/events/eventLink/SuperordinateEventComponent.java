@@ -37,7 +37,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -100,7 +99,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 		} else {
 			addComponent(new Label(I18nProperties.getString(Strings.infoNoSuperordinateEvent)));
 
-			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE, UserRight.EVENT_EDIT)) {
+			if (UiUtil.permitted(UserRight.EVENT_CREATE, UserRight.EVENT_EDIT)) {
 				Button btnLinkEvent = ButtonHelper.createIconButtonWithCaption(
 					"linkSuperordinateEvent",
 					I18nProperties.getCaption(Captions.linkEvent),

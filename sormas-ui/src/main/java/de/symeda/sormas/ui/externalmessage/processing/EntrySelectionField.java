@@ -34,7 +34,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
@@ -46,7 +45,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionGrid;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
@@ -410,9 +409,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 			}
 
 			public Builder addSelectCase(List<CaseSelectionDto> selectableCases) {
-				if (!selectableCases.isEmpty()
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-					&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
+				if (!selectableCases.isEmpty() && UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
 					return add(OptionType.SELECT_CASE, selectableCases);
 				} else {
 					return this;
@@ -421,8 +418,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 			public Builder addSelectContact(List<SimilarContactDto> selectableContacts) {
 				if (!selectableContacts.isEmpty()
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
-					&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
+					&& UiUtil.permitted(FeatureType.CONTACT_TRACING, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
 					return add(OptionType.SELECT_CONTACT, selectableContacts);
 				} else {
 					return this;
@@ -431,9 +427,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 			public Builder addSelectEventParticipant(List<SimilarEventParticipantDto> selectableEventParticipants) {
 				if (!selectableEventParticipants.isEmpty()
-					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-					&& Objects.requireNonNull(UserProvider.getCurrent())
-						.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
+					&& UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT)) {
 					return add(OptionType.SELECT_EVENT_PARTICIPANT, selectableEventParticipants);
 				} else {
 					return this;
@@ -445,8 +439,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 			}
 
 			public Builder addCreateEntry(OptionType optionType, FeatureType requiredFeatureType, UserRight... requiredUserRights) {
-				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(requiredFeatureType)
-					&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(requiredUserRights)) {
+				if (UiUtil.permitted(requiredFeatureType, requiredUserRights)) {
 					return addCreateEntry(optionType);
 				} else {
 					return this;

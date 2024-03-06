@@ -124,7 +124,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -1307,7 +1306,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
 				List<SampleDto> samples = Collections.emptyList();
-				if (UserProvider.getCurrent().hasAllUserRights(UserRight.SAMPLE_VIEW)) {
+				if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 					samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
 				}
 				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(symptoms.getOnsetDate(), reportDate.getValue(), samples);

@@ -68,7 +68,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.events.eventParticipantMerge.PickLeadEventParticipant;
@@ -89,7 +88,6 @@ public class PersonController {
 	}
 
 	public void registerViews(Navigator navigator) {
-		UserProvider userProvider = UserProvider.getCurrent();
 		navigator.addView(PersonsView.VIEW_NAME, PersonsView.class);
 		navigator.addView(PersonDataView.VIEW_NAME, PersonDataView.class);
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);

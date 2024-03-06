@@ -35,6 +35,10 @@ public class UiUtil {
 		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getUserName() : null;
 	}
 
+	public static String getUuid() {
+		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getUuid() : null;
+	}
+
 	public static Set<UserRoleDto> getUserRoles() {
 		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getUserRoles() : null;
 	}
@@ -71,8 +75,16 @@ public class UiUtil {
 		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasNoneJurisdictionLevel();
 	}
 
+	public static boolean hasLaboratoryOrExternalLaboratoryJurisdictionLevel() {
+		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasLaboratoryOrExternalLaboratoryJurisdictionLevel();
+	}
+
 	public static boolean isPortHealthUser() {
 		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().isPortHealthUser();
+	}
+
+	public static boolean isAdmin() {
+		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().isAdmin();
 	}
 
 	public static UserProvider getCurrentUserProvider() {

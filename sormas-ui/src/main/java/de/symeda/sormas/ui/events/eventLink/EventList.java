@@ -41,7 +41,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -62,7 +61,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_EDIT, UserRight.CASE_EDIT) && isEditAllowed) {
+			if (UiUtil.permitted(isEditAllowed, UserRight.EVENT_EDIT, UserRight.CASE_EDIT)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingUnlinkCaseFromEvent),

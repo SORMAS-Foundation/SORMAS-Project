@@ -15,7 +15,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -72,8 +71,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		container.addComponent(layout);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		boolean caseButtonVisible = currentUser != null && UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
+		boolean caseButtonVisible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
 		CaseReferenceDto resultingCase = travelEntryDto.getResultingCase();
 		if (resultingCase == null && caseButtonVisible) {
 			Button createCaseButton = ButtonHelper.createButton(Captions.travelEntryCreateCase, e -> showUnsavedChangesPopup(() -> {

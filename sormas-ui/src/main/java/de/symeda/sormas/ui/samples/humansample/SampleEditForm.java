@@ -39,7 +39,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -85,8 +84,7 @@ public class SampleEditForm extends AbstractSampleForm {
 			defaultValueChangeListener();
 			fillPathogenTestResult();
 			UserReferenceDto reportingUser = getValue().getReportingUser();
-			if (!(UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED)
-				|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid())))) {
+			if (!(UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUuid().equals(reportingUser.getUuid())))) {
 				getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
 				getField(SampleDto.SAMPLING_REASON).setEnabled(false);
 				getField(SampleDto.SAMPLING_REASON_DETAILS).setEnabled(false);

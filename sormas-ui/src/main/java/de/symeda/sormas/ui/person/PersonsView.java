@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.person;
 
-import static java.util.Objects.nonNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,7 +36,6 @@ import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -306,8 +303,7 @@ public class PersonsView extends AbstractView {
 		for (PersonAssociation association : FacadeProvider.getPersonFacade().getPermittedAssociations()) {
 
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
-				if ((nonNull(UserProvider.getCurrent()) && !UserProvider.getCurrent().hasNationJurisdictionLevel())
-					&& association == PersonAssociation.ALL) {
+				if (!UiUtil.hasNationJurisdictionLevel() && association == PersonAssociation.ALL) {
 					Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingSeeAllPersons),

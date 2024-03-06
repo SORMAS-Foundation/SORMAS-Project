@@ -26,6 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.wcs.wcslib.vaadin.widget.multifileupload.receiver.UploadReceiver;
@@ -36,9 +39,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.UserProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.symeda.sormas.ui.UiUtil;
 
 public class DocumentUploadReceiver implements UploadReceiver {
 
@@ -52,7 +53,7 @@ public class DocumentUploadReceiver implements UploadReceiver {
 	public OutputStream receiveUpload() {
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_document_upload" + DateHelper.formatDateForExport(new Date()) + "_"
-				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid());
+				+ DataHelper.getShortUuid(UiUtil.getUuid());
 			file = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toFile();
 			return new BufferedOutputStream(Files.newOutputStream(file.toPath()));
 

@@ -43,7 +43,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.V7CaptionConverter;
@@ -222,7 +221,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// Open the outbreak configuration window for the clicked row when
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
-		if (UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationJurisdictionLevel()) {
+		if (UiUtil.hasNoneJurisdictionLevel() || UiUtil.hasNationJurisdictionLevel()) {
 			ControllerProvider.getOutbreakController()
 				.openOutbreakConfigurationWindow(
 					(Disease) event.getPropertyId(),
