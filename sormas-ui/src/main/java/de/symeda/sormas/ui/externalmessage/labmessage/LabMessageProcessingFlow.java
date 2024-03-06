@@ -73,7 +73,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
@@ -97,7 +96,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageMapper mapper,
 		ExternalMessageProcessingFacade processingFacade,
 		RelatedLabMessageHandler relatedLabMessageHandler) {
-		super(labMessage, UserProvider.getCurrent().getUser(), mapper, processingFacade, relatedLabMessageHandler);
+		super(labMessage, UiUtil.getUser(), mapper, processingFacade, relatedLabMessageHandler);
 	}
 
 	@Override

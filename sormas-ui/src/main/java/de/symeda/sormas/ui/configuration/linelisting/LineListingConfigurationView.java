@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -192,8 +193,8 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			if (params.length > 1) {
 				disease = Disease.valueOf(params[1].substring(params[1].indexOf("=") + 1));
 			}
-		} else if (!(UserProvider.getCurrent().hasNationJurisdictionLevel() || UserProvider.getCurrent().hasNoneJurisdictionLevel())) {
-			this.region = UserProvider.getCurrent().getUser().getRegion();
+		} else if (!(UiUtil.hasNationJurisdictionLevel() || UiUtil.hasNoneJurisdictionLevel())) {
+			this.region = UiUtil.getUser().getRegion();
 		}
 
 		contentLayout = new VerticalLayout();

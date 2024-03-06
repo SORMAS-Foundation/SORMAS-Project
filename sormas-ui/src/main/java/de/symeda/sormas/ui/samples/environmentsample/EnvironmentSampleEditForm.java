@@ -53,7 +53,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
@@ -260,11 +260,10 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	}
 
 	private void disableFieldsBasedOnRights(EnvironmentSampleDto sample) {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel jurisdictionLevel = currentUserProvider.getJurisdictionLevel();
-		boolean hasEditReceivalRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
-		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
-		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
+		JurisdictionLevel jurisdictionLevel = UiUtil.getJurisdictionLevel();
+		boolean hasEditReceivalRight = UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
+		boolean hasEditDispatchRight = UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
+		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), UiUtil.getUser());
 		boolean canEditDispatchField =
 			isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
 

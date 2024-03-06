@@ -915,7 +915,7 @@ public class EventController {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
 
-				final UserDto user = UserProvider.getCurrent().getUser();
+				final UserDto user = UiUtil.getUser();
 				final RegionReferenceDto userRegion = user.getRegion();
 				final DistrictReferenceDto userDistrict = user.getDistrict();
 				final RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
@@ -1069,11 +1069,11 @@ public class EventController {
 	}
 
 	public EventDto createNewEvent() {
-		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser());
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UiUtil.getUser());
 	}
 
 	public EventDto createNewEvent(Disease disease) {
-		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UiUtil.getUser(), disease);
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {

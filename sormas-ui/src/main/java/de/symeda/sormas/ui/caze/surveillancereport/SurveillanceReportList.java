@@ -134,7 +134,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			mainLayout.setSpacing(false);
 			addComponentToField(mainLayout);
 
-			Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+			Language userLanguage = UiUtil.getUser().getLanguage();
 			mainLayout.addComponent(createRow(null, report.getReportingType(), SurveillanceReportDto.REPORTING_TYPE));
 			mainLayout.addComponent(
 				createRow(

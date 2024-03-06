@@ -58,7 +58,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.eventParticipantsLineListing.layout.LineListingLayout;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -295,7 +294,7 @@ public class EventParticipantsController {
 
 				EventParticipantDto dto = editForm.getValue();
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid(), false);
-				UserDto user = UserProvider.getCurrent().getUser();
+				UserDto user = UiUtil.getUser();
 
 				RegionReferenceDto userRegion = user.getRegion();
 				DistrictReferenceDto userDistrict = user.getDistrict();

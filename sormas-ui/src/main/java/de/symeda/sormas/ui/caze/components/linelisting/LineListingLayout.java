@@ -151,9 +151,8 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		if (currentUserProvider != null && currentUserProvider.hasRegionJurisdictionLevel()) {
-			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
+		if (UiUtil.hasRegionJurisdictionLevel()) {
+			RegionReferenceDto userRegion = UiUtil.getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);
 			updateDistricts(userRegion);

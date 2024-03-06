@@ -65,7 +65,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -105,7 +104,7 @@ public class PathogenTestController {
 		Consumer<PathogenTestDto> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
 		return getPathogenTestCreateComponent(
-			PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()),
+			PathogenTestDto.build(sampleDto, UiUtil.getUser()),
 			sampleDto,
 			caseSampleCount,
 			onSavedPathogenTest,
@@ -142,7 +141,7 @@ public class PathogenTestController {
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(EnvironmentSampleDto sampleDto) {
 
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
-		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
+		createForm.setValue(PathogenTestDto.build(sampleDto, UiUtil.getUser()));
 
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_PATHOGEN_TEST_CREATE), createForm.getFieldGroup());

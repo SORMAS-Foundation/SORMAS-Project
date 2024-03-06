@@ -58,7 +58,7 @@ public class EnvironmentController {
 	}
 
 	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent() {
-		UserProvider curentUser = UserProvider.getCurrent();
+		UserProvider curentUser = UiUtil.getCurrentUserProvider();
 
 		if (curentUser != null) {
 			EnvironmentCreateForm createForm;
@@ -122,7 +122,7 @@ public class EnvironmentController {
 			if (!environmentDataForm.getFieldGroup().isModified()) {
 				EnvironmentDto dto = environmentDataForm.getValue();
 
-				final UserDto user = UserProvider.getCurrent().getUser();
+				final UserDto user = UiUtil.getUser();
 				final RegionReferenceDto userRegion = user.getRegion();
 				final DistrictReferenceDto userDistrict = user.getDistrict();
 				final RegionReferenceDto environmentRegion = dto.getLocation().getRegion();
