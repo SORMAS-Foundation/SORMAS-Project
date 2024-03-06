@@ -8,6 +8,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.PseudonymizableDataAccessLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -40,6 +41,10 @@ public class UiUtil {
 
 	public static Set<UserRight> getUserRights() {
 		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getUserRights() : null;
+	}
+
+	public static PseudonymizableDataAccessLevel getPseudonymizableDataAccessLevel(boolean inJurisdiction) {
+		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getPseudonymizableDataAccessLevel(inJurisdiction) : null;
 	}
 
 	public static boolean hasUserAccess() {

@@ -113,7 +113,6 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.components.linelisting.LineListingLayout;
@@ -1294,9 +1293,8 @@ public class CaseController {
 			person,
 			SymptomsContext.CASE,
 			viewMode,
-			UiFieldAccessCheckers.forDataAccessLevel(
-				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()),
-				caseDataDto.isPseudonymized()));
+			UiFieldAccessCheckers
+				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()), caseDataDto.isPseudonymized()));
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView =
@@ -1379,9 +1377,8 @@ public class CaseController {
 		CaseDataDto caseDataDto = findCase(caseUuid);
 
 		CaseExternalDataForm caseExternalDataForm = new CaseExternalDataForm(
-			UiFieldAccessCheckers.forDataAccessLevel(
-				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()),
-				caseDataDto.isPseudonymized()));
+			UiFieldAccessCheckers
+				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()), caseDataDto.isPseudonymized()));
 		caseExternalDataForm.setValue(caseDataDto);
 
 		DetailSubComponentWrapper wrapper = new DetailSubComponentWrapper(() -> null);

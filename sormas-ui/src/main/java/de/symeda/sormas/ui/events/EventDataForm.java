@@ -79,7 +79,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
@@ -197,8 +197,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		boolean withPersonalAndSensitive) {
 
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers
-				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
+			return UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();

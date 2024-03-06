@@ -36,7 +36,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
@@ -52,9 +51,8 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 	public CaseInfoLayout(CaseDataDto caseDto, boolean isTravelEntry) {
 		super(
 			CaseDataDto.class,
-			UiFieldAccessCheckers.forDataAccessLevel(
-				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caseDto.isInJurisdiction()),
-				caseDto.isPseudonymized()));
+			UiFieldAccessCheckers
+				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caseDto.isInJurisdiction()), caseDto.isPseudonymized()));
 
 		this.caseDto = caseDto;
 		this.isTravelEntry = isTravelEntry;

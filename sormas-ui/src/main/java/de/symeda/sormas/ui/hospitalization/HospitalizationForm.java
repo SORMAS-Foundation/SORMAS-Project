@@ -53,7 +53,6 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -101,7 +100,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
 				.add(new OutbreakFieldVisibilityChecker(viewMode)),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
 			isEditAllowed);
 		this.caze = caze;
 		this.viewMode = viewMode;

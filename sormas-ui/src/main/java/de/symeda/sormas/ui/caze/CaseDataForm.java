@@ -325,7 +325,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
 				.add(new UserRightFieldVisibilityChecker(UiUtil::permitted)),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.caseUuid = caseUuid;
 		this.person = person;

@@ -439,8 +439,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		boolean inJurisdiction,
 		boolean withPersonalAndSensitive) {
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers
-				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
+			return UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();

@@ -60,7 +60,7 @@ public class SampleEditForm extends AbstractSampleForm {
 			SampleDto.class,
 			SampleDto.I18N_PREFIX,
 			disease,
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		testsToBeRemovedOnCommit = new ArrayList();
 	}
 
