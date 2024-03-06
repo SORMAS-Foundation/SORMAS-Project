@@ -28,7 +28,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -81,7 +80,7 @@ public class TravelEntryController {
 			createForm = new TravelEntryCreateForm();
 		}
 
-		travelEntry.setReportingUser(UserProvider.getCurrent().getUserReference());
+		travelEntry.setReportingUser(UiUtil.getUserReference());
 		createForm.setValue(travelEntry);
 
 		if (caseReferenceDto != null) {

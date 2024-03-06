@@ -44,7 +44,6 @@ import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.environment.EnvironmentDataView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -171,7 +170,7 @@ public class EnvironmentSampleController {
 
 	public void create(EnvironmentDto environment, Runnable callback) {
 		EnvironmentSampleEditForm createForm = new EnvironmentSampleEditForm(false, true);
-		EnvironmentSampleDto newSample = EnvironmentSampleDto.build(environment.toReference(), UserProvider.getCurrent().getUserReference());
+		EnvironmentSampleDto newSample = EnvironmentSampleDto.build(environment.toReference(), UiUtil.getUserReference());
 		DtoCopyHelper.copyDtoValues(newSample.getLocation(), environment.getLocation(), false);
 		createForm.setValue(newSample);
 		final CommitDiscardWrapperComponent<EnvironmentSampleEditForm> editView =

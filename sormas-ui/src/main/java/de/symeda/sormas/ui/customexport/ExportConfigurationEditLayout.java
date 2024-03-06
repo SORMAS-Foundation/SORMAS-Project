@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -47,7 +46,7 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -107,7 +106,8 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 		}
 		configNameAndSharedToPublicCheckboxLayout.addComponent(tfName);
 
-		checkBoxPublicExport = new CheckBox(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedToPublic));
+		checkBoxPublicExport =
+			new CheckBox(I18nProperties.getPrefixCaption(ExportConfigurationDto.I18N_PREFIX, Captions.ExportConfiguration_sharedToPublic));
 		checkBoxPublicExport.setWidth(350, Unit.PIXELS);
 		checkBoxPublicExport.setValue(this.exportConfiguration.isSharedToPublic());
 		checkBoxPublicExport.setEnabled(hasManagePublicExportRights());
@@ -124,8 +124,8 @@ public class ExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private boolean hasManagePublicExportRights() {
-		return Objects.requireNonNull(UserProvider.getCurrent()).hasUserRight(UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION)
-				&& (UserProvider.getCurrent().getUserReference().equals(this.exportConfiguration.getUser()));
+		return UiUtil.permitted(UserRight.MANAGE_PUBLIC_EXPORT_CONFIGURATION)
+			&& (UiUtil.getUserReference().equals(this.exportConfiguration.getUser()));
 	}
 
 	private int buildCheckBoxGroups(List<ExportPropertyMetaInfo> exportExportProperties) {

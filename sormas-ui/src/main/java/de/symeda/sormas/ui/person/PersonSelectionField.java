@@ -37,7 +37,6 @@ import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -82,9 +81,8 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 		initializeGrid();
 
-		this.hasMatches = referencePerson == null
-			? false
-			: FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		this.hasMatches =
+			referencePerson != null && FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UiUtil.getUserReference(), defaultCriteria);
 		if (infoTextWithoutMatches == null) {
 			this.infoText = infoText;
 		} else {
@@ -209,7 +207,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		if (hasMatches) {
 			selectPersonOption.add(SELECT_PERSON);
 		}
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)) {
+		if (UiUtil.enabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)) {
 			selectPersonOption.add(SEARCH_AND_SELECT_PERSON);
 		}
 

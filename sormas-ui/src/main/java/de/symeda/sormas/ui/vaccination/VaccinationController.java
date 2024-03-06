@@ -39,7 +39,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -91,7 +90,7 @@ public class VaccinationController {
 		boolean doSave,
 		Consumer<VaccinationDto> commitCallback) {
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
-		VaccinationDto vaccination = VaccinationDto.build(UserProvider.getCurrent().getUserReference());
+		VaccinationDto vaccination = VaccinationDto.build(UiUtil.getUserReference());
 		if (immunization != null) {
 			vaccination.setImmunization(immunization);
 		}

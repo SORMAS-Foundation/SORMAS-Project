@@ -122,15 +122,15 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease, callback);
+		createSample(SampleDto.build(UiUtil.getUserReference(), caseRef), disease, callback);
 	}
 
 	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease, callback);
+		createSample(SampleDto.build(UiUtil.getUserReference(), contactRef), disease, callback);
 	}
 
 	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease, callback);
+		createSample(SampleDto.build(UiUtil.getUserReference(), eventParticipantRef), disease, callback);
 	}
 
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
@@ -351,7 +351,7 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(SampleDto existingSample, Disease disease) {
-		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
+		final SampleDto referralSample = SampleDto.buildReferralDto(UiUtil.getUserReference(), existingSample);
 
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView =
 			getSampleCreateComponent(referralSample, disease, UserRight.SAMPLE_TRANSFER, null);
