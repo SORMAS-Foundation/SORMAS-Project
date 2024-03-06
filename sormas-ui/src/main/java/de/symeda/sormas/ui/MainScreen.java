@@ -342,7 +342,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(UsersView.class, AbstractUserView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
 
-		if (UserProvider.getCurrent().hasConfigurationAccess()) {
+		if (UiUtil.hasConfigurationAccess()) {
 			Class<? extends AbstractConfigurationView> firstAccessibleView = AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
 				firstAccessibleView,

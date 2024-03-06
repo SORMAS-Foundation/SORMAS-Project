@@ -834,7 +834,7 @@ public class ContactController {
 				640,
 				confirmed -> {
 					if (Boolean.TRUE.equals(confirmed)) {
-						String userName = UserProvider.getCurrent().getUserName();
+						String userName = UiUtil.getUserName();
 
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpCanceled,
@@ -884,7 +884,7 @@ public class ContactController {
 				640,
 				confirmed -> {
 					if (Boolean.TRUE.equals(confirmed)) {
-						String userName = UserProvider.getCurrent().getUserName();
+						String userName = UiUtil.getUserName();
 
 						new BulkOperationHandler<ContactIndexDto>(
 							Strings.messageFollowUpStatusChanged,
