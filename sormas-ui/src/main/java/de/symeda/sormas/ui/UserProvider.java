@@ -99,6 +99,7 @@ public class UserProvider {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
+	//TODO: refactor this to hasUserRightWithAllowedFlag
 	public boolean hasUserRightWithEditAllowedFlag(boolean isEditAllowed, UserRight userRight) {
 		return isEditAllowed && hasUserRight(userRight);
 	}
@@ -137,7 +138,7 @@ public class UserProvider {
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {
-		RegionReferenceDto userRegionReference = getCurrent().getUser().getRegion();
+		RegionReferenceDto userRegionReference = UiUtil.getUser().getRegion();
 		return Objects.equals(userRegionReference, regionReference);
 	}
 

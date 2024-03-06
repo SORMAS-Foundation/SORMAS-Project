@@ -24,6 +24,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.ImmunizationPickOrCreateField;
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
@@ -69,7 +70,7 @@ public class ImmunizationController {
 	}
 
 	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent() {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
 		if (currentUserProvider != null) {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm();
 			ImmunizationDto immunization = ImmunizationDto.build(null);
@@ -110,7 +111,7 @@ public class ImmunizationController {
 	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent(
 		PersonReferenceDto personReferenceDto,
 		Disease disease) {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
 		if (currentUserProvider != null) {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm(personReferenceDto, disease);
 			ImmunizationDto immunization = ImmunizationDto.build(personReferenceDto);
@@ -145,7 +146,6 @@ public class ImmunizationController {
 			actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
 		CommitDiscardWrapperComponent<ImmunizationDataForm> editComponent =
 			new CommitDiscardWrapperComponent<ImmunizationDataForm>(immunizationDataForm, true, immunizationDataForm.getFieldGroup()) {
 
@@ -192,7 +192,7 @@ public class ImmunizationController {
 		});
 
 		// Initialize 'Delete' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				ImmunizationsView.VIEW_NAME,
 				null,
@@ -202,7 +202,7 @@ public class ImmunizationController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					immunizationDto,
