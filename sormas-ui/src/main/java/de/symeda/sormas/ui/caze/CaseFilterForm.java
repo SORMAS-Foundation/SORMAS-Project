@@ -61,7 +61,6 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -397,7 +396,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,
@@ -674,7 +673,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);

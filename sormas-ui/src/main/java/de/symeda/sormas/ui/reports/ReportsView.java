@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -41,7 +40,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -61,7 +59,7 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		JurisdictionLevel jurisdictionLevel = Objects.requireNonNull(UserProvider.getCurrent().getJurisdictionLevel());
+		JurisdictionLevel jurisdictionLevel = UiUtil.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {

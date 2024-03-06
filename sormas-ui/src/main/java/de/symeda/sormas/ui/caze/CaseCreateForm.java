@@ -70,7 +70,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -386,7 +385,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityType.addValueChangeListener(e -> updateFacility());
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			regionCombo.setReadOnly(true);
 			responsibleRegionCombo.setReadOnly(true);
@@ -551,7 +550,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updateFacility() {
 
-		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY) {
+		if (UiUtil.getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY) {
 			return;
 		}
 

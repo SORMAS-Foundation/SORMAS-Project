@@ -303,7 +303,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		buildDeaContent(newFieldValue);
 
 		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
-		JurisdictionLevel userJurisditionLevel = currentUserProvider != null ? currentUserProvider.getJurisdictionLevel() : JurisdictionLevel.NONE;
+		JurisdictionLevel userJurisditionLevel = currentUserProvider != null ? UiUtil.getJurisdictionLevel() : JurisdictionLevel.NONE;
 
 		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(UiUtil.getUser().getHealthFacility().getUuid());

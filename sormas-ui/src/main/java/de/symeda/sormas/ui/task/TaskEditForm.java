@@ -56,7 +56,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -221,8 +220,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			// Allow users to assign tasks to users of the next higher jurisdiction level, when the higher jurisdiction contains the users jurisdiction
 			// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
 			// For national users, there is no higher level
-			if (UiUtil.enabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& UserProvider.getCurrent().getJurisdictionLevel() != JurisdictionLevel.NATION) {
+			if (UiUtil.enabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL) && UiUtil.getJurisdictionLevel() != JurisdictionLevel.NATION) {
 
 				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 				if (superordinateUsers != null) {

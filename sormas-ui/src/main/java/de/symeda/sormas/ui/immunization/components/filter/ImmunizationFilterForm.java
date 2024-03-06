@@ -33,6 +33,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -278,7 +279,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		final UserDto user = currentUserDto();
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		final JurisdictionLevel userJurisdictionLevel = currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : null;
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 
 		final ComboBox facilityTypeGroupField = getField(ImmunizationCriteria.FACILITY_TYPE_GROUP);
 		final ComboBox facilityTypeField = getField(ImmunizationCriteria.FACILITY_TYPE);

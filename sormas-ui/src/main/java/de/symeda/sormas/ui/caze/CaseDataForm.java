@@ -1074,7 +1074,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setEnabled(false, CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT);
 		}
 
-		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY || !isEditableAllowed(CaseDataDto.COMMUNITY)) {
+		if (UiUtil.getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY || !isEditableAllowed(CaseDataDto.COMMUNITY)) {
 			differentPlaceOfStayJurisdiction.setEnabled(false);
 			differentPlaceOfStayJurisdiction.setVisible(false);
 		}
