@@ -202,7 +202,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				}
 			}
 
-			final UserDto userDto = UserProvider.getCurrent().getUser();
+			final UserDto userDto = UiUtil.getUser();
 			availableUsers = new ArrayList<>();
 			if (taskDto.getCaze() != null) {
 				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingCaseInJurisdiction(taskDto.getCaze()));
@@ -323,8 +323,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
 
-			UserDto user = UserProvider.getCurrent().getUser();
-			JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+			UserDto user = UiUtil.getUser();
+			JurisdictionLevel jurisdictionLevel = UiUtil.getJurisdictionLevel();
 			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
 			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
 			boolean regional = jurisdictionLevel == JurisdictionLevel.REGION;

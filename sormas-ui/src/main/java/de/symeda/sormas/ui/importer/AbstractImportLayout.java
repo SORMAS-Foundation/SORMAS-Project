@@ -29,7 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -45,7 +45,7 @@ public class AbstractImportLayout extends VerticalLayout {
 	protected ComboBox separator;
 
 	public AbstractImportLayout() {
-		currentUser = UserProvider.getCurrent().getUser();
+		currentUser = UiUtil.getUser();
 		currentUI = UI.getCurrent();
 		setSpacing(false);
 		setMargin(true);
@@ -119,7 +119,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		comboBox.setItems(ValueSeparator.values());
 		comboBox.setValue(ValueSeparator.DEFAULT);
 		comboBox.setEmptySelectionAllowed(false);
-		comboBox.setItemCaptionGenerator(item -> ((ValueSeparator)item).getCaption(FacadeProvider.getConfigFacade().getCsvSeparator()));
+		comboBox.setItemCaptionGenerator(item -> ((ValueSeparator) item).getCaption(FacadeProvider.getConfigFacade().getCsvSeparator()));
 		separator = comboBox;
 		return comboBox;
 	}

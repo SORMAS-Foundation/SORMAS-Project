@@ -41,6 +41,7 @@ import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
@@ -301,12 +302,11 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : JurisdictionLevel.NONE;
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
+		JurisdictionLevel userJurisditionLevel = currentUserProvider != null ? currentUserProvider.getJurisdictionLevel() : JurisdictionLevel.NONE;
 
 		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(currentUserProvider.getUser().getHealthFacility().getUuid());
+			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(UiUtil.getUser().getHealthFacility().getUuid());
 			responsibleRegion.setValue(facility.getRegion());
 			responsibleRegion.setReadOnly(true);
 			responsibleDistrict.setValue(facility.getDistrict());

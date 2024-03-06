@@ -35,7 +35,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.components.FormActionButtonsComponent;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
@@ -147,7 +146,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	protected abstract String[] getMainFilterLocators();
 
 	protected UserDto currentUserDto() {
-		return UserProvider.getCurrent().getUser();
+		return UiUtil.getUser();
 	}
 
 	protected String createMoreFiltersHtmlLayout() {
@@ -254,7 +253,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void applyRegionFilterDependency(RegionReferenceDto region, String districtFieldId) {
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = UiUtil.getUser();
 		final ComboBox districtField = getField(districtFieldId);
 		DistrictReferenceDto userDistrict = user.getDistrict();
 
@@ -283,7 +282,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void applyDistrictDependency(DistrictReferenceDto district, String communityFieldId) {
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = UiUtil.getUser();
 		final ComboBox communityField = getField(communityFieldId);
 		if (user.getDistrict() != null && user.getCommunity() == null) {
 			FieldHelper.updateItems(communityField, FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));

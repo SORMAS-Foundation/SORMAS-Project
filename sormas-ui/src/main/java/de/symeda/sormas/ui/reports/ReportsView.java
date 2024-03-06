@@ -40,6 +40,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -157,8 +158,7 @@ public class ReportsView extends AbstractView {
 		if (grid instanceof WeeklyReportRegionsGrid) {
 			((WeeklyReportRegionsGrid) grid).reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		} else {
-			((WeeklyReportOfficersGrid) grid)
-				.reload(UserProvider.getCurrent().getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+			((WeeklyReportOfficersGrid) grid).reload(UiUtil.getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		}
 	}
 }

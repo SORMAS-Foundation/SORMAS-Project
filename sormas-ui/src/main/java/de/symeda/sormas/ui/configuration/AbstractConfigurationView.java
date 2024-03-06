@@ -29,7 +29,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumValuesView;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.docgeneration.emailtemplate.EmailTemplatesView;
@@ -214,7 +213,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//		}
 
 		if (isCaseSurveillanceEnabled && UiUtil.permitted(UserRight.LINE_LISTING_CONFIGURE)) {
-			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
+			RegionReferenceDto region = UiUtil.getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

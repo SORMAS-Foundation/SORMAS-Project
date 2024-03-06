@@ -676,7 +676,7 @@ public class CaseController {
 			caze = CaseDataDto.build(personreference, null);
 		}
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 		UserReferenceDto userReference = UiUtil.getUserReference();
 		caze.setReportingUser(userReference);
 

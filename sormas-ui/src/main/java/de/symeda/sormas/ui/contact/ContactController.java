@@ -408,7 +408,7 @@ public class ContactController {
 	}
 
 	private void setDefaults(ContactDto contact) {
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 		contact.setReportingUser(user.toReference());
 		contact.setReportingDistrict(user.getDistrict());
 	}

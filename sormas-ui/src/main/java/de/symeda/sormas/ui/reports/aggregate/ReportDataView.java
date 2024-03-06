@@ -26,7 +26,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -51,7 +50,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 	public ReportDataView() {
 
 		super(VIEW_NAME);
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(ReportDataView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(ReportDataView.class).get(AggregateReportCriteria.class);

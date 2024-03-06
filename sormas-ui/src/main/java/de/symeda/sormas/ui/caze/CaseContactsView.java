@@ -55,7 +55,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.AbstractContactGrid;
 import de.symeda.sormas.ui.contact.ContactGrid;
@@ -119,7 +118,7 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);

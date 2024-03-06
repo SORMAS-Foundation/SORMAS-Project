@@ -110,7 +110,6 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		UserProvider userProvider = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<UserEditForm> editView =
 			new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
@@ -133,7 +132,7 @@ public class UserController {
 						}
 					});
 				}
-				if (DataHelper.isSame(user, userProvider.getUser())) {
+				if (DataHelper.isSame(user, UiUtil.getUser())) {
 
 					Set<UserRight> oldUserRights =
 						UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));

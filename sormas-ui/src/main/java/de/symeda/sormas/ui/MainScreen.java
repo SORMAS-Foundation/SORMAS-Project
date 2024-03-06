@@ -306,7 +306,7 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.AIRPLANE);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
+		if (UiUtil.enabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
 			&& FacadeProvider.getSormasToSormasFacade().isProcessingShareEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
@@ -336,7 +336,7 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.BAR_CHART);
 		}
 
-		if (UserProvider.getCurrent().hasUserAccess()) {
+		if (UiUtil.hasUserAccess()) {
 			AbstractUserView.registerViews(navigator);
 
 			menu.addView(UsersView.class, AbstractUserView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
@@ -356,8 +356,8 @@ public class MainScreen extends HorizontalLayout {
 
 		// Add GDPR window
 		// possible to desactivate it with check
-		UserDto user = UserProvider.getCurrent().getUser();
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
+		UserDto user = UiUtil.getUser();
+		if (UiUtil.enabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
 			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);

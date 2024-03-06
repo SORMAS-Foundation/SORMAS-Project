@@ -151,8 +151,7 @@ public class ExternalMessageController {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
 		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
-		RelatedLabMessageHandler relatedLabMessageHandler =
-			new RelatedLabMessageHandler(UserProvider.getCurrent().getUser(), processingFacade, mapper);
+		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(UiUtil.getUser(), processingFacade, mapper);
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
 
 		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
