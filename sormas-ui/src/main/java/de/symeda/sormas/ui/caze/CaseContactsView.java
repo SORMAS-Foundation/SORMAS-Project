@@ -114,6 +114,7 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter = ComboBoxHelper.createComboBoxV7();
 		classificationFilter.setWidth(240, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+		classificationFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
@@ -122,6 +123,7 @@ public class CaseContactsView extends AbstractCaseView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
+			regionFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -139,6 +141,7 @@ public class CaseContactsView extends AbstractCaseView {
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
+		districtFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> criteria.district((DistrictReferenceDto) e.getProperty().getValue()));
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
@@ -168,6 +171,7 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter = ComboBoxHelper.createComboBoxV7();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
+		officerFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
 		if (user.getRegion() != null) {
 			officerFilter.addItems(
@@ -179,6 +183,7 @@ public class CaseContactsView extends AbstractCaseView {
 		searchField.setWidth(150, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
+		searchField.setDescription(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> criteria.setContactOrCaseLike(e.getText()));
 		topLayout.addComponent(searchField);
 
@@ -186,6 +191,7 @@ public class CaseContactsView extends AbstractCaseView {
 		personLikeField.setWidth(150, Unit.PIXELS);
 		personLikeField.setNullRepresentation("");
 		personLikeField.setInputPrompt(I18nProperties.getString(Strings.promptRelatedPersonLikeField));
+		personLikeField.setDescription(I18nProperties.getString(Strings.promptRelatedPersonLikeField));
 		personLikeField.addTextChangeListener(e -> criteria.setPersonLike(e.getText()));
 		topLayout.addComponent(personLikeField);
 

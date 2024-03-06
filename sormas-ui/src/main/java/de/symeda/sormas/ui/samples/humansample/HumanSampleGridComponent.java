@@ -35,7 +35,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SampleGridComponent;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -155,7 +155,7 @@ public class HumanSampleGridComponent extends SampleGridComponent<SampleIndexDto
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(220, Unit.PIXELS);
@@ -166,7 +166,7 @@ public class HumanSampleGridComponent extends SampleGridComponent<SampleIndexDto
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.sampleAllActiveAndArchivedSamples));
 
-				if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+				if (UiUtil.permitted(UserRight.SAMPLE_DELETE)) {
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.sampleDeletedSamples));
 				} else {
 					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
@@ -180,23 +180,27 @@ public class HumanSampleGridComponent extends SampleGridComponent<SampleIndexDto
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getSampleController()
-								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkDelete),
+							VaadinIcons.TRASH,
+							selectedItem -> ControllerProvider.getSampleController()
+								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UiUtil.permitted(UserRight.SAMPLE_DELETE)));
 				} else {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
-							ControllerProvider.getSampleController()
-								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkRestore),
+							VaadinIcons.ARROW_BACKWARD,
+							selectedItem -> ControllerProvider.getSampleController()
+								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UiUtil.permitted(UserRight.SAMPLE_DELETE)));
 				}
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());

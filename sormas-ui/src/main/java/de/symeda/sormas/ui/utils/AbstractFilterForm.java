@@ -12,12 +12,14 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -194,6 +196,14 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		if (configuration.getCaption() != null) {
 			setFieldCaption(field, configuration.getCaption());
 		}
+
+		// set description tooltip for fields without caption and description
+		if (field instanceof AbstractField) {
+			AbstractField withDescription = (AbstractField) field;
+			if (StringUtils.isBlank(withDescription.getCaption()) && StringUtils.isBlank(withDescription.getDescription())) {
+				withDescription.setDescription(getFieldCaption(field));
+			}
+		}
 	}
 
 	@Override
@@ -324,6 +334,18 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			((PopupDateField) field).setInputPrompt(caption);
 		} else {
 			field.setCaption(caption);
+		}
+	}
+
+	private <T1 extends Field> String getFieldCaption(T1 field) {
+		if (field instanceof ComboBox) {
+			return ((ComboBox) field).getInputPrompt();
+		} else if (field instanceof AbstractTextField) {
+			return ((AbstractTextField) field).getInputPrompt();
+		} else if (field instanceof PopupDateField) {
+			return ((PopupDateField) field).getInputPrompt();
+		} else {
+			return field.getCaption();
 		}
 	}
 

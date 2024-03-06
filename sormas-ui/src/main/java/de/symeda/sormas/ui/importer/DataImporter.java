@@ -177,21 +177,24 @@ public abstract class DataImporter {
 				I18nProperties.setUserLanguage(currentUser.getLanguage());
 				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 
-				ImportResultStatus importResult = runImport();
+				ImportResult importResult = runImport();
+				ImportResultStatus importStatus = importResult.getStatus();
+				boolean hasSkips = importResult.isHasSkips();
 
 				// Display a window presenting the import result
 				currentUI.access(() -> {
 					window.setClosable(true);
 					ProgressResult progressResult;
 					String newInfoText;
-					switch (importResult) {
+					switch (importStatus) {
 					case COMPLETED:
 						progressResult = ProgressResult.SUCCESS;
-						newInfoText = I18nProperties.getString(Strings.messageImportSuccessful);
+						newInfoText = I18nProperties.getString(hasSkips ? Strings.messageImportSuccessfulWithSkips : Strings.messageImportSuccessful);
 						break;
 					case COMPLETED_WITH_ERRORS:
 						progressResult = ProgressResult.SUCCESS_WITH_WARNING;
-						newInfoText = I18nProperties.getString(Strings.messageImportPartiallySuccessful);
+						newInfoText = I18nProperties
+							.getString(hasSkips ? Strings.messageImportPartiallySuccessfulWithSkips : Strings.messageImportPartiallySuccessful);
 						break;
 					case CANCELED:
 						progressResult = ProgressResult.SUCCESS;
@@ -205,7 +208,7 @@ public abstract class DataImporter {
 					progressLayout.finishProgress(progressResult, newInfoText, null, window::close);
 
 					window.addCloseListener(e -> {
-						if (importResult == ImportResultStatus.COMPLETED_WITH_ERRORS || importResult == ImportResultStatus.CANCELED_WITH_ERRORS) {
+						if (importStatus == ImportResultStatus.COMPLETED_WITH_ERRORS || importStatus == ImportResultStatus.CANCELED_WITH_ERRORS) {
 							StreamResource streamResource = createErrorReportStreamResource();
 							errorReportConsumer.accept(streamResource);
 						}
@@ -248,7 +251,7 @@ public abstract class DataImporter {
 	/**
 	 * To be called by async import thread or unit test
 	 */
-	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public ImportResult runImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		logger.debug("runImport - {}", inputFile.getAbsolutePath());
 
 		long t0 = System.currentTimeMillis();
@@ -284,7 +287,7 @@ public abstract class DataImporter {
 			// validate headers
 			if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length <= 1) {
 				writeImportError(new String[0], I18nProperties.getValidationError(Validations.importProbablyInvalidSeparator));
-				return ImportResultStatus.CANCELED_WITH_ERRORS;
+				return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, false);
 			}
 
 			// Read and import all lines from the import file
@@ -292,19 +295,25 @@ public abstract class DataImporter {
 
 			if (nextLine == null) {
 				writeImportError(new String[0], I18nProperties.getValidationError(Validations.importIncompleteContent));
-				return ImportResultStatus.CANCELED_WITH_ERRORS;
+				return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, false);
 			}
 
 			int lineCounter = 0;
+			boolean hasSkips = false;
 			while (nextLine != null) {
 				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);
+
+				hasSkips = hasSkips || lineResult == ImportLineResult.SKIPPED;
+
 				logger.debug("runImport - line {}", lineCounter);
 				if (importedLineCallback != null) {
 					importedLineCallback.accept(lineResult);
 				}
+
 				if (cancelAfterCurrent) {
 					break;
 				}
+
 				nextLine = readNextValidLine(csvReader);
 				lineCounter++;
 			}
@@ -317,14 +326,14 @@ public abstract class DataImporter {
 
 			if (cancelAfterCurrent) {
 				if (!hasImportError) {
-					return ImportResultStatus.CANCELED;
+					return ImportResult.withStatus(ImportResultStatus.CANCELED, hasSkips);
 				} else {
-					return ImportResultStatus.CANCELED_WITH_ERRORS;
+					return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, hasSkips);
 				}
 			} else if (hasImportError) {
-				return ImportResultStatus.COMPLETED_WITH_ERRORS;
+				return ImportResult.withStatus(ImportResultStatus.COMPLETED_WITH_ERRORS, hasSkips);
 			} else {
-				return ImportResultStatus.COMPLETED;
+				return ImportResult.withStatus(ImportResultStatus.COMPLETED, hasSkips);
 			}
 		} finally {
 			if (errorReportCsvWriter != null) {

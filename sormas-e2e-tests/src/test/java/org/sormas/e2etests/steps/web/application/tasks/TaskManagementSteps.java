@@ -263,6 +263,20 @@ public class TaskManagementSteps implements En {
         });
 
     When(
+        "^I check that region and district are correct displayed for contact entry by API in task management$",
+        () -> {
+          softly.assertEquals(
+              manager.getRegionName(apiState.getCreatedContact().getRegion().getUuid()),
+              webDriverHelpers.getTextFromWebElement(FIRST_GRID_REGION_VALUE),
+              "Regions are not equal");
+          softly.assertEquals(
+              manager.getDistrictName(apiState.getCreatedContact().getDistrict().getUuid()),
+              webDriverHelpers.getTextFromWebElement(FIRST_GRID_DISTRICT_VALUE),
+              "Districts are not equal");
+          softly.assertAll();
+        });
+
+    When(
         "^I check displayed task's context is ([^\"]*)$",
         (String taskContext) -> {
           taskTableRows.forEach(

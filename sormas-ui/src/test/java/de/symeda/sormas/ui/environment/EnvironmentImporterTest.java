@@ -62,7 +62,7 @@ public class EnvironmentImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_environment_import_test.csv").toURI());
 
 		EnvironmentImporterExtension importer = new EnvironmentImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = importer.runImport();
+		ImportResultStatus importResult = importer.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, importer.errors.toString());
 		assertEquals(3, getEnvironmentFacade().count(null));

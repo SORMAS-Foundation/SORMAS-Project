@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -634,10 +634,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().addComponent(reinfectionInfoLabel, REINFECTION_INFO_LOC);
 			reinfectionInfoLabel.setVisible(false);
 
-			CheckBoxTree<ReinfectionDetail> reinfectionDetailGroupCheckBoxTree =
-				addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTree.class);
-			reinfectionDetailGroupCheckBoxTree
-				.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
+			CheckBoxTree<ReinfectionDetail> reinfectionDetailGroupCheckBoxTree = addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTree.class);
+			reinfectionDetailGroupCheckBoxTree.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
 
 			tfReinfectionStatus.setReadOnly(false);
 			tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTree.getValue()));

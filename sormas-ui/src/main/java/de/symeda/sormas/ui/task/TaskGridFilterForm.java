@@ -115,16 +115,28 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-		TextField assigneeUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNEE_USER_LIKE, 200));
-		assigneeUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNEE_USER));
+		TextField assigneeUserLikeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.ASSIGNEE_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNEE_USER),
+				200));
 		assigneeUserLikeField.setNullRepresentation("");
 
-		TextField creatorUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.CREATOR_USER_LIKE, 200));
-		creatorUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.CREATOR_USER));
+		TextField creatorUserLikeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.CREATOR_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.CREATOR_USER),
+				200));
 		creatorUserLikeField.setNullRepresentation("");
 
-		TextField assignedByUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNED_BY_USER_LIKE, 200));
-		assignedByUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNED_BY_USER));
+		TextField assignedByUserLikeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.ASSIGNED_BY_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNED_BY_USER),
+				200));
 		assignedByUserLikeField.setNullRepresentation("");
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);

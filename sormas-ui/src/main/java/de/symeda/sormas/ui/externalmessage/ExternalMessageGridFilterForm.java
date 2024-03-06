@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Validator;
@@ -93,13 +93,14 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 				200));
 		contentSearchField.setNullRepresentation("");
 
-		ComboBoxWithPlaceholder assignee = addField(ExternalMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
+		ComboBoxWithPlaceholder assignee =
+			addField(FieldConfiguration.pixelSized(ExternalMessageCriteria.ASSIGNEE, 200), ComboBoxWithPlaceholder.class);
 		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, "", "", I18nProperties.getCaption(Captions.unassigned)));
 		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
 		assignee.setNullSelectionAllowed(true);
 
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			addField(ExternalMessageDto.TYPE, ComboBox.class);
+			addField(FieldConfiguration.pixelSized(ExternalMessageDto.TYPE, 140), ComboBox.class);
 		}
 
 		addField(FieldConfiguration.pixelSized(ExternalMessageCriteria.DISEASE, 140));
@@ -108,10 +109,12 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 		DateTimeField messageDateFrom = addField(ExternalMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);
 		messageDateFrom.setCaption(I18nProperties.getPrefixCaption(ExternalMessageCriteria.I18N_PREFIX, ExternalMessageCriteria.MESSAGE_DATE_FROM));
 		messageDateFrom.setInputPrompt(I18nProperties.getString(Strings.promptExternalMessagesDateFrom));
+		messageDateFrom.setDescription(I18nProperties.getString(Strings.promptExternalMessagesDateFrom));
 
 		DateTimeField messageDateTo = addField(ExternalMessageCriteria.MESSAGE_DATE_TO, DateTimeField.class);
 		messageDateTo.setCaption(I18nProperties.getPrefixCaption(ExternalMessageCriteria.I18N_PREFIX, ExternalMessageCriteria.MESSAGE_DATE_TO));
 		messageDateTo.setInputPrompt(I18nProperties.getString(Strings.promptExternalMessagesDateTo));
+		messageDateTo.setDescription(I18nProperties.getString(Strings.promptExternalMessagesDateTo));
 		DateComparisonValidator.addStartEndValidators(messageDateFrom, messageDateTo, false);
 
 		DateField personBirthDateFrom = addField(
