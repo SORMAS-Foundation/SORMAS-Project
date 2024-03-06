@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.CssLayout;
@@ -40,7 +39,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -313,17 +311,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, receivedDate.getCaption(), shipmentDate.getCaption())));
 
-		DateComparisonValidator validator = new DateComparisonValidator(
-			sampleDateField,
-			this::getEarliestPathogenTestDate,
-			true,
-			false,
-			() -> I18nProperties.getValidationError(
-				Validations.sampleDateTimeAfterPathogenTestDateTime,
-				DateFormatHelper.formatLocalDateTime(this.getEarliestPathogenTestDate())));
-		validator.setDateOnly(false);
-		sampleDateField.addValidator(validator);
-
 		List<AbstractField<Date>> validatedFields = Arrays.asList(sampleDateField, shipmentDate, receivedDate);
 		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
 			validatedFields.forEach(otherField -> {
@@ -471,13 +458,5 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		} else {
 			getContent().removeComponent(REQUESTED_ADDITIONAL_TESTS_READ_LOC);
 		}
-	}
-
-	private Date getEarliestPathogenTestDate() {
-		List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(getValue().toReference());
-		if (pathogenTests.isEmpty()) {
-			return null;
-		}
-		return pathogenTests.stream().map(PathogenTestDto::getTestDateTime).filter(Objects::nonNull).min(Date::compareTo).orElseGet(() -> null);
 	}
 }
