@@ -512,7 +512,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			noneOf(suspect));
 
 		ClassificationCriteriaDto notACase = configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-			? allOf(negativeTestResult(Disease.CORONAVIRUS))
+			? negativeTestResult(Disease.CORONAVIRUS)
 			: notACase(Disease.CORONAVIRUS);
 
 		addCriteria(

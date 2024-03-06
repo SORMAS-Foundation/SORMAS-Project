@@ -2256,7 +2256,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CaseClassification classification = null;
 		boolean setClassificationInfo = true;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
-			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE) {
+			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE
+				|| configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(savedCase);
 

@@ -1051,13 +1051,21 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAutomaticClassificationForLuxembourgServerConfirmed() {
+	public void testAutomaticClassificationForLuxembourgServerNegativeTestFirst() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
-		caze = getCaseFacade().save(caze);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.ANTIBODY_DETECTION, PathogenTestResultType.NEGATIVE);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
-		caze = getCaseFacade().save(caze); //triggers the recalculation of case classification
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testAutomaticClassificationForLuxembourgServerPositiveTestFirst() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
+		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.ANTIBODY_DETECTION, PathogenTestResultType.NEGATIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
 	}
@@ -1066,11 +1074,9 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	public void testAutomaticClassificationForLuxembourgServerNotACase() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
-		caze = getCaseFacade().save(caze);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.ANTIBODY_DETECTION, PathogenTestResultType.NEGATIVE);
 		creator.createPathogenTest(caze, Disease.CORONAVIRUS, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.NEGATIVE);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		caze = getCaseFacade().save(caze); //triggers the recalculation of case classification
 		assertEquals(CaseClassification.NO_CASE, caze.getCaseClassification());
 	}
 
