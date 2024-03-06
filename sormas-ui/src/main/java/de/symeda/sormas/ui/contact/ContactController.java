@@ -680,7 +680,7 @@ public class ContactController {
 			}
 		});
 
-		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+		if (UiUtil.getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.equal(contact.getContactOfficer(), UiUtil.getUserReference())) {
 			if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 				editComponent.addDeleteWithReasonOrRestoreListener(

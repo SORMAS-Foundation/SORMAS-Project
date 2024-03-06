@@ -954,7 +954,7 @@ public class CaseController {
 			editView.getWrappedComponent().addButtonListener(CaseDataForm.CASE_REFER_POINT_OF_ENTRY_BTN_LOC, clickListener);
 		}
 
-		if (UserProvider.getCurrent().getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+		if (UiUtil.getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.isSame(caze.getSurveillanceOfficer(), UiUtil.getUserReference())) {
 			appendSpecialCommands(caze, editView);
 		}

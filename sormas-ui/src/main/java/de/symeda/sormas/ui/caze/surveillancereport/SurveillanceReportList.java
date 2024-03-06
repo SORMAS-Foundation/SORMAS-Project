@@ -96,7 +96,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 				isEditable);
 
 			listEntry.setEnabled(isEditable);
-			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewExternalMessageButton(listEntry);
 			}
 			listLayout.addComponent(listEntry);

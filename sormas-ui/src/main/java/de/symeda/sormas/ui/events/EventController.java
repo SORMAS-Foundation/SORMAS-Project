@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -85,7 +84,6 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
@@ -941,10 +939,7 @@ public class EventController {
 			}
 		});
 
-		if (Objects.requireNonNull(UserProvider.getCurrent())
-			.getUserRoles()
-			.stream()
-			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+		if (UiUtil.getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.equal(event.getResponsibleUser(), UiUtil.getUserReference())) {
 			final String uuid = event.getUuid();
 			if (UiUtil.permitted(UserRight.EVENT_DELETE)) {

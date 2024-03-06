@@ -41,7 +41,6 @@ import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -94,7 +93,7 @@ public class UserRoleController {
 			if (!form.getFieldGroup().isModified()) {
 				UserRoleDto dto = form.getValue();
 
-				UserDto currentUser = UserProvider.getCurrent().getUser();
+				UserDto currentUser = UiUtil.getUser();
 				if (currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, dto))) {
 					Collection<UserRoleDto> currentUserRoles = FacadeProvider.getUserRoleFacade().getByReferences(currentUser.getUserRoles());
 					Set<UserRight> currentUserRights = UserRoleDto.getUserRights(currentUserRoles);

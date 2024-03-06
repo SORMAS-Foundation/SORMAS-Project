@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.environment;
 
-import java.util.Objects;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -161,10 +159,7 @@ public class EnvironmentController {
 			}
 		}
 
-		if (Objects.requireNonNull(UserProvider.getCurrent())
-			.getUserRoles()
-			.stream()
-			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+		if (UiUtil.getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
 			|| DataHelper.equal(environmentDto.getResponsibleUser(), UiUtil.getUserReference())) {
 			// Initialize 'Delete' button
 			if (UiUtil.permitted(UserRight.ENVIRONMENT_DELETE)) {

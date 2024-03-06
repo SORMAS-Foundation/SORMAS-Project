@@ -32,7 +32,6 @@ import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -83,7 +82,7 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 			listEntry.setEnabled(isEditAllowed);
 
-			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewLabMessageButton(listEntry);
 			}
 			listLayout.addComponent(listEntry);

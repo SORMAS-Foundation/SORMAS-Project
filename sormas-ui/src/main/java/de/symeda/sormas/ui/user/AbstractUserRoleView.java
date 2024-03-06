@@ -25,7 +25,6 @@ import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -58,7 +57,7 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 					});
 			});
 
-			if (!UserProvider.getCurrent().getUserRights().contains(UserRight.USER_ROLE_EDIT)) {
+			if (!UiUtil.getUserRights().contains(UserRight.USER_ROLE_EDIT)) {
 				applyUserRoleTemplate.setEnabled(false);
 			}
 
