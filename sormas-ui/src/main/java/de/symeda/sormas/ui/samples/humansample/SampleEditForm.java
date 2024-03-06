@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.Button;
@@ -32,6 +34,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -40,6 +44,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SampleEditForm extends AbstractSampleForm {
@@ -134,5 +141,30 @@ public class SampleEditForm extends AbstractSampleForm {
 	@Override
 	public void setHeading(String heading) {
 		laboratorySampleHeadingLabel.setValue(heading);
+	}
+
+	@Override
+	protected void addValidators() {
+		super.addValidators();
+
+		final DateTimeField sampleDateField = getField(SampleDto.SAMPLE_DATE_TIME);
+		DateComparisonValidator validator = new DateComparisonValidator(
+			sampleDateField,
+			this::getEarliestPathogenTestDate,
+			true,
+			false,
+			() -> I18nProperties.getValidationError(
+				Validations.sampleDateTimeAfterPathogenTestDateTime,
+				DateFormatHelper.formatLocalDateTime(this.getEarliestPathogenTestDate())));
+		validator.setDateOnly(false);
+		sampleDateField.addValidator(validator);
+	}
+
+	private Date getEarliestPathogenTestDate() {
+		List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(getValue().toReference());
+		if (pathogenTests.isEmpty()) {
+			return null;
+		}
+		return pathogenTests.stream().map(PathogenTestDto::getTestDateTime).filter(Objects::nonNull).min(Date::compareTo).orElseGet(() -> null);
 	}
 }

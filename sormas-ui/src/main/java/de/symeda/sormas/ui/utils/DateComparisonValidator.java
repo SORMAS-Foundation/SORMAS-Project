@@ -40,6 +40,7 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 
 	private Field<Date> dateField;
 	private Supplier<Date> referenceDateSupplier;
+	private Supplier<String> errorMessageSupplier;
 	private boolean earlierOrSame;
 	private boolean changeInvalidCommitted;
 	private boolean dateOnly = true;
@@ -56,6 +57,21 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		this.referenceDateSupplier = referenceDateSupplier;
 		this.earlierOrSame = earlierOrSame;
 		this.changeInvalidCommitted = changeInvalidCommitted;
+	}
+
+	public DateComparisonValidator(
+		Field<Date> dateField,
+		Supplier<Date> referenceDateSupplier,
+		boolean earlierOrSame,
+		boolean changeInvalidCommitted,
+		Supplier<String> errorMessageSupplier) {
+
+		super(null);
+		this.dateField = dateField;
+		this.referenceDateSupplier = referenceDateSupplier;
+		this.earlierOrSame = earlierOrSame;
+		this.changeInvalidCommitted = changeInvalidCommitted;
+		this.errorMessageSupplier = errorMessageSupplier;
 	}
 
 	public DateComparisonValidator(
@@ -78,6 +94,7 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		this(dateField, () -> referenceDate, earlierOrSame, changeInvalidCommitted, errorMessage);
 	}
 
+
 	@Override
 	protected boolean isValidValue(Date date) {
 
@@ -97,6 +114,8 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(false);
 				}
+
+				setErrorMessage(errorMessageSupplier != null ? errorMessageSupplier.get() : getErrorMessage());
 				return false;
 			}
 		} else {
@@ -109,6 +128,8 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(false);
 				}
+
+				setErrorMessage(errorMessageSupplier != null ? errorMessageSupplier.get() : getErrorMessage());
 				return false;
 			}
 		}
