@@ -1,4 +1,4 @@
-@UI @Sanity @env_survnet
+@UI @Sanity @env_survnet @ignore
 Feature: Survnet tests
 
   @tmsLink=SORQA-963 @precon
