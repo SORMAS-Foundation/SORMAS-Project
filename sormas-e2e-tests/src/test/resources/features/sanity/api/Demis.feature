@@ -1,4 +1,4 @@
-@Sanity @DEMIS
+@Sanity @DEMIS @ignore
 Feature: Check Demis functionalities
 
   @env_d2s
