@@ -14,7 +14,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -28,6 +27,7 @@ import javax.persistence.criteria.Selection;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -37,12 +37,12 @@ import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.person.PersonAssociation;
-import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
@@ -78,6 +78,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public DirectoryImmunizationService() {
 		super(DirectoryImmunization.class, DeletableEntityType.IMMUNIZATION);
@@ -305,6 +307,9 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_TOKEN), textFilter),
+					configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						? CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.NATIONAL_HEALTH_ID), textFilter)
+						: cb.disjunction(),
 					CriteriaBuilderHelper.unaccentedIlike(cb, lastVaccineType.get(LastVaccineType.VACCINE_TYPE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
@@ -406,7 +411,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter = null;
 
-			filter = isInJurisdictionOrOwned(qc);
+		filter = isInJurisdictionOrOwned(qc);
 
 		From<?, DirectoryImmunization> root = qc.getRoot();
 		DirectoryImmunizationJoins joins = qc.getJoins();

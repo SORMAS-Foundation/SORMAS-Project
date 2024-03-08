@@ -48,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
@@ -133,8 +134,10 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -2214,6 +2217,46 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactCriteria.setPersonLike("detail2");
 		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
 		assertEquals(0, contactIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void testGetContactsByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		ContactDto contact1 = getContactFacade().save(creator.createContact(user.toReference(), person1));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getContactFacade().save(creator.createContact(user.toReference(), person2));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getContactFacade().save(creator.createContact(user.toReference(), person3));
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setPersonLike("firstNationalId");
+
+		List<ContactIndexDto> contactIndexDtos1 = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		assertEquals(1, contactIndexDtos1.size());
+		assertEquals(contact1.getUuid(), contactIndexDtos1.get(0).getUuid());
+
+		contactCriteria.setPersonLike("National");
+		List<ContactIndexDto> contactIndexDtosNational = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		assertEquals(2, contactIndexDtosNational.size());
+
+		contactCriteria.setPersonLike(null);
+		List<ContactIndexDto> contactIndexDtosAll = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		assertEquals(3, contactIndexDtosAll.size());
 	}
 
 	@Test

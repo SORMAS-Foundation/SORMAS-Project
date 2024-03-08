@@ -14,6 +14,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -85,7 +86,10 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		final TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
 				ImmunizationCriteria.NAME_ADDRESS_PHONE_EMAIL_LIKE,
-				I18nProperties.getString(Strings.promptPersonsSearchField),
+				I18nProperties.getString(
+					isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						? Strings.promptPersonsSearchFieldLuxembourg
+						: Strings.promptPersonsSearchField),
 				200));
 		searchField.setNullRepresentation("");
 

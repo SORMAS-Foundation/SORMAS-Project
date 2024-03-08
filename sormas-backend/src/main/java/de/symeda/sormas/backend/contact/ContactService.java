@@ -56,6 +56,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -1356,7 +1357,10 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 					CriteriaBuilderHelper
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
+					configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						? CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)
+						: cb.disjunction()));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
