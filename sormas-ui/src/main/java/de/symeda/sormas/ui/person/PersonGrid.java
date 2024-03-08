@@ -92,7 +92,7 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 		setLazyDataProvider(
 			FacadeProvider.getPersonFacade()::getIndexList,
 			FacadeProvider.getPersonFacade()::count,
-			bulkEditMode && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) ? SelectionMode.MULTI : SelectionMode.NONE);
+			UiUtil.permitted(bulkEditMode, UserRight.PERFORM_BULK_OPERATIONS) ? SelectionMode.MULTI : SelectionMode.NONE);
 	}
 
 	public void setFixDataProvider(List<PersonIndexDto> list) {
@@ -102,7 +102,7 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 
 	protected void setBulkEditMode(boolean bulkEditMode) {
 		this.bulkEditMode = bulkEditMode;
-		if (bulkEditMode && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(bulkEditMode, UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);

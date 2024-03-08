@@ -278,7 +278,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 		exposureForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<ExposureForm> component =
-			new CommitDiscardWrapperComponent<>(exposureForm, UiUtil.permitted(UserRight.CASE_EDIT) && isEditAllowed, exposureForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(exposureForm, UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT), exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.entityExposure));

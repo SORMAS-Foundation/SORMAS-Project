@@ -99,13 +99,12 @@ public class UserProvider {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
-	//TODO: refactor this to hasUserRightWithAllowedFlag
-	public boolean hasUserRightWithEditAllowedFlag(boolean isEditAllowed, UserRight userRight) {
-		return isEditAllowed && hasUserRight(userRight);
+	public boolean hasUserRightWithAllowedFlag(boolean isActionAllowed, UserRight userRight) {
+		return isActionAllowed && hasUserRight(userRight);
 	}
 
-	public boolean hasAllUserRightsWithEditAllowedFlag(boolean isEditAllowed, UserRight... userRights) {
-		return isEditAllowed && getUserRights().containsAll(Arrays.asList(userRights));
+	public boolean hasAllUserRightsWithAllowedFlag(boolean isActionAllowed, UserRight... userRights) {
+		return isActionAllowed && getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
 	public boolean hasUserRightWithEditPermissionType(EditPermissionType editPermissionType, UserRight userRight) {

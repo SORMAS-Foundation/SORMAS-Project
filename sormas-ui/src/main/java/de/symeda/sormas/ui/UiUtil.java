@@ -111,13 +111,12 @@ public class UiUtil {
 		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasAllUserRights(userRights);
 	}
 
-	//TODO: refactor this to hasUserRightWithAllowedFlag
-	public static boolean permitted(boolean isEditAllowed, UserRight userRight) {
-		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasUserRightWithEditAllowedFlag(isEditAllowed, userRight);
+	public static boolean permitted(boolean isActionAllowed, UserRight userRight) {
+		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasUserRightWithAllowedFlag(isActionAllowed, userRight);
 	}
 
-	public static boolean permitted(boolean isEditAllowed, UserRight... userRights) {
-		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, userRights);
+	public static boolean permitted(boolean isActionAllowed, UserRight... userRights) {
+		return Objects.nonNull(getCurrentUserProvider()) && getCurrentUserProvider().hasAllUserRightsWithAllowedFlag(isActionAllowed, userRights);
 	}
 
 	public static boolean permitted(EditPermissionType editPermissionType, UserRight userRight) {

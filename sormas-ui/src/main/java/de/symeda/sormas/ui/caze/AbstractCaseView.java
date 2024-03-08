@@ -190,7 +190,9 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 			}
 		}
 
-		if (caseFollowupEnabled && UiUtil.enabled(FeatureType.VIEW_TAB_CASES_FOLLOW_UP) && caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+		if (caseFollowupEnabled
+			&& UiUtil.permitted(FeatureType.VIEW_TAB_CASES_FOLLOW_UP)
+			&& caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 			menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
 		}
 

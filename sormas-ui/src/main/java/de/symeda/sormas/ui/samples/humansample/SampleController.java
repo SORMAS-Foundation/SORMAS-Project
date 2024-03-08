@@ -402,7 +402,7 @@ public class SampleController {
 			}
 		});
 
-		if (showDeleteButton && UiUtil.permitted(UserRight.SAMPLE_DELETE)) {
+		if (UiUtil.permitted(showDeleteButton, UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);

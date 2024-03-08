@@ -256,7 +256,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	 *            allow admins to perform this action even on pseudonymized entries
 	 */
 	public void bulkActionHandler(Consumer<Set> callback, boolean allowAdminOverride) {
-		if (allowAdminOverride && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS_PSEUDONYM)) {
+		if (UiUtil.permitted(allowAdminOverride, UserRight.PERFORM_BULK_OPERATIONS_PSEUDONYM)) {
 			callback.accept(getSelectedItems());
 		} else {
 			bulkActionHandler(callback);
