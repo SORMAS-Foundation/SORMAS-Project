@@ -43,7 +43,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -832,9 +831,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
-					configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						? CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.NATIONAL_HEALTH_ID), textFilter)
-						: cb.disjunction());
+					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.NATIONAL_HEALTH_ID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));

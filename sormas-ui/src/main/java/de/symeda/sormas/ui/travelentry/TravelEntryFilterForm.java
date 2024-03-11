@@ -11,7 +11,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -62,10 +61,7 @@ public class TravelEntryFilterForm extends AbstractFilterForm<TravelEntryCriteri
 		final TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
 				TravelEntryCriteria.NAME_UUID_EXTERNAL_ID_LIKE,
-				I18nProperties.getString(
-					isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						? Strings.promptTravelEntrySearchFieldLuxembourg
-						: Strings.promptTravelEntrySearchField),
+				I18nProperties.getString(Strings.promptTravelEntrySearchField),
 				200));
 		searchField.setNullRepresentation("");
 

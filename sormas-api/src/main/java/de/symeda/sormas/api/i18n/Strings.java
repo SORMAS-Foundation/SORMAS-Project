@@ -1663,11 +1663,9 @@ public interface Strings {
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";
 	String promptPersonsSearchField = "promptPersonsSearchField";
-	String promptPersonsSearchFieldLuxembourg = "promptPersonsSearchFieldLuxembourg";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptRelatedPersonLikeField = "promptRelatedPersonLikeField";
-	String promptRelatedPersonLikeFieldLuxembourg = "promptRelatedPersonLikeFieldLuxembourg";
 	String promptSampleDashboardFilterDateType = "promptSampleDashboardFilterDateType";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
@@ -1687,7 +1685,6 @@ public interface Strings {
 	String promptTravelEntryEpiWeekFrom = "promptTravelEntryEpiWeekFrom";
 	String promptTravelEntryEpiWeekTo = "promptTravelEntryEpiWeekTo";
 	String promptTravelEntrySearchField = "promptTravelEntrySearchField";
-	String promptTravelEntrySearchFieldLuxembourg = "promptTravelEntrySearchFieldLuxembourg";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";

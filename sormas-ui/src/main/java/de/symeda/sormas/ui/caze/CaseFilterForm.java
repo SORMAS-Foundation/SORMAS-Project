@@ -169,13 +169,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		searchField.setNullRepresentation("");
 
 		TextField personLikeField = addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				CaseCriteria.PERSON_LIKE,
-				I18nProperties.getString(
-					isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						? Strings.promptRelatedPersonLikeFieldLuxembourg
-						: Strings.promptRelatedPersonLikeField),
-				200));
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.PERSON_LIKE, I18nProperties.getString(Strings.promptRelatedPersonLikeField), 200));
 		personLikeField.setNullRepresentation("");
 
 		TextField eventSearchField = addField(

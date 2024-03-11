@@ -58,7 +58,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -859,9 +858,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPersonAddress().get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getPersonAddress().get(Location.POSTAL_CODE), textFilter),
-					configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-						? CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)
-						: cb.disjunction()));
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
