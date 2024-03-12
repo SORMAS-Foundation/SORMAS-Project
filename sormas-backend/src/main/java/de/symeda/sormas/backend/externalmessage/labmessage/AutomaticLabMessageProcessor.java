@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -29,6 +30,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -67,6 +70,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless
 @LocalBean
 public class AutomaticLabMessageProcessor {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -137,11 +142,14 @@ public class AutomaticLabMessageProcessor {
 				} else if (matchingPersons.size() == 1 && personDetailsMatch(person, matchingPersons.get(0))) {
 					callback.done(new EntitySelection<>(matchingPersons.get(0), false));
 				} else {
+					logger.debug(
+						"[MESSAGE PROCESSING] Multiple persons with the same national health id found in the database, or the one with same id seems to be a different person. Canceling processing.");
 					callback.cancel();
 				}
 			} else {
 				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true);
 				if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
+					logger.debug("[MESSAGE PROCESSING] Similar persons found in the database. Canceling processing.");
 					callback.cancel();
 				} else {
 					callback.done(new EntitySelection<>(personFacade.save(person), true));
@@ -162,9 +170,8 @@ public class AutomaticLabMessageProcessor {
 				result.setNewCase(true);
 				callback.done(result);
 			} else {
-				String caseUuid = caseService.getCaseUuidForAutomaticSampleAssignment(
-					similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet()),
-					similarCases.get(0).getDisease());
+				Set<String> similarCaseUuids = similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet());
+				String caseUuid = caseService.getCaseUuidForAutomaticSampleAssignment(similarCaseUuids, similarCases.get(0).getDisease());
 
 				if (caseUuid != null) {
 					CaseSelectionDto caseToAssignTo =
@@ -172,6 +179,9 @@ public class AutomaticLabMessageProcessor {
 					result.setCaze(caseToAssignTo);
 					callback.done(result);
 				} else {
+					logger.debug(
+						"[MESSAGE PROCESSING] None of the similar cases {} is usable for automatic sample assignment. Canceling processing.",
+						similarCaseUuids);
 					callback.cancel();
 				}
 			}
