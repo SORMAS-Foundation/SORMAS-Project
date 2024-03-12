@@ -155,6 +155,8 @@ public class EnvironmentFacadeEjb
 				location.get(Location.CITY),
 				environment.get(Environment.REPORT_DATE),
 				environment.get(Environment.INVESTIGATION_STATUS),
+				environment.get(Environment.DELETION_REASON),
+				environment.get(Environment.OTHER_DELETION_REASON),
 				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(environmentQueryContext)));
 
 			cq.where(environment.get(Environment.ID).in(batchedIds));

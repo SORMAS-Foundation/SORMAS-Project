@@ -16,6 +16,8 @@
 package de.symeda.sormas.ui.environment;
 
 import java.util.Date;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -23,8 +25,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -52,40 +56,69 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 			setCriteria(criteria);
 		}
 
-		setColumns(
-			EnvironmentIndexDto.UUID,
-			EnvironmentIndexDto.EXTERNAL_ID,
-			EnvironmentIndexDto.ENVIRONMENT_NAME,
-			EnvironmentIndexDto.ENVIRONMENT_MEDIA,
-			EnvironmentIndexDto.REGION,
-			EnvironmentIndexDto.DISTRICT,
-			EnvironmentIndexDto.COMMUNITY,
-			EnvironmentIndexDto.LATITUDE,
-			EnvironmentIndexDto.LONGITUDE,
-			EnvironmentIndexDto.POSTAL_CODE,
-			EnvironmentIndexDto.CITY,
-			EnvironmentIndexDto.REPORT_DATE,
-			EnvironmentIndexDto.INVESTIGATION_STATUS);
-
-		((Column<EnvironmentIndexDto, String>) getColumn(EnvironmentIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<EnvironmentIndexDto, Date>) getColumn(EnvironmentIndexDto.REPORT_DATE))
-			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-
-		for (Column<EnvironmentIndexDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.findPrefixCaption(column.getId(), EnvironmentIndexDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
-			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(EnvironmentIndexDto.class, column.getId()));
-		}
+		initColumns();
 
 		addItemClickListener(
 			new ShowDetailsListener<>(
 				EnvironmentIndexDto.UUID,
 				e -> ControllerProvider.getEnvironmentController().navigateToEnvironment(e.getUuid())));
+	}
+
+	protected void initColumns() {
+		Column<EnvironmentIndexDto, String> deleteColumn = addColumn(entry -> {
+			if (entry.getDeletionReason() != null) {
+				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
+			} else {
+				return "-";
+			}
+		});
+		deleteColumn.setId(DELETE_REASON_COLUMN);
+		deleteColumn.setSortable(false);
+		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+
+		setColumns(getGridColumns().toArray(String[]::new));
+
+		((Column<EnvironmentIndexDto, String>) getColumn(EnvironmentIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<EnvironmentIndexDto, Date>) getColumn(EnvironmentIndexDto.REPORT_DATE))
+			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+
+		if (!UiUtil.permitted(UserRight.ENVIRONMENT_DELETE)) {
+			removeColumn(DELETE_REASON_COLUMN);
+		}
+
+		for (Column<EnvironmentIndexDto, ?> column : getColumns()) {
+			column.setCaption(
+				I18nProperties
+					.findPrefixCaptionWithDefault(column.getId(), column.getCaption(), EnvironmentIndexDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(EnvironmentIndexDto.class, column.getId()));
+		}
 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			getColumn(EnvironmentIndexDto.REGION).setHidden(true);
 			getColumn(EnvironmentIndexDto.DISTRICT).setHidden(true);
 			getColumn(EnvironmentIndexDto.COMMUNITY).setHidden(true);
 		}
+	}
+
+	protected Stream<String> getGridColumns() {
+		return Stream
+			.of(
+				Stream.of(
+					EnvironmentIndexDto.UUID,
+					EnvironmentIndexDto.EXTERNAL_ID,
+					EnvironmentIndexDto.ENVIRONMENT_NAME,
+					EnvironmentIndexDto.ENVIRONMENT_MEDIA,
+					EnvironmentIndexDto.REGION,
+					EnvironmentIndexDto.DISTRICT,
+					EnvironmentIndexDto.COMMUNITY,
+					EnvironmentIndexDto.LATITUDE,
+					EnvironmentIndexDto.LONGITUDE,
+					EnvironmentIndexDto.POSTAL_CODE,
+					EnvironmentIndexDto.CITY,
+					EnvironmentIndexDto.REPORT_DATE,
+					EnvironmentIndexDto.INVESTIGATION_STATUS),
+				Stream.of(DELETE_REASON_COLUMN))
+			.flatMap(Function.identity());
 	}
 
 	public void reload() {
