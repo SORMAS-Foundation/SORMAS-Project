@@ -3,6 +3,7 @@ package de.symeda.sormas.backend;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,6 +116,10 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule = methods().should().notBeAnnotatedWith(RolesAllowed.class);
+
+	@ArchTest
+	public static final ArchRule dontUseCommonsCollections3Rule =
+		noClasses().should().dependOnClassesThat().resideInAPackage("org.apache.commons.collections");
 
 	private static final DescribedPredicate<JavaClass> classesInDataDictionary =
 		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
@@ -467,7 +472,11 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testSpecialCaseAccessFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(SpecialCaseAccessFacadeEjb.class, AuthMode.CLASS_ONLY, Collections.singletonList("deleteExpiredSpecialCaseAccesses"), classes);
+		assertFacadeEjbAnnotated(
+			SpecialCaseAccessFacadeEjb.class,
+			AuthMode.CLASS_ONLY,
+			Collections.singletonList("deleteExpiredSpecialCaseAccesses"),
+			classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

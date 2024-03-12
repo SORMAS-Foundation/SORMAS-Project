@@ -263,9 +263,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void addValidators() {
 		// Validators
-		final DateTimeField sampleDateField = (DateTimeField) getField(SampleDto.SAMPLE_DATE_TIME);
-		final DateField shipmentDate = (DateField) getField(SampleDto.SHIPMENT_DATE);
-		final DateField receivedDate = (DateField) getField(SampleDto.RECEIVED_DATE);
+		final DateTimeField sampleDateField = getField(SampleDto.SAMPLE_DATE_TIME);
+		final DateField shipmentDate = getField(SampleDto.SHIPMENT_DATE);
+		final DateField receivedDate = getField(SampleDto.RECEIVED_DATE);
 
 		sampleDateField.addValidator(
 			new DateComparisonValidator(

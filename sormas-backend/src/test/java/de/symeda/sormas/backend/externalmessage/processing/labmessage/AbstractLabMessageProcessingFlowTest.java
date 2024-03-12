@@ -56,6 +56,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -81,6 +82,7 @@ import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelate
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
@@ -2703,6 +2705,115 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		assertThat(result.getData().getSamples().get(0).getEntity(), is(sample));
 		assertThat(result.getData().getSamples().get(0).getSampleReport(), is(labMessage.getSampleReports().get(0)));
 		assertThat(result.getData().getSamples().get(0).isNew(), is(false));
+	}
+
+	@Test
+	public void testCaseSurveillanceReportCreation() throws ExecutionException, InterruptedException {
+		getFacilityService().createConstantFacilities();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setReporterName("ReporterLab");
+		});
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+
+			getCallbackParam(invocation).done(getCaseFacade().save(caze));
+			return null;
+		}).when(handleCreateCase).handle(any(), any(), any());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		ExternalMessageDto savedMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		SurveillanceReportDto surveillanceReport = getSurveillanceReportFacade().getByUuid(savedMessage.getSurveillanceReport().getUuid());
+
+		assertThat(surveillanceReport.getFacility(), is(getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID)));
+		assertThat(surveillanceReport.getFacilityType(), is(FacilityType.LABORATORY));
+		assertThat(surveillanceReport.getFacilityDetails(), is("ReporterLab"));
+		assertThat(surveillanceReport.getFacilityRegion(), is(result.getData().getCase().getResponsibleRegion()));
+		assertThat(surveillanceReport.getFacilityDistrict(), is(result.getData().getCase().getResponsibleDistrict()));
+	}
+
+	@Test
+	public void testCaseSurveillanceReportHasReporterFacility() throws ExecutionException, InterruptedException {
+		getFacilityService().createConstantFacilities();
+
+		TestDataCreator.RDCF rdcfSample =
+			creator.createRDCF("Region", "District", "Community", "Facility", FacilityType.LABORATORY, "PointOfEntry", true);
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setReporterName(rdcfSample.facility.getCaption());
+			m.setReporterExternalIds(List.of(rdcfSample.facility.getExternalId()));
+		});
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+
+			getCallbackParam(invocation).done(getCaseFacade().save(caze));
+			return null;
+		}).when(handleCreateCase).handle(any(), any(), any());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		ExternalMessageDto savedMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		SurveillanceReportDto surveillanceReport = getSurveillanceReportFacade().getByUuid(savedMessage.getSurveillanceReport().getUuid());
+
+		assertThat(surveillanceReport.getFacility(), is(rdcfSample.facility));
+		assertThat(surveillanceReport.getFacilityType(), is(FacilityType.LABORATORY));
+		assertThat(surveillanceReport.getFacilityDetails(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityRegion(), is(rdcfSample.region));
+		assertThat(surveillanceReport.getFacilityDistrict(), is(rdcfSample.district));
+	}
+
+	@Test
+	public void testCaseSurveillanceReportUnknownFacility() throws ExecutionException, InterruptedException {
+		getFacilityService().createConstantFacilities();
+
+		TestDataCreator.RDCF rdcf1 = creator.createRDCF("Region", "District", "Community", "Facility", FacilityType.LABORATORY, "PointOfEntry", true);
+
+		TestDataCreator.RDCF rdcf2 = creator.createRDCF("Region", "District", "Community", "Facility", FacilityType.LABORATORY, "PointOfEntry", true);
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setReporterName(rdcf2.facility.getCaption());
+			// multiple reporters means no facility can be determined
+			m.setReporterExternalIds(List.of(rdcf1.facility.getExternalId(), rdcf2.facility.getExternalId()));
+		});
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+
+			getCallbackParam(invocation).done(getCaseFacade().save(caze));
+			return null;
+		}).when(handleCreateCase).handle(any(), any(), any());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		ExternalMessageDto savedMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		SurveillanceReportDto surveillanceReport = getSurveillanceReportFacade().getByUuid(savedMessage.getSurveillanceReport().getUuid());
+
+		assertThat(surveillanceReport.getFacility(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityType(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityDetails(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityRegion(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityDistrict(), is(nullValue()));
 	}
 
 	private ProcessingResult<ExternalMessageProcessingResult> runFlow(ExternalMessageDto labMessage) throws ExecutionException, InterruptedException {

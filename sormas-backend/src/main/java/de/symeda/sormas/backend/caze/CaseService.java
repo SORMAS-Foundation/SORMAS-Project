@@ -55,7 +55,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -1473,15 +1473,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				default:
 				}
 
-				filter = CriteriaBuilderHelper.or(cb, filter, specialCaseAccessService.createSpecialCaseAccessFilter(cb, joins.getSpecialCaseAccesses()));
+				filter =
+					CriteriaBuilderHelper.or(cb, filter, specialCaseAccessService.createSpecialCaseAccessFilter(cb, joins.getSpecialCaseAccesses()));
 			}
 
 			// get all cases based on the user's contact association
 			if (userFilterCriteria == null
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
-				ContactQueryContext contactQueryContext =
-					new ContactQueryContext(cb, cq, new ContactJoins(joins.getContacts()));
+				ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, new ContactJoins(joins.getContacts()));
 				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterWithoutCase(contactQueryContext));
 			}
 
@@ -1862,7 +1862,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			caze.get(Case.CHANGE_DATE));
 
 		Predicate filter = cb.equal(caze.get(Case.PERSON_ID), personId);
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(caze.get(Case.DELETED)));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(caze.get(Case.DELETED)), cb.isFalse(caze.get(Case.ARCHIVED)));
 		cq.where(filter);
 
 		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));

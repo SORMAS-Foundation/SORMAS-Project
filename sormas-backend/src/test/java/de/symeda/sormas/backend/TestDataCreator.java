@@ -1751,19 +1751,31 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF() {
-		return createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
+		return createRDCF("Region", "District", "Community", "Facility", FacilityType.HOSPITAL, "PointOfEntry", false);
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
-		return createRDCF(regionName, districtName, communityName, facilityName, null);
+		return createRDCF(regionName, districtName, communityName, facilityName, FacilityType.HOSPITAL, null, false);
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName, String pointOfEntryName) {
+		return createRDCF(regionName, districtName, communityName, facilityName, FacilityType.HOSPITAL, pointOfEntryName, false);
+	}
 
-		Region region = createRegion(regionName);
-		District district = createDistrict(districtName, region);
-		Community community = createCommunity(communityName, district);
-		Facility facility = createFacility(facilityName, region, district, community);
+	public RDCF createRDCF(
+		String regionName,
+		String districtName,
+		String communityName,
+		String facilityName,
+		FacilityType facilityType,
+		String pointOfEntryName,
+		boolean withExternalIds) {
+
+		Region region = createRegion(regionName, withExternalIds ? regionName + "_externalId" : null);
+		District district = createDistrict(districtName, region, withExternalIds ? districtName + "_externalId" : null);
+		Community community = createCommunity(communityName, district, withExternalIds ? communityName + "_externalId" : null);
+		Facility facility =
+			createFacility(facilityName, facilityType, region, district, community, withExternalIds ? facilityName + "_externalId" : null);
 
 		PointOfEntry pointOfEntry = null;
 		if (pointOfEntryName != null) {
