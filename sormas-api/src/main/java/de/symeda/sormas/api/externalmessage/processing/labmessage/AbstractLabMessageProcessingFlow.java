@@ -24,6 +24,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -70,6 +73,8 @@ import de.symeda.sormas.api.user.UserRight;
  * The flow is coded in the `run` method.
  */
 public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessingFlow {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final ExternalMessageDto externalMessage;
 	private final AbstractRelatedLabMessageHandler relatedLabMessageHandler;
@@ -121,6 +126,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	}
 
 	public CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> run() {
+		logger.debug("[MESSAGE PROCESSING] Start processing lab message: {}", externalMessage);
+
 		//@formatter:off
 		return doInitialChecks(externalMessage, new ExternalMessageProcessingResult())
 			.then(initialCheckResult -> handleRelatedLabMessages(relatedLabMessageHandler, initialCheckResult))
@@ -133,7 +140,10 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 				.when(PickOrCreateEntryResult::isSelectedCase, (f, p, r) -> doCaseSelectedFlow(p.getCaze(), f))
 				.when(PickOrCreateEntryResult::isSelectedContact, (f, p, r) -> doContactSelectedFlow(p.getContact(), f))
 				.when(PickOrCreateEntryResult::isSelectedEventParticipant, (f, p, r) -> doEventParticipantSelectedFlow(p.getEventParticipant(), f))
-			.then(f -> ProcessingResult.of(ProcessingResultStatus.DONE, f.getData()).asCompletedFuture())
+			.then(f -> {
+				logger.debug("[MESSAGE PROCESSING] Processing done: {}", f.getData());
+				return ProcessingResult.of(ProcessingResultStatus.DONE, f.getData()).asCompletedFuture();
+			})
 			.getResult().thenCompose(this::handleProcessingDone);
 		//@formatter:on
 	}
@@ -145,6 +155,9 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return caseFlow.then(p -> {
 			ExternalMessageProcessingResult previousResult = p.getData();
 			CaseDataDto caze = previousResult.getCase();
+
+			logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", previousResult);
+
 			BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForCase =
 				(sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, true, previousSampleResult);
 
@@ -157,6 +170,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 		FlowThen<ExternalMessageProcessingResult> contactFlow = flow.then(p -> createContact(p.getData().getPerson(), p.getData()));
 		return contactFlow.then(p -> {
+			logger.debug("[MESSAGE PROCESSING] Continue processing with contact: {}", p.getData());
+
 			ContactDto contact = p.getData().getContact();
 			BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForContact =
 				(sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(contact, sampleReportIndex, true, previousSampleResult);
@@ -174,21 +189,36 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return flow.thenSwitch(p -> pickOrCreateEvent())
 				.when(PickOrCreateEventResult::isNewEvent, (f, p, r) -> {
 					FlowThen<ExternalMessageProcessingResult> eventFlow = f.then(ignored -> createEvent(r));
-					return eventFlow.then(ef -> doCreateEventParticipantAndSamplesFlow(r.getPerson(), eventFlow).getResult());
+					return eventFlow.then(ef -> {
+						logger.debug("[MESSAGE PROCESSING] Continue processing with event: {}", ef.getData());
+
+						return doCreateEventParticipantAndSamplesFlow(r.getPerson(), eventFlow).getResult();
+					});
 				})
 				.when(PickOrCreateEventResult::isEventSelected, (f, p, r) -> f
 					.thenSwitch(e -> validateSelectedEvent(p.getEvent(), e.getData().getPerson()))
 						.when(EventValidationResult::isEventSelected, (vf, v, vr) -> {
-							FlowThen<ExternalMessageProcessingResult> eventFlow = vf.then(e -> ProcessingResult.continueWith(e.getData().withSelectedEvent(v.getEvent())).asCompletedFuture());
+							FlowThen<ExternalMessageProcessingResult> eventFlow = vf.then(e -> {
+								ExternalMessageProcessingResult withEvent = e.getData().withSelectedEvent(v.getEvent());
+
+								logger.debug("[MESSAGE PROCESSING] Continue processing with event: {}", withEvent);
+								
+								return ProcessingResult.continueWith(withEvent).asCompletedFuture();
+							});
 							return doCreateEventParticipantAndSamplesFlow(vr.getPerson(), eventFlow);
 						})
 						.when(EventValidationResult::isEventParticipantSelected, (vf, v, vr) -> {
 							EventDto event = processingFacade.getEventByUuid(p.getEvent().getUuid());
 							EventParticipantDto eventParticipant = processingFacade.getEventParticipantByUuid(v.eventParticipant.getUuid());
 
-							FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = vf.then(ignored -> ProcessingResult
-								.continueWith(vr.withSelectedEvent(event).withSelectedEventParticipant(eventParticipant))
-								.asCompletedFuture());
+							FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = vf.then(ignored -> {
+								ExternalMessageProcessingResult withEventParticipant = vr.withSelectedEvent(event).withSelectedEventParticipant(eventParticipant);
+								logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", withEventParticipant);
+								
+								return ProcessingResult
+										.continueWith(withEventParticipant)
+										.asCompletedFuture();
+							});
 
 							BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForEventParticipant =
 								(sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(
@@ -204,7 +234,10 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 									createSampleForEventParticipant,
 										eventParticipantFlow).getResult());
 						})
-						.when(EventValidationResult::isEventSelectionCanceled, (vf, v, vr) -> vf.then(ignored -> doCreateEventParticipantFlow(vf).getResult()))
+						.when(EventValidationResult::isEventSelectionCanceled, (vf, v, vr) -> {
+							logger.debug("[MESSAGE PROCESSING] Event selection discarded");
+							return vf.then(ignored -> doCreateEventParticipantFlow(vf).getResult());
+						})
 					.then(ProcessingResult::asCompletedFuture))
 			.then(ProcessingResult::asCompletedFuture);
 		//@formatter:on
@@ -217,6 +250,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		FlowThen<ExternalMessageProcessingResult> eventParticipantFlow =
 			flow.then(p -> createEventParticipant(p.getData().getEvent(), person, p.getData()));
 		return eventParticipantFlow.then(p -> {
+			logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", p.getData());
+
 			EventParticipantDto eventParticipant = p.getData().getEventParticipant();
 
 			BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForEventParticipant =
@@ -239,13 +274,19 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
 		FlowThen<ExternalMessageProcessingResult> flow) {
 
+		logger.debug("[MESSAGE PROCESSING] Processing sample report(s)");
+
 		List<SampleReportDto> sampleReports = externalMessage.getSampleReportsNullSafe();
 		if (sampleReports.size() > 1) {
-			flow = flow.then(
-				result -> handleMultipleSampleConfirmation().thenCompose(
-					next -> ProcessingResult
-						.withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED, result.getData())
-						.asCompletedFuture()));
+			flow = flow.then(result -> handleMultipleSampleConfirmation().thenCompose(next -> {
+				boolean confirmed = Boolean.TRUE.equals(next);
+				if (!confirmed) {
+					logger.debug("[MESSAGE PROCESSING] Canceled processing of multiple sample reports.");
+					return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, result.getData()).asCompletedFuture();
+				}
+
+				return ProcessingResult.withStatus(ProcessingResultStatus.CONTINUE, result.getData()).asCompletedFuture();
+			}));
 		}
 
 		int i = 0;
@@ -267,8 +308,13 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForCase =
 			(sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(caze, sampleReportIndex, false, previousSampleResult);
 
-		FlowThen<ExternalMessageProcessingResult> caseFlow =
-			flow.then(previousResult -> ProcessingResult.continueWith(previousResult.getData().withSelectedCase(caze)).asCompletedFuture());
+		FlowThen<ExternalMessageProcessingResult> caseFlow = flow.then(previousResult -> {
+			ExternalMessageProcessingResult withCase = previousResult.getData().withSelectedCase(caze);
+
+			logger.debug("[MESSAGE PROCESSING] Continue processing with case: {}", withCase);
+
+			return ProcessingResult.continueWith(withCase).asCompletedFuture();
+		});
 		return caseFlow.then(
 			previousResult -> doPickOrCreateSamplesFlow(
 				c -> c.sampleCriteria(new SampleCriteria().caze(caze.toReference())),
@@ -285,8 +331,13 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleForContact =
 			(sampleReportIndex, previousSampleResult) -> createOneSampleAndPathogenTests(contact, sampleReportIndex, false, previousSampleResult);
 
-		FlowThen<ExternalMessageProcessingResult> contactFlow =
-			flow.then(previousResult -> ProcessingResult.continueWith(previousResult.getData().withSelectedContact(contact)).asCompletedFuture());
+		FlowThen<ExternalMessageProcessingResult> contactFlow = flow.then(previousResult -> {
+			ExternalMessageProcessingResult withContact = previousResult.getData().withSelectedContact(contact);
+
+			logger.debug("[MESSAGE PROCESSING] Continue processing with contact: {}", withContact);
+
+			return ProcessingResult.continueWith(withContact).asCompletedFuture();
+		});
 
 		return contactFlow.then(
 			p -> doPickOrCreateSamplesFlow(
@@ -310,10 +361,14 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 				false,
 				previousSampleResult);
 
-		FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = flow.then(
-			previousResult -> ProcessingResult
-				.continueWith(previousResult.getData().withSelectedEvent(event).withSelectedEventParticipant(eventParticipant))
-				.asCompletedFuture());
+		FlowThen<ExternalMessageProcessingResult> eventParticipantFlow = flow.then(previousResult -> {
+			ExternalMessageProcessingResult withEventParticipant =
+				previousResult.getData().withSelectedEvent(event).withSelectedEventParticipant(eventParticipant);
+
+			logger.debug("[MESSAGE PROCESSING] Continue processing with event participant: {}", withEventParticipant);
+
+			return ProcessingResult.continueWith(withEventParticipant).asCompletedFuture();
+		});
 
 		return eventParticipantFlow.then(
 			p -> doPickOrCreateSamplesFlow(
@@ -384,14 +439,17 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return relatedLabMessageHandler.handle(externalMessage).thenCompose(result -> {
 			AbstractRelatedLabMessageHandler.HandlerResultStatus status = result.getStatus();
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED) {
+				logger.debug("[MESSAGE PROCESSING] Canceled while handling as a related message.");
 				return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, previousResult.getData()).asCompletedFuture();
 			}
 
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED_WITH_UPDATES) {
+				logger.debug("[MESSAGE PROCESSING] Canceled while handling as a related message. But some updates were made.");
 				return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED_WITH_CORRECTIONS, previousResult.getData()).asCompletedFuture();
 			}
 
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.HANDLED) {
+				logger.debug("[MESSAGE PROCESSING] Processing done as a related message to another one.");
 				SampleDto relatedSample = result.getSample();
 
 				return ProcessingResult
@@ -407,6 +465,11 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 									firstSampleReport,
 									false)))
 					.asCompletedFuture();
+			}
+
+			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CONTINUE) {
+				logger.debug("[MESSAGE PROCESSING] Processing done as a related message to another one and continue with the normal flow.");
+				return ProcessingResult.continueWith(previousResult.getData()).asCompletedFuture();
 			}
 
 			return ProcessingResult.continueWith(previousResult.getData()).asCompletedFuture();
@@ -537,10 +600,14 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 			isLastSample(externalMessage, sampleReportIndex),
 			callback);
 
-		return mapHandlerResult(
-			callback,
-			previousResult,
-			s -> previousResult.andWithSampleAndPathogenTests(s.getSample(), s.getPathogenTests(), sampleReport, true));
+		return mapHandlerResult(callback, previousResult, s -> {
+			ExternalMessageProcessingResult withSampleAndPathogenTests =
+				previousResult.andWithSampleAndPathogenTests(s.getSample(), s.getPathogenTests(), sampleReport, true);
+
+			logger.debug("[MESSAGE PROCESSING] Continue processing with sample and pathogen tests: {}", withSampleAndPathogenTests);
+
+			return withSampleAndPathogenTests;
+		});
 	}
 
 	protected abstract void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback);
@@ -674,14 +741,17 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
 		handleEditSample(sample, newTests, externalMessage, mapper, isLastSample(externalMessage, sampleReportIndex), callback);
 
-		return mapHandlerResult(
-			callback,
-			previousResult,
-			r -> previousResult.andWithSampleAndPathogenTests(
+		return mapHandlerResult(callback, previousResult, r -> {
+			ExternalMessageProcessingResult withSampleAndPathogenTests = previousResult.andWithSampleAndPathogenTests(
 				r.getSample(),
 				r.getPathogenTests(),
 				externalMessage.getSampleReportsNullSafe().get(sampleReportIndex),
-				false));
+				false);
+
+			logger.debug("[MESSAGE PROCESSING] Continue processing with sample and pathogen tests: {}", withSampleAndPathogenTests);
+
+			return withSampleAndPathogenTests;
+		});
 	}
 
 	private CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> handleProcessingDone(
