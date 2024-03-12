@@ -35,7 +35,7 @@ public class UiUtil {
 		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getUserName() : null;
 	}
 
-	public static String getUuid() {
+	public static String getUserUuid() {
 		return Objects.nonNull(getCurrentUserProvider()) ? getCurrentUserProvider().getUuid() : null;
 	}
 

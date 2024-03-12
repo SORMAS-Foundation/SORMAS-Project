@@ -84,7 +84,8 @@ public class SampleEditForm extends AbstractSampleForm {
 			defaultValueChangeListener();
 			fillPathogenTestResult();
 			UserReferenceDto reportingUser = getValue().getReportingUser();
-			if (!(UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUuid().equals(reportingUser.getUuid())))) {
+			if (!(UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED)
+				|| (reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid())))) {
 				getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
 				getField(SampleDto.SAMPLING_REASON).setEnabled(false);
 				getField(SampleDto.SAMPLING_REASON_DETAILS).setEnabled(false);

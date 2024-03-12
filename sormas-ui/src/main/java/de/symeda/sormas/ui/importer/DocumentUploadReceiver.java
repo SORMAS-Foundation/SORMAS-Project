@@ -53,7 +53,7 @@ public class DocumentUploadReceiver implements UploadReceiver {
 	public OutputStream receiveUpload() {
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_document_upload" + DateHelper.formatDateForExport(new Date()) + "_"
-				+ DataHelper.getShortUuid(UiUtil.getUuid());
+				+ DataHelper.getShortUuid(UiUtil.getUserUuid());
 			file = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toFile();
 			return new BufferedOutputStream(Files.newOutputStream(file.toPath()));
 

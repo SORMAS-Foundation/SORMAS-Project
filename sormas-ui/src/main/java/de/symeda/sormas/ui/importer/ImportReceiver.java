@@ -79,7 +79,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 			}
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_"
-				+ DataHelper.getShortUuid(UiUtil.getUuid()) + ".csv";
+				+ DataHelper.getShortUuid(UiUtil.getUserUuid()) + ".csv";
 			file = new File(tempDirectory.resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {

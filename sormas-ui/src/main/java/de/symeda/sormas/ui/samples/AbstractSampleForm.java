@@ -205,7 +205,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 
 		UserReferenceDto reportingUser = getValue().getReportingUser();
-		if (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUuid().equals(reportingUser.getUuid()))) {
+		if (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid()))) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS),
@@ -401,7 +401,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		boolean showRequestFields = getField(SampleDto.SAMPLE_PURPOSE).getValue() != SamplePurpose.INTERNAL;
 		UserReferenceDto reportingUser = getValue() != null ? getValue().getReportingUser() : null;
 		boolean canEditRequest = showRequestFields
-			&& (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || reportingUser != null && UiUtil.getUuid().equals(reportingUser.getUuid()));
+			&& (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid()));
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
 		boolean canUseAdditionalTests = UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW);
 

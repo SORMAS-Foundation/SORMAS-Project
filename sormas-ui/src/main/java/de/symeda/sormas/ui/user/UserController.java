@@ -312,7 +312,7 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid(UiUtil.getUuid());
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UiUtil.getUserUuid());
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
