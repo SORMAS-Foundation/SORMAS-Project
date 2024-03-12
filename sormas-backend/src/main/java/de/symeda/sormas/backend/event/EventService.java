@@ -76,7 +76,6 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
@@ -138,8 +137,6 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public EventService() {
 		super(Event.class, DeletableEntityType.EVENT);
@@ -831,7 +828,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.NATIONAL_HEALTH_ID), textFilter));
+					CriteriaBuilderHelper.ilike(cb, personJoin.get(Person.NATIONAL_HEALTH_ID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));

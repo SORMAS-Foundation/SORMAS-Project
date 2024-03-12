@@ -77,8 +77,6 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public DirectoryImmunizationService() {
 		super(DirectoryImmunization.class, DeletableEntityType.IMMUNIZATION);
@@ -306,7 +304,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.NATIONAL_HEALTH_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.NATIONAL_HEALTH_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, lastVaccineType.get(LastVaccineType.VACCINE_TYPE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}

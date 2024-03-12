@@ -250,8 +250,6 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	private DistrictService districtService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public CaseService() {
 		super(Case.class, DeletableEntityType.CASE);
@@ -858,7 +856,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPersonAddress().get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getPersonAddress().get(Location.POSTAL_CODE), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
