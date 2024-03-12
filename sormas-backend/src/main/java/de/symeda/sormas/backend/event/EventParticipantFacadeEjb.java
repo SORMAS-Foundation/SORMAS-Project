@@ -564,8 +564,20 @@ public class EventParticipantFacadeEjb
 		if (eventParticipantsToBeRestored != null) {
 			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
 				try {
-					restore(eventParticipantToBeRestored.getUuid());
-					processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+					final boolean empty = getByEventAndPersons(
+						eventParticipantToBeRestored.getEvent().getUuid(),
+						Collections.singletonList(eventParticipantToBeRestored.getPerson().getUuid())).isEmpty();
+					if (empty) {
+						restore(eventParticipantToBeRestored.getUuid());
+						processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedEventParticipants
+							.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
+						logger.error(
+							"The event participant with uuid {} could not be restored due to an Exception",
+							eventParticipantToBeRestored.getUuid());
+					}
+
 				} catch (Exception e) {
 					processedEventParticipants
 						.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
