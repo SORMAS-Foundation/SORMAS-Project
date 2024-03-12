@@ -274,7 +274,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		BiFunction<Integer, ExternalMessageProcessingResult, CompletionStage<ProcessingResult<ExternalMessageProcessingResult>>> createSampleAndPathogenTests,
 		FlowThen<ExternalMessageProcessingResult> flow) {
 
-		logger.debug("[MESSAGE PROCESSING] Processing sample repost(s)");
+		logger.debug("[MESSAGE PROCESSING] Processing sample report(s)");
 
 		List<SampleReportDto> sampleReports = externalMessage.getSampleReportsNullSafe();
 		if (sampleReports.size() > 1) {
@@ -439,12 +439,12 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return relatedLabMessageHandler.handle(externalMessage).thenCompose(result -> {
 			AbstractRelatedLabMessageHandler.HandlerResultStatus status = result.getStatus();
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED) {
-				logger.debug("[MESSAGE PROCESSING] Canceled while handling as a related messages.");
+				logger.debug("[MESSAGE PROCESSING] Canceled while handling as a related message.");
 				return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, previousResult.getData()).asCompletedFuture();
 			}
 
 			if (status == AbstractRelatedLabMessageHandler.HandlerResultStatus.CANCELED_WITH_UPDATES) {
-				logger.debug("[MESSAGE PROCESSING] Canceled while handling as a related messages. But some updates were made.");
+				logger.debug("[MESSAGE PROCESSING] Canceled while handling as a related message. But some updates were made.");
 				return ProcessingResult.withStatus(ProcessingResultStatus.CANCELED_WITH_CORRECTIONS, previousResult.getData()).asCompletedFuture();
 			}
 
@@ -601,12 +601,12 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 			callback);
 
 		return mapHandlerResult(callback, previousResult, s -> {
-			ExternalMessageProcessingResult withSampleAndPthogenTests =
+			ExternalMessageProcessingResult withSampleAndPathogenTests =
 				previousResult.andWithSampleAndPathogenTests(s.getSample(), s.getPathogenTests(), sampleReport, true);
 
-			logger.debug("[MESSAGE PROCESSING] Continue processing with sample and pathogen tests: {}", withSampleAndPthogenTests);
+			logger.debug("[MESSAGE PROCESSING] Continue processing with sample and pathogen tests: {}", withSampleAndPathogenTests);
 
-			return withSampleAndPthogenTests;
+			return withSampleAndPathogenTests;
 		});
 	}
 
