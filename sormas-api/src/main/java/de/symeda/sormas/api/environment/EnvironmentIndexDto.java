@@ -29,7 +29,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 	public static final String CITY = "city";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
-	public static final String DELETE_REASON = "deletionReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private String externalId;
 	private String environmentName;
