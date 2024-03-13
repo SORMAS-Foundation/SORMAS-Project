@@ -74,7 +74,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -183,7 +183,7 @@ public class EventsView extends AbstractView {
 		eventsViewSwitcher.addItem(EventsViewType.ACTIONS);
 		eventsViewSwitcher.setItemCaption(EventsViewType.ACTIONS, I18nProperties.getCaption(Captions.eventActionsView));
 
-		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		boolean eventGroupsFeatureEnabled = UiUtil.enabled(FeatureType.EVENT_GROUPS);
 		if (eventGroupsFeatureEnabled) {
 			eventsViewSwitcher.addItem(EventsViewType.GROUPS);
 			eventsViewSwitcher.setItemCaption(EventsViewType.GROUPS, I18nProperties.getCaption(Captions.eventGroupsView));
@@ -198,7 +198,7 @@ public class EventsView extends AbstractView {
 		});
 		addHeaderComponent(eventsViewSwitcher);
 
-		if (isDefaultViewType() && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_IMPORT)) {
+		if (isDefaultViewType() && UiUtil.permitted(UserRight.EVENT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new EventImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportEvent));
@@ -208,7 +208,7 @@ public class EventsView extends AbstractView {
 			addHeaderComponent(importButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
+		if (UiUtil.permitted(UserRight.EVENT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -275,7 +275,7 @@ public class EventsView extends AbstractView {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+		if (UiUtil.permitted(UserRight.EVENT_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.eventNewEvent,
 				VaadinIcons.PLUS_CIRCLE,
@@ -287,7 +287,7 @@ public class EventsView extends AbstractView {
 
 		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			{
 				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
@@ -491,7 +491,7 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+			if (UiUtil.permitted(UserRight.EVENT_VIEW)) {
 				if (isGroupViewType()) {
 					groupRelevanceStatusFilter =
 						buildRelevanceStatus(Captions.eventActiveGroups, Captions.eventArchivedGroups, Captions.eventAllGroups);
@@ -502,7 +502,7 @@ public class EventsView extends AbstractView {
 					});
 					actionButtonsLayout.addComponent(groupRelevanceStatusFilter);
 				} else {
-					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT)) {
+					if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT)) {
 
 						int daysAfterEventGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 							.getProperty(
@@ -536,11 +536,11 @@ public class EventsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+			if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
 				EventGrid eventGrid = (EventGrid) grid;
 				List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
 				if (eventCriteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
-					if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+					if (UiUtil.permitted(UserRight.EVENT_EDIT)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkEdit),
@@ -548,7 +548,7 @@ public class EventsView extends AbstractView {
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items, (EventGrid) grid))));
 					}
-					if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+					if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkDelete),
@@ -557,7 +557,7 @@ public class EventsView extends AbstractView {
 									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, (EventGrid) grid),
 									true)));
 					}
-					if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+					if (UiUtil.permitted(UserRight.EVENT_ARCHIVE)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
@@ -576,8 +576,7 @@ public class EventsView extends AbstractView {
 									true),
 								EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
 					}
-					if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE)
-						&& UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)) {
+					if (UiUtil.permitted(UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_LINK)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.actionGroupEvent),
@@ -593,7 +592,7 @@ public class EventsView extends AbstractView {
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController()
 									.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), eventGrid)),
-							UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
+							UiUtil.permitted(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
 								&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					if (isDocGenerationAllowed()) {
@@ -621,7 +620,7 @@ public class EventsView extends AbstractView {
 								});
 							}));
 					}
-				} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+				} else if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 					bulkActions.add(
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.bulkRestore),
@@ -739,8 +738,8 @@ public class EventsView extends AbstractView {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), null);
-		boolean eventGroupFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		ExportConfigurationDto config = ExportConfigurationDto.build(UiUtil.getUserReference(), null);
+		boolean eventGroupFeatureEnabled = UiUtil.enabled(FeatureType.EVENT_GROUPS);
 		config.setProperties(
 			ImportExportUtils
 				.getEventExportProperties(
@@ -764,7 +763,7 @@ public class EventsView extends AbstractView {
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventArchivedCaption));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventAllCaption));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventDeletedEvents));
 		} else {
 			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);

@@ -39,7 +39,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
@@ -135,9 +135,8 @@ public class ExternalEmailSideComponent extends SideComponent {
 		Consumer<Runnable> sendEmailWrapper) {
 		super(I18nProperties.getCaption(Captions.messagesEmails), sendEmailWrapper);
 
-		if (isEditAllowed
-			&& (isInJurisdiction && UserProvider.getCurrent().hasUserRight(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION)
-				|| !isInJurisdiction && UserProvider.getCurrent().hasUserRight(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION))) {
+		if (isInJurisdiction && UiUtil.permitted(isEditAllowed, UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION)
+			|| !isInJurisdiction && UiUtil.permitted(isEditAllowed, UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION)) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.messagesSendEmail),
 				() -> ControllerProvider.getExternalEmailController()

@@ -17,7 +17,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -130,7 +130,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 	protected void applyDependenciesOnNewValue(PersonCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 
 		final ComboBox districtFilter = getField(PersonCriteria.DISTRICT);
 		final ComboBox communityFilter = getField(PersonCriteria.COMMUNITY);

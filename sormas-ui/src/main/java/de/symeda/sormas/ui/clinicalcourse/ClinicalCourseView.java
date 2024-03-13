@@ -36,7 +36,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -81,8 +81,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 			if (isEditAllowed()) {
 				// Bulk operations
-				if (UserProvider.getCurrent()
-					.hasAllUserRights(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.CLINICAL_COURSE_EDIT)) {
+				if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS, UserRight.CASE_EDIT, UserRight.CLINICAL_COURSE_EDIT)) {
 					MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
@@ -99,7 +98,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 					headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 				}
 
-				if (UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_EDIT, UserRight.CLINICAL_VISIT_CREATE)) {
+				if (UiUtil.permitted(UserRight.CASE_EDIT, UserRight.CLINICAL_VISIT_CREATE)) {
 					Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
 						ControllerProvider.getClinicalCourseController()
 							.openClinicalVisitCreateForm(
@@ -145,8 +144,8 @@ public class ClinicalCourseView extends AbstractCaseView {
 		clinicalVisitGrid = new ClinicalVisitGrid(
 			getCaseRef(),
 			caze.isPseudonymized(),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CASE_EDIT, UserRight.CLINICAL_VISIT_EDIT),
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed(), UserRight.CLINICAL_VISIT_DELETE));
+			UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT, UserRight.CLINICAL_VISIT_EDIT),
+			UiUtil.permitted(isEditAllowed(), UserRight.CLINICAL_VISIT_DELETE));
 		clinicalVisitGrid.setCriteria(clinicalVisitCriteria);
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);

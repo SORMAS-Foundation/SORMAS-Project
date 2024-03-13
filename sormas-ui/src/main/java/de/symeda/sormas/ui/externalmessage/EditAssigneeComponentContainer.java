@@ -25,7 +25,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -47,8 +47,7 @@ public class EditAssigneeComponentContainer {
 		assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.ExternalMessage_assignee));
 		assigneeComboBox.addItems(
-			FacadeProvider.getUserFacade()
-				.getUsersByRegionAndRights(UserProvider.getCurrent().getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
+			FacadeProvider.getUserFacade().getUsersByRegionAndRights(UiUtil.getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
 		assigneeComboBox.setNullSelectionAllowed(true);
 		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 

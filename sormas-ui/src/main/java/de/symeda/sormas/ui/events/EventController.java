@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -78,14 +77,13 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
@@ -107,7 +105,7 @@ public class EventController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 			navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
 		}
 		navigator.addView(EventActionsView.VIEW_NAME, EventActionsView.class);
@@ -331,7 +329,7 @@ public class EventController {
 								caseDataDto.toReference(),
 								personByUuid.get(caseDataDto.getPerson().getUuid()),
 								eventReferenceDto,
-								UserProvider.getCurrent().getUserReference());
+								UiUtil.getUserReference());
 							FacadeProvider.getEventParticipantFacade().save(ep);
 							processedCases.add(new ProcessedEntity(caseDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
 						} else {
@@ -375,8 +373,6 @@ public class EventController {
 		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(new ArrayList<>(contactByPersonUuid.keySet()));
 		Map<String, PersonDto> personByUuid = remainingPersons.stream().collect(Collectors.toMap(EntityDto::getUuid, Functions.identity()));
 
-		UserReferenceDto currentUser = UserProvider.getCurrent().getUserReference();
-
 		new BulkOperationHandler<ContactDto>(
 			Strings.messageAllContactsLinkedToEvent,
 			null,
@@ -395,8 +391,10 @@ public class EventController {
 					try {
 						if (!alreadyLinkedContacts.contains(contactDataDto)) {
 
-							EventParticipantDto ep = EventParticipantDto
-								.buildFromPerson(personByUuid.get(contactDataDto.getPerson().getUuid()), eventReferenceDto, currentUser);
+							EventParticipantDto ep = EventParticipantDto.buildFromPerson(
+								personByUuid.get(contactDataDto.getPerson().getUuid()),
+								eventReferenceDto,
+								UiUtil.getUserReference());
 
 							FacadeProvider.getEventParticipantFacade().save(ep);
 							processedContacts.add(new ProcessedEntity(contactDataDto.getUuid(), ProcessedEntityStatus.SUCCESS));
@@ -624,7 +622,7 @@ public class EventController {
 		// Create new EventParticipant for this Person
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(caseDataDto.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UiUtil.getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 		return false;
@@ -633,7 +631,7 @@ public class EventController {
 	public void createEventParticipantWithContact(EventReferenceDto eventReferenceDto, ContactDto contact) {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UiUtil.getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 	}
@@ -641,7 +639,7 @@ public class EventController {
 	public void createEventParticipantWithPerson(EventReferenceDto eventReferenceDto, PersonReferenceDto personReference) {
 		final PersonDto personDto = FacadeProvider.getPersonFacade().getByUuid(personReference.getUuid());
 		final EventParticipantDto eventParticipantDto =
-			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
+			new EventParticipantDto().buildFromPerson(personDto, eventReferenceDto, UiUtil.getUserReference());
 		ControllerProvider.getEventParticipantController().createEventParticipant(eventReferenceDto, r -> {
 		}, eventParticipantDto);
 	}
@@ -717,7 +715,7 @@ public class EventController {
 		}
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			UiUtil.permitted(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
 
 		CaseDataDto finalCaseDataDto = caseDataDto;
@@ -732,7 +730,7 @@ public class EventController {
 
 					linkCaseToEvent(createdEvent, finalCaseDataDto, caseRef);
 					SormasUI.refreshView();
-				} else if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+				} else if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 					navigateToParticipants(dto.getUuid());
 				} else {
 					navigateToData(dto.getUuid());
@@ -753,10 +751,8 @@ public class EventController {
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent(caseDataDtos.stream().findFirst().get().getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		List<CaseDataDto> finalCaseDataDtos = caseDataDtos;
 		editView.addCommitListener(() -> {
@@ -787,7 +783,7 @@ public class EventController {
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			UiUtil.permitted(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -811,10 +807,8 @@ public class EventController {
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		eventCreateForm.setValue(createNewEvent());
 
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
@@ -838,10 +832,8 @@ public class EventController {
 		eventCreateForm.setValue(createNewEvent(contact.getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
@@ -869,7 +861,7 @@ public class EventController {
 		form.getField(EventDto.DISEASE).setReadOnly(true);
 
 		final CommitDiscardWrapperComponent<EventDataForm> component =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.EVENT_CREATE), form.getFieldGroup());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -921,7 +913,7 @@ public class EventController {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
 
-				final UserDto user = UserProvider.getCurrent().getUser();
+				final UserDto user = UiUtil.getUser();
 				final RegionReferenceDto userRegion = user.getRegion();
 				final DistrictReferenceDto userDistrict = user.getDistrict();
 				final RegionReferenceDto epEventRegion = eventDto.getEventLocation().getRegion();
@@ -947,13 +939,10 @@ public class EventController {
 			}
 		});
 
-		if (Objects.requireNonNull(UserProvider.getCurrent())
-			.getUserRoles()
-			.stream()
-			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| DataHelper.equal(event.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
+		if (UiUtil.getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+			|| DataHelper.equal(event.getResponsibleUser(), UiUtil.getUserReference())) {
 			final String uuid = event.getUuid();
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+			if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 				editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 					if (!existEventParticipantsLinkedToEvent(event)) {
 						try {
@@ -979,7 +968,7 @@ public class EventController {
 			}
 
 			// Initialize 'Archive' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+			if (UiUtil.permitted(UserRight.EVENT_ARCHIVE)) {
 				ControllerProvider.getArchiveController().addArchivingButton(event, ArchiveHandlers.forEvent(), editView, () -> {
 					ViewModelProviders.of(EventParticipantsView.class)
 						.get(EventParticipantsViewConfiguration.class)
@@ -1075,11 +1064,11 @@ public class EventController {
 	}
 
 	public EventDto createNewEvent() {
-		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser());
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UiUtil.getUser());
 	}
 
 	public EventDto createNewEvent(Disease disease) {
-		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UiUtil.getUser(), disease);
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, EventGrid eventGrid) {

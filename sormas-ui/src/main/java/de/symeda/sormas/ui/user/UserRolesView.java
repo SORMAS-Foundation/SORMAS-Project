@@ -30,7 +30,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -98,7 +98,7 @@ public class UserRolesView extends AbstractUserView {
 
 		addHeaderComponent(exportUserRightsButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT)) {
+		if (UiUtil.permitted(UserRight.USER_ROLE_EDIT)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userRoleNewUserRole,
 				VaadinIcons.PLUS_CIRCLE,

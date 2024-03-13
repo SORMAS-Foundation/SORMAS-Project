@@ -34,7 +34,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -127,7 +127,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		rowsLayout.addComponent(epiCurveAndMapLayout);
 
 		// add network diagram
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
+		if (UiUtil.permitted(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
 			networkDiagramComponent = Optional.of(FacadeProvider.getConfigFacade())
 				.map(ConfigFacade::getRScriptExecutable)
 				.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
@@ -475,7 +475,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		}
 
 		// Update cases and contacts shown on the map
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS) && networkDiagramLayout.isPresent()) {
+		if (UiUtil.permitted(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS) && networkDiagramLayout.isPresent()) {
 			boolean diseaseSelected = dashboardDataProvider.getDisease() != null;
 
 			networkDiagramLayout.get().setVisible(diseaseSelected);

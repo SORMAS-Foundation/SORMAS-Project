@@ -57,7 +57,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.eventParticipantsLineListing.layout.LineListingLayout;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -83,7 +83,7 @@ public class EventParticipantsController {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UiUtil.getUserReference());
 		return createEventParticipant(eventRef, doneConsumer, eventParticipant, true);
 	}
 
@@ -103,10 +103,8 @@ public class EventParticipantsController {
 		EventParticipantCreateForm createForm =
 			new EventParticipantCreateForm(!FacadeProvider.getEventFacade().hasRegionAndDistrict(eventRef.getUuid()));
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.EVENTPARTICIPANT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -250,7 +248,7 @@ public class EventParticipantsController {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
 				null,
@@ -264,7 +262,7 @@ public class EventParticipantsController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					eventParticipant,
@@ -296,7 +294,7 @@ public class EventParticipantsController {
 
 				EventParticipantDto dto = editForm.getValue();
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid(), false);
-				UserDto user = UserProvider.getCurrent().getUser();
+				UserDto user = UiUtil.getUser();
 
 				RegionReferenceDto userRegion = user.getRegion();
 				DistrictReferenceDto userDistrict = user.getDistrict();

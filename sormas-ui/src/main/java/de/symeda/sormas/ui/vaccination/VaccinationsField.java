@@ -32,7 +32,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -74,7 +74,7 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 	@Override
 	protected VaccinationDto createEntry() {
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 		return VaccinationDto.build(user.toReference());
 	}
 

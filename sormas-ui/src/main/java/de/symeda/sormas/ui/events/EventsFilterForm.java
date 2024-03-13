@@ -75,7 +75,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -279,7 +279,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		facilityTypeField.addValueChangeListener(e -> {
 			final FacilityType facilityType = (FacilityType) facilityTypeField.getValue();
 			if (facilityType != null) {
-				final UserDto user = UserProvider.getCurrent().getUser();
+				final UserDto user = UiUtil.getUser();
 				final CommunityReferenceDto community =
 					user.getCommunity() != null ? user.getCommunity() : (CommunityReferenceDto) communityField.getValue();
 
@@ -568,7 +568,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		DistrictReferenceDto districtReferenceDto,
 		CommunityReferenceDto communityReferenceDto) {
 
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = UiUtil.getUser();
 		final boolean visible = typeOfPlace == TypeOfPlace.FACILITY
 			&& ((user.getCommunity() != null || communityReferenceDto != null) || (user.getDistrict() != null || districtReferenceDto != null));
 		final ComboBox facilityField = getField(LocationDto.FACILITY);

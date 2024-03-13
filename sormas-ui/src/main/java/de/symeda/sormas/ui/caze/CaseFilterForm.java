@@ -61,7 +61,6 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -148,7 +147,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	@Override
 	protected void addFields() {
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
@@ -214,7 +213,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.COMMUNITY, 140));
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 
 			ComboBox typeGroup = addField(
 				moreFiltersContainer,
@@ -235,7 +234,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			facilityField.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			ComboBox pointOfEntryField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.POINT_OF_ENTRY, 140));
 			pointOfEntryField.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
 		}
@@ -245,7 +244,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		officerField
 			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), selectedDisease, UserRight.CASE_RESPONSIBLE));
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
+		if (UiUtil.enabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(
@@ -301,7 +300,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutGeo),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -312,8 +311,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
-			|| UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
+		if (UiUtil.permitted(UserRight.CLINICAL_COURSE_VIEW) || UiUtil.permitted(UserRight.THERAPY_VIEW)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -398,7 +396,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,
@@ -675,7 +673,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);
@@ -756,7 +754,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			disableFields(districtField, communityField, facilityTypeGroupField, facilityTypeField, facilityField);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (UiUtil.permitted(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			getField(CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY).setEnabled(criteria.getCaseOrigin() != CaseOrigin.IN_COUNTRY);
 		}
 

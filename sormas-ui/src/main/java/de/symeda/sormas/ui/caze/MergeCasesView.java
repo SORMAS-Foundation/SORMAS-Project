@@ -24,7 +24,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -49,7 +49,7 @@ public class MergeCasesView extends AbstractView {
 			criteria.creationDateFrom(DateHelper.getEpiWeekStart(DateHelper.getPreviousEpiWeek(new Date())))
 				.creationDateTo(new Date())
 				.relevanceStatus(EntityRelevanceStatus.ACTIVE)
-				.setRegion(UserProvider.getCurrent().getUser().getRegion());
+				.setRegion(UiUtil.getUser().getRegion());
 		}
 
 		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeCasesView.class).has(QueryDetails.class);

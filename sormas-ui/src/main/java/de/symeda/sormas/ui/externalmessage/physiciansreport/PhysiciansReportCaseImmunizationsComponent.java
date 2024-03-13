@@ -50,7 +50,7 @@ import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -213,8 +213,7 @@ public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWra
 			.getVaccinationEditComponent(
 				vaccination,
 				caze.getDisease(),
-				UiFieldAccessCheckers
-					.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(caze.isInJurisdiction()), caze.isPseudonymized()),
+				UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caze.isInJurisdiction()), caze.isPseudonymized()),
 				false,
 				(v) -> {
 					if (!vaccinationsToCreate.contains(v)) {
@@ -222,7 +221,7 @@ public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWra
 					}
 				},
 				true,
-				UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE));
+				UiUtil.permitted(UserRight.IMMUNIZATION_DELETE));
 
 		currentVaccinationEditComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		currentVaccinationEditComponent.getButtonsPanel()

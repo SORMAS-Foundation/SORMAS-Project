@@ -75,6 +75,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
@@ -102,9 +103,9 @@ public class ExternalMessageController {
 			FacadeProvider.getEventParticipantFacade(),
 			FacadeProvider.getSampleFacade(),
 			FacadeProvider.getPathogenTestFacade(),
-                FacadeProvider.getRegionFacade(),
-                FacadeProvider.getDistrictFacade(),
-                FacadeProvider.getCommunityFacade(),
+			FacadeProvider.getRegionFacade(),
+			FacadeProvider.getDistrictFacade(),
+			FacadeProvider.getCommunityFacade(),
 			FacadeProvider.getFacilityFacade(),
 			FacadeProvider.getCustomizableEnumFacade(),
 			FacadeProvider.getCountryFacade(),
@@ -150,8 +151,7 @@ public class ExternalMessageController {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 		ExternalMessageProcessingFacade processingFacade = getExternalMessageProcessingFacade();
 		ExternalMessageMapper mapper = new ExternalMessageMapper(labMessage, processingFacade);
-		RelatedLabMessageHandler relatedLabMessageHandler =
-			new RelatedLabMessageHandler(UserProvider.getCurrent().getUser(), processingFacade, mapper);
+		RelatedLabMessageHandler relatedLabMessageHandler = new RelatedLabMessageHandler(UiUtil.getUser(), processingFacade, mapper);
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(labMessage, mapper, processingFacade, relatedLabMessageHandler);
 
 		flow.run().handle((BiFunction<? super ProcessingResult<ExternalMessageProcessingResult>, Throwable, Void>) (result, exception) -> {
@@ -303,7 +303,7 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
 			Button deleteButton = ButtonHelper.createButton(
 				Captions.actionDelete,
 				I18nProperties.getCaption(Captions.actionDelete),
@@ -432,8 +432,7 @@ public class ExternalMessageController {
 			components.getAssigneeComboBox().setValue(externalMessageDto.getAssignee());
 		}
 
-		components.getAssignMeButton()
-			.addClickListener(e -> saveAssignee(externalMessageDto, UserProvider.getCurrent().getUserReference(), components.getWindow()));
+		components.getAssignMeButton().addClickListener(e -> saveAssignee(externalMessageDto, UiUtil.getUserReference(), components.getWindow()));
 		components.getWrapperComponent()
 			.addCommitListener(
 				() -> saveAssignee(externalMessageDto, (UserReferenceDto) components.getAssigneeComboBox().getValue(), components.getWindow()));
@@ -449,7 +448,7 @@ public class ExternalMessageController {
 			FacadeProvider.getExternalMessageFacade()
 				.bulkAssignExternalMessages(
 					selectedRows.stream().map(ExternalMessageIndexDto::getUuid).collect(Collectors.toList()),
-					UserProvider.getCurrent().getUserReference());
+					UiUtil.getUserReference());
 			components.getWindow().close();
 			Notification.show(I18nProperties.getString(Strings.messageExternalMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
 			callback.run();

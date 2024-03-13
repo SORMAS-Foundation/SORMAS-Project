@@ -54,7 +54,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
@@ -104,7 +104,6 @@ public class EventGroupController {
 	public void create(EventReferenceDto eventReference) {
 
 		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
-		UserProvider user = UserProvider.getCurrent();
 
 		EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
 		Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
@@ -113,7 +112,7 @@ public class EventGroupController {
 			.map(EventGroupReferenceDto::getUuid)
 			.collect(Collectors.toSet());
 		eventGroupCriteria.setExcludedUuids(eventGroupUuids);
-		if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+		if (UiUtil.permitted(UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_LINK)) {
 			long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
 			if (events > 0) {
 				ControllerProvider.getEventGroupController().selectOrCreate(eventReference);
@@ -203,10 +202,8 @@ public class EventGroupController {
 		EventGroupDataForm createForm = new EventGroupDataForm(true);
 		createForm.setValue(createNewEventGroup());
 
-		final CommitDiscardWrapperComponent<EventGroupDataForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventGroupDataForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.EVENTGROUP_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -234,15 +231,14 @@ public class EventGroupController {
 		EventGroupDto eventGroup = FacadeProvider.getEventGroupFacade().getEventGroupByUuid(uuid);
 		EventGroupDataForm eventGroupEditForm = new EventGroupDataForm(false);
 		eventGroupEditForm.setValue(eventGroup);
-		UserProvider user = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<EventGroupDataForm> editView =
 			new CommitDiscardWrapperComponent<>(eventGroupEditForm, true, eventGroupEditForm.getFieldGroup());
 
 		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
-		boolean hasRegion = user.hasNationJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
+		boolean hasRegion = UiUtil.hasNationJurisdictionLevel() || regions.stream().allMatch(UiUtil.getCurrentUserProvider()::hasRegion);
 		editView.setReadOnly(hasRegion);
 
-		if (user.hasUserRight(UserRight.EVENTGROUP_EDIT) && hasRegion) {
+		if (UiUtil.permitted(UserRight.EVENTGROUP_EDIT) && hasRegion) {
 			editView.addCommitListener(() -> {
 				if (!eventGroupEditForm.getFieldGroup().isModified()) {
 					EventGroupDto updatedEventGroup = eventGroupEditForm.getValue();
@@ -253,7 +249,7 @@ public class EventGroupController {
 			});
 		}
 
-		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
+		if (UiUtil.permitted(UserRight.EVENTGROUP_DELETE) && hasRegion) {
 			editView.addDeleteListener(() -> {
 				deleteEventGroup(eventGroup);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
@@ -261,7 +257,7 @@ public class EventGroupController {
 		}
 
 		// Initialize 'Archive' button
-		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
+		if (UiUtil.permitted(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
 			Button archiveEventButton = ButtonHelper.createButton(
 				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
@@ -369,12 +365,10 @@ public class EventGroupController {
 			return;
 		}
 
-		UserProvider user = UserProvider.getCurrent();
-
 		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
-		if (!user.hasNationJurisdictionLevel()) {
+		if (!UiUtil.hasNationJurisdictionLevel()) {
 			for (String eventUuid : eventUuids) {
 				if (!FacadeProvider.getEventFacade().isInJurisdictionOrOwned(eventUuid)) {
 					new Notification(
@@ -399,14 +393,14 @@ public class EventGroupController {
 				.filter(e -> remainingReferences.stream().anyMatch(r -> r.getUuid().equals(e.getUuid())))
 				.collect(Collectors.toList()));
 
-		if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+		if (UiUtil.permitted(UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_LINK)) {
 			long eventCount = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
 			if (eventCount > 0) {
 				selectOrCreate(eventReferences, callbackWrapper);
 			} else {
 				create(eventReferences, callbackWrapper);
 			}
-		} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+		} else if (UiUtil.permitted(UserRight.EVENTGROUP_CREATE)) {
 			create(eventReferences, callbackWrapper);
 		} else {
 			long eventCount = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);

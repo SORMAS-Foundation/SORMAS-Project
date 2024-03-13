@@ -45,7 +45,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.ArchiveHandlers.InfrastructureArchiveHandler;
 import de.symeda.sormas.ui.utils.ArchiveMessages;
@@ -181,7 +181,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<FacilityEditForm> editView = new CommitDiscardWrapperComponent<FacilityEditForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -216,7 +216,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<AreaEditForm> editComponent = new CommitDiscardWrapperComponent<>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {
@@ -247,7 +247,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<ContinentEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -278,7 +278,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<SubcontinentEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -310,7 +310,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<CountryEditForm> editView = new CommitDiscardWrapperComponent<>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -342,7 +342,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<RegionEditForm> editView = new CommitDiscardWrapperComponent<RegionEditForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -374,7 +374,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<DistrictEditForm> editView = new CommitDiscardWrapperComponent<DistrictEditForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -410,7 +410,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<CommunityEditForm> editView = new CommitDiscardWrapperComponent<CommunityEditForm>(
 			editForm,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -446,7 +446,7 @@ public class InfrastructureController {
 
 		final CommitDiscardWrapperComponent<PointOfEntryForm> view = new CommitDiscardWrapperComponent<PointOfEntryForm>(
 			form,
-			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			UiUtil.permitted(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			form.getFieldGroup());
 		view.addCommitListener(() -> {
 			FacadeProvider.getPointOfEntryFacade().save(form.getValue());
@@ -471,7 +471,7 @@ public class InfrastructureController {
 		InfrastructureArchiveHandler<T, F> archiveHandler,
 		Runnable callback) {
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE)) {
 			ControllerProvider.getArchiveController().addArchivingButton(entity, archiveHandler, component, callback, true);
 		}
 	}

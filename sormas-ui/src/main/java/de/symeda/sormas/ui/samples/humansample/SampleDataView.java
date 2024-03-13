@@ -40,7 +40,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
@@ -153,9 +153,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 			new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup, isEditAllowed());
 		layout.addSidePanelComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
-		if (UserProvider.getCurrent() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
+		if (UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW)) {
 
 			AdditionalTestListComponent additionalTestList =
 				new AdditionalTestListComponent(sampleReferenceDto.getUuid(), this::showUnsavedChangesPopup, isEditAllowed());
@@ -187,7 +185,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 	private AbstractInfoLayout<EntityDto> getDependentSideComponent(SampleDto sampleDto) {
 
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
-		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
+		if (associatedCase != null && UiUtil.permitted(UserRight.CASE_VIEW)) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 			disease = caseDto.getDisease();
 
@@ -198,7 +196,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 		}
 
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
-		if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
+		if (associatedContact != null && UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 
 			disease = contactDto.getDisease();
@@ -211,7 +209,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 		}
 
 		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
-		if (associatedEventParticipant != null && UserProvider.getCurrent().hasAllUserRights(UserRight.EVENTPARTICIPANT_VIEW)) {
+		if (associatedEventParticipant != null && UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 			final EventParticipantDto eventParticipantDto =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
 			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid(), false);

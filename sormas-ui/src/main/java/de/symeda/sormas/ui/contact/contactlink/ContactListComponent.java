@@ -16,7 +16,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
@@ -28,7 +28,7 @@ public class ContactListComponent extends SideComponent {
 	public ContactListComponent(PersonReferenceDto personReferenceDto, String activeUuid, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 		super(I18nProperties.getString(Strings.entityContacts), actionCallback);
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(CONTACT_CREATE)) {
+		if (UiUtil.permitted(isEditAllowed, CONTACT_CREATE)) {
 			addCreateButton(I18nProperties.getCaption(Captions.contactNewContact), () -> {
 				ControllerProvider.getContactController().create(personReferenceDto);
 			}, CONTACT_CREATE);

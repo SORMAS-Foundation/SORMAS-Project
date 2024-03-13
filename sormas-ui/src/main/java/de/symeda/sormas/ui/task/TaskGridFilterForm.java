@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibilityChecker;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -48,7 +48,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		super(
 			TaskCriteria.class,
 			TaskIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCheckers(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
+			FieldVisibilityCheckers.withCheckers(new UserRightFieldVisibilityChecker(UiUtil::permitted)),
 			JurisdictionFieldConfig.of(TaskIndexDto.REGION, TaskIndexDto.DISTRICT, null));
 	}
 

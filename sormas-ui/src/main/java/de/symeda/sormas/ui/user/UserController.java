@@ -55,7 +55,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -109,11 +109,8 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		UserProvider userProvider = UserProvider.getCurrent();
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
-			userEditForm,
-			userProvider.hasUserRight(UserRight.USER_EDIT),
-			userEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView =
+			new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
 		// Add reset password button
 		Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
@@ -134,7 +131,7 @@ public class UserController {
 						}
 					});
 				}
-				if (DataHelper.isSame(user, userProvider.getUser())) {
+				if (DataHelper.isSame(user, UiUtil.getUser())) {
 
 					Set<UserRight> oldUserRights =
 						UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));
@@ -185,10 +182,8 @@ public class UserController {
 
 		UserEditForm createForm = new UserEditForm(true);
 		createForm.setValue(UserDto.build());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView =
+			new CommitDiscardWrapperComponent<UserEditForm>(createForm, UiUtil.permitted(UserRight.USER_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 
@@ -317,7 +312,7 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UiUtil.getUserUuid());
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
