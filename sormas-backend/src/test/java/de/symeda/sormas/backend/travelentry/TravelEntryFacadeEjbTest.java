@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -296,5 +297,41 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			assertThat(result.get(0).getCaption(), equalTo("Hello"));
 			assertThat(result.get(0).getValue(), equalTo("World"));
 		}
+	}
+
+	@Test
+	public void testGetCasesByPersonNationalHealthId() {
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		final TravelEntryDto travelEntry1 = getTravelEntryFacade().save(creator.createTravelEntry(person1, districtUser1.toReference(), rdcf1, null));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getTravelEntryFacade().save(creator.createTravelEntry(person2, districtUser1.toReference(), rdcf1, null));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getTravelEntryFacade().save(creator.createTravelEntry(person3, districtUser1.toReference(), rdcf1, null));
+
+		TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+		travelEntryCriteria.setNameUuidExternalIDLike("firstNationalId");
+
+		List<TravelEntryIndexDto> travelEntryIndexDtos1 = getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, 100, null);
+		assertEquals(1, travelEntryIndexDtos1.size());
+		assertEquals(travelEntry1.getUuid(), travelEntryIndexDtos1.get(0).getUuid());
+
+		travelEntryCriteria.setNameUuidExternalIDLike("National");
+		List<TravelEntryIndexDto> travelEntryIndexDtosNational = getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, 100, null);
+		assertEquals(2, travelEntryIndexDtosNational.size());
+
+		travelEntryCriteria.setNameUuidExternalIDLike(null);
+		List<TravelEntryIndexDto> travelEntryIndexDtosAll = getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, 100, null);
+		assertEquals(3, travelEntryIndexDtosAll.size());
 	}
 }
