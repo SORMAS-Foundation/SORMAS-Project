@@ -564,8 +564,17 @@ public class EventParticipantFacadeEjb
 		if (eventParticipantsToBeRestored != null) {
 			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
 				try {
-					restore(eventParticipantToBeRestored.getUuid());
-					processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+					final boolean isPersonNotParticipant = getByEventAndPersons(
+						eventParticipantToBeRestored.getEvent().getUuid(),
+						Collections.singletonList(eventParticipantToBeRestored.getPerson().getUuid())).isEmpty();
+					if (isPersonNotParticipant) {
+						restore(eventParticipantToBeRestored.getUuid());
+						processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedEventParticipants
+							.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+					}
+
 				} catch (Exception e) {
 					processedEventParticipants
 						.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
