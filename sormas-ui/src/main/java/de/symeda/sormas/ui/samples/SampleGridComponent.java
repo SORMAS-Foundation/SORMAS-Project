@@ -26,6 +26,8 @@ public abstract class SampleGridComponent<T, C extends BaseCriteria> extends Ver
 
 	private static final long serialVersionUID = 2805771019861077651L;
 
+	public static final String DELETE_REASON_COLUMN = "deleteReasonCumulated";
+
 	public abstract ReloadableGrid<T, C> getGrid();
 
 	public abstract MenuBar getBulkOperationsDropdown();

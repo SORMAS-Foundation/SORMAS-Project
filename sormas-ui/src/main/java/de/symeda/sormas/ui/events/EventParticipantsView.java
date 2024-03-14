@@ -229,6 +229,12 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			if (relevanceStatusInfoLabel != null) {
 				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 			}
+
+			if (grid.getColumn(DELETE_REASON_COLUMN) != null) {
+				grid.getColumn(DELETE_REASON_COLUMN)
+					.setHidden(!eventParticipantRelevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+			}
+
 			criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
