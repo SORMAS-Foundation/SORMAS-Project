@@ -46,6 +46,8 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = -1L;
 
+	public static final String DELETE_REASON_COLUMN = "deleteReasonCumulated";
+
 	protected final String viewName;
 	private final HorizontalLayout viewHeader;
 	private final VerticalLayout viewTitleLayout;

@@ -702,6 +702,11 @@ public class CasesView extends AbstractView implements HasName {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					}
+
+					if (grid.getColumn(DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					}
+
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
