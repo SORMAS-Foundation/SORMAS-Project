@@ -75,6 +75,7 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 		deleteColumn.setId(DELETE_REASON_COLUMN);
 		deleteColumn.setSortable(false);
 		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+		deleteColumn.setHidden(true);
 
 		setColumns(getGridColumns().toArray(String[]::new));
 

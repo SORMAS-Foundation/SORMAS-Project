@@ -63,7 +63,7 @@ public class EnvironmentsView extends AbstractView {
 		gridCriteria = ViewModelProviders.of(getClass())
 			.getOrDefault(EnvironmentCriteria.class, () -> new EnvironmentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE));
 
-		gridComponent = new EnvironmentGridComponent(gridCriteria, viewConfiguration, () -> navigateTo(gridCriteria, true), () -> {
+		gridComponent = new EnvironmentGridComponent(gridCriteria, viewConfiguration, () -> navigateTo(gridCriteria, false), () -> {
 			ViewModelProviders.of(getClass()).remove(EnvironmentCriteria.class);
 			navigateTo(null, true);
 		});
