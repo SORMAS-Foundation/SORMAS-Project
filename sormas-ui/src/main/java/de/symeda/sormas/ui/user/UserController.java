@@ -74,6 +74,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class UserController {
 
 	private Window popUpWindow;
+	private boolean isGeneratePassword=false;
 
 	public void create() {
 		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
@@ -237,15 +238,21 @@ public class UserController {
 		}
 	}
 
-	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword ) {
+	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword) {
 		FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
-
-		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-			showPasswordChangeInternalSuccessPopup(I18nProperties.getString(Strings.messagePasswordChange));
+		if (isGeneratePassword) {
+			if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+				showPasswordResetInternalSuccessPopup(password);
+			} else {
+				showPasswordResetExternalSuccessPopup();
+			}
 		} else {
-			showPasswordResetExternalSuccessPopup();
+			showPasswordChangeInternalSuccessPopup(I18nProperties.getString(Strings.messagePasswordChange));
 		}
+
+		isGeneratePassword=false;
 	}
+
 
 	private void showPasswordResetInternalSuccessPopup(String newPassword) {
 		VerticalLayout layout = new VerticalLayout();
@@ -256,6 +263,10 @@ public class UserController {
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);
+
+		popupWindow.addCloseListener(event -> {
+			popUpWindow.close();
+		});
 	}
 
 	private void showPasswordChangeInternalSuccessPopup(String passwordSuccessMessage) {
@@ -268,7 +279,6 @@ public class UserController {
 
 		layout.setMargin(true);
 		popupWindow.addCloseListener(event -> {
-			System.out.println("closed");
 			popUpWindow.close();
 		});
 	}
@@ -289,6 +299,10 @@ public class UserController {
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		popupWindow.setWidth(450, Unit.PIXELS);
 		layout.setMargin(true);
+
+		popupWindow.addCloseListener(event -> {
+			popUpWindow.close();
+		});
 	}
 
 	private void refreshView() {
@@ -333,6 +347,9 @@ public class UserController {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				isGeneratePassword = true;
+
 				String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
 				form.currentPassword.setCaption(generatedPassword);
 				form.confirmPassword.setCaption(generatedPassword);
@@ -416,30 +433,23 @@ public class UserController {
 				passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
 			}
 		});
+
+		component.addDiscardListener(()->{
+			popUpWindow.close();
+		});
+
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
 				if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getUpdatePassword())) {
-					form.showNotification(
-						new Notification(
-							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
-							I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed),
-							Notification.Type.WARNING_MESSAGE));
+					Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
 				} else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
-					form.showNotification(
-						new Notification(
-							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
-							I18nProperties.getString(Strings.messagePasswordFailed),
-							Notification.Type.WARNING_MESSAGE));
+					Notification.show(I18nProperties.getString(Strings.messageWrongCurrentPassword), Notification.Type.ERROR_MESSAGE);
 				} else if (passwordStrengthDesc.getValue().contains("Weak")) {
-					form.showNotification(
-						new Notification(
-							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
-							I18nProperties.getString(Strings.messageNewPasswordFailed),
-							Notification.Type.WARNING_MESSAGE));
+					Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
 				} else {
-
-					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
+					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword(),
+							changedUser.getCurrentPassword());
 				}
 			}
 		});
