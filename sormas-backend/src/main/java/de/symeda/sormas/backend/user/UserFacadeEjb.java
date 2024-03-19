@@ -52,6 +52,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.task.TaskContextIndex;
+import de.symeda.sormas.backend.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -140,22 +141,7 @@ import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.util.RightsAllowed;
-import edu.vt.middleware.password.CharacterCharacteristicsRule;
-import edu.vt.middleware.password.DigitCharacterRule;
-import edu.vt.middleware.password.LengthRule;
-import edu.vt.middleware.password.LowercaseCharacterRule;
-import edu.vt.middleware.password.NonAlphanumericCharacterRule;
-import edu.vt.middleware.password.Password;
-import edu.vt.middleware.password.PasswordData;
-import edu.vt.middleware.password.PasswordValidator;
-import edu.vt.middleware.password.Rule;
-import edu.vt.middleware.password.RuleResult;
-import edu.vt.middleware.password.UppercaseCharacterRule;
-import edu.vt.middleware.password.WhitespaceRule;
+
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -937,75 +923,13 @@ public class UserFacadeEjb implements UserFacade {
 		}
 		return false;
 	}
-  
+
 	@PermitAll
 	@Override
 	public String checkPasswordStrength(String password) {
-		//Password must be between 8 and
-		LengthRule strongPasswordlengthRule = new LengthRule(10, 64);
+		return PasswordValidator.checkPasswordStrength(password);
+	}
 
-		LengthRule moderatePasswordlengthRule = new LengthRule(8, 16);
-		// don't allow whitespace
-		WhitespaceRule whitespaceRule = new WhitespaceRule();
-		/*-----STrong password-----*/
-		// control allowed characters
-		CharacterCharacteristicsRule strongPassword = new CharacterCharacteristicsRule();
-		// require at least 2 digit in passwords
-		strongPassword.getRules().add(new DigitCharacterRule(2));
-		// require at least 2 non-alphanumeric char
-		strongPassword.getRules().add(new NonAlphanumericCharacterRule(2));
-		// require at least 1 upper case char
-		strongPassword.getRules().add(new UppercaseCharacterRule(1));
-		// require at least 1 lower case char
-		strongPassword.getRules().add(new LowercaseCharacterRule(1));
-
-		// require at least 6 of the previous rules be met
-		strongPassword.setNumberOfCharacteristics(4);
-		//Check to see all rules are met for a strong
-		List<Rule> strongPasswordRuleList = new ArrayList<Rule>();
-		strongPasswordRuleList.add(strongPasswordlengthRule);
-		strongPasswordRuleList.add(whitespaceRule);
-		strongPasswordRuleList.add(strongPassword);
-		PasswordValidator strongPasswordValidator = new PasswordValidator(strongPasswordRuleList);
-		PasswordData strongPasswordData = new PasswordData(new Password(password));
-		RuleResult strongPasswordresult = strongPasswordValidator.validate(strongPasswordData);
-
-		/*-----moderate password-----*/
-		// control allowed characters
-		CharacterCharacteristicsRule moderatePassword = new CharacterCharacteristicsRule();
-		// require at least 1 digit in passwords
-		moderatePassword.getRules().add(new DigitCharacterRule(1));
-		// require at least 1 non-alphanumeric char
-		moderatePassword.getRules().add(new NonAlphanumericCharacterRule(1));
-		// require at least 1 upper case char
-		moderatePassword.getRules().add(new UppercaseCharacterRule(1));
-		// require at least 1 lower case char
-		moderatePassword.getRules().add(new LowercaseCharacterRule(1));
-
-		// require at least 6 of the previous rules be met
-		strongPassword.setNumberOfCharacteristics(3);
-		//Check to see all rules are met for a strong
-		List<Rule> moderatePasswordRuleList = new ArrayList<Rule>();
-		moderatePasswordRuleList.add(moderatePasswordlengthRule);
-		moderatePasswordRuleList.add(whitespaceRule);
-		moderatePasswordRuleList.add(moderatePassword);
-		PasswordValidator moderatePasswordValidator = new PasswordValidator(moderatePasswordRuleList);
-		PasswordData moderatePasswordData = new PasswordData(new Password(password));
-		RuleResult moderatePasswordresult = moderatePasswordValidator.validate(moderatePasswordData);
-
-		String passStrength = "Password Strength is Weak";
-		if (strongPasswordresult.isValid()) {
-			passStrength = "Password Strength is Strong";
-			return passStrength;
-
-		} else if (moderatePasswordresult.isValid()) {
-			passStrength = "Password Strength is Moderate";
-			return passStrength;
-
-		} else
-			return passStrength;
-	};
-  
 	@PermitAll
 	@Override
 	public void removeUserAsSurveillanceAndContactOfficer(String userUuid) {
