@@ -37,7 +37,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class EventGroupMemberList extends PaginationList<EventIndexDto> {
@@ -77,12 +77,11 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 			EventIndexDto event = displayedEntries.get(i);
 			EventGroupMemberListEntry listEntry = new EventGroupMemberListEntry(event);
 
-			UserProvider user = UserProvider.getCurrent();
-			if (user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+			if (UiUtil.permitted(UserRight.EVENTGROUP_LINK)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					if (!FacadeProvider.getEventFacade().isInJurisdictionOrOwned(event.getUuid())
-						&& !user.hasNationJurisdictionLevel()
-						&& !user.isAdmin()) {
+						&& !UiUtil.hasNationJurisdictionLevel()
+						&& !UiUtil.isAdmin()) {
 						new Notification(
 							I18nProperties.getString(Strings.headingEventGroupUnlinkEventIssue),
 							I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
@@ -95,7 +94,7 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 					reload();
 				});
 			}
-			if (user.hasUserRight(UserRight.EVENTGROUP_EDIT)) {
+			if (UiUtil.permitted(UserRight.EVENTGROUP_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));

@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.travelentry;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -28,7 +27,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.travelentry.importer.TravelEntryImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -82,7 +81,7 @@ public class TravelEntriesView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_CREATE)) {
 			addHeaderComponent(ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.actionImport), VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new TravelEntryImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportTravelEntries));
@@ -97,8 +96,7 @@ public class TravelEntriesView extends AbstractView {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE, UserRight.PERFORM_BULK_OPERATIONS)) {
 
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
@@ -190,9 +188,9 @@ public class TravelEntriesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 
 		// Show active/archived/all dropdown
-		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_VIEW)) {
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.TRAVEL_ENTRY)) {
+			if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.TRAVEL_ENTRY)) {
 
 				int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 					.getProperty(
@@ -225,7 +223,7 @@ public class TravelEntriesView extends AbstractView {
 				I18nProperties.getCaption(Captions.travelEntryAllActiveAndArchivedTravelEntries));
 			relevanceStatusFilter.setCaption("");
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
+			if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE)) {
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.TravelEntry_deletedTravelEntries));
 			} else {
@@ -243,8 +241,7 @@ public class TravelEntriesView extends AbstractView {
 		}
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE, UserRight.PERFORM_BULK_OPERATIONS)) {
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
 			if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 				bulkActions.add(

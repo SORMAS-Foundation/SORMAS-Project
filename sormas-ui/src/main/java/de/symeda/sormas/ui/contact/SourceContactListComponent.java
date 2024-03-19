@@ -34,7 +34,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -72,7 +72,7 @@ public class SourceContactListComponent extends VerticalLayout {
 		sourceContactsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(sourceContactsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE) && isEditAllowed) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.CONTACT_CREATE)) {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,

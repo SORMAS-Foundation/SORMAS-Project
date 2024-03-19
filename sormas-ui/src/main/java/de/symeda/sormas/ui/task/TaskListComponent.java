@@ -19,8 +19,6 @@ package de.symeda.sormas.ui.task;
 
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Button;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -29,14 +27,13 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 @SuppressWarnings("serial")
 public class TaskListComponent extends SideComponent {
 
 	private TaskList list;
-	private Button createButton;
 
 	public TaskListComponent(TaskContext context, ReferenceDto entityRef, Disease disease, Consumer<Runnable> actionCallback, boolean isEditAllowed) {
 
@@ -46,7 +43,7 @@ public class TaskListComponent extends SideComponent {
 		addComponent(list);
 		list.reload();
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.TASK_CREATE)) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.taskNewTask),
 				() -> ControllerProvider.getTaskController().create(context, entityRef, disease, this::reload),

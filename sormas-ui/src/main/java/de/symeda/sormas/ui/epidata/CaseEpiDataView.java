@@ -31,7 +31,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.contact.SourceContactListComponent;
 import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
@@ -67,17 +67,13 @@ public class CaseEpiDataView extends AbstractCaseView {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		boolean sourceContactsVisible = currentUser != null && currentUser.hasUserRight(UserRight.CONTACT_VIEW);
+		boolean sourceContactsVisible = UiUtil.permitted(UserRight.CONTACT_VIEW);
 		VerticalLayout sourceContactsLayout = new VerticalLayout();
 		Consumer<Boolean> sourceContactsToggleCallback =
 			(visible) -> sourceContactsLayout.setVisible(visible != null && sourceContactsVisible ? visible : false);
 
 		epiDataComponent = ControllerProvider.getCaseController()
-			.getEpiDataComponent(
-				getCaseRef().getUuid(),
-				sourceContactsToggleCallback,
-				isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT));
+			.getEpiDataComponent(getCaseRef().getUuid(), sourceContactsToggleCallback, UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT));
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(epiDataComponent, LOC_SOURCE_CONTACTS, TRAVEL_ENTRIES_LOC);
 		container.addComponent(layout);
@@ -87,11 +83,11 @@ public class CaseEpiDataView extends AbstractCaseView {
 			sourceContactsLayout.setSpacing(false);
 
 			final SourceContactListComponent sourceContactList =
-				new SourceContactListComponent(getCaseRef(), this, isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT));
+				new SourceContactListComponent(getCaseRef(), this, UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT));
 			sourceContactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sourceContactsLayout.addComponent(sourceContactList);
 
-			if (currentUser.hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CASE_EDIT)) {
+			if (UiUtil.permitted(UserRight.CONTACT_CREATE, UserRight.CASE_EDIT)) {
 				sourceContactList.addStyleName(CssStyles.VSPACE_NONE);
 				Label contactCreationDisclaimer = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewContactDiscardsChanges),
@@ -106,9 +102,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 		layout.addSidePanelComponent(sourceContactsLayout, LOC_SOURCE_CONTACTS);
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			&& UiUtil.permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withCase(getCaseRef()).build();
 			layout.addSidePanelComponent(
 				new SideComponentLayout(
@@ -116,10 +110,10 @@ public class CaseEpiDataView extends AbstractCaseView {
 						travelEntryListCriteria,
 						null,
 						this::showUnsavedChangesPopup,
-						isEditAllowed() && currentUser.hasUserRight(UserRight.CASE_EDIT))),
+						UiUtil.permitted(isEditAllowed(), UserRight.CASE_EDIT))),
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		setEditPermission(epiDataComponent, currentUser.hasUserRight(UserRight.CASE_EDIT), EpiDataDto.EXPOSURES, EpiDataDto.ACTIVITIES_AS_CASE);
+		setEditPermission(epiDataComponent, UiUtil.permitted(UserRight.CASE_EDIT), EpiDataDto.EXPOSURES, EpiDataDto.ACTIVITIES_AS_CASE);
 	}
 }

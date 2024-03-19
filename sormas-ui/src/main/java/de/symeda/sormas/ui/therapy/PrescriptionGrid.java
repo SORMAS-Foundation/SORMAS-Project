@@ -21,7 +21,7 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.GridButtonRenderer;
@@ -42,7 +42,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		setSizeFull();
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
@@ -86,8 +86,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		}
 
-		getColumn(DOCUMENT_TREATMENT_BTN_ID)
-			.setHidden(isPseudonymized || !isEditAllowed || !UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE));
+		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(isPseudonymized || !isEditAllowed || !UiUtil.permitted(UserRight.TREATMENT_CREATE));
 
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());

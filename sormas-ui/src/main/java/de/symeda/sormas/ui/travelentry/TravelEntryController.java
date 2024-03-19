@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -27,7 +27,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -80,17 +80,15 @@ public class TravelEntryController {
 			createForm = new TravelEntryCreateForm();
 		}
 
-		travelEntry.setReportingUser(UserProvider.getCurrent().getUserReference());
+		travelEntry.setReportingUser(UiUtil.getUserReference());
 		createForm.setValue(travelEntry);
 
 		if (caseReferenceDto != null) {
 			createForm.setDiseaseReadOnly(true);
 		}
 
-		final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.TRAVEL_ENTRY_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -161,7 +159,7 @@ public class TravelEntryController {
 		});
 
 		// Initialize 'Delete' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				TravelEntriesView.VIEW_NAME,
 				null,
@@ -171,7 +169,7 @@ public class TravelEntryController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntry.getUuid()));
 		}

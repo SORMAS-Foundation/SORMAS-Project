@@ -21,6 +21,7 @@ import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.FieldConfiguration;
 
 public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCriteria> {
 
@@ -43,7 +44,7 @@ public class ShareRequestFilterForm extends AbstractFilterForm<ShareRequestCrite
 
 	@Override
 	protected void addFields() {
-		ComboBox statusFiled = addField(ShareRequestCriteria.STATUS);
+		ComboBox statusFiled = addField(FieldConfiguration.pixelSized(ShareRequestCriteria.STATUS, 140));
 
 		if (viewType == ShareRequestViewType.INCOMING) {
 			statusFiled.removeItem(ShareRequestStatus.REJECTED);

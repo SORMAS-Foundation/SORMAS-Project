@@ -26,7 +26,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
@@ -78,9 +78,9 @@ public class AreasView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = UiUtil.enabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
-		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		if (UiUtil.permitted(infrastructureDataEditable, UserRight.INFRASTRUCTURE_IMPORT)) {
 			btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.AREA));
 				window.setCaption(I18nProperties.getString(Strings.headingImportAreas));
@@ -98,7 +98,7 @@ public class AreasView extends AbstractConfigurationView {
 			addHeaderComponent(infrastructureDataLocked);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
+		if (UiUtil.permitted(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			btnExport.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(btnExport);
@@ -108,7 +108,7 @@ public class AreasView extends AbstractConfigurationView {
 			fileDownloader.extend(btnExport);
 		}
 
-		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (UiUtil.permitted(infrastructureDataEditable, UserRight.INFRASTRUCTURE_CREATE)) {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -118,7 +118,7 @@ public class AreasView extends AbstractConfigurationView {
 			addHeaderComponent(btnCreate);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
@@ -174,7 +174,7 @@ public class AreasView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			if (UiUtil.permitted(UserRight.INFRASTRUCTURE_VIEW)) {
 				filterRelevanceStatus = new ComboBox<>();
 				filterRelevanceStatus.setId("relevanceStatus");
 				filterRelevanceStatus.setWidth(220, Unit.PERCENTAGE);
@@ -197,7 +197,7 @@ public class AreasView extends AbstractConfigurationView {
 				actionButtonsLayout.addComponent(filterRelevanceStatus);
 
 				// Bulk operation dropdown
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 					dropdownBulkOperations = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
 						new MenuBarHelper.MenuBarItem(
@@ -210,8 +210,7 @@ public class AreasView extends AbstractConfigurationView {
 									grid,
 									grid::reload,
 									() -> navigateTo(criteria)),
-							UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)
-								&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE) && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
@@ -222,7 +221,7 @@ public class AreasView extends AbstractConfigurationView {
 									grid,
 									grid::reload,
 									() -> navigateTo(criteria)),
-							UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)
+							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE)
 								&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					dropdownBulkOperations.setVisible(isBulkOperationsDropdownVisible());
@@ -263,7 +262,7 @@ public class AreasView extends AbstractConfigurationView {
 	}
 
 	private boolean isBulkOperationsDropdownVisible() {
-		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = UiUtil.enabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		return viewConfiguration.isInEagerMode()
 			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())

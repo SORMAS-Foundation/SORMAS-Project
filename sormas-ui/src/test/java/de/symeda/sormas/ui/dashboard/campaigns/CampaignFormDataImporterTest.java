@@ -53,7 +53,7 @@ public class CampaignFormDataImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_success.csv").toURI());
 		CampaignFormDataImporterExtension campaignFormDataImporter =
 			new CampaignFormDataImporterExtension(csvFile, false, user, campaignForm.getUuid(), new CampaignReferenceDto(campaign.getUuid()));
-		ImportResultStatus importResult = campaignFormDataImporter.runImport();
+		ImportResultStatus importResult = campaignFormDataImporter.runImport().getStatus();
 
 		assertTrue(campaignFormDataImporter.getErrorMessages().isEmpty());
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -79,7 +79,7 @@ public class CampaignFormDataImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("campaign/sormas_campaign_data_import_test_wrong_type.csv").toURI());
 		CampaignFormDataImporterExtension campaignFormDataImporter =
 			new CampaignFormDataImporterExtension(csvFile, false, user, campaignForm.getUuid(), new CampaignReferenceDto(campaign.getUuid()));
-		ImportResultStatus importResult = campaignFormDataImporter.runImport();
+		ImportResultStatus importResult = campaignFormDataImporter.runImport().getStatus();
 
 		assertFalse(campaignFormDataImporter.getErrorMessages().isEmpty());
 		assertEquals("Value nonNumeric in column infected does not match expected data type.", campaignFormDataImporter.getErrorMessages().get(0));

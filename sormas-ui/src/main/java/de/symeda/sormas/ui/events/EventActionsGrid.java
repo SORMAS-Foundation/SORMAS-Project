@@ -36,7 +36,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -91,7 +91,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 				EventActionIndexDto.ACTION_PRIORITY,
 				createLastModifiedByOrCreatorColumn(this)));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 			columnIds.add(DELETE_REASON_COLUMN);
 		}
 
@@ -159,7 +159,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 	}
 
 	private void createDeletionReasonColumn() {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 			Column<EventActionIndexDto, String> deleteColumn = addColumn(entry -> {
 				if (entry.getDeletionReason() != null) {
 					return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");

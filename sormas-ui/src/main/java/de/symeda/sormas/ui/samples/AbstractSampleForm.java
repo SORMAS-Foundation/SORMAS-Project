@@ -50,7 +50,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -178,11 +178,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		Disease disease = null;
 		final CaseReferenceDto associatedCase = getValue().getAssociatedCase();
-		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
+		if (associatedCase != null && UiUtil.permitted(UserRight.CASE_VIEW)) {
 			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid()).getDisease();
 		} else {
 			final ContactReferenceDto associatedContact = getValue().getAssociatedContact();
-			if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
+			if (associatedContact != null && UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 				disease = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid()).getDisease();
 			}
 		}
@@ -205,8 +205,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		}
 
 		UserReferenceDto reportingUser = getValue().getReportingUser();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-			|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()))) {
+		if (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || (reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid()))) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS),
@@ -264,9 +263,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void addValidators() {
 		// Validators
-		final DateTimeField sampleDateField = (DateTimeField) getField(SampleDto.SAMPLE_DATE_TIME);
-		final DateField shipmentDate = (DateField) getField(SampleDto.SHIPMENT_DATE);
-		final DateField receivedDate = (DateField) getField(SampleDto.RECEIVED_DATE);
+		final DateTimeField sampleDateField = getField(SampleDto.SAMPLE_DATE_TIME);
+		final DateField shipmentDate = getField(SampleDto.SHIPMENT_DATE);
+		final DateField receivedDate = getField(SampleDto.RECEIVED_DATE);
 
 		sampleDateField.addValidator(
 			new DateComparisonValidator(
@@ -402,11 +401,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		boolean showRequestFields = getField(SampleDto.SAMPLE_PURPOSE).getValue() != SamplePurpose.INTERNAL;
 		UserReferenceDto reportingUser = getValue() != null ? getValue().getReportingUser() : null;
 		boolean canEditRequest = showRequestFields
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-				|| reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()));
+			&& (UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED) || reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid()));
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
-		boolean canUseAdditionalTests = UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS);
+		boolean canUseAdditionalTests = UiUtil.permitted(FeatureType.ADDITIONAL_TESTS, UserRight.ADDITIONAL_TEST_VIEW);
 
 		Field<?> pathogenTestingField = getField(SampleDto.PATHOGEN_TESTING_REQUESTED);
 		pathogenTestingField.setVisible(canEditRequest);

@@ -32,7 +32,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -54,7 +54,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 		Consumer<VisitIndexDto> visitIndexDtoConsumer = e -> ControllerProvider.getVisitController()
 			.editVisit(e.getUuid(), getCriteria().getContact(), getCriteria().getCaze(), r -> reload(), isEditAllowed, isDeleteAllowed);
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 			addEditColumn(visitIndexDtoConsumer);
 		} else {

@@ -28,7 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.groups.EventGroupMemberListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -89,7 +89,7 @@ public class EventGroupDataView extends AbstractDetailView<EventGroupReferenceDt
 		layout.addComponent(eventGroupMemberListComponent, EVENTS_LOC);
 		CssStyles.style(eventGroupMemberListComponent, CssStyles.VSPACE_TOP_2);
 
-		if(!UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_EDIT)){
+		if (!UiUtil.permitted(UserRight.EVENTGROUP_EDIT)) {
 			layout.getComponent(EVENTS_LOC).setEnabled(false);
 		}
 	}

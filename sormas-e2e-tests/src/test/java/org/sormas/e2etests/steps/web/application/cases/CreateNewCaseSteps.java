@@ -1217,6 +1217,13 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
+    When(
+        "I fill case UUID field for the last created case",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
+        });
+
     And(
         "^I fill only mandatory fields for a new case form$",
         () -> {

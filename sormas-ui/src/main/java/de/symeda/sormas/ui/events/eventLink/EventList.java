@@ -40,7 +40,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -61,7 +61,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (UserProvider.getCurrent().hasAllUserRights(UserRight.EVENT_EDIT, UserRight.CASE_EDIT) && isEditAllowed) {
+			if (UiUtil.permitted(isEditAllowed, UserRight.EVENT_EDIT, UserRight.CASE_EDIT)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingUnlinkCaseFromEvent),
@@ -96,8 +96,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToContact));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			UserProvider user = UserProvider.getCurrent();
-			if (contact.getPerson() != null && user.hasUserRight(UserRight.EVENTPARTICIPANT_DELETE) && isEditAllowed) {
+			if (contact.getPerson() != null && UiUtil.permitted(isEditAllowed, UserRight.EVENTPARTICIPANT_DELETE)) {
 				listEntry.addUnlinkEventListener(
 					i,
 					(ClickListener) clickEvent -> ControllerProvider.getEventParticipantController()
@@ -115,7 +114,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
 		addUnlinkEventListener = (Integer i, EventListEntry listEntry) -> {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+			if (UiUtil.permitted(UserRight.EVENT_EDIT)) {
 				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
 					EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(listEntry.getEvent().getUuid(), false);
 					ControllerProvider.getEventController()
@@ -149,8 +148,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 			EventIndexDto event = displayedEntries.get(i);
 			EventListEntry listEntry = new EventListEntry(event);
 
-			UserProvider user = UserProvider.getCurrent();
-			if (user.hasUserRight(UserRight.EVENT_EDIT)) {
+			if (UiUtil.permitted(UserRight.EVENT_EDIT)) {
 				if (addUnlinkEventListener != null) {
 					addUnlinkEventListener.accept(i, listEntry);
 				}
@@ -159,7 +157,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 				String.valueOf(i),
 				(ClickListener) clickEvent -> actionCallback
 					.accept(() -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid())),
-				isEditAllowed && user.hasUserRight(UserRight.EVENT_EDIT));
+				UiUtil.permitted(isEditAllowed, UserRight.EVENT_EDIT));
 			listEntry.setEnabled(isEditAllowed);
 			listLayout.addComponent(listEntry);
 		}

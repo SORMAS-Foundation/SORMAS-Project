@@ -72,7 +72,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
@@ -265,8 +265,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
-				}
-				else if (source instanceof EventDataForm) {
+				} else if (source instanceof EventDataForm) {
 					final EventDataForm eventDataForm = (EventDataForm) source;
 					final LocationEditForm locationEditForm = eventDataForm.getField(EventDto.EVENT_LOCATION);
 					if (atLeastOneFieldModified(
@@ -287,8 +286,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
-				}
-				else if (source instanceof LocationEditForm) {
+				} else if (source instanceof LocationEditForm) {
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
 					if (atLeastOneFieldModified(
 						locationEditForm.getField(LocationDto.LATITUDE),
@@ -302,14 +300,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					}
-				}
-				else if (source instanceof AccessibleTextField) {
+				} else if (source instanceof AccessibleTextField) {
 					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
 					if (accessibleTextField.isModified()) {
 						dirty = true;
 					}
-				}
-				else {
+				} else {
 					dirty = true;
 				}
 			})));
@@ -1012,7 +1008,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		boolean isEditAllowed = isEditAllowed(editParentRight, editChildRight, editPermissionType);
 
 		if (!isEditAllowed) {
-			if (isInJurisdiction && isUserRightAllowed(deleteEntityRight)) {
+			if (isInJurisdiction && UiUtil.permitted(deleteEntityRight)) {
 				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
 			}
 
@@ -1031,10 +1027,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		boolean isEditAllowed = isEditAllowed(editParentRight, editChildRight, editPermissionType);
 
 		if (!isEditAllowed) {
-			if (isInJurisdiction && isUserRightAllowed(deleteEntityRight)) {
+			if (isInJurisdiction && UiUtil.permitted(deleteEntityRight)) {
 				addToActiveButtonsList(CommitDiscardWrapperComponent.DELETE_RESTORE);
 			}
-			if (isInJurisdiction && archiveEntityRight != null && isUserRightAllowed(archiveEntityRight)) {
+			if (isInJurisdiction && archiveEntityRight != null && UiUtil.permitted(archiveEntityRight)) {
 				addToActiveButtonsList(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 			}
 
@@ -1046,16 +1042,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		this.setEditable(false, activeButtons.stream().toArray(String[]::new));
 	}
 
-	public boolean isUserRightAllowed(UserRight userRight) {
-		return UserProvider.getCurrent().hasUserRight(userRight);
-	}
-
 	public boolean isEditAllowed(UserRight editParentRight, UserRight editChildRight, EditPermissionType editPermissionType) {
 		if (editChildRight != null) {
-			return UserProvider.getCurrent().hasUserRight(editParentRight) && UserProvider.getCurrent().hasUserRight(editChildRight);
+			return UiUtil.permitted(editParentRight, editChildRight);
 		} else {
-			return UserProvider.getCurrent().hasUserRight(editParentRight)
-				&& (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED);
+			return UiUtil.permitted(editPermissionType, editParentRight);
 		}
 	}
 

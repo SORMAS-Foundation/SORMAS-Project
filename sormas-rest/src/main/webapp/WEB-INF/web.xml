@@ -397,23 +397,7 @@
 	</security-role>
 
 	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_EVENT</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>MANAGE_PUBLIC_EXPORT_CONFIGURATION</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</role-name>
 	</security-role>
 
 	<security-role>

@@ -805,9 +805,18 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) ->
             webDriverHelpers.selectFromCombobox(
                 CASE_DISEASE_VARIANT_FILTER_COMBOBOX, diseaseFilterOption));
+
     And(
         "I click SHOW MORE FILTERS button on Case directory page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
+        () -> {
+          String showMoreLessFilterCaption =
+              webDriverHelpers.getTextFromWebElement(
+                  By.cssSelector("#showHideMoreFilters > span > .v-button-caption"));
+
+          if (showMoreLessFilterCaption.equalsIgnoreCase("Mehr Filter anzeigen")
+              || showMoreLessFilterCaption.equalsIgnoreCase("Show More Filters"))
+            webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS);
+        });
 
     Then(
         "I apply Outcome of case filter {string} on Case directory page",

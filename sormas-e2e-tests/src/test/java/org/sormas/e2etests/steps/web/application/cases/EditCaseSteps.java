@@ -2202,7 +2202,7 @@ public class EditCaseSteps implements En {
         "I check if editable fields are enabled for the case in view",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitForElementPresent(BACK_TO_CASES_LIST_BUTTON, 3);
+          webDriverHelpers.waitForElementPresent(BACK_TO_CASES_LIST_BUTTON, 8);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
               true,
@@ -2327,6 +2327,12 @@ public class EditCaseSteps implements En {
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_THIS_PERSON_BUTTON);
+              break;
+            case "See samples for this case":
+              webDriverHelpers.scrollToElement(SEE_SAMPLES_FOR_THIS_CASE_BUTTON);
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  SEE_SAMPLES_FOR_THIS_CASE_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(SEE_SAMPLES_FOR_THIS_CASE_BUTTON);
               break;
           }
         });

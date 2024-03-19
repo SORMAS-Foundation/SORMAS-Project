@@ -55,7 +55,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -201,7 +201,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 				}
 			}
 
-			final UserDto userDto = UserProvider.getCurrent().getUser();
+			final UserDto userDto = UiUtil.getUser();
 			availableUsers = new ArrayList<>();
 			if (taskDto.getCaze() != null) {
 				availableUsers.addAll(FacadeProvider.getUserFacade().getUsersHavingCaseInJurisdiction(taskDto.getCaze()));
@@ -220,8 +220,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			// Allow users to assign tasks to users of the next higher jurisdiction level, when the higher jurisdiction contains the users jurisdiction
 			// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
 			// For national users, there is no higher level
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& UserProvider.getCurrent().getJurisdictionLevel() != JurisdictionLevel.NATION) {
+			if (UiUtil.enabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL) && UiUtil.getJurisdictionLevel() != JurisdictionLevel.NATION) {
 
 				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 				if (superordinateUsers != null) {
@@ -285,7 +284,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		String missingEmailOrPhoneLabel,
 		String location) {
 
-		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
+		if (assigneeRef == null || UiUtil.disabled(FeatureType.TASK_NOTIFICATIONS)) {
 			return;
 		}
 
@@ -322,8 +321,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
 
-			UserDto user = UserProvider.getCurrent().getUser();
-			JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+			UserDto user = UiUtil.getUser();
+			JurisdictionLevel jurisdictionLevel = UiUtil.getJurisdictionLevel();
 			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
 			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
 			boolean regional = jurisdictionLevel == JurisdictionLevel.REGION;
@@ -333,7 +332,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 			setVisible(freeEditingAllowed || !creating || assignee || nationalOrAdmin, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 
-			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
+			if (UiUtil.permitted(editOrCreateUserRight)) {
 				setReadOnly(!(freeEditingAllowed || assignee || creator || nationalOrAdmin), TaskDto.TASK_STATUS);
 				setReadOnly(!(freeEditingAllowed || assignee || nationalOrAdmin), TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(

@@ -46,7 +46,7 @@ import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekFilterOption;
@@ -152,7 +152,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			if (district != null) {
 				checkForExistingData(edit);
 				comboBoxDistrict.setComponentError(null);
-				if (comboBoxFacility != null && !UserProvider.getCurrent().isPortHealthUser()) {
+				if (comboBoxFacility != null && !UiUtil.isPortHealthUser()) {
 					comboBoxFacility.setItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(district, false));
 					comboBoxFacility.setEnabled(true);
 				}
@@ -187,15 +187,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxPoe.setWidth(250, Unit.PIXELS);
 		comboBoxPoe.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.POINT_OF_ENTRY));
 		comboBoxPoe.setEnabled(false);
-		if (UserProvider.getCurrent().isPortHealthUser()) {
+		if (UiUtil.isPortHealthUser()) {
 			comboBoxPoe.setRequiredIndicatorVisible(true);
 		}
 		comboBoxPoe.addValueChangeListener(e -> {
 			if (comboBoxPoe.getValue() != null) {
 				comboBoxFacility.clear();
-			}
-			else {
-				if (UserProvider.getCurrent().isPortHealthUser()) {
+			} else {
+				if (UiUtil.isPortHealthUser()) {
 					comboBoxPoe.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
 				}
 			}
@@ -408,7 +407,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private void initialize() {
 
 		epiWeekOptions.setValue(EpiWeekFilterOption.THIS_WEEK);
-		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		final UserDto currentUser = UiUtil.getUser();
 		RegionReferenceDto region = currentUser.getRegion();
 		if (region != null) {
 			comboBoxRegion.setValue(region);
@@ -539,7 +538,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					newReport.setNewCases(newCases);
 					newReport.setPointOfEntry(comboBoxPoe.getValue());
 					newReport.setRegion(comboBoxRegion.getValue());
-					newReport.setReportingUser(UserProvider.getCurrent().getUser().toReference());
+					newReport.setReportingUser(UiUtil.getUser().toReference());
 					newReport.setYear(comboBoxYear.getValue());
 
 					FacadeProvider.getAggregateReportFacade().saveAggregateReport(newReport);

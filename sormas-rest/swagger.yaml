@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.95.0-SNAPSHOT
+  version: 1.96.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -7052,7 +7052,6 @@ paths:
                   - SAMPLE_EXPORT
                   - SAMPLE_TRANSFER
                   - SAMPLE_EDIT_NOT_OWNED
-                  - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
                   - PATHOGEN_TEST_CREATE
                   - PATHOGEN_TEST_EDIT
                   - PATHOGEN_TEST_DELETE
@@ -7092,7 +7091,6 @@ paths:
                   - EVENT_DELETE
                   - EVENT_IMPORT
                   - EVENT_EXPORT
-                  - PERFORM_BULK_OPERATIONS_EVENT
                   - EVENT_RESPONSIBLE
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
@@ -7100,7 +7098,6 @@ paths:
                   - EVENTPARTICIPANT_ARCHIVE
                   - EVENTPARTICIPANT_DELETE
                   - EVENTPARTICIPANT_IMPORT
-                  - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
                   - EVENTGROUP_CREATE
                   - EVENTGROUP_EDIT
                   - EVENTGROUP_ARCHIVE
@@ -7206,7 +7203,6 @@ paths:
                   - EXTERNAL_MESSAGE_PROCESS
                   - EXTERNAL_MESSAGE_PUSH
                   - EXTERNAL_MESSAGE_DELETE
-                  - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
                   - OUTBREAK_VIEW
                   - OUTBREAK_EDIT
                   - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -7273,7 +7269,6 @@ paths:
                   - SAMPLE_EXPORT
                   - SAMPLE_TRANSFER
                   - SAMPLE_EDIT_NOT_OWNED
-                  - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
                   - PATHOGEN_TEST_CREATE
                   - PATHOGEN_TEST_EDIT
                   - PATHOGEN_TEST_DELETE
@@ -7313,7 +7308,6 @@ paths:
                   - EVENT_DELETE
                   - EVENT_IMPORT
                   - EVENT_EXPORT
-                  - PERFORM_BULK_OPERATIONS_EVENT
                   - EVENT_RESPONSIBLE
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
@@ -7321,7 +7315,6 @@ paths:
                   - EVENTPARTICIPANT_ARCHIVE
                   - EVENTPARTICIPANT_DELETE
                   - EVENTPARTICIPANT_IMPORT
-                  - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
                   - EVENTGROUP_CREATE
                   - EVENTGROUP_EDIT
                   - EVENTGROUP_ARCHIVE
@@ -7427,7 +7420,6 @@ paths:
                   - EXTERNAL_MESSAGE_PROCESS
                   - EXTERNAL_MESSAGE_PUSH
                   - EXTERNAL_MESSAGE_DELETE
-                  - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
                   - OUTBREAK_VIEW
                   - OUTBREAK_EDIT
                   - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -10824,8 +10816,6 @@ components:
         firstName:
           type: string
         lastName:
-          type: string
-        name:
           type: string
         uuid:
           type: string
@@ -25348,7 +25338,6 @@ components:
             - SAMPLE_EXPORT
             - SAMPLE_TRANSFER
             - SAMPLE_EDIT_NOT_OWNED
-            - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
             - PATHOGEN_TEST_CREATE
             - PATHOGEN_TEST_EDIT
             - PATHOGEN_TEST_DELETE
@@ -25388,7 +25377,6 @@ components:
             - EVENT_DELETE
             - EVENT_IMPORT
             - EVENT_EXPORT
-            - PERFORM_BULK_OPERATIONS_EVENT
             - EVENT_RESPONSIBLE
             - EVENTPARTICIPANT_VIEW
             - EVENTPARTICIPANT_CREATE
@@ -25396,7 +25384,6 @@ components:
             - EVENTPARTICIPANT_ARCHIVE
             - EVENTPARTICIPANT_DELETE
             - EVENTPARTICIPANT_IMPORT
-            - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
             - EVENTGROUP_CREATE
             - EVENTGROUP_EDIT
             - EVENTGROUP_ARCHIVE
@@ -25502,7 +25489,6 @@ components:
             - EXTERNAL_MESSAGE_PROCESS
             - EXTERNAL_MESSAGE_PUSH
             - EXTERNAL_MESSAGE_DELETE
-            - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
             - OUTBREAK_VIEW
             - OUTBREAK_EDIT
             - MANAGE_PUBLIC_EXPORT_CONFIGURATION

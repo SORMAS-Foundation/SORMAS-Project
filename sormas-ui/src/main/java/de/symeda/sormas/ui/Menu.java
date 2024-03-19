@@ -128,7 +128,7 @@ public class Menu extends CssLayout {
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
 		logoutMenu.addItem(
-			I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+			I18nProperties.getCaption(Captions.actionLogout) + " (" + UiUtil.getUserName() + ")",
 			VaadinIcons.SIGN_OUT,
 			(Command) selectedItem -> LoginHelper.logout());
 

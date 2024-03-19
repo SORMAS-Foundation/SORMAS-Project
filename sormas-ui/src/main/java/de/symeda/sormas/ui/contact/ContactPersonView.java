@@ -26,7 +26,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.person.PersonSideComponentsElement;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -68,10 +68,6 @@ public class ContactPersonView extends AbstractContactView implements PersonSide
 			person.toReference(),
 			this::showUnsavedChangesPopup,
 			isEditAllowed());
-		setEditPermission(
-			editComponent,
-			UserProvider.getCurrent().hasUserRight(UserRight.PERSON_EDIT),
-			PersonDto.ADDRESSES,
-			PersonDto.PERSON_CONTACT_DETAILS);
+		setEditPermission(editComponent, UiUtil.permitted(UserRight.PERSON_EDIT), PersonDto.ADDRESSES, PersonDto.PERSON_CONTACT_DETAILS);
 	}
 }

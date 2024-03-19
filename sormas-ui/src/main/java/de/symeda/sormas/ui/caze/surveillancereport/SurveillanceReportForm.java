@@ -25,7 +25,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
@@ -51,9 +51,7 @@ public class SurveillanceReportForm extends AbstractEditForm<SurveillanceReportD
 			SurveillanceReportDto.I18N_PREFIX,
 			true,
 			null,
-			UiFieldAccessCheckers.forDataAccessLevel(
-				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(report.isInJurisdiction()),
-				report.isPseudonymized()));
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(report.isInJurisdiction()), report.isPseudonymized()));
 
 		setValue(report);
 	}

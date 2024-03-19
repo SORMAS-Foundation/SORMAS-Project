@@ -74,7 +74,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2193,43 +2193,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 
-		// Update case classification if the feature is enabled
-		CaseClassification classification = null;
-		boolean setClassificationInfo = true;
-		if (configFacade.isFeatureAutomaticCaseClassification()) {
-			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
-				// calculate classification
-				CaseDataDto newCaseDto = toDto(newCase);
-
-				classification = caseClassificationFacade.getClassification(newCaseDto);
-
-				// only update when classification by system changes - user may overwrite this
-				if (classification != newCase.getSystemCaseClassification()) {
-					newCase.setSystemCaseClassification(classification);
-
-					// really a change? (user may have already set it)
-					if (classification != newCase.getCaseClassification()) {
-						newCase.setCaseClassification(classification);
-						newCase.setClassificationUser(null);
-						newCase.setClassificationDate(new Date());
-						setClassificationInfo = false;
-					}
-				}
-			}
-		}
-
-		if (setClassificationInfo
-			&& ((existingCase == null && newCase.getCaseClassification() != CaseClassification.NOT_CLASSIFIED)
-				|| (existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()))) {
-			newCase.setClassificationUser(userService.getCurrentUser());
-			newCase.setClassificationDate(new Date());
-		}
-
-		// calculate reference definition for cases
-		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			boolean fulfilled = evaluateFulfilledCondition(toDto(newCase), classification);
-			newCase.setCaseReferenceDefinition(fulfilled ? CaseReferenceDefinition.FULFILLED : CaseReferenceDefinition.NOT_FULFILLED);
-		}
+		handleClassificationOnCaseChange(existingCase, newCase);
 
 		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists
 		// are not empty
@@ -2243,26 +2207,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// Update completeness value
 		service.clearCompleteness(newCase);
-
-		// Send an email to all responsible supervisors when the case classification has
-		// changed
-		if (existingCase != null && existingCase.getCaseClassification() != newCase.getCaseClassification()) {
-
-			try {
-				String message = String.format(
-					I18nProperties.getString(MessageContents.CONTENT_CASE_CLASSIFICATION_CHANGED),
-					DataHelper.getShortUuid(newCase.getUuid()),
-					newCase.getCaseClassification().toString());
-				notificationService.sendNotifications(
-					NotificationType.CASE_CLASSIFICATION_CHANGED,
-					JurisdictionHelper.getCaseRegions(newCase),
-					null,
-					MessageSubject.CASE_CLASSIFICATION_CHANGED,
-					message);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. ");
-			}
-		}
 
 		// Send an email to all responsible supervisors when the disease of an
 		// Unspecified VHF case has changed
@@ -2286,18 +2230,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
-		// If the case is a newly created case or if it was not in a CONFIRMED status
-		// and now the case is in a CONFIRMED status, notify related surveillance officers
-		Set<CaseClassification> confirmedClassifications = CaseClassification.getConfirmedClassifications();
-		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
-			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
-			sendConfirmedCaseNotificationsForEvents(newCase);
-		}
-
-		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
-		}
-
 		// This logic should be consistent with CaseDataForm.onQuarantineEndChange
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
@@ -2311,6 +2243,98 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			newCase.setReinfectionDetails(cleanupReinfectionDetails(newCase.getReinfectionDetails()));
 			newCase.setReinfectionStatus(CaseLogic.calculateReinfectionStatus(newCase.getReinfectionDetails()));
+		}
+
+		// This should be the last action to make sure all changes are done on the case before syncing to other instances
+		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
+		}
+	}
+
+	private void handleClassificationOnCaseChange(CaseDataDto existingDto, Case savedCase) {
+		// Update case classification if the feature is enabled
+		CaseClassification classification = null;
+		boolean setClassificationInfo = true;
+		if (configFacade.isFeatureAutomaticCaseClassification()) {
+			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE
+				|| configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				// calculate classification
+				CaseDataDto newCaseDto = toDto(savedCase);
+
+				classification = caseClassificationFacade.getClassification(newCaseDto);
+
+				// only update when classification by system changes - user may overwrite this
+				if (classification != savedCase.getSystemCaseClassification()) {
+					savedCase.setSystemCaseClassification(classification);
+
+					// really a change? (user may have already set it)
+					if (classification != savedCase.getCaseClassification()) {
+						savedCase.setCaseClassification(classification);
+						savedCase.setClassificationUser(null);
+						savedCase.setClassificationDate(new Date());
+						setClassificationInfo = false;
+					}
+				}
+			}
+		}
+
+		if (setClassificationInfo
+			&& ((existingDto == null && savedCase.getCaseClassification() != CaseClassification.NOT_CLASSIFIED)
+				|| (existingDto != null && savedCase.getCaseClassification() != existingDto.getCaseClassification()))) {
+			savedCase.setClassificationUser(userService.getCurrentUser());
+			savedCase.setClassificationDate(new Date());
+		}
+
+		// calculate reference definition for cases
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			boolean fulfilled = evaluateFulfilledCondition(toDto(savedCase), classification);
+			savedCase.setCaseReferenceDefinition(fulfilled ? CaseReferenceDefinition.FULFILLED : CaseReferenceDefinition.NOT_FULFILLED);
+		}
+
+		// Send an email to all responsible supervisors when the case classification has
+		// changed
+		if (existingDto != null && existingDto.getCaseClassification() != savedCase.getCaseClassification()) {
+
+			try {
+				String message = String.format(
+					I18nProperties.getString(MessageContents.CONTENT_CASE_CLASSIFICATION_CHANGED),
+					DataHelper.getShortUuid(savedCase.getUuid()),
+					savedCase.getCaseClassification().toString());
+				notificationService.sendNotifications(
+					NotificationType.CASE_CLASSIFICATION_CHANGED,
+					JurisdictionHelper.getCaseRegions(savedCase),
+					null,
+					MessageSubject.CASE_CLASSIFICATION_CHANGED,
+					message);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error("NotificationDeliveryFailedException when trying to notify supervisors about the change of a case classification. ");
+			}
+		}
+
+		// If the case is a newly created case or if it was not in a CONFIRMED status
+		// and now the case is in a CONFIRMED status, notify related surveillance officers
+		Set<CaseClassification> confirmedClassifications = CaseClassification.getConfirmedClassifications();
+		if ((existingDto == null || !confirmedClassifications.contains(existingDto.getCaseClassification()))
+			&& confirmedClassifications.contains(savedCase.getCaseClassification())) {
+			sendConfirmedCaseNotificationsForEvents(savedCase);
+		}
+	}
+
+	@RightsAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT,
+		UserRight._SAMPLE_DELETE,
+		UserRight._PATHOGEN_TEST_CREATE,
+		UserRight._PATHOGEN_TEST_EDIT,
+		UserRight._PATHOGEN_TEST_DELETE })
+	public void onCaseSampleChanged(Case caze, boolean syncShares) {
+		CaseDataDto dto = toDto(caze);
+		handleClassificationOnCaseChange(dto, caze);
+		service.ensurePersisted(caze);
+
+		// This should be the last action to make sure all changes are done on the case before syncing to other instances
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(caze.getUuid()));
 		}
 	}
 
@@ -4438,6 +4462,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		SymptomsHelper.updateSymptoms(SymptomsFacadeEjb.toSymptomsDto(visit.getSymptoms()), caseSymptoms);
 
 		caseSave(cazeDto, true, visit.getCaze(), cazeDto, true, true);
+	}
+
+	@Override
+	public boolean hasCurrentUserSpecialAccess(CaseReferenceDto caze) {
+		return specialCaseAccessService.hasCurrentUserSpecialAccess(caze);
 	}
 
 	@LocalBean

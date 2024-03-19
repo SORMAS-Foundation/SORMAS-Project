@@ -53,7 +53,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -1356,7 +1356,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 					CriteriaBuilderHelper
 						.unaccentedIlike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PRIMARY_OTHER_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
@@ -1964,7 +1965,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			contact.get(Contact.CHANGE_DATE));
 
 		Predicate filter = cb.equal(contact.get(Contact.PERSON_ID), personId);
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(contact.get(Contact.DELETED)));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(contact.get(Contact.ARCHIVED)));
 		cq.where(filter);
 
 		cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));

@@ -55,7 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -564,8 +564,17 @@ public class EventParticipantFacadeEjb
 		if (eventParticipantsToBeRestored != null) {
 			eventParticipantsToBeRestored.forEach(eventParticipantToBeRestored -> {
 				try {
-					restore(eventParticipantToBeRestored.getUuid());
-					processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+					final boolean isPersonNotParticipant = getByEventAndPersons(
+						eventParticipantToBeRestored.getEvent().getUuid(),
+						Collections.singletonList(eventParticipantToBeRestored.getPerson().getUuid())).isEmpty();
+					if (isPersonNotParticipant) {
+						restore(eventParticipantToBeRestored.getUuid());
+						processedEventParticipants.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.SUCCESS));
+					} else {
+						processedEventParticipants
+							.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE));
+					}
+
 				} catch (Exception e) {
 					processedEventParticipants
 						.add(new ProcessedEntity(eventParticipantToBeRestored.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE));
@@ -784,8 +793,11 @@ public class EventParticipantFacadeEjb
 			event.get(Event.END_DATE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
-		Predicate filter =
-			CriteriaBuilderHelper.and(cb, service.buildCriteriaFilter(eventParticipantCriteria, queryContext), cb.isFalse(event.get(Event.DELETED)));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			service.buildCriteriaFilter(eventParticipantCriteria, queryContext),
+			cb.isFalse(event.get(Event.DELETED)),
+			cb.isFalse(event.get(Event.ARCHIVED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));

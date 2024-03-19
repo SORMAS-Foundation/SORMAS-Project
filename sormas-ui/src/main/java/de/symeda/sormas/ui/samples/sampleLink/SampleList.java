@@ -31,7 +31,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -70,7 +70,7 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 			SampleListEntry listEntry = new SampleListEntry(sample);
 
 			String sampleUuid = sample.getUuid();
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT) && isEditAllowed) {
+			if (UiUtil.permitted(isEditAllowed, UserRight.SAMPLE_EDIT)) {
 				listEntry.addEditButton(
 					"edit-sample-" + sampleUuid,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
@@ -82,7 +82,7 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 
 			listEntry.setEnabled(isEditAllowed);
 
-			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewLabMessageButton(listEntry);
 			}
 			listLayout.addComponent(listEntry);
@@ -90,7 +90,7 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 			List<ExternalMessageDto> labMessages =
 				FacadeProvider.getExternalMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
 			if (!labMessages.isEmpty()) {

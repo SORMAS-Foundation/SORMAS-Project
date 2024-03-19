@@ -1119,6 +1119,7 @@ public interface Captions {
 	String EnvironmentSample_positivePathogenTests = "EnvironmentSample.positivePathogenTests";
 	String EnvironmentSample_receivalDate = "EnvironmentSample.receivalDate";
 	String EnvironmentSample_received = "EnvironmentSample.received";
+	String EnvironmentSample_reportingUser = "EnvironmentSample.reportingUser";
 	String EnvironmentSample_requestedPathogenTests = "EnvironmentSample.requestedPathogenTests";
 	String EnvironmentSample_sampleDateTime = "EnvironmentSample.sampleDateTime";
 	String EnvironmentSample_sampleMaterial = "EnvironmentSample.sampleMaterial";
@@ -1297,6 +1298,7 @@ public interface Captions {
 	String EventParticipant_person = "EventParticipant.person";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String EventParticipant_region = "EventParticipant.region";
+	String EventParticipant_reportingUser = "EventParticipant.reportingUser";
 	String EventParticipant_responsibleDistrict = "EventParticipant.responsibleDistrict";
 	String EventParticipant_responsibleRegion = "EventParticipant.responsibleRegion";
 	String EventParticipant_sex = "EventParticipant.sex";
@@ -1591,6 +1593,7 @@ public interface Captions {
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_region = "Immunization.region";
 	String Immunization_reportDate = "Immunization.reportDate";
+	String Immunization_reportingUser = "Immunization.reportingUser";
 	String Immunization_responsibleCommunity = "Immunization.responsibleCommunity";
 	String Immunization_responsibleDistrict = "Immunization.responsibleDistrict";
 	String Immunization_responsibleRegion = "Immunization.responsibleRegion";
@@ -1889,6 +1892,7 @@ public interface Captions {
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
+	String personCommunityPrompt = "personCommunityPrompt";
 	String PersonContactDetail = "PersonContactDetail";
 	String PersonContactDetail_additionalInformation = "PersonContactDetail.additionalInformation";
 	String PersonContactDetail_contactInformation = "PersonContactDetail.contactInformation";
@@ -1905,6 +1909,7 @@ public interface Captions {
 	String personContactDetailThirdParty = "personContactDetailThirdParty";
 	String personContactDetailThisPerson = "personContactDetailThisPerson";
 	String personCreateNew = "personCreateNew";
+	String personDistrictPrompt = "personDistrictPrompt";
 	String personFindMatching = "personFindMatching";
 	String personLinkToCases = "personLinkToCases";
 	String personLinkToContacts = "personLinkToContacts";
@@ -1914,6 +1919,7 @@ public interface Captions {
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
+	String personRegionPrompt = "personRegionPrompt";
 	String personSearchAndSelect = "personSearchAndSelect";
 	String personSelect = "personSelect";
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
@@ -2587,6 +2593,7 @@ public interface Captions {
 	String TravelEntry_quarantineTypeDetails = "TravelEntry.quarantineTypeDetails";
 	String TravelEntry_recovered = "TravelEntry.recovered";
 	String TravelEntry_reportDate = "TravelEntry.reportDate";
+	String TravelEntry_reportingUser = "TravelEntry.reportingUser";
 	String TravelEntry_responsibleCommunity = "TravelEntry.responsibleCommunity";
 	String TravelEntry_responsibleDistrict = "TravelEntry.responsibleDistrict";
 	String TravelEntry_responsibleRegion = "TravelEntry.responsibleRegion";

@@ -23,7 +23,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class SurveillanceReportListComponent extends SideComponent {
@@ -42,7 +42,7 @@ public class SurveillanceReportListComponent extends SideComponent {
 		addComponent(list);
 		list.reload();
 
-		if (UserProvider.getCurrent().hasUserRight(editRight) && isEditAllowed) {
+		if (UiUtil.permitted(isEditAllowed, editRight)) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.surveillanceReportNewReport),
 				() -> ControllerProvider.getSurveillanceReportController().createSurveillanceReport(caze, list::reload));
