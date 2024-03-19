@@ -651,7 +651,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	}
 
 	public String generatePassword() {
-		return PasswordHelper.generatePasswordWithSpecialChars(12);
+      return PasswordHelper.generatePasswordWithSpecialChars(12);
 	}
 
 	public String updatePassword(String userUuid, String password) {
