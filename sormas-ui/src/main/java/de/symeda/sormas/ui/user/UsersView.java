@@ -44,7 +44,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -113,7 +113,7 @@ public class UsersView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
+		if (UiUtil.permitted(UserRight.USER_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
 				VaadinIcons.PLUS_CIRCLE,
@@ -129,7 +129,7 @@ public class UsersView extends AbstractUserView {
 			addHeaderComponent(syncButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 
@@ -169,6 +169,7 @@ public class UsersView extends AbstractUserView {
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
+		activeFilter.setDescription(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
 		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
 		activeFilter.addValueChangeListener(e -> {
 			criteria.active(
@@ -183,6 +184,7 @@ public class UsersView extends AbstractUserView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
+		userRolesFilter.setDescription(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
 		userRolesFilter.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 		userRolesFilter.addValueChangeListener(e -> {
 			criteria.userRole((UserRoleReferenceDto) e.getProperty().getValue());
@@ -190,7 +192,7 @@ public class UsersView extends AbstractUserView {
 		});
 		filterLayout.addComponent(userRolesFilter);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(CaseDataDto.REGION);
@@ -198,6 +200,7 @@ public class UsersView extends AbstractUserView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
+			regionFilter.setDescription(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -229,6 +232,7 @@ public class UsersView extends AbstractUserView {
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptUserSearch));
+		searchField.setDescription(I18nProperties.getString(Strings.promptUserSearch));
 		searchField.setImmediate(true);
 		searchField.addTextChangeListener(e -> {
 			criteria.freeText(e.getText());
@@ -259,7 +263,7 @@ public class UsersView extends AbstractUserView {
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			HorizontalLayout actionButtonsLayout = new HorizontalLayout();
 			actionButtonsLayout.setSpacing(true);
 
@@ -267,10 +271,10 @@ public class UsersView extends AbstractUserView {
 				Captions.bulkActions,
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
 					ControllerProvider.getUserController().enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)),
+				}, UiUtil.permitted(UserRight.USER_EDIT)),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
 					ControllerProvider.getUserController().disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid);
-				}, UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT)));
+				}, UiUtil.permitted(UserRight.USER_EDIT)));
 
 			bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 			actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -301,13 +305,13 @@ public class UsersView extends AbstractUserView {
 	public void updateFilterComponents() {
 
 		applyingCriteria = true;
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
 		regionFilter.setValue(criteria.getRegion());
-		showOnlyRestrictedAccessToAssignedEntities.setValue(
-			criteria.getShowOnlyRestrictedAccessToAssignedEntities() == null ? false : criteria.getShowOnlyRestrictedAccessToAssignedEntities());
+		showOnlyRestrictedAccessToAssignedEntities
+			.setValue(criteria.getShowOnlyRestrictedAccessToAssignedEntities() != null && criteria.getShowOnlyRestrictedAccessToAssignedEntities());
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));

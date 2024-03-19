@@ -23,7 +23,7 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 
 public final class RelevanceStatusFilter {
 
@@ -48,7 +48,7 @@ public final class RelevanceStatusFilter {
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(archivedCaption));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(allActiveAndArchivedCaption));
 
-		if (UserProvider.getCurrent().hasUserRight(deleteUserRight)) {
+		if (UiUtil.permitted(deleteUserRight)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(deletedCaption));
 		} else {
 			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);

@@ -34,7 +34,7 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 
 @SuppressWarnings("serial")
@@ -52,7 +52,7 @@ public class ExportConfigurationsLayout extends VerticalLayout {
 		addComponent(lblDescription);
 
 		btnNewExportConfiguration = ButtonHelper.createIconButton(Captions.exportNewExportConfiguration, VaadinIcons.PLUS, e -> {
-			ExportConfigurationDto newConfig = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), exportType);
+			ExportConfigurationDto newConfig = ExportConfigurationDto.build(UiUtil.getUserReference(), exportType);
 			ControllerProvider.getCustomExportController()
 				.openEditExportConfigurationWindow(
 					grid,

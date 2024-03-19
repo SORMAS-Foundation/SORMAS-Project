@@ -24,7 +24,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -39,7 +39,7 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 	protected AbstractUserRoleView(String viewName) {
 		super(viewName);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT) || UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_VIEW)) {
+		if (UiUtil.permitted(UserRight.USER_ROLE_EDIT) || UiUtil.permitted(UserRight.USER_ROLE_VIEW)) {
 			userRoleTemplateSelectionField = new UserRoleTemplateSelectionField();
 
 			applyUserRoleTemplate = ButtonHelper.createButton(Captions.userrole_applyUserRoleTemplate, e -> {
@@ -57,7 +57,7 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 					});
 			});
 
-			if (!UserProvider.getCurrent().getUserRights().contains(UserRight.USER_ROLE_EDIT)) {
+			if (!UiUtil.getUserRights().contains(UserRight.USER_ROLE_EDIT)) {
 				applyUserRoleTemplate.setEnabled(false);
 			}
 

@@ -132,6 +132,8 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	@Override
 	public void onLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+
+		PathogenTestValidator.initializePathogenTestValidation(contentBinding);
 	}
 
 	@Override

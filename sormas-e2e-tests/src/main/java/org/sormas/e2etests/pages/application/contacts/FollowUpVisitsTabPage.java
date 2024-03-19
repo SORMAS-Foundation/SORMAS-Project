@@ -26,5 +26,5 @@ public class FollowUpVisitsTabPage {
   public static final By CONTACTS_LIST_BUTTON = By.id("tab-contacts");
   public static final By FIRST_VISIT_BUTTON =
       By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
-  public static final By LATEST_VISIT_ORIGIN = By.xpath("//tbody//tr[1]//td[8]");
+  public static final By LATEST_VISIT_ORIGIN = By.xpath("//tbody//tr[1]//td[9]");
 }

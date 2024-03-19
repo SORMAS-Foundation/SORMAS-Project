@@ -207,31 +207,31 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
 		assertEquals(2, getRegionFacade().count(new RegionCriteria()));
 
 		// Import district
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(districtCsvFile, user, InfrastructureType.DISTRICT);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
 		assertEquals(2, getDistrictFacade().count(new DistrictCriteria()));
 
 		// Import community
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user, InfrastructureType.COMMUNITY);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
 		assertEquals(2, getCommunityFacade().count(new CommunityCriteria()));
 
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user, InfrastructureType.FACILITY);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
 		assertEquals(3, getFacilityFacade().count(new FacilityCriteria()));
 
 		// Import point of entry
 		File poeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(poeCsvFile, user, InfrastructureType.POINT_OF_ENTRY);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
 		assertEquals(1, getPointOfEntryFacade().count(new PointOfEntryCriteria()));
 	}
 

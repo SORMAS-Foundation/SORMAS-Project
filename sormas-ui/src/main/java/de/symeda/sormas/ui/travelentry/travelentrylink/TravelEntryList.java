@@ -27,7 +27,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
@@ -80,7 +80,7 @@ public class TravelEntryList extends PaginationList<TravelEntryListEntryDto> {
 		listEntry.addActionButton(
 			listEntry.getTravelEntry().getUuid(),
 			(Button.ClickListener) event -> ControllerProvider.getTravelEntryController().navigateToTravelEntry(listEntry.getTravelEntry().getUuid()),
-			isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT));
+			UiUtil.permitted(isEditAllowed, UserRight.TRAVEL_ENTRY_EDIT));
 		listEntry.setEnabled(isEditAllowed);
 	}
 }

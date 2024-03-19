@@ -25,6 +25,8 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import io.restassured.http.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
@@ -35,12 +37,14 @@ import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.api.sormasrest.TravelEntryHelper;
+import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
 import org.sormas.e2etests.state.ApiState;
 
 public class TravelEntrySteps implements En {
 
   private static WebDriverHelpers webDriverHelpers;
   private final RestAssuredClient restAssuredClient;
+  public static List<String> travelEntriesUUID = new ArrayList<>();
 
   @Inject
   public TravelEntrySteps(
@@ -75,6 +79,13 @@ public class TravelEntrySteps implements En {
                   + apiState.getCreatedTravelEntry().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_TRAVEL_ENTRY_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    When(
+        "I collect uuid of the new travel entry",
+        () -> {
+          travelEntriesUUID.add(
+              webDriverHelpers.getValueFromWebElement(EditTravelEntryPage.UUID_INPUT));
         });
 
     When(

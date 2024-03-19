@@ -45,7 +45,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -69,13 +68,13 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 		super(beanType);
 		setSizeFull();
-		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		caseFollowUpEnabled = UiUtil.enabled(FeatureType.CASE_FOLLOWUP);
 		externalSurveillanceToolShareEnabled = FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -86,7 +85,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		initColumns();
 
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.PERSON_UUID, e -> {
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
+			if (UiUtil.enabled(FeatureType.PERSON_MANAGEMENT)) {
 				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());
 			} else {
 				ControllerProvider.getCaseController().navigateToView(CasePersonView.VIEW_NAME, e.getUuid(), null);
@@ -179,14 +178,14 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (UiUtil.permitted(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+		if (!UiUtil.permitted(UserRight.CASE_DELETE)) {
 			removeColumn(DELETE_REASON_COLUMN);
 		}
 
@@ -283,7 +282,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			this.getColumn(NUMBER_OF_VISITS).setHidden(hidden);
 		}
 
-		if (UserProvider.getCurrent().isPortHealthUser() && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
+		if (UiUtil.isPortHealthUser() && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {
 			removeColumn(CaseIndexDto.HEALTH_FACILITY_NAME);
 		} else {
 			if (getCriteria().getCaseOrigin() == CaseOrigin.IN_COUNTRY && getColumn(CaseIndexDto.POINT_OF_ENTRY_NAME) != null) {

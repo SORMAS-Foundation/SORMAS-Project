@@ -37,7 +37,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
@@ -77,8 +77,7 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)
+		if (UiUtil.permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)
 			&& FacadeProvider.getExternalMessageFacade().existsExternalMessageForEntity(getReference())) {
 			menu.addView(ExternalMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.externalMessagesList));
 		}
@@ -88,16 +87,16 @@ public abstract class AbstractContactView extends AbstractEditAllowedDetailView<
 		}
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA)) {
+		if (UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA)) {
 			menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		}
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
+		if (UiUtil.enabled(FeatureType.VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS)) {
 			menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 		}
 
 		setMainHeaderComponent(ControllerProvider.getContactController().getContactViewTitleLayout(contact));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+		if (UiUtil.permitted(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getByUuid(contact.getPerson().getUuid());
 			ExternalJournalUtil.getExternalJournalUiButton(contactPerson, contact).ifPresent(getButtonsLayout()::addComponent);
 		}

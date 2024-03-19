@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibilityChecker;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -48,7 +48,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 		super(
 			TaskCriteria.class,
 			TaskIndexDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withCheckers(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
+			FieldVisibilityCheckers.withCheckers(new UserRightFieldVisibilityChecker(UiUtil::permitted)),
 			JurisdictionFieldConfig.of(TaskIndexDto.REGION, TaskIndexDto.DISTRICT, null));
 	}
 
@@ -115,16 +115,28 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
-		TextField assigneeUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNEE_USER_LIKE, 200));
-		assigneeUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNEE_USER));
+		TextField assigneeUserLikeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.ASSIGNEE_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNEE_USER),
+				200));
 		assigneeUserLikeField.setNullRepresentation("");
 
-		TextField creatorUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.CREATOR_USER_LIKE, 200));
-		creatorUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.CREATOR_USER));
+		TextField creatorUserLikeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.CREATOR_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.CREATOR_USER),
+				200));
 		creatorUserLikeField.setNullRepresentation("");
 
-		TextField assignedByUserLikeField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(TaskCriteria.ASSIGNED_BY_USER_LIKE, 200));
-		assignedByUserLikeField.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNED_BY_USER));
+		TextField assignedByUserLikeField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				TaskCriteria.ASSIGNED_BY_USER_LIKE,
+				I18nProperties.getPrefixCaption(propertyI18nPrefix, TaskIndexDto.ASSIGNED_BY_USER),
+				200));
 		assignedByUserLikeField.setNullRepresentation("");
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);

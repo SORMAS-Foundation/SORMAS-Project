@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -43,13 +44,16 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 
 public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
@@ -776,5 +780,43 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(1, immunizationIndexDtos.size());
 		assertEquals(immunizationDto2.getUuid(), immunizationIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void testGetCasesByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		final ImmunizationDto immunization1 =
+			getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person1, districtUser1.toReference(), rdcf1));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person2, districtUser1.toReference(), rdcf1));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person3, districtUser1.toReference(), rdcf1));
+
+		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setNameAddressPhoneEmailLike("firstNationalId");
+
+		List<ImmunizationIndexDto> immunizationIndexDtos1 = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(1, immunizationIndexDtos1.size());
+		assertEquals(immunization1.getUuid(), immunizationIndexDtos1.get(0).getUuid());
+
+		immunizationCriteria.setNameAddressPhoneEmailLike("National");
+		List<ImmunizationIndexDto> immunizationIndexDtosNational = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(2, immunizationIndexDtosNational.size());
+
+		immunizationCriteria.setNameAddressPhoneEmailLike(null);
+		List<ImmunizationIndexDto> immunizationIndexDtosAll = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(3, immunizationIndexDtosAll.size());
 	}
 }

@@ -64,6 +64,8 @@ public class TaskManagementPage {
           "//div[@class='popupContent']//div[contains(@id, '-delete') and not(contains(@id, 'null-delete'))]");
   public static final By CUSTOM_EXPORT_CONFIGURATION_NAME_INPUT =
       By.xpath("//div[@id='sormasui-1655777373-overlays']//input[@type='text']");
+  public static final By FIRST_GRID_REGION_VALUE = By.xpath("//tbody/tr/td[5]");
+  public static final By FIRST_GRID_DISTRICT_VALUE = By.xpath("//tbody/tr/td[6]");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -73,7 +73,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
@@ -121,15 +121,15 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease, callback);
+		createSample(SampleDto.build(UiUtil.getUserReference(), caseRef), disease, callback);
 	}
 
 	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease, callback);
+		createSample(SampleDto.build(UiUtil.getUserReference(), contactRef), disease, callback);
 	}
 
 	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease, callback);
+		createSample(SampleDto.build(UiUtil.getUserReference(), eventParticipantRef), disease, callback);
 	}
 
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
@@ -217,7 +217,7 @@ public class SampleController {
 				pathogenTestForm.getField(PathogenTestDto.TYPING_ID).setVisible(true);
 			}
 		} else {
-			pathogenTestForm.setValue(PathogenTestDto.build(sampleComponent.getWrappedComponent().getValue(), UserProvider.getCurrent().getUser()));
+			pathogenTestForm.setValue(PathogenTestDto.build(sampleComponent.getWrappedComponent().getValue(), UiUtil.getUser()));
 			// remove value invalid for newly created pathogen tests
 			ComboBox pathogenTestResultField = pathogenTestForm.getField(PathogenTestDto.TEST_RESULT);
 			pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
@@ -263,8 +263,7 @@ public class SampleController {
 		// add delete if allowed
 		if (isNew
 			|| isNull(pathogenTest)
-			|| UserProvider.getCurrent()
-				.hasUserRight(pathogenTest.getSample() != null ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE)) {
+			|| UiUtil.permitted(pathogenTest.getSample() != null ? UserRight.PATHOGEN_TEST_DELETE : UserRight.ENVIRONMENT_PATHOGEN_TEST_DELETE)) {
 			collapsibleForm.setDeleteHandler(() -> {
 				sampleComponent.removeComponent(separator);
 				sampleComponent.removeComponent(collapsibleForm);
@@ -296,7 +295,7 @@ public class SampleController {
 		final SampleCreateForm createForm = new SampleCreateForm(disease);
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView =
-			new CommitDiscardWrapperComponent<>(createForm, UserProvider.getCurrent().hasUserRight(userRight), createForm.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(userRight), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -304,6 +303,8 @@ public class SampleController {
 				if (callback != null) {
 					callback.run();
 				}
+
+				Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 			}
 		});
 
@@ -317,7 +318,7 @@ public class SampleController {
 		Runnable deleteCallback,
 		Consumer<PathogenTestDto> saveHandler) {
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+		if (!UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE)) {
 			return;
 		}
 
@@ -349,7 +350,7 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(SampleDto existingSample, Disease disease) {
-		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
+		final SampleDto referralSample = SampleDto.buildReferralDto(UiUtil.getUserReference(), existingSample);
 
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView =
 			getSampleCreateComponent(referralSample, disease, UserRight.SAMPLE_TRANSFER, null);
@@ -360,6 +361,8 @@ public class SampleController {
 				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(existingSample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
 				FacadeProvider.getSampleFacade().saveSample(updatedSample);
+
+				Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 			}
 		});
 		return createView;
@@ -391,7 +394,7 @@ public class SampleController {
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
-					&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+					&& UiUtil.permitted(UserRight.TASK_CREATE)) {
 					requestSampleCollectionTaskCreation(changedDto, form);
 				} else {
 					Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
@@ -399,7 +402,7 @@ public class SampleController {
 			}
 		});
 
-		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
+		if (UiUtil.permitted(showDeleteButton, UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteWithReasonOrRestoreListener((deleteDetails) -> {
 				FacadeProvider.getSampleFacade().delete(dto.getUuid(), deleteDetails);
 				updateAssociationsForSample(dto);
@@ -453,13 +456,13 @@ public class SampleController {
 
 	private void updateAssociationsForSample(SampleDto sampleDto) {
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
-		if (associatedCase != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (associatedCase != null && UiUtil.permitted(UserRight.CASE_EDIT)) {
 			final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 			FacadeProvider.getCaseFacade().save(caseDataByUuid);
 		}
 
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
-		if (associatedContact != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+		if (associatedContact != null && UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 			final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 			FacadeProvider.getContactFacade().save(contactDataByUuid);
 		}
@@ -486,7 +489,7 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = null;
 		SampleDto sample = editForm.getWrappedComponent().getValue();
 		if (sample.getReferredTo() == null) {
-			if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
+			if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && UiUtil.permitted(UserRight.SAMPLE_TRANSFER)) {
 				referOrLinkToOtherLabButton =
 					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 

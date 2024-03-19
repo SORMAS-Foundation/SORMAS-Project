@@ -12958,4 +12958,24 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (541, 'Update environment sample deletion dependencies #12887');
 
+-- 2024-02-09 Remove entity specific PERFORM_BULK_OPERATIONS user rights #10994
+DO $$
+  DECLARE
+     rec RECORD;
+  BEGIN
+       FOR rec IN SELECT id FROM userroles
+           LOOP
+               IF NOT EXISTS (SELECT 1 FROM userroles_userrights WHERE userrole_id = rec.id AND userright = 'PERFORM_BULK_OPERATIONS') THEN
+                  IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES','PERFORM_BULK_OPERATIONS_EVENT','PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES'))) = true) THEN
+                      INSERT INTO userroles_userrights(userrole_id, userright, sys_period) values (rec.id, 'PERFORM_BULK_OPERATIONS', tstzrange(now(), null));
+                  END IF;
+               END IF;
+           END LOOP;
+       DELETE from userroles_userrights WHERE userright in ('PERFORM_BULK_OPERATIONS_CASE_SAMPLES', 'PERFORM_BULK_OPERATIONS_EVENT', 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT','PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES');
+   END;
+
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
