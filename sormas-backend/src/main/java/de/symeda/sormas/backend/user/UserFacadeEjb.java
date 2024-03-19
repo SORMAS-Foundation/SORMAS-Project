@@ -624,10 +624,8 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	@PermitAll
 	public UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate) {
-		if (!userService.hasRight(UserRight.USER_CREATE)
-			&& !userService.hasRight(UserRight.USER_EDIT)
-			&& !DataHelper.isSame(getCurrentUser(), dto)
-			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC)) {
+		if ((!userService.hasRight(UserRight.USER_CREATE) && !userService.hasRight(UserRight.USER_EDIT) && !DataHelper.isSame(getCurrentUser(), dto))
+			|| (featureConfigurationFacade.isFeatureEnabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC))) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 
@@ -637,6 +635,10 @@ public class UserFacadeEjb implements UserFacade {
 			FacadeHelper.checkCreateAndEditRights(user, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
 		}
 
+		return saveUserRoles(dto, isUserSettingsUpdate, user);
+	}
+
+	private UserDto saveUserRoles(UserDto dto, boolean isUserSettingsUpdate, User user) {
 		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(dto.getUserRoles());
 
 		try {
@@ -680,6 +682,20 @@ public class UserFacadeEjb implements UserFacade {
 		}
 
 		return toDto(user);
+	}
+
+	@Override
+	public UserDto saveOnlyRoles(@Valid UserDto dto, boolean isUserSettingsUpdate) {
+		User user = userService.getByUuid(dto.getUuid());
+
+		if (user == null) {
+			throw new ValidationException(I18nProperties.getValidationError(Validations.onlyUserRolesChangesAccepted));
+		}
+
+		UserDto userToBeSaved = toDto(user);
+		userToBeSaved.setUserRoles(dto.getUserRoles());
+
+		return saveUserRoles(dto, isUserSettingsUpdate, user);
 	}
 
 	@Override
