@@ -36,8 +36,6 @@ public class AuthProvider {
 
 	private final boolean isDefaultProvider;
 
-	private final boolean isUserSyncSupported;
-
 	private final boolean isUserSyncAtStartupEnabled;
 
 	private final String name;
@@ -45,8 +43,7 @@ public class AuthProvider {
 	private AuthProvider(ConfigFacade configFacade) {
 		String configuredProvider = configFacade.getAuthenticationProvider();
 		isDefaultProvider = SORMAS.equalsIgnoreCase(configuredProvider);
-		isUserSyncSupported = KEYCLOAK.equalsIgnoreCase(configuredProvider);
-		isUserSyncAtStartupEnabled = isUserSyncSupported && configFacade.isAuthenticationProviderUserSyncAtStartupEnabled();
+		isUserSyncAtStartupEnabled = KEYCLOAK.equalsIgnoreCase(configuredProvider) && configFacade.isAuthenticationProviderUserSyncAtStartupEnabled();
 		name = configuredProvider;
 	}
 
@@ -66,13 +63,6 @@ public class AuthProvider {
 	 */
 	public boolean isDefaultProvider() {
 		return isDefaultProvider;
-	}
-
-	/**
-	 * Authentication Provider enables users to be synced from the default provider.
-	 */
-	public boolean isUserSyncSupported() {
-		return isUserSyncSupported;
 	}
 
 	/**

@@ -338,8 +338,13 @@ public class UserController {
 	}
 
 	public void sync() {
-		Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
-		window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
+		if (true) {
+			FacadeProvider.getUserFacade().syncUsersFromAuthenticationProvider();
+			SormasUI.refreshView();
+		} else {
+			Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
+			window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
+		}
 	}
 
 	public void enableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {

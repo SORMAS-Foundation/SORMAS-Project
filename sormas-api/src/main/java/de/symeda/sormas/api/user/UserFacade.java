@@ -164,4 +164,8 @@ public interface UserFacade {
 	 * @return A set containing the user rights associated to all user roles assigned to the user
 	 */
 	List<UserRight> getUserRights(String userUuid);
+
+	void syncUsersFromAuthenticationProvider();
+
+	boolean isSyncEnabled();
 }

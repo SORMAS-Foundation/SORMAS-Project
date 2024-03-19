@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.Spe
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Singleton
 @RunAs(UserRight._SYSTEM)
@@ -93,6 +94,8 @@ public class CronService {
 	private CoreEntityDeletionService coreEntityDeletionService;
 	@EJB
 	private SpecialCaseAccessFacadeEjbLocal specialCaseAccessFacade;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -288,5 +291,13 @@ public class CronService {
 	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void deleteExpiredSpecialCaseAccesses() {
 		specialCaseAccessFacade.deleteExpiredSpecialCaseAccesses();
+	}
+
+	@Schedule(hour = "2", minute = "35", persistent = false)
+	public void syncUsersFromAuthenticationProvider() {
+		// TODO - use proper feature type
+		if (userFacade.isSyncEnabled() && featureConfigurationFacade.isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+			userFacade.syncUsersFromAuthenticationProvider();
+		}
 	}
 }
