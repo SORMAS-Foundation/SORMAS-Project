@@ -109,7 +109,8 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
-	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW),
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED),
+    TASK_VIEW_ARCHIVED(UserRightGroup.TASK),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	ACTION_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._DOCUMENT_DELETE),
@@ -343,6 +344,7 @@ public enum UserRight {
 	public static final String _TASK_DELETE = "TASK_DELETE";
 	public static final String _TASK_EXPORT = "TASK_EXPORT";
 	public static final String _TASK_ARCHIVE = "TASK_ARCHIVE";
+	public static final String _TASK_VIEW_ARCHIVED = "TASK_VIEW_ARCHIVED";
 	public static final String _ACTION_CREATE = "ACTION_CREATE";
 	public static final String _ACTION_DELETE = "ACTION_DELETE";
 	public static final String _ACTION_EDIT = "ACTION_EDIT";
@@ -525,6 +527,12 @@ public enum UserRight {
 
 	public static Set<UserRight> getRequiredUserRights(Set<UserRight> userRights) {
 		return userRights.stream().map(UserRight::getRequiredUserRights).flatMap(Collection::stream).collect(Collectors.toSet());
+	}
+
+	public static Set<UserRight> getInitialSelectionUserRightDependencies() {
+		Set<UserRight> initialSelectionDependencies = new HashSet<>();
+		initialSelectionDependencies.add(UserRight.TASK_VIEW_ARCHIVED);
+		return initialSelectionDependencies;
 	}
 
 	/**
