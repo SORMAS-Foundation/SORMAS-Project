@@ -1507,6 +1507,7 @@ public interface Strings {
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageVisitsWithWrongStatusNotCancelled = "messageVisitsWithWrongStatusNotCancelled";
 	String messageVisitsWithWrongStatusNotSetToLost = "messageVisitsWithWrongStatusNotSetToLost";
+	String messageWrongCurrentPassword = "messageWrongCurrentPassword";
 	String messageWrongFileType = "messageWrongFileType";
 	String messageWrongTemplateFileType = "messageWrongTemplateFileType";
 	String min = "min";
