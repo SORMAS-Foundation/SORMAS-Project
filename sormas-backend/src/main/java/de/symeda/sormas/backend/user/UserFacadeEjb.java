@@ -67,6 +67,8 @@ import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -177,6 +179,8 @@ public class UserFacadeEjb implements UserFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private UserRoleFacadeEjbLocal userRoleFacade;
+	@EJB
+	private FeatureConfigurationFacade featureConfigurationFacade;
 	@EJB
 	private UserRoleService userRoleService;
 	@EJB
@@ -620,7 +624,10 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	@PermitAll
 	public UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate) {
-		if (!userService.hasRight(UserRight.USER_CREATE) && !userService.hasRight(UserRight.USER_EDIT) && !DataHelper.isSame(getCurrentUser(), dto)) {
+		if (!userService.hasRight(UserRight.USER_CREATE)
+			&& !userService.hasRight(UserRight.USER_EDIT)
+			&& !DataHelper.isSame(getCurrentUser(), dto)
+			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 

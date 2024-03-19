@@ -241,6 +241,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
         addFieldListeners(UserDto.USER_ROLES, e -> updateFieldsByUserRole());
         updateFieldsByUserRole();
+
+        if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC)) {
+            this.getFieldGroup().getFields().forEach(userField ->{
+                if (!userField.getId().equals(UserDto.USER_ROLES)) {
+                    userField.setEnabled(false);
+                }
+            });
+            this.getField(UserEditForm.RESTRICT_DISEASES_CHECKBOX_LOC).setEnabled(false);
+        }
     }
 
 	@Override
