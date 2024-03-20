@@ -33,9 +33,9 @@ public enum UserRight {
 	//@formatter:off
 	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
-	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
-    CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
-	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._CASE_VIEW_ARCHIVED),
+	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT), 
+    CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE), 
+    CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._CASE_VIEW_ARCHIVED), 
     CASE_VIEW_ARCHIVED(UserRightGroup.CASE),
 	CASE_IMPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EXPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
@@ -110,7 +110,7 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
-	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED), 
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED),
     TASK_VIEW_ARCHIVED(UserRightGroup.TASK),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
