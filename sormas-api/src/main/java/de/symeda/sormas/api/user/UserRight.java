@@ -88,8 +88,9 @@ public enum UserRight {
 	CONTACT_VIEW(UserRightGroup.CONTACT, UserRight._CASE_VIEW, UserRight._PERSON_VIEW),
 	CONTACT_CREATE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EDIT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._PERSON_EDIT),
-	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
-	CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
+    CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
+	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._CONTACT_VIEW_ARCHIVED),
+    CONTACT_VIEW_ARCHIVED(UserRightGroup.CONTACT),
 	CONTACT_IMPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EXPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	// users that are allowed to convert a contact to a case need to be allowed to create a case,
@@ -120,16 +121,18 @@ public enum UserRight {
 	EVENT_VIEW(UserRightGroup.EVENT),
 	EVENT_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
-	EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTPARTICIPANT_DELETE, UserRight._TASK_DELETE, UserRight._ACTION_DELETE, UserRight._DOCUMENT_DELETE),
-	EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
+    EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENT_VIEW_ARCHIVED),
+    EVENT_VIEW_ARCHIVED(UserRightGroup.EVENT),
+    EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EXPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_RESPONSIBLE(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
 
 	EVENTPARTICIPANT_VIEW(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._PERSON_VIEW),
 	EVENTPARTICIPANT_CREATE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 	EVENTPARTICIPANT_EDIT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._PERSON_EDIT),
-	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
+	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._EVENTPARTICIPANT_VIEW_ARCHIVED),
+    EVENTPARTICIPANT_VIEW_ARCHIVED(UserRightGroup.EVENT),
 	EVENTPARTICIPANT_DELETE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._SAMPLE_DELETE, UserRight._PERSON_DELETE),
 	EVENTPARTICIPANT_IMPORT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 
@@ -327,6 +330,7 @@ public enum UserRight {
 	public static final String _CONTACT_CREATE = "CONTACT_CREATE";
 	public static final String _CONTACT_IMPORT = "CONTACT_IMPORT";
 	public static final String _CONTACT_VIEW = "CONTACT_VIEW";
+	public static final String _CONTACT_VIEW_ARCHIVED = "CONTACT_VIEW_ARCHIVED";
 	public static final String _CONTACT_ARCHIVE = "CONTACT_ARCHIVE";
 	public static final String _CONTACT_EDIT = "CONTACT_EDIT";
 	public static final String _CONTACT_DELETE = "CONTACT_DELETE";
@@ -352,6 +356,7 @@ public enum UserRight {
 	public static final String _ACTION_EDIT = "ACTION_EDIT";
 	public static final String _EVENT_CREATE = "EVENT_CREATE";
 	public static final String _EVENT_VIEW = "EVENT_VIEW";
+	public static final String _EVENT_VIEW_ARCHIVED = "EVENT_VIEW_ARCHIVED";
 	public static final String _EVENT_EDIT = "EVENT_EDIT";
 	public static final String _EVENT_IMPORT = "EVENT_IMPORT";
 	public static final String _EVENT_EXPORT = "EVENT_EXPORT";
@@ -363,6 +368,7 @@ public enum UserRight {
 	public static final String _EVENTPARTICIPANT_DELETE = "EVENTPARTICIPANT_DELETE";
 	public static final String _EVENTPARTICIPANT_IMPORT = "EVENTPARTICIPANT_IMPORT";
 	public static final String _EVENTPARTICIPANT_VIEW = "EVENTPARTICIPANT_VIEW";
+	public static final String _EVENTPARTICIPANT_VIEW_ARCHIVED = "EVENTPARTICIPANT_VIEW_ARCHIVED";
 	public static final String _EVENTGROUP_CREATE = "EVENTGROUP_CREATE";
 	public static final String _EVENTGROUP_EDIT = "EVENTGROUP_EDIT";
 	public static final String _EVENTGROUP_LINK = "EVENTGROUP_LINK";
@@ -535,6 +541,9 @@ public enum UserRight {
 		Set<UserRight> initialSelectionDependencies = new HashSet<>();
 		initialSelectionDependencies.add(UserRight.TASK_VIEW_ARCHIVED);
 		initialSelectionDependencies.add(UserRight.CASE_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.CONTACT_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.EVENT_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED);
 		return initialSelectionDependencies;
 	}
 

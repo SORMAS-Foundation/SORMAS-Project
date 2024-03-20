@@ -660,7 +660,9 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
+	@RightsAllowed({
+		UserRight._CONTACT_ARCHIVE,
+		UserRight._CONTACT_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
 	}

@@ -487,10 +487,16 @@ public class ContactsView extends AbstractView implements HasName {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.contactActiveContacts));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
-				relevanceStatusFilter.setItemCaption(
-					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-					I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+
+				if (UiUtil.permitted(UserRight.CONTACT_VIEW_ARCHIVED)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
+					relevanceStatusFilter.setItemCaption(
+						EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+						I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
 
 				if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.contactDeletedContacts));
@@ -563,7 +569,7 @@ public class ContactsView extends AbstractView implements HasName {
 										.dearchiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight
-									&& UiUtil.permitted(UserRight.CONTACT_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CONTACT_ARCHIVE, UserRight.CONTACT_VIEW_ARCHIVED)
 									&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.sormasToSormasShare),

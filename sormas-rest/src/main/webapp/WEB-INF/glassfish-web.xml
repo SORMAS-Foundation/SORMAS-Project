@@ -226,6 +226,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CONTACT_VIEW_ARCHIVED</role-name>
+        <group-name>CONTACT_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CONTACT_ARCHIVE</role-name>
         <group-name>CONTACT_ARCHIVE</group-name>
     </security-role-mapping>
@@ -351,6 +356,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EVENT_VIEW_ARCHIVED</role-name>
+        <group-name>EVENT_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EVENT_EDIT</role-name>
         <group-name>EVENT_EDIT</group-name>
     </security-role-mapping>
@@ -403,6 +413,11 @@
     <security-role-mapping>
         <role-name>EVENTPARTICIPANT_VIEW</role-name>
         <group-name>EVENTPARTICIPANT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_VIEW_ARCHIVED</role-name>
+        <group-name>EVENTPARTICIPANT_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

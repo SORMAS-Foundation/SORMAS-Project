@@ -1332,7 +1332,9 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	@RightsAllowed({
+		UserRight._EVENTPARTICIPANT_ARCHIVE,
+		UserRight._EVENTPARTICIPANT_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
 	}

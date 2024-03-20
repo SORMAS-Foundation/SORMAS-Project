@@ -307,8 +307,14 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventParticipantActiveCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
+
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		}
 
 		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			relevanceStatusFilter

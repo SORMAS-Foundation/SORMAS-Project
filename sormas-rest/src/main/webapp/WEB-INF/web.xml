@@ -188,7 +188,11 @@
 		<role-name>CONTACT_VIEW</role-name>
 	</security-role>
 
-	<security-role>
+    <security-role>
+        <role-name>CONTACT_VIEW_ARCHIVED</role-name>
+    </security-role>
+
+    <security-role>
 		<role-name>CONTACT_ARCHIVE</role-name>
 	</security-role>
 
@@ -288,7 +292,11 @@
 		<role-name>EVENT_VIEW</role-name>
 	</security-role>
 
-	<security-role>
+    <security-role>
+        <role-name>EVENT_VIEW_ARCHIVED</role-name>
+    </security-role>
+
+    <security-role>
 		<role-name>EVENT_EDIT</role-name>
 	</security-role>
 
@@ -331,6 +339,10 @@
 	<security-role>
 		<role-name>EVENTPARTICIPANT_VIEW</role-name>
 	</security-role>
+
+    <security-role>
+        <role-name>EVENTPARTICIPANT_VIEW_ARCHIVED</role-name>
+    </security-role>
 
 	<security-role>
 		<role-name>EVENTGROUP_CREATE</role-name>

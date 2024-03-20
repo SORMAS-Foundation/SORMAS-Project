@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.api.user.UserRight.EVENT_ARCHIVE;
+import static de.symeda.sormas.api.user.UserRight.EVENT_VIEW_ARCHIVED;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 
 import java.util.ArrayList;
@@ -557,25 +559,24 @@ public class EventsView extends AbstractView {
 									items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, (EventGrid) grid),
 									true)));
 					}
-					if (UiUtil.permitted(UserRight.EVENT_ARCHIVE)) {
-						bulkActions.add(
-							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
-								VaadinIcons.ARCHIVE,
-								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, eventGrid),
-									true),
-								EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
-						bulkActions.add(
-							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
-								VaadinIcons.ARCHIVE,
-								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getEventController()
-										.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), eventGrid),
-									true),
-								EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
-					}
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
+							VaadinIcons.ARCHIVE,
+							mi -> grid
+								.bulkActionHandler(items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, eventGrid), true),
+							UiUtil.permitted(EVENT_ARCHIVE) && EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
+							VaadinIcons.ARCHIVE,
+							mi -> grid.bulkActionHandler(
+								items -> ControllerProvider.getEventController()
+									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), eventGrid),
+								true),
+							UiUtil.permitted(EVENT_ARCHIVE, EVENT_VIEW_ARCHIVED)
+								&& EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
+
 					if (UiUtil.permitted(UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_LINK)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
@@ -760,8 +761,14 @@ public class EventsView extends AbstractView {
 		relevanceStatusFilter.setTextInputAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventActiveCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventArchivedCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventAllCaption));
+
+		if (UiUtil.permitted(UserRight.EVENT_VIEW_ARCHIVED)) {
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventArchivedCaption));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventAllCaption));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		}
 
 		if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventDeletedEvents));
