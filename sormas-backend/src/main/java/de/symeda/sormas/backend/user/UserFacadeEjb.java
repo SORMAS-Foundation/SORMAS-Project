@@ -685,6 +685,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	@PermitAll
 	public UserDto saveOnlyRoles(@Valid UserDto dto, boolean isUserSettingsUpdate) {
 		User user = userService.getByUuid(dto.getUuid());
 
