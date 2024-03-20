@@ -23,12 +23,4 @@ public enum EntityRelevanceStatus {
 			.collect(Collectors.toList())
 			.toArray(new EntityRelevanceStatus[] {});
 	}
-
-	public static EntityRelevanceStatus[] getActive() {
-		return Arrays.stream(EntityRelevanceStatus.values())
-			.filter(val -> val == EntityRelevanceStatus.ACTIVE)
-			.collect(Collectors.toList())
-			.toArray(new EntityRelevanceStatus[] {});
-	}
-
 }

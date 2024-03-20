@@ -20,6 +20,10 @@
 		<role-name>CASE_VIEW</role-name>
 	</security-role>
 
+    <security-role>
+        <role-name>CASE_VIEW_ARCHIVED</role-name>
+    </security-role>
+
 	<security-role>
 		<role-name>CASE_EDIT</role-name>
 	</security-role>

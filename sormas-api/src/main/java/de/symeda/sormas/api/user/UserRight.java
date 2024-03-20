@@ -34,8 +34,9 @@ public enum UserRight {
 	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
-	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
-	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
+    CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
+	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._CASE_VIEW_ARCHIVED),
+    CASE_VIEW_ARCHIVED(UserRightGroup.CASE),
 	CASE_IMPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EXPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	/*
@@ -109,7 +110,7 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
-	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED),
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED), 
     TASK_VIEW_ARCHIVED(UserRightGroup.TASK),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
@@ -295,6 +296,7 @@ public enum UserRight {
 	public static final String _CASE_EXPORT = "CASE_EXPORT";
 	public static final String _CASE_SHARE = "CASE_SHARE";
 	public static final String _CASE_ARCHIVE = "CASE_ARCHIVE";
+	public static final String _CASE_VIEW_ARCHIVED = "CASE_VIEW_ARCHIVED";
 	public static final String _CASE_MERGE = "CASE_MERGE";
 	public static final String _GRANT_SPECIAL_CASE_ACCESS = "GRANT_SPECIAL_CASE_ACCESS";
 	public static final String _IMMUNIZATION_VIEW = "IMMUNIZATION_VIEW";
@@ -532,6 +534,7 @@ public enum UserRight {
 	public static Set<UserRight> getInitialSelectionUserRightDependencies() {
 		Set<UserRight> initialSelectionDependencies = new HashSet<>();
 		initialSelectionDependencies.add(UserRight.TASK_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.CASE_VIEW_ARCHIVED);
 		return initialSelectionDependencies;
 	}
 

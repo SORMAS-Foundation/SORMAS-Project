@@ -295,6 +295,7 @@ public enum DefaultUserRole {
 					CASE_EXPORT,
 					CASE_SHARE,
 					CASE_ARCHIVE,
+					CASE_VIEW_ARCHIVED,
 					CASE_MERGE,
 					GRANT_SPECIAL_CASE_ACCESS,
 					IMMUNIZATION_VIEW,

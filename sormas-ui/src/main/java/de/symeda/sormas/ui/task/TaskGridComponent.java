@@ -154,16 +154,17 @@ public class TaskGridComponent extends VerticalLayout {
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
+				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.taskActiveTasks));
 
 				if (UiUtil.permitted(UserRight.TASK_VIEW_ARCHIVED)) {
-					relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.taskArchivedTasks));
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.taskAllTasks));
 				} else {
-					relevanceStatusFilter.addItems(EntityRelevanceStatus.getActive());
-
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
 				}
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.taskActiveTasks));
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					tasksView.navigateTo(criteria);
