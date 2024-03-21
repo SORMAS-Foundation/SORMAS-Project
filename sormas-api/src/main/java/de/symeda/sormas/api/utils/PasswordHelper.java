@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.validation.ValidationException;
 
@@ -64,6 +65,27 @@ public final class PasswordHelper {
 		if (i != PASSWORD_CHARS.length) {
 			throw new ValidationException("Size of password char array does not match defined values.");
 		}
+	}
+
+	public static String generatePasswordWithSpecialChars(int length) {
+		// Combine the existing character set with special characters
+		char[] combinedChars = Arrays.copyOf(PASSWORD_CHARS, PASSWORD_CHARS.length + 10);
+		combinedChars[PASSWORD_CHARS.length] = '!';
+		combinedChars[PASSWORD_CHARS.length + 1] = '@';
+		combinedChars[PASSWORD_CHARS.length + 2] = '#';
+		combinedChars[PASSWORD_CHARS.length + 3] = '$';
+		combinedChars[PASSWORD_CHARS.length + 4] = '%';
+		combinedChars[PASSWORD_CHARS.length + 5] = '^';
+		combinedChars[PASSWORD_CHARS.length + 6] = '&';
+		combinedChars[PASSWORD_CHARS.length + 7] = '*';
+		combinedChars[PASSWORD_CHARS.length + 8] = '(';
+		combinedChars[PASSWORD_CHARS.length + 9] = ')';
+
+		SecureRandom rnd = new SecureRandom();
+		char[] chs = new char[length];
+		for (int i = 0; i < length; i++)
+			chs[i] = combinedChars[rnd.nextInt(combinedChars.length)];
+		return new String(chs);
 	}
 
 	public static String createPass(final int length) {
