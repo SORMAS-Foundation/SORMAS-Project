@@ -98,7 +98,7 @@
 			<property name="hibernate.criteria.literal_handling_mode" value="bind"/>
 			<property name="hibernate.transaction.jta.platform"
 					  value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-			<property name="hibernate.show_sql" value="false"/>
+			<property name="hibernate.show_sql" value="true"/>
 			<property name="hibernate.format_sql" value="false"/>
 
 			<property name="hibernate.cache.use_second_level_cache" value="true"/>

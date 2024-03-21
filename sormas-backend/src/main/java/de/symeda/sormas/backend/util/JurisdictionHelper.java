@@ -60,8 +60,8 @@ public class JurisdictionHelper {
 		return regions;
 	}
 
-	public static Expression<Object> booleanSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
-		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
+	public static Expression<Boolean> booleanSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
+		return cb.<Boolean> selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
 	}
 
 	public static InfrastructureAdo getParentInfrastructure(InfrastructureAdo infrastructure, JurisdictionLevel parentJurisdictionLevel) {

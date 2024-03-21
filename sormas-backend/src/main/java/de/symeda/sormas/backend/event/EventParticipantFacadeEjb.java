@@ -635,8 +635,8 @@ public class EventParticipantFacadeEjb
 			sampleDateSq.distinct(true);
 			sampleDateSq.select(cb.max(sampleSqRoot.get(Sample.SAMPLE_DATE_TIME)));
 
-			Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
-			Expression<Object> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
+			Expression<Boolean> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
+			Expression<Boolean> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
 
 			cq.multiselect(
 				Stream
@@ -1257,7 +1257,8 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantQueryContext.getJoins().getPerson();
 		Join<EventParticipant, Event> eventJoin = eventParticipantQueryContext.getJoins().getEvent();
 
-		Expression<Object> jurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
+		Expression<Boolean> jurisdictionSelector =
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),

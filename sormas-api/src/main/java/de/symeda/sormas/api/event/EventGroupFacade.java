@@ -24,6 +24,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -58,7 +59,7 @@ public interface EventGroupFacade {
 
 	void linkEventToGroups(EventReferenceDto eventReference, List<EventGroupReferenceDto> eventGroupReferences);
 
-	void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
+	List<ProcessedEntity> linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference);
 
 	List<ProcessedEntity> linkEventsToGroups(List<String> eventUuids, List<String> eventGroupReferences, List<String> alreadyLinkedEventUuidsToGroup);
 
@@ -79,4 +80,6 @@ public interface EventGroupFacade {
 	void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences);
 
 	List<String> getAlreadyLinkedEventUuidsToGroup(List<String> eventUuids, List<String> eventGroupUuids);
+
+	EditPermissionType getEditPermissionType(String uuid);
 }
