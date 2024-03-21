@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -415,29 +416,19 @@ public class UserController {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
 				if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getUpdatePassword())) {
-					form.showNotification(
-						new Notification(
-							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
-							I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed),
-							Notification.Type.WARNING_MESSAGE));
-				} else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
-					form.showNotification(
-						new Notification(
-							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
-							I18nProperties.getString(Strings.messagePasswordFailed),
-							Notification.Type.WARNING_MESSAGE));
-				} else if (passwordStrengthDesc.getValue().contains("Weak")) {
-					form.showNotification(
-						new Notification(
-							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
-							I18nProperties.getString(Strings.messageNewPasswordFailed),
-							Notification.Type.WARNING_MESSAGE));
-				} else {
 
+					Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
+				} else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
+					Notification.show(I18nProperties.getString(Strings.messageWrongCurrentPassword), Notification.Type.ERROR_MESSAGE);
+				} else if (passwordStrengthDesc.getValue().contains("Weak")) {
+					Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
+				} else{
 					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
+
 				}
 			}
 		});
+
 		Button generatePasswordButton = ControllerProvider.getUserController().generatePasswordButton();
 		generatePasswordButton.addClickListener((ClickListener) event -> {
 			String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
