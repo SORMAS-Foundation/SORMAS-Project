@@ -85,6 +85,10 @@
 		<role-name>IMMUNIZATION_VIEW</role-name>
 	</security-role>
 
+    <security-role>
+        <role-name>IMMUNIZATION_VIEW_ARCHIVED</role-name>
+    </security-role>
+
 	<security-role>
 		<role-name>IMMUNIZATION_CREATE</role-name>
 	</security-role>
@@ -368,6 +372,10 @@
 	<security-role>
 		<role-name>EVENTGROUP_DELETE</role-name>
 	</security-role>
+
+    <security-role>
+        <role-name>EVENTGROUP_VIEW_ARCHIVED</role-name>
+    </security-role>
 
 	<security-role>
 		<role-name>WEEKLYREPORT_CREATE</role-name>
@@ -656,6 +664,10 @@
 	<security-role>
 		<role-name>TRAVEL_ENTRY_VIEW</role-name>
 	</security-role>
+
+    <security-role>
+        <role-name>TRAVEL_ENTRY_VIEW_ARCHIVED</role-name>
+    </security-role>
 
 	<security-role>
 		<role-name>TRAVEL_ENTRY_CREATE</role-name>

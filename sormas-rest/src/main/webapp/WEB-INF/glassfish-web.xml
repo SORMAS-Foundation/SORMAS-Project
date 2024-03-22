@@ -91,6 +91,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>IMMUNIZATION_VIEW_ARCHIVED</role-name>
+        <group-name>IMMUNIZATION_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>IMMUNIZATION_CREATE</role-name>
         <group-name>IMMUNIZATION_CREATE</group-name>
     </security-role-mapping>
@@ -443,6 +448,11 @@
     <security-role-mapping>
         <role-name>EVENTGROUP_DELETE</role-name>
         <group-name>EVENTGROUP_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_VIEW_ARCHIVED</role-name>
+        <group-name>EVENTGROUP_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -803,6 +813,11 @@
     <security-role-mapping>
         <role-name>TRAVEL_ENTRY_VIEW</role-name>
         <group-name>TRAVEL_ENTRY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_VIEW_ARCHIVED</role-name>
+        <group-name>TRAVEL_ENTRY_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
