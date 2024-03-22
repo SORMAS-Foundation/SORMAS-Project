@@ -67,7 +67,6 @@ import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -113,6 +112,7 @@ import de.symeda.sormas.backend.environment.EnvironmentJurisdictionPredicateVali
 import de.symeda.sormas.backend.environment.EnvironmentQueryContext;
 import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventQueryContext;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -180,7 +180,7 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
-	private FeatureConfigurationFacade featureConfigurationFacade;
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private UserRoleService userRoleService;
 	@EJB
@@ -685,7 +685,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	@PermitAll
+	@RightsAllowed(UserRight._USER_EDIT)
 	public UserDto saveOnlyRoles(@Valid UserDto dto, boolean isUserSettingsUpdate) {
 		User user = userService.getByUuid(dto.getUuid());
 

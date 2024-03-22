@@ -147,9 +147,13 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			List<FeatureConfiguration> resultList = (List<FeatureConfiguration>) query.getResultList();
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false);
+			final FeatureConfiguration singleResult = resultList.stream()
+				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.CASE_SURVEILANCE))
+				.findFirst()
+				.orElse(null);
 			singleResult.setProperties(properties);
 			em.persist(singleResult);
 		});
@@ -472,7 +476,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertNotPseudonymized(getCaseFacade().getByUuids(Collections.singletonList(caze.getUuid())).get(0), rdcf1, user1);
 		assertNotPseudonymized(getCaseFacade().getAllAfter(new Date(0)).get(0), rdcf1, user1);
 		assertThat(getCaseFacade().getIndexList(new CaseCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
-		assertThat(getCaseFacade().getExportList(new CaseCriteria(), null, null, 0, Integer.MAX_VALUE, null, Language.EN).get(0).getHealthFacilityDetails(), is("Test Facility details"));
+		assertThat(
+			getCaseFacade().getExportList(new CaseCriteria(), null, null, 0, Integer.MAX_VALUE, null, Language.EN).get(0).getHealthFacilityDetails(),
+			is("Test Facility details"));
 	}
 
 	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.Query;
 
@@ -37,9 +38,13 @@ public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			List<FeatureConfiguration> resultList = query.getResultList();
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+			final FeatureConfiguration singleResult = resultList.stream()
+				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.LIMITED_SYNCHRONIZATION))
+				.findFirst()
+				.orElse(null);
 			singleResult.setProperties(properties);
 			em.persist(singleResult);
 		});

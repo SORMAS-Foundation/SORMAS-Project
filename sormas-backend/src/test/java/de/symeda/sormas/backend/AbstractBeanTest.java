@@ -33,6 +33,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -310,6 +312,7 @@ public abstract class AbstractBeanTest {
 			e.printStackTrace();
 		}
 
+		createFeatureConfigurationForSormasUserSave();
 		useNationalAdminLogin();
 
 		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
@@ -324,6 +327,12 @@ public abstract class AbstractBeanTest {
 		I18nProperties.setUserLanguage(Language.EN);
 
 		createDiseaseConfigurations();
+	}
+
+	public void createFeatureConfigurationForSormasUserSave() {
+		FeatureConfigurationIndexDto featureConfigurationKeycloak =
+				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfigurationKeycloak, FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC);
 	}
 
 	protected void initH2Functions() {

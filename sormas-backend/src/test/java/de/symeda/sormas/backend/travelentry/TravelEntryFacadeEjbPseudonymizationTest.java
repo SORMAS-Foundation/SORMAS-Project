@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.Query;
 
@@ -73,9 +74,13 @@ public class TravelEntryFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			List<FeatureConfiguration> resultList = query.getResultList();
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false);
+			final FeatureConfiguration singleResult = resultList.stream()
+				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.CASE_SURVEILANCE))
+				.findFirst()
+				.orElse(null);
 			singleResult.setProperties(properties);
 			em.persist(singleResult);
 		});

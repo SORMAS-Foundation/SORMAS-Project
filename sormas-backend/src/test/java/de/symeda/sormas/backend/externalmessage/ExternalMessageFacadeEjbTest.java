@@ -374,9 +374,13 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			List<FeatureConfiguration> resultList = query.getResultList();
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING, true);
+			final FeatureConfiguration singleResult = resultList.stream()
+				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.EXTERNAL_MESSAGES))
+				.findFirst()
+				.orElse(null);
 			singleResult.setProperties(properties);
 			em.persist(singleResult);
 		});

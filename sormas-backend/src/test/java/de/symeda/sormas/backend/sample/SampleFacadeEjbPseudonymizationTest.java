@@ -127,9 +127,13 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+			List<FeatureConfiguration> resultList = query.getResultList();
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false);
+			final FeatureConfiguration singleResult = resultList.stream()
+				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.CASE_SURVEILANCE))
+				.findFirst()
+				.orElse(null);
 			singleResult.setProperties(properties);
 			em.persist(singleResult);
 		});
@@ -390,7 +394,9 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertNotPseudonymized(sampleByUuid, user1.getUuid());
 		assertNotPseudonymized(getSampleFacade().getByUuids(Collections.singletonList(sample.getUuid())).get(0), user1.getUuid());
 		assertThat(getSampleFacade().getIndexList(new SampleCriteria(), null, null, null).get(0).isPseudonymized(), is(false));
-		assertThat(getSampleFacade().getExportList(new SampleCriteria(), null, 0, Integer.MAX_VALUE).get(0).getShipmentDetails(), is("Test shipment details"));
+		assertThat(
+			getSampleFacade().getExportList(new SampleCriteria(), null, 0, Integer.MAX_VALUE).get(0).getShipmentDetails(),
+			is("Test shipment details"));
 	}
 
 	private void createPathogenTest(SampleDto sample, UserDto user) {
