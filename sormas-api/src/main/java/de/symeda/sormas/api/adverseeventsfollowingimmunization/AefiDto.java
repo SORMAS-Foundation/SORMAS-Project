@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -81,13 +78,13 @@ public class AefiDto extends PseudonymizableDto {
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String REPORTER_NAME = "reporterName";
-	public static final String REPORTER_INSTITUTION = "reporterInstitution";
-	public static final String REPORTER_DESIGNATION = "reporterDesignation";
-	public static final String REPORTER_DEPARTMENT = "reporterDepartment";
-	public static final String REPORTER_ADDRESS = "reporterAddress";
-	public static final String REPORTER_PHONE = "reporterPhone";
-	public static final String REPORTER_EMAIL = "reporterEmail";
+	public static final String REPORTING_OFFICER_NAME = "reportingOfficerName";
+	public static final String REPORTING_OFFICER_FACILITY = "reportingOfficerFacility";
+	public static final String REPORTING_OFFICER_DESIGNATION = "reportingOfficerDesignation";
+	public static final String REPORTING_OFFICER_DEPARTMENT = "reportingOfficerDepartment";
+	public static final String REPORTING_OFFICER_ADDRESS = "reportingOfficerAddress";
+	public static final String REPORTING_OFFICER_PHONE_NUMBER = "reportingOfficerPhoneNumber";
+	public static final String REPORTING_OFFICER_EMAIL = "reportingOfficerEmail";
 	public static final String TODAYS_DATE = "todaysDate";
 	public static final String START_DATE_TIME = "startDateTime";
 	public static final String AEFI_DESCRIPTION = "aefiDescription";
@@ -110,7 +107,7 @@ public class AefiDto extends PseudonymizableDto {
 	private ImmunizationReferenceDto immunization;
 	private PersonReferenceDto person;
 	private LocationDto address;
-	@NotEmpty(message = Validations.aefiWithoutSuspectVaccine)
+	@NotEmpty(message = Validations.aefiWithoutSuspectVaccines)
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
 	@NotNull(message = Validations.aefiWithoutPrimarySuspectVaccine)
 	private VaccinationDto primarySuspectVaccine;
@@ -139,17 +136,17 @@ public class AefiDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String reporterName;
-	private FacilityReferenceDto reporterInstitution;
+	private String reportingOfficerName;
+	private FacilityReferenceDto reportingOfficerFacility;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String reporterDesignation;
+	private String reportingOfficerDesignation;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String reporterDepartment;
-	private LocationDto reporterAddress;
+	private String reportingOfficerDepartment;
+	private LocationDto reportingOfficerAddress;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String reporterPhone;
+	private String reportingOfficerPhoneNumber;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String reporterEmail;
+	private String reportingOfficerEmail;
 	private Date todaysDate;
 	private Date startDateTime;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -209,7 +206,7 @@ public class AefiDto extends PseudonymizableDto {
 	}
 
 	public AefiReferenceDto toReference() {
-		return new AefiReferenceDto(getUuid(), getPerson().getCaption(), getExternalId());
+		return new AefiReferenceDto(getUuid(), getExternalId());
 	}
 
 	public ImmunizationReferenceDto getImmunization() {
@@ -404,60 +401,60 @@ public class AefiDto extends PseudonymizableDto {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
-	public String getReporterName() {
-		return reporterName;
+	public String getReportingOfficerName() {
+		return reportingOfficerName;
 	}
 
-	public void setReporterName(String reporterName) {
-		this.reporterName = reporterName;
+	public void setReportingOfficerName(String reportingOfficerName) {
+		this.reportingOfficerName = reportingOfficerName;
 	}
 
-	public FacilityReferenceDto getReporterInstitution() {
-		return reporterInstitution;
+	public FacilityReferenceDto getReportingOfficerFacility() {
+		return reportingOfficerFacility;
 	}
 
-	public void setReporterInstitution(FacilityReferenceDto reporterInstitution) {
-		this.reporterInstitution = reporterInstitution;
+	public void setReportingOfficerFacility(FacilityReferenceDto reportingOfficerFacility) {
+		this.reportingOfficerFacility = reportingOfficerFacility;
 	}
 
-	public String getReporterDesignation() {
-		return reporterDesignation;
+	public String getReportingOfficerDesignation() {
+		return reportingOfficerDesignation;
 	}
 
-	public void setReporterDesignation(String reporterDesignation) {
-		this.reporterDesignation = reporterDesignation;
+	public void setReportingOfficerDesignation(String reportingOfficerDesignation) {
+		this.reportingOfficerDesignation = reportingOfficerDesignation;
 	}
 
-	public String getReporterDepartment() {
-		return reporterDepartment;
+	public String getReportingOfficerDepartment() {
+		return reportingOfficerDepartment;
 	}
 
-	public void setReporterDepartment(String reporterDepartment) {
-		this.reporterDepartment = reporterDepartment;
+	public void setReportingOfficerDepartment(String reportingOfficerDepartment) {
+		this.reportingOfficerDepartment = reportingOfficerDepartment;
 	}
 
-	public LocationDto getReporterAddress() {
-		return reporterAddress;
+	public LocationDto getReportingOfficerAddress() {
+		return reportingOfficerAddress;
 	}
 
-	public void setReporterAddress(LocationDto reporterAddress) {
-		this.reporterAddress = reporterAddress;
+	public void setReportingOfficerAddress(LocationDto reportingOfficerAddress) {
+		this.reportingOfficerAddress = reportingOfficerAddress;
 	}
 
-	public String getReporterPhone() {
-		return reporterPhone;
+	public String getReportingOfficerPhoneNumber() {
+		return reportingOfficerPhoneNumber;
 	}
 
-	public void setReporterPhone(String reporterPhone) {
-		this.reporterPhone = reporterPhone;
+	public void setReportingOfficerPhoneNumber(String reportingOfficerPhoneNumber) {
+		this.reportingOfficerPhoneNumber = reportingOfficerPhoneNumber;
 	}
 
-	public String getReporterEmail() {
-		return reporterEmail;
+	public String getReportingOfficerEmail() {
+		return reportingOfficerEmail;
 	}
 
-	public void setReporterEmail(String reporterEmail) {
-		this.reporterEmail = reporterEmail;
+	public void setReportingOfficerEmail(String reportingOfficerEmail) {
+		this.reportingOfficerEmail = reportingOfficerEmail;
 	}
 
 	public Date getTodaysDate() {

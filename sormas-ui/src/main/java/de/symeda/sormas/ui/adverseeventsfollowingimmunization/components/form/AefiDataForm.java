@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -79,7 +76,8 @@ public class AefiDataForm extends AbstractEditForm<AefiDto> {
 	private static final String HTML_LAYOUT =
 			divCss(CssStyles.VIEW_SECTION_MARGIN_TOP_4_MARGIN_X_4,
 			loc(REPORTING_INFORMATION_HEADING_LOC)
-					+ fluidRowLocs(4, AefiDto.UUID, 3, AefiDto.REPORT_DATE, 3, AefiDto.REPORTING_USER, 2, "")
+					+ fluidRowLocs(4, AefiDto.UUID, 4, AefiDto.REPORT_DATE, 3, AefiDto.REPORTING_USER)
+					+ fluidRowLocs(4, AefiDto.RESPONSIBLE_REGION, 4, AefiDto.RESPONSIBLE_DISTRICT, 3, AefiDto.RESPONSIBLE_COMMUNITY)
 					+ fluidRowLocs(4, AefiDto.REPORTING_ID_NUMBER, 3, ASSIGN_NEW_AEFI_ID_LOC)
 			)
 			+ divCss(CssStyles.VIEW_SECTION_MARGIN_X_4 + " " + CssStyles.VSPACE_TOP_3,
@@ -118,6 +116,9 @@ public class AefiDataForm extends AbstractEditForm<AefiDto> {
 
 	private boolean isCreateAction;
 	private final Consumer<Runnable> actionCallback;
+	private TextField responsibleRegion;
+	private TextField responsibleDistrict;
+	private TextField responsibleCommunity;
 	private AefiVaccinationsField vaccinationsField;
 
 	public AefiDataForm(boolean isCreateAction, boolean isPseudonymized, boolean inJurisdiction, Consumer<Runnable> actionCallback) {
@@ -156,7 +157,14 @@ public class AefiDataForm extends AbstractEditForm<AefiDto> {
 			addField(AefiDto.UUID);
 		}
 		addField(AefiDto.REPORT_DATE, DateField.class);
-		addField(ImmunizationDto.REPORTING_USER, UserField.class);
+		addField(AefiDto.REPORTING_USER, UserField.class);
+
+		responsibleRegion = new TextField(I18nProperties.getPrefixCaption(AefiDto.I18N_PREFIX, AefiDto.RESPONSIBLE_REGION));
+		getContent().addComponent(responsibleRegion, AefiDto.RESPONSIBLE_REGION);
+		responsibleDistrict = new TextField(I18nProperties.getPrefixCaption(AefiDto.I18N_PREFIX, AefiDto.RESPONSIBLE_DISTRICT));
+		getContent().addComponent(responsibleDistrict, AefiDto.RESPONSIBLE_DISTRICT);
+		responsibleCommunity = new TextField(I18nProperties.getPrefixCaption(AefiDto.I18N_PREFIX, AefiDto.RESPONSIBLE_COMMUNITY));
+		getContent().addComponent(responsibleCommunity, AefiDto.RESPONSIBLE_COMMUNITY);
 
 		TextField reportIdField = addField(AefiDto.REPORTING_ID_NUMBER, TextField.class);
 		/*
@@ -272,18 +280,25 @@ public class AefiDataForm extends AbstractEditForm<AefiDto> {
 	public void attach() {
 		super.attach();
 
-		vaccinationsField.setAefiDto(getValue());
-		if (getValue().getPrimarySuspectVaccine() != null) {
-			vaccinationsField.selectPrimarySuspectVaccination(getValue().getPrimarySuspectVaccine());
+		AefiDto dataFormValue = getValue();
+
+		ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(dataFormValue.getImmunization().getUuid());
+
+		responsibleRegion.setValue(immunizationDto.getResponsibleRegion().getCaption());
+		responsibleDistrict.setValue(immunizationDto.getResponsibleDistrict().getCaption());
+		if (immunizationDto.getResponsibleCommunity() != null) {
+			responsibleCommunity.setValue(immunizationDto.getResponsibleCommunity().getCaption());
+		}
+
+		responsibleRegion.setReadOnly(true);
+		responsibleDistrict.setReadOnly(true);
+		responsibleCommunity.setReadOnly(true);
+
+		vaccinationsField.applyAefiReportContext(dataFormValue);
+		if (dataFormValue.getPrimarySuspectVaccine() != null) {
+			vaccinationsField.selectPrimarySuspectVaccination(dataFormValue.getPrimarySuspectVaccine());
 		}
 	}
-
-	/*
-	 * @Override
-	 * public AefiDto getValue() {
-	 * return super.getValue();
-	 * }
-	 */
 
 	@Override
 	public void setValue(AefiDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {

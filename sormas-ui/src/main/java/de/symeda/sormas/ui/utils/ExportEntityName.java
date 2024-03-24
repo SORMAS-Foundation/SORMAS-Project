@@ -43,6 +43,9 @@ public enum ExportEntityName {
 	ENVIRONMENTS("entityEnvironments", "environments"),
 	ENVIRONMENT_SAMPLES("entityEnvironmentSamples", "environment samples"),
 	SELF_REPORTS("entitySelfReports", "self reports");
+	ENVIRONMENT_SAMPLES("entityEnvironmentSamples", "environment samples"),
+	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION("entityAdverseEvents", "adverse events following immunization"),
+	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_INVESTIGATION("entityAdverseEventInvestigations", "aefi investigations");
 
 	private final String languageKey;
 	private final String defaultName;

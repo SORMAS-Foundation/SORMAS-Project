@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -91,13 +88,13 @@ public class Aefi extends CoreAdo {
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String REPORTER_NAME = "reporterName";
-	public static final String REPORTER_INSTITUTION = "reporterInstitution";
-	public static final String REPORTER_DESIGNATION = "reporterDesignation";
-	public static final String REPORTER_DEPARTMENT = "reporterDepartment";
-	public static final String REPORTER_ADDRESS = "reporterAddress";
-	public static final String REPORTER_PHONE = "reporterPhone";
-	public static final String REPORTER_EMAIL = "reporterEmail";
+	public static final String REPORTING_OFFICER_NAME = "reportingOfficerName";
+	public static final String REPORTING_OFFICER_FACILITY = "reportingOfficerFacility";
+	public static final String REPORTING_OFFICER_DESIGNATION = "reportingOfficerDesignation";
+	public static final String REPORTING_OFFICER_DEPARTMENT = "reportingOfficerDepartment";
+	public static final String REPORTING_OFFICER_ADDRESS = "reportingOfficerAddress";
+	public static final String REPORTING_OFFICER_PHONE_NUMBER = "reportingOfficerPhoneNumber";
+	public static final String REPORTING_OFFICER_EMAIL = "reportingOfficerEmail";
 	public static final String TODAYS_DATE = "todaysDate";
 	public static final String START_DATE_TIME = "startDateTime";
 	public static final String AEFI_DESCRIPTION = "aefiDescription";
@@ -140,13 +137,13 @@ public class Aefi extends CoreAdo {
 	private AefiAgeGroup ageGroup;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
-	private String reporterName;
-	private Facility reporterInstitution;
-	private String reporterDesignation;
-	private String reporterDepartment;
-	private Location reporterAddress;
-	private String reporterPhone;
-	private String reporterEmail;
+	private String reportingOfficerName;
+	private Facility reportingOfficerFacility;
+	private String reportingOfficerDesignation;
+	private String reportingOfficerDepartment;
+	private Location reportingOfficerAddress;
+	private String reportingOfficerPhoneNumber;
+	private String reportingOfficerEmail;
 	private Date todaysDate;
 	private Date startDateTime;
 	private String aefiDescription;
@@ -323,6 +320,7 @@ public class Aefi extends CoreAdo {
 		this.reportingIdNumber = reportingIdNumber;
 	}
 
+	@Column
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -358,6 +356,7 @@ public class Aefi extends CoreAdo {
 		this.lactating = lactating;
 	}
 
+	@Column
 	public Integer getOnsetAgeYears() {
 		return onsetAgeYears;
 	}
@@ -366,6 +365,7 @@ public class Aefi extends CoreAdo {
 		this.onsetAgeYears = onsetAgeYears;
 	}
 
+	@Column
 	public Integer getOnsetAgeMonths() {
 		return onsetAgeMonths;
 	}
@@ -374,6 +374,7 @@ public class Aefi extends CoreAdo {
 		this.onsetAgeMonths = onsetAgeMonths;
 	}
 
+	@Column
 	public Integer getOnsetAgeDays() {
 		return onsetAgeDays;
 	}
@@ -409,63 +410,68 @@ public class Aefi extends CoreAdo {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
-	public String getReporterName() {
-		return reporterName;
+	@Column
+	public String getReportingOfficerName() {
+		return reportingOfficerName;
 	}
 
-	public void setReporterName(String reporterName) {
-		this.reporterName = reporterName;
+	public void setReportingOfficerName(String reporterName) {
+		this.reportingOfficerName = reporterName;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	public Facility getReporterInstitution() {
-		return reporterInstitution;
+	public Facility getReportingOfficerFacility() {
+		return reportingOfficerFacility;
 	}
 
-	public void setReporterInstitution(Facility reporterInstitution) {
-		this.reporterInstitution = reporterInstitution;
+	public void setReportingOfficerFacility(Facility reporterInstitution) {
+		this.reportingOfficerFacility = reporterInstitution;
 	}
 
-	public String getReporterDesignation() {
-		return reporterDesignation;
+	@Column
+	public String getReportingOfficerDesignation() {
+		return reportingOfficerDesignation;
 	}
 
-	public void setReporterDesignation(String reporterDesignation) {
-		this.reporterDesignation = reporterDesignation;
+	public void setReportingOfficerDesignation(String reporterDesignation) {
+		this.reportingOfficerDesignation = reporterDesignation;
 	}
 
-	public String getReporterDepartment() {
-		return reporterDepartment;
+	@Column
+	public String getReportingOfficerDepartment() {
+		return reportingOfficerDepartment;
 	}
 
-	public void setReporterDepartment(String reporterDepartment) {
-		this.reporterDepartment = reporterDepartment;
+	public void setReportingOfficerDepartment(String reporterDepartment) {
+		this.reportingOfficerDepartment = reporterDepartment;
 	}
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "reporteraddress_id")
-	public Location getReporterAddress() {
-		return reporterAddress;
+	@JoinColumn(name = "reportingofficeraddress_id")
+	public Location getReportingOfficerAddress() {
+		return reportingOfficerAddress;
 	}
 
-	public void setReporterAddress(Location reporterAddress) {
-		this.reporterAddress = reporterAddress;
+	public void setReportingOfficerAddress(Location reporterAddress) {
+		this.reportingOfficerAddress = reporterAddress;
 	}
 
-	public String getReporterPhone() {
-		return reporterPhone;
+	@Column
+	public String getReportingOfficerPhoneNumber() {
+		return reportingOfficerPhoneNumber;
 	}
 
-	public void setReporterPhone(String reporterPhone) {
-		this.reporterPhone = reporterPhone;
+	public void setReportingOfficerPhoneNumber(String reporterPhone) {
+		this.reportingOfficerPhoneNumber = reporterPhone;
 	}
 
-	public String getReporterEmail() {
-		return reporterEmail;
+	@Column
+	public String getReportingOfficerEmail() {
+		return reportingOfficerEmail;
 	}
 
-	public void setReporterEmail(String reporterEmail) {
-		this.reporterEmail = reporterEmail;
+	public void setReportingOfficerEmail(String reporterEmail) {
+		this.reportingOfficerEmail = reporterEmail;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -587,6 +593,7 @@ public class Aefi extends CoreAdo {
 		this.receivedAtNationalLevelDate = receivedAtNationalLevelDate;
 	}
 
+	@Column
 	public String getWorldwideId() {
 		return worldwideId;
 	}

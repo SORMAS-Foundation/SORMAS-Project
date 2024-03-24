@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -39,14 +36,14 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 	public static final String I18N_PREFIX = "AefiCriteria";
 
 	public static final String DISEASE = "disease";
-	public static final String NAME_ADDRESS_PHONE_EMAIL_LIKE = "nameAddressPhoneEmailLike";
+	public static final String PERSON_LIKE = "personLike";
 	public static final String AEFI_TYPE = "aefiType";
-	public static final String OUTCOME = "outcome";
 	public static final String VACCINE_NAME = "vaccineName";
 	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String OUTCOME = "outcome";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String HEALTH_FACILITY = "healthFacility";
@@ -57,14 +54,14 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 	public static final String RELEVANCE_STATUS = "relevanceStatus";
 
 	private Disease disease;
-	private String nameAddressPhoneEmailLike;
+	private String personLike;
 	private AefiType aefiType;
-	private AefiOutcome outcome;
 	private Vaccine vaccineName;
 	private VaccineManufacturer vaccineManufacturer;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private AefiOutcome outcome;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private FacilityReferenceDto healthFacility;
@@ -82,12 +79,12 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 		this.disease = disease;
 	}
 
-	public String getNameAddressPhoneEmailLike() {
-		return nameAddressPhoneEmailLike;
+	public String getPersonLike() {
+		return personLike;
 	}
 
-	public void setNameAddressPhoneEmailLike(String nameAddressPhoneEmailLike) {
-		this.nameAddressPhoneEmailLike = nameAddressPhoneEmailLike;
+	public void setPersonLike(String personLike) {
+		this.personLike = personLike;
 	}
 
 	public AefiType getAefiType() {
@@ -96,14 +93,6 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 
 	public void setAefiType(AefiType aefiType) {
 		this.aefiType = aefiType;
-	}
-
-	public AefiOutcome getOutcome() {
-		return outcome;
-	}
-
-	public void setOutcome(AefiOutcome outcome) {
-		this.outcome = outcome;
 	}
 
 	public Vaccine getVaccineName() {
@@ -144,6 +133,14 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public AefiOutcome getOutcome() {
+		return outcome;
+	}
+
+	public void setOutcome(AefiOutcome outcome) {
+		this.outcome = outcome;
 	}
 
 	public FacilityTypeGroup getFacilityTypeGroup() {

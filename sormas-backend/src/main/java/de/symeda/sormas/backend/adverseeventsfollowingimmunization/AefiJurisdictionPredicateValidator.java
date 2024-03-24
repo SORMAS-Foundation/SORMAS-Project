@@ -55,7 +55,7 @@ public class AefiJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 	@Override
 	public Predicate isRootInJurisdictionOrOwned() {
-		final Path<Object> reportingUserPath = joins.getRoot().get(Immunization.REPORTING_USER);
+		final Path<Object> reportingUserPath = joins.getRoot().get(Aefi.REPORTING_USER);
 		final Predicate reportedByCurrentUser = cb.and(cb.isNotNull(reportingUserPath), cb.equal(reportingUserPath.get(User.ID), user.getId()));
 		return cb.or(reportedByCurrentUser, this.isRootInJurisdiction());
 	}

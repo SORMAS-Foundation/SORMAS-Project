@@ -20,8 +20,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AdverseEventState;
-import de.symeda.sormas.api.adverseeventsfollowingimmunization.SeizureType;
-import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -30,7 +28,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.fields.vaccines.AefiVaccinationsField;
-import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.fields.vaccines.AefiVaccinationsField_2;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.AdverseEventsForm;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.exposure.ExposuresField;
@@ -80,9 +77,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
 				&& (SymptomState.class.isAssignableFrom(type)
 					|| YesNoUnknown.class.isAssignableFrom(type)
-					|| AdverseEventState.class.isAssignableFrom(type)
-					|| SeizureType.class.isAssignableFrom(type)
-					|| Trimester.class.isAssignableFrom(type))) {
+					|| AdverseEventState.class.isAssignableFrom(type))) {
 				NullableOptionGroup field = new NullableOptionGroup();
 				field.setImmediate(true);
 				populateWithEnumData(field, (Class<? extends Enum>) type);
@@ -191,7 +186,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new AefiVaccinationsField(fieldAccessCheckers);
 		} else if (AdverseEventsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new AdverseEventsForm(fieldVisibilityCheckers, fieldAccessCheckers);
-		}else if (CheckBoxTree.class.isAssignableFrom(fieldType)){
+		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckBoxTree<>();
 		}
 		return super.createField(type, fieldType);

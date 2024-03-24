@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -29,6 +26,7 @@ import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDto;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiInvestigationDto;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,7 +39,10 @@ import de.symeda.sormas.ui.caze.AbstractTableField;
 public class AefiVaccinationsField extends AbstractTableField<VaccinationDto> {
 
 	private AefiDto aefiDto;
+	private AefiInvestigationDto aefiInvestigationDto;
 	private VaccinationDto primarySuspectVaccination;
+	private boolean aefiReportContext;
+	private boolean aefiInvestigationContext;
 	private final UiFieldAccessCheckers fieldAccessCheckers;
 
 	public AefiVaccinationsField(UiFieldAccessCheckers fieldAccessCheckers) {
@@ -60,37 +61,18 @@ public class AefiVaccinationsField extends AbstractTableField<VaccinationDto> {
 	protected void editEntry(VaccinationDto entry, boolean create, Consumer<VaccinationDto> commitCallback) {
 
 		if (create) {
-			ControllerProvider.getAefiController().selectPrimarySuspectVaccination(aefiDto, this::selectPrimarySuspectVaccination);
+			if (aefiReportContext) {
+				ControllerProvider.getAefiController().selectPrimarySuspectVaccination(aefiDto, this::selectPrimarySuspectVaccination);
+			} else if (aefiInvestigationContext) {
+				ControllerProvider.getAefiInvestigationController()
+					.selectPrimarySuspectVaccination(aefiInvestigationDto, this::selectPrimarySuspectVaccination);
+			}
 		}
 	}
 
 	public void updateAddButtonCaption() {
 		getAddButton().setCaption(I18nProperties.getCaption(Captions.actionAefiSelectPrimarySuspectVaccination));
 	}
-
-	/*
-	 * @Override
-	 * protected VaccinationDto createEntry() {
-	 * UserDto user = UserProvider.getCurrent().getUser();
-	 * return VaccinationDto.build(user.toReference());
-	 * }
-	 */
-
-	/*
-	 * @Override
-	 * protected Table createTable() {
-	 * Table table = super.createTable();
-	 * table.addGeneratedColumn(VaccinationDto.UUID, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-	 * Label textField = new Label(DataHelper.getShortUuid(((EntityDto) itemId).getUuid()));
-	 * return textField;
-	 * });
-	 * table.addGeneratedColumn(VaccinationDto.VACCINATION_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-	 * Label textField = new Label(DateFormatHelper.formatDate(((VaccinationDto) itemId).getVaccinationDate()));
-	 * return textField;
-	 * });
-	 * return table;
-	 * }
-	 */
 
 	@Override
 	protected void updateColumns() {
@@ -175,12 +157,22 @@ public class AefiVaccinationsField extends AbstractTableField<VaccinationDto> {
 		}
 
 		container.removeAllItems();
-		container.addAll(aefiDto.getVaccinations());
+		if (aefiReportContext) {
+			container.addAll(aefiDto.getVaccinations());
+		} else {
+			container.addAll(aefiInvestigationDto.getVaccinations());
+		}
 		table.refreshRowCache();
 	}
 
-	public void setAefiDto(AefiDto aefiDto) {
+	public void applyAefiReportContext(AefiDto aefiDto) {
 		this.aefiDto = aefiDto;
+		aefiReportContext = true;
+	}
+
+	public void applyAefiInvestigationContext(AefiInvestigationDto aefiInvestigationDto) {
+		this.aefiInvestigationDto = aefiInvestigationDto;
+		aefiInvestigationContext = true;
 	}
 
 	public void selectPrimarySuspectVaccination(VaccinationDto vaccinationDto) {

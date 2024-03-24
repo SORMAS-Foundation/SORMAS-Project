@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -28,6 +25,7 @@ import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDto;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiType;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,6 +34,7 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -44,8 +43,10 @@ import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.fields.
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.AefiDataForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
+import de.symeda.sormas.ui.utils.components.page.title.RowLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -53,9 +54,9 @@ public class AefiController {
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(AefiView.VIEW_NAME, AefiView.class);
-		//navigator.addView(ImmunizationDataView.VIEW_NAME, ImmunizationDataView.class);
-		//navigator.addView(ImmunizationPersonView.VIEW_NAME, ImmunizationPersonView.class);
 		navigator.addView(AefiDataView.VIEW_NAME, AefiDataView.class);
+		navigator.addView(AefiInvestigationView.VIEW_NAME, AefiInvestigationView.class);
+		navigator.addView(AefiInvestigationDataView.VIEW_NAME, AefiInvestigationDataView.class);
 	}
 
 	public void selectPrimarySuspectVaccination(AefiDto aefiDto, Consumer<VaccinationDto> commitCallback) {
@@ -67,6 +68,7 @@ public class AefiController {
 		final CommitDiscardWrapperComponent<AefiPrimarySuspectVaccinationSelectionField> component =
 			new CommitDiscardWrapperComponent<>(selectionField);
 		component.addCommitListener(() -> {
+
 			VaccinationDto selectedVaccination = selectionField.getValue();
 			if (selectedVaccination != null) {
 				aefiDto.setPrimarySuspectVaccine(selectedVaccination);
@@ -78,7 +80,7 @@ public class AefiController {
 		});
 
 		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
-		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingAefiPickPrimarySuspectVaccine));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingAefiSelectPrimarySuspectVaccine));
 	}
 
 	public void navigateToAefi(String uuid) {
@@ -162,18 +164,30 @@ public class AefiController {
 
 	public TitleLayout getAefiViewTitleLayout(String aefiUuid, String immunizationUuid, boolean isCreateAction) {
 
+		TitleLayout titleLayout = new TitleLayout();
+
 		if (!isCreateAction) {
 			AefiDto aefiDto = findAefi(aefiUuid);
 			immunizationUuid = aefiDto.getImmunization().getUuid();
+
+			if (aefiDto.getSerious() == YesNoUnknown.YES) {
+				RowLayout aefiTypeLayout = new RowLayout();
+				aefiTypeLayout.addToLayout(AefiType.SERIOUS.toString(), CssStyles.LABEL_CRITICAL);
+				titleLayout.addRow(aefiTypeLayout);
+			} else {
+				titleLayout.addRow(AefiType.NON_SERIOUS.toString());
+			}
 		}
 
-		TitleLayout titleLayout = new TitleLayout();
-
-		String shortUuid = DataHelper.getShortUuid(immunizationUuid);
+		String shortUuid = DataHelper.getShortUuid(aefiUuid);
 		ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(immunizationUuid);
 		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(immunizationDto.getPerson().getUuid());
 		StringBuilder mainRowText = TitleLayoutHelper.buildPersonString(person);
-		mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+
+		if (!StringUtils.isBlank(shortUuid)) {
+			mainRowText.append(mainRowText.length() > 0 ? " (" + shortUuid + ")" : shortUuid);
+		}
+
 		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
@@ -189,7 +203,7 @@ public class AefiController {
 
 	public String getCreateActionImmunizationUuid(String params) {
 		return StringUtils.contains(params, "/")
-			? StringUtils.substringBetween(params, "/", "/")
-			: StringUtils.substringBetween(params, "immunization", "create");
+			? StringUtils.substringBetween(params, "immunization/", "/adverseevent/create")
+			: StringUtils.substringBetween(params, "immunization", "adverseeventcreate");
 	}
 }

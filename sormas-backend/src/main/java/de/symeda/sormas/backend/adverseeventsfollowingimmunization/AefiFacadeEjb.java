@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.adverseeventsfollowingimmunization;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.adverseeventsfollowingimmunization.AdverseEventState
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AdverseEventsDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiCriteria;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDto;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiExportDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiFacade;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiIndexDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiListCriteria;
@@ -174,6 +176,15 @@ public class AefiFacadeEjb extends AbstractCoreFacadeEjb<Aefi, AefiDto, AefiInde
 	}
 
 	@Override
+	@RightsAllowed(UserRight._ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT)
+	public List<AefiExportDto> getExportList(AefiCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		List<AefiExportDto> resultsList = service.getExportList(criteria, selectedRows, first, max);
+		Pseudonymizer<AefiExportDto> pseudonymizer = createGenericPlaceholderPseudonymizer();
+		pseudonymizer.pseudonymizeDtoCollection(AefiExportDto.class, resultsList, AefiExportDto::getInJurisdiction, null);
+		return resultsList;
+	}
+
+	@Override
 	public List<AefiListEntryDto> getEntriesList(AefiListCriteria criteria, Integer first, Integer max) {
 		Long immunizationId = immunizationService.getIdByUuid(criteria.getImmunization().getUuid());
 		return service.getEntriesList(immunizationId, first, max);
@@ -295,13 +306,14 @@ public class AefiFacadeEjb extends AbstractCoreFacadeEjb<Aefi, AefiDto, AefiInde
 		target.setAgeGroup(source.getAgeGroup());
 		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
-		target.setReporterName(source.getReporterName());
-		target.setReporterInstitution(facilityService.getByReferenceDto(source.getReporterInstitution()));
-		target.setReporterDesignation(source.getReporterDesignation());
-		target.setReporterDepartment(source.getReporterDepartment());
-		target.setReporterAddress(locationFacade.fillOrBuildEntity(source.getReporterAddress(), target.getReporterAddress(), checkChangeDate));
-		target.setReporterPhone(source.getReporterPhone());
-		target.setReporterEmail(source.getReporterEmail());
+		target.setReportingOfficerName(source.getReportingOfficerName());
+		target.setReportingOfficerFacility(facilityService.getByReferenceDto(source.getReportingOfficerFacility()));
+		target.setReportingOfficerDesignation(source.getReportingOfficerDesignation());
+		target.setReportingOfficerDepartment(source.getReportingOfficerDepartment());
+		target.setReportingOfficerAddress(
+			locationFacade.fillOrBuildEntity(source.getReportingOfficerAddress(), target.getReportingOfficerAddress(), checkChangeDate));
+		target.setReportingOfficerPhoneNumber(source.getReportingOfficerPhoneNumber());
+		target.setReportingOfficerEmail(source.getReportingOfficerEmail());
 		target.setTodaysDate(source.getTodaysDate());
 		target.setStartDateTime(source.getStartDateTime());
 		target.setAefiDescription(source.getAefiDescription());
@@ -369,13 +381,13 @@ public class AefiFacadeEjb extends AbstractCoreFacadeEjb<Aefi, AefiDto, AefiInde
 		dto.setAgeGroup(entity.getAgeGroup());
 		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
 		dto.setHealthFacilityDetails(entity.getHealthFacilityDetails());
-		dto.setReporterName(entity.getReporterName());
-		dto.setReporterInstitution(FacilityFacadeEjb.toReferenceDto(entity.getReporterInstitution()));
-		dto.setReporterDesignation(entity.getReporterDesignation());
-		dto.setReporterDepartment(entity.getReporterDepartment());
-		dto.setReporterAddress(LocationFacadeEjb.toDto(entity.getReporterAddress()));
-		dto.setReporterPhone(entity.getReporterPhone());
-		dto.setReporterEmail(entity.getReporterEmail());
+		dto.setReportingOfficerName(entity.getReportingOfficerName());
+		dto.setReportingOfficerFacility(FacilityFacadeEjb.toReferenceDto(entity.getReportingOfficerFacility()));
+		dto.setReportingOfficerDesignation(entity.getReportingOfficerDesignation());
+		dto.setReportingOfficerDepartment(entity.getReportingOfficerDepartment());
+		dto.setReportingOfficerAddress(LocationFacadeEjb.toDto(entity.getReportingOfficerAddress()));
+		dto.setReportingOfficerPhoneNumber(entity.getReportingOfficerPhoneNumber());
+		dto.setReportingOfficerEmail(entity.getReportingOfficerEmail());
 		dto.setTodaysDate(entity.getTodaysDate());
 		dto.setStartDateTime(entity.getStartDateTime());
 		dto.setAefiDescription(entity.getAefiDescription());
@@ -410,7 +422,7 @@ public class AefiFacadeEjb extends AbstractCoreFacadeEjb<Aefi, AefiDto, AefiInde
 			return null;
 		}
 
-		return new AefiReferenceDto(entity.getUuid(), "", "");
+		return new AefiReferenceDto(entity.getUuid(), "");
 	}
 
 	@Override

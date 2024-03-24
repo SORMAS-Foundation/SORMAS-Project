@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.adverseeventsfollowingimmunization;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,22 +27,27 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiCriteria;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDateType;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiExportDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiIndexDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiListEntryDto;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiType;
@@ -58,10 +64,14 @@ import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiJo
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.transformers.AefiIndexDtoResultTransformer;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.transformers.AefiListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -90,6 +100,24 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 
 	public AefiService() {
 		super(Aefi.class, DeletableEntityType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION);
+	}
+
+	public Long getIdByUuid(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Aefi> from = cq.from(Aefi.class);
+		cq.select(from.get(AbstractDomainObject.ID));
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
+
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+
+		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
 	public List<AefiListEntryDto> getEntriesList(Long immunizationId, Integer first, Integer max) {
@@ -205,6 +233,7 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 							responsibleDistrict.get(District.NAME),
 							aefi.get(Aefi.SERIOUS),
 							primarySuspectVaccine.get(Vaccination.VACCINE_NAME),
+							primarySuspectVaccine.get(Vaccination.OTHER_VACCINE_NAME),
 							aefi.get(Aefi.OUTCOME),
 							primarySuspectVaccine.get(Vaccination.VACCINATION_DATE),
 							aefi.get(Aefi.REPORT_DATE),
@@ -258,6 +287,121 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 
 		List<Tuple> aefiResultList = QueryHelper.getResultList(em, cq, first, max);
 		return aefiResultList.stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	public List<AefiExportDto> getExportList(AefiCriteria criteria, Collection<String> selectedRows, int first, int max) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<AefiExportDto> cq = cb.createQuery(AefiExportDto.class);
+		final Root<Aefi> aefi = cq.from(Aefi.class);
+
+		final AefiQueryContext aefiQueryContext = new AefiQueryContext(cb, cq, aefi);
+		AefiJoins joins = aefiQueryContext.getJoins();
+
+		final Join<Aefi, Immunization> immunization = joins.getImmunization();
+		final Join<Immunization, Person> person = joins.getImmunizationJoins().getPerson();
+		final Join<Immunization, Facility> immunizationFacility = joins.getImmunizationJoins().getHealthFacility();
+		final Join<Facility, Region> immunizationFacilityRegion = immunizationFacility.join(Facility.REGION, JoinType.LEFT);
+		final Join<Facility, District> immunizationFacilityDistrict = immunizationFacility.join(Facility.DISTRICT, JoinType.LEFT);
+		final Join<Facility, Region> immunizationFacilityCommunity = immunizationFacility.join(Facility.COMMUNITY, JoinType.LEFT);
+
+		final Join<Person, Location> personLocation = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, Region> personLocationRegion = personLocation.join(Location.REGION, JoinType.LEFT);
+		final Join<Location, District> personLocationDistrict = personLocation.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Location, Community> personLocationCommunity = personLocation.join(Location.COMMUNITY, JoinType.LEFT);
+
+		final Join<Immunization, Region> responsibleRegion = joins.getImmunizationJoins().getResponsibleRegion();
+		final Join<Immunization, District> responsibleDistrict = joins.getImmunizationJoins().getResponsibleDistrict();
+
+		final Join<Aefi, Vaccination> primarySuspectVaccine = joins.getPrimarySuspectVaccination();
+		final Join<Aefi, AdverseEvents> adverseEvents = joins.getAdverseEvents();
+
+		final Join<Aefi, User> reportingUser = joins.getReportingUser();
+		final Join<User, Location> reportingUserLocation = reportingUser.join(User.ADDRESS, JoinType.LEFT);
+		final Join<Location, Country> reportingUserLocationCountry = reportingUserLocation.join(Location.COUNTRY, JoinType.LEFT);
+		final Join<User, Facility> reportingUserFacility = reportingUser.join(User.HEALTH_FACILITY, JoinType.LEFT);
+		final Join<Facility, Region> reportingUserFacilityRegion = reportingUserFacility.join(Facility.REGION, JoinType.LEFT);
+		final Join<Facility, District> reportingUserFacilityDistrict = reportingUserFacility.join(Facility.DISTRICT, JoinType.LEFT);
+		final Join<Facility, Community> reportingUserFacilityCommunity = reportingUserFacility.join(Facility.COMMUNITY, JoinType.LEFT);
+
+		cq.multiselect(
+			aefi.get(Aefi.UUID),
+			aefi.get(Aefi.RECEIVED_AT_NATIONAL_LEVEL_DATE),
+			immunizationFacility.get(Facility.NAME),
+			immunizationFacilityRegion.get(Region.NAME),
+			immunizationFacilityDistrict.get(District.NAME),
+			immunizationFacilityCommunity.get(Community.NAME),
+			reportingUserLocationCountry.get(Country.DEFAULT_NAME),
+			personLocationRegion.get(Region.NAME),
+			personLocationDistrict.get(District.NAME),
+			personLocationCommunity.get(Community.NAME),
+			personLocation.get(Location.STREET),
+			personLocation.get(Location.HOUSE_NUMBER),
+			personLocation.get(Location.POSTAL_CODE),
+			personLocation.get(Location.CITY),
+			aefi.get(Aefi.REPORTINGID_NUMBER),
+			aefi.get(Aefi.WORLD_WIDE_ID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			person.get(Person.BIRTHDATE_DD),
+			person.get(Person.BIRTHDATE_MM),
+			person.get(Person.BIRTHDATE_YYYY),
+			aefi.get(Aefi.ONSET_AGE_YEARS),
+			aefi.get(Aefi.ONSET_AGE_MONTHS),
+			aefi.get(Aefi.ONSET_AGE_DAYS),
+			aefi.get(Aefi.AGE_GROUP),
+			person.get(Person.SEX),
+			aefi.get(Aefi.AEFI_DESCRIPTION),
+			primarySuspectVaccine.get(Vaccination.VACCINE_NAME),
+			primarySuspectVaccine.get(Vaccination.OTHER_VACCINE_NAME),
+			primarySuspectVaccine.get(Vaccination.VACCINE_MANUFACTURER),
+			primarySuspectVaccine.get(Vaccination.VACCINE_BATCH_NUMBER),
+			primarySuspectVaccine.get(Vaccination.VACCINE_DOSE),
+			primarySuspectVaccine.get(Vaccination.VACCINATION_DATE),
+			aefi.get(Aefi.START_DATE_TIME),
+			adverseEvents.get(AdverseEvents.SEVERE_LOCAL_REACTION),
+			adverseEvents.get(AdverseEvents.SEVERE_LOCAL_REACTION_MORE_THAN_THREE_DAYS),
+			adverseEvents.get(AdverseEvents.SEVERE_LOCAL_REACTION_BEYOND_NEAREST_JOINT),
+			adverseEvents.get(AdverseEvents.SEIZURES),
+			adverseEvents.get(AdverseEvents.SEIZURE_TYPE),
+			adverseEvents.get(AdverseEvents.ABSCESS),
+			adverseEvents.get(AdverseEvents.SEPSIS),
+			adverseEvents.get(AdverseEvents.ENCEPHALOPATHY),
+			adverseEvents.get(AdverseEvents.TOXIC_SHOCK_SYNDROME),
+			adverseEvents.get(AdverseEvents.THROMBOCYTOPENIA),
+			adverseEvents.get(AdverseEvents.ANAPHYLAXIS),
+			adverseEvents.get(AdverseEvents.FEVERISH_FEELING),
+			adverseEvents.get(AdverseEvents.OTHER_ADVERSE_EVENT_DETAILS),
+			aefi.get(Aefi.OUTCOME),
+			aefi.get(Aefi.SERIOUS),
+			reportingUser.get(User.FIRST_NAME),
+			reportingUser.get(User.LAST_NAME),
+			reportingUserFacility.get(Facility.NAME),
+			reportingUserFacilityRegion.get(Region.NAME),
+			reportingUserFacilityDistrict.get(District.NAME),
+			reportingUserFacilityCommunity.get(Community.NAME),
+			reportingUser.get(User.USER_EMAIL),
+			reportingUser.get(User.PHONE),
+			aefi.get((Aefi.REPORT_DATE)),
+			aefi.get((Aefi.NATIONAL_LEVEL_COMMENT)),
+			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(aefiQueryContext)));
+
+		/*
+		 * buildWhereCondition(criteria, cb, cq, aefiQueryContext, null);
+		 * cq.distinct(true);
+		 */
+
+		Predicate filter = buildExportListWhereCondition(criteria, cb, cq, aefiQueryContext);
+		if (selectedRows != null && !selectedRows.isEmpty()) {
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, aefi.get(Aefi.UUID));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, AefiQueryContext aefiQueryContext) {
@@ -349,6 +493,22 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 		}
 	}
 
+	private <T> Predicate buildExportListWhereCondition(
+		AefiCriteria criteria,
+		CriteriaBuilder cb,
+		CriteriaQuery<T> cq,
+		AefiQueryContext aefiQueryContext) {
+
+		Predicate filter = createUserFilter(aefiQueryContext);
+
+		if (criteria != null) {
+			final Predicate criteriaFilter = buildCriteriaFilter(criteria, aefiQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		return filter;
+	}
+
 	public Predicate buildCriteriaFilter(AefiCriteria criteria, AefiQueryContext aefiQueryContext) {
 
 		final AefiJoins joins = aefiQueryContext.getJoins();
@@ -365,11 +525,11 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 			filter = CriteriaBuilderHelper.and(cb, null, cb.equal(immunization.get(Immunization.DISEASE), criteria.getDisease()));
 		}
 
-		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
+		if (!DataHelper.isNullOrEmpty(criteria.getPersonLike())) {
 			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getImmunizationJoins().getPersonJoins());
 
-			String[] textFilters = criteria.getNameAddressPhoneEmailLike().split("\\s+");
+			String[] textFilters = criteria.getPersonLike().split("\\s+");
 
 			for (String textFilter : textFilters) {
 				if (DataHelper.isNullOrEmpty(textFilter)) {
@@ -496,7 +656,7 @@ public class AefiService extends AbstractCoreAdoService<Aefi, AefiJoins> {
 		} else {
 			filter = CriteriaBuilderHelper.or(
 				cb,
-				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+				cb.equal(qc.getRoot().get(Aefi.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
 					.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, personService.getPermittedAssociations())
 					.inJurisdictionOrOwned());

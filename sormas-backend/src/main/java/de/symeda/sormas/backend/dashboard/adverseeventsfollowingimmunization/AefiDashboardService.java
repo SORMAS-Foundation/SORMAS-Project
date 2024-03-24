@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -49,8 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiClassification;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiCriteria;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDashboardFilterDateType;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiInvestigationStatus;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiType;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.dashboard.AefiDashboardCriteria;
@@ -62,6 +61,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.AefiInvestigationService;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.AefiQueryContext;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.AefiService;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents;
@@ -97,6 +97,8 @@ public class AefiDashboardService {
 	@EJB
 	private AefiService aefiService;
 	@EJB
+	private AefiInvestigationService aefiInvestigationService;
+	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
@@ -111,6 +113,167 @@ public class AefiDashboardService {
 		result.put(AefiType.NON_SERIOUS, dataMap.getOrDefault(YesNoUnknown.NO, 0L) + dataMap.getOrDefault(YesNoUnknown.UNKNOWN, 0L));
 
 		return result;
+	}
+
+	public Map<AefiInvestigationStatus, Map<String, String>> getAefiInvestigationCountsByInvestigationStatus(
+		AefiDashboardCriteria dashboardCriteria) {
+
+		Map<AefiInvestigationStatus, Map<String, String>> countsByInvestigationStatus = new HashMap<>();
+
+		Map<String, String> defaultValuesMap = new HashMap<>();
+		defaultValuesMap.put("total", "0");
+		defaultValuesMap.put("percent", "0");
+
+		for (AefiInvestigationStatus investigationStatus : AefiInvestigationStatus.values()) {
+			countsByInvestigationStatus.put(investigationStatus, new HashMap<>(defaultValuesMap));
+		}
+
+		Disease disease = dashboardCriteria.getDisease();
+		RegionReferenceDto regionReference = dashboardCriteria.getRegion();
+		DistrictReferenceDto districtReference = dashboardCriteria.getDistrict();
+
+		String whereConditions = createAefiNativeQueryFilter(dashboardCriteria);
+		if (StringUtils.isBlank(whereConditions)) {
+			whereConditions = " aefininvestigation.investigationstatus is not null";
+		} else {
+			whereConditions = whereConditions + " AND aefininvestigation.investigationstatus is not null";
+		}
+
+		//@formatter:off
+		String queryString = "select aefininvestigation.investigationstatus, count(*) as total_status "
+				+ " from adverseeventsfollowingimmunizationinvestigation aefininvestigation"
+				+ "         join adverseeventsfollowingimmunization aefi on aefininvestigation.adverseeventsfollowingimmunization_id = aefi.id"
+				+ "         join immunization on aefi.immunization_id = immunization.id"
+				+ " where " + whereConditions
+				+ " group by aefininvestigation.investigationstatus";
+		//@formatter:on
+
+		Query dataQuery = em.createNativeQuery(queryString);
+
+		if (disease != null) {
+			dataQuery.setParameter("disease", disease.name());
+		}
+
+		if (regionReference != null) {
+			Region region = regionService.getByReferenceDto(regionReference);
+			dataQuery.setParameter("responsibleregion_id", region.getId());
+		}
+
+		if (districtReference != null) {
+			District district = districtService.getByReferenceDto(districtReference);
+			dataQuery.setParameter("responsibledistrict_id", district.getId());
+		}
+
+		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
+			Date dateFrom = DateHelper.getStartOfDay(dashboardCriteria.getDateFrom());
+			Date dateTo = DateHelper.getEndOfDay(dashboardCriteria.getDateTo());
+
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String dateFromStr = DateHelper.formatLocalDate(dateFrom, simpleDateFormat);
+			String dateToStr = DateHelper.formatLocalDate(dateTo, simpleDateFormat);
+
+			dataQuery.setParameter("dateFrom", dateFromStr);
+			dataQuery.setParameter("dateTo", dateToStr);
+		}
+
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = dataQuery.getResultList();
+
+		int totalInvestigations = 0;
+		for (Object[] result : resultList) {
+			totalInvestigations += ((BigInteger) result[1]).intValue();
+		}
+
+		int statusTotal;
+		int statusPercent;
+		for (Object[] result : resultList) {
+			statusTotal = ((BigInteger) result[1]).intValue();
+			statusPercent = (totalInvestigations == 0) ? 0 : ((int) ((statusTotal * 100.0f) / totalInvestigations));
+			countsByInvestigationStatus.get(AefiInvestigationStatus.valueOf((String) result[0])).put("total", String.valueOf(statusTotal));
+			countsByInvestigationStatus.get(AefiInvestigationStatus.valueOf((String) result[0])).put("percent", String.valueOf(statusPercent));
+		}
+
+		return countsByInvestigationStatus;
+	}
+
+	public Map<AefiClassification, Map<String, String>> getAefiInvestigationCountsByAefiClassification(AefiDashboardCriteria dashboardCriteria) {
+
+		Map<AefiClassification, Map<String, String>> countsByAefiClassitication = new HashMap<>();
+
+		Map<String, String> defaultValuesMap = new HashMap<>();
+		defaultValuesMap.put("total", "0");
+		defaultValuesMap.put("percent", "0");
+
+		for (AefiClassification aefiClassification : AefiClassification.values()) {
+			countsByAefiClassitication.put(aefiClassification, new HashMap<>(defaultValuesMap));
+		}
+
+		Disease disease = dashboardCriteria.getDisease();
+		RegionReferenceDto regionReference = dashboardCriteria.getRegion();
+		DistrictReferenceDto districtReference = dashboardCriteria.getDistrict();
+
+		String whereConditions = createAefiNativeQueryFilter(dashboardCriteria);
+		if (StringUtils.isBlank(whereConditions)) {
+			whereConditions = " aefininvestigation.adverseeventfollowingimmunizationclassification is not null";
+		} else {
+			whereConditions = whereConditions + " AND aefininvestigation.adverseeventfollowingimmunizationclassification is not null";
+		}
+
+		//@formatter:off
+		String queryString = "select aefininvestigation.adverseeventfollowingimmunizationclassification, count(*) as total_classification "
+				+ " from adverseeventsfollowingimmunizationinvestigation aefininvestigation"
+				+ "         join adverseeventsfollowingimmunization aefi on aefininvestigation.adverseeventsfollowingimmunization_id = aefi.id"
+				+ "         join immunization on aefi.immunization_id = immunization.id"
+				+ " where " + whereConditions
+				+ " group by aefininvestigation.adverseeventfollowingimmunizationclassification";
+		//@formatter:on
+
+		Query dataQuery = em.createNativeQuery(queryString);
+
+		if (disease != null) {
+			dataQuery.setParameter("disease", disease.name());
+		}
+
+		if (regionReference != null) {
+			Region region = regionService.getByReferenceDto(regionReference);
+			dataQuery.setParameter("responsibleregion_id", region.getId());
+		}
+
+		if (districtReference != null) {
+			District district = districtService.getByReferenceDto(districtReference);
+			dataQuery.setParameter("responsibledistrict_id", district.getId());
+		}
+
+		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
+			Date dateFrom = DateHelper.getStartOfDay(dashboardCriteria.getDateFrom());
+			Date dateTo = DateHelper.getEndOfDay(dashboardCriteria.getDateTo());
+
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String dateFromStr = DateHelper.formatLocalDate(dateFrom, simpleDateFormat);
+			String dateToStr = DateHelper.formatLocalDate(dateTo, simpleDateFormat);
+
+			dataQuery.setParameter("dateFrom", dateFromStr);
+			dataQuery.setParameter("dateTo", dateToStr);
+		}
+
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = dataQuery.getResultList();
+
+		int totalInvestigations = 0;
+		for (Object[] result : resultList) {
+			totalInvestigations += ((BigInteger) result[1]).intValue();
+		}
+
+		int classificationTotal;
+		int classificationPercent;
+		for (Object[] result : resultList) {
+			classificationTotal = ((BigInteger) result[1]).intValue();
+			classificationPercent = (totalInvestigations == 0) ? 0 : ((int) ((classificationTotal * 100.0f) / totalInvestigations));
+			countsByAefiClassitication.get(AefiClassification.valueOf((String) result[0])).put("total", String.valueOf(classificationTotal));
+			countsByAefiClassitication.get(AefiClassification.valueOf((String) result[0])).put("percent", String.valueOf(classificationPercent));
+		}
+
+		return countsByAefiClassitication;
 	}
 
 	public Map<Vaccine, Map<AefiType, Long>> getAefiCountsByVaccine(AefiDashboardCriteria dashboardCriteria) {
@@ -349,7 +512,7 @@ public class AefiDashboardService {
 
 			if (!resultList.isEmpty()) {
 				Object[] firstResult = resultList.get(0);
-				maleSeries.addData(firstResult[1].toString());
+				maleSeries.addData("-" + firstResult[1].toString());
 				femaleSeries.addData(firstResult[2].toString());
 			} else {
 				maleSeries.addData("0");
@@ -500,10 +663,12 @@ public class AefiDashboardService {
 
 			switch (aefiDashboardFilterDateType) {
 			case REPORT_DATE:
-				whereConditions.add("(aefi.reportdate >= cast(:dateFrom as timestamp) and aefi.reportdate <= cast(:dateTo as timestamp))");
+				whereConditions
+					.add("(cast(aefi.reportdate as date) >= cast(:dateFrom as date) and cast(aefi.reportdate as date) <= cast(:dateTo as date))");
 				break;
 			case START_DATE:
-				whereConditions.add("(aefi.startdatetime >= cast(:dateFrom as timestamp) and aefi.startdatetime <= cast(:dateTo as timestamp))");
+				whereConditions.add(
+					"(cast(aefi.startdatetime as date) >= cast(:dateFrom as date) and cast(aefi.startdatetime as date) <= cast(:dateTo as date))");
 				break;
 			default:
 				throw new RuntimeException("Unhandled date type [" + aefiDashboardFilterDateType + "]");

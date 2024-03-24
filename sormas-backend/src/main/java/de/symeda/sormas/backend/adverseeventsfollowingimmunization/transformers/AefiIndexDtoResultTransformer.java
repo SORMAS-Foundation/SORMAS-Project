@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -49,11 +46,11 @@ public class AefiIndexDtoResultTransformer implements ResultTransformer {
 
 		//@formatter:off
 		String adverseEvents = AefiHelper
-				.buildAdverseEventsString((AdverseEventState) objects[20], (boolean) objects[21], (boolean) objects[22],
-						(AdverseEventState) objects[23], (SeizureType) objects[24], (AdverseEventState) objects[25],
-						(AdverseEventState) objects[26], (AdverseEventState) objects[27], (AdverseEventState) objects[28],
-						(AdverseEventState) objects[29], (AdverseEventState) objects[30], (AdverseEventState) objects[31],
-						(String) objects[32]);
+				.buildAdverseEventsString((AdverseEventState) objects[21], (boolean) objects[22], (boolean) objects[23],
+						(AdverseEventState) objects[24], (SeizureType) objects[25], (AdverseEventState) objects[26],
+						(AdverseEventState) objects[27], (AdverseEventState) objects[28], (AdverseEventState) objects[29],
+						(AdverseEventState) objects[30], (AdverseEventState) objects[31], (AdverseEventState) objects[32],
+						(String) objects[33]);
 		//@formatter:on
 
 		return new AefiIndexDto(
@@ -69,14 +66,15 @@ public class AefiIndexDtoResultTransformer implements ResultTransformer {
 			(String) objects[13],
 			(YesNoUnknown) objects[14],
 			(Vaccine) objects[15],
-			(AefiOutcome) objects[16],
-			(Date) objects[17],
+			(String) objects[16],
+			(AefiOutcome) objects[17],
 			(Date) objects[18],
 			(Date) objects[19],
+			(Date) objects[20],
 			adverseEvents,
-			(DeletionReason) objects[33],
-			(String) objects[34],
-			(boolean) objects[35]);
+			(DeletionReason) objects[34],
+			(String) objects[35],
+			(boolean) objects[36]);
 	}
 
 	@Override

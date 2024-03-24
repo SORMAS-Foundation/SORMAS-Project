@@ -1,37 +1,45 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.ui.adverseeventsfollowingimmunization;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiCriteria;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiIndexDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -43,11 +51,15 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.directory.AefiDataLayout;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.directory.AefiFilterFormLayout;
-import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.AefiDownloadUtil;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class AefiView extends AbstractView {
+public class AefiView extends AbstractAefiView {
 
 	public static final String VIEW_NAME = "adverseevents";
 
@@ -59,17 +71,52 @@ public class AefiView extends AbstractView {
 	// Filters
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
+	private ViewConfiguration viewConfiguration;
 
 	public AefiView() {
 		super(VIEW_NAME);
 
 		CssStyles.style(getViewTitleLabel(), CssStyles.PAGE_TITLE);
 
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+
 		criteria = ViewModelProviders.of(AefiView.class).get(AefiCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.setRelevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 		dataLayout = new AefiDataLayout(criteria);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT)) {
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+
+			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportButton);
+
+			Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(basicExportButton);
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				dataLayout.getGrid(),
+				() -> viewConfiguration.isInEagerMode() ? dataLayout.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
+				ExportEntityName.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(basicExportButton);
+
+			StreamResource extendedExportStreamResource =
+				AefiDownloadUtil.createAefiExportResource(dataLayout.getGrid().getCriteria(), this::getSelectedRowUuids, null);
+			addExportButton(
+				extendedExportStreamResource,
+				exportButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Strings.infoDetailedExport);
+		}
 
 		final VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.addComponent(createFilterBar());
@@ -86,11 +133,11 @@ public class AefiView extends AbstractView {
 
 		mainLayout.addComponent(gridLayout);
 
-		mainLayout.setMargin(true);
+		mainLayout.setMargin(new MarginInfo(false, true, true, true));
 		mainLayout.setSpacing(false);
 		mainLayout.setSizeFull();
 		mainLayout.setExpandRatio(gridLayout, 1);
-		mainLayout.setStyleName("crud-main-layout");
+		mainLayout.addStyleNames("crud-main-layout", CssStyles.VSPACE_TOP_4);
 
 		addComponent(mainLayout);
 	}
@@ -195,6 +242,12 @@ public class AefiView extends AbstractView {
 		return statusFilterLayout;
 	}
 
+	private Set<String> getSelectedRowUuids() {
+		return viewConfiguration.isInEagerMode()
+			? dataLayout.getGrid().asMultiSelect().getSelectedItems().stream().map(AefiIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
+	}
+
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 
@@ -204,5 +257,7 @@ public class AefiView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 		updateFilterComponents();
+
+		super.enter(event);
 	}
 }

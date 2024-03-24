@@ -19,6 +19,7 @@ package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiController;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiInvestigationController;
 import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
@@ -91,6 +92,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final TravelEntryController travelEntryController;
 	private final ImmunizationController immunizationController;
 	private final AefiController aefiController;
+	private final AefiInvestigationController aefiInvestigationController;
 	private final VaccinationController vaccinationController;
 	private final ArchivingController archivingController;
 	private final DeleteRestoreController deleteRestoreController;
@@ -135,6 +137,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		travelEntryController = new TravelEntryController();
 		immunizationController = new ImmunizationController();
 		aefiController = new AefiController();
+		aefiInvestigationController = new AefiInvestigationController();
 		vaccinationController = new VaccinationController();
 		archivingController = new ArchivingController();
 		deleteRestoreController = new DeleteRestoreController();
@@ -269,6 +272,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static AefiController getAefiController() {
 		return get().aefiController;
+	}
+
+	public static AefiInvestigationController getAefiInvestigationController() {
+		return get().aefiInvestigationController;
 	}
 
 	public static VaccinationController getVaccinationController() {

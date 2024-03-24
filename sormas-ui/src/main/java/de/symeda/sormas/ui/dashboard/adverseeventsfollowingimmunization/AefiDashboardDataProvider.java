@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -21,7 +18,9 @@ package de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization;
 import java.util.Map;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiClassification;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDashboardFilterDateType;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiInvestigationStatus;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiType;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.dashboard.AefiDashboardCriteria;
@@ -33,6 +32,9 @@ public class AefiDashboardDataProvider extends AbstractDashboardDataProvider<Aef
 	private AefiDashboardFilterDateType dateType = AefiDashboardFilterDateType.REPORT_DATE;
 
 	private Map<AefiType, Long> aefiCountsByType;
+	private int totalAefiInvestigations;
+	private Map<AefiInvestigationStatus, Map<String, String>> aefiInvestigationCountsByInvestigationStatus;
+	private Map<AefiClassification, Map<String, String>> aefiInvestigationCountsByAefiClassification;
 	private Map<Vaccine, Map<AefiType, Long>> aefiCountsByVaccine;
 	private AefiChartData aefiByVaccineDoseChartData;
 	private AefiChartData aefiEventsByGenderChartData;
@@ -40,6 +42,16 @@ public class AefiDashboardDataProvider extends AbstractDashboardDataProvider<Aef
 	@Override
 	public void refreshData() {
 		aefiCountsByType = FacadeProvider.getAefiDashboardFacade().getAefiCountsByType(buildDashboardCriteriaWithDates());
+		aefiInvestigationCountsByInvestigationStatus =
+			FacadeProvider.getAefiDashboardFacade().getAefiInvestigationCountsByInvestigationStatus(buildDashboardCriteriaWithDates());
+
+		totalAefiInvestigations = 0;
+		for (Map<String, String> investigationStatusValue : aefiInvestigationCountsByInvestigationStatus.values()) {
+			totalAefiInvestigations += Integer.parseInt(investigationStatusValue.get("total"));
+		}
+
+		aefiInvestigationCountsByAefiClassification =
+			FacadeProvider.getAefiDashboardFacade().getAefiInvestigationCountsByAefiClassification(buildDashboardCriteriaWithDates());
 		aefiCountsByVaccine = FacadeProvider.getAefiDashboardFacade().getAefiCountsByVaccine(buildDashboardCriteriaWithDates());
 		aefiByVaccineDoseChartData = FacadeProvider.getAefiDashboardFacade().getAefiByVaccineDoseChartData(buildDashboardCriteriaWithDates());
 		aefiEventsByGenderChartData = FacadeProvider.getAefiDashboardFacade().getAefiEventsByGenderChartData(buildDashboardCriteriaWithDates());
@@ -65,6 +77,18 @@ public class AefiDashboardDataProvider extends AbstractDashboardDataProvider<Aef
 
 	public Map<AefiType, Long> getAefiCountsByType() {
 		return aefiCountsByType;
+	}
+
+	public int getTotalAefiInvestigations() {
+		return totalAefiInvestigations;
+	}
+
+	public Map<AefiInvestigationStatus, Map<String, String>> getAefiInvestigationCountsByInvestigationStatus() {
+		return aefiInvestigationCountsByInvestigationStatus;
+	}
+
+	public Map<AefiClassification, Map<String, String>> getAefiInvestigationCountsByAefiClassification() {
+		return aefiInvestigationCountsByAefiClassification;
 	}
 
 	public Map<Vaccine, Map<AefiType, Long>> getAefiCountsByVaccine() {

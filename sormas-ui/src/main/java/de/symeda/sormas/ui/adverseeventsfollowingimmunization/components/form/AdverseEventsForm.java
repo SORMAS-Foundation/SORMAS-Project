@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -44,6 +41,7 @@ import java.util.Arrays;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
@@ -58,7 +56,9 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
+@SuppressWarnings("deprecation")
 public class AdverseEventsForm extends AbstractEditForm<AdverseEventsDto> {
 
 	private static final long serialVersionUID = 5081846814610543073L;
@@ -119,7 +119,8 @@ public class AdverseEventsForm extends AbstractEditForm<AdverseEventsDto> {
 		emptyLabel.addStyleName(H3);
 		getContent().addComponent(emptyLabel, EMPTY_LABEL_LOC);
 
-		addField(SEIZURE_TYPE);
+		NullableOptionGroup seizureType = addField(SEIZURE_TYPE, NullableOptionGroup.class);
+		CssStyles.style(seizureType, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 
 		TextArea otherAdverseEvents = addField(OTHER_ADVERSE_EVENT_DETAILS, TextArea.class);
 		otherAdverseEvents.setRows(6);

@@ -323,6 +323,8 @@ public final class CssStyles {
 	public static final String MARGIN_TOP_4 = "margin-top-4";
 	public static final String PADDING_X_8 = "padding-x-8";
 	public static final String PADDING_X_20 = "padding-x-20";
+	public static final String FORM_SECTION_ACCORDION_PANEL_TITLE_BUTTON = "form-section-accordion-panel-title-button";
+	public static final String OPTIONGROUP_CAPTION_FLEX = "optiongroup-caption-flex";
 	public static final String VIEW_SECTION_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4;
 	public static final String VIEW_SECTION_MARGIN_TOP_4_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4 + " " + MARGIN_TOP_4;
 

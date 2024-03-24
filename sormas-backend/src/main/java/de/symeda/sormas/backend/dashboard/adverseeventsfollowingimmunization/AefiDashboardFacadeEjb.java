@@ -22,6 +22,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiClassification;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiInvestigationStatus;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiType;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.dashboard.AefiDashboardCriteria;
@@ -41,6 +43,17 @@ public class AefiDashboardFacadeEjb implements AefiDashboardFacade {
 	@Override
 	public Map<AefiType, Long> getAefiCountsByType(AefiDashboardCriteria dashboardCriteria) {
 		return aefiDashboardService.getAefiCountsByType(dashboardCriteria);
+	}
+
+	@Override
+	public Map<AefiInvestigationStatus, Map<String, String>> getAefiInvestigationCountsByInvestigationStatus(
+		AefiDashboardCriteria dashboardCriteria) {
+		return aefiDashboardService.getAefiInvestigationCountsByInvestigationStatus(dashboardCriteria);
+	}
+
+	@Override
+	public Map<AefiClassification, Map<String, String>> getAefiInvestigationCountsByAefiClassification(AefiDashboardCriteria dashboardCriteria) {
+		return aefiDashboardService.getAefiInvestigationCountsByAefiClassification(dashboardCriteria);
 	}
 
 	@Override

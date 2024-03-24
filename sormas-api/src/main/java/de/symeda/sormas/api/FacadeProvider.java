@@ -20,6 +20,7 @@ import javax.naming.NamingException;
 
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiFacade;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiInvestigationFacade;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -152,6 +153,10 @@ public class FacadeProvider {
 
 	public static AefiFacade getAefiFacade() {
 		return get().lookupEjbRemote(AefiFacade.class);
+	}
+
+	public static AefiInvestigationFacade getAefiInvestigationFacade() {
+		return get().lookupEjbRemote(AefiInvestigationFacade.class);
 	}
 
 	public static VaccinationFacade getVaccinationFacade() {

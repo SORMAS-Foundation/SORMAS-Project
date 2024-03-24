@@ -10,9 +10,11 @@ public interface Validations {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String aefiInvestigationWithoutPrimarySuspectVaccine = "aefiInvestigationWithoutPrimarySuspectVaccine";
+	String aefiInvestigationWithoutSuspectVaccines = "aefiInvestigationWithoutSuspectVaccines";
 	String aefiWithoutAdverseEvents = "aefiWithoutAdverseEvents";
 	String aefiWithoutPrimarySuspectVaccine = "aefiWithoutPrimarySuspectVaccine";
-	String aefiWithoutSuspectVaccine = "aefiWithoutSuspectVaccine";
+	String aefiWithoutSuspectVaccines = "aefiWithoutSuspectVaccines";
 	String afterDate = "afterDate";
 	String afterDateSoft = "afterDateSoft";
 	String afterDateWithDate = "afterDateWithDate";
@@ -266,6 +268,7 @@ public interface Validations {
 	String userNameNotUnique = "userNameNotUnique";
 	String uuidPatternNotMatching = "uuidPatternNotMatching";
 	String vaccineDosesFormat = "vaccineDosesFormat";
+	String validAefiReport = "validAefiReport";
 	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";
 	String validDateOfArrival = "validDateOfArrival";

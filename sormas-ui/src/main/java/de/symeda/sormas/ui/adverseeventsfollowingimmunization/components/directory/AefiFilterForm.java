@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -77,7 +74,7 @@ public class AefiFilterForm extends AbstractFilterForm<AefiCriteria> {
 	@Override
 	protected String createHtmlLayout() {
 		return divCss(
-			CssStyles.VIEW_SECTION,
+			"",
 			filterLocs(ArrayUtils.addAll(getMainFilterLocators(), ACTION_BUTTONS_ID)) + locCss(CssStyles.VSPACE_TOP_NONE, MORE_FILTERS_ID));
 
 	}
@@ -86,7 +83,7 @@ public class AefiFilterForm extends AbstractFilterForm<AefiCriteria> {
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			AefiCriteria.DISEASE,
-			AefiCriteria.NAME_ADDRESS_PHONE_EMAIL_LIKE,
+			AefiCriteria.PERSON_LIKE,
 			AefiCriteria.AEFI_TYPE,
 			AefiCriteria.VACCINE_NAME,
 			AefiCriteria.REGION,
@@ -105,10 +102,7 @@ public class AefiFilterForm extends AbstractFilterForm<AefiCriteria> {
 		addField(FieldConfiguration.pixelSized(AefiCriteria.DISEASE, 140));
 
 		final TextField searchField = addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				AefiCriteria.NAME_ADDRESS_PHONE_EMAIL_LIKE,
-				I18nProperties.getString(Strings.promptPersonsSearchField),
-				200));
+			FieldConfiguration.withCaptionAndPixelSized(AefiCriteria.PERSON_LIKE, I18nProperties.getString(Strings.promptPersonsSearchField), 200));
 		searchField.setNullRepresentation("");
 
 		addFields(FieldConfiguration.pixelSized(AefiCriteria.AEFI_TYPE, 140), FieldConfiguration.pixelSized(AefiCriteria.VACCINE_NAME, 140));
