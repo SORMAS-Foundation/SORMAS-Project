@@ -115,7 +115,7 @@ public class UserController {
 			new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
 		// Add reset password button
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
 			editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
 		}
@@ -178,8 +178,8 @@ public class UserController {
 	}
 
 	private void saveUser(UserDto user) {
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC)) {
-			FacadeProvider.getUserFacade().saveOnlyRoles(user, false);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			FacadeProvider.getUserFacade().setUserRoles(user.toReference(), user.getUserRoles());
 		} else {
 			FacadeProvider.getUserFacade().saveUser(user, false);
 		}

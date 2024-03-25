@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -481,15 +483,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName("James").lastName("Smith").nationalHealthId(nationalHealthId);
 		List<String> similarPersonUuids =
-				getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
 
 		assertThat(similarPersonUuids, containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid()));
 
 		MockProducer.mockProperty(ConfigFacadeEjb.DUPLICATE_CHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA, Boolean.TRUE.toString());
 		similarPersonUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
 		assertThat(
-				similarPersonUuids,
-				containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid(), otherNameSameHealthIdPerson.getUuid()));
+			similarPersonUuids,
+			containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid(), otherNameSameHealthIdPerson.getUuid()));
 
 	}
 
@@ -632,6 +634,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(case12);
 		getCaseFacade().save(case2);
 
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(2));
@@ -702,6 +707,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(case4);
 		getCaseFacade().save(case5);
 
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
+
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(4));
@@ -722,6 +731,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetPersonsAfter() {
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TRAVEL_ENTRIES);
 
 		int batchSize = 4;
 		Date t1 = new Date();
@@ -1656,6 +1668,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.pointOfEntry);
 
 		// DENGUE Travel Entry
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TRAVEL_ENTRIES);
+
 		PersonDto personWithDengue = creator.createPerson("Person Dengue", "Test");
 		creator.createTravelEntry(
 			personWithDengue.toReference(),

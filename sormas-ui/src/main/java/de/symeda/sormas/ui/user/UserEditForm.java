@@ -242,7 +242,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addFieldListeners(UserDto.USER_ROLES, e -> updateFieldsByUserRole());
         updateFieldsByUserRole();
 
-        if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC)) {
+        if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
             this.getFieldGroup().getFields().forEach(userField ->{
                 if (!userField.getId().equals(UserDto.USER_ROLES)) {
                     userField.setEnabled(false);

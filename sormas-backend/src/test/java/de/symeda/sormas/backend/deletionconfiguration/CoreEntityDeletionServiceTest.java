@@ -322,15 +322,11 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.IMMUNIZATION_MANAGEMENT);
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			List<FeatureConfiguration> resultList = query.getResultList();
+			List<FeatureConfiguration> resultList = (List<FeatureConfiguration>) query.getResultList();
 
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.REDUCED, true);
-			final FeatureConfiguration singleResult = resultList.stream()
-				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.IMMUNIZATION_MANAGEMENT))
-				.findFirst()
-				.orElse(null);
-			singleResult.setProperties(properties);
+			resultList.get(1).setProperties(properties);
 			em.persist(resultList.get(1));
 		});
 

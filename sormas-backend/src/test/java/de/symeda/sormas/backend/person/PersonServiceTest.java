@@ -7,7 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -16,6 +19,9 @@ public class PersonServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testIsPermittedAssociation() {
+		FeatureConfigurationIndexDto featureConfiguration =
+				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TRAVEL_ENTRIES);
 
 		assertTrue(getPersonService().isPermittedAssociation(PersonAssociation.ALL));
 		assertTrue(getPersonService().isPermittedAssociation(PersonAssociation.CASE));

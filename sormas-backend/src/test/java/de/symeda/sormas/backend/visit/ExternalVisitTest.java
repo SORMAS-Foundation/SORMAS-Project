@@ -30,6 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Test;
 
@@ -377,6 +380,10 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesCasesOnly() {
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
+
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
@@ -479,6 +486,9 @@ public class ExternalVisitTest extends AbstractBeanTest {
 
 		loginWith(externalVisitsUser);
 
+		FeatureConfigurationIndexDto featureConfiguration =
+				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(4));

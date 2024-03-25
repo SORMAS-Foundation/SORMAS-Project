@@ -28,6 +28,9 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -668,6 +671,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	@Test
 	public void testShareCase_WithCaseNotAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws SormasToSormasException {
 		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
+
+		FeatureConfigurationIndexDto featureConfigurationKeycloak =
+				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfigurationKeycloak, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {

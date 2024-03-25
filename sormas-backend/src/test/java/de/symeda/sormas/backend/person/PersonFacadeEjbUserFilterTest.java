@@ -21,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -94,6 +97,9 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 	@Test
 	public void testGetPersonIndexListWhenSeveralAssociations() {
 		loginWith(nationalUser);
+		FeatureConfigurationIndexDto featureConfiguration =
+				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TRAVEL_ENTRIES);
 
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("John2", "Doe2");

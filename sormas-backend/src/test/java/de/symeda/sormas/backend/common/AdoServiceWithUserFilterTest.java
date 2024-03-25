@@ -38,13 +38,9 @@ public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 
 		executeInTransaction(em -> {
 			Query query = em.createQuery("select f from featureconfiguration f");
-			List<FeatureConfiguration> resultList = query.getResultList();
+			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
 			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
 			properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-			final FeatureConfiguration singleResult = resultList.stream()
-				.filter(featureConfig -> featureConfig.getFeatureType().equals(FeatureType.LIMITED_SYNCHRONIZATION))
-				.findFirst()
-				.orElse(null);
 			singleResult.setProperties(properties);
 			em.persist(singleResult);
 		});
