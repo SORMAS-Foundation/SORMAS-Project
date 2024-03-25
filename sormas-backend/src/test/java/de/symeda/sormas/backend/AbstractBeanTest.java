@@ -33,8 +33,6 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,6 +75,8 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportFacade;
@@ -329,9 +329,9 @@ public abstract class AbstractBeanTest {
 		createDiseaseConfigurations();
 	}
 
-	public void createFeatureConfigurationForSormasUserSave() {
+	private void createFeatureConfigurationForSormasUserSave() {
 		FeatureConfigurationIndexDto featureConfigurationKeycloak =
-				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
 		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfigurationKeycloak, FeatureType.KEYCLOAK_TO_SORMAS_USER_SYNC);
 	}
 
