@@ -30,18 +30,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
-import javax.persistence.Query;
 
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -58,7 +55,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -121,18 +117,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testPseudonymizedGetByUuidWithLimitedUser() throws InterruptedException {
 
 		// deactivate AUTOMATIC_RESPONSIBILITY_ASSIGNMENT in order to assign the limited user to a case from outside jurisdiction
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_SURVEILANCE);
-
-		executeInTransaction(em -> {
-			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
-			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-			properties.put(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false);
-			singleResult.setProperties(properties);
-			em.persist(singleResult);
-		});
+		createFeatureConfiguration(FeatureType.CASE_SURVEILANCE, true, Map.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, false));
 
 		// case and sample within limited user's jurisdiction
 		CaseDataDto caze1 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);

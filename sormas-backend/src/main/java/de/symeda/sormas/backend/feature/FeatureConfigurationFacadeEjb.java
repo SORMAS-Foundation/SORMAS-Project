@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.feature;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -384,23 +383,17 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	public boolean isFeatureDisabled(FeatureType featureType) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
 
 		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
-		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
+		cq.select(root.get(FeatureConfiguration.ENABLED));
+		List<Boolean> resultList = em.createQuery(cq).getResultList();
 
 		if (resultList.isEmpty()) {
-			return !Arrays.stream(FeatureType.values()).filter(featureType1 -> featureType1.equals(featureType)).findFirst().get().isEnabledDefault();
+			return !featureType.isEnabledDefault();
 		}
-
-		if (resultList.size() == 1) {
-			return !resultList.get(0).isEnabled();
-		} else {
-			final List<FeatureConfiguration> disabledFeaturesFound =
-				resultList.stream().filter(resultFeature -> !resultFeature.isEnabled()).collect(Collectors.toList());
-			return !disabledFeaturesFound.isEmpty();
-		}
+		return resultList.stream().anyMatch(Boolean.FALSE::equals);
 	}
 
 	@Override

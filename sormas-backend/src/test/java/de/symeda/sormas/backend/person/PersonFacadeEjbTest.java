@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -43,6 +41,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -634,9 +633,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(case12);
 		getCaseFacade().save(case2);
 
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(2));
@@ -707,9 +704,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(case4);
 		getCaseFacade().save(case5);
 
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -731,9 +726,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetPersonsAfter() {
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TRAVEL_ENTRIES);
+		createFeatureConfiguration(FeatureType.TRAVEL_ENTRIES, true);
 
 		int batchSize = 4;
 		Date t1 = new Date();
@@ -1668,9 +1661,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.pointOfEntry);
 
 		// DENGUE Travel Entry
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.TRAVEL_ENTRIES);
+		createFeatureConfiguration(FeatureType.TRAVEL_ENTRIES, true);
 
 		PersonDto personWithDengue = creator.createPerson("Person Dengue", "Test");
 		creator.createTravelEntry(

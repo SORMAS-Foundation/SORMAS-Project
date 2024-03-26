@@ -59,6 +59,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 
 		Mockito.when(configurationFacade.isFeatureEnabled(any())).thenReturn(true);
 		Mockito.when(configurationFacade.isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)).thenReturn(false);
+
 	}
 
 	@Test

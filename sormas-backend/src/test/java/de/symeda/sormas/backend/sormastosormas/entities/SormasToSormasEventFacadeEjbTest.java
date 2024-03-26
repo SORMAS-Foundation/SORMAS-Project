@@ -30,8 +30,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -46,6 +44,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -89,9 +88,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEvent() throws SormasToSormasException {
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 
 		UserDto nationalUser = creator.createNationalUser();
 		useSurveillanceOfficerLogin(rdcf);
@@ -169,9 +166,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEventWithPseudonymizeData() throws SormasToSormasException {
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 
 		UserDto nationalUser = creator.createNationalUser();
 		useSurveillanceOfficerLogin(rdcf);
@@ -250,9 +245,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEventWithSamples() throws SormasToSormasException {
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 		UserDto nationalUser = creator.createNationalUser();
 
 		EventDto event = creator.createEvent(
@@ -473,9 +466,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testReturnEvent() throws SormasToSormasException {
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 
 		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
@@ -900,9 +891,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	public void testReportingUserIsIncludedButUpdated() throws SormasToSormasException {
 		UserDto officer = useSurveillanceOfficerLogin(rdcf);
 
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 
 		EventDto event = creator.createEvent(
 			EventStatus.SCREENING,

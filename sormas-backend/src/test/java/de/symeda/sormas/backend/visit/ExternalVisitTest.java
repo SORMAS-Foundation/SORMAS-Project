@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +42,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
@@ -380,9 +378,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesCasesOnly() {
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -486,9 +482,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 
 		loginWith(externalVisitsUser);
 
-		FeatureConfigurationIndexDto featureConfiguration =
-				new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.CASE_FOLLOWUP);
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(4));
