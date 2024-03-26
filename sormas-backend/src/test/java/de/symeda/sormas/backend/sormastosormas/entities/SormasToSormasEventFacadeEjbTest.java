@@ -44,6 +44,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -87,6 +88,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEvent() throws SormasToSormasException {
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
+
 		UserDto nationalUser = creator.createNationalUser();
 		useSurveillanceOfficerLogin(rdcf);
 
@@ -163,6 +166,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEventWithPseudonymizeData() throws SormasToSormasException {
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
+
 		UserDto nationalUser = creator.createNationalUser();
 		useSurveillanceOfficerLogin(rdcf);
 
@@ -240,6 +245,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEventWithSamples() throws SormasToSormasException {
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 		UserDto nationalUser = creator.createNationalUser();
 
 		EventDto event = creator.createEvent(
@@ -460,6 +466,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testReturnEvent() throws SormasToSormasException {
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
+
 		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
 
 		SormasToSormasOriginInfoDto originInfo = createAndSaveSormasToSormasOriginInfo(DEFAULT_SERVER_ID, true, null);
@@ -882,6 +890,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	@Test
 	public void testReportingUserIsIncludedButUpdated() throws SormasToSormasException {
 		UserDto officer = useSurveillanceOfficerLogin(rdcf);
+
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, true);
 
 		EventDto event = creator.createEvent(
 			EventStatus.SCREENING,

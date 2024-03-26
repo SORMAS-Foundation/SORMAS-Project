@@ -41,6 +41,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -481,15 +482,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName("James").lastName("Smith").nationalHealthId(nationalHealthId);
 		List<String> similarPersonUuids =
-				getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
+			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
 
 		assertThat(similarPersonUuids, containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid()));
 
 		MockProducer.mockProperty(ConfigFacadeEjb.DUPLICATE_CHECKS_NATIONAL_HEALTH_ID_OVERRIDES_CRITERIA, Boolean.TRUE.toString());
 		similarPersonUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(AbstractUuidDto::getUuid).collect(Collectors.toList());
 		assertThat(
-				similarPersonUuids,
-				containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid(), otherNameSameHealthIdPerson.getUuid()));
+			similarPersonUuids,
+			containsInAnyOrder(matchingNameAndHealthIdPerson.getUuid(), sameNameNoHealthIdPerson.getUuid(), otherNameSameHealthIdPerson.getUuid()));
 
 	}
 
@@ -632,6 +633,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(case12);
 		getCaseFacade().save(case2);
 
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(2));
@@ -702,6 +704,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(case4);
 		getCaseFacade().save(case5);
 
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
+
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(4));
@@ -722,6 +726,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetPersonsAfter() {
+		createFeatureConfiguration(FeatureType.TRAVEL_ENTRIES, true);
 
 		int batchSize = 4;
 		Date t1 = new Date();
@@ -1656,6 +1661,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.pointOfEntry);
 
 		// DENGUE Travel Entry
+		createFeatureConfiguration(FeatureType.TRAVEL_ENTRIES, true);
+
 		PersonDto personWithDengue = creator.createPerson("Person Dengue", "Test");
 		creator.createTravelEntry(
 			personWithDengue.toReference(),

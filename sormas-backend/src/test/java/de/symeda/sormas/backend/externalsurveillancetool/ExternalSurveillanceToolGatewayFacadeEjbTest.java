@@ -60,6 +60,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
@@ -668,6 +669,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 	@Test
 	public void testShareCase_WithCaseNotAllowedToBeSharedWithReportingTool(WireMockRuntimeInfo wireMockRuntime) throws SormasToSormasException {
 		UserReferenceDto officer = useSurveillanceOfficerLogin(rdcf).toReference();
+
+		createFeatureConfiguration(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, false);
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {

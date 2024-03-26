@@ -266,6 +266,7 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
+	AUTH_PROVIDER_TO_SORMAS_USER_SYNC(true, false, null, null, null),
 
 	// REGION- AND DISEASE-BASED FEATURES
 	LINE_LISTING(false, false, null, null, null),
