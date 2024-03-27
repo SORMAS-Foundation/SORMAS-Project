@@ -86,6 +86,7 @@
 		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
 		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
+		<class>de.symeda.sormas.backend.selfdeclaration.SelfDeclaration</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
