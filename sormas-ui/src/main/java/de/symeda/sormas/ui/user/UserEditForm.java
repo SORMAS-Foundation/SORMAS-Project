@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static java.util.function.Predicate.not;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -244,7 +245,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
             this.getFieldGroup().getFields().forEach(userField ->{
-                if (!userField.getId().equals(UserDto.USER_ROLES)) {
+                List<String> excludedFields = Arrays.asList(UserDto.USER_ROLES, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY);
+                if (!excludedFields.contains(userField.getId())) {
                     userField.setEnabled(false);
                 }
             });
