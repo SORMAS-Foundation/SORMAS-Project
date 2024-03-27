@@ -198,8 +198,8 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 				}
 
 				relevanceStatusFilter.addValueChangeListener(e -> {
-					if (grid.getColumn(DELETE_REASON_COLUMN) != null) {
-						grid.getColumn(DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
 					}
 
 					criteria.setRelevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
