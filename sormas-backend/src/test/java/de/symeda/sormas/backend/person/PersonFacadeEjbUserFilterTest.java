@@ -29,6 +29,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
@@ -94,6 +95,7 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 	@Test
 	public void testGetPersonIndexListWhenSeveralAssociations() {
 		loginWith(nationalUser);
+		createFeatureConfiguration(FeatureType.TRAVEL_ENTRIES, true);
 
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("John2", "Doe2");

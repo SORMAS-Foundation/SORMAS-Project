@@ -46,6 +46,7 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -77,6 +78,7 @@ public class UserController {
 	public void edit(UserDto user) {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid(), window::close);
+
 		window.setCaption(I18nProperties.getString(Strings.headingEditUser));
 		window.setContent(userComponent);
 		// user form is too big for typical screens
@@ -113,8 +115,10 @@ public class UserController {
 			new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
 		// Add reset password button
-		Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
-		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
+			editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		}
 
 		editView.addDiscardListener(closeWindowCallback::run);
 		editView.addCommitListener(() -> {
@@ -174,7 +178,11 @@ public class UserController {
 	}
 
 	private void saveUser(UserDto user) {
-		FacadeProvider.getUserFacade().saveUser(user, false);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			FacadeProvider.getUserFacade().setUserRoles(user.toReference(), user.getUserRoles());
+		} else {
+			FacadeProvider.getUserFacade().saveUser(user, false);
+		}
 		refreshView();
 	}
 

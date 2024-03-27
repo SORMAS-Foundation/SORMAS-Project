@@ -31,6 +31,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -112,7 +113,8 @@ public class UsersView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		if (UiUtil.permitted(UserRight.USER_CREATE)) {
+		if (UiUtil.permitted(UserRight.USER_CREATE)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
 				VaadinIcons.PLUS_CIRCLE,
@@ -123,6 +125,8 @@ public class UsersView extends AbstractUserView {
 		}
 
 		if (FacadeProvider.getUserFacade().isSyncEnabled()) {
+		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			syncButton = ButtonHelper.createIconButton(Captions.syncUsers, VaadinIcons.REFRESH, e -> ControllerProvider.getUserController().sync());
 
 			addHeaderComponent(syncButton);
