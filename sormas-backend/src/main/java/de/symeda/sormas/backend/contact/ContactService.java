@@ -1383,7 +1383,9 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, cqc.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
+					phoneNumberPredicate(cb, cqc.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					//the below field is intentionally added to be available to be checked from two different filter fields
+					CriteriaBuilderHelper.ilike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
