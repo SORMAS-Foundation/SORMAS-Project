@@ -346,7 +346,7 @@ public class UserController {
 	}
 
 	public void sync() {
-		if (true) {
+		if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			FacadeProvider.getUserFacade().syncUsersFromAuthenticationProvider();
 			SormasUI.refreshView();
 		} else {
