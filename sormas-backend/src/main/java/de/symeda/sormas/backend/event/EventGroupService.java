@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -32,6 +34,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -48,6 +51,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
 @LocalBean
@@ -55,6 +59,8 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private EventService eventService;
 
 	public EventGroupService() {
 		super(EventGroup.class);
@@ -77,12 +83,14 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 		if (currentUser == null) {
 			return null;
 		}
+
+		final Join<EventGroup, Event> eventPath = eventGroupPath.join(EventGroup.EVENTS, JoinType.LEFT);
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION) {
-			return null;
+			return CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, eventPath.get(Event.DISEASE));
 		}
 
-		Join<EventGroup, Event> eventPath = eventGroupPath.join(EventGroup.EVENTS, JoinType.LEFT);
 		Predicate filter = null;
 
 		switch (jurisdictionLevel) {
@@ -102,11 +110,8 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 		}
 
 		if (filter != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				CriteriaBuilderHelper
-					.limitedDiseasePredicate(cb, currentUser, eventPath.get(Event.DISEASE), cb.isNull(eventPath.get(Event.DISEASE))));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, eventPath.get(Event.DISEASE)));
 		}
 
 		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
@@ -286,5 +291,20 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 		}
 
 		return filter;
+	}
+
+	public EditPermissionType getEditPermissionType(String uuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Event> event = cq.from(Event.class);
+
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+		cq.where(cb.equal(event.join(Event.EVENT_GROUPS).get(EventGroup.UUID), uuid), eventService.createDefaultFilter(cb, event));
+
+		cq.select(JurisdictionHelper.booleanSelector(cb, eventService.inJurisdiction(eventQueryContext, getCurrentUser())));
+
+		List<Boolean> jurisdictionFlags = em.createQuery(cq).getResultList();
+		return jurisdictionFlags.stream().allMatch(Boolean::booleanValue) ? EditPermissionType.ALLOWED : EditPermissionType.REFUSED;
 	}
 }

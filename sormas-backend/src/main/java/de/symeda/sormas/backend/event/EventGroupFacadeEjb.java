@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
@@ -332,6 +333,10 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		EventGroup existingEventGroup = eventGroupService.getByUuid(dto.getUuid());
 		FacadeHelper.checkCreateAndEditRights(existingEventGroup, userService, UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_EDIT);
 
+		if (!isEditAllowed(dto.getUuid())) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		EventGroup eventGroup = fillOrBuildEntity(dto, existingEventGroup, checkChangeDate);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -353,15 +358,18 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
 	public void linkEventToGroup(EventReferenceDto eventReference, EventGroupReferenceDto eventGroupReference) {
-		linkEventsToGroup(Collections.singletonList(eventReference), eventGroupReference);
+		Event event = eventService.getByReferenceDto(eventReference);
+		EventGroup eventGroup = eventGroupService.getByReferenceDto(eventGroupReference);
+
+		linkEventToGroup(event, userService.getCurrentUser(), List.of(eventGroup));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_LINK)
-	public void linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
+	public List<ProcessedEntity> linkEventsToGroup(List<EventReferenceDto> eventReferences, EventGroupReferenceDto eventGroupReference) {
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
-		linkEventsToGroups(
+		return linkEventsToGroups(
 			eventUuids,
 			Collections.singletonList(eventGroupReference.getUuid()),
 			getAlreadyLinkedEventUuidsToGroup(eventUuids, Collections.singletonList(eventGroupReference.getUuid())));
@@ -432,15 +440,14 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 				"User " + currentUser.getUuid() + " is not allowed to link events from another region to an event group.");
 		}
 
-		// Check that the event group is not already related to this event
-		List<EventGroup> filteredEventGroups = getFilteredEventGroups(event, eventGroups);
+		List<EventGroup> eventGroupsToLinkTo = getEventGroupsNotLinkedTo(event, eventGroups);
 
-		if (!filteredEventGroups.isEmpty()) {
+		if (!eventGroupsToLinkTo.isEmpty()) {
 			List<EventGroup> groups = new ArrayList<>();
 			if (event.getEventGroups() != null) {
 				groups.addAll(event.getEventGroups());
 			}
-			groups.addAll(filteredEventGroups);
+			groups.addAll(eventGroupsToLinkTo);
 			event.setEventGroups(groups);
 
 			eventService.ensurePersisted(event);
@@ -454,7 +461,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		List<EventGroup> filteredEventGroups;
 		List<String> alreadyLinkedEventUuids = new ArrayList<>();
 		for (Event event : events) {
-			filteredEventGroups = getFilteredEventGroups(event, eventGroups);
+			filteredEventGroups = getEventGroupsNotLinkedTo(event, eventGroups);
 			if (filteredEventGroups.isEmpty()) {
 				alreadyLinkedEventUuids.add(event.getUuid());
 			}
@@ -462,7 +469,16 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		return alreadyLinkedEventUuids;
 	}
 
-	public List<EventGroup> getFilteredEventGroups(Event event, List<EventGroup> eventGroups) {
+	@Override
+	public EditPermissionType getEditPermissionType(String uuid) {
+		return eventGroupService.getEditPermissionType(uuid);
+	}
+
+	private boolean isEditAllowed(String uuid) {
+		return getEditPermissionType(uuid) == EditPermissionType.ALLOWED;
+	}
+
+	public List<EventGroup> getEventGroupsNotLinkedTo(Event event, List<EventGroup> eventGroups) {
 		List<EventGroup> filteredEventGroups = eventGroups != null ? eventGroups : Collections.emptyList();
 
 		// Check that the event group is not already related to this event
@@ -484,8 +500,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (!eventFacade.isInJurisdictionOrOwned(event.getUuid()) && (jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-			throw new UnsupportedOperationException(
-				"User " + currentUser.getUuid() + " is not allowed to unlink events from another region to an event group.");
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
 		}
 
 		// Check that the event group is not already unlinked to this event
