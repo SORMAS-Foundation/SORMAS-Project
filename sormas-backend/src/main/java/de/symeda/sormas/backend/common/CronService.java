@@ -187,12 +187,11 @@ public class CronService {
 
 		final int daysAfterEventsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
-		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade
-			.getProperty(
-				FeatureType.AUTOMATIC_ARCHIVING,
-				DeletableEntityType.EVENT_PARTICIPANT,
-				FeatureTypeProperty.THRESHOLD_IN_DAYS,
-				Integer.class);
+		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade.getProperty(
+			FeatureType.AUTOMATIC_ARCHIVING,
+			DeletableEntityType.EVENT_PARTICIPANT,
+			FeatureTypeProperty.THRESHOLD_IN_DAYS,
+			Integer.class);
 		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
 			logger.warn(
 				"{} for {} [{}] should be <= the one for {} [{}]",
@@ -256,12 +255,11 @@ public class CronService {
 
 	@Schedule(hour = "2", minute = "20", persistent = false)
 	public void archiveEventParticipants() {
-		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade
-			.getProperty(
-				FeatureType.AUTOMATIC_ARCHIVING,
-				DeletableEntityType.EVENT_PARTICIPANT,
-				FeatureTypeProperty.THRESHOLD_IN_DAYS,
-				Integer.class);
+		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade.getProperty(
+			FeatureType.AUTOMATIC_ARCHIVING,
+			DeletableEntityType.EVENT_PARTICIPANT,
+			FeatureTypeProperty.THRESHOLD_IN_DAYS,
+			Integer.class);
 
 		if (daysAfterEventParticipantGetsArchived >= 1) {
 			eventParticipantFacade.archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived);
@@ -276,7 +274,7 @@ public class CronService {
 		if (daysAfterImmunizationsGetsArchived >= 1) {
 			immunizationFacade.archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived);
 		}
-}
+	}
 
 	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void archiveTravelEntry() {
@@ -295,8 +293,7 @@ public class CronService {
 
 	@Schedule(hour = "2", minute = "35", persistent = false)
 	public void syncUsersFromAuthenticationProvider() {
-		// TODO - use proper feature type
-		if (userFacade.isSyncEnabled() && featureConfigurationFacade.isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (userFacade.isSyncEnabled() && featureConfigurationFacade.isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			userFacade.syncUsersFromAuthenticationProvider();
 		}
 	}

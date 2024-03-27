@@ -125,8 +125,6 @@ public class UsersView extends AbstractUserView {
 		}
 
 		if (FacadeProvider.getUserFacade().isSyncEnabled()) {
-		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
 			syncButton = ButtonHelper.createIconButton(Captions.syncUsers, VaadinIcons.REFRESH, e -> ControllerProvider.getUserController().sync());
 
 			addHeaderComponent(syncButton);
