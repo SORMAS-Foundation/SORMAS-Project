@@ -46,8 +46,6 @@ public class EnvironmentGridComponent extends VerticalLayout {
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
-	public static final String DELETE_REASON_COLUMN = "deleteReasonCumulated";
-
 	public EnvironmentGridComponent(
 		EnvironmentCriteria criteria,
 		ViewConfiguration viewConfiguration,
@@ -123,8 +121,8 @@ public class EnvironmentGridComponent extends VerticalLayout {
 				criteria.getRelevanceStatus(),
 				UserRight.ENVIRONMENT_DELETE,
 				relevanceStatus -> {
-					if (grid.getColumn(DELETE_REASON_COLUMN) != null) {
-						grid.getColumn(DELETE_REASON_COLUMN).setHidden(!relevanceStatus.equals(EntityRelevanceStatus.DELETED));
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatus.equals(EntityRelevanceStatus.DELETED));
 					}
 					criteria.setRelevanceStatus(relevanceStatus);
 					filterChangeHandler.run();
