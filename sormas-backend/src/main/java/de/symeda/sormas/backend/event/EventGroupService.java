@@ -83,12 +83,14 @@ public class EventGroupService extends AdoServiceWithUserFilterAndJurisdiction<E
 		if (currentUser == null) {
 			return null;
 		}
+
+		final Join<EventGroup, Event> eventPath = eventGroupPath.join(EventGroup.EVENTS, JoinType.LEFT);
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION) {
-			return null;
+			return CriteriaBuilderHelper.limitedDiseasePredicate(cb, currentUser, eventPath.get(Event.DISEASE));
 		}
 
-		Join<EventGroup, Event> eventPath = eventGroupPath.join(EventGroup.EVENTS, JoinType.LEFT);
 		Predicate filter = null;
 
 		switch (jurisdictionLevel) {

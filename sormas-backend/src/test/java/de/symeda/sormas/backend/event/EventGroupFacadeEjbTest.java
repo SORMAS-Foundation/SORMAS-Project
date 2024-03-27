@@ -17,19 +17,24 @@ package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupFacade;
+import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -91,8 +96,36 @@ public class EventGroupFacadeEjbTest extends AbstractBeanTest {
 		eventsByGroupCriteria.setUserFilterIncluded(false);
 		List<EventIndexDto> eventsByGroup = getEventFacade().getIndexList(eventsByGroupCriteria, 0, 10, null);
 
-		assertThat(eventsByGroup, Matchers.hasSize(1));
+		assertThat(eventsByGroup, hasSize(1));
 		assertThat(eventsByGroup.get(0).getUuid(), Matchers.is(event.getUuid()));
+	}
+
+	@Test
+	public void testGetIndexListWithNationalUserLimitedToCovid() {
+		EventGroupFacadeEjb eventGroupFacade = getBean(EventGroupFacadeEjbLocal.class);
+		RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+
+		// create a group with a cholera event
+		EventDto event = creator.createEvent(user, Disease.CHOLERA);
+		EventGroupDto eventGroup = createEventGroup();
+		eventGroupFacade.linkEventToGroup(event.toReference(), eventGroup.toReference());
+
+		//create a group with covid event
+		EventDto event2 = creator.createEvent(user, Disease.CORONAVIRUS);
+		EventGroupDto eventGroup2 = createEventGroup();
+		eventGroupFacade.linkEventToGroup(event2.toReference(), eventGroup2.toReference());
+
+		RDCF rdcf2 = creator.createRDCF();
+		UserDto natUser = creator.createUser(rdcf2, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER), u -> {
+			u.setLimitedDiseases(Set.of(Disease.CORONAVIRUS));
+		});
+		loginWith(natUser);
+
+		List<EventGroupIndexDto> indexList = eventGroupFacade.getIndexList(new EventGroupCriteria(), 0, 10, null);
+
+		assertThat(indexList, hasSize(1));
+		assertThat(indexList.get(0).getUuid(), Matchers.is(eventGroup2.getUuid()));
 	}
 
 	private EventGroupDto createEventGroup() {
