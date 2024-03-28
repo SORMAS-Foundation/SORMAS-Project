@@ -22,6 +22,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.immunization.components.layout.directory.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.layout.directory.ImmunizationDataLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -166,6 +167,12 @@ public class ImmunizationsView extends AbstractView {
 				if (relevanceStatusInfoLabel != null) {
 					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 				}
+
+				ImmunizationGrid grid = immunizationDataLayout.getGrid();
+				if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+					grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+				}
+
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 				navigateTo(criteria);
 			});

@@ -24,6 +24,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
@@ -53,14 +54,14 @@ public class EnvironmentGridComponent extends VerticalLayout {
 		setSizeFull();
 		setSpacing(false);
 
+		grid = new EnvironmentGrid(criteria, viewConfiguration);
+		grid.addDataSizeChangeListener(e -> updateStatusButtons(criteria));
+
 		filterForm = new EnvironmentFilterForm();
 		filterForm.addResetHandler(e -> filterResetHandler.run());
 		filterForm.addApplyHandler(e -> filterChangeHandler.run());
 
 		HorizontalLayout statusFilterBar = buildStatusFilterBar(criteria, filterChangeHandler);
-
-		grid = new EnvironmentGrid(criteria, viewConfiguration);
-		grid.addDataSizeChangeListener(e -> updateStatusButtons(criteria));
 
 		addComponents(filterForm, statusFilterBar, grid);
 		setExpandRatio(grid, 1);
@@ -120,6 +121,9 @@ public class EnvironmentGridComponent extends VerticalLayout {
 				criteria.getRelevanceStatus(),
 				UserRight.ENVIRONMENT_DELETE,
 				relevanceStatus -> {
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatus.equals(EntityRelevanceStatus.DELETED));
+					}
 					criteria.setRelevanceStatus(relevanceStatus);
 					filterChangeHandler.run();
 				}));
