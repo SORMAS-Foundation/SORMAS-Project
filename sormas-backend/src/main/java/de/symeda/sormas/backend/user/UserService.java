@@ -104,9 +104,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 		User user = new User();
 		// dummy password to make sure no one can login with this user
-		String password = PasswordHelper.createPass(12);
-		user.setSeed(PasswordHelper.createPass(16));
-		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+		setNewPassword(user);
 		return user;
 	}
 
@@ -642,10 +640,16 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 			return null;
 		}
 
+		String password = setNewPassword(user);
+		ensurePersisted(user);
+
+		return password;
+	}
+
+	public static String setNewPassword(User user) {
 		String password = PasswordHelper.createPass(12);
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
-		ensurePersisted(user);
 
 		return password;
 	}

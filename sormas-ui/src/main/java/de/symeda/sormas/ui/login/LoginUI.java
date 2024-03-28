@@ -17,12 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
+import java.io.IOException;
+
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import javax.servlet.ServletSecurityElement;
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,21 +44,14 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-import de.symeda.sormas.api.AuthProvider;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasErrorHandler;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 import fish.payara.security.openid.api.OpenIdContext;
-
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -80,14 +80,14 @@ public class LoginUI extends UI {
 		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
 
 		setContent(
-				new LoginScreen(
-						DefaultPasswordUIHelper.getInterceptionLoginListener(
-							(LoginListener) () -> UI.getCurrent().getPage().setLocation(
-								VaadinServletService.getCurrentServletRequest().getContextPath() + "#"
-									+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment())),
-								UI.getCurrent())
-				)
-		);
+			new LoginScreen(
+				DefaultPasswordUIHelper.getInterceptionLoginListener(
+					(LoginListener) () -> UI.getCurrent()
+						.getPage()
+						.setLocation(
+							VaadinServletService.getCurrentServletRequest().getContextPath() + "#"
+								+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment())),
+					UI.getCurrent())));
 	}
 
 	public static class SormasLoginServlet extends VaadinServlet {
