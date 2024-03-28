@@ -1,0 +1,1194 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../DEMO_APP/">
+      
+      
+        <link rel="next" href="../DEVELOPMENT_ENVIRONMENT/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>REST - SORMAS Project</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rest-interface-for-sormas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SORMAS Project" class="md-header__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SORMAS Project
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              REST
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SORMAS Project" class="md-nav__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SORMAS Project
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://sormas.org" class="md-nav__link">
+        Official Website
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEMO_APP/" class="md-nav__link">
+        Demo App
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          REST
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        REST
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-documentation" class="md-nav__link">
+    API Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openapi-swagger" class="md-nav__link">
+    OpenAPI / Swagger
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-visit-api" class="md-nav__link">
+    External Visit API
+  </a>
+  
+    <nav class="md-nav" aria-label="External Visit API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-description" class="md-nav__link">
+    Workflow Description
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#about-external-follow-up" class="md-nav__link">
+    About external follow up
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#about-persons-cases-and-contacts" class="md-nav__link">
+    About persons, cases and contacts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#person-status-variables" class="md-nav__link">
+    Person status variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-in-sormas" class="md-nav__link">
+    Configuration in SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflows" class="md-nav__link">
+    Workflows
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sormas-fetching-an-authentication-token-from-the-external-journal" class="md-nav__link">
+    SORMAS fetching an authentication token from the external journal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registration-of-a-new-person-in-the-external-journal" class="md-nav__link">
+    Registration of a new person in the external journal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-of-symptom-journal-data-to-sormas" class="md-nav__link">
+    Upload of symptom journal data to SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-of-a-symptom-journal-status-to-sormas" class="md-nav__link">
+    Upload of a symptom journal status to SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-a-person-in-the-external-journal-from-within-sormas" class="md-nav__link">
+    Opening a person in the external journal from within SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletion-of-a-person-from-an-external-journal" class="md-nav__link">
+    Deletion of a person from an external journal
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT_ENVIRONMENT/" class="md-nav__link">
+        Development Environment
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-cargoserver/" class="md-nav__link">
+        Cargo Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-base/doc/keycloak/" class="md-nav__link">
+        Keycloak
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-keycloak-service-provider/" class="md-nav__link">
+        Keycloak Service Provider
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../I18N/" class="md-nav__link">
+        I18n
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_CUSTOMIZATION/" class="md-nav__link">
+        Customization
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_DEV_SETUP.md" class="md-nav__link">
+        Development Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_SETUP/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_UPDATE/" class="md-nav__link">
+        Update
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SOP_DISEASES/" class="md-nav__link">
+        Diseases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADDING_LICENSE/" class="md-nav__link">
+        Licensing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3RD_PARTY_ACK/" class="md-nav__link">
+        Acknowledgements
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-documentation" class="md-nav__link">
+    API Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openapi-swagger" class="md-nav__link">
+    OpenAPI / Swagger
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-visit-api" class="md-nav__link">
+    External Visit API
+  </a>
+  
+    <nav class="md-nav" aria-label="External Visit API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-description" class="md-nav__link">
+    Workflow Description
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#about-external-follow-up" class="md-nav__link">
+    About external follow up
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#about-persons-cases-and-contacts" class="md-nav__link">
+    About persons, cases and contacts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#person-status-variables" class="md-nav__link">
+    Person status variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-in-sormas" class="md-nav__link">
+    Configuration in SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflows" class="md-nav__link">
+    Workflows
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sormas-fetching-an-authentication-token-from-the-external-journal" class="md-nav__link">
+    SORMAS fetching an authentication token from the external journal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registration-of-a-new-person-in-the-external-journal" class="md-nav__link">
+    Registration of a new person in the external journal
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-of-symptom-journal-data-to-sormas" class="md-nav__link">
+    Upload of symptom journal data to SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-of-a-symptom-journal-status-to-sormas" class="md-nav__link">
+    Upload of a symptom journal status to SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-a-person-in-the-external-journal-from-within-sormas" class="md-nav__link">
+    Opening a person in the external journal from within SORMAS
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deletion-of-a-person-from-an-external-journal" class="md-nav__link">
+    Deletion of a person from an external journal
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+<h1 id="rest-interface-for-sormas">REST interface for SORMAS</h1>
+<p>This is a one-stop-shop for all systems that need access to the SORMAS data:</p>
+<ul>
+<li>Synchronization of data with the SORMAS Android app</li>
+<li>Data access for the SORMAS Angular web app</li>
+<li>Exchanging data with other SORMAS instances</li>
+<li>External services like symptom diaries or citizen applications</li>
+<li>Synchronization of data with other surveillance or to data analysis systems</li>
+</ul>
+<h2 id="authentication">Authentication</h2>
+<p>Access to the API is by default restricted by HTTP Basic authentication. Using OIDC/OAUTH2/Bearer authentication is
+also possible depending on how keycloak is set up.
+See <a href="https://github.com/sormas-foundation/SORMAS-Project/wiki/Authentication-&amp;-Authorization#keycloak">Authentication &amp; Authorization</a>.</p>
+<p>For basic auth use the username and password as credentials for your HTTP requests.
+The user needs to have a user role having the SORMAS_REST user right.</p>
+<h2 id="api-documentation">API Documentation</h2>
+<p>The SORMAS REST API is documented automatically. The OpenAPI specification files are generated during the build process
+and can be found at <code>${Project Root}/sormas-rest/target/swagger.{json,yaml}</code>.</p>
+<p>You can render the OpenAPI specification with tools like
+<a href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/sormas-foundation/SORMAS-Project/development/sormas-rest/swagger.yaml">editor.swagger.io</a>.
+This allows you to inspect endpoints and example payloads, generate a matching API client for many languages, and to easily interact with the API of a live instance.</p>
+<h2 id="openapi-swagger">OpenAPI / Swagger</h2>
+<p>The OpenAPI files are generated with the <a href="https://github.com/swagger-api/swagger-core/tree/master/modules/swagger-maven-plugin"><code>swagger-maven-plugin</code></a>
+and the Swagger Annotation Framework<sup><a href="[SwaggerAnnotations]">[1]</a></sup>.</p>
+<p>If you are only interested in the OpenAPI specification files, you may either download a recent SORMAS
+<a href="https://github.com/sormas-foundation/SORMAS-Project/releases/">release</a> where the files reside in the <code>openapi</code>
+directory, take a look at the files in <code>sormas-rest</code>, or execute the following command inside the <code>sormas-base</code> module's
+directory to build them for yourself:</p>
+<pre><code class="language-bash"># Requires Maven to be installed!
+mvn package --projects ../sormas-rest --also-make -Dmaven.test.skip=true
+</code></pre>
+<p>The specification files are created at the path specified above.</p>
+<hr />
+<p><a id="SwaggerAnnotations"></a>[1] Swagger Annotations Guide on GitHub:
+<a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations">https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations</a></p>
+<h2 id="external-visit-api">External Visit API</h2>
+<p>The purpose of this API is to enable communication between SORMAS and other symptom journals.
+Only users with the role <code>REST_EXTERNAL_VISITS_USER</code> are authorized to use the endpoints. Authentication is done using
+basic auth, with the user and password. For technical details please contact the dev team on
+<a href="https://github.com/sormas-foundation/SORMAS-Project/discussions">GitHub Discussions</a>.</p>
+<h3 id="workflow-description">Workflow Description</h3>
+<h4 id="about-external-follow-up">About external follow up</h4>
+<p>Follow up in SORMAS is done via visits. Visits hold information about symptoms at a specific time point.
+Visits can be created for cases and contacts, either via the SORMAS-UI or the external visits journal API.</p>
+<h4 id="about-persons-cases-and-contacts">About persons, cases and contacts</h4>
+<p>This is a very basic concept that one needs to understand when working with visits. In SORMAS, a person entity
+represents a physically existing person. Cases and contacts represent epidemiological occurrences. When a person was
+in contact with an infectious environment, the person has a contact in SORMAS.
+When the person was in contact with such environments twice, it gets two contacts.
+When a person falls ill, it gets a case with the according disease. This means: In SORMAS, each contact and case relates
+to exactly one person. One person can have several contacts and cases, though. Follow up is done for a contact
+(or a case, which can be enabled in the SORMAS feature configuration). Contacts (or cases) initiate follow up. A person,
+though, either shows symptoms or not. It can not show symptoms for just one contact and not for the other. Thus, visits
+are related to all active contacts (and cases) of a person. Also, the communication with external symptom journals is
+<strong>PERSON BASED</strong>. Only the person uuid is used, visits are uploaded to each active case and contact of a person.</p>
+<h4 id="person-status-variables">Person status variables</h4>
+<p>It is important to understand the meaning of two variables: the follow-up status and the symptom journal status.</p>
+<p>The follow-up status describes the follow-up for a contact or a case. Possible values are defined in
+<a href="https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/contact/FollowUpStatus.java">the FollowUpStatus enum</a></p>
+<p>Follow up can be done with, or without an external journal, the follow-up status makes no distinction there. Because the
+follow-up status is contact and case specific,but the communication with external journals is person based, SORMAS
+determines the most important follow-up status of all contacts and cases related to the person in question when
+communicating with external journals. Whenever there is follow-up ongoing for any of the persons contacts (and cases if
+the case follow-up feature is enabled in SORMAS), SORMAS will state the <code>FollowUpStatus.FOLLOW_UP</code> for that person
+towards external journals.</p>
+<p>The <a href="https://github.com/sormas-foundation/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/person/SymptomJournalStatus.java">SymptomJournalStatus</a>
+describes the state of a person related to external symptom journals. It is not contact or case specific.</p>
+<h4 id="configuration-in-sormas">Configuration in SORMAS</h4>
+<p>In the domain folder, there is a sormas.properties. it holds the following values relevant for an external journal:</p>
+<ul>
+<li>
+<p><code>interface.patientdiary.authurl</code>: used to fetch an authentication token (see 1. below).</p>
+</li>
+<li>
+<p><code>interface.patientdiary.frontendAuthurl</code>: URL used to retrieve tokens for frontend requests. If not specified, no tokens will be fetched for such.</p>
+</li>
+<li>
+<p><code>interface.patientdiary.tokenLifetime</code>: Lifetime of tokens fetched via the authurl or the frontendAuthurl. To be specified in seconds. Can be set to 0 for no token caching. Defaults to 21600 (6 hrs.).</p>
+</li>
+<li>
+<p><code>interface.patientdiary.probandsurl</code>: used to register new persons in the external journal (see 2. below).</p>
+</li>
+<li>
+<p><code>interface.patientdiary.url</code>: used to open a person in the external journal (see 6. below).</p>
+</li>
+<li>
+<p><code>interface.patientdiary.email</code>: used to authenticate at the external journal (see 1. below).</p>
+</li>
+<li>
+<p><code>interface.patientdiary.password</code>: used to authenticate at the external journal.</p>
+</li>
+<li>
+<p><code>interface.patientdiary.defaultuser.username</code>: This user will be created in SORMAS and can be used by the external journal to authenticate.</p>
+</li>
+<li>
+<p><code>interface.patientdiary.defaultuser.password</code>: The above user's password.</p>
+</li>
+<li>
+<p><code>interface.patientdiary.acceptPhoneContact</code>: used to configure whether the phone number is considered relevant for registering a person in the external journal. It affects the validation of persons in SORMAS (see 2. below). Defaults to true</p>
+</li>
+</ul>
+<h4 id="workflows">Workflows</h4>
+<h5 id="sormas-fetching-an-authentication-token-from-the-external-journal">SORMAS fetching an authentication token from the external journal</h5>
+<p>POST to the <code>interface.patientdiary.authurl</code>.</p>
+<p>Request body:
+```json lines
+{
+    "email" : [patientdiary.email],
+    "password" : [patientdiary.password]
+}</p>
+<pre><code>where `[patientdiary.email]` is replaced with `interface.patientdiary.email` and `[patientdiary.password]` with
+`interface.patientdiary.password specified` in the `sormas.properties`.
+
+Expected response body:
+```json lines
+{
+    &quot;success&quot; : true,
+    &quot;userId&quot; : [some-user-id],
+    &quot;token&quot; : [token]
+}
+</code></pre>
+<p>The <code>token</code> returned will be used to authenticate in other requests. Its lifetime can be configured via the
+<code>interface.patientdiary.tokenLifetime</code> property.</p>
+<p>One special scenario is fetching a token for frontend calls (see 6.): When the <code>interface.patientdiary.frontendAuthurl</code>
+is configured, it is used instead of the <code>interface.patientdiary.authurl</code> here. If it is not configured, no token will
+be used.</p>
+<h5 id="registration-of-a-new-person-in-the-external-journal">Registration of a new person in the external journal</h5>
+<p>This process involves several steps that are triggered via the <code>REGISTER</code> button a privileged user can see in the top
+right corner when having opened a case or a contact.</p>
+<p>To be able to see this button, the user must have at least one of the following user roles: national user, contact
+supervisor, contact officer, community officer, surveillance officer, surveillance supervisor, or admin supervisor.</p>
+<p>First comes a SORMAS-internal validation of contact details.
+The person to be registered needs to have at least an email address (or a phone number if that is accepted for
+registration, see <code>interface.patientdiary.acceptPhoneContact</code>) to pass this validation.Also, when there are several
+email addresses or phone numbers, one of them has to be marked primary contact detail, so that it is clear which contact
+detail shall be used.</p>
+<p>Then comes an external validation of the contact details. For this, SORMAS fetches an authentication token as in 1.
+Then it sends a GET request to the following URL for each contact detail to be used in  the external journal:</p>
+<p><code>GET [interface.patientdiary.probandsurl]/probands?q=[URL-encoded-query-parameter-and-value]</code>, with a header like
+<code>x-access-token: [token]</code>.</p>
+<p>The <code>[URL-encoded-query-parameter-and-value]</code> consists of a parameter-value-pair. The parameter is either <code>Email</code> or
+<code>Mobile phone</code>. The value holds the contact detail to be validated.</p>
+<p>An unencoded example for this is <code>"Email" = "example@example.de"</code>, the URL-encoded version is
+<code>%22Email%22%20%3D%20%22example%40example.de%22</code>.</p>
+<p><code>[token]</code> is replaced with the token fetched for authorization.</p>
+<p>The CURL equivalent for an exemplary call is \
+<code>curl --request GET 'https://probands-URL.com//probands?q=%22Email%22%20%3D%20%22example%40example.de%22' --header 'x-access-token: my-access-token'</code>.</p>
+<p>Expected result is a <code>PatientDiaryQueryResponse</code> which information about any person already registered in the external
+journal and using the same contact detail.</p>
+<p>It needs to be structured as follows:
+```json lines
+PatientDiaryQueryResponse {
+    total: integer,
+    count: integer,
+    results: List<PatientDiaryPersonData>
+}</p>
+<pre><code>
+- `total` should state how many persons are registered in the external journal (this information is currently never used in SORMAS).
+
+- `count` should state how many registered persons using the same contact detail were found.
+
+- `results` need to contain a PatientDiaryPersonData for each match:
+
+```json lines
+PatientDiaryPersonData {
+    _id: string,
+    idatId: PatientDiaryIdatId
+}
+</code></pre>
+<ul>
+<li><code>_id</code> should be a unique identifier for the person this data is about (this information is currently never used in SORMAS)</li>
+</ul>
+<p>The <code>PatientDiaryIdatId</code> needs to be structured as follows:</p>
+<p>```json lines
+PatientDiaryIdatId{
+    idat: PatientDiaryPersonDto
+}</p>
+<pre><code>
+The `PatientDiaryPersonDto` holds the actual person data:
+
+```json lines
+PatientDiaryPersonDto{
+    personUUID: string,
+    firstName: string,
+    lastName: string,
+    gender: string,
+    birthday: string,
+    contactInformation: PatientDiaryContactInformation,
+    endDate: string
+}
+
+</code></pre>
+<ul>
+<li><code>personUUID</code> should be the UUID of the person in SORMAS. This UUID is used to sync with external journals (this information is currently never used in SORMAS).</li>
+<li><code>firstName</code> and <code>lastName</code> need to hold the first and last name of the person.</li>
+<li><code>gender</code> should hold the persons gender (this information is currently never used in SORMAS).</li>
+<li><code>birthday</code> should hold the person's birthday (this information is currently never used in SORMAS).</li>
+<li><code>contactInformation</code> should hold the contact information of that person, which should for logical reasons always contain (at least) the contact detail provided by SORMAS in the query.</li>
+<li><code>endDate</code> should hold the date after which follow up is supposed to be stopped by the external journal.</li>
+</ul>
+<p>```json lines
+PatientDiaryIdatId {
+    email: string,
+    phone: PatientDiaryPhone
+}</p>
+<pre><code>
+- `email` should hold the email address for the person
+- `phone` should hold the phone number of that person:
+
+```json lines
+PatientDiaryPhone {
+    number: string,
+    internationalNumber: string,
+    nationalNumber: string,
+    countryCode: string,
+    dialCode: string,
+}
+</code></pre>
+<p>To put this all together, here is an example <code>PatientDiaryQueryResponse</code> with one person using the same contact detail:</p>
+<pre><code class="language-json">{
+    &quot;total&quot; : 100,
+    &quot;count&quot; : 1,
+    &quot;results&quot; : [{
+        &quot;_id&quot; : &quot;60586691d4c30700119515c8&quot;,
+        &quot;idatId&quot; : {
+            &quot;idat&quot; : {
+            &quot;contactInformation&quot; : {
+                &quot;phone&quot; : null,
+                &quot;email&quot; : &quot;example@example.de&quot;
+            },
+            &quot;personUUID&quot; : &quot;RMTEF2-UZXCXE-7YBJK6-KUMSSEME&quot;,
+              &quot;firstName&quot; : &quot;Maria&quot;,
+              &quot;lastName&quot; : &quot;Muster&quot;,
+              &quot;gender&quot; : &quot;female&quot;,
+              &quot;birthday&quot; : null
+            }
+        }
+    }]
+}
+</code></pre>
+<p>SORMAS allows to continue with the registration of a new person only when the person has a unique first name, so when
+all persons of the response have a different one (or if the response does not contain any matches, which needs to show
+in <code>PatientDiaryQueryResponse.count == 0</code>). This validation is necessary to avoid confusion of person related data in
+some external journals.</p>
+<p>When there are no validation errors in the process described above, SORMAS fetches an authentication token as described
+in 1. and then uses it to request the external journal to register the person:</p>
+<p><code>POST [interface.patientdiary.probandsurl]/external-data/[personUUID]</code>.</p>
+<p>The <code>[personUUID]</code> is replaced with the UUID of the person, which is later used to sync data between the external
+journal and SORMAS.</p>
+<p>Expected response body:
+```json lines
+{
+    "success" : [boolean],
+    "message" : [messageString]
+}</p>
+<pre><code>`[boolean]` is expected to be true in case of successful registration. SORMAS then sets the symptom journal status to
+`REGISTERED` and displays the message to the user.
+
+When `[boolean]` is false, the message is shown as an error to the user.
+
+To fetch data relevant for the registration, the external journal can use the `/visits-external/person/{personUuid}`
+API endpoint described below.
+
+##### Synchronization of person data changed in SORMAS
+
+It may happen that person data (like a contact detail) gets changed after a person is registered in an external journal.
+SORMAS notifies external journals about such a change with first fetching an authentication token as descriced in 1.,
+and the using this token for this request:
+
+`PUT [interface.patientdiary.probandsurl]/external-data/[personUUID]`
+
+The external journal is expected to refetch the person data via the `/visits-external/person/{personUuid}` API endpoint
+described below and save the changes.
+
+After re-fetching the person data, the symptom journal does its own internal validation and responds to SORMAS with the
+synchronization result, containing eventual validation errors.
+
+The expected response body:
+```json lines
+{
+    &quot;success&quot; : [boolean],
+    &quot;message&quot; : [messageString],
+    &quot;errors&quot; : [{
+        &quot;errorKey&quot;: [errorString]
+      }]
+}
+</code></pre>
+<p>If the changes were done manually by a user from the person edit form, the synchronization result is shown to the user
+in a popup window, so that the user can fix eventual errors and resynchronize the person data.</p>
+<h5 id="upload-of-symptom-journal-data-to-sormas">Upload of symptom journal data to SORMAS</h5>
+<p>For this, the <code>/visits-external</code> API endpoint has to be used. This is described below.</p>
+<h5 id="upload-of-a-symptom-journal-status-to-sormas">Upload of a symptom journal status to SORMAS</h5>
+<p>For this, the <code>/visits-external/person/{personUuid}/status</code> API endpoint is to be used. This is described below.</p>
+<h5 id="opening-a-person-in-the-external-journal-from-within-sormas">Opening a person in the external journal from within SORMAS</h5>
+<p>Once the symptom journal status of a person is set to <code>REGISTERED</code> or <code>ACCEPTED</code>, the external journal button in the
+SORMAS-UI changes. It does not provide a registration anymore, but the options to open the person in the external
+journal and to cancel external follow up. This button can be found when having opened a contact (or a case if the case
+follow-up feature is enabled in SORMAS) in the top right corner. If the user chooses to open the person in the external
+journal, SORMAS opens a new browser tab with the following URL:</p>
+<p><code>[interface.patientdiary.url]/data?q=[personUuid]&amp;queryKey=sicFieldIdentifier</code></p>
+<p>SORMAS expects the external journal to present a view of the person there.</p>
+<p>If the <code>interface.patientdiary.frontendAuthurl</code> is configured, SORMAS fetches an authentication token as described in 1,
+and appends it to the URL:</p>
+<p><code>[interface.patientdiary.url]/data?q=[personUuid]&amp;queryKey=sicFieldIdentifier&amp;token=[token]</code></p>
+<h5 id="deletion-of-a-person-from-an-external-journal">Deletion of a person from an external journal</h5>
+<p>As described above, the journal button can offer the option to cancel external follow up. If a user choses this option,
+SORMAS fetches an authentication token as described in 1., and uses it to request:</p>
+<p><code>DELETE [interface.patientdiary.probandsurl]/external-data/[personUUID]</code></p>
+<p>Expected response body:
+<code>json lines
+{
+    "success" : [boolean],
+    "message" : [messageString]
+}</code></p>
+<p><code>[boolean]</code> is expected to be true in case of successful deletion. SORMAS then sets the symptom journal status to
+<code>DELETED</code> and displays the message to the user.</p>
+<p>When <code>[boolean]</code> is false, the message is shown as an error to the user.</p>
+<p>Please note that this does not affect any follow-up status. Cancelling follow up of a contact or case is independent
+of cancelling external follow up of a person.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/sormas-foundation/SORMAS-Project" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["tabs"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": 0.1}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>

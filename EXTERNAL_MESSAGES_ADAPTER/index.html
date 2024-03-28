@@ -1,0 +1,1041 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>External Message Adapter Implementation Guide - SORMAS Project</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#external-message-adapter-implementation-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SORMAS Project" class="md-header__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SORMAS Project
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              External Message Adapter Implementation Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SORMAS Project" class="md-nav__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SORMAS Project
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://sormas.org" class="md-nav__link">
+        Official Website
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEMO_APP/" class="md-nav__link">
+        Demo App
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-rest/" class="md-nav__link">
+        REST
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT_ENVIRONMENT/" class="md-nav__link">
+        Development Environment
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-cargoserver/" class="md-nav__link">
+        Cargo Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-base/doc/keycloak/" class="md-nav__link">
+        Keycloak
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-keycloak-service-provider/" class="md-nav__link">
+        Keycloak Service Provider
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../I18N/" class="md-nav__link">
+        I18n
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_CUSTOMIZATION/" class="md-nav__link">
+        Customization
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_DEV_SETUP.md" class="md-nav__link">
+        Development Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_SETUP/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_UPDATE/" class="md-nav__link">
+        Update
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SOP_DISEASES/" class="md-nav__link">
+        Diseases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADDING_LICENSE/" class="md-nav__link">
+        Licensing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3RD_PARTY_ACK/" class="md-nav__link">
+        Acknowledgements
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-project" class="md-nav__link">
+    The project
+  </a>
+  
+    <nav class="md-nav" aria-label="The project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mymessageadapterjava" class="md-nav__link">
+    MyMessageAdapter.java
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versiontxt" class="md-nav__link">
+    version.txt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pomxml" class="md-nav__link">
+    pom.xml
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-into-the-sormas-domain" class="md-nav__link">
+    Deploying into the sormas domain
+  </a>
+  
+    <nav class="md-nav" aria-label="Deploying into the sormas domain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploying-in-your-local-development-environment" class="md-nav__link">
+    Deploying in your local development environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploying-in-your-payara-domain" class="md-nav__link">
+    Deploying in your payara domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-the-deployment" class="md-nav__link">
+    Testing the deployment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+<h1 id="external-message-adapter-implementation-guide">External Message Adapter Implementation Guide</h1>
+<h2 id="the-project">The project</h2>
+<p>A minimal maven project structure for an external message adapter module is shown below:</p>
+<pre><code class="language-text">  my-message-adapter
+  |-- src
+    |   |-- main
+    |   |   |-- java
+    |   |   |   |-- my.project
+    |   |   |   |   |-- MyExternalMessageFacadeEjb.java
+    |   |   |-- resources
+    |   |   |   |-- version.txt
+    |   |-- test
+    |   |   |-- java
+    |   |   |   |-- my.project
+    |   |   |   |   |-- MyMessageAdapterTest.java
+    |   |   |-- resources
+    |-- pom.xml    
+
+</code></pre>
+<h3 id="mymessageadapterjava">MyMessageAdapter.java</h3>
+<p>This is the main class of the external message adapter module.
+It must implement the  <a href="../sormas-api/src/main/java/de/symeda/sormas/api/externalmessage/ExternalMessageAdapterFacade.java">ExternalMessageAdapterFacade</a> interface from the <code>sormas-api</code> module.</p>
+<p>For more information please refer to the javadoc on the <a href="../sormas-api/src/main/java/de/symeda/sormas/api/externalmessage/ExternalMessageAdapterFacade.java">ExternalMessageAdapterFacade</a> interface.</p>
+<p>Example:</p>
+<pre><code class="language-java">package my.project;
+
+import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
+
+import javax.ejb.Stateless;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Stateless(name = &quot;MyExternalMessageFacade&quot;)
+public class MyExternalMessageFacadeEjb implements ExternalMessageAdapterFacade {
+
+    @Override
+    public ExternalMessageResult&lt;List&lt;ExternalMessageDto&gt;&gt; getExternalMessages(Date since) {
+        return new ExternalMessageResult&lt;&gt;(Collections.emptyList(), new Date(), true, null);
+    }
+
+    @Override
+    public ExternalMessageResult&lt;String&gt; convertToHTML(ExternalMessageDto message) {
+        return new ExternalMessageResult&lt;&gt;(&quot;&quot;, new Date(), true, null);
+    }
+
+    @Override
+    public ExternalMessageResult&lt;byte[]&gt; convertToPDF(ExternalMessageDto message) {
+        return new ExternalMessageResult&lt;&gt;(new byte[0], new Date(), true, null);
+    }
+
+    @Override
+    public String getVersion() {
+        return new BufferedReader(
+                new InputStreamReader(
+                        Objects.requireNonNull(MyExternalMessageFacadeEjb.class.getResourceAsStream(&quot;/version.txt&quot;)),
+                        StandardCharsets.UTF_8)).lines().collect(Collectors.joining(&quot;\n&quot;));
+    }
+}
+</code></pre>
+<h3 id="versiontxt">version.txt</h3>
+<p>This file contains the template string that describes this modules version.
+It is used by the SORMAS server to display the version of configured external message module's version on the about page.
+SORMAS also uses the version method for doing an availability check.</p>
+<p>You can use the maven resource filtering to replace placeholders in the <code>version.txt</code> file with values from the <code>pom.xml</code> file.</p>
+<p>Example:</p>
+<pre><code class="language-text">${project.name} ${project.version}
+</code></pre>
+<h3 id="pomxml">pom.xml</h3>
+<p>This is the maven project configuration file.</p>
+<p>The <code>sormas-api</code> must be added as a dependency to your project in order to be able to implement the <code>ExternalMessageAdapterFacade</code> interface.</p>
+<p>Example with default dependencies for java-ee, sormas-api, logging and testing:</p>
+<details>
+<summary>Expand to see below the whole file content
+
+
+<pre><code class="language-xml">    &lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+        &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+        &lt;properties&gt;
+            &lt;sormas.version&gt;1.85.0&lt;/sormas.version&gt;
+            &lt;warName&gt;my-message-adapter&lt;/warName&gt;
+
+            &lt;javaee.version&gt;8.0&lt;/javaee.version&gt;
+            &lt;slf4j.version&gt;1.7.30&lt;/slf4j.version&gt;
+            &lt;junit.version&gt;4.13.1&lt;/junit.version&gt;
+        &lt;/properties&gt;
+
+        &lt;groupId&gt;my.project&lt;/groupId&gt;
+        &lt;artifactId&gt;my-message-adapter&lt;/artifactId&gt;
+        &lt;name&gt;${project.artifactId}&lt;/name&gt;
+        &lt;packaging&gt;war&lt;/packaging&gt;
+        &lt;version&gt;0.1.0-SNAPSHOT&lt;/version&gt;
+
+        &lt;dependencies&gt;
+            &lt;dependency&gt;
+                &lt;groupId&gt;javax&lt;/groupId&gt;
+                &lt;artifactId&gt;javaee-web-api&lt;/artifactId&gt;
+                &lt;version&gt;${javaee.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+
+            &lt;dependency&gt;
+                &lt;groupId&gt;${project.groupId}&lt;/groupId&gt;
+                &lt;artifactId&gt;sormas-api&lt;/artifactId&gt;
+                &lt;version&gt;${sormas.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+
+            &lt;dependency&gt;
+                &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+                &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+                &lt;version&gt;${slf4j.version}&lt;/version&gt;
+            &lt;/dependency&gt;
+
+            &lt;dependency&gt;
+                &lt;groupId&gt;junit&lt;/groupId&gt;
+                &lt;artifactId&gt;junit&lt;/artifactId&gt;
+                &lt;version&gt;${junit.version}&lt;/version&gt;
+                &lt;scope&gt;test&lt;/scope&gt;
+            &lt;/dependency&gt;
+            ...
+        &lt;/dependencies&gt;
+
+        &lt;build&gt;
+            &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+            ...
+        &lt;/build&gt;
+&lt;/project&gt;
+</code></pre>
+
+</summary>
+
+
+<pre><code class="language-xml">
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;properties&gt;
+        &lt;sormas.version&gt;1.85.0&lt;/sormas.version&gt;
+        &lt;warName&gt;my-message-adapter&lt;/warName&gt;
+
+        &lt;junit.version&gt;4.13.1&lt;/junit.version&gt;
+        &lt;mockito.version&gt;3.6.0&lt;/mockito.version&gt;
+        &lt;assertj.version&gt;3.18.1&lt;/assertj.version&gt;
+
+        &lt;commons-lang.version&gt;3.11&lt;/commons-lang.version&gt;
+        &lt;commons-io.version&gt;2.8.0&lt;/commons-io.version&gt;
+        &lt;slf4j.version&gt;1.7.30&lt;/slf4j.version&gt;
+        &lt;javaee.version&gt;8.0.1&lt;/javaee.version&gt;
+
+        &lt;maven.compiler.source&gt;11&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;11&lt;/maven.compiler.target&gt;
+        &lt;productionBranch&gt;master&lt;/productionBranch&gt;
+    &lt;/properties&gt;
+
+    &lt;groupId&gt;my.project&lt;/groupId&gt;
+    &lt;artifactId&gt;my-message-adapter&lt;/artifactId&gt;
+    &lt;name&gt;${project.artifactId}&lt;/name&gt;
+    &lt;packaging&gt;war&lt;/packaging&gt;
+    &lt;version&gt;0.1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;repositories&gt;
+        &lt;repository&gt;
+            &lt;id&gt;central&lt;/id&gt;
+            &lt;name&gt;bintray&lt;/name&gt;
+            &lt;url&gt;https://jcenter.bintray.com&lt;/url&gt;
+            &lt;snapshots&gt;
+                &lt;enabled&gt;false&lt;/enabled&gt;
+            &lt;/snapshots&gt;
+        &lt;/repository&gt;
+    &lt;/repositories&gt;
+
+    &lt;dependencies&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax&lt;/groupId&gt;
+            &lt;artifactId&gt;javaee-web-api&lt;/artifactId&gt;
+            &lt;version&gt;${javaee.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+            &lt;version&gt;${slf4j.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;${project.groupId}&lt;/groupId&gt;
+            &lt;artifactId&gt;sormas-api&lt;/artifactId&gt;
+            &lt;version&gt;${sormas.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;${junit.version}&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.mockito&lt;/groupId&gt;
+            &lt;artifactId&gt;mockito-core&lt;/artifactId&gt;
+            &lt;version&gt;${mockito.version}&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.mockito&lt;/groupId&gt;
+            &lt;artifactId&gt;mockito-inline&lt;/artifactId&gt;
+            &lt;version&gt;${mockito.version}&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.assertj&lt;/groupId&gt;
+            &lt;artifactId&gt;assertj-core&lt;/artifactId&gt;
+            &lt;version&gt;${assertj.version}&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jsoup&lt;/groupId&gt;
+            &lt;artifactId&gt;jsoup&lt;/artifactId&gt;
+            &lt;version&gt;1.14.2&lt;/version&gt;
+            &lt;scope&gt;compile&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.hamcrest&lt;/groupId&gt;
+            &lt;artifactId&gt;hamcrest-library&lt;/artifactId&gt;
+            &lt;version&gt;1.3&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.maven&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-model&lt;/artifactId&gt;
+            &lt;version&gt;3.8.4&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;finalName&gt;${project.artifactId}&lt;/finalName&gt;
+
+        &lt;!-- Provide version.txt that can be read for returning the desired version string of this module --&gt;
+        &lt;resources&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;src/main/resources&lt;/directory&gt;
+                &lt;filtering&gt;true&lt;/filtering&gt;
+                &lt;includes&gt;
+                    &lt;include&gt;**/version.txt&lt;/include&gt;
+                &lt;/includes&gt;
+            &lt;/resource&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;src/main/resources&lt;/directory&gt;
+                &lt;filtering&gt;false&lt;/filtering&gt;
+                &lt;excludes&gt;
+                    &lt;exclude&gt;**/version.txt&lt;/exclude&gt;
+                &lt;/excludes&gt;
+            &lt;/resource&gt;
+        &lt;/resources&gt;
+
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+                &lt;version&gt;3.2.3&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;warName&gt;${warName}&lt;/warName&gt;
+
+                    &lt;filteringDeploymentDescriptors&gt;true&lt;/filteringDeploymentDescriptors&gt;
+                    &lt;webResources&gt;
+                        &lt;resource&gt;
+                            &lt;directory&gt;src/main/webapp&lt;/directory&gt;
+                            &lt;targetPath&gt;/&lt;/targetPath&gt;
+                            &lt;filtering&gt;false&lt;/filtering&gt;
+                        &lt;/resource&gt;
+                    &lt;/webResources&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;com.amashchenko.maven.plugin&lt;/groupId&gt;
+                &lt;artifactId&gt;gitflow-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;1.15.1&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;gitFlowConfig&gt;
+                        &lt;productionBranch&gt;${productionBranch}&lt;/productionBranch&gt;
+                        &lt;developmentBranch&gt;development&lt;/developmentBranch&gt;
+                        &lt;featureBranchPrefix&gt;feature-&lt;/featureBranchPrefix&gt;
+                        &lt;releaseBranchPrefix&gt;release-&lt;/releaseBranchPrefix&gt;
+                        &lt;hotfixBranchPrefix&gt;hotfix-&lt;/hotfixBranchPrefix&gt;
+                        &lt;versionTagPrefix&gt;v&lt;/versionTagPrefix&gt;
+                    &lt;/gitFlowConfig&gt;
+                    &lt;commitMessagePrefix&gt;[GITFLOW]&lt;/commitMessagePrefix&gt;
+                    &lt;useSnapshotInHotfix&gt;true&lt;/useSnapshotInHotfix&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+
+            &lt;!-- Code Coverage / activate Integration Tests --&gt;
+            &lt;plugin&gt;
+                &lt;artifactId&gt;maven-failsafe-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.19.1&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;integration-test&lt;/id&gt;
+                        &lt;phase&gt;integration-test&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;integration-test&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;verify&lt;/id&gt;
+                        &lt;phase&gt;verify&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;verify&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.jacoco&lt;/groupId&gt;
+                &lt;artifactId&gt;jacoco-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;0.8.5&lt;/version&gt;
+                &lt;inherited&gt;true&lt;/inherited&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;prepare-coverage&lt;/id&gt;
+                        &lt;phase&gt;generate-test-sources&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;prepare-agent&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;analyze-coverage&lt;/id&gt;
+                        &lt;phase&gt;verify&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;report&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;prepare-coverage-integration&lt;/id&gt;
+                        &lt;phase&gt;pre-integration-test&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;prepare-agent-integration&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;analyze-coverage-integration&lt;/id&gt;
+                        &lt;phase&gt;post-integration-test&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;report-integration&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+</code></pre>
+
+</details>
+
+<h2 id="deploying-into-the-sormas-domain">Deploying into the <code>sormas</code> domain</h2>
+<p>Set the <code>interface.demis.jndiName</code> in the <code>sormas.properties</code> of your SORMAS domain.
+This JNDI name should match the location the external message ejb implemented in the module.
+Following the above example project it would be:</p>
+<pre><code class="language-properties">interface.demis.jndiName=java:global/my-message-adapter/MyExternalMessageFacade
+</code></pre>
+<p>After changing the <code>sormas.properties</code>, restart the SORMAS domain then deploy your module.</p>
+<h3 id="deploying-in-your-local-development-environment">Deploying in your local development environment</h3>
+<ul>
+<li>in your IDE, import the module to your SORMAS-Project</li>
+<li>make the module deploy on your glassfish server (add it just next to sormas-rest, sormas-ui and sormas-ear war files)</li>
+</ul>
+<p>After that, you should be able to build and deploy SORMAS with your module.
+If you want to exclude your module from the build, that can be done in IntelliJ as follows:
+File -&gt; Settings -&gt; Build, Execution, Deployment -&gt; Compiler -&gt; Excludes</p>
+<h3 id="deploying-in-your-payara-domain">Deploying in your payara domain</h3>
+<ul>
+<li>build the project with maven</li>
+<li>deploy the built <code>.war</code> file in the <code>sormas</code> domain of your payara server</li>
+</ul>
+<h3 id="testing-the-deployment">Testing the deployment</h3>
+<p>In the SORMAS web interface, go to the <code>About</code> menu, and you must see a green checkmark next to the <em>External message adapter</em> label and your module's version text provided by implementing the <code>ExternalMessageAdapterFacade::getVersion</code> method.</p>
+<p>e.g.:
+<img alt="screenshot" src="../images/configured-external-message-adapter.png" /></p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/sormas-foundation/SORMAS-Project" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["tabs"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": 0.1}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>

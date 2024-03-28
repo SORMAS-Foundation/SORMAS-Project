@@ -1,0 +1,885 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>Sormas2Sormas Setup - SORMAS Project</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sormas2sormas-setup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SORMAS Project" class="md-header__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SORMAS Project
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sormas2Sormas Setup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SORMAS Project" class="md-nav__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SORMAS Project
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://sormas.org" class="md-nav__link">
+        Official Website
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEMO_APP/" class="md-nav__link">
+        Demo App
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-rest/" class="md-nav__link">
+        REST
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT_ENVIRONMENT/" class="md-nav__link">
+        Development Environment
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-cargoserver/" class="md-nav__link">
+        Cargo Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-base/doc/keycloak/" class="md-nav__link">
+        Keycloak
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-keycloak-service-provider/" class="md-nav__link">
+        Keycloak Service Provider
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../I18N/" class="md-nav__link">
+        I18n
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_CUSTOMIZATION/" class="md-nav__link">
+        Customization
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_DEV_SETUP.md" class="md-nav__link">
+        Development Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_SETUP/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_UPDATE/" class="md-nav__link">
+        Update
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SOP_DISEASES/" class="md-nav__link">
+        Diseases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADDING_LICENSE/" class="md-nav__link">
+        Licensing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3RD_PARTY_ACK/" class="md-nav__link">
+        Acknowledgements
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    Components
+  </a>
+  
+    <nav class="md-nav" aria-label="Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sormas-instance" class="md-nav__link">
+    SORMAS Instance
+  </a>
+  
+    <nav class="md-nav" aria-label="SORMAS Instance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#server-descriptors" class="md-nav__link">
+    Server Descriptors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystore" class="md-nav__link">
+    Keystore
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#truststore" class="md-nav__link">
+    Truststore
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
+    Properties
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keycloak" class="md-nav__link">
+    Keycloak
+  </a>
+  
+    <nav class="md-nav" aria-label="Keycloak">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clients" class="md-nav__link">
+    Clients
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#client-scopes" class="md-nav__link">
+    Client Scopes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#etcd" class="md-nav__link">
+    etcd
+  </a>
+  
+    <nav class="md-nav" aria-label="etcd">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#server-descriptors-stored-in-etcd" class="md-nav__link">
+    Server Descriptors stored in etcd
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infrastructure-data" class="md-nav__link">
+    Infrastructure Data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#secure-communication" class="md-nav__link">
+    Secure Communication
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deactivation" class="md-nav__link">
+    Deactivation
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+<h1 id="sormas2sormas-setup">Sormas2Sormas Setup</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Sormas2Sormas (or S2S for short) is a feature that allows sharing of entities (e.g., cases, contacts, events, etc.)
+between two or more SORMAS instances.</p>
+<h2 id="components">Components</h2>
+<h3 id="sormas-instance">SORMAS Instance</h3>
+<p>A SORMAS instance is a running instance of the SORMAS application. A SORMAS instance which is configured to participate
+in S2S is obviously the main component of the Sormas2Sormas feature. It is the one that initiates the sharing process
+and the one that receives the shared entities. Each instance has a unique S2S identifier which is an arbitrary string.
+We do not enforce a certain scheme, but it is strongly encouraged to use a meaningful and consistent identifiers
+(e.g., <code>2.sormas.id.sormas_a</code> in Germany which is the dedicated SurvNet ID for the public health office).</p>
+<h4 id="server-descriptors">Server Descriptors</h4>
+<p>A server descriptor is a struct which contains the information needed to connect to a SORMAS instance (see the
+<code>SormasServerDescriptor</code> class). It consists of the S2S ID, a human-readable name used in the UI, and the hostname.
+Descriptors centrally distributed via a dedicated <code>etcd</code> keyspace (e.g., <code>/s2s/</code>).</p>
+<pre><code class="language-json">{
+  &quot;id&quot;:&quot;2.sormas.id.sormas_a&quot;,
+  &quot;name&quot;:&quot;sormas_a_org_name&quot;,
+  &quot;hostName&quot;:&quot;sormas_a:6080&quot;
+}
+</code></pre>
+<h4 id="keystore">Keystore</h4>
+<p>Each instance receives a dedicated x509 certificate and private key pair which is used to encrypt all S2S communication.
+The certificate is signed by a common S2S CA. The certificate and private key are stored in a <code>pkcs12</code> keystore under the
+S2S ID of the instance. See <a href="https://github.com/sormas-foundation/S2S-Testbed/blob/main/docker/certs/sormas_a/generate-cert-a.sh">here</a>
+for an example of how to generate a keystore.</p>
+<h4 id="truststore">Truststore</h4>
+<p>Each instance receives a truststore which contains the S2S CA certificate under the <code>sormas2sormas.rootCaAlias</code>.
+See <a href="https://github.com/sormas-foundation/S2S-Testbed/blob/main/docker/certs/ca/generate_ca.sh">here</a> for an example of
+how to generate a truststore.</p>
+<h4 id="properties">Properties</h4>
+<p>The following properties are required to be set in the <code>sormas.properties</code> file:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>central.oidc.url</code></td>
+<td>URL of the OIDC server authenticating instances and authorizing S2S requests.</td>
+</tr>
+<tr>
+<td><code>central.etcd.host=</code></td>
+<td>The hostname of the etcd instance providing data like server descriptors.</td>
+</tr>
+<tr>
+<td><code>central.etcd.clientName</code></td>
+<td>The client name of the instance used in authentication towards etcd.</td>
+</tr>
+<tr>
+<td><code>central.etcd.clientPassword</code></td>
+<td>The client password of the instance used in authentication towards etcd.</td>
+</tr>
+<tr>
+<td><code>central.etcd.caPath</code></td>
+<td>The full filesystem path to the CA trusted by etcd clients when creating a TLS connection to the etcd server.</td>
+</tr>
+<tr>
+<td><code>central.location.sync</code></td>
+<td>If set to true, all infrastructure data from the central server will be synchronized into the local SORMAS database at (re)start and on a daily basis.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.path</code></td>
+<td>Filesystem path to a directory where certificates and files related to SORMAS2SORMAS are stored.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.id=</code></td>
+<td>The S2S ID of this instance. The identifier can be arbitrary, but should be meaningful.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.keystoreName</code></td>
+<td>Name of the key store file relative to <code>sormas2sormas.path</code>.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.keystorePass</code></td>
+<td>Password of the key store file.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.rootCaAlias</code></td>
+<td>The alias of the trusted root CA which secures the S2S communication. This is NOT used for TLS.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.truststoreName</code></td>
+<td>Name of the truststore file relative to <code>sormas2sormas.path</code>.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.truststorePass</code></td>
+<td>Password of the truststore.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.oidc.realm</code></td>
+<td>Name of our S2S authorization realm provided by the OIDC server.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.oidc.clientId</code></td>
+<td>The client ID used in authentication of the instance towards the OIDC server.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.oidc.clientSecret</code></td>
+<td>The client secret used in authorization of the instance towards the OIDC server.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.etcd.keyPrefix</code></td>
+<td>The etcd key space prefix which is used to store s2s related information.</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.ignoreProperty.additionalDetails</code></td>
+<td>Controls whether the value in <code>additionalDetails</code> field should be sent or not to the other instances. Possible values: true/false(default).</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.ignoreProperty.externalId</code></td>
+<td>Controls whether the value in <code>externalId</code> field should be sent or not to the other instances. Possible values: true/false(default).</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.ignoreProperty.externalToken</code></td>
+<td>Controls whether the value in <code>externalToken</code> field should be sent or not to the other instances.  Possible values: true/false(default).</td>
+</tr>
+<tr>
+<td><code>sormas2sormas.ignoreProperty.internalToken</code></td>
+<td>Controls whether the value in <code>internalToken</code> field should be sent or not to the other instances.  Possible values: true/false(default).</td>
+</tr>
+<tr>
+<td><code>#sormas2sormas.districtExternalId</code></td>
+<td>External ID of the district to which the cases/contacts to be assigned when accepting a share request</td>
+</tr>
+</tbody>
+</table>
+<h3 id="keycloak">Keycloak</h3>
+<p>Keycloak is an open source identity and access management solution. It is used to manage the users and their permissions.
+In our case, we use the <a href="https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow">OIDC client credentials flow</a>
+to authenticate the S2S enabled instances and to authorize the S2S share operations. It consists of a dedicated S2S
+realm which contains all the necessary configurations, namely dedicated clients and client scopes. Connections to Keycloak
+must be protected by TLS.</p>
+<h4 id="clients">Clients</h4>
+<p>Each S2S instance receives a dedicated client in the S2S realm. An S2S instance is acting as client and is configured to
+use the OIDC client credentials.</p>
+<h4 id="client-scopes">Client Scopes</h4>
+<p>For each client, a similar client scope is created. Each S2S instance <code>A</code> which should be able to send data to another
+instance <code>B</code> must be assigned the client scope of instance <code>B</code>. This way, instance <code>A</code> is allowed to send data to instance <code>B</code>.
+The client scope <em>must</em> be prefixed with <code>s2s-</code> and <em>must</em> contain the S2S ID of the instance it is assigned to (e.g.,
+<code>s2s-2.sormas.id.sormas_b</code>).</p>
+<h3 id="etcd">etcd</h3>
+<h4 id="server-descriptors-stored-in-etcd">Server Descriptors stored in etcd</h4>
+<p>etcd is a distributed key-value store. It is used to store the server descriptors of all S2S enabled instances. They are
+all stored under a dedicated S2S key space prefix (e.g., <code>/s2s/</code>) at a path like <code>/s2s/2.sormas.id.sormas_b</code>.
+The etcd server is expected to be secured by TLS with a trusted CA announced to instances via <code>central.etcd.caPath</code>.
+The etcd client name and password are used to authenticate the S2S instances towards the etcd server.</p>
+<h4 id="infrastructure-data">Infrastructure Data</h4>
+<p>etcd is also used to store the infrastructure data of the central server. This data is used to synchronize the local DB
+to have a consistent view of the infrastructure data. The infrastructure data is stored under a dedicated key space of
+the form <code>/central/location/${entity}</code> where <code>entity</code> is one of continent, subcontinent, country, region, district,
+and community. A complete key could look like <code>/central/location/continent/3fab2b69-31cd-5765-91e3-d68826a6dd48</code> where
+the uuid is the uuid assigned to the continent in the central server. The values are expected to mirror the JSON values
+of the DTOs (e.g., <code>ContinentDto</code>, etc.).</p>
+<h2 id="secure-communication">Secure Communication</h2>
+<p>The S2S communication is expected to be secured by TLS. For additional security, the S2S communication is also
+encrypted. Each instance receives a dedicated keystore and truststore. The keystore contains the instance's private and
+public key. The truststore contains a root CA certificate (i.e., <code>sormas2sormas.rootCaAlias</code>) which is used to sign all
+instance certificates. The connection to Keycloak must be secured by TLS. The connection to etcd must be secured by
+TLS. The CA trusted by etcd clients when creating a TLS connection to the server is set via <code>central.etcd.caPath</code>.</p>
+<h2 id="deactivation">Deactivation</h2>
+<ol>
+<li>Stop the instance and create backup</li>
+<li>The instance on which S2S will be deactivated has to revoke all outgoing pending requests AND has to accept or reject
+all incoming pending request. Please note that as of now, users won't be able to see the whole sharebox or share directory.
+Therefore, they cannot track if the case/contact was shared with/by another instance or not.</li>
+<li>Deactivate the S2S feature by commenting all relevant properties in <code>sormas.properties</code>:</li>
+<li><code>sormas2sormas.*</code></li>
+<li><code>central.oidc.url</code></li>
+<li>Optional if GA wants to disable central infra sync: <code>central.*</code>. Strongly discouraged.</li>
+<li>Remove service descriptor of the deactivated instance from central <code>etcd</code> to prevent further discovery.</li>
+<li>Reset feature configuration table.</li>
+<li>Remove client and client scope of the instance from central Keycloak.</li>
+<li><code>shred</code> the instance's key material.</li>
+<li>Restart the instance.</li>
+</ol>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/sormas-foundation/SORMAS-Project" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["tabs"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": 0.1}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>

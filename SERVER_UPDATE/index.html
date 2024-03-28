@@ -1,0 +1,1104 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../SERVER_SETUP/">
+      
+      
+        <link rel="next" href="../SOP_DISEASES/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>Update - SORMAS Project</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#updating-a-sormas-server" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SORMAS Project" class="md-header__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SORMAS Project
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Update
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SORMAS Project" class="md-nav__button md-logo" aria-label="SORMAS Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    SORMAS Project
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/sormas-foundation/SORMAS-Project" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    sormas-foundation/SORMAS-Project
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://sormas.org" class="md-nav__link">
+        Official Website
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEMO_APP/" class="md-nav__link">
+        Demo App
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-rest/" class="md-nav__link">
+        REST
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DEVELOPMENT_ENVIRONMENT/" class="md-nav__link">
+        Development Environment
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-cargoserver/" class="md-nav__link">
+        Cargo Server
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-base/doc/keycloak/" class="md-nav__link">
+        Keycloak
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sormas-keycloak-service-provider/" class="md-nav__link">
+        Keycloak Service Provider
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../I18N/" class="md-nav__link">
+        I18n
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_CUSTOMIZATION/" class="md-nav__link">
+        Customization
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_DEV_SETUP.md" class="md-nav__link">
+        Development Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SERVER_SETUP/" class="md-nav__link">
+        Setup
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Update
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Update
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#preparations" class="md-nav__link">
+    Preparations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-updates" class="md-nav__link">
+    Breaking Updates
+  </a>
+  
+    <nav class="md-nav" aria-label="Breaking Updates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1670" class="md-nav__link">
+    1.67.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1730" class="md-nav__link">
+    1.73.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1810" class="md-nav__link">
+    1.81.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1850" class="md-nav__link">
+    1.85.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1890" class="md-nav__link">
+    1.89.0
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatic-server-update" class="md-nav__link">
+    Automatic Server Update
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restoring-the-database" class="md-nav__link">
+    Restoring the Database
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-logins" class="md-nav__link">
+    Default Logins
+  </a>
+  
+    <nav class="md-nav" aria-label="Default Logins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#admin" class="md-nav__link">
+    Admin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-users" class="md-nav__link">
+    Web users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mobile-app-users" class="md-nav__link">
+    Mobile app users
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updating-keycloak" class="md-nav__link">
+    Updating Keycloak
+  </a>
+  
+    <nav class="md-nav" aria-label="Updating Keycloak">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standalone-installation" class="md-nav__link">
+    Standalone installation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-installation" class="md-nav__link">
+    Docker installation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-migrate-to-new-payara-server" class="md-nav__link">
+    How to migrate to new Payara Server
+  </a>
+  
+    <nav class="md-nav" aria-label="How to migrate to new Payara Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-shutdown-and-backup-existing-domain" class="md-nav__link">
+    Step 1: Shutdown and backup existing domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-setup-payara-domain" class="md-nav__link">
+    Step 2: Setup Payara domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-apply-your-config-file-changes" class="md-nav__link">
+    Step 3: Apply your config file changes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-install-new-sormas-version" class="md-nav__link">
+    Step 4: Install new SORMAS version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-for-development-systems" class="md-nav__link">
+    Alternative for development systems
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SOP_DISEASES/" class="md-nav__link">
+        Diseases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ADDING_LICENSE/" class="md-nav__link">
+        Licensing
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3RD_PARTY_ACK/" class="md-nav__link">
+        Acknowledgements
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#preparations" class="md-nav__link">
+    Preparations
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-updates" class="md-nav__link">
+    Breaking Updates
+  </a>
+  
+    <nav class="md-nav" aria-label="Breaking Updates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1670" class="md-nav__link">
+    1.67.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1730" class="md-nav__link">
+    1.73.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1810" class="md-nav__link">
+    1.81.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1850" class="md-nav__link">
+    1.85.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1890" class="md-nav__link">
+    1.89.0
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatic-server-update" class="md-nav__link">
+    Automatic Server Update
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restoring-the-database" class="md-nav__link">
+    Restoring the Database
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#default-logins" class="md-nav__link">
+    Default Logins
+  </a>
+  
+    <nav class="md-nav" aria-label="Default Logins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#admin" class="md-nav__link">
+    Admin
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-users" class="md-nav__link">
+    Web users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mobile-app-users" class="md-nav__link">
+    Mobile app users
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#updating-keycloak" class="md-nav__link">
+    Updating Keycloak
+  </a>
+  
+    <nav class="md-nav" aria-label="Updating Keycloak">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standalone-installation" class="md-nav__link">
+    Standalone installation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-installation" class="md-nav__link">
+    Docker installation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-migrate-to-new-payara-server" class="md-nav__link">
+    How to migrate to new Payara Server
+  </a>
+  
+    <nav class="md-nav" aria-label="How to migrate to new Payara Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-shutdown-and-backup-existing-domain" class="md-nav__link">
+    Step 1: Shutdown and backup existing domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-setup-payara-domain" class="md-nav__link">
+    Step 2: Setup Payara domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-apply-your-config-file-changes" class="md-nav__link">
+    Step 3: Apply your config file changes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-install-new-sormas-version" class="md-nav__link">
+    Step 4: Install new SORMAS version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-for-development-systems" class="md-nav__link">
+    Alternative for development systems
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+
+<h1 id="updating-a-sormas-server">Updating a SORMAS Server</h1>
+<p>SORMAS releases starting from 1.21.0 contain a script that automatically updates and deploys the server. If you are using an older version and therefore need to do a manual server update, please download the 1.21.0 release files and use the commands specified in the server-update.sh script.</p>
+<h2 id="preparations">Preparations</h2>
+<ul>
+<li>Get the latest release files (deploy.zip) from <a href="https://github.com/sormas-foundation/SORMAS-Project/releases/latest">https://github.com/sormas-foundation/SORMAS-Project/releases/latest</a></li>
+<li>Unzip the archive and copy/upload its contents to <strong>/root/deploy/sormas/$(date +%F)</strong>
+    <code>bash
+    cd /root/deploy/sormas
+    SORMAS_VERSION=1.y.z
+    wget https://github.com/sormas-foundation/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+    unzip sormas_${SORMAS_VERSION}.zip
+    mv deploy/ $(date +%F)
+    rm sormas_${SORMAS_VERSION}.zip</code></li>
+</ul>
+<h2 id="breaking-updates">Breaking Updates</h2>
+<p>The following is a list of version that have breaking changes in the update. <strong>You only have to consider this if you are coming from an earlier version.</strong> For fresh installs, this is not relevant.</p>
+<h3 id="1670">1.67.0</h3>
+<p>Coming from 1.66.4 or earlier, you have to update the payara server, as explained in the <a href="./#how-to-migrate-to-new-payara-server">Payara migration</a>.</p>
+<h3 id="1730">1.73.0</h3>
+<p>Deploying this release <strong>will clear the userrolesconfig and userrole_userrights tables</strong> and overwrite them with the default user role configurations of SORMAS. <strong>If you added entries to these tables in order to customize the user roles on your system</strong>, please run the following queries before deploying this release in order to prevent data loss:</p>
+<pre><code class="language-SQL">-- Retrieve all customized roles
+SELECT * FROM userrolesconfig;
+
+-- Overridden rights for roles
+SELECT c.userrole, ur.userright FROM userroles_userrights ur LEFT JOIN userrolesconfig c (ON c.id = ur.userrole_id);
+</code></pre>
+<p>After deploying the new version, the information retrieved from these queries can be used to alter the new user role configurations accordingly.</p>
+<h3 id="1810">1.81.0</h3>
+<p>The <a href="https://github.com/sormas-foundation/SORMAS-Project/issues/10260">temporal tables extension is replaced</a> during the deployment of the backend. As a preparation the following SQL <strong>needs to be executed on the SORMAS database using the postgres user.</strong></p>
+<pre><code class="language-SQL">-- versioning function will be replaced during server backend startup
+ALTER FUNCTION public.versioning() OWNER TO sormas_user;
+</code></pre>
+<p><strong>After the successful deployment</strong>, you can run the following SQL to get rid of the no longer used extension:</p>
+<pre><code class="language-SQL">-- needed because `ALTER FUNCTION ... NO DEPENDS ON EXTENSION` is not possible in Postgres 10 and below
+DELETE FROM pg_depend
+WHERE deptype = 'e'
+  AND refobjid = (SELECT oid FROM pg_extension WHERE extname = 'temporal_tables')
+  and objid = (SELECT oid FROM pg_proc WHERE proname = 'versioning');
+
+DROP EXTENSION IF EXISTS temporal_tables;
+</code></pre>
+<h3 id="1850">1.85.0</h3>
+<p>Payara is updated from 5.2021.10 to 5.2022.5.
+If you are <strong>not</strong> using <a href="https://github.com/SORMAS-Foundation/SORMAS-Docker">SORMAS-Docker</a>, please follow the <a href="./#how-to-migrate-to-new-payara-server">Payara migration guide</a>.</p>
+<h3 id="1890">1.89.0</h3>
+<p>When installing this version on new systems or upgrading postgres version on Ubuntu make sure you have at least Ubuntu LTS 20 with postgres 14 (or 18 with postgres 12 from APT).</p>
+<h2 id="automatic-server-update">Automatic Server Update</h2>
+<ul>
+<li>Navigate to the  folder containing the unzipped deploy files:
+  <code>cd /root/deploy/sormas/$(date +%F)</code></li>
+<li>Make the update script executable:
+  <code>chmod +x server-update.sh</code></li>
+<li>Optional: Open server-update.sh in a text editor to customize the values for e.g. the domain path or the database name. You only need to do this if you used custom values while setting up the server.</li>
+<li>Execute the update script and follow the instructions:
+  <code>./server-update.sh</code></li>
+<li>If anything goes wrong, open the latest update log file (by default located in the "update-logs" folder in the domain directory) and check it for errors.</li>
+</ul>
+<h2 id="restoring-the-database">Restoring the Database</h2>
+<p>If anything goes wrong during the automatic database update process when deploying the server, you can use the following command to restore the data:</p>
+<p><code>pg_restore --clean -U postgres -Fc -d sormas_db sormas_db_....dump</code></p>
+<h2 id="default-logins">Default Logins</h2>
+<p>These are the default users for most user roles, intended to be used on development or demo systems. In all cases except the admin user, the username and password are identical. Make sure to deactivate them or change the passwords on productive systems.</p>
+<h3 id="admin">Admin</h3>
+<p><strong>Username:</strong> admin
+<strong>Password:</strong> sadmin</p>
+<h3 id="web-users">Web users</h3>
+<p><strong>Surveillance Supervisor:</strong> SurvSup
+<strong>Case Supervisor:</strong> CaseSup
+<strong>Contact Supervisor:</strong> ContSup
+<strong>Point of Entry Supervisor:</strong> PoeSup
+<strong>Laboratory Officer:</strong> LabOff
+<strong>Event Officer:</strong> EveOff
+<strong>National User:</strong> NatUser
+<strong>National Clinician:</strong> NatClin</p>
+<h3 id="mobile-app-users">Mobile app users</h3>
+<p><strong>Surveillance Officer:</strong> SurvOff
+<strong>Hospital Informant:</strong> HospInf
+<strong>Point of Entry Informant:</strong> PoeInf</p>
+<h2 id="updating-keycloak">Updating Keycloak</h2>
+<h3 id="standalone-installation">Standalone installation</h3>
+<p>Follow the official Keycloak upgrade <a href="https://www.keycloak.org/docs/latest/upgrading/">guide</a>.</p>
+<p>To update follow this steps:</p>
+<ol>
+<li>Prerequisites</li>
+<li>Backup the DB</li>
+<li>Backup the current Keycloak configuration</li>
+<li>Download the 18.0.1 zip from <a href="https://www.keycloak.org/downloads">https://www.keycloak.org/downloads</a></li>
+<li>
+<p>Extract everything from the archive somewhere on your disk (will call this <code>KEYCLOAK_HOME_NEW</code>)</p>
+</li>
+<li>
+<p>From you current installation (will call this <code>KEYCLOAK_HOME_OLD</code>) directory copy the following into the new installation</p>
+</li>
+<li>Copy directory <code>KEYCLOAK_HOME_OLD/themes/sormas</code> over to <code>KEYCLOAK_HOME_NEW/themes</code></li>
+<li>
+<p>Copy <code>KEYCLOAK_HOME_OLD/providers/sormas-keycloak-service-provider-*.jar</code> over to <code>KEYCLOAK_HOME_16/providers</code></p>
+</li>
+<li>
+<p>Setup Keycloak to use the <a href="https://www.keycloak.org/server/db">Database</a></p>
+</li>
+<li>Start Keycloak</li>
+<li>Database will be migrated automatically</li>
+</ol>
+<h3 id="docker-installation">Docker installation</h3>
+<p>The docker installation is automatically upgraded to the latest version specified in the Dockerfile.</p>
+<p><strong>Prerequisites:</strong> Make sure the DB is backed up, because once the upgrade is done the new DB won't be usable with the old version of Keycloak.</p>
+<p>For more info see the <a href="https://github.com/sormas-foundation/SORMAS-Docker/blob/development/keycloak/README.md">Keycloak Docker Documentation</a>.</p>
+<h2 id="how-to-migrate-to-new-payara-server">How to migrate to new Payara Server</h2>
+<h3 id="step-1-shutdown-and-backup-existing-domain">Step 1: Shutdown and backup existing domain</h3>
+<pre><code class="language-bash"># Stop domain
+service payara-sormas stop
+
+# Move (backup) existing domain
+DOMAIN_PATH=/opt/domains
+DOMAIN_NAME=&quot;sormas&quot;
+DOMAIN_BACKUP_NAME=&quot;sormas_backup&quot;
+mv $DOMAIN_PATH/$DOMAIN_NAME $DOMAIN_PATH/$DOMAIN_BACKUP_NAME
+</code></pre>
+<h3 id="step-2-setup-payara-domain">Step 2: Setup Payara domain</h3>
+<p>Please follow the <a href="../SERVER_SETUP/#sormas-server">server setup</a>: Create the payara domain under the same path as before, use the same directory paths and the same database settings.</p>
+<h3 id="step-3-apply-your-config-file-changes">Step 3: Apply your config file changes</h3>
+<p>Transfer your settings from <code>sormas.properties</code>, <code>logback.xml</code> or changes in the domain setup. Use the new provided files and copy your changes in, don't reuse old files!</p>
+<h3 id="step-4-install-new-sormas-version">Step 4: Install new SORMAS version</h3>
+<p>To install the new SORMAS version in the Payara domain, proceed with the <a href="./#automatic-server-update">automatic update</a> or for developers: Deploy SORMAS via the IDE as usual.</p>
+<h3 id="alternative-for-development-systems">Alternative for development systems</h3>
+<p>For minor updates of the payara version, you will most often be able to keep the existing domain and only replace the payara server.</p>
+<ol>
+<li>Download the needed version of <a href="https://www.payara.fish/downloads/payara-platform-community-edition/">Payara server</a>.</li>
+<li>Undeploy all sormas modules from the payara domain and stop the domain.</li>
+<li>Replace your payara server in <code>/opt/payara5</code> (default path) with the downloaded one. Remove the default domain in <code>opt/payara5/glassfish/domains</code> as it is not needed.</li>
+<li>Replace the application server in your IDE with the new server. See <a href="../DEVELOPMENT_ENVIRONMENT/#step-5-install-and-configure-your-ide">IDE setup guide</a></li>
+<li>If you are facing any problems, restart your IDE and clean all generated files from the sormas domain.</li>
+</ol>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/sormas-foundation/SORMAS-Project" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["tabs"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": 0.1}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+    
+  </body>
+</html>
