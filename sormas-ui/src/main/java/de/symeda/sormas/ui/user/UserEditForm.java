@@ -259,7 +259,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     userField.setEnabled(false);
                 }
             });
-            this.getField(UserEditForm.RESTRICT_DISEASES_CHECKBOX_LOC).setEnabled(true);
         }
     }
 
