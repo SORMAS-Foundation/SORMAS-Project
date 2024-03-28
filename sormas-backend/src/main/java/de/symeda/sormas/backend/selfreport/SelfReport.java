@@ -13,39 +13,39 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfdeclaration;
+package de.symeda.sormas.backend.selfreport;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.selfreport.InvestigationStatus;
+import de.symeda.sormas.api.selfreport.ProcessingStatus;
+import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.user.User;
 
-public class SelfDeclarationDto extends EntityDto {
+@Entity(name = "selfreports")
+public class SelfReport extends CoreAdo {
 
-	private static final long serialVersionUID = 604507951783731873L;
+	private static final long serialVersionUID = 6676716702984236618L;
 
-	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
-	private UserReferenceDto responsibleUser;
-	@NotNull(message = Validations.requiredField)
+
+	private User responsibleUser;
+
 	private InvestigationStatus investigationStatus;
-	@NotNull(message = Validations.requiredField)
+
 	private ProcessingStatus processingStatus;
 
-	public static SelfDeclarationDto build() {
-		SelfDeclarationDto dto = new SelfDeclarationDto();
-
-		dto.setUuid(DataHelper.createUuid());
-		dto.setInvestigationStatus(InvestigationStatus.PENDING);
-		dto.setProcessingStatus(ProcessingStatus.UNPROCESSED);
-
-		return dto;
-	}
-
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -54,14 +54,17 @@ public class SelfDeclarationDto extends EntityDto {
 		this.reportDate = reportDate;
 	}
 
-	public UserReferenceDto getResponsibleUser() {
+	@ManyToOne(fetch = FetchType.LAZY)
+	public User getResponsibleUser() {
 		return responsibleUser;
 	}
 
-	public void setResponsibleUser(UserReferenceDto responsibleUser) {
+	public void setResponsibleUser(User responsibleUser) {
 		this.responsibleUser = responsibleUser;
 	}
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
@@ -70,6 +73,8 @@ public class SelfDeclarationDto extends EntityDto {
 		this.investigationStatus = investigationStatus;
 	}
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
 	public ProcessingStatus getProcessingStatus() {
 		return processingStatus;
 	}

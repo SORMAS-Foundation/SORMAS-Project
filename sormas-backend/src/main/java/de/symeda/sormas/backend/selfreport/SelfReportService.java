@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.selfdeclaration;
+package de.symeda.sormas.backend.selfreport;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -27,24 +27,24 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 
 @Stateless
 @LocalBean
-public class SelfDeclarationService extends AbstractCoreAdoService<SelfDeclaration, SelfDeclarationJoins> {
+public class SelfReportService extends AbstractCoreAdoService<SelfReport, SelfReportJoins> {
 
-	public SelfDeclarationService() {
-		super(SelfDeclaration.class, DeletableEntityType.SELF_DECLARATION);
+	public SelfReportService() {
+		super(SelfReport.class, DeletableEntityType.SELF_REPORT);
 	}
 
 	@Override
-	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, SelfDeclaration> from) {
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, SelfReport> from) {
 		return null;
 	}
 
 	@Override
-	protected SelfDeclarationJoins toJoins(From<?, SelfDeclaration> adoPath) {
-		return new SelfDeclarationJoins(adoPath);
+	protected SelfReportJoins toJoins(From<?, SelfReport> adoPath) {
+		return new SelfReportJoins(adoPath);
 	}
 
 	@Override
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, SelfDeclaration> from) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, SelfReport> from) {
 		return cb.conjunction();
 	}
 }

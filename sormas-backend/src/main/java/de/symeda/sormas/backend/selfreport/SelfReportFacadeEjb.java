@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.selfdeclaration;
+package de.symeda.sormas.backend.selfreport;
 
 import java.util.Date;
 import java.util.List;
@@ -28,11 +28,11 @@ import org.apache.commons.lang3.NotImplementedException;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationCriteria;
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationDto;
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationFacade;
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationIndexDto;
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationReferenceDto;
+import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportFacade;
+import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
+import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -43,51 +43,50 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
-@Stateless(name = "SelfDeclarationFacade")
-@RightsAllowed(UserRight._SELF_DECLARATION_VIEW)
-public class SelfDeclarationFacadeEjb
+@Stateless(name = "SelfReportFacade")
+@RightsAllowed(UserRight._SELF_REPORT_VIEW)
+public class SelfReportFacadeEjb
 	extends
-	AbstractCoreFacadeEjb<SelfDeclaration, SelfDeclarationDto, SelfDeclarationIndexDto, SelfDeclarationReferenceDto, SelfDeclarationService, SelfDeclarationCriteria>
-	implements SelfDeclarationFacade {
+	AbstractCoreFacadeEjb<SelfReport, SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportService, SelfReportCriteria>
+	implements SelfReportFacade {
 
-	public SelfDeclarationFacadeEjb() {
+	public SelfReportFacadeEjb() {
 	}
 
 	@Inject
-	public SelfDeclarationFacadeEjb(SelfDeclarationService service) {
-		super(SelfDeclaration.class, SelfDeclarationDto.class, service);
+	public SelfReportFacadeEjb(SelfReportService service) {
+		super(SelfReport.class, SelfReportDto.class, service);
 	}
 
 	@Override
 	@RightsAllowed({
-		UserRight._SELF_DECLARATION_CREATE,
-		UserRight._SELF_DECLARATION_EDIT })
-	public SelfDeclarationDto save(@Valid SelfDeclarationDto dto) {
-		SelfDeclaration existingSelfDeclaration = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		UserRight._SELF_REPORT_CREATE,
+		UserRight._SELF_REPORT_EDIT })
+	public SelfReportDto save(@Valid SelfReportDto dto) {
+		SelfReport existingSelfReport = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
 		FacadeHelper
-			.checkCreateAndEditRights(existingSelfDeclaration, userService, UserRight.SELF_DECLARATION_CREATE, UserRight.SELF_DECLARATION_EDIT);
+			.checkCreateAndEditRights(existingSelfReport, userService, UserRight.SELF_REPORT_CREATE, UserRight.SELF_REPORT_EDIT);
 
-		SelfDeclarationDto existingDto = toDto(existingSelfDeclaration);
-		Pseudonymizer<SelfDeclarationDto> pseudonymizer = createPseudonymizer(existingSelfDeclaration);
-		restorePseudonymizedDto(dto, existingDto, existingSelfDeclaration, pseudonymizer);
+		SelfReportDto existingDto = toDto(existingSelfReport);
+		Pseudonymizer<SelfReportDto> pseudonymizer = createPseudonymizer(existingSelfReport);
+		restorePseudonymizedDto(dto, existingDto, existingSelfReport, pseudonymizer);
 
 		validate(dto);
 
-		SelfDeclaration selfDeclaration = fillOrBuildEntity(dto, existingSelfDeclaration, true);
-		service.ensurePersisted(selfDeclaration);
+		SelfReport selfReport = fillOrBuildEntity(dto, existingSelfReport, true);
+		service.ensurePersisted(selfReport);
 
-		return toPseudonymizedDto(selfDeclaration, pseudonymizer);
+		return toPseudonymizedDto(selfReport, pseudonymizer);
 	}
 
 	@Override
-	public long count(SelfDeclarationCriteria criteria) {
+	public long count(SelfReportCriteria criteria) {
 		return 0;
 	}
 
 	@Override
-	public List<SelfDeclarationIndexDto> getIndexList(
-		SelfDeclarationCriteria criteria,
+	public List<SelfReportIndexDto> getIndexList(SelfReportCriteria criteria,
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
@@ -95,7 +94,7 @@ public class SelfDeclarationFacadeEjb
 	}
 
 	@Override
-	public void validate(SelfDeclarationDto dto) throws ValidationRuntimeException {
+	public void validate(SelfReportDto dto) throws ValidationRuntimeException {
 
 	}
 
@@ -105,20 +104,20 @@ public class SelfDeclarationFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._SELF_DECLARATION_DELETE)
+	@RightsAllowed(UserRight._SELF_REPORT_DELETE)
 	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
 		return null;
 	}
 
 	@Override
-	@RightsAllowed(UserRight._SELF_DECLARATION_DELETE)
+	@RightsAllowed(UserRight._SELF_REPORT_DELETE)
 	public List<ProcessedEntity> restore(List<String> uuids) {
 		return null;
 	}
 
 	@Override
-	protected SelfDeclaration fillOrBuildEntity(SelfDeclarationDto source, SelfDeclaration target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, SelfDeclaration::new, checkChangeDate);
+	protected SelfReport fillOrBuildEntity(SelfReportDto source, SelfReport target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, SelfReport::new, checkChangeDate);
 
 		target.setReportDate(source.getReportDate());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
@@ -129,11 +128,11 @@ public class SelfDeclarationFacadeEjb
 	}
 
 	@Override
-	protected SelfDeclarationDto toDto(SelfDeclaration source) {
+	protected SelfReportDto toDto(SelfReport source) {
 		if (source == null) {
 			return null;
 		}
-		SelfDeclarationDto target = new SelfDeclarationDto();
+		SelfReportDto target = new SelfReportDto();
 
 		DtoHelper.fillDto(target, source);
 
@@ -146,39 +145,39 @@ public class SelfDeclarationFacadeEjb
 	}
 
 	@Override
-	protected SelfDeclarationReferenceDto toRefDto(SelfDeclaration selfDeclaration) {
-		return new SelfDeclarationReferenceDto(selfDeclaration.getUuid());
+	protected SelfReportReferenceDto toRefDto(SelfReport selfReport) {
+		return new SelfReportReferenceDto(selfReport.getUuid());
 	}
 
 	@Override
 	protected void pseudonymizeDto(
-		SelfDeclaration source,
-		SelfDeclarationDto dto,
-		Pseudonymizer<SelfDeclarationDto> pseudonymizer,
+		SelfReport source,
+		SelfReportDto dto,
+		Pseudonymizer<SelfReportDto> pseudonymizer,
 		boolean inJurisdiction) {
 
 	}
 
 	@Override
 	protected void restorePseudonymizedDto(
-		SelfDeclarationDto dto,
-		SelfDeclarationDto existingDto,
-		SelfDeclaration entity,
-		Pseudonymizer<SelfDeclarationDto> pseudonymizer) {
+		SelfReportDto dto,
+		SelfReportDto existingDto,
+		SelfReport entity,
+		Pseudonymizer<SelfReportDto> pseudonymizer) {
 
 	}
 
 	@Override
 	protected DeletableEntityType getDeletableEntityType() {
-		return DeletableEntityType.SELF_DECLARATION;
+		return DeletableEntityType.SELF_REPORT;
 	}
 
 	@LocalBean
 	@Stateless
-	public static class SelfDeclarationFacadeEjbLocal extends SelfDeclarationFacadeEjb {
+	public static class SelfReportFacadeEjbLocal extends SelfReportFacadeEjb {
 
 		@Inject
-		public SelfDeclarationFacadeEjbLocal(SelfDeclarationService service) {
+		public SelfReportFacadeEjbLocal(SelfReportService service) {
 			super(service);
 		}
 	}

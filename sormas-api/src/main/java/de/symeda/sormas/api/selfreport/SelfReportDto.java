@@ -13,37 +13,39 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.selfdeclaration;
+package de.symeda.sormas.api.selfreport;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.selfdeclaration.InvestigationStatus;
-import de.symeda.sormas.api.selfdeclaration.ProcessingStatus;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
-@Entity(name = "selfdeclarations")
-public class SelfDeclaration extends CoreAdo {
+public class SelfReportDto extends EntityDto {
 
+	private static final long serialVersionUID = 604507951783731873L;
+
+	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
-
-	private User responsibleUser;
-
+	private UserReferenceDto responsibleUser;
+	@NotNull(message = Validations.requiredField)
 	private InvestigationStatus investigationStatus;
-
+	@NotNull(message = Validations.requiredField)
 	private ProcessingStatus processingStatus;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
+	public static SelfReportDto build() {
+		SelfReportDto dto = new SelfReportDto();
+
+		dto.setUuid(DataHelper.createUuid());
+		dto.setInvestigationStatus(InvestigationStatus.PENDING);
+		dto.setProcessingStatus(ProcessingStatus.UNPROCESSED);
+
+		return dto;
+	}
+
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -52,17 +54,14 @@ public class SelfDeclaration extends CoreAdo {
 		this.reportDate = reportDate;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	public User getResponsibleUser() {
+	public UserReferenceDto getResponsibleUser() {
 		return responsibleUser;
 	}
 
-	public void setResponsibleUser(User responsibleUser) {
+	public void setResponsibleUser(UserReferenceDto responsibleUser) {
 		this.responsibleUser = responsibleUser;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	public InvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
@@ -71,8 +70,6 @@ public class SelfDeclaration extends CoreAdo {
 		this.investigationStatus = investigationStatus;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	public ProcessingStatus getProcessingStatus() {
 		return processingStatus;
 	}

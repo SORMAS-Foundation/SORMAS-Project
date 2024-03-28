@@ -13,14 +13,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfdeclaration;
+package de.symeda.sormas.api.selfreport;
 
 import java.util.Date;
 
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class SelfDeclarationIndexDto extends AbstractUuidDto {
+public class SelfReportIndexDto extends AbstractUuidDto {
+
+	private static final long serialVersionUID = -4984417669514467918L;
 
 	private final Date reportDate;
 
@@ -30,7 +32,7 @@ public class SelfDeclarationIndexDto extends AbstractUuidDto {
 
 	private final ProcessingStatus processingStatus;
 
-	public SelfDeclarationIndexDto(
+	public SelfReportIndexDto(
 		String uuid,
 		Date reportDate,
 		UserReferenceDto responsibleUser,

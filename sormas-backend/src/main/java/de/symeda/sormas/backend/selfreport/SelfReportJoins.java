@@ -13,15 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.selfdeclaration;
+package de.symeda.sormas.backend.selfreport;
 
 import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryJoins;
 
-public class SelfDeclarationJoins extends QueryJoins<SelfDeclaration> {
+public class SelfReportJoins extends QueryJoins<SelfReport> {
 
-	public SelfDeclarationJoins(From<?, SelfDeclaration> root) {
+	public SelfReportJoins(From<?, SelfReport> root) {
 		super(root);
 	}
 }

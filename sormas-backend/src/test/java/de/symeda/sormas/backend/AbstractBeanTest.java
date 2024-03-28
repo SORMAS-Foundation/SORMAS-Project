@@ -101,7 +101,7 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationFacade;
+import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.entities.caze.SormasToSormasCaseFacade;
@@ -220,7 +220,7 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.selfdeclaration.SelfDeclarationFacadeEjb.SelfDeclarationFacadeEjbLocal;
+import de.symeda.sormas.backend.selfreport.SelfReportFacadeEjb.SelfReportFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
@@ -1075,7 +1075,7 @@ public abstract class AbstractBeanTest {
 		return getBean(SpecialCaseAccessService.class);
 	}
 
-	public SelfDeclarationFacade getSelfDeclarationFacade() {
-		return getBean(SelfDeclarationFacadeEjbLocal.class);
+	public SelfReportFacade getSelfReportFacade() {
+		return getBean(SelfReportFacadeEjbLocal.class);
 	}
 }

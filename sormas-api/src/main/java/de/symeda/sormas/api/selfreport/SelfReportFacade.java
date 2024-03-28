@@ -13,9 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfdeclaration;
+package de.symeda.sormas.api.selfreport;
 
-public enum ProcessingStatus {
-	UNPROCESSED,
-	PROCESSED
+import javax.ejb.Remote;
+
+import de.symeda.sormas.api.CoreFacade;
+
+@Remote
+public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
 }

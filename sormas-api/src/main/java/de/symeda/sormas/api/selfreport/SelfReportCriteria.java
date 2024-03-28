@@ -13,19 +13,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfdeclaration;
+package de.symeda.sormas.api.selfreport;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public enum InvestigationStatus {
-
-	IN_PROGRESS,
-	PENDING,
-	COMPLETED,
-	REJECTED;
-
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+public class SelfReportCriteria extends BaseCriteria {
 }

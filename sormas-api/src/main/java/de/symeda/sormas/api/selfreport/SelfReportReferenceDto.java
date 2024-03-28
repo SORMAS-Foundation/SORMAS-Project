@@ -13,31 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.selfdeclaration;
+package de.symeda.sormas.api.selfreport;
 
-import java.util.Date;
+import de.symeda.sormas.api.ReferenceDto;
 
-import org.junit.jupiter.api.Test;
+public class SelfReportReferenceDto extends ReferenceDto {
 
-import de.symeda.sormas.api.selfdeclaration.SelfDeclarationDto;
-import de.symeda.sormas.backend.AbstractBeanTest;
-
-public class SelfDeclarationFacadeEjbTest extends AbstractBeanTest {
-
-	@Test
-	public void testGetByUuid() {
-		SelfDeclarationDto dto = createSelfDeclaration();
-
-		SelfDeclarationDto result = getSelfDeclarationFacade().getByUuid(dto.getUuid());
-
-		assert result != null;
-		assert result.getUuid().equals(dto.getUuid());
-	}
-
-	private SelfDeclarationDto createSelfDeclaration() {
-		SelfDeclarationDto dto = SelfDeclarationDto.build();
-		dto.setReportDate(new Date());
-
-		return getSelfDeclarationFacade().save(dto);
+	public SelfReportReferenceDto(String uuid) {
+		super(uuid);
 	}
 }

@@ -13,13 +13,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfdeclaration;
+package de.symeda.sormas.api.selfreport;
 
-import de.symeda.sormas.api.ReferenceDto;
-
-public class SelfDeclarationReferenceDto extends ReferenceDto {
-
-	public SelfDeclarationReferenceDto(String uuid) {
-		super(uuid);
-	}
+public enum ProcessingStatus {
+	UNPROCESSED,
+	PROCESSED
 }

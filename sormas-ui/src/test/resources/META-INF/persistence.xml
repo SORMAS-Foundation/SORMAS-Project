@@ -87,7 +87,7 @@
 		<class>de.symeda.sormas.backend.environment.Environment</class>
 		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
 		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
-		<class>de.symeda.sormas.backend.selfdeclaration.SelfDeclaration</class>
+		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
