@@ -16,6 +16,7 @@ package de.symeda.sormas.backend.user;
 
 import static java.util.Objects.isNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,6 +54,7 @@ import javax.validation.ValidationException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -629,17 +631,33 @@ public class UserFacadeEjb implements UserFacade {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
 		}
 
-		User user = userService.getByUuid(dto.getUuid());
+		User existingUser = userService.getByUuid(dto.getUuid());
 		// current user should be able to edit itself
 		if (!DataHelper.isSame(userService.getCurrentUser(), dto)) {
-			FacadeHelper.checkCreateAndEditRights(user, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
+			FacadeHelper.checkCreateAndEditRights(existingUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
 		}
 
-		return saveUserRoles(dto, isUserSettingsUpdate, user);
+		if (!isLoginUnique(existingUser == null ? null : existingUser.getUuid(), dto.getUserName())) {
+			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
+		}
+
+		validateUserRoles(dto.getUserRoles(), isUserSettingsUpdate, existingUser, dto.getCreationDate() != null);
+
+		User user = fillOrBuildEntity(dto, existingUser, true);
+		userService.ensurePersisted(user);
+
+		if (existingUser == null) {
+			userCreateEvent.fire(new UserCreateEvent(user));
+		} else {
+			userUpdateEvent.fire(new UserUpdateEvent(existingUser, user));
+		}
+
+		return toDto(user);
 	}
 
-	private UserDto saveUserRoles(UserDto dto, boolean isUserSettingsUpdate, User user) {
-		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(dto.getUserRoles());
+	@Nullable
+	private User validateUserRoles(Set<UserRoleReferenceDto> roles, boolean isUserSettingsUpdate, User user, boolean isUserUpdate) {
+		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(roles);
 
 		try {
 			userRoleFacade.validateUserRoleCombination(newRoles);
@@ -647,13 +665,9 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ValidationException(e);
 		}
 
-		if (!isLoginUnique(user == null ? null : user.getUuid(), dto.getUserName())) {
-			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
-		}
-
 		User oldUser = null;
 		Set<UserRight> oldUserRights = Collections.emptySet();
-		if (dto.getCreationDate() != null) {
+		if (isUserUpdate) {
 			try {
 				oldUser = (User) BeanUtils.cloneBean(user);
 				oldUserRights = UserRole.getUserRights(oldUser.getUserRoles());
@@ -671,28 +685,39 @@ public class UserFacadeEjb implements UserFacade {
 				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
 			}
 		}
-
-		user = fillOrBuildEntity(dto, user, true);
-		userService.ensurePersisted(user);
-
-		if (oldUser == null) {
-			userCreateEvent.fire(new UserCreateEvent(user));
-		} else {
-			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
-		}
-
-		return toDto(user);
+		return oldUser;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._USER_EDIT)
-	public UserDto setUserRoles(UserReferenceDto userReference, Set<UserRoleReferenceDto> userRoles) {
-		User user = userService.getByReferenceDto(userReference);
+	public UserDto saveUserRolesAndRestrictions(UserDto userDto, Set<UserRoleReferenceDto> userRoles) {
+		User user = userService.getByReferenceDto(userDto.toReference());
 
-		UserDto userToBeSaved = toDto(user);
-		userToBeSaved.setUserRoles(userRoles);
+		User oldUser;
+		try {
+			oldUser = (User) BeanUtils.cloneBean(user);
+		} catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
 
-		return saveUserRoles(userToBeSaved, false, user);
+		validateUserRoles(userDto.getUserRoles(), false, user, true);
+
+		fillEntityUserRoles(user, userDto);
+
+		user.setRegion(regionService.getByReferenceDto(userDto.getRegion()));
+		user.setDistrict(districtService.getByReferenceDto(userDto.getDistrict()));
+		user.setCommunity(communityService.getByReferenceDto(userDto.getCommunity()));
+		user.setHealthFacility(facilityService.getByReferenceDto(userDto.getHealthFacility()));
+		user.setAssociatedOfficer(userService.getByReferenceDto(userDto.getAssociatedOfficer()));
+		user.setLaboratory(facilityService.getByReferenceDto(userDto.getLaboratory()));
+		user.setPointOfEntry(pointOfEntryService.getByReferenceDto(userDto.getPointOfEntry()));
+		user.setLimitedDiseases(userDto.getLimitedDiseases());
+
+		userService.ensurePersisted(user);
+
+		userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+
+		return toDto(user);
 	}
 
 	@Override
@@ -830,6 +855,14 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
+		fillEntityUserRoles(target, source);
+
+		target.updateJurisdictionLevel();
+
+		return target;
+	}
+
+	private void fillEntityUserRoles(User target, UserDto source) {
 		//Make sure userroles of target are attached
 		Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
 		target.setUserRoles(userRoles);
@@ -845,10 +878,6 @@ public class UserFacadeEjb implements UserFacade {
 		target.getUserRoles().addAll(newUserRoles);
 		//Remove userroles that were removed
 		target.getUserRoles().removeIf(userRole -> !sourceUserRoleUuids.contains(userRole.getUuid()));
-
-		target.updateJurisdictionLevel();
-
-		return target;
 	}
 
 	@Override
