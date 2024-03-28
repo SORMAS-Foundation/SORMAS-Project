@@ -34,8 +34,9 @@ public enum UserRight {
 	CASE_VIEW(UserRightGroup.CASE, UserRight._PERSON_VIEW),
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
-	CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
-	CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
+    CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
+    CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._CASE_VIEW_ARCHIVED),
+    CASE_VIEW_ARCHIVED(UserRightGroup.CASE),
 	CASE_IMPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EXPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	/*
@@ -58,8 +59,9 @@ public enum UserRight {
 	IMMUNIZATION_VIEW(UserRightGroup.IMMUNIZATION, UserRight._PERSON_VIEW),
 	IMMUNIZATION_CREATE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
 	IMMUNIZATION_EDIT(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_EDIT),
-	IMMUNIZATION_ARCHIVE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
-	IMMUNIZATION_DELETE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_DELETE),
+    IMMUNIZATION_DELETE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_DELETE),
+	IMMUNIZATION_ARCHIVE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._IMMUNIZATION_VIEW_ARCHIVED),
+    IMMUNIZATION_VIEW_ARCHIVED(UserRightGroup.IMMUNIZATION),
 
 	PERSON_VIEW(UserRightGroup.PERSON),
 	PERSON_EDIT(UserRightGroup.PERSON, UserRight._PERSON_VIEW),
@@ -87,8 +89,9 @@ public enum UserRight {
 	CONTACT_VIEW(UserRightGroup.CONTACT, UserRight._CASE_VIEW, UserRight._PERSON_VIEW),
 	CONTACT_CREATE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EDIT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._PERSON_EDIT),
-	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
-	CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
+    CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
+	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._CONTACT_VIEW_ARCHIVED),
+    CONTACT_VIEW_ARCHIVED(UserRightGroup.CONTACT),
 	CONTACT_IMPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EXPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	// users that are allowed to convert a contact to a case need to be allowed to create a case,
@@ -109,7 +112,8 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
-	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW),
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED),
+    TASK_VIEW_ARCHIVED(UserRightGroup.TASK),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	ACTION_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._DOCUMENT_DELETE),
@@ -118,22 +122,25 @@ public enum UserRight {
 	EVENT_VIEW(UserRightGroup.EVENT),
 	EVENT_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
-	EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTPARTICIPANT_DELETE, UserRight._TASK_DELETE, UserRight._ACTION_DELETE, UserRight._DOCUMENT_DELETE),
-	EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
+    EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENT_VIEW_ARCHIVED),
+    EVENT_VIEW_ARCHIVED(UserRightGroup.EVENT),
+    EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EXPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_RESPONSIBLE(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
 
 	EVENTPARTICIPANT_VIEW(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._PERSON_VIEW),
 	EVENTPARTICIPANT_CREATE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 	EVENTPARTICIPANT_EDIT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._PERSON_EDIT),
-	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
-	EVENTPARTICIPANT_DELETE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._SAMPLE_DELETE, UserRight._PERSON_DELETE),
+    EVENTPARTICIPANT_DELETE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._SAMPLE_DELETE, UserRight._PERSON_DELETE),
+	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._EVENTPARTICIPANT_VIEW_ARCHIVED),
+    EVENTPARTICIPANT_VIEW_ARCHIVED(UserRightGroup.EVENT),
 	EVENTPARTICIPANT_IMPORT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 
 	EVENTGROUP_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTGROUP_LINK),
 	EVENTGROUP_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
-	EVENTGROUP_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
+	EVENTGROUP_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTGROUP_VIEW_ARCHIVED),
+    EVENTGROUP_VIEW_ARCHIVED(UserRightGroup.EVENT),
 	EVENTGROUP_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENTGROUP_LINK(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
 
@@ -207,8 +214,9 @@ public enum UserRight {
 	TRAVEL_ENTRY_VIEW(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight._PERSON_VIEW),
 	TRAVEL_ENTRY_CREATE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
 	TRAVEL_ENTRY_EDIT(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._PERSON_EDIT),
-	TRAVEL_ENTRY_ARCHIVE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
-	TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE, UserRight._DOCUMENT_DELETE, UserRight._PERSON_DELETE),
+	TRAVEL_ENTRY_ARCHIVE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TRAVEL_ENTRY_VIEW_ARCHIVED),
+    TRAVEL_ENTRY_VIEW_ARCHIVED(UserRightGroup.TRAVEL_ENTRY),
+    TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE, UserRight._DOCUMENT_DELETE, UserRight._PERSON_DELETE),
 
 	ENVIRONMENT_VIEW(UserRightGroup.ENVIRONMENT),
 	ENVIRONMENT_CREATE(UserRightGroup.ENVIRONMENT, UserRight._ENVIRONMENT_VIEW),
@@ -294,9 +302,11 @@ public enum UserRight {
 	public static final String _CASE_EXPORT = "CASE_EXPORT";
 	public static final String _CASE_SHARE = "CASE_SHARE";
 	public static final String _CASE_ARCHIVE = "CASE_ARCHIVE";
+	public static final String _CASE_VIEW_ARCHIVED = "CASE_VIEW_ARCHIVED";
 	public static final String _CASE_MERGE = "CASE_MERGE";
 	public static final String _GRANT_SPECIAL_CASE_ACCESS = "GRANT_SPECIAL_CASE_ACCESS";
 	public static final String _IMMUNIZATION_VIEW = "IMMUNIZATION_VIEW";
+	public static final String _IMMUNIZATION_VIEW_ARCHIVED = "IMMUNIZATION_VIEW_ARCHIVED";
 	public static final String _IMMUNIZATION_CREATE = "IMMUNIZATION_CREATE";
 	public static final String _IMMUNIZATION_EDIT = "IMMUNIZATION_EDIT";
 	public static final String _IMMUNIZATION_DELETE = "IMMUNIZATION_DELETE";
@@ -324,6 +334,7 @@ public enum UserRight {
 	public static final String _CONTACT_CREATE = "CONTACT_CREATE";
 	public static final String _CONTACT_IMPORT = "CONTACT_IMPORT";
 	public static final String _CONTACT_VIEW = "CONTACT_VIEW";
+	public static final String _CONTACT_VIEW_ARCHIVED = "CONTACT_VIEW_ARCHIVED";
 	public static final String _CONTACT_ARCHIVE = "CONTACT_ARCHIVE";
 	public static final String _CONTACT_EDIT = "CONTACT_EDIT";
 	public static final String _CONTACT_DELETE = "CONTACT_DELETE";
@@ -343,11 +354,13 @@ public enum UserRight {
 	public static final String _TASK_DELETE = "TASK_DELETE";
 	public static final String _TASK_EXPORT = "TASK_EXPORT";
 	public static final String _TASK_ARCHIVE = "TASK_ARCHIVE";
+	public static final String _TASK_VIEW_ARCHIVED = "TASK_VIEW_ARCHIVED";
 	public static final String _ACTION_CREATE = "ACTION_CREATE";
 	public static final String _ACTION_DELETE = "ACTION_DELETE";
 	public static final String _ACTION_EDIT = "ACTION_EDIT";
 	public static final String _EVENT_CREATE = "EVENT_CREATE";
 	public static final String _EVENT_VIEW = "EVENT_VIEW";
+	public static final String _EVENT_VIEW_ARCHIVED = "EVENT_VIEW_ARCHIVED";
 	public static final String _EVENT_EDIT = "EVENT_EDIT";
 	public static final String _EVENT_IMPORT = "EVENT_IMPORT";
 	public static final String _EVENT_EXPORT = "EVENT_EXPORT";
@@ -359,11 +372,13 @@ public enum UserRight {
 	public static final String _EVENTPARTICIPANT_DELETE = "EVENTPARTICIPANT_DELETE";
 	public static final String _EVENTPARTICIPANT_IMPORT = "EVENTPARTICIPANT_IMPORT";
 	public static final String _EVENTPARTICIPANT_VIEW = "EVENTPARTICIPANT_VIEW";
+	public static final String _EVENTPARTICIPANT_VIEW_ARCHIVED = "EVENTPARTICIPANT_VIEW_ARCHIVED";
 	public static final String _EVENTGROUP_CREATE = "EVENTGROUP_CREATE";
 	public static final String _EVENTGROUP_EDIT = "EVENTGROUP_EDIT";
 	public static final String _EVENTGROUP_LINK = "EVENTGROUP_LINK";
 	public static final String _EVENTGROUP_ARCHIVE = "EVENTGROUP_ARCHIVE";
 	public static final String _EVENTGROUP_DELETE = "EVENTGROUP_DELETE";
+	public static final String _EVENTGROUP_VIEW_ARCHIVED = "EVENTGROUP_VIEW_ARCHIVED";
 	public static final String _WEEKLYREPORT_CREATE = "WEEKLYREPORT_CREATE";
 	public static final String _WEEKLYREPORT_VIEW = "WEEKLYREPORT_VIEW";
 	public static final String _USER_CREATE = "USER_CREATE";
@@ -436,6 +451,7 @@ public enum UserRight {
 	public static final String _EXTERNAL_MESSAGE_DELETE = "EXTERNAL_MESSAGE_DELETE";
 	public static final String _TRAVEL_ENTRY_MANAGEMENT_ACCESS = "TRAVEL_ENTRY_MANAGEMENT_ACCESS";
 	public static final String _TRAVEL_ENTRY_VIEW = "TRAVEL_ENTRY_VIEW";
+	public static final String _TRAVEL_ENTRY_VIEW_ARCHIVED = "TRAVEL_ENTRY_VIEW_ARCHIVED";
 	public static final String _TRAVEL_ENTRY_CREATE = "TRAVEL_ENTRY_CREATE";
 	public static final String _TRAVEL_ENTRY_EDIT = "TRAVEL_ENTRY_EDIT";
 	public static final String _TRAVEL_ENTRY_DELETE = "TRAVEL_ENTRY_DELETE";
@@ -525,6 +541,19 @@ public enum UserRight {
 
 	public static Set<UserRight> getRequiredUserRights(Set<UserRight> userRights) {
 		return userRights.stream().map(UserRight::getRequiredUserRights).flatMap(Collection::stream).collect(Collectors.toSet());
+	}
+
+	public static Set<UserRight> getInitialSelectionUserRightDependencies() {
+		Set<UserRight> initialSelectionDependencies = new HashSet<>();
+		initialSelectionDependencies.add(UserRight.TASK_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.CASE_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.CONTACT_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.EVENT_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.EVENTGROUP_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.IMMUNIZATION_VIEW_ARCHIVED);
+		initialSelectionDependencies.add(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED);
+		return initialSelectionDependencies;
 	}
 
 	/**

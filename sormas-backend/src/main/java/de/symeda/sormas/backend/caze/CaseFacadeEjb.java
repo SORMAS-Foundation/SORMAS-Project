@@ -2842,7 +2842,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RightsAllowed(UserRight._CASE_ARCHIVE)
+	@RightsAllowed({
+		UserRight._CASE_ARCHIVE,
+		UserRight._CASE_VIEW_ARCHIVED })
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public ProcessedEntity dearchive(String entityUuid, String dearchiveReason, boolean includeContacts) {
 		ProcessedEntity processedEntity = dearchive(Collections.singletonList(entityUuid), dearchiveReason, includeContacts).get(0);
@@ -2851,7 +2853,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RightsAllowed(UserRight._CASE_ARCHIVE)
+	@RightsAllowed({
+		UserRight._CASE_ARCHIVE,
+		UserRight._CASE_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		List<ProcessedEntity> processedEntities = super.dearchive(entityUuids, dearchiveReason);
 
