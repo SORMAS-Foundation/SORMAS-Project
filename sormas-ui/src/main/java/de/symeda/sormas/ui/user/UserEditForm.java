@@ -81,6 +81,16 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseasesHeadingLoc";
 	public static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
 	private static final String RESTRICT_DISEASES_DESCRIPTION_LOC = "restrictDiseasesDescriptionLoc";
+	public static List<String> excludedFields = Arrays.asList(
+		UserDto.USER_ROLES,
+		UserDto.REGION,
+		UserDto.DISTRICT,
+		UserDto.COMMUNITY,
+		UserDto.HEALTH_FACILITY,
+		UserDto.POINT_OF_ENTRY,
+		UserDto.ASSOCIATED_OFFICER,
+		UserDto.LABORATORY,
+		UserDto.LIMITED_DISEASES);
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -245,12 +255,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
             this.getFieldGroup().getFields().forEach(userField ->{
-                List<String> excludedFields = Arrays.asList(UserDto.USER_ROLES, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY);
                 if (!excludedFields.contains(userField.getId())) {
                     userField.setEnabled(false);
                 }
             });
-            this.getField(UserEditForm.RESTRICT_DISEASES_CHECKBOX_LOC).setEnabled(false);
+            this.getField(UserEditForm.RESTRICT_DISEASES_CHECKBOX_LOC).setEnabled(true);
         }
     }
 

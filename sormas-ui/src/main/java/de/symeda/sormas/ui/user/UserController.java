@@ -179,7 +179,7 @@ public class UserController {
 
 	private void saveUser(UserDto user) {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
-			FacadeProvider.getUserFacade().setUserRoles(user.toReference(), user.getUserRoles());
+			FacadeProvider.getUserFacade().saveUserRolesAndRestrictions(user, user.getUserRoles());
 		} else {
 			FacadeProvider.getUserFacade().saveUser(user, false);
 		}

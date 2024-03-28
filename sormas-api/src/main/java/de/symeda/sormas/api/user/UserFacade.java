@@ -46,7 +46,7 @@ public interface UserFacade {
 
 	UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate);
 
-	UserDto setUserRoles(UserReferenceDto userReference, Set<UserRoleReferenceDto> userRoles);
+	UserDto saveUserRolesAndRestrictions(UserDto user, Set<UserRoleReferenceDto> userRoles);
 
 	boolean isLoginUnique(String uuid, String userName);
 
