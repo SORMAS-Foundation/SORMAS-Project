@@ -27,11 +27,11 @@ import de.symeda.sormas.api.dashboard.adverseeventsfollowingimmunization.AefiCha
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.highcharts.HighChart;
 
-public class AefiReactionsByGenderChart extends VerticalLayout {
+public class AefiReactionsBySexChart extends VerticalLayout {
 
 	protected final HighChart chart;
 
-	public AefiReactionsByGenderChart() {
+	public AefiReactionsBySexChart() {
 
 		setMargin(false);
 		setSpacing(false);
@@ -56,7 +56,7 @@ public class AefiReactionsByGenderChart extends VerticalLayout {
 					"		borderRadius: '8px'" +
 					"    }," +
 					"    title: {" +
-					"        text: 'Proportion of AEFI reactions (events) by gender'," +
+					"        text: 'Proportion of AEFI reactions (events) by sex'," +
 					"        align: 'left'," +
 					"			style: {" +
 					"        		fontSize: '15px'," +

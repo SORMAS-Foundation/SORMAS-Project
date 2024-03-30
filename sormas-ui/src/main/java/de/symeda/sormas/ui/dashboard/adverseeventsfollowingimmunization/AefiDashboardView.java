@@ -39,7 +39,7 @@ import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.components.AefiByVaccineDoseChart;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.components.AefiCountTilesComponent;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.components.AefiDashboardMapComponent;
-import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.components.AefiReactionsByGenderChart;
+import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.components.AefiReactionsBySexChart;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.components.AefiTypeStatisticsGroupComponent;
 import de.symeda.sormas.ui.dashboard.components.DashboardHeadingComponent;
 import de.symeda.sormas.ui.dashboard.statistics.DashboardStatisticsPercentageElement;
@@ -77,7 +77,7 @@ public class AefiDashboardView extends AbstractDashboardView {
 	private DashboardStatisticsPercentageElement aefiClassificationUndetermined;
 	private final AefiTypeStatisticsGroupComponent aefiCountsByVaccine;
 	private final AefiByVaccineDoseChart vaccineDoseChart;
-	private final AefiReactionsByGenderChart reactionsByGenderChart;
+	private final AefiReactionsBySexChart reactionsBySexChart;
 	private final AefiEpiCurveComponent epiCurveComponent;
 	private final AefiDashboardMapComponent mapComponent;
 
@@ -175,8 +175,8 @@ public class AefiDashboardView extends AbstractDashboardView {
 		vaccineDoseChart = new AefiByVaccineDoseChart();
 		aefiCountsLayout.addComponent(vaccineDoseChart, VACCINE_DOSE_LOC);
 
-		reactionsByGenderChart = new AefiReactionsByGenderChart();
-		aefiCountsLayout.addComponent(reactionsByGenderChart, REACTIONS_LOC);
+		reactionsBySexChart = new AefiReactionsBySexChart();
+		aefiCountsLayout.addComponent(reactionsBySexChart, REACTIONS_LOC);
 
 		epiCurveComponent = new AefiEpiCurveComponent(dataProvider);
 		epiCurveLayout = createEpiCurveLayout();
@@ -220,7 +220,7 @@ public class AefiDashboardView extends AbstractDashboardView {
 
 		aefiCountsByVaccine.update(dataProvider.getAefiCountsByVaccine());
 		vaccineDoseChart.update(dataProvider.getAefiByVaccineDoseChartData());
-		reactionsByGenderChart.update(dataProvider.getAefiEventsByGenderChartData());
+		reactionsBySexChart.update(dataProvider.getAefiEventsByGenderChartData());
 		epiCurveComponent.clearAndFillEpiCurveChart();
 		mapComponent.refreshMap();
 	}
