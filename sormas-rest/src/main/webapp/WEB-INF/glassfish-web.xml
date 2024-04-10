@@ -891,6 +891,27 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>SELF_REPORT_VIEW</role-name>
+        <group-name>SELF_REPORT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SELF_REPORT_CREATE</role-name>
+        <group-name>SELF_REPORT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SELF_REPORT_EDIT</role-name>
+        <group-name>SELF_REPORT_EDIT</group-name>
+    </security-role-mapping>
+
+
+    <security-role-mapping>
+        <role-name>SELF_REPORT_DELETE</role-name>
+        <group-name>SELF_REPORT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>DOCUMENT_VIEW</role-name>
         <group-name>DOCUMENT_VIEW</group-name>
     </security-role-mapping>
