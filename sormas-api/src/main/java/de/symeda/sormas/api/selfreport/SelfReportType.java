@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.selfreport;
 
-public enum ProcessingStatus {
-	UNPROCESSED,
-	PROCESSED
+public enum SelfReportType {
+	CASE,
+	CONTACT
 }

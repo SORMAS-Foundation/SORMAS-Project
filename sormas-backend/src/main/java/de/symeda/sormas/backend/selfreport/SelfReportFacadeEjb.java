@@ -18,10 +18,12 @@ package de.symeda.sormas.backend.selfreport;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -38,6 +40,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -46,9 +50,11 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @Stateless(name = "SelfReportFacade")
 @RightsAllowed(UserRight._SELF_REPORT_VIEW)
 public class SelfReportFacadeEjb
-	extends
-	AbstractCoreFacadeEjb<SelfReport, SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportService, SelfReportCriteria>
+	extends AbstractCoreFacadeEjb<SelfReport, SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportService, SelfReportCriteria>
 	implements SelfReportFacade {
+
+	@EJB
+	private LocationFacadeEjbLocal locationFacade;
 
 	public SelfReportFacadeEjb() {
 	}
@@ -62,11 +68,10 @@ public class SelfReportFacadeEjb
 	@RightsAllowed({
 		UserRight._SELF_REPORT_CREATE,
 		UserRight._SELF_REPORT_EDIT })
-	public SelfReportDto save(@Valid SelfReportDto dto) {
+	public SelfReportDto save(@Valid @NotNull SelfReportDto dto) {
 		SelfReport existingSelfReport = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		FacadeHelper
-			.checkCreateAndEditRights(existingSelfReport, userService, UserRight.SELF_REPORT_CREATE, UserRight.SELF_REPORT_EDIT);
+		FacadeHelper.checkCreateAndEditRights(existingSelfReport, userService, UserRight.SELF_REPORT_CREATE, UserRight.SELF_REPORT_EDIT);
 
 		SelfReportDto existingDto = toDto(existingSelfReport);
 		Pseudonymizer<SelfReportDto> pseudonymizer = createPseudonymizer(existingSelfReport);
@@ -86,10 +91,7 @@ public class SelfReportFacadeEjb
 	}
 
 	@Override
-	public List<SelfReportIndexDto> getIndexList(SelfReportCriteria criteria,
-		Integer first,
-		Integer max,
-		List<SortProperty> sortProperties) {
+	public List<SelfReportIndexDto> getIndexList(SelfReportCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		return null;
 	}
 
@@ -119,7 +121,21 @@ public class SelfReportFacadeEjb
 	protected SelfReport fillOrBuildEntity(SelfReportDto source, SelfReport target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, SelfReport::new, checkChangeDate);
 
+		target.setType(source.getType());
 		target.setReportDate(source.getReportDate());
+		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setSex(source.getSex());
+		target.setBirthdateDD(source.getBirthdateDD());
+		target.setBirthdateMM(source.getBirthdateMM());
+		target.setBirthdateYYYY(source.getBirthdateYYYY());
+		target.setNationalHealthId(source.getNationalHealthId());
+		target.setEmail(source.getEmail());
+		target.setPhoneNumber(source.getPhoneNumber());
+		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
+		target.setComment(source.getComment());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setProcessingStatus(source.getProcessingStatus());
@@ -136,7 +152,21 @@ public class SelfReportFacadeEjb
 
 		DtoHelper.fillDto(target, source);
 
+		target.setType(source.getType());
 		target.setReportDate(source.getReportDate());
+		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setSex(source.getSex());
+		target.setBirthdateDD(source.getBirthdateDD());
+		target.setBirthdateMM(source.getBirthdateMM());
+		target.setBirthdateYYYY(source.getBirthdateYYYY());
+		target.setNationalHealthId(source.getNationalHealthId());
+		target.setEmail(source.getEmail());
+		target.setPhoneNumber(source.getPhoneNumber());
+		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		target.setComment(source.getComment());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setProcessingStatus(source.getProcessingStatus());
@@ -150,11 +180,7 @@ public class SelfReportFacadeEjb
 	}
 
 	@Override
-	protected void pseudonymizeDto(
-		SelfReport source,
-		SelfReportDto dto,
-		Pseudonymizer<SelfReportDto> pseudonymizer,
-		boolean inJurisdiction) {
+	protected void pseudonymizeDto(SelfReport source, SelfReportDto dto, Pseudonymizer<SelfReportDto> pseudonymizer, boolean inJurisdiction) {
 
 	}
 
@@ -175,6 +201,9 @@ public class SelfReportFacadeEjb
 	@LocalBean
 	@Stateless
 	public static class SelfReportFacadeEjbLocal extends SelfReportFacadeEjb {
+
+		public SelfReportFacadeEjbLocal() {
+		}
 
 		@Inject
 		public SelfReportFacadeEjbLocal(SelfReportService service) {

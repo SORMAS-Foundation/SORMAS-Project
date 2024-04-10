@@ -17,7 +17,7 @@ package de.symeda.sormas.api.selfreport;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum InvestigationStatus {
+public enum SelfReportInvestigationStatus {
 
 	IN_PROGRESS,
 	PENDING,

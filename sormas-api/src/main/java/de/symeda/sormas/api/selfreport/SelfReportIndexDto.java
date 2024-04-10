@@ -17,6 +17,9 @@ package de.symeda.sormas.api.selfreport;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
@@ -24,20 +27,30 @@ public class SelfReportIndexDto extends AbstractUuidDto {
 
 	private static final long serialVersionUID = -4984417669514467918L;
 
+	private SelfReportType type;
 	private final Date reportDate;
-
+	private Disease disease;
+	private String firstName;
+	private String lastName;
+	private AgeAndBirthDateDto ageAndBirthDate;
+	private Sex sex;
+	private String district;
+	private String street;
+	private String houseNumber;
+	private String postalCode;
+	private String city;
+	private String email;
+	private String phoneNumber;
 	private final UserReferenceDto responsibleUser;
-
-	private final InvestigationStatus investigationStatus;
-
-	private final ProcessingStatus processingStatus;
+	private final SelfReportInvestigationStatus investigationStatus;
+	private final SelfReportProcessingStatus processingStatus;
 
 	public SelfReportIndexDto(
 		String uuid,
 		Date reportDate,
 		UserReferenceDto responsibleUser,
-		InvestigationStatus investigationStatus,
-		ProcessingStatus processingStatus) {
+		SelfReportInvestigationStatus investigationStatus,
+		SelfReportProcessingStatus processingStatus) {
 		super(uuid);
 		this.reportDate = reportDate;
 		this.responsibleUser = responsibleUser;
@@ -53,11 +66,11 @@ public class SelfReportIndexDto extends AbstractUuidDto {
 		return responsibleUser;
 	}
 
-	public InvestigationStatus getInvestigationStatus() {
+	public SelfReportInvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
 
-	public ProcessingStatus getProcessingStatus() {
+	public SelfReportProcessingStatus getProcessingStatus() {
 		return processingStatus;
 	}
 }

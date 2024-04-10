@@ -15,11 +15,17 @@
 
 package de.symeda.sormas.backend.selfreport;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
 import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class SelfReportFacadeEjbTest extends AbstractBeanTest {
@@ -30,13 +36,16 @@ public class SelfReportFacadeEjbTest extends AbstractBeanTest {
 
 		SelfReportDto result = getSelfReportFacade().getByUuid(dto.getUuid());
 
-		assert result != null;
-		assert result.getUuid().equals(dto.getUuid());
+		assertThat(result, notNullValue());
+		assertThat(result.getUuid(), is(dto.getUuid()));
 	}
 
 	private SelfReportDto createSelfReport() {
-		SelfReportDto dto = SelfReportDto.build();
+		SelfReportDto dto = SelfReportDto.build(SelfReportType.CASE);
 		dto.setReportDate(new Date());
+		dto.setDisease(Disease.CORONAVIRUS);
+		dto.setFirstName("John");
+		dto.setLastName("Doe");
 
 		return getSelfReportFacade().save(dto);
 	}
