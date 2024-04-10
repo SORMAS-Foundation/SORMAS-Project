@@ -12981,22 +12981,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specif
 
 -- 2024-04-10 Create a new Self Report entity and IndexDTO #13059
 
-INSERT INTO userroles_userrights (userrole_id, userright)
-SELECT id, 'SELF_REPORT_VIEW'
-FROM userroles
-WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
-INSERT INTO userroles_userrights (userrole_id, userright)
-SELECT id, 'SELF_REPORT_CREATE'
-FROM userroles
-WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
-INSERT INTO userroles_userrights (userrole_id, userright)
-SELECT id, 'SELF_REPORT_EDIT'
-FROM userroles
-WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
-INSERT INTO userroles_userrights (userrole_id, userright)
-SELECT id, 'SELF_REPORT_DELETE'
-FROM userroles
-WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_VIEW' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_CREATE' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_EDIT' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_DELETE' FROM userroles WHERE userroles.linkeddefaultuserrole in('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
 
 CREATE TABLE IF NOT EXISTS selfreports
 (
@@ -13035,31 +13023,18 @@ CREATE TABLE IF NOT EXISTS selfreports
     primary key (id)
 );
 
-ALTER TABLE selfreports
-    OWNER TO sormas_user;
-ALTER TABLE selfreports
-    ADD CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES location (id);
-ALTER TABLE selfreports
-    ADD CONSTRAINT fk_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users (id);
+ALTER TABLE selfreports OWNER TO sormas_user;
+ALTER TABLE selfreports ADD CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES location (id);
+ALTER TABLE selfreports ADD CONSTRAINT fk_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users (id);
 
-CREATE TABLE selfreports_history
-(
-    LIKE selfreports
-);
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE
-    ON selfreports
-    FOR EACH ROW
-EXECUTE PROCEDURE versioning('sys_period', 'selfreports_history', true);
+CREATE TABLE selfreports_history (LIKE selfreports);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON selfreports
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'selfreports_history', true);
 CREATE TRIGGER delete_history_trigger
-    AFTER DELETE
-    ON selfreports
-    FOR EACH ROW
-EXECUTE PROCEDURE delete_history_trigger('selfreports_history', 'id');
-ALTER TABLE selfreports_history
-    OWNER TO sormas_user;
+    AFTER DELETE ON selfreports
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('selfreports_history', 'id');
+ALTER TABLE selfreports_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
+INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
