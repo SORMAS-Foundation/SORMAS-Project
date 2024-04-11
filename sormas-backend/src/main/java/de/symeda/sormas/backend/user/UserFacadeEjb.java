@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.user;
 
+import static de.symeda.sormas.api.AuthProvider.KEYCLOAK;
 import static java.util.Objects.isNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -50,6 +51,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.ws.rs.ForbiddenException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +60,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
@@ -102,6 +105,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -114,7 +118,7 @@ import de.symeda.sormas.backend.environment.EnvironmentJurisdictionPredicateVali
 import de.symeda.sormas.backend.environment.EnvironmentQueryContext;
 import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventQueryContext;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -140,6 +144,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateVali
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -182,17 +187,21 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private UserRoleService userRoleService;
 	@EJB
 	private PersonService personService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+	@Inject
+	private Event<SyncUsersFromProviderEvent> syncUsersFromProviderEventEvent;
 
 	public static UserDto toDto(User source) {
 
@@ -1040,6 +1049,56 @@ public class UserFacadeEjb implements UserFacade {
 		this.userUpdateEvent.fire(event);
 
 		return userSyncResult;
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._USER_CREATE,
+		UserRight._USER_EDIT,
+		UserRight._SYSTEM })
+	public void syncUsersFromAuthenticationProvider() {
+
+		if (!isSyncEnabled()) {
+			throw new ForbiddenException("No default role for new users from authentication provider is configured");
+		}
+
+		String defaultRoleName = configFacade.getAuthenticationProviderSyncedNewUserRole();
+		UserRole defaultRole = userRoleService.getByCaption(defaultRoleName);
+
+		if (defaultRole == null) {
+			throw new ForbiddenException("No default role for new users from authentication provider is configured");
+		}
+
+		List<User> existingUsers = userService.getAll();
+
+		syncUsersFromProviderEventEvent.fire(new SyncUsersFromProviderEvent(existingUsers, (syncedUsers, deletedUsers) -> {
+			syncedUsers.forEach(user -> {
+				if (user.getId() == null) {
+					user.setUuid(DataHelper.createUuid());
+					user.setUserRoles(Collections.singleton(defaultRole));
+					UserService.setNewPassword(user);
+				}
+				userService.ensurePersisted(user);
+			});
+
+			deletedUsers.forEach(user -> {
+				user.setActive(false);
+				userService.ensurePersisted(user);
+			});
+		}));
+	}
+
+	@Override
+	@RightsAllowed({
+		UserRight._USER_CREATE,
+		UserRight._USER_EDIT,
+		UserRight._SYSTEM })
+	public boolean isSyncEnabled() {
+		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
+		return KEYCLOAK.equalsIgnoreCase(authProvider.getName())
+			&& (featureConfigurationFacade.isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)
+				|| StringUtils.isNotBlank(configFacade.getAuthenticationProviderSyncedNewUserRole()));
+
 	}
 
 	@Override

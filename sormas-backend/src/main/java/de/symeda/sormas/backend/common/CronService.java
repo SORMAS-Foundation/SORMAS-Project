@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.Spe
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Singleton
 @RunAs(UserRight._SYSTEM)
@@ -93,6 +94,8 @@ public class CronService {
 	private CoreEntityDeletionService coreEntityDeletionService;
 	@EJB
 	private SpecialCaseAccessFacadeEjbLocal specialCaseAccessFacade;
+	@EJB
+	private UserFacadeEjbLocal userFacade;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -184,12 +187,11 @@ public class CronService {
 
 		final int daysAfterEventsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
-		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade
-			.getProperty(
-				FeatureType.AUTOMATIC_ARCHIVING,
-				DeletableEntityType.EVENT_PARTICIPANT,
-				FeatureTypeProperty.THRESHOLD_IN_DAYS,
-				Integer.class);
+		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade.getProperty(
+			FeatureType.AUTOMATIC_ARCHIVING,
+			DeletableEntityType.EVENT_PARTICIPANT,
+			FeatureTypeProperty.THRESHOLD_IN_DAYS,
+			Integer.class);
 		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
 			logger.warn(
 				"{} for {} [{}] should be <= the one for {} [{}]",
@@ -253,12 +255,11 @@ public class CronService {
 
 	@Schedule(hour = "2", minute = "20", persistent = false)
 	public void archiveEventParticipants() {
-		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade
-			.getProperty(
-				FeatureType.AUTOMATIC_ARCHIVING,
-				DeletableEntityType.EVENT_PARTICIPANT,
-				FeatureTypeProperty.THRESHOLD_IN_DAYS,
-				Integer.class);
+		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade.getProperty(
+			FeatureType.AUTOMATIC_ARCHIVING,
+			DeletableEntityType.EVENT_PARTICIPANT,
+			FeatureTypeProperty.THRESHOLD_IN_DAYS,
+			Integer.class);
 
 		if (daysAfterEventParticipantGetsArchived >= 1) {
 			eventParticipantFacade.archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived);
@@ -273,7 +274,7 @@ public class CronService {
 		if (daysAfterImmunizationsGetsArchived >= 1) {
 			immunizationFacade.archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived);
 		}
-}
+	}
 
 	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void archiveTravelEntry() {
@@ -288,5 +289,12 @@ public class CronService {
 	@Schedule(hour = "2", minute = "30", persistent = false)
 	public void deleteExpiredSpecialCaseAccesses() {
 		specialCaseAccessFacade.deleteExpiredSpecialCaseAccesses();
+	}
+
+	@Schedule(hour = "2", minute = "35", persistent = false)
+	public void syncUsersFromAuthenticationProvider() {
+		if (userFacade.isSyncEnabled() && featureConfigurationFacade.isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			userFacade.syncUsersFromAuthenticationProvider();
+		}
 	}
 }
