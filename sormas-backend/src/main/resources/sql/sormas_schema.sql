@@ -13003,6 +13003,7 @@ CREATE TABLE IF NOT EXISTS selfreports
 
     type                varchar(255) not null,
     reportdate          timestamp    not null,
+    caseReference text,
     desease             varchar(255) not null,
     diseasevariant      text,
     firstname           text         not null,

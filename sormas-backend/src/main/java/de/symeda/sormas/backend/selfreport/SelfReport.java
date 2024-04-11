@@ -50,6 +50,7 @@ public class SelfReport extends CoreAdo {
 
 	private SelfReportType type;
 	private Date reportDate;
+	private String caseReference;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private String firstName;
@@ -85,6 +86,15 @@ public class SelfReport extends CoreAdo {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCaseReference() {
+		return caseReference;
+	}
+
+	public void setCaseReference(String caseReference) {
+		this.caseReference = caseReference;
 	}
 
 	@Enumerated(EnumType.STRING)

@@ -44,6 +44,8 @@ public class SelfReportDto extends EntityDto {
 	private SelfReportType type;
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String caseReference;
 	@NotNull(message = Validations.requiredField)
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
@@ -99,6 +101,14 @@ public class SelfReportDto extends EntityDto {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	public String getCaseReference() {
+		return caseReference;
+	}
+
+	public void setCaseReference(String caseReference) {
+		this.caseReference = caseReference;
 	}
 
 	public Disease getDisease() {

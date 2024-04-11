@@ -123,6 +123,7 @@ public class SelfReportFacadeEjb
 
 		target.setType(source.getType());
 		target.setReportDate(source.getReportDate());
+		target.setCaseReference(source.getCaseReference());
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setFirstName(source.getFirstName());
@@ -154,6 +155,7 @@ public class SelfReportFacadeEjb
 
 		target.setType(source.getType());
 		target.setReportDate(source.getReportDate());
+		target.setCaseReference(source.getCaseReference());
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setFirstName(source.getFirstName());
