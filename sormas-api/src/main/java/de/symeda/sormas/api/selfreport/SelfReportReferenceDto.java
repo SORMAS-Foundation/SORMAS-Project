@@ -16,8 +16,13 @@
 package de.symeda.sormas.api.selfreport;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
 public class SelfReportReferenceDto extends ReferenceDto {
+
+	private static final long serialVersionUID = -6392280374586133536L;
 
 	public SelfReportReferenceDto(String uuid) {
 		super(uuid);

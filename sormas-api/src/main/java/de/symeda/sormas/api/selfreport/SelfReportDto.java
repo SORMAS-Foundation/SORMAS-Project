@@ -24,13 +24,16 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
 public class SelfReportDto extends EntityDto {
 
 	private static final long serialVersionUID = 604507951783731873L;
