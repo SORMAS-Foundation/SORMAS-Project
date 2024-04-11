@@ -1062,7 +1062,8 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._USER_CREATE,
-		UserRight._USER_EDIT })
+		UserRight._USER_EDIT,
+		UserRight._SYSTEM })
 	public boolean isSyncEnabled() {
 		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
 		return KEYCLOAK.equalsIgnoreCase(authProvider.getName())
