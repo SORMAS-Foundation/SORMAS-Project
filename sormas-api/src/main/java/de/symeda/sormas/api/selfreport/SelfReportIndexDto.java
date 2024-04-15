@@ -19,13 +19,33 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class SelfReportIndexDto extends AbstractUuidDto {
+public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
 	private static final long serialVersionUID = -4984417669514467918L;
+
+	public static final String TYPE = "type";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String DISEASE = "disease";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
+	public static final String SEX = "sex";
+	public static final String DISTRICT = "district";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String POSTAL_CODE = "postalCode";
+	public static final String CITY = "city";
+	public static final String EMAIL = "email";
+	public static final String PHONE_NUMBER = "phoneNumber";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String PROCESSING_STATUS = "processingStatus";
 
 	private SelfReportType type;
 	private final Date reportDate;
@@ -44,22 +64,132 @@ public class SelfReportIndexDto extends AbstractUuidDto {
 	private final UserReferenceDto responsibleUser;
 	private final SelfReportInvestigationStatus investigationStatus;
 	private final SelfReportProcessingStatus processingStatus;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	public SelfReportIndexDto(
 		String uuid,
 		Date reportDate,
 		UserReferenceDto responsibleUser,
 		SelfReportInvestigationStatus investigationStatus,
-		SelfReportProcessingStatus processingStatus) {
+		SelfReportProcessingStatus processingStatus,
+		DeletionReason deletionReason,
+		String otherDeletionReason) {
 		super(uuid);
 		this.reportDate = reportDate;
 		this.responsibleUser = responsibleUser;
 		this.investigationStatus = investigationStatus;
 		this.processingStatus = processingStatus;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public SelfReportType getType() {
+		return type;
+	}
+
+	public void setType(SelfReportType type) {
+		this.type = type;
 	}
 
 	public Date getReportDate() {
 		return reportDate;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public AgeAndBirthDateDto getAgeAndBirthDate() {
+		return ageAndBirthDate;
+	}
+
+	public void setAgeAndBirthDate(AgeAndBirthDateDto ageAndBirthDate) {
+		this.ageAndBirthDate = ageAndBirthDate;
+	}
+
+	public Sex getSex() {
+		return sex;
+	}
+
+	public void setSex(Sex sex) {
+		this.sex = sex;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
 	public UserReferenceDto getResponsibleUser() {
@@ -72,5 +202,41 @@ public class SelfReportIndexDto extends AbstractUuidDto {
 
 	public SelfReportProcessingStatus getProcessingStatus() {
 		return processingStatus;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	@Override
+	public boolean isPseudonymized() {
+		return false;
+	}
+
+	@Override
+	public void setPseudonymized(boolean pseudonymized) {
+
+	}
+
+	@Override
+	public boolean isInJurisdiction() {
+		return false;
+	}
+
+	@Override
+	public void setInJurisdiction(boolean inJurisdiction) {
+
 	}
 }

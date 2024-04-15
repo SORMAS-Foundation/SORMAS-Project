@@ -40,6 +40,8 @@ public class SelfReportDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "SelfReport";
 
+	public static final String ADDRESS = "address";
+
 	@NotNull(message = Validations.requiredField)
 	private SelfReportType type;
 	@NotNull(message = Validations.validReportDateTime)

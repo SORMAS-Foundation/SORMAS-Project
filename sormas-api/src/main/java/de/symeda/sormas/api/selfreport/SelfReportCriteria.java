@@ -15,7 +15,34 @@
 
 package de.symeda.sormas.api.selfreport;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SelfReportCriteria extends BaseCriteria {
+
+	private static final long serialVersionUID = 7245463026500908524L;
+
+	private SelfReportInvestigationStatus investigationStatus;
+	private EntityRelevanceStatus relevanceStatus;
+
+	public SelfReportInvestigationStatus getInvestigationStatus() {
+		return investigationStatus;
+	}
+
+	public void setInvestigationStatus(SelfReportInvestigationStatus investigationStatus) {
+		this.investigationStatus = investigationStatus;
+	}
+
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+
+	public void setRelevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
+	}
+
+	public SelfReportCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		setRelevanceStatus(relevanceStatus);
+		return this;
+	}
 }

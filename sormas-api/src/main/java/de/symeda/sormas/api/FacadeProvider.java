@@ -87,6 +87,7 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
@@ -521,12 +522,16 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ExternalEmailFacade.class);
 	}
 
-    public static ManualMessageLogFacade getManualMessageLogFacade() {
-        return get().lookupEjbRemote(ManualMessageLogFacade.class);
-    }
+	public static ManualMessageLogFacade getManualMessageLogFacade() {
+		return get().lookupEjbRemote(ManualMessageLogFacade.class);
+	}
 
 	public static SpecialCaseAccessFacade getSpecialCaseAccessFacade() {
 		return get().lookupEjbRemote(SpecialCaseAccessFacade.class);
+	}
+
+	public static SelfReportFacade getSelfReportFacade() {
+		return get().lookupEjbRemote(SelfReportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

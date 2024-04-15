@@ -1699,6 +1699,7 @@ public interface Captions {
 	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
 	String mainMenuSamples = "mainMenuSamples";
+	String mainMenuSelfReports = "mainMenuSelfReports";
 	String mainMenuShareRequests = "mainMenuShareRequests";
 	String mainMenuStatistics = "mainMenuStatistics";
 	String mainMenuTasks = "mainMenuTasks";
@@ -2196,6 +2197,10 @@ public interface Captions {
 	String SelfReport_responsibleUser = "SelfReport.responsibleUser";
 	String SelfReport_sex = "SelfReport.sex";
 	String SelfReport_type = "SelfReport.type";
+	String selfReportActiveEnvironments = "selfReportActiveEnvironments";
+	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
+	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
+	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
 	String SelfReportInvestigationStatus_COMPLETED = "SelfReportInvestigationStatus.COMPLETED";
 	String SelfReportInvestigationStatus_IN_PROGRESS = "SelfReportInvestigationStatus.IN_PROGRESS";
 	String SelfReportInvestigationStatus_PENDING = "SelfReportInvestigationStatus.PENDING";

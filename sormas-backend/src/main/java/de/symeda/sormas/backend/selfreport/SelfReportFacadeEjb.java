@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.selfreport;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -92,7 +93,7 @@ public class SelfReportFacadeEjb
 
 	@Override
 	public List<SelfReportIndexDto> getIndexList(SelfReportCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
