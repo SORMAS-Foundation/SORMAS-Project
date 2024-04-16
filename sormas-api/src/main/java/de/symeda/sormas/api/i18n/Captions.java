@@ -2201,14 +2201,6 @@ public interface Captions {
 	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
 	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
 	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
-	String SelfReportInvestigationStatus_COMPLETED = "SelfReportInvestigationStatus.COMPLETED";
-	String SelfReportInvestigationStatus_IN_PROGRESS = "SelfReportInvestigationStatus.IN_PROGRESS";
-	String SelfReportInvestigationStatus_PENDING = "SelfReportInvestigationStatus.PENDING";
-	String SelfReportInvestigationStatus_REJECTED = "SelfReportInvestigationStatus.REJECTED";
-	String SelfReportProcessingStatus_PROCESSED = "SelfReportProcessingStatus.PROCESSED";
-	String SelfReportProcessingStatus_UNPROCESSED = "SelfReportProcessingStatus.UNPROCESSED";
-	String SelfReportType_CASE = "SelfReportType.CASE";
-	String SelfReportType_CONTACT = "SelfReportType.CONTACT";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
