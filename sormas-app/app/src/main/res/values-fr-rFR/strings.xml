@@ -54,7 +54,7 @@
     <string name="action_edit">Modifier</string>
     <string name="action_edit_case">Modifier le cas</string>
     <string name="action_edit_contact">Modifier le contact</string>
-    <string name="action_edit_environment">Edit Environment</string>
+    <string name="action_edit_environment">Modifier l\'environnement</string>
     <string name="action_edit_event">Modifier l\'événement</string>
     <string name="action_edit_sample">Modifier l\'échantillon</string>
     <string name="action_edit_environment_sample">Modifier l\'échantillon</string>
@@ -73,10 +73,10 @@
     <string name="action_new_immunization">Nouvelle immunisation</string>
     <string name="action_new_campaign_form_data">Données du formulaire de nouvelle campagne</string>
     <string name="action_new_contact">Nouveau Contact</string>
-    <string name="action_new_environment">New Environment</string>
+    <string name="action_new_environment">Nouvel environnement</string>
     <string name="action_new_event">Nouvel événement</string>
     <string name="action_new_sample">Nouvel échantillon</string>
-    <string name="action_new_environment_sample">New Environment Sample</string>
+    <string name="action_new_environment_sample">Échantillon de nouvel environnement</string>
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
