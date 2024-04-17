@@ -7180,6 +7180,10 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - SELF_REPORT_VIEW
+                  - SELF_REPORT_CREATE
+                  - SELF_REPORT_EDIT
+                  - SELF_REPORT_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7397,6 +7401,10 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - SELF_REPORT_VIEW
+                  - SELF_REPORT_CREATE
+                  - SELF_REPORT_EDIT
+                  - SELF_REPORT_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -17138,6 +17146,7 @@ components:
             - DASHBOARD_SAMPLES
             - LIMITED_SYNCHRONIZATION
             - ENVIRONMENT_MANAGEMENT
+            - SELF_REPORTING
             - ASSIGN_TASKS_TO_HIGHER_LEVEL
             - CASE_FOLLOWUP
             - DOCUMENTS
@@ -17289,6 +17298,7 @@ components:
           - DASHBOARD_SAMPLES
           - LIMITED_SYNCHRONIZATION
           - ENVIRONMENT_MANAGEMENT
+          - SELF_REPORTING
           - ASSIGN_TASKS_TO_HIGHER_LEVEL
           - CASE_FOLLOWUP
           - DOCUMENTS
@@ -25468,6 +25478,10 @@ components:
             - ENVIRONMENT_PATHOGEN_TEST_CREATE
             - ENVIRONMENT_PATHOGEN_TEST_EDIT
             - ENVIRONMENT_PATHOGEN_TEST_DELETE
+            - SELF_REPORT_VIEW
+            - SELF_REPORT_CREATE
+            - SELF_REPORT_EDIT
+            - SELF_REPORT_DELETE
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE
