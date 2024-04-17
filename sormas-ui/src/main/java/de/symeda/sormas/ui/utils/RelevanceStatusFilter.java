@@ -41,7 +41,7 @@ public final class RelevanceStatusFilter {
 
 		ComboBox relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 		relevanceStatusFilter.setId("relevanceStatus");
-		relevanceStatusFilter.setWidth(210, Sizeable.Unit.PIXELS);
+		relevanceStatusFilter.setWidth(260, Sizeable.Unit.PIXELS);
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(activeCaption));
