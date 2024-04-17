@@ -42,7 +42,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.map.LeafletMap;
@@ -268,7 +268,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 				map.setCenter(mapCenter);
 			} else {
-				UserDto user = UserProvider.getCurrent().getUser();
+				UserDto user = UiUtil.getUser();
 				if (user.getRegion() != null) {
 					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
 				} else {

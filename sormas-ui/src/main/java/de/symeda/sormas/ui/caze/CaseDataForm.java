@@ -36,12 +36,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -69,7 +66,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -128,8 +124,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.caze.surveillancereport.CaseReinfectionCheckBoxTree;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -216,10 +210,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumnLoc(3, 0, CaseDataDto.REINFECTION_STATUS),
 							fluidColumnLoc(4, 0, CaseDataDto.PREVIOUS_INFECTION_DATE)
 					) +
-					fluidRow(
-							fluidColumnLoc(6, 0, REINFECTION_DETAILS_COL_1_LOC),
-							fluidColumnLoc(6, 0, REINFECTION_DETAILS_COL_2_LOC)
-					) +
+					fluidRowLocs(CaseDataDto.REINFECTION_DETAILS) +
 					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
@@ -316,8 +307,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 
-	private final Map<ReinfectionDetailGroup, CaseReinfectionCheckBoxTree> reinfectionTrees = new EnumMap<>(ReinfectionDetailGroup.class);
-
 	public CaseDataForm(
 		String caseUuid,
 		PersonDto person,
@@ -334,14 +323,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
-				.add(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+				.add(new UserRightFieldVisibilityChecker(UiUtil::permitted)),
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.caseUuid = caseUuid;
 		this.person = person;
 		this.disease = disease;
 		this.symptoms = symptoms;
-		this.caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		this.caseFollowUpEnabled = UiUtil.enabled(FeatureType.CASE_FOLLOWUP);
 
 		addFields();
 	}
@@ -513,7 +502,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 				getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
 
-				if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY)) {
+				if (!UiUtil.permitted(UserRight.CASE_CLASSIFY)) {
 					caseClassificationCalculationButton.setEnabled(false);
 				}
 			}
@@ -587,7 +576,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			setReadOnly(
-				!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
+				!UiUtil.permitted(UserRight.CASE_CLASSIFY),
 				CaseDataDto.CLINICAL_CONFIRMATION,
 				CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION,
 				CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION);
@@ -644,40 +633,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			getContent().addComponent(reinfectionInfoLabel, REINFECTION_INFO_LOC);
 			reinfectionInfoLabel.setVisible(false);
 
-			final VerticalLayout reinfectionDetailsLeftLayout = new VerticalLayout();
-			CssStyles.style(reinfectionDetailsLeftLayout, CssStyles.VSPACE_3);
-			final VerticalLayout reinfectionDetailsRightLayout = new VerticalLayout();
-			CssStyles.style(reinfectionDetailsRightLayout, CssStyles.VSPACE_3);
-			for (ReinfectionDetailGroup group : ReinfectionDetailGroup.values()) {
-				CaseReinfectionCheckBoxTree reinfectionTree = new CaseReinfectionCheckBoxTree(
-					ReinfectionDetail.values(group).stream().map(e -> new CheckBoxTree.CheckBoxElement<>(null, e)).collect(Collectors.toList()),
-					() -> {
-						tfReinfectionStatus.setReadOnly(false);
-						tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(mergeReinfectionTrees()));
-						tfReinfectionStatus.setReadOnly(true);
-					});
-				reinfectionTrees.put(group, reinfectionTree);
+			CheckBoxTree<ReinfectionDetail> reinfectionDetailGroupCheckBoxTree = addField(CaseDataDto.REINFECTION_DETAILS, CheckBoxTree.class);
+			reinfectionDetailGroupCheckBoxTree.setEnumType(ReinfectionDetail.class, ReinfectionDetail::getGroup, ReinfectionDetailGroup.class, 2);
 
-				if (StringUtils.isNotBlank(group.toString())) {
-					Label heading = new Label(group.toString());
-					CssStyles.style(heading, CssStyles.H4);
-					if (group.ordinal() < 2) {
-						reinfectionDetailsLeftLayout.addComponent(heading);
-					} else {
-						reinfectionDetailsRightLayout.addComponent(heading);
-					}
-				}
+			tfReinfectionStatus.setReadOnly(false);
+			tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTree.getValue()));
+			tfReinfectionStatus.setReadOnly(true);
 
-				if (group.ordinal() < 2) {
-					reinfectionDetailsLeftLayout.addComponent(reinfectionTree);
-				} else {
-					reinfectionDetailsRightLayout.addComponent(reinfectionTree);
-				}
-			}
-			getContent().addComponent(reinfectionDetailsLeftLayout, REINFECTION_DETAILS_COL_1_LOC);
-			getContent().addComponent(reinfectionDetailsRightLayout, REINFECTION_DETAILS_COL_2_LOC);
-			reinfectionDetailsLeftLayout.setVisible(false);
-			reinfectionDetailsRightLayout.setVisible(false);
+			reinfectionDetailGroupCheckBoxTree.addValueChangeListener(e -> {
+				tfReinfectionStatus.setReadOnly(false);
+				tfReinfectionStatus.setValue(CaseLogic.calculateReinfectionStatus(reinfectionDetailGroupCheckBoxTree.getValue()));
+				tfReinfectionStatus.setReadOnly(true);
+			});
 
 			ogReinfection.addValueChangeListener(e -> {
 				if (((NullableOptionGroup) e.getProperty()).getNullableValue() == YesNoUnknown.YES) {
@@ -706,14 +673,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						reinfectionInfoLabel.setDescription(null);
 						reinfectionInfoLabel.setVisible(false);
 					}
-
-					reinfectionDetailsLeftLayout.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
-					reinfectionDetailsRightLayout.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
+					reinfectionDetailGroupCheckBoxTree.setVisible(isVisibleAllowed(CaseDataDto.RE_INFECTION));
 				} else {
 					reinfectionInfoLabel.setDescription(null);
 					reinfectionInfoLabel.setVisible(false);
-					reinfectionDetailsLeftLayout.setVisible(false);
-					reinfectionDetailsRightLayout.setVisible(false);
+					reinfectionDetailGroupCheckBoxTree.setVisible(false);
 				}
 			});
 		}
@@ -877,9 +841,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityCombo.addValueChangeListener(e -> updateFacilityDetails(facilityCombo, facilityDetails));
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
+		if (UiUtil.enabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
-			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
+			setReadOnly(!UiUtil.permitted(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 
 		ComboBox pointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY, false);
@@ -1083,18 +1047,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.POINT_OF_ENTRY_DETAILS,
 			CaseDataDto.CASE_ORIGIN);
 
-		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!UiUtil.permitted(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
+		setReadOnly(!UiUtil.permitted(UserRight.CASE_INVESTIGATE), CaseDataDto.INVESTIGATION_STATUS, CaseDataDto.INVESTIGATED_DATE);
+		setReadOnly(!UiUtil.permitted(UserRight.CASE_CLASSIFY), CaseDataDto.CASE_CLASSIFICATION, CaseDataDto.OUTCOME, CaseDataDto.OUTCOME_DATE);
 		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE),
-			CaseDataDto.INVESTIGATION_STATUS,
-			CaseDataDto.INVESTIGATED_DATE);
-		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY),
-			CaseDataDto.CASE_CLASSIFICATION,
-			CaseDataDto.OUTCOME,
-			CaseDataDto.OUTCOME_DATE);
-		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER),
+			!UiUtil.permitted(UserRight.CASE_TRANSFER),
 			CaseDataDto.RESPONSIBLE_REGION,
 			CaseDataDto.RESPONSIBLE_DISTRICT,
 			CaseDataDto.RESPONSIBLE_COMMUNITY,
@@ -1116,7 +1073,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setEnabled(false, CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT);
 		}
 
-		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY || !isEditableAllowed(CaseDataDto.COMMUNITY)) {
+		if (UiUtil.getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY || !isEditableAllowed(CaseDataDto.COMMUNITY)) {
 			differentPlaceOfStayJurisdiction.setEnabled(false);
 			differentPlaceOfStayJurisdiction.setVisible(false);
 		}
@@ -1317,8 +1274,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 				if (getValue().getPointOfEntry() != null) {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
-					btnReferFromPointOfEntry
-						.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
+					btnReferFromPointOfEntry.setVisible(UiUtil.permitted(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
 				} else if (!isEditableAllowed(CaseDataDto.POINT_OF_ENTRY)) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY_DETAILS);
 					btnReferFromPointOfEntry.setVisible(false);
@@ -1343,14 +1299,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			// Hide case origin from port health users
-			if (UserProvider.getCurrent().isPortHealthUser()) {
+			if (UiUtil.isPortHealthUser()) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
 				List<SampleDto> samples = Collections.emptyList();
-				if (UserProvider.getCurrent().hasAllUserRights(UserRight.SAMPLE_VIEW)) {
+				if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 					samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
 				}
 				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(symptoms.getOnsetDate(), reportDate.getValue(), samples);
@@ -1415,9 +1371,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					.setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));
 			}
 
-			for (CaseReinfectionCheckBoxTree reinfectionTree : reinfectionTrees.values()) {
-				reinfectionTree.initCheckboxes();
-			}
 		});
 	}
 
@@ -1617,7 +1570,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(CaseDataDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
-		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (followUpVisible && UiUtil.permitted(UserRight.CASE_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
@@ -1657,39 +1610,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	private Map<ReinfectionDetail, Boolean> mergeReinfectionTrees() {
-		Map<ReinfectionDetail, Boolean> reinfectionDetails = new EnumMap<>(ReinfectionDetail.class);
-		reinfectionTrees.values().forEach(t -> {
-			if (t.getValues() != null) {
-				reinfectionDetails.putAll(t.getValues());
-			}
-		});
-		return reinfectionDetails;
-	}
-
-	@Override
-	public CaseDataDto getValue() {
-		final CaseDataDto caze = super.getValue();
-		caze.setReinfectionDetails(mergeReinfectionTrees());
-		return caze;
-	}
-
 	@Override
 	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
-
-		for (ReinfectionDetailGroup group : reinfectionTrees.keySet()) {
-			if (newFieldValue.getReinfectionDetails() != null) {
-				reinfectionTrees.get(group)
-					.setValues(
-						newFieldValue.getReinfectionDetails()
-							.entrySet()
-							.stream()
-							.filter(e -> e.getKey().getGroup() == group)
-							.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-			} else {
-				reinfectionTrees.get(group).setValues(null);
-			}
-		}
 
 		super.setValue(newFieldValue);
 
@@ -1705,7 +1627,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-		if (caseFollowUpEnabled && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
+		if (caseFollowUpEnabled && UiUtil.permitted(UserRight.CASE_EDIT)) {
 			expectedFollowUpPeriodDto = FacadeProvider.getCaseFacade().calculateFollowUpUntilDate(newFieldValue, true);
 			tfExpectedFollowUpUntilDate
 				.setValue(DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));

@@ -726,6 +726,22 @@
 	</security-role>
 
 	<security-role>
+		<role-name>SELF_REPORT_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SELF_REPORT_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SELF_REPORT_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SELF_REPORT_DELETE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>DOCUMENT_VIEW</role-name>
 	</security-role>
 

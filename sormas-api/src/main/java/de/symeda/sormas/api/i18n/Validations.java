@@ -60,6 +60,7 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String environmentMedia = "environmentMedia";
 	String environmentName = "environmentName";
+	String environmentSampleDateTimeAfterPathogenTestDateTime = "environmentSampleDateTimeAfterPathogenTestDateTime";
 	String environmentWaterFieldsSetWithNotWaterMedia = "environmentWaterFieldsSetWithNotWaterMedia";
 	String errorsInForm = "errorsInForm";
 	String eventSubordinateEventFromDateFilterValidation = "eventSubordinateEventFromDateFilterValidation";
@@ -201,6 +202,7 @@ public interface Validations {
 	String removeUserRightEditRightFromOwnUser = "removeUserRightEditRightFromOwnUser";
 	String required = "required";
 	String requiredField = "requiredField";
+	String sampleDateTimeAfterPathogenTestDateTime = "sampleDateTimeAfterPathogenTestDateTime";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	String sormasToSormasAcceptCaseBeforeContact = "sormasToSormasAcceptCaseBeforeContact";

@@ -6,7 +6,7 @@ import com.vaadin.ui.Component;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 public class AbstractUserView extends AbstractSubNavigationView<Component> {
@@ -19,7 +19,7 @@ public class AbstractUserView extends AbstractSubNavigationView<Component> {
 
 	public static void registerViews(Navigator navigator) {
 		navigator.addView(UsersView.VIEW_NAME, UsersView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_VIEW)) {
+		if (UiUtil.permitted(UserRight.USER_ROLE_VIEW)) {
 			navigator.addView(UserRolesView.VIEW_NAME, UserRolesView.class);
 			navigator.addView(UserRoleView.VIEW_NAME, UserRoleView.class);
 			navigator.addView(UserRoleNotificationsView.VIEW_NAME, UserRoleNotificationsView.class);
@@ -31,7 +31,7 @@ public class AbstractUserView extends AbstractSubNavigationView<Component> {
 		menu.removeAllViews();
 
 		menu.addView(UsersView.VIEW_NAME, I18nProperties.getPrefixCaption("View", UsersView.VIEW_NAME.replace("/", "."), ""), params);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_VIEW)) {
+		if (UiUtil.permitted(UserRight.USER_ROLE_VIEW)) {
 			menu.addView(UserRolesView.VIEW_NAME, I18nProperties.getPrefixCaption("View", UserRolesView.VIEW_NAME.replace("/", "."), ""), params);
 		}
 	}

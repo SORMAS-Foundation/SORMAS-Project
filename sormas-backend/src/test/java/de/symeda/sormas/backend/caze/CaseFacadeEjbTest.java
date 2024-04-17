@@ -63,6 +63,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
@@ -183,6 +184,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -3110,6 +3112,43 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caseCriteria.setPersonLike("detail2");
 		caseIndexDetailedDtos = getCaseFacade().getIndexDetailedList(caseCriteria, 0, 100, null);
 		assertEquals(0, caseIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void testGetCasesByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		CaseDataDto case1 = getCaseFacade().save(creator.createCase(surveillanceOfficer.toReference(), person1, rdcf));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getCaseFacade().save(creator.createCase(surveillanceOfficer.toReference(), person2, rdcf));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getCaseFacade().save(creator.createCase(surveillanceOfficer.toReference(), person3, rdcf));
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setPersonLike("firstNationalId");
+
+		List<CaseIndexDto> caseIndexDtos1 = getCaseFacade().getIndexList(caseCriteria, 0, 100, null);
+		assertEquals(1, caseIndexDtos1.size());
+		assertEquals(case1.getUuid(), caseIndexDtos1.get(0).getUuid());
+
+		caseCriteria.setPersonLike("National");
+		List<CaseIndexDto> caseIndexDtosNational = getCaseFacade().getIndexList(caseCriteria, 0, 100, null);
+		assertEquals(2, caseIndexDtosNational.size());
+
+		caseCriteria.setPersonLike(null);
+		List<CaseIndexDto> caseIndexDtosAll = getCaseFacade().getIndexList(caseCriteria, 0, 100, null);
+		assertEquals(3, caseIndexDtosAll.size());
 	}
 
 	@Test

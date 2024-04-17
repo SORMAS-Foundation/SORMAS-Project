@@ -39,7 +39,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.map.BaseDashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardDataProvider;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -122,7 +121,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 	@Override
 	protected void addLayerOptions(VerticalLayout layersLayout) {
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (UiUtil.permitted(UserRight.CASE_VIEW)) {
 			CheckBox showCaseSamplesCheckBox = new CheckBox();
 			showCaseSamplesCheckBox.setId(Captions.sampleDashboardShowCaseSamples);
 			showCaseSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowCaseSamples));
@@ -139,7 +138,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			layersLayout.addComponent(showCaseSamplesCheckBox);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			CheckBox showContactSamplesCheckBox = new CheckBox();
 			showContactSamplesCheckBox.setId(Captions.sampleDashboardShowContactSamples);
 			showContactSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowContactSamples));
@@ -156,7 +155,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			layersLayout.addComponent(showContactSamplesCheckBox);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW)) {
 			CheckBox showEventParticipantSamplesCheckBox = new CheckBox();
 			showEventParticipantSamplesCheckBox.setId(Captions.sampleDashboardShowEventParticipantSamples);
 			showEventParticipantSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEventParticipantSamples));
@@ -173,7 +172,7 @@ public class SampleDashboardMapComponent extends BaseDashboardMapComponent<Sampl
 			layersLayout.addComponent(showEventParticipantSamplesCheckBox);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_VIEW)) {
+		if (UiUtil.permitted(UserRight.ENVIRONMENT_VIEW)) {
 			CheckBox showEnvironmentSamplesCheckBox = new CheckBox();
 			showEnvironmentSamplesCheckBox.setId(Captions.sampleDashboardShowEnvironmentSamples);
 			showEnvironmentSamplesCheckBox.setCaption(I18nProperties.getCaption(Captions.sampleDashboardShowEnvironmentSamples));

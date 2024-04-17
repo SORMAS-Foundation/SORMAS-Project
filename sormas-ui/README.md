@@ -11,7 +11,7 @@ The data transfer takes place via an encrypted HTTPS connection.
 On the client-side additional JavaScript libraries are used to display components like maps and charts.
 
 The user interface is divided according to the main modules of SORMAS:
-Cases, mSERS (aggregated case reporting), Contacts, Events, Samples, Messages, Statistics, Settings and User Management.
+Cases, Aggregate, Contacts, Events, Samples, Messages, Statistics, Settings and User Management.
 In addition, there is a dashboard that gives an overview of the data.
 
 

@@ -24,6 +24,7 @@ import java.util.Set;
 
 import com.vaadin.ui.UI;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -94,16 +95,20 @@ public class UserProvider {
 		return getUserRights().contains(userRight);
 	}
 
-	public boolean hasAnyRight(Set<UserRight> userRight) {
-		return getUserRights().stream().anyMatch(userRight::contains);
-	}
-
 	public boolean hasAllUserRights(UserRight... userRights) {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
-	public boolean hasAllUserRightsWithEditAllowedFlag(boolean isEditAllowed, UserRight... userRights) {
-		return isEditAllowed && getUserRights().containsAll(Arrays.asList(userRights));
+	public boolean hasUserRightWithAllowedFlag(boolean isActionAllowed, UserRight userRight) {
+		return isActionAllowed && hasUserRight(userRight);
+	}
+
+	public boolean hasAllUserRightsWithAllowedFlag(boolean isActionAllowed, UserRight... userRights) {
+		return isActionAllowed && getUserRights().containsAll(Arrays.asList(userRights));
+	}
+
+	public boolean hasUserRightWithEditPermissionType(EditPermissionType editPermissionType, UserRight userRight) {
+		return (editPermissionType == null || editPermissionType == EditPermissionType.ALLOWED) && hasUserRight(userRight);
 	}
 
 	public boolean hasNationJurisdictionLevel() {
@@ -132,7 +137,7 @@ public class UserProvider {
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {
-		RegionReferenceDto userRegionReference = getCurrent().getUser().getRegion();
+		RegionReferenceDto userRegionReference = UiUtil.getUser().getRegion();
 		return Objects.equals(userRegionReference, regionReference);
 	}
 

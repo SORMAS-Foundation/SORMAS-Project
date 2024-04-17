@@ -53,7 +53,7 @@ import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
@@ -277,10 +277,8 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			fieldAccessCheckers);
 		exposureForm.setValue(entry);
 
-		final CommitDiscardWrapperComponent<ExposureForm> component = new CommitDiscardWrapperComponent<>(
-			exposureForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT) && isEditAllowed,
-			exposureForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ExposureForm> component =
+			new CommitDiscardWrapperComponent<>(exposureForm, UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT), exposureForm.getFieldGroup());
 		component.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.entityExposure));
@@ -322,7 +320,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 
 	@Override
 	protected ExposureDto createEntry() {
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 		ExposureDto exposure = ExposureDto.build(null);
 		exposure.getLocation().setRegion(user.getRegion());
 		exposure.getLocation().setDistrict(user.getDistrict());

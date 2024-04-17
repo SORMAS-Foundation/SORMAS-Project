@@ -40,7 +40,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -76,7 +76,7 @@ public class ActionStatsComponent extends VerticalLayout {
 		actionsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(actionsHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_CREATE)) {
+		if (UiUtil.permitted(UserRight.ACTION_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewAction,
 				VaadinIcons.PLUS_CIRCLE,

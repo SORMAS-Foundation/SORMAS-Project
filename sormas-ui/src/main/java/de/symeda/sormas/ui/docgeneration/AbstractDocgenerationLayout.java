@@ -48,7 +48,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -75,7 +75,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		hideTextfields();
 		hideAdditionalParameters();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_UPLOAD)) {
+		if (UiUtil.permitted(UserRight.DOCUMENT_UPLOAD)) {
 			checkBoxUploadGeneratedDoc = new CheckBox(
 				I18nProperties.getPrefixCaption(
 					ExportConfigurationDto.I18N_PREFIX,

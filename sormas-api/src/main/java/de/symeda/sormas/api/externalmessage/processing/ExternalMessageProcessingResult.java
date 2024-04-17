@@ -165,6 +165,13 @@ public class ExternalMessageProcessingResult {
 		return samples;
 	}
 
+	@Override
+	public String toString() {
+		return "ExternalMessageProcessingResult{" + "selectedPerson=" + selectedPerson + ", selectedCase=" + selectedCase + ", selectedContact="
+			+ selectedContact + ", selectedEvent=" + selectedEvent + ", selectedEventParticipant=" + selectedEventParticipant + ", samples=" + samples
+			+ '}';
+	}
+
 	public static class EntitySelection<T> {
 
 		private final T entity;
@@ -181,6 +188,11 @@ public class ExternalMessageProcessingResult {
 
 		public boolean isNew() {
 			return isNew;
+		}
+
+		@Override
+		public String toString() {
+			return "EntitySelection{" + "entity=" + entity + ", isNew=" + isNew + '}';
 		}
 	}
 
@@ -202,6 +214,12 @@ public class ExternalMessageProcessingResult {
 
 		public List<PathogenTestDto> getPathogenTests() {
 			return pathogenTests;
+		}
+
+		@Override
+		public String toString() {
+			return "SampleSelection{" + "sampleReport=" + sampleReport + ", pathogenTests=" + pathogenTests + ", entity=" + getEntity() + ", isNew="
+				+ isNew() + '}';
 		}
 	}
 }

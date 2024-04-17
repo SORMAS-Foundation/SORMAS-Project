@@ -38,7 +38,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;

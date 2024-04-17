@@ -1338,7 +1338,9 @@ public interface Strings {
 	String messageImportFileTypeNotAllowed = "messageImportFileTypeNotAllowed";
 	String messageImportInvalidColumn = "messageImportInvalidColumn";
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
+	String messageImportPartiallySuccessfulWithSkips = "messageImportPartiallySuccessfulWithSkips";
 	String messageImportSuccessful = "messageImportSuccessful";
+	String messageImportSuccessfulWithSkips = "messageImportSuccessfulWithSkips";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInfrastructureLocked = "messageInfrastructureLocked";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";

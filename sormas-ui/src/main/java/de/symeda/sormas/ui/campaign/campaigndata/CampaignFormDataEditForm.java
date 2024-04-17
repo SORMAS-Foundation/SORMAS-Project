@@ -37,7 +37,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.expressions.ExpressionProcessor;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -100,10 +99,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		final UserDto currentUser = UiUtil.getUser();
 		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+		if (UiUtil.enabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
 			cbArea.setCaption(I18nProperties.getCaption(Captions.CampaignFormData_area));
 			setRequired(true, CampaignFormDataEditForm.AREA);
@@ -161,7 +160,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		cbCommunity.setVisible(false);
 		cbCommunity.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+		if (UiUtil.enabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			cbArea.setVisible(false);
 			cbArea.setValue(defaultRegion != null ? FacadeProvider.getRegionFacade().getByUuid(defaultRegion.getUuid()).getArea() : null);
 		}

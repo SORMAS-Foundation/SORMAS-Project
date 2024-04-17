@@ -30,7 +30,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
@@ -63,7 +62,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		addHeaderComponent(campaignSelector);
 		grid = new CampaignStatisticsGrid(criteria);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+		if (UiUtil.permitted(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -147,7 +146,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 	}
 
 	public CampaignStatisticsFilterForm createFilterForm() {
-		final UserDto user = UserProvider.getCurrent().getUser();
+		final UserDto user = UiUtil.getUser();
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
@@ -176,7 +175,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			grid.addDefaultColumns();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
-				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+				Language userLanguage = UiUtil.getUser().getLanguage();
 				CampaignFormTranslations translations = null;
 				if (userLanguage != null) {
 					translations = formMeta.getCampaignFormTranslations()

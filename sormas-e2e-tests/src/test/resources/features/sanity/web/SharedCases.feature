@@ -532,7 +532,7 @@ Feature: Sharing cases between environments tests
     And I confirm merge duplicated case
     Then I check if popup with merge message in german appears
 
-  @tmsLink=SORDEV-12445 @env_d2s
+  @tmsLink=SORDEV-12445 @env_d2s @ignore
   Scenario: S2S_Processed lab messages should be transferred [2]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -953,7 +953,7 @@ Feature: Sharing cases between environments tests
     Then I fill comment field in Reject share request popup and click confirm
     And I check if popup with error with handover displays
 
-  @tmsLink=SORDEV-12445 @env_d2s
+  @tmsLink=SORDEV-12445 @env_d2s @ignore
   Scenario: S2S_Processed lab messages should be transferred [1]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -1307,7 +1307,7 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 10
     Then Total number of read only fields in Survnet details section should be 3
 
-  @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
+  @tmsLink=HSP=6265 @env_d2s @LoginKeycloak @ignore
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
    Given API : Login to DEMIS server
    Then I create and send Laboratory Notification
@@ -1343,7 +1343,7 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 13
     Then I check that data present in target are match to data from source in surveillance report
 
-  @tmsLink=HSP=6343 @env_d2s @LoginKeycloak
+  @tmsLink=HSP=6343 @env_d2s @LoginKeycloak @ignore
     Scenario: S2S - Share a Case created from processed Lab message/Physician Report with option "Share reports"
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification

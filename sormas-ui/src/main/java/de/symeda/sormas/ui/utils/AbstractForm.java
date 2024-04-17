@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
@@ -357,19 +356,28 @@ public abstract class AbstractForm<T> extends CustomField<T> implements WithChil
 	}
 
 	public void addBirthDateFields(CustomLayout moreFiltersContainer, String yearPropertyId, String monthPropertyId, String dayPropertyId) {
-		final ComboBox birthDateYYYY = addField(moreFiltersContainer, yearPropertyId, ComboBox.class);
-		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
-		birthDateYYYY.setWidth(140, Sizeable.Unit.PIXELS);
+		final ComboBox birthDateYYYY = addField(
+			moreFiltersContainer,
+			ComboBox.class,
+			FieldConfiguration
+				.withCaptionAndPixelSized(yearPropertyId, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY), 140));
+
 		birthDateYYYY.addItems(DateHelper.getYearsToNow());
 		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-		final ComboBox birthDateMM = addField(moreFiltersContainer, monthPropertyId, ComboBox.class);
-		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
-		birthDateMM.setWidth(140, Sizeable.Unit.PIXELS);
+
+		final ComboBox birthDateMM = addField(
+			moreFiltersContainer,
+			ComboBox.class,
+			FieldConfiguration
+				.withCaptionAndPixelSized(monthPropertyId, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM), 140));
 		birthDateMM.addItems(DateHelper.getMonthsInYear());
 		DateHelper.getMonthsInYear().forEach(month -> birthDateMM.setItemCaption(month, Month.values()[month - 1].toString()));
-		final ComboBox birthDateDD = addField(moreFiltersContainer, dayPropertyId, ComboBox.class);
-		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
-		birthDateDD.setWidth(140, Sizeable.Unit.PIXELS);
+
+		final ComboBox birthDateDD = addField(
+			moreFiltersContainer,
+			ComboBox.class,
+			FieldConfiguration
+				.withCaptionAndPixelSized(dayPropertyId, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD), 140));
 	}
 
 	@SuppressWarnings("rawtypes")

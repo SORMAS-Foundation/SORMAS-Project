@@ -28,7 +28,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -184,7 +183,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
 				}
 			});
 			secondRowLayout.addComponent(cbRegion);
-			if (UserProvider.getCurrent().getUser().getRegion() != null) {
+			if (UiUtil.getUser().getRegion() != null) {
 				cbRegion.setEnabled(false);
 			}
 

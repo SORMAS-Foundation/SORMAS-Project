@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.Button;
@@ -32,14 +34,19 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SampleEditForm extends AbstractSampleForm {
@@ -59,7 +66,7 @@ public class SampleEditForm extends AbstractSampleForm {
 			SampleDto.class,
 			SampleDto.I18N_PREFIX,
 			disease,
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		testsToBeRemovedOnCommit = new ArrayList();
 	}
 
@@ -84,8 +91,8 @@ public class SampleEditForm extends AbstractSampleForm {
 			defaultValueChangeListener();
 			fillPathogenTestResult();
 			UserReferenceDto reportingUser = getValue().getReportingUser();
-			if (!(UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-				|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid())))) {
+			if (!(UiUtil.permitted(UserRight.SAMPLE_EDIT_NOT_OWNED)
+				|| (reportingUser != null && UiUtil.getUserUuid().equals(reportingUser.getUuid())))) {
 				getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
 				getField(SampleDto.SAMPLING_REASON).setEnabled(false);
 				getField(SampleDto.SAMPLING_REASON_DETAILS).setEnabled(false);
@@ -134,5 +141,30 @@ public class SampleEditForm extends AbstractSampleForm {
 	@Override
 	public void setHeading(String heading) {
 		laboratorySampleHeadingLabel.setValue(heading);
+	}
+
+	@Override
+	protected void addValidators() {
+		super.addValidators();
+
+		final DateTimeField sampleDateField = getField(SampleDto.SAMPLE_DATE_TIME);
+		DateComparisonValidator validator = new DateComparisonValidator(
+			sampleDateField,
+			this::getEarliestPathogenTestDate,
+			true,
+			false,
+			() -> I18nProperties.getValidationError(
+				Validations.sampleDateTimeAfterPathogenTestDateTime,
+				DateFormatHelper.formatLocalDateTime(this.getEarliestPathogenTestDate())));
+		validator.setDateOnly(false);
+		sampleDateField.addValidator(validator);
+	}
+
+	private Date getEarliestPathogenTestDate() {
+		List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(getValue().toReference());
+		if (pathogenTests.isEmpty()) {
+			return null;
+		}
+		return pathogenTests.stream().map(PathogenTestDto::getTestDateTime).filter(Objects::nonNull).min(Date::compareTo).orElseGet(() -> null);
 	}
 }

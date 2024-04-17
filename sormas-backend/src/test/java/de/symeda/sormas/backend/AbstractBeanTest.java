@@ -23,6 +23,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -75,6 +76,9 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportFacade;
@@ -174,6 +178,7 @@ import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
@@ -214,6 +219,7 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.selfreport.SelfReportFacadeEjb.SelfReportFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
@@ -431,6 +437,24 @@ public abstract class AbstractBeanTest {
 		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(deletableEntityType, automaticDeletionReference, 3650));
 		deletionConfigurationService.ensurePersisted(DeletionConfiguration.build(deletableEntityType, DeletionReference.MANUAL_DELETION, 90));
+	}
+
+	protected void createFeatureConfiguration(FeatureType featureType, boolean enabled) {
+		createFeatureConfiguration(featureType, enabled, null);
+	}
+
+	protected void createFeatureConfiguration(FeatureType featureType, boolean enabled, Map<FeatureTypeProperty, Object> properties) {
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, enabled, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, featureType);
+		if (properties != null) {
+			executeInTransaction(em -> {
+				Query query = em.createQuery("select f from featureconfiguration f where featureType = '" + featureType.name() + "'");
+				FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+				singleResult.setProperties(properties);
+				em.persist(singleResult);
+			});
+		}
 	}
 
 	public ConfigFacade getConfigFacade() {
@@ -1048,5 +1072,9 @@ public abstract class AbstractBeanTest {
 
 	public SpecialCaseAccessService getSpecialCaseAccessService() {
 		return getBean(SpecialCaseAccessService.class);
+	}
+
+	public SelfReportFacadeEjbLocal getSelfReportFacade() {
+		return getBean(SelfReportFacadeEjbLocal.class);
 	}
 }

@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
+import static de.symeda.sormas.ui.reports.aggregate.ReportDataGrid.DELETE_AGGREGATE_REPORT;
+import static de.symeda.sormas.ui.reports.aggregate.ReportDataGrid.EDIT_AGGREGATE_REPORT;
+
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
@@ -22,16 +25,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.NotificationHelper;
-
-import static de.symeda.sormas.ui.reports.aggregate.ReportDataGrid.DELETE_AGGREGATE_REPORT;
-import static de.symeda.sormas.ui.reports.aggregate.ReportDataGrid.EDIT_AGGREGATE_REPORT;
 
 public class ReportDataView extends AbstractAggregateReportsView {
 
@@ -50,7 +50,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 	public ReportDataView() {
 
 		super(VIEW_NAME);
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(ReportDataView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(ReportDataView.class).get(AggregateReportCriteria.class);
@@ -58,7 +58,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 		}
 
-		grid = new ReportDataGrid(criteria, ()-> navigateTo(criteria, true));
+		grid = new ReportDataGrid(criteria, () -> navigateTo(criteria, true));
 
 		gridLayout = new VerticalLayout();
 
@@ -74,7 +74,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EDIT)) {
+		if (UiUtil.permitted(UserRight.AGGREGATE_REPORT_EDIT)) {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
@@ -93,7 +93,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			addHeaderComponent(btnEdit);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EXPORT)) {
+		if (UiUtil.permitted(UserRight.AGGREGATE_REPORT_EXPORT)) {
 			btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnExport);

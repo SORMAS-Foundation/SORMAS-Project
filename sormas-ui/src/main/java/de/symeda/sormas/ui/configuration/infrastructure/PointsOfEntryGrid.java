@@ -6,7 +6,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -23,7 +23,7 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -41,7 +41,7 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			PointOfEntryDto.EXTERNAL_ID,
 			PointOfEntryDto.ACTIVE);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UiUtil.permitted(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editPointOfEntry(e.getUuid()));
 		}
 

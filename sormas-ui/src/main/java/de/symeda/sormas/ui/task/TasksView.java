@@ -40,7 +40,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -73,7 +73,7 @@ public class TasksView extends AbstractView {
 		taskListComponent = new TaskGridComponent(getViewTitleLabel(), this);
 		addComponent(taskListComponent);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EXPORT)) {
+		if (UiUtil.permitted(UserRight.TASK_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			exportLayout.setSpacing(true);
 			exportLayout.setMargin(true);
@@ -114,7 +114,7 @@ public class TasksView extends AbstractView {
 			exportLayout.addComponent(btnCustomExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
@@ -142,7 +142,7 @@ public class TasksView extends AbstractView {
 			});
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+		if (UiUtil.permitted(UserRight.TASK_CREATE)) {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.taskNewTask,
 				VaadinIcons.PLUS_CIRCLE,

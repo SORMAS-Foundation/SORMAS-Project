@@ -36,7 +36,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -52,7 +52,7 @@ public class EnvironmentSampleListComponent extends SideComponent {
 	public EnvironmentSampleListComponent(EnvironmentDto environment, boolean isEditAllowed, Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getString(Strings.entityEnvironmentSamples), actionCallback);
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_CREATE)) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.ENVIRONMENT_SAMPLE_CREATE)) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.environmentSampleNewSample),
 				() -> ControllerProvider.getEnvironmentSampleController().create(environment, this::reload),
@@ -105,7 +105,7 @@ public class EnvironmentSampleListComponent extends SideComponent {
 				EnvironmentSampleListEntry listEntry = new EnvironmentSampleListEntry(sample);
 
 				String sampleUuid = sample.getUuid();
-				if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT) && isEditAllowed) {
+				if (UiUtil.permitted(isEditAllowed, UserRight.ENVIRONMENT_SAMPLE_EDIT)) {
 					listEntry.addEditButton(
 						"edit-environment-sample-" + sampleUuid,
 						(Button.ClickListener) event -> ControllerProvider.getEnvironmentSampleController().navigateToSample(sampleUuid));

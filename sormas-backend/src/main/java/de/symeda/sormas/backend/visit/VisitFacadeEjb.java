@@ -556,7 +556,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(VisitQueryContext queryContext) {
+	private Expression<Boolean> jurisdictionSelector(VisitQueryContext queryContext) {
 		return JurisdictionHelper.booleanSelector(queryContext.getCriteriaBuilder(), service.inJurisdictionOrOwned(queryContext));
 	}
 

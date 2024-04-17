@@ -26,7 +26,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -43,7 +43,7 @@ public class TherapyController {
 		PrescriptionForm form = new PrescriptionForm(true, false, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
 
@@ -163,7 +163,7 @@ public class TherapyController {
 		TreatmentForm form = new TreatmentForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(TreatmentDto.build(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.TREATMENT_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
 
@@ -185,7 +185,7 @@ public class TherapyController {
 		TreatmentForm form = new TreatmentForm(true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		form.setValue(TreatmentDto.build(prescription));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UiUtil.permitted(UserRight.TREATMENT_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
 

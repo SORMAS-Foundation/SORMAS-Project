@@ -32,7 +32,7 @@ import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.slf4j.Logger;

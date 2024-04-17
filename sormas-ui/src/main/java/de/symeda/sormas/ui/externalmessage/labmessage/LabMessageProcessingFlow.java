@@ -72,7 +72,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
@@ -96,12 +96,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageMapper mapper,
 		ExternalMessageProcessingFacade processingFacade,
 		RelatedLabMessageHandler relatedLabMessageHandler) {
-		super(
-			labMessage,
-			UserProvider.getCurrent().getUser(),
-			mapper,
-			processingFacade,
-			relatedLabMessageHandler);
+		super(labMessage, UiUtil.getUser(), mapper, processingFacade, relatedLabMessageHandler);
 	}
 
 	@Override
@@ -245,10 +240,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true);
 		eventCreateForm.setValue(event);
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
-			eventCreateForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
-			eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView =
+			new CommitDiscardWrapperComponent<>(eventCreateForm, UiUtil.permitted(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		editView.addCommitListener(() -> {
@@ -285,10 +278,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			event.getEventLocation().getRegion() == null && event.getEventLocation().getDistrict() == null,
 			eventParticipant.getPerson().getCreationDate() == null);
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.EVENTPARTICIPANT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {

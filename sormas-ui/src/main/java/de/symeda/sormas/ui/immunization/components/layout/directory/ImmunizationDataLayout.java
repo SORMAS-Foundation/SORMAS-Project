@@ -19,6 +19,10 @@ public class ImmunizationDataLayout extends VerticalLayout {
 		setExpandRatio(grid, 1);
 	}
 
+	public ImmunizationGrid getGrid() {
+		return grid;
+	}
+
 	public void refreshGrid() {
 		grid.reload();
 	}

@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -52,6 +54,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Functions;
 import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.AuthProvider;
@@ -59,6 +62,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 
@@ -229,6 +233,34 @@ public class KeycloakService {
 		}
 	}
 
+	public void handleSyncUsersFromProviderEvent(@Observes SyncUsersFromProviderEvent syncUsersFromProviderEvent) {
+		Optional<Keycloak> keycloak = getKeycloakInstance();
+		if (keycloak.isEmpty()) {
+			logger.warn("Cannot obtain keycloak instance. Will not sync users from provider");
+			return;
+		}
+
+		List<User> existingUsers = syncUsersFromProviderEvent.getExistingUsers();
+		Map<String, User> existingUsersByUsername =
+			existingUsers.stream().collect(Collectors.toMap(user1 -> user1.getUserName().toLowerCase(), Functions.identity()));
+		List<UserRepresentation> providerUsers = keycloak.get().realm(REALM_NAME).users().list();
+		List<User> syncedUsers = providerUsers.stream().map(user -> {
+			User sormasUser = existingUsersByUsername.get(user.getUsername().toLowerCase());
+			if (sormasUser == null) {
+				sormasUser = new User();
+			}
+			updateUser(sormasUser, user);
+
+			return sormasUser;
+		}).collect(Collectors.toList());
+
+		Set<String> providerUserNames = providerUsers.stream().map(UserRepresentation::getUsername).collect(Collectors.toSet());
+		List<User> deletedUsers = existingUsers.stream().filter(user -> !providerUserNames.contains(user.getUserName())).collect(Collectors.toList());
+
+		syncUsersFromProviderEvent.getCallback().accept(syncedUsers, deletedUsers);
+
+	}
+
 	/**
 	 * Creates a {@link UserRepresentation} from the SORMAS user and send the request to create the user to Keycloak.
 	 *
@@ -272,6 +304,15 @@ public class KeycloakService {
 		}
 
 		return userRepresentation;
+	}
+
+	private void updateUser(User user, UserRepresentation userRepresentation) {
+		user.setActive(userRepresentation.isEnabled());
+		user.setUserName(userRepresentation.getUsername());
+		user.setFirstName(userRepresentation.getFirstName());
+		user.setLastName(userRepresentation.getLastName());
+		user.setLanguage(getLanguage(userRepresentation));
+		user.setUserEmail(userRepresentation.getEmail());
 	}
 
 	private Optional<UserRepresentation> updateUser(Keycloak keycloak, String existingUsername, User newUser) {
@@ -369,6 +410,17 @@ public class KeycloakService {
 
 	private void sendPasswordResetEmail(Keycloak keycloak, String userId) {
 		keycloak.realm(REALM_NAME).users().get(userId).executeActionsEmail(Collections.singletonList(ACTION_UPDATE_PASSWORD));
+	}
+
+	private Language getLanguage(UserRepresentation userRepresentation) {
+		Map<String, List<String>> attributes = userRepresentation.getAttributes();
+		if (attributes != null) {
+			List<String> locale = attributes.get(LOCALE);
+			if (locale != null && !locale.isEmpty()) {
+				return Language.fromLocaleString(locale.get(0));
+			}
+		}
+		return null;
 	}
 
 	private void setLanguage(UserRepresentation userRepresentation, Language language) {

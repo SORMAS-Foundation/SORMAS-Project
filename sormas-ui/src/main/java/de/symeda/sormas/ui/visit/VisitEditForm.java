@@ -45,7 +45,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -82,9 +82,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			VisitDto.I18N_PREFIX,
 			false,
 			null,
-			UiFieldAccessCheckers.forDataAccessLevel(
-				UserProvider.getCurrent().getPseudonymizableDataAccessLevel(create || inJurisdiction),
-				!create && isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(create || inJurisdiction), !create && isPseudonymized));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}

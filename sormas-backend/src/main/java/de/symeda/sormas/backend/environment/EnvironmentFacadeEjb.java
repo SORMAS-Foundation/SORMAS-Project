@@ -24,7 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -155,6 +155,8 @@ public class EnvironmentFacadeEjb
 				location.get(Location.CITY),
 				environment.get(Environment.REPORT_DATE),
 				environment.get(Environment.INVESTIGATION_STATUS),
+				environment.get(Environment.DELETION_REASON),
+				environment.get(Environment.OTHER_DELETION_REASON),
 				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(environmentQueryContext)));
 
 			cq.where(environment.get(Environment.ID).in(batchedIds));

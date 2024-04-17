@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -39,7 +38,7 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -188,7 +187,7 @@ public class ExternalMessagesView extends AbstractView {
 	private MenuBar createBulkOperationsDropdown() {
 		final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
 			menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 				ControllerProvider.getExternalMessageController()
 					.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> navigateTo(criteria));
@@ -238,13 +237,9 @@ public class ExternalMessagesView extends AbstractView {
 			activeStatus = (ExternalMessageStatus) activeStatusButton.getData();
 		}
 
-		boolean processingPossible = (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-			&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT))
-			|| (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
-				&& Objects.requireNonNull(UserProvider.getCurrent()).hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT))
-			|| (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-				&& Objects.requireNonNull(UserProvider.getCurrent())
-					.hasAllUserRights(UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT));
+		boolean processingPossible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE, UserRight.CASE_EDIT)
+			|| UiUtil.permitted(FeatureType.CONTACT_TRACING, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)
+			|| UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 		grid.updateProcessColumnVisibility((activeStatus == null || activeStatus.isProcessable()) && processingPossible);
 	}
 
@@ -361,7 +356,7 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
+		return UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS);
 	}
 
 	private void enterBulkEditMode() {

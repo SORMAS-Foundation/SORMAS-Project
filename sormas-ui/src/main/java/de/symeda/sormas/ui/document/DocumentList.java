@@ -26,7 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -90,8 +90,7 @@ public class DocumentList extends VerticalLayout {
 		res.addComponent(downloadButton);
 		res.setExpandRatio(downloadButton, 0);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_DELETE) && isDeleteAllowed) {
+		if (UiUtil.permitted(editRight, UserRight.DOCUMENT_DELETE) && isDeleteAllowed) {
 			Button deleteButton = buildDeleteButton(document);
 			res.addComponent(deleteButton);
 			res.setExpandRatio(deleteButton, 0);

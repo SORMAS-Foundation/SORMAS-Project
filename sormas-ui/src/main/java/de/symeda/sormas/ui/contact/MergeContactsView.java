@@ -20,7 +20,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -45,9 +45,7 @@ public class MergeContactsView extends AbstractView {
 
 		criteria = ViewModelProviders.of(MergeContactsView.class).get(ContactCriteria.class);
 		if (criteriaUninitialized) {
-			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
-				.creationDateTo(new Date())
-				.setRegion(UserProvider.getCurrent().getUser().getRegion());
+			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30)).creationDateTo(new Date()).setRegion(UiUtil.getUser().getRegion());
 		}
 
 		boolean queryDetailsUninitialized = !ViewModelProviders.of(MergeContactsView.class).has(QueryDetails.class);

@@ -10,7 +10,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -51,10 +51,8 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 			AdditionalTestDto additionalTest = displayedEntries.get(i);
 			AdditionalTestListEntry listEntry = new AdditionalTestListEntry(additionalTest);
 
-			boolean isEditableAndHasEditRight =
-				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.ADDITIONAL_TEST_EDIT);
-			boolean isEditableAndHasDeleteRight =
-				UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditable, UserRight.ADDITIONAL_TEST_DELETE);
+			boolean isEditableAndHasEditRight = UiUtil.permitted(isEditable, UserRight.ADDITIONAL_TEST_EDIT);
+			boolean isEditableAndHasDeleteRight = UiUtil.permitted(isEditable, UserRight.ADDITIONAL_TEST_DELETE);
 
 			listEntry.addActionButton(
 				additionalTest.getUuid(),
