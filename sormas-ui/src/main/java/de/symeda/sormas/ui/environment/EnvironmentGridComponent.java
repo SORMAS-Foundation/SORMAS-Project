@@ -112,6 +112,7 @@ public class EnvironmentGridComponent extends VerticalLayout {
 		statusFilterBar.addComponent(buttonFilterLayout);
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
 		actionButtonsLayout.addComponent(
 			RelevanceStatusFilter.createRelevanceStatusFilter(
 				Captions.environmentActiveEnvironments,
