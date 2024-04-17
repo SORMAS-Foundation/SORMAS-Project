@@ -12978,4 +12978,64 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
 
+
+-- 2024-04-10 Create a new Self Report entity and IndexDTO #13059
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_VIEW' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_CREATE' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_EDIT' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_DELETE' FROM userroles WHERE userroles.linkeddefaultuserrole in('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+
+CREATE TABLE IF NOT EXISTS selfreports
+(
+    id                  bigint       not null,
+    uuid                varchar(36)  not null unique,
+    changedate          timestamp    not null,
+    creationdate        timestamp    not null,
+    change_user_id      bigint,
+    sys_period          tstzrange    not null,
+    deleted             boolean DEFAULT false,
+    deletionreason      varchar(255),
+    otherdeletionreason text,
+    archived            boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
+
+    type                varchar(255) not null,
+    reportdate          timestamp    not null,
+    caseReference text,
+    desease             varchar(255) not null,
+    diseasevariant      text,
+    firstname           text         not null,
+    lastname            text         not null,
+    sex                 varchar(255),
+    birthdatedd         integer,
+    birthdatemm         integer,
+    birthdateyyyy       integer,
+    nationalhealthid    text,
+    email               text,
+    phonenumber         text,
+    address_id          bigint,
+    comment             text,
+    responsibleuser_id  bigint,
+    investigationstatus varchar(255),
+    processingstatus    varchar(255),
+
+    primary key (id)
+);
+
+ALTER TABLE selfreports OWNER TO sormas_user;
+ALTER TABLE selfreports ADD CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES location (id);
+ALTER TABLE selfreports ADD CONSTRAINT fk_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users (id);
+
+CREATE TABLE selfreports_history (LIKE selfreports);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON selfreports
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'selfreports_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON selfreports
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('selfreports_history', 'id');
+ALTER TABLE selfreports_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
