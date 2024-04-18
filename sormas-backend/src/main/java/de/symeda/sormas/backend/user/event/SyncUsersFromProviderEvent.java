@@ -13,16 +13,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfreport;
+package de.symeda.sormas.backend.user.event;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.List;
+import java.util.function.BiConsumer;
 
-public enum SelfReportProcessingStatus {
-	UNPROCESSED,
-	PROCESSED;
+import de.symeda.sormas.backend.user.User;
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+public class SyncUsersFromProviderEvent {
+
+	private final List<User> existingUsers;
+
+	private final BiConsumer<List<User>, List<User>> callback;
+
+	public SyncUsersFromProviderEvent(List<User> existingUsers, BiConsumer<List<User>, List<User>> callback) {
+		this.existingUsers = existingUsers;
+		this.callback = callback;
+	}
+
+	public List<User> getExistingUsers() {
+		return existingUsers;
+	}
+
+	public BiConsumer<List<User>, List<User>> getCallback() {
+		return callback;
 	}
 }

@@ -61,6 +61,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String AUTHENTICATION_PROVIDER = "authentication.provider";
 	private static final String AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP = "authentication.provider.userSyncAtStartup";
+	private static final String AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE = "authentication.provider.syncedNewUserRole";
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
@@ -657,6 +658,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isAuthenticationProviderUserSyncAtStartupEnabled() {
 		return getBoolean(AUTHENTICATION_PROVIDER_USER_SYNC_AT_STARTUP, false);
+	}
+
+	@Override
+	public String getAuthenticationProviderSyncedNewUserRole() {
+		return getProperty(AUTHENTICATION_PROVIDER_SYNCED_NEW_USER_ROLE, null);
 	}
 
 	@Override

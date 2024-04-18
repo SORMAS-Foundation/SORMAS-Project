@@ -1286,7 +1286,7 @@ public class ContactFacadeEjb
 		return orderList;
 	}
 
-	private Expression<Object> jurisdictionSelector(ContactQueryContext qc) {
+	private Expression<Boolean> jurisdictionSelector(ContactQueryContext qc) {
 		return JurisdictionHelper.booleanSelector(qc.getCriteriaBuilder(), service.inJurisdictionOrOwned(qc));
 	}
 

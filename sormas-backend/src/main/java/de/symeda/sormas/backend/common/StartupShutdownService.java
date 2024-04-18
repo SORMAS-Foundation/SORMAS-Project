@@ -616,11 +616,6 @@ public class StartupShutdownService {
 
 		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
 
-		if (!authProvider.isUserSyncSupported()) {
-			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
-			return;
-		}
-
 		if (!authProvider.isUserSyncAtStartupEnabled()) {
 			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");
 			return;

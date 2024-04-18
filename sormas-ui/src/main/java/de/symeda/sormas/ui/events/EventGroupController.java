@@ -37,6 +37,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -91,14 +91,14 @@ public class EventGroupController {
 			Strings.messageAllEventsAlreadyLinkedToGroup,
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 			Strings.infoBulkProcessFinishedWithoutSuccess)
-				.doBulkOperation(
-					batch -> FacadeProvider.getEventGroupFacade()
-						.linkEventsToGroups(
-							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-							eventGroupUuids,
-							alreadyLinkedEventUuidsToGroup),
-					new ArrayList<>(eventReferences),
-					callback);
+			.doBulkOperation(
+				batch -> FacadeProvider.getEventGroupFacade()
+					.linkEventsToGroups(
+						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+						eventGroupUuids,
+						alreadyLinkedEventUuidsToGroup),
+				new ArrayList<>(eventReferences),
+				callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {
@@ -234,11 +234,10 @@ public class EventGroupController {
 		final CommitDiscardWrapperComponent<EventGroupDataForm> editView =
 			new CommitDiscardWrapperComponent<>(eventGroupEditForm, true, eventGroupEditForm.getFieldGroup());
 
-		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
-		boolean hasRegion = UiUtil.hasNationJurisdictionLevel() || regions.stream().allMatch(UiUtil.getCurrentUserProvider()::hasRegion);
-		editView.setReadOnly(hasRegion);
+		EditPermissionType editPermission = FacadeProvider.getEventGroupFacade().getEditPermissionType(uuid);
+		Boolean isEditAllowed = editPermission == EditPermissionType.ALLOWED;
 
-		if (UiUtil.permitted(UserRight.EVENTGROUP_EDIT) && hasRegion) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_EDIT)) {
 			editView.addCommitListener(() -> {
 				if (!eventGroupEditForm.getFieldGroup().isModified()) {
 					EventGroupDto updatedEventGroup = eventGroupEditForm.getValue();
@@ -249,7 +248,7 @@ public class EventGroupController {
 			});
 		}
 
-		if (UiUtil.permitted(UserRight.EVENTGROUP_DELETE) && hasRegion) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_DELETE)) {
 			editView.addDeleteListener(() -> {
 				deleteEventGroup(eventGroup);
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
@@ -257,7 +256,7 @@ public class EventGroupController {
 		}
 
 		// Initialize 'Archive' button
-		if (UiUtil.permitted(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_ARCHIVE)) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
 			Button archiveEventButton = ButtonHelper.createButton(
 				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
@@ -276,7 +275,7 @@ public class EventGroupController {
 			null,
 			UserRight.EVENTGROUP_DELETE,
 			UserRight.EVENTGROUP_ARCHIVE,
-			null,
+			editPermission,
 			true);
 
 		return editView;

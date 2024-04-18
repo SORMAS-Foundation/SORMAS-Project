@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 
 import com.vaadin.ui.renderers.DateRenderer;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
@@ -56,7 +57,7 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 			setCriteria(criteria);
 		}
 
-		initColumns();
+		initColumns(criteria);
 
 		addItemClickListener(
 			new ShowDetailsListener<>(
@@ -64,7 +65,7 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 				e -> ControllerProvider.getEnvironmentController().navigateToEnvironment(e.getUuid())));
 	}
 
-	protected void initColumns() {
+	protected void initColumns(EnvironmentCriteria criteria) {
 		Column<EnvironmentIndexDto, String> deleteColumn = addColumn(entry -> {
 			if (entry.getDeletionReason() != null) {
 				return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
@@ -75,6 +76,7 @@ public class EnvironmentGrid extends FilteredGrid<EnvironmentIndexDto, Environme
 		deleteColumn.setId(DELETE_REASON_COLUMN);
 		deleteColumn.setSortable(false);
 		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+		deleteColumn.setHidden(!criteria.getRelevanceStatus().equals(EntityRelevanceStatus.DELETED));
 
 		setColumns(getGridColumns().toArray(String[]::new));
 

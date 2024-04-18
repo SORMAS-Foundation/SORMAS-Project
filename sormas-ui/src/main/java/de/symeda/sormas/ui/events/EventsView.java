@@ -528,6 +528,12 @@ public class EventsView extends AbstractView {
 						if (relevanceStatusInfoLabel != null) {
 							relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 						}
+
+						if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+							grid.getColumn(grid.DELETE_REASON_COLUMN)
+								.setHidden(!eventRelevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+						}
+
 						eventCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 						navigateTo(eventCriteria);
 					});

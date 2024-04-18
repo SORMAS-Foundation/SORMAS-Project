@@ -77,8 +77,8 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 			EventIndexDto event = displayedEntries.get(i);
 			EventGroupMemberListEntry listEntry = new EventGroupMemberListEntry(event);
 
-			if (UiUtil.permitted(UserRight.EVENTGROUP_LINK)) {
-				listEntry.addUnlinkEventListener(i, (ClickListener) clickEvent -> {
+			if (event.isInJurisdiction() && UiUtil.permitted(UserRight.EVENTGROUP_LINK)) {
+				listEntry.addUnlinkEventButton(i, (ClickListener) clickEvent -> {
 					if (!FacadeProvider.getEventFacade().isInJurisdictionOrOwned(event.getUuid())
 						&& !UiUtil.hasNationJurisdictionLevel()
 						&& !UiUtil.isAdmin()) {
@@ -94,11 +94,11 @@ public class EventGroupMemberList extends PaginationList<EventIndexDto> {
 					reload();
 				});
 			}
-			if (UiUtil.permitted(UserRight.EVENTGROUP_EDIT)) {
-				listEntry.addEditListener(
-					i,
-					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));
-			}
+			listEntry.addNavigateToEventButton(
+				i,
+				event.isInJurisdiction(),
+				(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));
+
 			listLayout.addComponent(listEntry);
 		}
 	}
