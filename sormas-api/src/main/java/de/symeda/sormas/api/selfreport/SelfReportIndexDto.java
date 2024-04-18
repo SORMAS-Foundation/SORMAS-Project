@@ -69,14 +69,40 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 
 	public SelfReportIndexDto(
 		String uuid,
+		SelfReportType type,
 		Date reportDate,
+		Disease disease,
+		String firstName,
+		String lastName,
+		AgeAndBirthDateDto ageAndBirthDate,
+		Sex sex,
+		String district,
+		String street,
+		String houseNumber,
+		String postalCode,
+		String city,
+		String email,
+		String phoneNumber,
 		UserReferenceDto responsibleUser,
 		SelfReportInvestigationStatus investigationStatus,
 		SelfReportProcessingStatus processingStatus,
 		DeletionReason deletionReason,
 		String otherDeletionReason) {
 		super(uuid);
+		this.type = type;
 		this.reportDate = reportDate;
+		this.disease = disease;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.ageAndBirthDate = ageAndBirthDate;
+		this.sex = sex;
+		this.district = district;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.postalCode = postalCode;
+		this.city = city;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
 		this.responsibleUser = responsibleUser;
 		this.investigationStatus = investigationStatus;
 		this.processingStatus = processingStatus;

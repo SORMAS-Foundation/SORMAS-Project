@@ -13038,4 +13038,10 @@ ALTER TABLE selfreports_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
 
+-- Add a self Reporting directory (UI) #13068
+
+ALTER TABLE selfreports RENAME COLUMN desease TO disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
