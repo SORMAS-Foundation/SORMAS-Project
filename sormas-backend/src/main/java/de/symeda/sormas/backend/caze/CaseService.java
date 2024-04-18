@@ -124,7 +124,6 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
@@ -871,7 +870,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.INTERNAL_TOKEN), textFilter)));
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.INTERNAL_TOKEN), textFilter),
+					//the below field is intentionally added to be available to be checked from two different filter fields
+					CriteriaBuilderHelper.ilike(cb, joins.getPerson().get(Person.NATIONAL_HEALTH_ID), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}

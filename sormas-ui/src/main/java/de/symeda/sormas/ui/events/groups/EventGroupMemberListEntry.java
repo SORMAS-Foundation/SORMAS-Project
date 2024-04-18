@@ -44,7 +44,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class EventGroupMemberListEntry extends HorizontalLayout {
 
 	private final EventIndexDto event;
-	private Button editButton;
+	private Button navigateButton;
 	private Button unlinkEventButton;
 
 	public EventGroupMemberListEntry(EventIndexDto event) {
@@ -115,26 +115,26 @@ public class EventGroupMemberListEntry extends HorizontalLayout {
 		topLayout.addComponent(topLeftLayout);
 	}
 
-	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
+	public void addNavigateToEventButton(int rowIndex, boolean isEditable, Button.ClickListener editClickListener) {
+		if (navigateButton == null) {
+			navigateButton = ButtonHelper.createIconButtonWithCaption(
 				"add-event-" + rowIndex,
 				null,
-				VaadinIcons.PENCIL,
+				isEditable ? VaadinIcons.PENCIL : VaadinIcons.EYE,
 				null,
 				ValoTheme.BUTTON_LINK,
 				CssStyles.BUTTON_COMPACT);
-			editButton.setDescription(I18nProperties.getCaption(Captions.eventEditEvent));
+			navigateButton.setDescription(I18nProperties.getCaption(Captions.eventEditEvent));
 
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(editButton, 0);
+			addComponent(navigateButton);
+			setComponentAlignment(navigateButton, Alignment.MIDDLE_RIGHT);
+			setExpandRatio(navigateButton, 0);
 		}
 
-		editButton.addClickListener(editClickListener);
+		navigateButton.addClickListener(editClickListener);
 	}
 
-	public void addUnlinkEventListener(int rowIndex, Button.ClickListener unlinkEventClickListener) {
+	public void addUnlinkEventButton(int rowIndex, Button.ClickListener unlinkEventClickListener) {
 		if (unlinkEventButton == null) {
 			unlinkEventButton = ButtonHelper.createIconButtonWithCaption(
 				"unlink-event-" + rowIndex,

@@ -28,13 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import javax.persistence.Query;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -54,7 +52,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -74,7 +71,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
 
 public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
@@ -368,18 +364,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSaveAndProcess() {
 
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.EXTERNAL_MESSAGES);
-
-		executeInTransaction(em -> {
-			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
-			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-			properties.put(FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING, true);
-			singleResult.setProperties(properties);
-			em.persist(singleResult);
-		});
+		createFeatureConfiguration(FeatureType.EXTERNAL_MESSAGES, true, Map.of(FeatureTypeProperty.FORCE_AUTOMATIC_PROCESSING, true));
 
 		ExternalMessageDto labMessage = createLabMessage(m -> m.setAutomaticProcessingPossible(true));
 		ExternalMessageDto savedLabMessage = getExternalMessageFacade().saveAndProcessLabmessage(labMessage);

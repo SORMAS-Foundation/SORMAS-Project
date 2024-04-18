@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 import javax.validation.ConstraintViolationException;
@@ -32,7 +32,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
@@ -64,7 +63,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
@@ -317,18 +315,7 @@ public class CoreEntityDeletionServiceTest extends SormasToSormasTest {
 		assertEquals(1, getPersonService().count());
 
 		// change feature configuration to immunization reduced
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.IMMUNIZATION_MANAGEMENT);
-		executeInTransaction(em -> {
-			Query query = em.createQuery("select f from featureconfiguration f");
-			List<FeatureConfiguration> resultList = (List<FeatureConfiguration>) query.getResultList();
-
-			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-			properties.put(FeatureTypeProperty.REDUCED, true);
-			resultList.get(1).setProperties(properties);
-			em.persist(resultList.get(1));
-		});
+		createFeatureConfiguration(FeatureType.IMMUNIZATION_MANAGEMENT, true, Map.of(FeatureTypeProperty.REDUCED, true));
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
