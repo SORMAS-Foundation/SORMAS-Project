@@ -774,7 +774,9 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._IMMUNIZATION_ARCHIVE)
+	@RightsAllowed({
+		UserRight._IMMUNIZATION_ARCHIVE,
+		UserRight._IMMUNIZATION_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
 	}

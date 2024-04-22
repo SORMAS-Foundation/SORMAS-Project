@@ -125,6 +125,7 @@ public class ArchivingController {
 		CommitDiscardWrapperComponent<?> editView,
 		Consumer<Boolean> doArchiveDearchive) {
 		boolean archived = archiveHandler.isArchived(entityDto);
+		//TODO: check if the whole page should not be displayed or only the archive/dearchive button
 		Button archiveButton = ButtonHelper
 			.createButton(ARCHIVE_DEARCHIVE_BUTTON_ID, I18nProperties.getCaption(archiveHandler.getArchiveButtonCaptionProperty(archived)), e -> {
 				doArchiveDearchive.accept(archived);
