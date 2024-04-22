@@ -759,30 +759,38 @@ public class EventsView extends AbstractView {
 		return config;
 	}
 
-	private ComboBox buildRelevanceStatus(String eventActiveCaption, String eventArchivedCaption, String eventAllCaption) {
+	private ComboBox buildRelevanceStatus(String activeCaption, String archivedCaption, String allCaption) {
 		ComboBox relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 		relevanceStatusFilter.setId("relevanceStatusFilter");
 		relevanceStatusFilter.setWidth(210, Unit.PIXELS);
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.setTextInputAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventActiveCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(activeCaption));
 
-		if (UiUtil.permitted(UserRight.EVENT_VIEW_ARCHIVED)) {
-			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventArchivedCaption));
-			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventAllCaption));
+		if (isGroupViewType()) {
+			setRelevanceStatusFilterItems(relevanceStatusFilter, UserRight.EVENTGROUP_VIEW_ARCHIVED, archivedCaption, allCaption);
 		} else {
-			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
-			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
-		}
-
-		if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
-			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventDeletedEvents));
-		} else {
-			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+			//TODO: Ticket for change - For actions we have CREATE, DELETE, EDIT
+			setRelevanceStatusFilterItems(relevanceStatusFilter, UserRight.EVENT_VIEW_ARCHIVED, archivedCaption, allCaption);
+			if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventDeletedEvents));
+			} else {
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
+			}
 		}
 
 		relevanceStatusFilter.setCaption("");
 		return relevanceStatusFilter;
+	}
+
+	private void setRelevanceStatusFilterItems(ComboBox relevanceStatusFilter, UserRight userRight, String archivedCaption, String allCaption) {
+		if (UiUtil.permitted(userRight)) {
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(archivedCaption));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(allCaption));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		}
 	}
 }

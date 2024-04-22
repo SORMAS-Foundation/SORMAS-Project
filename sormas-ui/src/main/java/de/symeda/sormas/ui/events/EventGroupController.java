@@ -91,14 +91,14 @@ public class EventGroupController {
 			Strings.messageAllEventsAlreadyLinkedToGroup,
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 			Strings.infoBulkProcessFinishedWithoutSuccess)
-			.doBulkOperation(
-				batch -> FacadeProvider.getEventGroupFacade()
-					.linkEventsToGroups(
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-						eventGroupUuids,
-						alreadyLinkedEventUuidsToGroup),
-				new ArrayList<>(eventReferences),
-				callback);
+				.doBulkOperation(
+					batch -> FacadeProvider.getEventGroupFacade()
+						.linkEventsToGroups(
+							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+							eventGroupUuids,
+							alreadyLinkedEventUuidsToGroup),
+					new ArrayList<>(eventReferences),
+					callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {
@@ -255,18 +255,8 @@ public class EventGroupController {
 			}, I18nProperties.getString(Strings.entityEventGroup));
 		}
 
-		// Initialize 'Archive' button
-		if (UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_ARCHIVE)) {
-			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
-			Button archiveEventButton = ButtonHelper.createButton(
-				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
-				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
-				e -> archiveOrDearchiveEventGroup(uuid, !archived),
-				ValoTheme.BUTTON_LINK);
-
-			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
-			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
-		}
+		// Initialize 'Archive'/'Dearchive' button
+		initializeArchiveDearchiveButton(editView, isEditAllowed, uuid);
 
 		editView.addDiscardListener(SormasUI::refreshView);
 
@@ -280,6 +270,23 @@ public class EventGroupController {
 
 		return editView;
 
+	}
+
+	public void initializeArchiveDearchiveButton(CommitDiscardWrapperComponent<EventGroupDataForm> editView, boolean isEditAllowed, String uuid) {
+		boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
+
+		if (archived
+			? UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_ARCHIVE, UserRight.EVENTGROUP_VIEW_ARCHIVED)
+			: UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_ARCHIVE)) {
+			Button archiveEventButton = ButtonHelper.createButton(
+				ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID,
+				I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
+				e -> archiveOrDearchiveEventGroup(uuid, !archived),
+				ValoTheme.BUTTON_LINK);
+
+			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
+			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
+		}
 	}
 
 	public TitleLayout getEventGroupViewTitleLayout(String uuid) {
@@ -319,7 +326,7 @@ public class EventGroupController {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						FacadeProvider.getEventGroupFacade().archiveOrDearchiveEventGroup(uuid, true);
+						FacadeProvider.getEventGroupFacade().archiveEventGroup(uuid, true);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageEventGroupArchived),
@@ -342,7 +349,7 @@ public class EventGroupController {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						FacadeProvider.getEventGroupFacade().archiveOrDearchiveEventGroup(uuid, false);
+						FacadeProvider.getEventGroupFacade().dearchiveEventGroup(uuid, false);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageEventGroupDearchived),
