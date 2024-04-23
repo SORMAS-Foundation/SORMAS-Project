@@ -25,11 +25,10 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
@@ -88,7 +87,7 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 			SelfReportIndexDto.DISEASE,
 			SelfReportIndexDto.FIRST_NAME,
 			SelfReportIndexDto.LAST_NAME,
-			SelfReportIndexDto.AGE_AND_BIRTH_DATE,
+			SelfReportIndexDto.BIRTH_DATE,
 			SelfReportIndexDto.SEX,
 			SelfReportIndexDto.DISTRICT,
 			SelfReportDto.ADDRESS,
@@ -101,15 +100,11 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 		((Column<SelfReportIndexDto, String>) getColumn(SelfReportIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<SelfReportIndexDto, Date>) getColumn(SelfReportIndexDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<SelfReportIndexDto, AgeAndBirthDateDto>) getColumn(SelfReportIndexDto.AGE_AND_BIRTH_DATE)).setRenderer(
+		((Column<SelfReportIndexDto, BirthDateDto>) getColumn(SelfReportIndexDto.BIRTH_DATE)).setRenderer(
 			value -> value == null
 				? ""
-				: PersonHelper.getAgeAndBirthdateString(
-					value.getAge(),
-					value.getAgeType(),
-					value.getDateOfBirthDD(),
-					value.getDateOfBirthMM(),
-					value.getDateOfBirthYYYY()),
+				: de.symeda.sormas.api.utils.DateFormatHelper
+					.formatDate(value.getDateOfBirthDD(), value.getDateOfBirthMM(), value.getDateOfBirthYYYY()),
 			new TextRenderer());
 
 		if (!UiUtil.permitted(UserRight.SELF_REPORT_DELETE)) {

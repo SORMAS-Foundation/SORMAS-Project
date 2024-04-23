@@ -13041,6 +13041,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new 
 -- Add a self Reporting directory (UI) #13068
 
 ALTER TABLE selfreports RENAME COLUMN desease TO disease;
+ALTER TABLE selfreports_history
+    RENAME COLUMN desease TO disease;
 
 INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
 

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -27,10 +28,9 @@ import javax.inject.Inject;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -39,7 +39,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.NotImplementedException;
 
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
@@ -48,7 +47,6 @@ import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -141,39 +139,41 @@ public class SelfReportFacadeEjb
 			final Join<SelfReport, Location> location = selfReportJoins.getAddress();
 			final Join<Location, District> district = selfReportJoins.getAddressJoins().getDistrict();
 			Join<SelfReport, User> responsibleUser = selfReportJoins.getResponsibleUser();
+			List<Order> orderList = getOrderList(sortProperties, selfReportQueryContext);
 
 			cq.multiselect(
-				selfReport.get(SelfReport.UUID),
-				selfReport.get(SelfReport.TYPE),
-				selfReport.get(SelfReport.REPORT_DATE),
-				selfReport.get(SelfReport.DISEASE),
-				selfReport.get(SelfReport.FIRST_NAME),
-				selfReport.get(SelfReport.LAST_NAME),
-				cb.construct(
-					AgeAndBirthDateDto.class,
-					selfReport.get(SelfReport.BIRTHDATE_DD),
-					selfReport.get(SelfReport.BIRTHDATE_MM),
-					selfReport.get(SelfReport.BIRTHDATE_YYYY)),
-				selfReport.get(SelfReport.SEX),
-				district.get(District.NAME),
-				location.get(Location.STREET),
-				location.get(Location.HOUSE_NUMBER),
-				location.get(Location.POSTAL_CODE),
-				location.get(Location.CITY),
-				selfReport.get(SelfReport.EMAIL),
-				selfReport.get(SelfReport.PHONE_NUMBER),
-				cb.construct(
-					UserReferenceDto.class,
-					responsibleUser.get(User.UUID),
-					responsibleUser.get(User.FIRST_NAME),
-					responsibleUser.get(User.LAST_NAME)),
-				selfReport.get(SelfReport.INVESTIGATION_STATUS),
-				selfReport.get(SelfReport.PROCESSING_STATUS),
-				selfReport.get(SelfReport.DELETION_REASON),
-				selfReport.get(SelfReport.OTHER_DELETION_REASON));
+				Stream
+					.concat(
+						Stream.of(
+							selfReport.get(SelfReport.UUID),
+							selfReport.get(SelfReport.TYPE),
+							selfReport.get(SelfReport.REPORT_DATE),
+							selfReport.get(SelfReport.DISEASE),
+							selfReport.get(SelfReport.FIRST_NAME),
+							selfReport.get(SelfReport.LAST_NAME),
+							selfReport.get(SelfReport.BIRTHDATE_DD),
+							selfReport.get(SelfReport.BIRTHDATE_MM),
+							selfReport.get(SelfReport.BIRTHDATE_YYYY),
+							selfReport.get(SelfReport.SEX),
+							district.get(District.NAME),
+							location.get(Location.STREET),
+							location.get(Location.HOUSE_NUMBER),
+							location.get(Location.POSTAL_CODE),
+							location.get(Location.CITY),
+							selfReport.get(SelfReport.EMAIL),
+							selfReport.get(SelfReport.PHONE_NUMBER),
+							responsibleUser.get(User.UUID),
+							responsibleUser.get(User.FIRST_NAME),
+							responsibleUser.get(User.LAST_NAME),
+							selfReport.get(SelfReport.INVESTIGATION_STATUS),
+							selfReport.get(SelfReport.PROCESSING_STATUS),
+							selfReport.get(SelfReport.DELETION_REASON),
+							selfReport.get(SelfReport.OTHER_DELETION_REASON)),
+						orderList.stream().map(Order::getExpression))
+					.collect(Collectors.toList()));
 
 			cq.where(selfReport.get(SelfReport.ID).in(batchedIds));
-			sortBy(sortProperties, selfReportQueryContext);
+			cq.orderBy(orderList);
 
 			selfReports.addAll(QueryHelper.getResultList(em, cq, new SelfReportIndexDtoResultTransformer(), null, null));
 		});
@@ -194,7 +194,8 @@ public class SelfReportFacadeEjb
 
 		List<Selection<?>> selections = new ArrayList<>();
 		selections.add(selfReport.get(SelfReport.ID));
-		selections.addAll(sortBy(sortProperties, selfReportQueryContext));
+		List<Order> orderList = getOrderList(sortProperties, selfReportQueryContext);
+		selections.addAll(orderList.stream().map(Order::getExpression).collect(Collectors.toList()));
 
 		cq.multiselect(selections);
 
@@ -204,57 +205,68 @@ public class SelfReportFacadeEjb
 			cq.where(filter);
 		}
 		cq.distinct(true);
+		cq.orderBy(orderList);
 
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}
 
-	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, SelfReportQueryContext selfReportQueryContext) {
+	private List<Order> getOrderList(List<SortProperty> sortProperties, SelfReportQueryContext selfReportQueryContext) {
 
-		List<Selection<?>> selections = new ArrayList<>();
+		List<Order> orderList = new ArrayList<>();
 		CriteriaBuilder cb = selfReportQueryContext.getCriteriaBuilder();
-		CriteriaQuery<?> cq = selfReportQueryContext.getQuery();
+		From<?, SelfReport> root = selfReportQueryContext.getRoot();
+		SelfReportJoins joins = selfReportQueryContext.getJoins();
+
 		if (sortProperties != null && !sortProperties.isEmpty()) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				final List<Order> order;
 				switch (sortProperty.propertyName) {
 				case SelfReportIndexDto.UUID:
 				case SelfReportIndexDto.TYPE:
 				case SelfReportIndexDto.REPORT_DATE:
 				case SelfReportIndexDto.DISEASE:
-				case SelfReportIndexDto.FIRST_NAME:
-				case SelfReportIndexDto.LAST_NAME:
 				case SelfReportIndexDto.SEX:
-				case SelfReportIndexDto.EMAIL:
-				case SelfReportIndexDto.PHONE_NUMBER:
 				case SelfReportIndexDto.INVESTIGATION_STATUS:
 				case SelfReportIndexDto.PROCESSING_STATUS:
-					expression = selfReportQueryContext.getRoot().get(sortProperty.propertyName);
+					order = orderBuilder.build(root.get(sortProperty.propertyName));
+					break;
+				case SelfReportIndexDto.FIRST_NAME:
+				case SelfReportIndexDto.LAST_NAME:
+				case SelfReportIndexDto.EMAIL:
+				case SelfReportIndexDto.PHONE_NUMBER:
+					order = orderBuilder.build(cb.lower(root.get(sortProperty.propertyName)));
 					break;
 				case SelfReportIndexDto.DISTRICT:
-					Join<Location, District> district = selfReportQueryContext.getJoins().getAddressJoins().getDistrict();
-					expression = district.get(District.NAME);
+					Join<Location, District> district = joins.getAddressJoins().getDistrict();
+					order = orderBuilder.build(cb.lower(district.get(District.NAME)));
 					break;
-				case SelfReportIndexDto.AGE_AND_BIRTH_DATE:
+				case SelfReportIndexDto.BIRTH_DATE:
+					order =
+						orderBuilder.build(root.get(SelfReport.BIRTHDATE_YYYY), root.get(SelfReport.BIRTHDATE_MM), root.get(SelfReport.BIRTHDATE_DD));
 					break;
 				case SelfReportDto.ADDRESS:
-					Join<SelfReport, Location> location = selfReportQueryContext.getJoins().getAddress();
-					expression = location.get(sortProperty.propertyName);
+					Join<SelfReport, Location> location = joins.getAddress();
+					order = orderBuilder.build(
+						cb.lower(location.get(Location.STREET)),
+						cb.lower(location.get(Location.HOUSE_NUMBER)),
+						cb.lower(location.get(Location.CITY)),
+						cb.lower(location.get(Location.POSTAL_CODE)));
+					break;
+				case SelfReportIndexDto.RESPONSIBLE_USER:
+					Join<SelfReport, User> responsibleUser = joins.getResponsibleUser();
+					order = orderBuilder.build(cb.lower(responsibleUser.get(User.FIRST_NAME)), cb.lower(responsibleUser.get(User.LAST_NAME)));
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-				selections.add(expression);
+				orderList.addAll(order);
 			}
-			cq.orderBy(order);
 		} else {
-			Path<Object> changeDate = selfReportQueryContext.getRoot().get(SelfReport.CHANGE_DATE);
-			cq.orderBy(cb.desc(changeDate));
-			selections.add(changeDate);
+			orderList.add(cb.desc(root.get(SelfReport.CHANGE_DATE)));
 		}
 
-		return selections;
+		return orderList;
 	}
 
 	@Override

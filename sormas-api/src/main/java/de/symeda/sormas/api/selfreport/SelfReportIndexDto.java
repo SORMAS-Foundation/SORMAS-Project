@@ -18,7 +18,7 @@ package de.symeda.sormas.api.selfreport;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -34,7 +34,7 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 	public static final String DISEASE = "disease";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
-	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
+	public static final String BIRTH_DATE = "birthDate";
 	public static final String SEX = "sex";
 	public static final String DISTRICT = "district";
 	public static final String STREET = "street";
@@ -52,7 +52,7 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 	private Disease disease;
 	private String firstName;
 	private String lastName;
-	private AgeAndBirthDateDto ageAndBirthDate;
+	private BirthDateDto birthDate;
 	private Sex sex;
 	private String district;
 	private String street;
@@ -74,7 +74,7 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 		Disease disease,
 		String firstName,
 		String lastName,
-		AgeAndBirthDateDto ageAndBirthDate,
+		BirthDateDto birthDate,
 		Sex sex,
 		String district,
 		String street,
@@ -94,7 +94,7 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 		this.disease = disease;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.ageAndBirthDate = ageAndBirthDate;
+		this.birthDate = birthDate;
 		this.sex = sex;
 		this.district = district;
 		this.street = street;
@@ -146,12 +146,12 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 		this.lastName = lastName;
 	}
 
-	public AgeAndBirthDateDto getAgeAndBirthDate() {
-		return ageAndBirthDate;
+	public BirthDateDto getBirthDate() {
+		return birthDate;
 	}
 
-	public void setAgeAndBirthDate(AgeAndBirthDateDto ageAndBirthDate) {
-		this.ageAndBirthDate = ageAndBirthDate;
+	public void setBirthDate(BirthDateDto birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	public Sex getSex() {
