@@ -484,7 +484,9 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	@RightsAllowed({
+		UserRight._TRAVEL_ENTRY_ARCHIVE,
+		UserRight._TRAVEL_ENTRY_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
 	}

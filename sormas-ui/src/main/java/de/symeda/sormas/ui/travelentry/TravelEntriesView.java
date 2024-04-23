@@ -215,12 +215,19 @@ public class TravelEntriesView extends AbstractView {
 			relevanceStatusFilter.setNullSelectionAllowed(false);
 			relevanceStatusFilter.setTextInputAllowed(false);
 			relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.travelEntryActiveTravelEntries));
-			relevanceStatusFilter
-				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
-			relevanceStatusFilter.setItemCaption(
-				EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-				I18nProperties.getCaption(Captions.travelEntryAllActiveAndArchivedTravelEntries));
+
+			if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
+				relevanceStatusFilter.setItemCaption(
+					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+					I18nProperties.getCaption(Captions.travelEntryAllActiveAndArchivedTravelEntries));
+			} else {
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+			}
 			relevanceStatusFilter.setCaption("");
 
 			if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE)) {

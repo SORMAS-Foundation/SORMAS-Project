@@ -35,7 +35,7 @@ public enum UserRight {
 	CASE_CREATE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EDIT(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._PERSON_EDIT),
     CASE_DELETE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._TREATMENT_DELETE, UserRight._PRESCRIPTION_DELETE, UserRight._CLINICAL_VISIT_DELETE, UserRight._IMMUNIZATION_DELETE, UserRight._DOCUMENT_DELETE),
-    CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW, UserRight._CASE_VIEW_ARCHIVED),
+    CASE_ARCHIVE(UserRightGroup.CASE, UserRight._CASE_VIEW),
     CASE_VIEW_ARCHIVED(UserRightGroup.CASE),
 	CASE_IMPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_EXPORT(UserRightGroup.CASE, UserRight._CASE_VIEW),
@@ -60,7 +60,7 @@ public enum UserRight {
 	IMMUNIZATION_CREATE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
 	IMMUNIZATION_EDIT(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_EDIT),
     IMMUNIZATION_DELETE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._PERSON_DELETE),
-	IMMUNIZATION_ARCHIVE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW, UserRight._IMMUNIZATION_VIEW_ARCHIVED),
+	IMMUNIZATION_ARCHIVE(UserRightGroup.IMMUNIZATION, UserRight._IMMUNIZATION_VIEW),
     IMMUNIZATION_VIEW_ARCHIVED(UserRightGroup.IMMUNIZATION),
 
 	PERSON_VIEW(UserRightGroup.PERSON),
@@ -90,7 +90,7 @@ public enum UserRight {
 	CONTACT_CREATE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EDIT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._PERSON_EDIT),
     CONTACT_DELETE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._TASK_DELETE, UserRight._SAMPLE_DELETE, UserRight._VISIT_DELETE, UserRight._PERSON_DELETE, UserRight._DOCUMENT_DELETE),
-	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW, UserRight._CONTACT_VIEW_ARCHIVED),
+	CONTACT_ARCHIVE(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
     CONTACT_VIEW_ARCHIVED(UserRightGroup.CONTACT),
 	CONTACT_IMPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
 	CONTACT_EXPORT(UserRightGroup.CONTACT, UserRight._CONTACT_VIEW),
@@ -112,7 +112,7 @@ public enum UserRight {
 	TASK_DELETE(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_EXPORT(UserRightGroup.TASK, UserRight._TASK_VIEW),
 	TASK_ASSIGN(UserRightGroup.TASK, UserRight._TASK_EDIT),
-	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW, UserRight._TASK_VIEW_ARCHIVED),
+	TASK_ARCHIVE(UserRightGroup.TASK, UserRight._TASK_VIEW),
     TASK_VIEW_ARCHIVED(UserRightGroup.TASK),
 
 	ACTION_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
@@ -123,7 +123,7 @@ public enum UserRight {
 	EVENT_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTPARTICIPANT_DELETE, UserRight._TASK_DELETE, UserRight._ACTION_DELETE, UserRight._DOCUMENT_DELETE),
-    EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENT_VIEW_ARCHIVED),
+    EVENT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
     EVENT_VIEW_ARCHIVED(UserRightGroup.EVENT),
     EVENT_IMPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENT_EXPORT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
@@ -133,13 +133,13 @@ public enum UserRight {
 	EVENTPARTICIPANT_CREATE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 	EVENTPARTICIPANT_EDIT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._PERSON_EDIT),
     EVENTPARTICIPANT_DELETE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._SAMPLE_DELETE, UserRight._PERSON_DELETE),
-	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW, UserRight._EVENTPARTICIPANT_VIEW_ARCHIVED),
+	EVENTPARTICIPANT_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
     EVENTPARTICIPANT_VIEW_ARCHIVED(UserRightGroup.EVENT),
 	EVENTPARTICIPANT_IMPORT(UserRightGroup.EVENT, UserRight._EVENTPARTICIPANT_VIEW),
 
 	EVENTGROUP_CREATE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTGROUP_LINK),
 	EVENTGROUP_EDIT(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
-	EVENTGROUP_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW, UserRight._EVENTGROUP_VIEW_ARCHIVED),
+	EVENTGROUP_ARCHIVE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
     EVENTGROUP_VIEW_ARCHIVED(UserRightGroup.EVENT),
 	EVENTGROUP_DELETE(UserRightGroup.EVENT, UserRight._EVENT_VIEW),
 	EVENTGROUP_LINK(UserRightGroup.EVENT, UserRight._EVENT_EDIT),
@@ -214,7 +214,7 @@ public enum UserRight {
 	TRAVEL_ENTRY_VIEW(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight._PERSON_VIEW),
 	TRAVEL_ENTRY_CREATE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
 	TRAVEL_ENTRY_EDIT(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._PERSON_EDIT),
-	TRAVEL_ENTRY_ARCHIVE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TRAVEL_ENTRY_VIEW_ARCHIVED),
+	TRAVEL_ENTRY_ARCHIVE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW),
     TRAVEL_ENTRY_VIEW_ARCHIVED(UserRightGroup.TRAVEL_ENTRY),
     TRAVEL_ENTRY_DELETE(UserRightGroup.TRAVEL_ENTRY, UserRight._TRAVEL_ENTRY_VIEW, UserRight._TASK_DELETE, UserRight._DOCUMENT_DELETE, UserRight._PERSON_DELETE),
 
@@ -551,19 +551,6 @@ public enum UserRight {
 
 	public static Set<UserRight> getRequiredUserRights(Set<UserRight> userRights) {
 		return userRights.stream().map(UserRight::getRequiredUserRights).flatMap(Collection::stream).collect(Collectors.toSet());
-	}
-
-	public static Set<UserRight> getInitialSelectionUserRightDependencies() {
-		Set<UserRight> initialSelectionDependencies = new HashSet<>();
-		initialSelectionDependencies.add(UserRight.TASK_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.CASE_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.CONTACT_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.EVENT_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.EVENTGROUP_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.IMMUNIZATION_VIEW_ARCHIVED);
-		initialSelectionDependencies.add(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED);
-		return initialSelectionDependencies;
 	}
 
 	/**
