@@ -354,7 +354,7 @@
     <string name="heading_event_edit">Upravit Udalost</string>
     <string name="heading_event_new">Nová udalost</string>
     <string name="heading_event_participant">Účastník události</string>
-    <string name="heading_event_participant_new">New Event Participant</string>
+    <string name="heading_event_participant_new">Nový účastník události</string>
     <string name="heading_event_read">Číst událost</string>
     <string name="heading_event_summary">Shrnutí události</string>
     <string name="heading_events_list">Výpis událostí</string>
@@ -393,9 +393,9 @@
     <string name="heading_sample_edit">Upravit vzorek</string>
     <string name="heading_sample_new">Nový vzorek</string>
     <string name="heading_sample_read">Číst vzorek</string>
-    <string name="heading_environment_sample_read">Read Environment Sample</string>
-    <string name="heading_environment_sample_edit">Edit Environment Sample</string>
-    <string name="heading_environment_sample_new">New Environment Sample</string>
+    <string name="heading_environment_sample_read">Číst vzorek prostředí</string>
+    <string name="heading_environment_sample_edit">Upravit vzorek prostředí</string>
+    <string name="heading_environment_sample_new">Nový vzorek prostředí</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
     <string name="heading_environment_sample_list">Seznam vzorků prostředí</string>
@@ -455,7 +455,7 @@
     <string name="heading_laboratory_sample">Laboratorní vzorek</string>
     <string name="heading_sample_measurements">Měření vzorku</string>
     <string name="heading_location_sampling_site">Umístění místa odběru vzorků</string>
-    <string name="heading_sample_management">Sample management</string>
+    <string name="heading_sample_management">Správa vzorků</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
