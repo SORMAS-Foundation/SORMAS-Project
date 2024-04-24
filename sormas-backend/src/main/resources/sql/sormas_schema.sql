@@ -13046,4 +13046,13 @@ ALTER TABLE selfreports_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
 
+-- 2024-04-24 Extend the contacts with Case Reference Number & add case reference number to cases #13067
+
+ALTER TABLE cases ADD COLUMN casereferencenumber text;
+ALTER TABLE cases_history ADD COLUMN casereferencenumber text;
+ALTER TABLE contact ADD COLUMN casereferencenumber text;
+ALTER TABLE contact_history ADD COLUMN casereferencenumber text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (545, 'Extend the contacts with Case Reference Number & add case reference number to cases #13067');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

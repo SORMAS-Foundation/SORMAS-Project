@@ -78,8 +78,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.loc(PERSON_NAME_LOC) +
 					LayoutUtil.fluidRowLocs(ContactDto.PERSON) + 
 					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
-					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
-					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
+					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, CaseDataDto.CASE_REFERENCE_NUMBER) +
+					LayoutUtil.fluidRowLocs(ContactDto.DISEASE, ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
 					LayoutUtil.fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
 					LayoutUtil.fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
@@ -127,7 +127,9 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
-			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+			FieldVisibilityCheckers.withDisease(disease)
+				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()));
 
 		this.disease = disease;
 		this.hasCaseRelation = hasCaseRelation;
@@ -148,6 +150,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		}
 
 		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
@@ -195,6 +198,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.CASE_ID_EXTERNAL_SYSTEM, TextField.class);
 		addField(ContactDto.CASE_OR_EVENT_INFORMATION, TextArea.class).setRows(4);
+
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		CssStyles.style(CssStyles.SOFT_REQUIRED, firstContactDate, lastContactDate, contactProximity, relationToCase);
 

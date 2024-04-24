@@ -118,6 +118,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String CASE_REFERENCE_NUMBER = "caseReferenceNumber";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -201,6 +202,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
+	private String caseReferenceNumber;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -634,6 +636,15 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setInternalToken(String internalToken) {
 		this.internalToken = internalToken;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public void setCaseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
 	}
 
 	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
