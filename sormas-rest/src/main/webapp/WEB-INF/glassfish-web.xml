@@ -721,6 +721,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CAMPAIGN_VIEW_ARCHIVED</role-name>
+        <group-name>CAMPAIGN_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CAMPAIGN_EDIT</role-name>
         <group-name>CAMPAIGN_EDIT</group-name>
     </security-role-mapping>
@@ -859,6 +864,12 @@
         <role-name>ENVIRONMENT_ARCHIVE</role-name>
         <group-name>ENVIRONMENT_ARCHIVE</group-name>
     </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_VIEW_ARCHIVED</role-name>
+        <group-name>ENVIRONMENT_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
 
     <security-role-mapping>
         <role-name>ENVIRONMENT_DELETE</role-name>

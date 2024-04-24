@@ -371,7 +371,9 @@ public class EnvironmentFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
+	@RightsAllowed({
+		UserRight._ENVIRONMENT_ARCHIVE,
+		UserRight._ENVIRONMENT_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
 	}

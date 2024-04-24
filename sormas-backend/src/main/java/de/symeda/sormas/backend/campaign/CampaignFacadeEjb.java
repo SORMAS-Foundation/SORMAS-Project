@@ -428,7 +428,9 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed({
+		UserRight._CAMPAIGN_ARCHIVE,
+		UserRight._CAMPAIGN_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
 	}
