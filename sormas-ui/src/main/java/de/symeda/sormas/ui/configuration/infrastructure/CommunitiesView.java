@@ -258,10 +258,17 @@ public class CommunitiesView extends AbstractConfigurationView {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.communityActiveCommunities));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.communityAllCommunities));
+
+				if (UiUtil.permitted(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+					relevanceStatusFilter
+						.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.communityArchivedCommunities));
+					relevanceStatusFilter
+						.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.communityAllCommunities));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
@@ -293,7 +300,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 									grid,
 									grid::reload,
 									() -> navigateTo(criteria)),
-							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE)
+							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE, UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)
 								&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());

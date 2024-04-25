@@ -449,6 +449,10 @@
 		<role-name>INFRASTRUCTURE_VIEW</role-name>
 	</security-role>
 
+    <security-role>
+        <role-name>INFRASTRUCTURE_VIEW_ARCHIVED</role-name>
+    </security-role>
+
 	<security-role>
 		<role-name>INFRASTRUCTURE_EXPORT</role-name>
 	</security-role>

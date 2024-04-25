@@ -171,7 +171,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(userRights);
 
 		Set<UserRight> missingRights = requiredUserRights.stream().filter(r -> !userRights.contains(r)).collect(Collectors.toSet());
-
 		Map<UserRight, Set<UserRight>> missingDependencies = new HashMap<>();
 		for (UserRight missingRight : missingRights) {
 			Set<UserRight> requiredRights = UserRight.requiredRightFromUserRights(missingRight, userRights);

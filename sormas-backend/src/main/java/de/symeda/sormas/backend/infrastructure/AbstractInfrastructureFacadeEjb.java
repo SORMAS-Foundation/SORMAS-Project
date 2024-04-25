@@ -240,7 +240,9 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return processedEntity;
 	}
 
-	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_ARCHIVE,
+		UserRight._INFRASTRUCTURE_VIEW_ARCHIVED })
 	public ProcessedEntity dearchive(String uuid) {
 		checkInfraDataLocked();
 		if (hasArchivedParentInfrastructure(Collections.singletonList(uuid))) {
@@ -268,7 +270,9 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return processedEntities;
 	}
 
-	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
+	@RightsAllowed({
+		UserRight._INFRASTRUCTURE_ARCHIVE,
+		UserRight._INFRASTRUCTURE_VIEW_ARCHIVED })
 	public List<ProcessedEntity> dearchive(List<String> entityUuids) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 
