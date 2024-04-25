@@ -690,6 +690,7 @@ public class CaseController {
 			caze.setResponsibleDistrict(healthFacility.getDistrict());
 			caze.setResponsibleCommunity(healthFacility.getCommunity());
 			caze.setHealthFacility(healthFacility.toReference());
+			caze.setFacilityType(healthFacility.getType());
 		} else if (convertedTravelEntry == null) {
 			caze.setResponsibleRegion(user.getRegion());
 			caze.setResponsibleDistrict(user.getDistrict());
