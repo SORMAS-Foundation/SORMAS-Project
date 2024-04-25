@@ -16,12 +16,45 @@
 package de.symeda.sormas.backend.selfreport;
 
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.common.QueryJoins;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationJoins;
+import de.symeda.sormas.backend.user.User;
 
 public class SelfReportJoins extends QueryJoins<SelfReport> {
 
+	private Join<SelfReport, Location> address;
+	private LocationJoins addressJoins;
+	private Join<SelfReport, User> responsibleUser;
+
 	public SelfReportJoins(From<?, SelfReport> root) {
 		super(root);
+	}
+
+	public Join<SelfReport, Location> getAddress() {
+		return getOrCreate(address, SelfReport.ADDRESS, JoinType.LEFT, this::setAddress);
+	}
+
+	private void setAddress(Join<SelfReport, Location> address) {
+		this.address = address;
+	}
+
+	public LocationJoins getAddressJoins() {
+		return getOrCreate(addressJoins, () -> new LocationJoins(getAddress()), this::setAddressJoins);
+	}
+
+	private void setAddressJoins(LocationJoins addressJoins) {
+		this.addressJoins = addressJoins;
+	}
+
+	public Join<SelfReport, User> getResponsibleUser() {
+		return getOrCreate(responsibleUser, SelfReport.RESPONSIBLE_USER, JoinType.LEFT, this::setResponsibleUser);
+	}
+
+	private void setResponsibleUser(Join<SelfReport, User> responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 }

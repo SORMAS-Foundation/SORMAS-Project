@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
+import de.symeda.sormas.ui.selfreport.SelfReportsView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
@@ -127,6 +128,8 @@ public class MainScreen extends HorizontalLayout {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
 					defaultView = EnvironmentsView.VIEW_NAME;
+				} else if (permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
+					defaultView = SelfReportsView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;
 				} else {
@@ -324,6 +327,15 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
+
+		if (permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
+			menu.addView(
+				SelfReportsView.class,
+				SelfReportsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuSelfReports),
+				VaadinIcons.USER_CHECK);
+		}
+
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}

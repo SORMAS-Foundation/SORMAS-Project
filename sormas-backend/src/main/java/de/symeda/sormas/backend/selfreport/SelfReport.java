@@ -48,6 +48,26 @@ public class SelfReport extends CoreAdo {
 
 	private static final long serialVersionUID = 6676716702984236618L;
 
+	public static final String TYPE = "type";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String CASE_REFERENCE = "caseReference";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String SEX = "sex";
+	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String EMAIL = "email";
+	public static final String PHONE_NUMBER = "phoneNumber";
+	public static final String ADDRESS = "address";
+	public static final String COMMENT = "comment";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String PROCESSING_STATUS = "processingStatus";
+
 	private SelfReportType type;
 	private Date reportDate;
 	private String caseReference;
