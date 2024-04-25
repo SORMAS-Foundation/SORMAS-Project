@@ -13046,14 +13046,6 @@ ALTER TABLE selfreports_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
 
--- Add a self Reporting directory (UI) #13068
-
-ALTER TABLE selfreports RENAME COLUMN desease TO disease;
-ALTER TABLE selfreports_history
-    RENAME COLUMN desease TO disease;
-
-INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
-
 -- 2024-04-24 Extend the contacts with Case Reference Number & add case reference number to cases #13067
 
 ALTER TABLE cases ADD COLUMN casereferencenumber text;
