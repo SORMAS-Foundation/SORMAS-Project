@@ -608,6 +608,10 @@
 		<role-name>CAMPAIGN_FORM_DATA_VIEW</role-name>
 	</security-role>
 
+    <security-role>
+        <role-name>CAMPAIGN_FORM_DATA_VIEW_ARCHIVED</role-name>
+    </security-role>
+
 	<security-role>
 		<role-name>CAMPAIGN_FORM_DATA_EDIT</role-name>
 	</security-role>
