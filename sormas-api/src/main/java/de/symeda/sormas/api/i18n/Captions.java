@@ -2828,6 +2828,7 @@ public interface Captions {
 	String View_samples_archive = "View.samples.archive";
 	String View_samples_data = "View.samples.data";
 	String View_samples_sub = "View.samples.sub";
+	String View_selfreports = "View.selfreports";
 	String View_shareRequests = "View.shareRequests";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";
