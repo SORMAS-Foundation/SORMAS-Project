@@ -13038,6 +13038,14 @@ ALTER TABLE selfreports_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
 
+-- Add a self Reporting directory (UI) #13068
+
+ALTER TABLE selfreports RENAME COLUMN desease TO disease;
+ALTER TABLE selfreports_history
+    RENAME COLUMN desease TO disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
+
 -- 2024-04-25 Bulk action - send emails with uploaded attached documents #13043
 CREATE TABLE documentrelatedentities
 (
@@ -13081,6 +13089,6 @@ ALTER TABLE documents DROP COLUMN relatedentity_uuid;
 ALTER TABLE documents_history DROP COLUMN relatedentity_type;
 ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
 
-INSERT INTO schema_version (version_number, comment) VALUES (544, '#13043 - Bulk action - send emails with uploaded attached documents');
+INSERT INTO schema_version (version_number, comment) VALUES (545, '#13043 - Bulk action - send emails with uploaded attached documents');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
