@@ -254,6 +254,8 @@ import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntities;
+import de.symeda.sormas.backend.document.DocumentRelatedEntitiesService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -475,6 +477,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private ExternalShareInfoService externalShareInfoService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
 	@EJB
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
@@ -3888,9 +3892,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// 6 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, otherCase.getUuid());
 		for (Document document : documents) {
-			document.setRelatedEntityUuid(leadCaseData.getUuid());
+			DocumentRelatedEntities relatedEntity = new DocumentRelatedEntities().build(DocumentRelatedEntityType.CASE, leadCaseData.getUuid());
+			relatedEntity.setDocument(document);
+			documentRelatedEntitiesService.ensurePersisted(relatedEntity);
 
-			documentService.ensurePersisted(document);
+			DocumentRelatedEntities documentRelatedEntity =
+				documentRelatedEntitiesService.getByDocumentAndRelatedEntityUuid(document.getUuid(), otherCase.getUuid());
+			documentRelatedEntitiesService.deletePermanent(documentRelatedEntity);
 		}
 
 		// 7 Persist Event links through eventparticipants

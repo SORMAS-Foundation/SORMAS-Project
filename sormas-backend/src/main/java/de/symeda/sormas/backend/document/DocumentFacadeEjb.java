@@ -19,11 +19,14 @@ import static java.util.Arrays.asList;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -42,8 +45,10 @@ import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
 import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -54,6 +59,8 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -86,6 +93,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private DocumentService documentService;
 	@EJB
+	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
+	@EJB
 	private DocumentStorageService documentStorageService;
 	@EJB
 	private CaseService caseService;
@@ -94,7 +103,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private EventService eventService;
 	@EJB
+	private TravelEntryService travelEntryService;
+	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private DocumentRelatedEntitiesFacadeEjb.DocumentRelatedEntitiesFacadeEjbLocal documentRelatedEntitiesFacade;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -103,7 +116,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_UPLOAD)
-	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content) throws IOException {
+	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content, @Nonnull List<DocumentRelatedEntitiesDto> relatedEntities)
+		throws IOException {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
@@ -118,9 +132,27 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		try {
 			document.setStorageReference(storageReference);
 
-			documentService.persist(document);
-			documentService.doFlush();
+			Set<DocumentRelatedEntities> relatedEntitiesSet = document.getDocumentRelatedEntities();
+			relatedEntities.forEach(relatedEntity -> {
+				DocumentRelatedEntities documentRelatedEntities = relatedEntitiesSet.stream()
+					.filter(existingRelatedEntity -> existingRelatedEntity.getUuid().equals(relatedEntity.getUuid()))
+					.findFirst()
+					.orElseGet(() -> null);
+				DocumentRelatedEntities updatedDocumentRelatedEntity =
+					documentRelatedEntitiesFacade.fillOrBuildEntity(relatedEntity, documentRelatedEntities, true);
+				updatedDocumentRelatedEntity.setDocument(document);
+				relatedEntitiesSet.add(updatedDocumentRelatedEntity);
+			});
 
+			relatedEntitiesSet.removeAll(
+				relatedEntitiesSet.stream()
+					.filter(
+						existingRelatedEntity -> relatedEntities.stream()
+							.noneMatch(relatedEntity -> DataHelper.isSame(existingRelatedEntity, relatedEntity)))
+					.collect(Collectors.toSet()));
+
+			document.setDocumentRelatedEntities(relatedEntitiesSet);
+			documentService.ensurePersisted(document);
 			return convertToDto(document, Pseudonymizer.getDefault(userService));
 		} catch (Throwable t) {
 			try {
@@ -132,7 +164,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 	}
 
-	private String getFileExtension(String fileName) {
+	public String getFileExtension(String fileName) {
 		int index = fileName.lastIndexOf('.');
 		if (index > 0) {
 			return fileName.substring(index);
@@ -174,9 +206,13 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_DELETE)
-	public void deleteDocument(String uuid) {
-		// Only mark as delete here; actual deletion will be done in document storage cleanup via cron job
-		documentService.markAsDeleted(documentService.getByUuid(uuid));
+	public void deleteDocument(String documentUuid, String relatedEntityUuid) {
+		documentRelatedEntitiesService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid);
+		Document document = documentService.getByUuid(documentUuid);
+		if (document.getDocumentRelatedEntities().isEmpty()) {
+			// The document is only marked as delete here; actual deletion will be done in document storage cleanup via cron job
+			documentService.markAsDeleted(document);
+		}
 	}
 
 	@Override
@@ -187,7 +223,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
-		return documentService.getReferencesRelatedToEntity(type, uuid, fileExtensions);
+		List<DocumentReferenceDto> referencesRelatedToEntity = documentService.getReferencesRelatedToEntity(type, uuid, fileExtensions);
+		return referencesRelatedToEntity;
 	}
 
 	@Override
@@ -195,7 +232,15 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
 		List<Document> allDocuments =
 			documentService.getRelatedToEntities(criteria.getDocumentRelatedEntityType(), criteria.getEntityUuids(), sortProperties);
-		return allDocuments.stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.groupingBy(DocumentDto::getRelatedEntityUuid));
+
+		return allDocuments.stream()
+			.flatMap(d -> d.getDocumentRelatedEntities().stream().map((relatedEntity) -> Map.entry(relatedEntity.getRelatedEntityUuid(), d)))
+			.map((entry) -> Map.entry(entry.getKey(), convertToDto(entry.getValue(), pseudonymizer)))
+			.collect(Collectors.toMap(Map.Entry::getKey, (entry) -> Collections.singletonList(entry.getValue()), (d1, d2) -> {
+				ArrayList<DocumentDto> documents = new ArrayList<>(d1);
+				documents.addAll(d2);
+				return documents;
+			}));
 	}
 
 	@Override
@@ -230,8 +275,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		target.setName(source.getName());
 		target.setMimeType(source.getMimeType());
 		target.setSize(source.getSize());
-		target.setRelatedEntityUuid(source.getRelatedEntityUuid());
-		target.setRelatedEntityType(source.getRelatedEntityType());
 
 		return target;
 	}
@@ -246,7 +289,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	private void pseudonymizeDto(Document document, DocumentDto dto, Pseudonymizer<DocumentDto> pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = isInJurisdiction(dto);
+			boolean inJurisdiction = isInJurisdiction(document);
 			pseudonymizer.pseudonymizeDto(
 				DocumentDto.class,
 				dto,
@@ -255,19 +298,29 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		}
 	}
 
-	private boolean isInJurisdiction(DocumentDto dto) {
-		switch (dto.getRelatedEntityType()) {
-		case CASE:
-			Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
-			return caseService.inJurisdictionOrOwned(caze);
-		case CONTACT:
-			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-			return contactService.inJurisdictionOrOwned(contact);
-		case EVENT:
-			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-			return eventService.inJurisdictionOrOwned(event);
+	private boolean isInJurisdiction(Document document) {
+		List<String> relatedEntitiesUuids =
+			document.getDocumentRelatedEntities().stream().map(DocumentRelatedEntities::getRelatedEntityUuid).collect(Collectors.toList());
+
+		if (!relatedEntitiesUuids.isEmpty()) {
+			// this logic is valid until each document has only one type of related entities linked to it
+			switch (document.getDocumentRelatedEntities().iterator().next().getRelatedEntityType()) {
+			case CASE:
+				List<Case> cases = caseService.getByUuids(relatedEntitiesUuids);
+				return !caseService.getInJurisdictionIds(cases).isEmpty();
+			case CONTACT:
+				List<Contact> contacts = contactService.getByUuids(relatedEntitiesUuids);
+				return !contactService.getInJurisdictionIds(contacts).isEmpty();
+			case EVENT:
+				List<Event> events = eventService.getByUuids(relatedEntitiesUuids);
+				return !eventService.getInJurisdictionIds(events).isEmpty();
+			case TRAVEL_ENTRY:
+				List<TravelEntry> travelEntries = travelEntryService.getByUuids(relatedEntitiesUuids);
+				return !travelEntryService.getInJurisdictionIds(travelEntries).isEmpty();
+			}
 		}
-		return true;
+
+		return false;
 	}
 
 	public static DocumentDto toDto(Document source) {
@@ -281,9 +334,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		target.setName(source.getName());
 		target.setMimeType(source.getMimeType());
 		target.setSize(source.getSize());
-		target.setRelatedEntityUuid(source.getRelatedEntityUuid());
-		target.setRelatedEntityType(source.getRelatedEntityType());
-
 		return target;
 	}
 

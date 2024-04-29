@@ -13038,4 +13038,49 @@ ALTER TABLE selfreports_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
 
+-- 2024-04-25 Bulk action - send emails with uploaded attached documents #13043
+CREATE TABLE documentrelatedentities
+(
+    id                 bigint PRIMARY KEY     NOT NULL,
+    uuid                varchar(36)  not null unique,
+    changedate         timestamp              not null,
+    creationdate       timestamp              not null,
+    change_user_id     bigint,
+    sys_period         tstzrange              not null,
+    document_id        bigint                 NOT NULL,
+    relatedentity_type character varying(255) NOT NULL,
+    relatedentity_uuid character varying(36)  NOT NULL
+);
+ALTER TABLE documentrelatedentities ADD CONSTRAINT fk_documentsrelatedentities_documents_id FOREIGN KEY (document_id) REFERENCES documents(id);
+ALTER TABLE documentrelatedentities OWNER TO sormas_user;
+CREATE TABLE documentrelatedentities_history(LIKE documentrelatedentities
+);
+
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON documentrelatedentities
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documentrelatedentities_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON documentrelatedentities
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('documentrelatedentities_history', 'id');
+
+
+DO $$
+    DECLARE
+     rec RECORD;
+    BEGIN
+       FOR
+           rec IN SELECT * FROM documents
+           LOOP
+               INSERT INTO documentrelatedentities(id, uuid, changedate, creationdate, change_user_id, sys_period, document_id, relatedentity_type, relatedentity_uuid)
+               values (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.change_user_id,  tstzrange(now(),null), rec.id, rec.relatedentity_type, rec.relatedentity_uuid);
+    END LOOP;
+    END;
+    $$ LANGUAGE plpgsql;
+
+ALTER TABLE documents DROP COLUMN relatedentity_type;
+ALTER TABLE documents DROP COLUMN relatedentity_uuid;
+ALTER TABLE documents_history DROP COLUMN relatedentity_type;
+ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
+
+INSERT INTO schema_version (version_number, comment) VALUES (544, '#13043 - Bulk action - send emails with uploaded attached documents');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

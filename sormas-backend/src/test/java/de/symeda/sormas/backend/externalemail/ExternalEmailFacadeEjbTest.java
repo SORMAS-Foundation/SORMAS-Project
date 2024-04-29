@@ -61,7 +61,9 @@ import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.externalemail.AttachmentException;
 import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -74,6 +76,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
@@ -83,6 +86,7 @@ import de.symeda.sormas.backend.common.messaging.EmailService;
 import de.symeda.sormas.backend.common.messaging.InvalidPhoneNumberException;
 import de.symeda.sormas.backend.common.messaging.SmsService;
 import de.symeda.sormas.backend.docgeneration.AbstractDocGenerationTest;
+import de.symeda.sormas.backend.document.DocumentRelatedEntitiesService;
 
 public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
@@ -95,6 +99,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	private EmailService emailService;
 	@Mock
 	private SmsService smsService;
+	@Mock
+	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
 
 	@Override
 	public void init() {
@@ -260,7 +266,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void testSendEmailToCasePerson() throws DocumentTemplateException, ExternalEmailException, MessagingException {
+	public void testSendEmailToCasePerson()
+		throws DocumentTemplateException, ExternalEmailException, MessagingException, AttachmentException, ValidationException {
 
 		CaseDataDto caze = creator.createCase(userDto.toReference(), personDto.toReference(), rdcf);
 
@@ -294,7 +301,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void testSendEmailToContactPerson() throws DocumentTemplateException, ExternalEmailException, MessagingException {
+	public void testSendEmailToContactPerson()
+		throws DocumentTemplateException, ExternalEmailException, MessagingException, AttachmentException, ValidationException {
 
 		ContactDto contact = creator.createContact(userDto.toReference(), personDto.toReference(), Disease.CORONAVIRUS, (c) -> {
 			c.setContactStatus(ContactStatus.ACTIVE);
@@ -332,7 +340,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	}
 
 	@Test
-	public void testSendEmailWithAttachments() throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException {
+	public void testSendEmailWithAttachments()
+		throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException, AttachmentException, ValidationException {
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
 		String personNationalHealthId = "1234567890";
 		PersonDto person = creator.createPerson("Person", "Name", Sex.UNKNOWN, p -> {
@@ -395,7 +404,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 	@Test
 	public void testEncryptAttachmentsWithRandomPassword()
-		throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException, InvalidPhoneNumberException {
+		throws MessagingException, DocumentTemplateException, ExternalEmailException, IOException, InvalidPhoneNumberException, AttachmentException,
+		ValidationException {
 		setupMockSmsService();
 
 		MockProducer.mockProperty(ConfigFacadeEjb.DOCUMENT_FILES_PATH, MockProducer.TMP_PATH);
@@ -500,7 +510,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		options.setRecipientEmail("test@mail.com");
 		options.setAttachedDocuments(Collections.singleton(document.toReference()));
 
-		assertThrows(ExternalEmailException.class, () -> getExternalEmailFacade().sendEmail(options));
+		assertThrows(AttachmentException.class, () -> getExternalEmailFacade().sendEmail(options));
 
 		Mockito.verify(emailService, Mockito.times(0)).sendEmail(any(), any(), any(), any());
 		Mockito.verify(smsService, Mockito.times(0)).sendSms(any(), any());
@@ -513,7 +523,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			p.setNationalHealthId("1234567890");
 		});
 
-		CaseDataDto caze	 = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze = creator.createCase(userDto.toReference(), person.toReference(), rdcf);
 
 		DocumentDto document =
 			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CONTACT, "mock-uuid", "Some content".getBytes(StandardCharsets.UTF_8));
@@ -529,8 +539,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		Mockito.verify(smsService, Mockito.times(0)).sendSms(any(), any());
 	}
 
-	private void createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid) throws IOException {
-		createDocument(fileName, relatedEntityType, relatedEntityUuid, new byte[0]);
+	private DocumentDto createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid) throws IOException {
+		return createDocument(fileName, relatedEntityType, relatedEntityUuid, new byte[0]);
 	}
 
 	private DocumentDto createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid, byte[] content)
@@ -538,11 +548,11 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		DocumentDto document = DocumentDto.build();
 		document.setName(fileName);
 		document.setUploadingUser(userDto.toReference());
-		document.setRelatedEntityType(relatedEntityType);
-		document.setRelatedEntityUuid(relatedEntityUuid);
 		document.setMimeType("application/octet-stream");
+		DocumentRelatedEntitiesDto documentRelatedEntities = DocumentRelatedEntitiesDto.build(relatedEntityType, relatedEntityUuid);
+		DocumentDto documentDto = getDocumentFacade().saveDocument(document, content, Collections.singletonList(documentRelatedEntities));
 
-		return getDocumentFacade().saveDocument(document, content);
+		return documentDto;
 	}
 
 	private PersonDto createPerson(String nationalHealthId, String phone) {

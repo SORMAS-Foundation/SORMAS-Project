@@ -59,6 +59,9 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -799,6 +802,25 @@ public class ContactController {
 				}
 			}
 		};
+	}
+
+	public void sendEmailsToAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			ControllerProvider.getExternalEmailController()
+				.sendBulkEmail(
+					DocumentWorkflow.CONTACT_EMAIL,
+					RootEntityType.ROOT_CONTACT,
+					DocumentRelatedEntityType.CONTACT,
+					selectedRows,
+					bulkOperationCallback(null, contactGrid, null),
+					ContactIndexDto::toReference);
+		}
 	}
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, AbstractContactGrid<?> contactGrid) {

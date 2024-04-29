@@ -29,9 +29,9 @@ public interface DocumentFacade {
 
 	DocumentDto getDocumentByUuid(String uuid);
 
-	DocumentDto saveDocument(@Valid DocumentDto dto, byte[] bytes) throws IOException;
+	DocumentDto saveDocument(@Valid DocumentDto dto, byte[] bytes, List<DocumentRelatedEntitiesDto> relatedEntities) throws IOException;
 
-	void deleteDocument(String uuid);
+	void deleteDocument(String uuid, String relatedEntityUuids);
 
 	List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid);
 
@@ -44,4 +44,6 @@ public interface DocumentFacade {
 	byte[] getContent(String uuid) throws IOException;
 
 	void cleanupDeletedDocuments();
+
+	String getFileExtension(String fileName);
 }

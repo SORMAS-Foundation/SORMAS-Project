@@ -165,6 +165,8 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntities;
+import de.symeda.sormas.backend.document.DocumentRelatedEntitiesService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -272,6 +274,8 @@ public class ContactFacadeEjb
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
@@ -2222,9 +2226,13 @@ public class ContactFacadeEjb
 		// 4 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
 		for (Document document : documents) {
-			document.setRelatedEntityUuid(leadContact.getUuid());
+			DocumentRelatedEntities relatedEntity = new DocumentRelatedEntities().build(DocumentRelatedEntityType.CONTACT, leadContact.getUuid());
+			relatedEntity.setDocument(document);
+			documentRelatedEntitiesService.ensurePersisted(relatedEntity);
 
-			documentService.ensurePersisted(document);
+			DocumentRelatedEntities documentRelatedEntity =
+				documentRelatedEntitiesService.getByDocumentAndRelatedEntityUuid(document.getUuid(), otherContact.getUuid());
+			documentRelatedEntitiesService.deletePermanent(documentRelatedEntity);
 		}
 	}
 
