@@ -557,7 +557,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._EVENTGROUP_ARCHIVE,
-		UserRight._EVENTPARTICIPANT_VIEW_ARCHIVED })
+		UserRight._EVENTGROUP_VIEW_ARCHIVED })
 	public void dearchiveEventGroup(String uuid, boolean archive) {
 		archiveOrDearchiveEventGroup(uuid, archive);
 	}
