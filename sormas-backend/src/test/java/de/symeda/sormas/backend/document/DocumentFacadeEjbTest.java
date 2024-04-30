@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 import javax.persistence.EntityExistsException;
 
@@ -44,7 +45,8 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 	private byte[] contentAsBytes = new String(
 		"%PDF-1.0\n1 0 obj<</Type/Catalog/Pages " + "2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Ty"
 			+ "pe/Page/MediaBox[0 0 3 3]>>endobj\nxref\n0 4\n0000000000 65535 f\n000000001"
-			+ "0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " + "0 R>>\nstartxref\n149\n%EOF").getBytes();
+			+ "0 00000 n\n0000000053 00000 n\n0000000102 00000 n\ntrailer<</Size 4/Root 1 " + "0 R>>\nstartxref\n149\n%EOF")
+		.getBytes();
 
 	@Test
 	public void testDocumentCreation() throws IOException {
@@ -81,7 +83,9 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 
 		DocumentDto document = creator.createDocument(user.toReference(), "Name.pdf", "application/pdf", 42L, event.toReference(), contentAsBytes);
 
-		assertThrows(EntityExistsException.class, () -> getDocumentFacade().saveDocument(document, "duplicate".getBytes(StandardCharsets.UTF_8)));
+		assertThrows(
+			EntityExistsException.class,
+			() -> getDocumentFacade().saveDocument(document, "duplicate".getBytes(StandardCharsets.UTF_8), Collections.emptyList()));
 	}
 
 	@Test
@@ -98,7 +102,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 			getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()),
 			equalTo(document.getUuid()));
 
-		getDocumentFacade().deleteDocument(document.getUuid());
+		getDocumentFacade().deleteDocument(document.getUuid(), event.getUuid(), DocumentRelatedEntityType.EVENT);
 
 		Document deleted = getDocumentService().getByUuid(document.getUuid());
 		assertNotNull(deleted);
@@ -115,7 +119,12 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 		assertThrows(
 			FileExtensionNotAllowedException.class,
-			() -> creator
-				.createDocument(user.toReference(), "test.json", DocumentDto.MIME_TYPE_DEFAULT, 42L, event.toReference(), "content".getBytes(StandardCharsets.UTF_8)));
+			() -> creator.createDocument(
+				user.toReference(),
+				"test.json",
+				DocumentDto.MIME_TYPE_DEFAULT,
+				42L,
+				event.toReference(),
+				"content".getBytes(StandardCharsets.UTF_8)));
 	}
 }

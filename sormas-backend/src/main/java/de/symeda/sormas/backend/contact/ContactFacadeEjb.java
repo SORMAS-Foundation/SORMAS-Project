@@ -165,6 +165,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -272,6 +273,8 @@ public class ContactFacadeEjb
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
@@ -2222,8 +2225,10 @@ public class ContactFacadeEjb
 		// 4 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
 		for (Document document : documents) {
-			document.setRelatedEntityUuid(leadContact.getUuid());
-
+			document.getRelatedEntities()
+				.stream()
+				.filter(documentRelatedEntity -> documentRelatedEntity.getRelatedEntityUuid().equals(otherContact.getUuid()))
+				.forEach(a -> a.setRelatedEntityUuid(leadContact.getUuid()));
 			documentService.ensurePersisted(document);
 		}
 	}

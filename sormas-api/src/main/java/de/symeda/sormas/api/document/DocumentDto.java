@@ -16,7 +16,6 @@ package de.symeda.sormas.api.document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.i18n.Validations;
@@ -33,8 +32,6 @@ public class DocumentDto extends PseudonymizableDto {
 	public static final String NAME = "name";
 	public static final String CONTENT_TYPE = "contentType";
 	public static final String SIZE = "size";
-	public static final String RELATED_ENTITY_UUID = "relatedEntityUuid";
-	public static final String RELATED_ENTITY_CLASS = "relatedEntityClass";
 
 	@NotNull(message = Validations.requiredField)
 	private UserReferenceDto uploadingUser;
@@ -46,12 +43,6 @@ public class DocumentDto extends PseudonymizableDto {
 	private String mimeType;
 	@NotNull(message = Validations.requiredField)
 	private long size;
-	@NotBlank(message = Validations.requiredField)
-	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
-	private String relatedEntityUuid;
-	@NotNull(message = Validations.requiredField)
-	private DocumentRelatedEntityType relatedEntityType;
 
 	public static DocumentDto build() {
 		DocumentDto document = new DocumentDto();
@@ -92,23 +83,7 @@ public class DocumentDto extends PseudonymizableDto {
 		this.size = size;
 	}
 
-	public String getRelatedEntityUuid() {
-		return relatedEntityUuid;
+	public DocumentReferenceDto toReference() {
+		return new DocumentReferenceDto(getUuid(), name);
 	}
-
-	public void setRelatedEntityUuid(String relatedEntityUuid) {
-		this.relatedEntityUuid = relatedEntityUuid;
-	}
-
-	public DocumentRelatedEntityType getRelatedEntityType() {
-		return relatedEntityType;
-	}
-
-	public void setRelatedEntityType(DocumentRelatedEntityType relatedEntityType) {
-		this.relatedEntityType = relatedEntityType;
-	}
-
-    public DocumentReferenceDto toReference() {
-        return new DocumentReferenceDto(getUuid(), name);
-    }
 }
