@@ -29,6 +29,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -182,13 +183,17 @@ public class EnvironmentController {
 			}
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(
-			UserRight.ENVIRONMENT_EDIT,
-			null,
-			UserRight.ENVIRONMENT_DELETE,
-			UserRight.ENVIRONMENT_ARCHIVE,
-			FacadeProvider.getEnvironmentFacade().getEditPermissionType(environmentDto.getUuid()),
-			true);
+		if (FacadeProvider.getEnvironmentFacade().isArchived(environmentUuid) && !UiUtil.permitted(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editComponent.restrictEditableComponentsOnEditView(
+				UserRight.ENVIRONMENT_EDIT,
+				null,
+				UserRight.ENVIRONMENT_DELETE,
+				UserRight.ENVIRONMENT_ARCHIVE,
+				FacadeProvider.getEnvironmentFacade().getEditPermissionType(environmentDto.getUuid()),
+				true);
+		}
 
 		return editComponent;
 	}

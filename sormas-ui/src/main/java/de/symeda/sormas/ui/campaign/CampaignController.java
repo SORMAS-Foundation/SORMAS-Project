@@ -34,6 +34,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
@@ -164,8 +165,17 @@ public class CampaignController {
 			}
 		}
 
-		campaignComponent
-			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, UserRight.CAMPAIGN_ARCHIVE, null, true);
+		if (FacadeProvider.getCampaignFacade().isArchived(campaignDto.getUuid()) && !UiUtil.permitted(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			campaignComponent.restrictEditableComponentsOnEditView(
+				UserRight.CAMPAIGN_EDIT,
+				null,
+				UserRight.CAMPAIGN_DELETE,
+				UserRight.CAMPAIGN_ARCHIVE,
+				null,
+				true);
+		}
 
 		return campaignComponent;
 	}

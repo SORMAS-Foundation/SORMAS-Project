@@ -24,6 +24,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -164,23 +165,27 @@ public class TravelEntryController {
 				TravelEntriesView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityTravelEntry),
-				travelEntry.getUuid(),
+				travelEntryUuid,
 				FacadeProvider.getTravelEntryFacade());
 		}
 
 		// Initialize 'Archive' button
 		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntry.getUuid()));
+				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntryUuid));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(
-			UserRight.TRAVEL_ENTRY_EDIT,
-			null,
-			UserRight.TRAVEL_ENTRY_DELETE,
-			UserRight.TRAVEL_ENTRY_ARCHIVE,
-			FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
-			travelEntry.isInJurisdiction());
+		if (FacadeProvider.getTravelEntryFacade().isArchived(travelEntryUuid) && !UiUtil.permitted(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editComponent.restrictEditableComponentsOnEditView(
+				UserRight.TRAVEL_ENTRY_EDIT,
+				null,
+				UserRight.TRAVEL_ENTRY_DELETE,
+				UserRight.TRAVEL_ENTRY_ARCHIVE,
+				FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
+				travelEntry.isInJurisdiction());
+		}
 
 		return editComponent;
 	}

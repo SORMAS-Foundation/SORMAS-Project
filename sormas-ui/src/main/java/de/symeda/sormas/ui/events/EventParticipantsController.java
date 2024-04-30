@@ -53,6 +53,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -268,16 +269,21 @@ public class EventParticipantsController {
 					eventParticipant,
 					ArchiveHandlers.forEventParticipant(),
 					editComponent,
-					() -> navigateToData(eventParticipant.getUuid()));
+					() -> navigateToData(eventParticipantUuid));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(
-			UserRight.EVENTPARTICIPANT_EDIT,
-			null,
-			UserRight.EVENTPARTICIPANT_DELETE,
-			UserRight.EVENTPARTICIPANT_ARCHIVE,
-			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
-			eventParticipant.isInJurisdiction());
+		if (FacadeProvider.getEventParticipantFacade().isArchived(eventParticipantUuid)
+			&& !UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editComponent.restrictEditableComponentsOnEditView(
+				UserRight.EVENTPARTICIPANT_EDIT,
+				null,
+				UserRight.EVENTPARTICIPANT_DELETE,
+				UserRight.EVENTPARTICIPANT_ARCHIVE,
+				FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
+				eventParticipant.isInJurisdiction());
+		}
 
 		return editComponent;
 	}

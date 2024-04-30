@@ -21,6 +21,7 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -139,6 +140,8 @@ public class ImmunizationController {
 		ImmunizationDto immunizationDto,
 		Consumer<Runnable> actionCallback) {
 
+		String uuid = immunizationDto.getUuid();
+
 		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
 			immunizationDto.isPseudonymized(),
 			immunizationDto.isInJurisdiction(),
@@ -156,8 +159,8 @@ public class ImmunizationController {
 				}
 			};
 
-		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
-		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(uuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(uuid);
 
 		editComponent.getButtonsPanel()
 			.addComponentAsFirst(
@@ -197,7 +200,7 @@ public class ImmunizationController {
 				ImmunizationsView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityImmunization),
-				immunizationDto.getUuid(),
+				uuid,
 				FacadeProvider.getImmunizationFacade());
 		}
 
@@ -208,16 +211,20 @@ public class ImmunizationController {
 					immunizationDto,
 					ArchiveHandlers.forImmunization(),
 					editComponent,
-					() -> navigateToImmunization(immunizationDto.getUuid()));
+					() -> navigateToImmunization(uuid));
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(
-			UserRight.IMMUNIZATION_EDIT,
-			null,
-			UserRight.IMMUNIZATION_DELETE,
-			UserRight.IMMUNIZATION_ARCHIVE,
-			FacadeProvider.getImmunizationFacade().getEditPermissionType(immunizationDto.getUuid()),
-			immunizationDto.isInJurisdiction());
+		if (FacadeProvider.getImmunizationFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editComponent.restrictEditableComponentsOnEditView(
+				UserRight.IMMUNIZATION_EDIT,
+				null,
+				UserRight.IMMUNIZATION_DELETE,
+				UserRight.IMMUNIZATION_ARCHIVE,
+				FacadeProvider.getImmunizationFacade().getEditPermissionType(uuid),
+				immunizationDto.isInJurisdiction());
+		}
 
 		return editComponent;
 	}
