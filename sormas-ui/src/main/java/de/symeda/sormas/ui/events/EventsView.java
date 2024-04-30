@@ -771,7 +771,6 @@ public class EventsView extends AbstractView {
 		if (isGroupViewType()) {
 			setRelevanceStatusFilterItems(relevanceStatusFilter, UserRight.EVENTGROUP_VIEW_ARCHIVED, archivedCaption, allCaption);
 		} else {
-			//TODO: Ticket for change - For actions we have CREATE, DELETE, EDIT
 			setRelevanceStatusFilterItems(relevanceStatusFilter, UserRight.EVENT_VIEW_ARCHIVED, archivedCaption, allCaption);
 			if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.eventDeletedEvents));

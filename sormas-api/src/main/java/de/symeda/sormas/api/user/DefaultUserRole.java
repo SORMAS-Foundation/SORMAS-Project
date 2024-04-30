@@ -439,7 +439,6 @@ public enum DefaultUserRole {
 					ENVIRONMENT_CREATE,
 					ENVIRONMENT_EDIT,
 					ENVIRONMENT_ARCHIVE,
-					//TODO: should by default these roles have view archived?
 					ENVIRONMENT_VIEW_ARCHIVED,
 					ENVIRONMENT_DELETE,
 					ENVIRONMENT_IMPORT,

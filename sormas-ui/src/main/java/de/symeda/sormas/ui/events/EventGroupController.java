@@ -279,8 +279,6 @@ public class EventGroupController {
 
 	public void initializeArchiveDearchiveButton(CommitDiscardWrapperComponent<EventGroupDataForm> editView, boolean isEditAllowed, String uuid) {
 		boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
-
-		//TODO: check if the whole page with the archived entity should not be displayed or only the dearchive button
 		if (archived
 			? UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_ARCHIVE, UserRight.EVENTGROUP_VIEW_ARCHIVED)
 			: UiUtil.permitted(isEditAllowed, UserRight.EVENTGROUP_ARCHIVE)) {
