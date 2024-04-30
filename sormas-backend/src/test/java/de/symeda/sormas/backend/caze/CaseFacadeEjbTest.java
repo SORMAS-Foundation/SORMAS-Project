@@ -125,6 +125,7 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -1365,13 +1366,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		boolean withFollowUp = true;
 		boolean withClinicalCourse = true;
 		boolean withTherapy = true;
-		String countryLocale = getConfigFacade().getCountryLocale();
 
 		ExportConfigurationDto config = new ExportConfigurationDto();
 		config.setProperties(
-			ImportExportUtils.getCaseExportProperties((a, b) -> "Case", withFollowUp, withClinicalCourse, withTherapy, countryLocale)
+			ImportExportUtils.getCaseExportProperties((a, b) -> "Case", withFollowUp, withClinicalCourse, withTherapy)
 				.stream()
-				.map(e -> e.getPropertyId())
+				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
 
 		return config;

@@ -247,8 +247,7 @@ public class CasesView extends AbstractView implements HasName {
 					CaseDownloadUtil::getPropertyCaption,
 					caseFollowUpEnabled,
 					hasClinicalCourseRight,
-					hasTherapyRight,
-					FacadeProvider.getConfigFacade().getCountryLocale())
+					hasTherapyRight)
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
@@ -388,8 +387,7 @@ public class CasesView extends AbstractView implements HasName {
 							CaseDownloadUtil::getPropertyCaption,
 							caseFollowUpEnabled,
 							hasClinicalCourseRight,
-							hasTherapyRight,
-							FacadeProvider.getConfigFacade().getCountryLocale()),
+							hasTherapyRight),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()

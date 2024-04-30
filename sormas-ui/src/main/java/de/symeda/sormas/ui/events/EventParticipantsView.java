@@ -435,8 +435,7 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 				ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 					ExportType.EVENT_PARTICIPANTS,
 					ImportExportUtils.getEventParticipantExportProperties(
-						EventParticipantDownloadUtil::getPropertyCaption,
-						FacadeProvider.getConfigFacade().getCountryLocale()),
+						EventParticipantDownloadUtil::getPropertyCaption),
 					customExportWindow::close);
 				customExportsLayout.setExportCallback(
 					(exportConfig) -> Page.getCurrent()

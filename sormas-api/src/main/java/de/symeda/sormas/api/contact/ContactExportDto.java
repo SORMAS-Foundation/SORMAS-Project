@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.importexport.ExportEntity;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -1203,6 +1205,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	@Order(122)
 	@ExportProperty(ContactDto.CASE_REFERENCE_NUMBER)
 	@ExportGroup(ExportGroupType.CORE)
+	@DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
 	public String getCaseReferenceNumber() {
 		return caseReferenceNumber;
 	}

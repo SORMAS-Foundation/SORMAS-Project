@@ -30,6 +30,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -57,6 +58,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.HideForCountries;
@@ -650,6 +652,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.CASE_REFERENCE_NUMBER)
 	@ExportGroup(ExportGroupType.CORE)
+	@DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
 	public String getCaseReferenceNumber() {
 		return caseReferenceNumber;
 	}

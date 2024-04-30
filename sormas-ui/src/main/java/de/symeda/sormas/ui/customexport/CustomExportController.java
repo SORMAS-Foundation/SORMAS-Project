@@ -47,8 +47,7 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.CONTACT,
-			ImportExportUtils
-				.getContactExportProperties(ContactDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
+			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent()
@@ -63,7 +62,7 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.TASK,
-			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
+			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent().open(TaskDownloadUtil.createTaskExportResource(taskCriteria, selectedRows, exportConfig), null, true));
@@ -77,7 +76,7 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.PERSON,
-			ImportExportUtils.getPersonExportProperties(PersonDownloadUtil::getPropertyCaption, FacadeProvider.getConfigFacade().getCountryLocale()),
+			ImportExportUtils.getPersonExportProperties(PersonDownloadUtil::getPropertyCaption),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent().open(PersonDownloadUtil.createPersonExportResource(personCriteria, exportConfig), null, true));
