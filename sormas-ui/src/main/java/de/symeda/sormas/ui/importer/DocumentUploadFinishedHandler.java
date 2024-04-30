@@ -28,7 +28,7 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadFinishedHandler;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.document.DocumentDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -68,7 +68,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 						null,
 						ok -> {
 							if (ok) {
-								FacadeProvider.getDocumentFacade().deleteDocument(existing, relatedEntityUuid);
+								FacadeProvider.getDocumentFacade().deleteDocument(existing, relatedEntityUuid, relatedEntityType);
 								try {
 									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
 									if (filesLeftInQueue == 0) {
@@ -192,7 +192,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		document.setName(fileName);
 		document.setMimeType(mimeType != null ? mimeType : DocumentDto.MIME_TYPE_DEFAULT);
 		document.setSize(length);
-		DocumentRelatedEntitiesDto documentRelatedEntities = DocumentRelatedEntitiesDto.build(relatedEntityType, relatedEntityUuid);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
 
 		FacadeProvider.getDocumentFacade().saveDocument(document, bytes, Collections.singletonList(documentRelatedEntities));
 	}

@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.externalemail;
 import static de.symeda.sormas.backend.docgeneration.TemplateTestUtil.updateLineSeparatorsBasedOnOS;
 import static de.symeda.sormas.backend.util.luxembourg.LuxembourgNationalHealthIdValidatorTest.VALID_LU_NATIONAL_HEALTH_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -35,8 +36,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,19 +56,23 @@ import org.mockito.Mockito;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externalemail.AttachmentException;
 import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
+import de.symeda.sormas.api.externalemail.ExternalEmailOptionsWithAttachmentsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
@@ -86,7 +93,8 @@ import de.symeda.sormas.backend.common.messaging.EmailService;
 import de.symeda.sormas.backend.common.messaging.InvalidPhoneNumberException;
 import de.symeda.sormas.backend.common.messaging.SmsService;
 import de.symeda.sormas.backend.docgeneration.AbstractDocGenerationTest;
-import de.symeda.sormas.backend.document.DocumentRelatedEntitiesService;
+import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntity;
 
 public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
@@ -94,13 +102,12 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 	private UserDto admin;
 	private UserDto userDto;
 	private PersonDto personDto;
+	private LocationDto locationDto2;
 
 	@Mock
 	private EmailService emailService;
 	@Mock
 	private SmsService smsService;
-	@Mock
-	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
 
 	@Override
 	public void init() {
@@ -140,6 +147,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		personDto.setBirthdateDD(28);
 		personDto.setAddress(locationDto);
 		personDto.setPhone("+49 681 1234");
+		personDto.setNationalHealthId("1985012512523");
+		personDto.setEmailAddress("testEmail@email.com");
 
 		getPersonFacade().save(personDto);
 	}
@@ -539,6 +548,108 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		Mockito.verify(smsService, Mockito.times(0)).sendSms(any(), any());
 	}
 
+	@Test
+	public void testSendBulkEmailToCasePerson() throws MessagingException, IOException {
+
+		CaseDataDto caze1 = creator.createCase(userDto.toReference(), personDto.toReference(), rdcf);
+
+		loginWith(userDto);
+
+		locationDto2 = LocationDto.build();
+		locationDto2.setStreet("Nauwieserstraße");
+		locationDto2.setHouseNumber("105");
+		locationDto2.setCity("Saarbrücken");
+		locationDto2.setPostalCode("66111");
+
+		PersonDto personDto2 = PersonDto.build();
+		personDto2.setFirstName("John");
+		personDto2.setLastName("Doe");
+		personDto2.setSex(Sex.UNKNOWN);
+		personDto2.setBirthdateYYYY(1980);
+		personDto2.setBirthdateMM(10);
+		personDto2.setBirthdateDD(22);
+		personDto2.setAddress(locationDto2);
+		personDto2.setPhone("+49 123 4567");
+		personDto2.setNationalHealthId("1987080412582");
+		personDto2.setEmailAddress("testEmail2@email.com");
+		getPersonFacade().save(personDto2);
+		CaseDataDto caze2 = creator.createCase(userDto.toReference(), personDto2.toReference(), rdcf);
+
+		Mockito.doAnswer(invocation -> {
+			assertThat(invocation.getArgument(0), is("testEmail@email.com"));
+			assertThat(invocation.getArgument(1), is("Email subject in template"));
+
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail.cmp"), writer, "UTF-8");
+			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
+
+			assertThat(invocation.getArgument(2), is(expectedContent));
+			assertThat(invocation.getArgument(3), aMapWithSize(1));
+
+			return null;
+		}).doAnswer(invocation -> {
+			assertThat(invocation.getArgument(0), is("testEmail2@email.com"));
+			assertThat(invocation.getArgument(1), is("Email subject in template"));
+
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail2.cmp"), writer, "UTF-8");
+			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
+
+			assertThat(invocation.getArgument(2), is(expectedContent));
+			assertThat(invocation.getArgument(3), aMapWithSize(1));
+
+			return null;
+		}
+
+		).when(emailService).sendEmail(any(), any(), any(), any());
+
+		List<ReferenceDto> selectedEntries = new ArrayList<>();
+		selectedEntries.add(new CaseReferenceDto(caze1.getUuid()));
+		selectedEntries.add(new CaseReferenceDto(caze2.getUuid()));
+
+		ExternalEmailOptionsWithAttachmentsDto options =
+			new ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE);
+		options.setTemplateName("CaseEmail.txt");
+
+		DocumentDto documentDto = DocumentDto.build();
+		documentDto.setUploadingUser(admin.toReference());
+		documentDto.setName("attached.docx");
+		documentDto.setMimeType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+		Set<EmailAttachementDto> attachedDocuments = new HashSet<>();
+		attachedDocuments
+			.add(new EmailAttachementDto(documentDto, getClass().getResourceAsStream("/docgeneration/testcasesDocx/BasicTest.docx").readAllBytes()));
+		options.setAttachedDocuments(attachedDocuments);
+		getExternalEmailFacade().sendBulkEmail(options, selectedEntries);
+
+		Mockito.verify(emailService, Mockito.times(2)).sendEmail(any(), any(), any(), any());
+
+		List<ManualMessageLogIndexDto> messageLogs =
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze1.toReference()));
+		assertThat(messageLogs, hasSize(1));
+		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
+		assertThat(messageLogs.get(0).getEmailAddress(), is("testEmail@email.com"));
+		assertThat(messageLogs.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs.get(0).getAttachedDocuments(), hasSize(1));
+		assertThat(messageLogs.get(0).getAttachedDocuments().get(0), is("attached.docx"));
+
+		List<ManualMessageLogIndexDto> messageLogs2 =
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze2.toReference()));
+		assertThat(messageLogs2, hasSize(1));
+		assertThat(messageLogs2.get(0).getUsedTemplate(), is("CaseEmail.txt"));
+		assertThat(messageLogs2.get(0).getEmailAddress(), is("testEmail2@email.com"));
+		assertThat(messageLogs2.get(0).getSendingUser(), is(userDto.toReference()));
+		assertThat(messageLogs2.get(0).getAttachedDocuments(), hasSize(1));
+		assertThat(messageLogs.get(0).getAttachedDocuments().get(0), is("attached.docx"));
+
+		Document document = getDocumentService().getByUuid(documentDto.getUuid());
+		List<String> relatedEntityUuids =
+			document.getRelatedEntities().stream().map(DocumentRelatedEntity::getRelatedEntityUuid).collect(Collectors.toList());
+
+		assertThat(relatedEntityUuids, hasItem(caze1.getUuid()));
+		assertThat(relatedEntityUuids, hasItem(caze2.getUuid()));
+	}
+
 	private DocumentDto createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid) throws IOException {
 		return createDocument(fileName, relatedEntityType, relatedEntityUuid, new byte[0]);
 	}
@@ -549,7 +660,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		document.setName(fileName);
 		document.setUploadingUser(userDto.toReference());
 		document.setMimeType("application/octet-stream");
-		DocumentRelatedEntitiesDto documentRelatedEntities = DocumentRelatedEntitiesDto.build(relatedEntityType, relatedEntityUuid);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
 		DocumentDto documentDto = getDocumentFacade().saveDocument(document, content, Collections.singletonList(documentRelatedEntities));
 
 		return documentDto;

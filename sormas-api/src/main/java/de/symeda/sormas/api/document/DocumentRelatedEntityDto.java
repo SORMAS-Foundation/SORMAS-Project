@@ -18,57 +18,51 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.backend.document;
+package de.symeda.sormas.api.document;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.document.DocumentRelatedEntityType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-@Entity(name = DocumentRelatedEntities.TABLE_NAME)
-public class DocumentRelatedEntities extends AbstractDomainObject {
+public class DocumentRelatedEntityDto extends PseudonymizableDto {
 
-	public static final String TABLE_NAME = "documentrelatedentities";
-
-	public static final String DOCUMENT = "document";
 	public static final String RELATED_ENTITY_UUID = "relatedEntityUuid";
 	public static final String RELATED_ENTITY_TYPE = "relatedEntityType";
-	public static final String CASES = "cases";
-	public static final String CONTACTS = "contacts";
-	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String TRAVEL_ENTRIES = "travelEntries";
 
-	private Document document;
+	@NotNull
+	private DocumentReferenceDto document;
+	@NotBlank(message = Validations.requiredField)
+	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
+	@Size(min = FieldConstraints.CHARACTER_LIMIT_UUID_MIN, max = FieldConstraints.CHARACTER_LIMIT_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String relatedEntityUuid;
+	@NotNull(message = Validations.requiredField)
 	private DocumentRelatedEntityType relatedEntityType;
 
-	public DocumentRelatedEntities() {
+	public DocumentRelatedEntityDto() {
 	}
 
-	public DocumentRelatedEntities build(DocumentRelatedEntityType documentRelatedEntityType, String relatedEntityUuid) {
-		DocumentRelatedEntities documentRelatedEntities = new DocumentRelatedEntities();
+	public static DocumentRelatedEntityDto build(DocumentRelatedEntityType documentRelatedEntityType, String relatedEntityUuid) {
+		DocumentRelatedEntityDto documentRelatedEntities = new DocumentRelatedEntityDto();
+		documentRelatedEntities.setUuid(DataHelper.createUuid());
 		documentRelatedEntities.setRelatedEntityType(documentRelatedEntityType);
 		documentRelatedEntities.setRelatedEntityUuid(relatedEntityUuid);
 		return documentRelatedEntities;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "document_id", nullable = false)
-	public Document getDocument() {
+	public DocumentReferenceDto getDocument() {
 		return document;
 	}
 
-	public void setDocument(Document document) {
+	public void setDocument(DocumentReferenceDto document) {
 		this.document = document;
 	}
 
-	@Column(name = "relatedentity_uuid")
 	public String getRelatedEntityUuid() {
 		return relatedEntityUuid;
 	}
@@ -77,8 +71,6 @@ public class DocumentRelatedEntities extends AbstractDomainObject {
 		this.relatedEntityUuid = relatedEntityUuid;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "relatedentity_type")
 	public DocumentRelatedEntityType getRelatedEntityType() {
 		return relatedEntityType;
 	}

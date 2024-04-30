@@ -18,30 +18,14 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.api.docgeneneration;
+package de.symeda.sormas.api.document;
 
-import java.io.Serializable;
+import javax.ejb.Remote;
 
-import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.DeletableFacade;
 
-public class AttachementReferenceDto implements Serializable {
+@Remote
+public interface DocumentRelatedEntityFacade extends DeletableFacade {
 
-	private static final long serialVersionUID = -6376903475087381451L;
-
-	private final DocumentDto document;
-
-	private final byte[] content;
-
-	public AttachementReferenceDto(DocumentDto document, byte[] content) {
-		this.document = document;
-		this.content = content;
-	}
-
-	public DocumentDto getDocument() {
-		return document;
-	}
-
-	public byte[] getContent() {
-		return content;
-	}
+	DocumentRelatedEntityDto saveDocumentRelatedEntity(DocumentRelatedEntityDto dto);
 }

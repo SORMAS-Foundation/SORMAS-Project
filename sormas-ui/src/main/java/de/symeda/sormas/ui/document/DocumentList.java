@@ -91,7 +91,7 @@ public class DocumentList extends VerticalLayout {
 		res.setExpandRatio(downloadButton, 0);
 
 		if (UiUtil.permitted(editRight, UserRight.DOCUMENT_DELETE) && isDeleteAllowed) {
-			Button deleteButton = buildDeleteButton(document, entityRef.getUuid());
+			Button deleteButton = buildDeleteButton(document, entityRef.getUuid(), relatedEntityType);
 			res.addComponent(deleteButton);
 			res.setExpandRatio(deleteButton, 0);
 		} else {
@@ -126,14 +126,14 @@ public class DocumentList extends VerticalLayout {
 		return viewButton;
 	}
 
-	private Button buildDeleteButton(DocumentDto document, String relatedEntityUuid) {
+	private Button buildDeleteButton(DocumentDto document, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
 		return ButtonHelper.createIconButton(
 			"",
 			VaadinIcons.TRASH,
 			e -> VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), document.getName()), () -> {
 					try {
-						FacadeProvider.getDocumentFacade().deleteDocument(document.getUuid(), relatedEntityUuid);
+						FacadeProvider.getDocumentFacade().deleteDocument(document.getUuid(), relatedEntityUuid, relatedEntityType);
 					} catch (IllegalArgumentException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocument),

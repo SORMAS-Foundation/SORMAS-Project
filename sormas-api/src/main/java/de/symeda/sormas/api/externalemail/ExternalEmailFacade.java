@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.api.externalemail;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
@@ -38,7 +40,10 @@ public interface ExternalEmailFacade {
 	void sendEmail(@Valid ExternalEmailOptionsDto options)
 		throws DocumentTemplateException, ExternalEmailException, AttachmentException, ValidationException;
 
-	List<ProcessedEntity> sendBulkEmail(@Valid ExternalEmailOptionsWithAttachmentsDto options, List<ReferenceDto> rootEntityReferences);
+	List<ProcessedEntity> sendBulkEmail(@Valid ExternalEmailOptionsWithAttachmentsDto options, List<ReferenceDto> rootEntityReferences)
+		throws IOException;
 
 	boolean isAttachmentAvailable(PersonReferenceDto personReferenceDto);
+
+	Set<String> getAttachableFileExtensions();
 }

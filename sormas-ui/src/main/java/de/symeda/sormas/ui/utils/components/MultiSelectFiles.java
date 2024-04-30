@@ -37,6 +37,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CustomField;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.email.ExternalBulkEmailOptionsForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -44,8 +47,6 @@ public class MultiSelectFiles<T> extends CustomField<Set<T>> {
 
 	private VerticalLayout labelLayout = new VerticalLayout();
 	private Map<String, T> selectedItemsWithCaption = new HashMap<>();
-
-	private Runnable deleteAttachmentCallBack;
 
 	public static <T> MultiSelectFiles<T> create(Class<T> clazz) {
 		return new MultiSelectFiles<>();
@@ -121,7 +122,12 @@ public class MultiSelectFiles<T> extends CustomField<Set<T>> {
 			selectedItemsWithCaption.putAll(selection);
 			setValue(new HashSet<>(selectedItemsWithCaption.values()));
 		} else {
-			VaadinUiUtil.createWarningLayout().addComponent(new Label("max 5 files allowed for attachment"));
+			VaadinUiUtil.createWarningLayout()
+				.addComponent(
+					new Label(
+						String.format(
+							I18nProperties.getString(Strings.messageBulkEmailMaxAttachedFiles),
+							ExternalBulkEmailOptionsForm.MAX_ATTACHMENT_NUMBER)));
 		}
 		listSelectedItems();
 
@@ -131,7 +137,4 @@ public class MultiSelectFiles<T> extends CustomField<Set<T>> {
 		return selectedItemsWithCaption;
 	}
 
-	public void setDeleteAttachmentCallBack(Runnable deleteAttachmentCallBack) {
-		this.deleteAttachmentCallBack = deleteAttachmentCallBack;
-	}
 }

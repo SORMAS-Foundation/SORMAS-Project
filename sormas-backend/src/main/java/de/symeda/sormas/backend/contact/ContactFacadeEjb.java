@@ -165,8 +165,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
-import de.symeda.sormas.backend.document.DocumentRelatedEntities;
-import de.symeda.sormas.backend.document.DocumentRelatedEntitiesService;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -275,7 +274,7 @@ public class ContactFacadeEjb
 	@EJB
 	private DocumentService documentService;
 	@EJB
-	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
@@ -2226,13 +2225,20 @@ public class ContactFacadeEjb
 		// 4 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
 		for (Document document : documents) {
-			DocumentRelatedEntities relatedEntity = new DocumentRelatedEntities().build(DocumentRelatedEntityType.CONTACT, leadContact.getUuid());
-			relatedEntity.setDocument(document);
-			documentRelatedEntitiesService.ensurePersisted(relatedEntity);
+			document.getRelatedEntities()
+				.stream()
+				.filter(documentRelatedEntity -> documentRelatedEntity.getRelatedEntityUuid().equals(otherContact.getUuid()))
+				.forEach(a -> a.setRelatedEntityUuid(leadContact.getUuid()));
+			documentService.ensurePersisted(document);
 
-			DocumentRelatedEntities documentRelatedEntity =
-				documentRelatedEntitiesService.getByDocumentAndRelatedEntityUuid(document.getUuid(), otherContact.getUuid());
-			documentRelatedEntitiesService.deletePermanent(documentRelatedEntity);
+//
+//			RelatedEntities relatedEntity = new RelatedEntities().build(DocumentRelatedEntityType.CONTACT, leadContact.getUuid());
+//			relatedEntity.setDocument(document);
+//			documentRelatedEntitiesService.ensurePersisted(relatedEntity);
+//
+//			RelatedEntities documentRelatedEntity = documentRelatedEntitiesService
+//				.getByDocumentAndRelatedEntityUuid(document.getUuid(), otherContact.getUuid(), DocumentRelatedEntityType.CONTACT);
+//			documentRelatedEntitiesService.deletePermanent(documentRelatedEntity);
 		}
 	}
 

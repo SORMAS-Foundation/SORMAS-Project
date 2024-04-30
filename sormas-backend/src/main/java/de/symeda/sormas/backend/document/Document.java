@@ -44,7 +44,7 @@ public class Document extends AbstractDomainObject {
 	public static final String NAME = "name";
 	public static final String MIME_TYPE = "mimeType";
 	public static final String SIZE = "size";
-	public static final String RELATED_ENTITIES = "documentRelatedEntities";
+	public static final String RELATED_ENTITIES = "relatedEntities";
 
 	private boolean deleted;
 	private User uploadingUser;
@@ -52,7 +52,7 @@ public class Document extends AbstractDomainObject {
 	private String mimeType;
 	private long size;
 	private String storageReference;
-	private Set<DocumentRelatedEntities> documentRelatedEntities = new HashSet<>();
+	private Set<DocumentRelatedEntity> relatedEntities = new HashSet<>();
 
 	/**
 	 * Indicates whether the document is marked for deletion.
@@ -126,13 +126,13 @@ public class Document extends AbstractDomainObject {
 		this.storageReference = storageReference;
 	}
 
-	@OneToMany(mappedBy = DocumentRelatedEntities.DOCUMENT, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = DocumentRelatedEntity.DOCUMENT, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	public Set<DocumentRelatedEntities> getDocumentRelatedEntities() {
-		return documentRelatedEntities;
+	public Set<DocumentRelatedEntity> getRelatedEntities() {
+		return relatedEntities;
 	}
 
-	public void setDocumentRelatedEntities(Set<DocumentRelatedEntities> documentRelatedEntities) {
-		this.documentRelatedEntities = documentRelatedEntities;
+	public void setRelatedEntities(Set<DocumentRelatedEntity> documentRelatedEntities) {
+		this.relatedEntities = documentRelatedEntities;
 	}
 }

@@ -26,41 +26,43 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesFacade;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityFacade;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "DocumentRelatedEntitiesFacade")
-public class DocumentRelatedEntitiesFacadeEjb implements DocumentRelatedEntitiesFacade {
+public class DocumentRelatedEntityFacadeEjb implements DocumentRelatedEntityFacade {
 
 	@EJB
-	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private DocumentService documentService;
 
-	public static DocumentRelatedEntitiesDto toDto(DocumentRelatedEntities source) {
+	public static DocumentRelatedEntityDto toDto(DocumentRelatedEntity source) {
 		if (source == null) {
 			return null;
 		}
 
-		DocumentRelatedEntitiesDto target = new DocumentRelatedEntitiesDto();
+		DocumentRelatedEntityDto target = new DocumentRelatedEntityDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setDocument(new DocumentReferenceDto(source.getDocument().getUuid(), source.getDocument().getName()));
+		target.setDocument(DocumentFacadeEjb.toReferenceDto(source.getDocument()));
 		target.setRelatedEntityUuid(source.getRelatedEntityUuid());
 		target.setRelatedEntityType(source.getRelatedEntityType());
 
 		return target;
 	}
 
-	public DocumentRelatedEntities fillOrBuildEntity(DocumentRelatedEntitiesDto source, DocumentRelatedEntities target, boolean checkChangeDate) {
+	public DocumentRelatedEntity fillOrBuildEntity(DocumentRelatedEntityDto source, DocumentRelatedEntity target, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
-		target = DtoHelper.fillOrBuildEntity(source, target, DocumentRelatedEntities::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, DocumentRelatedEntity::new, checkChangeDate);
 
 		target.setRelatedEntityType(source.getRelatedEntityType());
 		target.setRelatedEntityUuid(source.getRelatedEntityUuid());
@@ -71,22 +73,22 @@ public class DocumentRelatedEntitiesFacadeEjb implements DocumentRelatedEntities
 
 	@Override
 	public void delete(String uuid, DeletionDetails deletionDetails) {
-
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public void restore(String uuid) {
-
+		throw new NotImplementedException();
 	}
 
 	@Override
 	public List<ProcessedEntity> restore(List<String> uuids) {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -95,18 +97,18 @@ public class DocumentRelatedEntitiesFacadeEjb implements DocumentRelatedEntities
 	}
 
 	@Override
-	public DocumentRelatedEntitiesDto saveDocumentRelatedEntity(DocumentRelatedEntitiesDto dto) {
+	public DocumentRelatedEntityDto saveDocumentRelatedEntity(DocumentRelatedEntityDto dto) {
 
-		DocumentRelatedEntities documentRelatedEntities = new DocumentRelatedEntities().build(dto.getRelatedEntityType(), dto.getRelatedEntityUuid());
-		documentRelatedEntities.setDocument(documentRelatedEntities.getDocument());
-		documentRelatedEntitiesService.ensurePersisted(documentRelatedEntities);
+		DocumentRelatedEntity documentRelatedEntity = new DocumentRelatedEntity().build(dto.getRelatedEntityType(), dto.getRelatedEntityUuid());
+		documentRelatedEntity.setDocument(documentRelatedEntity.getDocument());
+		documentRelatedEntityService.ensurePersisted(documentRelatedEntity);
 
-		return toDto(documentRelatedEntities);
+		return toDto(documentRelatedEntity);
 	}
 
 	@LocalBean
 	@Stateless
-	public static class DocumentRelatedEntitiesFacadeEjbLocal extends de.symeda.sormas.backend.document.DocumentRelatedEntitiesFacadeEjb {
+	public static class DocumentRelatedEntityFacadeEjbLocal extends DocumentRelatedEntityFacadeEjb {
 
 	}
 

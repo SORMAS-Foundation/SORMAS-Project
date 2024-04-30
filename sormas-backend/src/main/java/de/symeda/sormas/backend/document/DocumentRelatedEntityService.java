@@ -28,33 +28,38 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 
 @Stateless
 @LocalBean
-public class DocumentRelatedEntitiesService extends BaseAdoService<DocumentRelatedEntities> {
+public class DocumentRelatedEntityService extends BaseAdoService<DocumentRelatedEntity> {
 
-	public DocumentRelatedEntitiesService() {
-		super(DocumentRelatedEntities.class);
+	public DocumentRelatedEntityService() {
+		super(DocumentRelatedEntity.class);
 	}
 
-	public DocumentRelatedEntities getByDocumentAndRelatedEntityUuid(String documentUuid, String relatedEntityUuid) {
+	public DocumentRelatedEntity getByDocumentAndRelatedEntityUuid(
+		String documentUuid,
+		String relatedEntityUuid,
+		DocumentRelatedEntityType relatedEntityType) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DocumentRelatedEntities> cq = cb.createQuery(DocumentRelatedEntities.class);
+		CriteriaQuery<DocumentRelatedEntity> cq = cb.createQuery(DocumentRelatedEntity.class);
 
-		Root<DocumentRelatedEntities> root = cq.from(DocumentRelatedEntities.class);
-		Join<DocumentRelatedEntities, Document> documentJoin = root.join(DocumentRelatedEntities.DOCUMENT, JoinType.LEFT);
+		Root<DocumentRelatedEntity> root = cq.from(DocumentRelatedEntity.class);
+		Join<DocumentRelatedEntity, Document> documentJoin = root.join(DocumentRelatedEntity.DOCUMENT, JoinType.LEFT);
 
 		cq.where(
 			cb.and(cb.equal(documentJoin.get(AbstractDomainObject.UUID), documentUuid)),
-			cb.equal(root.get(DocumentRelatedEntities.RELATED_ENTITY_UUID), relatedEntityUuid));
+			cb.equal(root.get(DocumentRelatedEntity.RELATED_ENTITY_UUID), relatedEntityUuid),
+			cb.equal(root.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), relatedEntityType));
 
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public void deleteDocumentRelatedEntity(String documentUuid, String relatedEntityUuid) {
-		DocumentRelatedEntities documentRelatedEntity = getByDocumentAndRelatedEntityUuid(documentUuid, relatedEntityUuid);
+	public void deleteDocumentRelatedEntity(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
+		DocumentRelatedEntity documentRelatedEntity = getByDocumentAndRelatedEntityUuid(documentUuid, relatedEntityUuid, relatedEntityType);
 		deletePermanent(documentRelatedEntity);
 	}
 }

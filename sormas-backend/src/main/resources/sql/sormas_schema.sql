@@ -13056,8 +13056,8 @@ CREATE TABLE documentrelatedentities
     change_user_id     bigint,
     sys_period         tstzrange              not null,
     document_id        bigint                 NOT NULL,
-    relatedentity_type character varying(255) NOT NULL,
-    relatedentity_uuid character varying(36)  NOT NULL
+    relatedentitytype character varying(255) NOT NULL,
+    relatedentityuuid character varying(36)  NOT NULL
 );
 ALTER TABLE documentrelatedentities ADD CONSTRAINT fk_documentsrelatedentities_documents_id FOREIGN KEY (document_id) REFERENCES documents(id);
 ALTER TABLE documentrelatedentities OWNER TO sormas_user;
@@ -13078,7 +13078,7 @@ DO $$
        FOR
            rec IN SELECT * FROM documents
            LOOP
-               INSERT INTO documentrelatedentities(id, uuid, changedate, creationdate, change_user_id, sys_period, document_id, relatedentity_type, relatedentity_uuid)
+               INSERT INTO documentrelatedentities(id, uuid, changedate, creationdate, change_user_id, sys_period, document_id, relatedentitytype, relatedentityuuid)
                values (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.change_user_id,  tstzrange(now(),null), rec.id, rec.relatedentity_type, rec.relatedentity_uuid);
     END LOOP;
     END;

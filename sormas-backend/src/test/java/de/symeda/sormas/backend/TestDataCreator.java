@@ -64,7 +64,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
@@ -2099,7 +2099,7 @@ public class TestDataCreator {
 		document.setName(name);
 		document.setMimeType(contentType);
 		document.setSize(size);
-		DocumentRelatedEntitiesDto documentRelatedEntities = DocumentRelatedEntitiesDto.build(relatedEntityType, relatedEntityUuid);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
 
 		return beanTest.getDocumentFacade().saveDocument(document, content, Collections.singletonList(documentRelatedEntities));
 	}

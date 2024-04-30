@@ -254,8 +254,7 @@ import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
-import de.symeda.sormas.backend.document.DocumentRelatedEntities;
-import de.symeda.sormas.backend.document.DocumentRelatedEntitiesService;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -478,7 +477,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private DocumentService documentService;
 	@EJB
-	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
@@ -3892,13 +3891,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// 6 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, otherCase.getUuid());
 		for (Document document : documents) {
-			DocumentRelatedEntities relatedEntity = new DocumentRelatedEntities().build(DocumentRelatedEntityType.CASE, leadCaseData.getUuid());
-			relatedEntity.setDocument(document);
-			documentRelatedEntitiesService.ensurePersisted(relatedEntity);
 
-			DocumentRelatedEntities documentRelatedEntity =
-				documentRelatedEntitiesService.getByDocumentAndRelatedEntityUuid(document.getUuid(), otherCase.getUuid());
-			documentRelatedEntitiesService.deletePermanent(documentRelatedEntity);
+			document.getRelatedEntities()
+				.stream()
+				.filter(documentRelatedEntity -> documentRelatedEntity.getRelatedEntityUuid().equals(otherCase.getUuid()))
+				.forEach(a -> a.setRelatedEntityUuid(leadCase.getUuid()));
+			documentService.ensurePersisted(document);
 		}
 
 		// 7 Persist Event links through eventparticipants

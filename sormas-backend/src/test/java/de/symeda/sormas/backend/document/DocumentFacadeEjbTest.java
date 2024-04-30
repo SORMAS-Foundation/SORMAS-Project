@@ -102,7 +102,7 @@ public class DocumentFacadeEjbTest extends AbstractBeanTest {
 			getDocumentFacade().isExistingDocument(DocumentRelatedEntityType.EVENT, event.getUuid(), document.getName()),
 			equalTo(document.getUuid()));
 
-		getDocumentFacade().deleteDocument(document.getUuid(), event.getUuid());
+		getDocumentFacade().deleteDocument(document.getUuid(), event.getUuid(), DocumentRelatedEntityType.EVENT);
 
 		Document deleted = getDocumentService().getByUuid(document.getUuid());
 		assertNotNull(deleted);

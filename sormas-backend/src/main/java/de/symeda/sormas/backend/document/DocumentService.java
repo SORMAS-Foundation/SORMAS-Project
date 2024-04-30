@@ -66,12 +66,12 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
 		from.fetch(Document.UPLOADING_USER);
-		Join<Document, DocumentRelatedEntities> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
 		Predicate filter = cb.and(
 			cb.isFalse(from.get(Document.DELETED)),
-			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntities.RELATED_ENTITY_TYPE), type),
-			cb.in(relatedEntitiesJoin.get(DocumentRelatedEntities.RELATED_ENTITY_UUID)).value(uuids));
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), type),
+			cb.in(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_UUID)).value(uuids));
 
 		cq.where(filter);
 
@@ -104,7 +104,7 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
 		from.fetch(Document.UPLOADING_USER);
-		Join<Document, DocumentRelatedEntities> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
 		cq.where(buildRelatedEntityFilter(type, uuid, cb, from, relatedEntitiesJoin));
 
@@ -137,7 +137,7 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DocumentReferenceDto> cq = cb.createQuery(DocumentReferenceDto.class);
 		Root<Document> from = cq.from(getElementClass());
-		Join<Document, DocumentRelatedEntities> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
 		cq.multiselect(from.get(Document.UUID), from.get(Document.NAME));
 
@@ -155,11 +155,11 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		String uuid,
 		CriteriaBuilder cb,
 		Root<Document> from,
-		Join<Document, DocumentRelatedEntities> relatedEntitiesJoin) {
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin) {
 		return cb.and(
 			cb.isFalse(from.get(Document.DELETED)),
-			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntities.RELATED_ENTITY_TYPE), type),
-			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntities.RELATED_ENTITY_UUID), uuid));
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), type),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_UUID), uuid));
 	}
 
 	private static Predicate buildExtensionFilter(Set<String> fileExtensions, CriteriaBuilder cb, Root<Document> from) {
@@ -177,12 +177,12 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Document> from = cq.from(getElementClass());
-		Join<Document, DocumentRelatedEntities> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
 		Predicate filter = cb.and(
 			cb.isFalse(from.get(Document.DELETED)),
-			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntities.RELATED_ENTITY_TYPE), type),
-			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntities.RELATED_ENTITY_UUID), uuid),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), type),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_UUID), uuid),
 			cb.equal(from.get(Document.NAME), name));
 
 		cq.where(filter);

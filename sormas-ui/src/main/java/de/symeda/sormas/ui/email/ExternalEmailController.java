@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.email;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -139,8 +140,14 @@ public class ExternalEmailController {
 				Strings.messageBulkEmailsFinishedWithSkips,
 				Strings.messageBulkEmailsFinishedWithoutSuccess)
 				.doBulkOperation(
-					selectedEntries -> FacadeProvider.getExternalEmailFacade()
-						.sendBulkEmail(options, selectedEntries.stream().map(mapToReference).collect(Collectors.toList())),
+					selectedEntries -> {
+						try {
+							return FacadeProvider.getExternalEmailFacade()
+								.sendBulkEmail(options, selectedEntries.stream().map(mapToReference).collect(Collectors.toList()));
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					},
 					selectedEntitiesCpy,
 					bulkOperationDoneCallback);
 

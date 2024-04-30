@@ -45,7 +45,7 @@ import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -93,7 +93,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private DocumentService documentService;
 	@EJB
-	private DocumentRelatedEntitiesService documentRelatedEntitiesService;
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private DocumentStorageService documentStorageService;
 	@EJB
@@ -107,7 +107,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private DocumentRelatedEntitiesFacadeEjb.DocumentRelatedEntitiesFacadeEjbLocal documentRelatedEntitiesFacade;
+	private DocumentRelatedEntityFacadeEjb.DocumentRelatedEntityFacadeEjbLocal documentRelatedEntitiesFacade;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -116,7 +116,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_UPLOAD)
-	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content, @Nonnull List<DocumentRelatedEntitiesDto> relatedEntities)
+	public DocumentDto saveDocument(@Valid DocumentDto dto, byte[] content, @Nonnull List<DocumentRelatedEntityDto> relatedEntities)
 		throws IOException {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
@@ -132,26 +132,29 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		try {
 			document.setStorageReference(storageReference);
 
-			Set<DocumentRelatedEntities> relatedEntitiesSet = document.getDocumentRelatedEntities();
+			Set<DocumentRelatedEntity> documentRelatedEntitySet = document.getRelatedEntities();
+
+			//adds new related entities to document or updates the existing ones
 			relatedEntities.forEach(relatedEntity -> {
-				DocumentRelatedEntities documentRelatedEntities = relatedEntitiesSet.stream()
+				DocumentRelatedEntity documentRelatedEntity = documentRelatedEntitySet.stream()
 					.filter(existingRelatedEntity -> existingRelatedEntity.getUuid().equals(relatedEntity.getUuid()))
 					.findFirst()
 					.orElseGet(() -> null);
-				DocumentRelatedEntities updatedDocumentRelatedEntity =
-					documentRelatedEntitiesFacade.fillOrBuildEntity(relatedEntity, documentRelatedEntities, true);
+				DocumentRelatedEntity updatedDocumentRelatedEntity =
+					documentRelatedEntitiesFacade.fillOrBuildEntity(relatedEntity, documentRelatedEntity, true);
 				updatedDocumentRelatedEntity.setDocument(document);
-				relatedEntitiesSet.add(updatedDocumentRelatedEntity);
+				documentRelatedEntitySet.add(updatedDocumentRelatedEntity);
 			});
 
-			relatedEntitiesSet.removeAll(
-				relatedEntitiesSet.stream()
+			//removes all the related entities of the document which are not present in the related entities list
+			documentRelatedEntitySet.removeAll(
+				documentRelatedEntitySet.stream()
 					.filter(
 						existingRelatedEntity -> relatedEntities.stream()
 							.noneMatch(relatedEntity -> DataHelper.isSame(existingRelatedEntity, relatedEntity)))
 					.collect(Collectors.toSet()));
 
-			document.setDocumentRelatedEntities(relatedEntitiesSet);
+			document.setRelatedEntities(documentRelatedEntitySet);
 			documentService.ensurePersisted(document);
 			return convertToDto(document, Pseudonymizer.getDefault(userService));
 		} catch (Throwable t) {
@@ -206,10 +209,10 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_DELETE)
-	public void deleteDocument(String documentUuid, String relatedEntityUuid) {
-		documentRelatedEntitiesService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid);
+	public void deleteDocument(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
+		documentRelatedEntityService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
 		Document document = documentService.getByUuid(documentUuid);
-		if (document.getDocumentRelatedEntities().isEmpty()) {
+		if (document.getRelatedEntities().isEmpty()) {
 			// The document is only marked as delete here; actual deletion will be done in document storage cleanup via cron job
 			documentService.markAsDeleted(document);
 		}
@@ -234,7 +237,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			documentService.getRelatedToEntities(criteria.getDocumentRelatedEntityType(), criteria.getEntityUuids(), sortProperties);
 
 		return allDocuments.stream()
-			.flatMap(d -> d.getDocumentRelatedEntities().stream().map((relatedEntity) -> Map.entry(relatedEntity.getRelatedEntityUuid(), d)))
+			.flatMap(d -> d.getRelatedEntities().stream().map((relatedEntity) -> Map.entry(relatedEntity.getRelatedEntityUuid(), d)))
 			.map((entry) -> Map.entry(entry.getKey(), convertToDto(entry.getValue(), pseudonymizer)))
 			.collect(Collectors.toMap(Map.Entry::getKey, (entry) -> Collections.singletonList(entry.getValue()), (d1, d2) -> {
 				ArrayList<DocumentDto> documents = new ArrayList<>(d1);
@@ -300,11 +303,11 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	private boolean isInJurisdiction(Document document) {
 		List<String> relatedEntitiesUuids =
-			document.getDocumentRelatedEntities().stream().map(DocumentRelatedEntities::getRelatedEntityUuid).collect(Collectors.toList());
+			document.getRelatedEntities().stream().map(DocumentRelatedEntity::getRelatedEntityUuid).collect(Collectors.toList());
 
 		if (!relatedEntitiesUuids.isEmpty()) {
 			// this logic is valid until each document has only one type of related entities linked to it
-			switch (document.getDocumentRelatedEntities().iterator().next().getRelatedEntityType()) {
+			switch (document.getRelatedEntities().iterator().next().getRelatedEntityType()) {
 			case CASE:
 				List<Case> cases = caseService.getByUuids(relatedEntitiesUuids);
 				return !caseService.getInJurisdictionIds(cases).isEmpty();
@@ -335,6 +338,15 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		target.setMimeType(source.getMimeType());
 		target.setSize(source.getSize());
 		return target;
+	}
+
+	public static DocumentReferenceDto toReferenceDto(Document entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new DocumentReferenceDto(entity.getUuid(), entity.getName());
 	}
 
 	@LocalBean

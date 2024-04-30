@@ -27,8 +27,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.audit.AuditedClass;
-import de.symeda.sormas.api.docgeneneration.AttachementReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.i18n.Validations;
 
@@ -50,7 +50,7 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
 	private String templateName;
-	private Set<AttachementReferenceDto> attachedDocuments;
+	private Set<EmailAttachementDto> attachedDocuments;
 
 	public ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow documentWorkflow, RootEntityType rootEntityType) {
 		this.documentWorkflow = documentWorkflow;
@@ -73,11 +73,11 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 		this.templateName = templateName;
 	}
 
-	public Set<AttachementReferenceDto> getAttachedDocuments() {
+	public Set<EmailAttachementDto> getAttachedDocuments() {
 		return attachedDocuments;
 	}
 
-	public void setAttachedDocuments(Set<AttachementReferenceDto> attachedDocuments) {
+	public void setAttachedDocuments(Set<EmailAttachementDto> attachedDocuments) {
 		this.attachedDocuments = attachedDocuments;
 	}
 }

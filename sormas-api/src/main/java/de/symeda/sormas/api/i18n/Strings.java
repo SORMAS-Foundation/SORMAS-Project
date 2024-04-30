@@ -1102,6 +1102,7 @@ public interface Strings {
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
+	String messageBulkEmailMaxAttachedFiles = "messageBulkEmailMaxAttachedFiles";
 	String messageBulkEmailsCountNotProcessed = "messageBulkEmailsCountNotProcessed";
 	String messageBulkEmailsCountNotProcessedAccessDenied = "messageBulkEmailsCountNotProcessedAccessDenied";
 	String messageBulkEmailsCountNotProcessedExternalReason = "messageBulkEmailsCountNotProcessedExternalReason";

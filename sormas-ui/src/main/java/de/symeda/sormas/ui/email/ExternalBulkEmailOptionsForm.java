@@ -26,7 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -42,17 +43,16 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.MultiFileUpload;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.docgeneneration.AttachementReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.document.DocumentDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntitiesDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externalemail.ExternalEmailOptionsWithAttachmentsDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.importer.DocumentMultiFileUpload;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -65,14 +65,14 @@ import de.symeda.sormas.ui.utils.components.MultiSelectFiles;
 public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmailOptionsWithAttachmentsDto> {
 
 	private static final String UPLOAD_LOC = "uploadLoc";
-	private static final int MAX_ATTACHMENT_NUMBER = 5;
+	public static final int MAX_ATTACHMENT_NUMBER = 5;
 	private static final String HTML_LAYOUT = fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE_NAME)
 		+ fluidRowLocs(UPLOAD_LOC)
 		+ fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS);
 
 	private final DocumentWorkflow documentWorkflow;
 	private final DocumentRelatedEntityType documentRelatedEntityType;
-	public MultiSelectFiles<AttachementReferenceDto> attachedDocumentsField;
+	public MultiSelectFiles<EmailAttachementDto> attachedDocumentsField;
 
 	protected Upload upload;
 	private PopupButton mainButton;
@@ -106,7 +106,6 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 
 		if (documentRelatedEntityType != null) {
 			attachedDocumentsField = addField(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS, MultiSelectFiles.class);
-			attachedDocumentsField.setDeleteAttachmentCallBack(SormasUI::refreshView);
 		}
 	}
 
@@ -120,43 +119,36 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
 		boolean multipleUpload = UiUtil.enabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
-		AtomicInteger noOfUploadFiles = new AtomicInteger();
-		final boolean[] limitFiveInfoPopUpShown = {
-			false };
+		AtomicBoolean limitInfoPopUpShown = new AtomicBoolean(false);
 
 		UploadStateWindow uploadStateWindow = new UploadStateWindow();
 		MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {
 			mainButton.setButtonClickTogglesPopupVisibility(false);
 			mainButton.setClosePopupOnOutsideClick(false);
 		}, (inputStream, fileName, mimeType, length, filesLeftInQueue) -> {
-			int attachedFilesBeforeNextAdd = attachedDocumentsField.getSelectedItemsWithCaption().size();
-			noOfUploadFiles.set(attachedFilesBeforeNextAdd);
-			noOfUploadFiles.getAndIncrement();
+			int alreadyAttachedCount = attachedDocumentsField.getSelectedItemsWithCaption().size();
 
-			List<String> acceptedFileExtensions = Arrays.asList(".docx", ".pdf", ".jpg", ".png", ".gif");
-
+			Set<String> acceptedFileExtensions = FacadeProvider.getExternalEmailFacade().getAttachableFileExtensions();
 			String fileExtension = FacadeProvider.getDocumentFacade().getFileExtension(fileName);
 
 			if (acceptedFileExtensions.contains(fileExtension)) {
-				if (noOfUploadFiles.get() <= MAX_ATTACHMENT_NUMBER) {
+				if (alreadyAttachedCount < MAX_ATTACHMENT_NUMBER) {
 					DocumentDto document = DocumentDto.build();
 					document.setName(fileName);
 					document.setMimeType(mimeType);
 					document.setSize(length);
 					document.setUploadingUser(FacadeProvider.getUserFacade().getCurrentUser().toReference());
-					DocumentRelatedEntitiesDto documentRelatedEntitiesDto = new DocumentRelatedEntitiesDto();
-					documentRelatedEntitiesDto.setRelatedEntityType(documentRelatedEntityType);
+					DocumentRelatedEntityDto documentRelatedEntityDto = new DocumentRelatedEntityDto();
+					documentRelatedEntityDto.setRelatedEntityType(documentRelatedEntityType);
 
-					attachedDocumentsField.addSelectedItemWithCaption(new AttachementReferenceDto(document, getContent(inputStream)), fileName);
-				} else {
-					if (noOfUploadFiles.get() == 6 && !limitFiveInfoPopUpShown[0]) {
-						limitFiveInfoPopUpShown[0] = true;
-						VaadinUiUtil.showSimplePopupWindow(
-							I18nProperties.getString(Strings.headingBulkEmailMaxAttachedFiles),
-							I18nProperties.getString(Strings.messageBulkEmailTooManySelectedAtachments),
-							ContentMode.HTML,
-							620);
-					}
+					attachedDocumentsField.addSelectedItemWithCaption(new EmailAttachementDto(document, getContent(inputStream)), fileName);
+				} else if (!limitInfoPopUpShown.get()) {
+					limitInfoPopUpShown.set(true);
+					VaadinUiUtil.showSimplePopupWindow(
+						I18nProperties.getString(Strings.headingBulkEmailMaxAttachedFiles),
+						I18nProperties.getString(Strings.messageBulkEmailTooManySelectedAtachments),
+						ContentMode.HTML,
+						620);
 				}
 			} else {
 				StringBuilder fileType = new StringBuilder();
@@ -167,7 +159,7 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 				fileType.replace(fileType.length() - 2, fileType.length() - 1, "");
 				String fileNameLabel = String.format(I18nProperties.getString(Strings.messageBulkEmailWrongAttachmentExtension), fileName, fileType);
 				VaadinUiUtil
-					.showSimplePopupWindow(I18nProperties.getString(Strings.headingBulkEmailWrongFileType), fileNameLabel, ContentMode.HTML, 500);
+					.showSimplePopupWindow(I18nProperties.getString(Strings.headingBulkEmailWrongFileType), fileNameLabel, ContentMode.HTML, 520);
 			}
 
 		}, uploadStateWindow, multipleUpload);
@@ -190,10 +182,5 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	protected ExternalEmailOptionsWithAttachmentsDto getInternalValue() {
-		return super.getInternalValue();
 	}
 }
