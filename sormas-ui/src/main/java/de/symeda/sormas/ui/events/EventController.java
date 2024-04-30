@@ -978,13 +978,17 @@ public class EventController {
 			}
 		}
 
-		editView.restrictEditableComponentsOnEditView(
-			UserRight.EVENT_EDIT,
-			null,
-			UserRight.EVENT_DELETE,
-			UserRight.EVENT_ARCHIVE,
-			FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
-			event.isInJurisdiction());
+		if (FacadeProvider.getEventFacade().isArchived(eventUuid) && !UiUtil.permitted(UserRight.EVENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editView.restrictEditableComponentsOnEditView(
+				UserRight.EVENT_EDIT,
+				null,
+				UserRight.EVENT_DELETE,
+				UserRight.EVENT_ARCHIVE,
+				FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
+				event.isInJurisdiction());
+		}
 
 		return editView;
 	}

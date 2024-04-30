@@ -701,13 +701,17 @@ public class ContactController {
 			}
 		}
 
-		editComponent.restrictEditableComponentsOnEditView(
-			UserRight.CONTACT_EDIT,
-			null,
-			UserRight.CONTACT_DELETE,
-			UserRight.CONTACT_ARCHIVE,
-			FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
-			contact.isInJurisdiction());
+		if (FacadeProvider.getContactFacade().isArchived(contactUuid) && !UiUtil.permitted(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editComponent.restrictEditableComponentsOnEditView(
+				UserRight.CONTACT_EDIT,
+				null,
+				UserRight.CONTACT_DELETE,
+				UserRight.CONTACT_ARCHIVE,
+				FacadeProvider.getContactFacade().getEditPermissionType(contactUuid),
+				contact.isInJurisdiction());
+		}
 
 		return editComponent;
 	}

@@ -103,6 +103,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -959,13 +960,17 @@ public class CaseController {
 			appendSpecialCommands(caze, editView);
 		}
 
-		editView.restrictEditableComponentsOnEditView(
-			UserRight.CASE_EDIT,
-			null,
-			UserRight.CASE_DELETE,
-			UserRight.CASE_ARCHIVE,
-			FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
-			caze.isInJurisdiction());
+		if (FacadeProvider.getCaseFacade().isArchived(caseUuid) && !UiUtil.permitted(UserRight.CASE_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		} else {
+			editView.restrictEditableComponentsOnEditView(
+				UserRight.CASE_EDIT,
+				null,
+				UserRight.CASE_DELETE,
+				UserRight.CASE_ARCHIVE,
+				FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
+				caze.isInJurisdiction());
+		}
 
 		return editView;
 	}
