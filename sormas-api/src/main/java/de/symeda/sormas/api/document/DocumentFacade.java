@@ -44,6 +44,4 @@ public interface DocumentFacade {
 	byte[] getContent(String uuid) throws IOException;
 
 	void cleanupDeletedDocuments();
-
-	String getFileExtension(String fileName);
 }

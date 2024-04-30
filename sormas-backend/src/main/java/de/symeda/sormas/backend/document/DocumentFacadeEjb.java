@@ -41,6 +41,7 @@ import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 
+import de.symeda.sormas.api.DocumentHelper;
 import de.symeda.sormas.api.document.DocumentCriteria;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
@@ -123,7 +124,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
 		}
 
-		String fileExtension = getFileExtension(dto.getName());
+		String fileExtension = DocumentHelper.getFileExtension(dto.getName());
 		checkFileExtension(fileExtension);
 		checkFileContents(dto.getName(), content, fileExtension);
 
@@ -164,15 +165,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 				t.addSuppressed(t2);
 			}
 			throw t;
-		}
-	}
-
-	public String getFileExtension(String fileName) {
-		int index = fileName.lastIndexOf('.');
-		if (index > 0) {
-			return fileName.substring(index);
-		} else {
-			throw new FileExtensionNotAllowedException(String.format("File name (%s) is not properly formatted", fileName));
 		}
 	}
 
@@ -226,8 +218,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
-		List<DocumentReferenceDto> referencesRelatedToEntity = documentService.getReferencesRelatedToEntity(type, uuid, fileExtensions);
-		return referencesRelatedToEntity;
+		return documentService.getReferencesRelatedToEntity(type, uuid, fileExtensions);
 	}
 
 	@Override

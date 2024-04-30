@@ -18,10 +18,18 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.api.document;
+package de.symeda.sormas.api;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.api.utils.FileExtensionNotAllowedException;
 
-@Remote
-public interface DocumentRelatedEntityFacade {
+public class DocumentHelper {
+
+	public static String getFileExtension(String fileName) {
+		int index = fileName.lastIndexOf('.');
+		if (index > 0) {
+			return fileName.substring(index);
+		} else {
+			throw new FileExtensionNotAllowedException(String.format("File name (%s) is not properly formatted", fileName));
+		}
+	}
 }

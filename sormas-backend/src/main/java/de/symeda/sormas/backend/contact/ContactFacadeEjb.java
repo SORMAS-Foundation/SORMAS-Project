@@ -2230,15 +2230,6 @@ public class ContactFacadeEjb
 				.filter(documentRelatedEntity -> documentRelatedEntity.getRelatedEntityUuid().equals(otherContact.getUuid()))
 				.forEach(a -> a.setRelatedEntityUuid(leadContact.getUuid()));
 			documentService.ensurePersisted(document);
-
-//
-//			RelatedEntities relatedEntity = new RelatedEntities().build(DocumentRelatedEntityType.CONTACT, leadContact.getUuid());
-//			relatedEntity.setDocument(document);
-//			documentRelatedEntitiesService.ensurePersisted(relatedEntity);
-//
-//			RelatedEntities documentRelatedEntity = documentRelatedEntitiesService
-//				.getByDocumentAndRelatedEntityUuid(document.getUuid(), otherContact.getUuid(), DocumentRelatedEntityType.CONTACT);
-//			documentRelatedEntitiesService.deletePermanent(documentRelatedEntity);
 		}
 	}
 

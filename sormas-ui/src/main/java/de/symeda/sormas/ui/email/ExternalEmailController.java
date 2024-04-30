@@ -94,9 +94,11 @@ public class ExternalEmailController {
 				Notification.show(null, I18nProperties.getString(Strings.notificationExternalEmailSent), Notification.Type.TRAY_NOTIFICATION);
 				callback.run();
 			} catch (DocumentTemplateException | ExternalEmailException e) {
+				logger.error("Email could not be sent", e);
 				Notification.show(I18nProperties.getString(Strings.errorOccurred), e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			} catch (AttachmentException | ValidationException e) {
 				logger.warn("Email could not be sent", e);
+				Notification.show(I18nProperties.getString(Strings.errorOccurred), e.getMessage(), Notification.Type.WARNING_MESSAGE);
 			}
 		});
 

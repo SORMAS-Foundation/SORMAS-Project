@@ -20,16 +20,10 @@
 
 package de.symeda.sormas.backend.document;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import org.apache.commons.lang3.NotImplementedException;
-
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityFacade;
@@ -38,8 +32,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 @Stateless(name = "DocumentRelatedEntitiesFacade")
 public class DocumentRelatedEntityFacadeEjb implements DocumentRelatedEntityFacade {
 
-	@EJB
-	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private DocumentService documentService;
 
@@ -69,41 +61,6 @@ public class DocumentRelatedEntityFacadeEjb implements DocumentRelatedEntityFaca
 		target.setDocument(documentService.getByReferenceDto(source.getDocument()));
 
 		return target;
-	}
-
-	@Override
-	public void delete(String uuid, DeletionDetails deletionDetails) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void restore(String uuid) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<ProcessedEntity> restore(List<String> uuids) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public boolean isDeleted(String uuid) {
-		return false;
-	}
-
-	@Override
-	public DocumentRelatedEntityDto saveDocumentRelatedEntity(DocumentRelatedEntityDto dto) {
-
-		DocumentRelatedEntity documentRelatedEntity = new DocumentRelatedEntity().build(dto.getRelatedEntityType(), dto.getRelatedEntityUuid());
-		documentRelatedEntity.setDocument(documentRelatedEntity.getDocument());
-		documentRelatedEntityService.ensurePersisted(documentRelatedEntity);
-
-		return toDto(documentRelatedEntity);
 	}
 
 	@LocalBean

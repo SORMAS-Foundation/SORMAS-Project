@@ -42,6 +42,7 @@ import com.vaadin.v7.ui.Upload;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.MultiFileUpload;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
+import de.symeda.sormas.api.DocumentHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
@@ -129,7 +130,7 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 			int alreadyAttachedCount = attachedDocumentsField.getSelectedItemsWithCaption().size();
 
 			Set<String> acceptedFileExtensions = FacadeProvider.getExternalEmailFacade().getAttachableFileExtensions();
-			String fileExtension = FacadeProvider.getDocumentFacade().getFileExtension(fileName);
+			String fileExtension = DocumentHelper.getFileExtension(fileName);
 
 			if (acceptedFileExtensions.contains(fileExtension)) {
 				if (alreadyAttachedCount < MAX_ATTACHMENT_NUMBER) {
@@ -146,7 +147,10 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 					limitInfoPopUpShown.set(true);
 					VaadinUiUtil.showSimplePopupWindow(
 						I18nProperties.getString(Strings.headingBulkEmailMaxAttachedFiles),
-						I18nProperties.getString(Strings.messageBulkEmailTooManySelectedAtachments),
+						String.format(
+							I18nProperties.getString(Strings.messageBulkEmailTooManySelectedAtachments),
+							MAX_ATTACHMENT_NUMBER,
+							MAX_ATTACHMENT_NUMBER),
 						ContentMode.HTML,
 						620);
 				}
