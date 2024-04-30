@@ -39,6 +39,8 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -476,6 +478,25 @@ public class EventParticipantsController {
 			notification.setDelayMsec(1000);
 			notification.show(Page.getCurrent());
 			ControllerProvider.getEventParticipantController().navigateToIndex(eventUuid);
+		}
+	}
+
+	public void sendEmailsToAllSelectedItems(Collection<EventParticipantIndexDto> selectedRows, EventParticipantsGrid eventParticipantsGrid) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			ControllerProvider.getExternalEmailController()
+				.<EventParticipantIndexDto> sendBulkEmail(
+					DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
+					RootEntityType.ROOT_EVENT_PARTICIPANT,
+					null,
+					selectedRows,
+					bulkOperationCallback(eventParticipantsGrid, eventParticipantsGrid::reload, null),
+					EventParticipantIndexDto::toReference);
 		}
 	}
 }

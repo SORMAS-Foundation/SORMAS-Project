@@ -264,6 +264,11 @@ public class TravelEntriesView extends AbstractView {
 							items -> ControllerProvider.getTravelEntryController()
 								.deleteAllSelectedItems(items, (TravelEntryGrid) grid, () -> navigateTo(criteria)),
 							true)));
+				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+					grid.bulkActionHandler(
+						items -> ControllerProvider.getTravelEntryController().sendEmailsToAllSelectedItems(items, (TravelEntryGrid) grid),
+						true);
+				}, UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 			} else {
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(
