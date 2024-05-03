@@ -502,6 +502,11 @@ public class ContactsView extends AbstractView implements HasName {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					}
+
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					}
+
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
@@ -611,6 +616,12 @@ public class ContactsView extends AbstractView implements HasName {
 									items -> ControllerProvider.getContactController()
 										.linkSelectedContactsToEvent(items, (AbstractContactGrid<?>) grid))));
 					}
+
+					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getContactController().sendEmailsToAllSelectedItems(items, (AbstractContactGrid<?>) grid),
+							true);
+					}, hasBulkOperationsRight && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 				} else {
 					bulkActions = List.of(
 						new MenuBarHelper.MenuBarItem(

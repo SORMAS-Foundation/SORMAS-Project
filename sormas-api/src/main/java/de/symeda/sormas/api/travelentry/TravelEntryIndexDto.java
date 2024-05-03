@@ -168,4 +168,8 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements IsTr
 	public void setInJurisdiction(boolean inJurisdiction) {
 		isInJurisdiction = inJurisdiction;
 	}
+
+	public TravelEntryReferenceDto toReference() {
+		return new TravelEntryReferenceDto(getUuid());
+	}
 }

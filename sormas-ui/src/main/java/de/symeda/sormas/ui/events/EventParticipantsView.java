@@ -229,6 +229,12 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 			if (relevanceStatusInfoLabel != null) {
 				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 			}
+
+			if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+				grid.getColumn(grid.DELETE_REASON_COLUMN)
+					.setHidden(!eventParticipantRelevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+			}
+
 			criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
@@ -362,6 +368,11 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 					});
 				}));
 			}
+
+			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+				grid.bulkActionHandler(items -> ControllerProvider.getEventParticipantController().sendEmailsToAllSelectedItems(items, grid), true);
+			}, UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
+
 		} else if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 				grid.bulkActionHandler(items -> {

@@ -198,6 +198,10 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 				}
 
 				relevanceStatusFilter.addValueChangeListener(e -> {
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					}
+
 					criteria.setRelevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					samplesView.navigateTo(criteria);
 				});
@@ -211,17 +215,21 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getEnvironmentSampleController()
-								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkDelete),
+							VaadinIcons.TRASH,
+							selectedItem -> ControllerProvider.getEnvironmentSampleController()
+								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_DELETE)));
 				} else {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
-							ControllerProvider.getEnvironmentSampleController()
-								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkRestore),
+							VaadinIcons.ARROW_BACKWARD,
+							selectedItem -> ControllerProvider.getEnvironmentSampleController()
+								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_DELETE)));
 				}
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());

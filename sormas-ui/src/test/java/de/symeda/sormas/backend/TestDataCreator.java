@@ -60,6 +60,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -1975,10 +1976,9 @@ public class TestDataCreator {
 		document.setName(name);
 		document.setMimeType(contentType);
 		document.setSize(size);
-		document.setRelatedEntityType(relatedEntityType);
-		document.setRelatedEntityUuid(relatedEntityUuid);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
 
-		return beanTest.getDocumentFacade().saveDocument(document, content);
+		return beanTest.getDocumentFacade().saveDocument(document, content, Collections.singletonList(documentRelatedEntities));
 	}
 
 	public ExportConfigurationDto createExportConfiguration(String name, ExportType exportType, Set<String> properites, UserReferenceDto user) {

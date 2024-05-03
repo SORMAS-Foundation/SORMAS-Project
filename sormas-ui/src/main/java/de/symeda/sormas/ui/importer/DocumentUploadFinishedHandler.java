@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.importer;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isFileSizeLimitExceeded;
 
 import java.io.InputStream;
+import java.util.Collections;
 
 import com.google.common.io.ByteStreams;
 import com.vaadin.server.Page;
@@ -27,6 +28,7 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadFinishedHandler;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -66,7 +68,7 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 						null,
 						ok -> {
 							if (ok) {
-								FacadeProvider.getDocumentFacade().deleteDocument(existing);
+								FacadeProvider.getDocumentFacade().deleteDocument(existing, relatedEntityUuid, relatedEntityType);
 								try {
 									saveDocument(fileName, mimeType, length, relatedEntityType, relatedEntityUuid, bytes);
 									if (filesLeftInQueue == 0) {
@@ -190,9 +192,8 @@ public class DocumentUploadFinishedHandler implements UploadFinishedHandler {
 		document.setName(fileName);
 		document.setMimeType(mimeType != null ? mimeType : DocumentDto.MIME_TYPE_DEFAULT);
 		document.setSize(length);
-		document.setRelatedEntityType(relatedEntityType);
-		document.setRelatedEntityUuid(relatedEntityUuid);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
 
-		FacadeProvider.getDocumentFacade().saveDocument(document, bytes);
+		FacadeProvider.getDocumentFacade().saveDocument(document, bytes, Collections.singletonList(documentRelatedEntities));
 	}
 }

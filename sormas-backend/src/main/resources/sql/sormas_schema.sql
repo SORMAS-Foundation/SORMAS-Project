@@ -12978,4 +12978,117 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (542, 'Remove_Specific_Perform_Bulk_Operation_User_Rights #10994');
 
+
+-- 2024-04-10 Create a new Self Report entity and IndexDTO #13059
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_VIEW' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_CREATE' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_EDIT' FROM userroles WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SELF_REPORT_DELETE' FROM userroles WHERE userroles.linkeddefaultuserrole in('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+
+CREATE TABLE IF NOT EXISTS selfreports
+(
+    id                  bigint       not null,
+    uuid                varchar(36)  not null unique,
+    changedate          timestamp    not null,
+    creationdate        timestamp    not null,
+    change_user_id      bigint,
+    sys_period          tstzrange    not null,
+    deleted             boolean DEFAULT false,
+    deletionreason      varchar(255),
+    otherdeletionreason text,
+    archived            boolean DEFAULT false,
+    archiveundonereason varchar(512),
+    endofprocessingdate timestamp without time zone,
+
+    type                varchar(255) not null,
+    reportdate          timestamp    not null,
+    caseReference text,
+    desease             varchar(255) not null,
+    diseasevariant      text,
+    firstname           text         not null,
+    lastname            text         not null,
+    sex                 varchar(255),
+    birthdatedd         integer,
+    birthdatemm         integer,
+    birthdateyyyy       integer,
+    nationalhealthid    text,
+    email               text,
+    phonenumber         text,
+    address_id          bigint,
+    comment             text,
+    responsibleuser_id  bigint,
+    investigationstatus varchar(255),
+    processingstatus    varchar(255),
+
+    primary key (id)
+);
+
+ALTER TABLE selfreports OWNER TO sormas_user;
+ALTER TABLE selfreports ADD CONSTRAINT fk_address_id FOREIGN KEY (address_id) REFERENCES location (id);
+ALTER TABLE selfreports ADD CONSTRAINT fk_responsibleuser_id FOREIGN KEY (responsibleuser_id) REFERENCES users (id);
+
+CREATE TABLE selfreports_history (LIKE selfreports);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON selfreports
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'selfreports_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON selfreports
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('selfreports_history', 'id');
+ALTER TABLE selfreports_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (543, 'Create a new Self Report entity and IndexDTO #13059');
+
+-- Add a self Reporting directory (UI) #13068
+
+ALTER TABLE selfreports RENAME COLUMN desease TO disease;
+ALTER TABLE selfreports_history
+    RENAME COLUMN desease TO disease;
+
+INSERT INTO schema_version (version_number, comment) VALUES (544, 'Add a self Reporting directory (UI) #13068');
+
+-- 2024-04-25 Bulk action - send emails with uploaded attached documents #13043
+CREATE TABLE documentrelatedentities
+(
+    id                 bigint PRIMARY KEY     NOT NULL,
+    uuid                varchar(36)  not null unique,
+    changedate         timestamp              not null,
+    creationdate       timestamp              not null,
+    change_user_id     bigint,
+    sys_period         tstzrange              not null,
+    document_id        bigint                 NOT NULL,
+    relatedentitytype character varying(255) NOT NULL,
+    relatedentityuuid character varying(36)  NOT NULL
+);
+ALTER TABLE documentrelatedentities ADD CONSTRAINT fk_documentsrelatedentities_documents_id FOREIGN KEY (document_id) REFERENCES documents(id);
+ALTER TABLE documentrelatedentities OWNER TO sormas_user;
+CREATE TABLE documentrelatedentities_history(LIKE documentrelatedentities
+);
+
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON documentrelatedentities
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documentrelatedentities_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON documentrelatedentities
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('documentrelatedentities_history', 'id');
+
+
+DO $$
+    DECLARE
+     rec RECORD;
+    BEGIN
+       FOR
+           rec IN SELECT * FROM documents
+           LOOP
+               INSERT INTO documentrelatedentities(id, uuid, changedate, creationdate, change_user_id, sys_period, document_id, relatedentitytype, relatedentityuuid)
+               values (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.change_user_id,  tstzrange(now(),null), rec.id, rec.relatedentity_type, rec.relatedentity_uuid);
+    END LOOP;
+    END;
+    $$ LANGUAGE plpgsql;
+
+ALTER TABLE documents DROP COLUMN relatedentity_type;
+ALTER TABLE documents DROP COLUMN relatedentity_uuid;
+ALTER TABLE documents_history DROP COLUMN relatedentity_type;
+ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
+
+INSERT INTO schema_version (version_number, comment) VALUES (545, '#13043 - Bulk action - send emails with uploaded attached documents');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

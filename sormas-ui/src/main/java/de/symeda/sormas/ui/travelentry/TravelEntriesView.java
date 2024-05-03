@@ -234,6 +234,11 @@ public class TravelEntriesView extends AbstractView {
 				if (relevanceStatusInfoLabel != null) {
 					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 				}
+
+				if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+					grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+				}
+
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 				navigateTo(criteria);
 			});
@@ -252,6 +257,11 @@ public class TravelEntriesView extends AbstractView {
 							items -> ControllerProvider.getTravelEntryController()
 								.deleteAllSelectedItems(items, (TravelEntryGrid) grid, () -> navigateTo(criteria)),
 							true)));
+				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+					grid.bulkActionHandler(
+						items -> ControllerProvider.getTravelEntryController().sendEmailsToAllSelectedItems(items, (TravelEntryGrid) grid),
+						true);
+				}, UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 			} else {
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(

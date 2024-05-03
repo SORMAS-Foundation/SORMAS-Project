@@ -3,9 +3,7 @@ package de.symeda.sormas.backend.common;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
-import java.util.HashMap;
-
-import javax.persistence.Query;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,33 +14,19 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.feature.FeatureConfiguration;
 
 public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetObsoleteUuidsSince() {
 
-		FeatureConfigurationIndexDto featureConfiguration =
-			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
-		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
-
-		executeInTransaction(em -> {
-			Query query = em.createQuery("select f from featureconfiguration f");
-			FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
-			HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
-			properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
-			singleResult.setProperties(properties);
-			em.persist(singleResult);
-		});
+		createFeatureConfiguration(FeatureType.LIMITED_SYNCHRONIZATION, true, Map.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true));
 
 		RequestContextHolder.setRequestContext(new RequestContextTO(true)); // simulate mobile call
 

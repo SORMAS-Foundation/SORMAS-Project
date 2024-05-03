@@ -321,6 +321,7 @@ public interface Strings {
 	String errorEventsFromAnotherJurisdiction = "errorEventsFromAnotherJurisdiction";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalEmailAttachmentCannotEncrypt = "errorExternalEmailAttachmentCannotEncrypt";
+	String errorExternalEmailMissingPersonEmailAddress = "errorExternalEmailMissingPersonEmailAddress";
 	String errorExternalSurveillanceToolCasesNotSharable = "errorExternalSurveillanceToolCasesNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
@@ -419,6 +420,10 @@ public interface Strings {
 	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
+	String headingBulkEmailMaxAttachedFiles = "headingBulkEmailMaxAttachedFiles";
+	String headingBulkEmailsNoProcessedEntities = "headingBulkEmailsNoProcessedEntities";
+	String headingBulkEmailsSomeNotSent = "headingBulkEmailsSomeNotSent";
+	String headingBulkEmailWrongFileType = "headingBulkEmailWrongFileType";
 	String headingBulkOperationProgress = "headingBulkOperationProgress";
 	String headingBulkSpecialCaseAccessNoneProcessed = "headingBulkSpecialCaseAccessNoneProcessed";
 	String headingBulkSpecialCaseAccessSomeNotProcessed = "headingBulkSpecialCaseAccessSomeNotProcessed";
@@ -1101,6 +1106,17 @@ public interface Strings {
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
 	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
+	String messageBulkEmailMaxAttachedFiles = "messageBulkEmailMaxAttachedFiles";
+	String messageBulkEmailsCountNotProcessed = "messageBulkEmailsCountNotProcessed";
+	String messageBulkEmailsCountNotProcessedAccessDenied = "messageBulkEmailsCountNotProcessedAccessDenied";
+	String messageBulkEmailsCountNotProcessedExternalReason = "messageBulkEmailsCountNotProcessedExternalReason";
+	String messageBulkEmailsFinishedWithoutSuccess = "messageBulkEmailsFinishedWithoutSuccess";
+	String messageBulkEmailsFinishedWithSkips = "messageBulkEmailsFinishedWithSkips";
+	String messageBulkEmailsNoEligible = "messageBulkEmailsNoEligible";
+	String messageBulkEmailsNotSentToToEntites = "messageBulkEmailsNotSentToToEntites";
+	String messageBulkEmailsSentToAllSelectedEntities = "messageBulkEmailsSentToAllSelectedEntities";
+	String messageBulkEmailTooManySelectedAtachments = "messageBulkEmailTooManySelectedAtachments";
+	String messageBulkEmailWrongAttachmentExtension = "messageBulkEmailWrongAttachmentExtension";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
 	String messageBulkSpecialCaseAccessAllProcessed = "messageBulkSpecialCaseAccessAllProcessed";
 	String messageCampaignArchived = "messageCampaignArchived";
