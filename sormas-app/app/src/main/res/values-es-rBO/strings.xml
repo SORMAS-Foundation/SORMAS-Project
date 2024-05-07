@@ -693,8 +693,8 @@
     <string name="no_camera_permission">No hay permiso para cámaras</string>
     <string name="permission_camera_rationale">El acceso a la cámara es necesario para la detección</string>
     <string name="scan_field_sample_id">Escanear id de muestra de campo</string>
-    <string name="caption_facility_type_group">Categoría de instalaciones</string>
-    <string name="caption_facility_type">Tipo de instalación</string>
+    <string name="caption_facility_type_group">Categoría de establecimientos</string>
+    <string name="caption_facility_type">Tipo de establecimiento</string>
     <string name="value_vaccine_date_unknown">Fecha de vacunación</string>
     <string name="value_vaccine_name_unknown">Vacuna N/A</string>
     <string name="value_vaccine_manufacturer_unknown">Fabricante N/A</string>
