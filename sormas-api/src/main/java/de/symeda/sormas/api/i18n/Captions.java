@@ -227,6 +227,7 @@ public interface Captions {
 	String bulkDiseaseVariant = "bulkDiseaseVariant";
 	String bulkEdit = "bulkEdit";
 	String bulkEditAssignee = "bulkEditAssignee";
+	String bulkEmailSend = "bulkEmailSend";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
 	String bulkEventManagementStatus = "bulkEventManagementStatus";
 	String bulkEventParticipantsToContacts = "bulkEventParticipantsToContacts";
@@ -1427,6 +1428,8 @@ public interface Captions {
 	String ExternalEmailOptions_attachedDocuments = "ExternalEmailOptions.attachedDocuments";
 	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
 	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
+	String ExternalEmailOptionsWithAttachments_attachedDocuments = "ExternalEmailOptionsWithAttachments.attachedDocuments";
+	String ExternalEmailOptionsWithAttachments_templateName = "ExternalEmailOptionsWithAttachments.templateName";
 	String externalEmailSentBy = "externalEmailSentBy";
 	String externalEmailSentTo = "externalEmailSentTo";
 	String externalEmailUsedTemplate = "externalEmailUsedTemplate";

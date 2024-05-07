@@ -158,6 +158,7 @@ import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.Document
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal;
 import de.symeda.sormas.backend.environment.EnvironmentService;
@@ -919,6 +920,10 @@ public abstract class AbstractBeanTest {
 
 	public DocumentService getDocumentService() {
 		return getBean(DocumentService.class);
+	}
+
+	public DocumentRelatedEntityService getDocumentRelatedEntitiesService() {
+		return getBean(DocumentRelatedEntityService.class);
 	}
 
 	public ExportFacade getExportFacade() {

@@ -15913,16 +15913,6 @@
           "pseudonymized" : {
             "type" : "boolean"
           },
-          "relatedEntityType" : {
-            "type" : "string",
-            "enum" : [ "CASE", "CONTACT", "ACTION", "EVENT", "TRAVEL_ENTRY" ]
-          },
-          "relatedEntityUuid" : {
-            "type" : "string",
-            "maxLength" : 36,
-            "minLength" : 20,
-            "pattern" : "^[0-9a-zA-Z-]*$"
-          },
           "size" : {
             "type" : "integer",
             "format" : "int64"
@@ -15937,7 +15927,7 @@
             "pattern" : "^[0-9a-zA-Z-]*$"
           }
         },
-        "required" : [ "mimeType", "name", "relatedEntityType", "relatedEntityUuid", "size", "uploadingUser" ]
+        "required" : [ "mimeType", "name", "size", "uploadingUser" ]
       },
       "EnvironmentDto" : {
         "type" : "object",

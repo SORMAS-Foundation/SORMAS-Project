@@ -828,6 +828,12 @@ public class CasesView extends AbstractView implements HasName {
 										items -> ControllerProvider.getSpecialCaseAccessController()
 											.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
 						}
+						menuBarItems
+							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().sendEmailsToAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
+									true);
+							}, hasBulkOperationsRight && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {

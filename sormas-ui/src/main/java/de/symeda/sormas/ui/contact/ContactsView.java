@@ -624,6 +624,12 @@ public class ContactsView extends AbstractView implements HasName {
 									items -> ControllerProvider.getContactController()
 										.linkSelectedContactsToEvent(items, (AbstractContactGrid<?>) grid))));
 					}
+
+					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getContactController().sendEmailsToAllSelectedItems(items, (AbstractContactGrid<?>) grid),
+							true);
+					}, hasBulkOperationsRight && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 				} else {
 					bulkActions = List.of(
 						new MenuBarHelper.MenuBarItem(

@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 
@@ -16,6 +17,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -251,4 +255,22 @@ public class TravelEntryController {
 		};
 	}
 
+	public void sendEmailsToAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, TravelEntryGrid travelEntryGrid) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			ControllerProvider.getExternalEmailController()
+				.sendBulkEmail(
+					DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
+					RootEntityType.ROOT_TRAVEL_ENTRY,
+					DocumentRelatedEntityType.TRAVEL_ENTRY,
+					selectedRows,
+					bulkOperationCallback(travelEntryGrid, travelEntryGrid::reload, null),
+					TravelEntryIndexDto::toReference);
+		}
+	}
 }
