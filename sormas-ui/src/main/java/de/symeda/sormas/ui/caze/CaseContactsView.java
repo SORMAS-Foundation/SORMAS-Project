@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.contact.ContactsView.buildDetailedExportConfiguration;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -48,6 +50,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -94,6 +97,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private DetailSubComponentWrapper gridLayout;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
+	private final ExportConfigurationDto detailedExportConfiguration;
 
 	public CaseContactsView() {
 
@@ -103,6 +107,7 @@ public class CaseContactsView extends AbstractCaseView {
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		viewConfiguration.setInEagerMode(true);
 		criteria = ViewModelProviders.of(CaseContactsView.class).get(ContactCriteria.class);
+		detailedExportConfiguration = buildDetailedExportConfiguration();
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -316,7 +321,7 @@ public class CaseContactsView extends AbstractCaseView {
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 				StreamResource extendedExportStreamResource =
-					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
+					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, detailedExportConfiguration);
 				addExportButton(
 					extendedExportStreamResource,
 					exportButton,
