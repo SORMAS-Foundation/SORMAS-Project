@@ -562,27 +562,6 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		archiveOrDearchiveEventGroup(uuid, archive);
 	}
 
-	public void archiveOrDearchiveEventGroup(String uuid, boolean archive) {
-		User currentUser = userService.getCurrentUser();
-
-		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
-
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
-			for (RegionReferenceDto region : regions) {
-				if (!userService.hasRegion(region)) {
-					throw new UnsupportedOperationException(
-						"User " + currentUser.getUuid() + " is not allowed to " + (archive ? "" : "de")
-							+ "archive event groups related to another region.");
-				}
-			}
-		}
-
-		eventGroup.setArchived(archive);
-		eventGroupService.ensurePersisted(eventGroup);
-	}
-
 	@Override
 	public List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -740,6 +719,27 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			caption += " (" + user.getUserEmail() + ")";
 		}
 		return caption;
+	}
+
+	private void archiveOrDearchiveEventGroup(String uuid, boolean archive) {
+		User currentUser = userService.getCurrentUser();
+
+		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
+			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
+			for (RegionReferenceDto region : regions) {
+				if (!userService.hasRegion(region)) {
+					throw new UnsupportedOperationException(
+						"User " + currentUser.getUuid() + " is not allowed to " + (archive ? "" : "de")
+							+ "archive event groups related to another region.");
+				}
+			}
+		}
+
+		eventGroup.setArchived(archive);
+		eventGroupService.ensurePersisted(eventGroup);
 	}
 
 	public static EventGroupDto toDto(EventGroup source) {
