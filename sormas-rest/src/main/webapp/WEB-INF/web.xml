@@ -445,7 +445,7 @@
 	</security-role>
 
     <security-role>
-        <role-name>INFRASTRUCTURE_VIEW_ARCHVED</role-name>
+        <role-name>INFRASTRUCTURE_VIEW_ARCHIVED</role-name>
     </security-role>
 
 	<security-role>
