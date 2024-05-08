@@ -240,20 +240,26 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return processedEntity;
 	}
 
-	@RightsAllowed({
-		UserRight._INFRASTRUCTURE_ARCHIVE,
-		UserRight._INFRASTRUCTURE_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public ProcessedEntity dearchive(String uuid) {
 		checkInfraDataLocked();
 		if (hasArchivedParentInfrastructure(Collections.singletonList(uuid))) {
 			throw new AccessDeniedException(I18nProperties.getString(dearchivingNotPossibleMessageProperty));
 		}
-		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(false);
-			service.ensurePersisted(ado);
+
+		ProcessedEntity processedEntity;
+		if (userService.hasRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			ADO ado = service.getByUuid(uuid);
+			if (ado != null) {
+				ado.setArchived(false);
+				service.ensurePersisted(ado);
+			}
+			processedEntity = new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS);
+		} else {
+			processedEntity = new ProcessedEntity(uuid, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
 		}
-		return new ProcessedEntity(uuid, ProcessedEntityStatus.SUCCESS);
+
+		return processedEntity;
 	}
 
 	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
@@ -270,9 +276,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return processedEntities;
 	}
 
-	@RightsAllowed({
-		UserRight._INFRASTRUCTURE_ARCHIVE,
-		UserRight._INFRASTRUCTURE_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids) {
 		List<ProcessedEntity> processedEntities = new ArrayList<>();
 

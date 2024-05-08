@@ -38,6 +38,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -428,11 +429,16 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._CAMPAIGN_ARCHIVE,
-		UserRight._CAMPAIGN_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+		if (userService.hasRight(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override

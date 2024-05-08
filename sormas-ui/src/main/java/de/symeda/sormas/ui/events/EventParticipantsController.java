@@ -233,6 +233,11 @@ public class EventParticipantsController {
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getAutomaticDeletionInfo(eventParticipantUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventParticipantFacade().getManuallyDeletionInfo(eventParticipantUuid);
 
+		if (FacadeProvider.getEventParticipantFacade().isArchived(eventParticipantUuid)
+			&& !UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		final EventParticipantEditForm editForm =
 			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.isInJurisdiction());
 		editForm.setValue(eventParticipant);
@@ -274,18 +279,13 @@ public class EventParticipantsController {
 					() -> navigateToData(eventParticipantUuid));
 		}
 
-		if (FacadeProvider.getEventParticipantFacade().isArchived(eventParticipantUuid)
-			&& !UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editComponent.restrictEditableComponentsOnEditView(
-				UserRight.EVENTPARTICIPANT_EDIT,
-				null,
-				UserRight.EVENTPARTICIPANT_DELETE,
-				UserRight.EVENTPARTICIPANT_ARCHIVE,
-				FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
-				eventParticipant.isInJurisdiction());
-		}
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.EVENTPARTICIPANT_EDIT,
+			null,
+			UserRight.EVENTPARTICIPANT_DELETE,
+			UserRight.EVENTPARTICIPANT_ARCHIVE,
+			FacadeProvider.getEventParticipantFacade().getEditPermissionType(eventParticipantUuid),
+			eventParticipant.isInJurisdiction());
 
 		return editComponent;
 	}

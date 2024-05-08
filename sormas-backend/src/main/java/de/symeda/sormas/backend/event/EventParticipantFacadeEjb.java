@@ -1333,11 +1333,17 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._EVENTPARTICIPANT_ARCHIVE,
-		UserRight._EVENTPARTICIPANT_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override

@@ -112,6 +112,10 @@ public class CampaignController {
 
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
 
+		if (FacadeProvider.getCampaignFacade().isArchived(campaignDto.getUuid()) && !UiUtil.permitted(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
 		boolean isCreate = false;
 		if (campaignDto == null) {
@@ -165,17 +169,8 @@ public class CampaignController {
 			}
 		}
 
-		if (FacadeProvider.getCampaignFacade().isArchived(campaignDto.getUuid()) && !UiUtil.permitted(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			campaignComponent.restrictEditableComponentsOnEditView(
-				UserRight.CAMPAIGN_EDIT,
-				null,
-				UserRight.CAMPAIGN_DELETE,
-				UserRight.CAMPAIGN_ARCHIVE,
-				null,
-				true);
-		}
+		campaignComponent
+			.restrictEditableComponentsOnEditView(UserRight.CAMPAIGN_EDIT, null, UserRight.CAMPAIGN_DELETE, UserRight.CAMPAIGN_ARCHIVE, null, true);
 
 		return campaignComponent;
 	}
