@@ -13986,19 +13986,6 @@ components:
           minLength: 0
         pseudonymized:
           type: boolean
-        relatedEntityType:
-          type: string
-          enum:
-          - CASE
-          - CONTACT
-          - ACTION
-          - EVENT
-          - TRAVEL_ENTRY
-        relatedEntityUuid:
-          type: string
-          maxLength: 36
-          minLength: 20
-          pattern: "^[0-9a-zA-Z-]*$"
         size:
           type: integer
           format: int64
@@ -14012,8 +13999,6 @@ components:
       required:
       - mimeType
       - name
-      - relatedEntityType
-      - relatedEntityUuid
       - size
       - uploadingUser
     EnvironmentDto:
