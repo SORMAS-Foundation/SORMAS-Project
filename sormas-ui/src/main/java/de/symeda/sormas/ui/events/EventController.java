@@ -890,6 +890,10 @@ public class EventController {
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, Consumer<EventStatus> saveCallback) {
 
+		if (FacadeProvider.getEventFacade().isArchived(eventUuid) && !UiUtil.permitted(UserRight.EVENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		EventDto event = findEvent(eventUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventFacade().getManuallyDeletionInfo(eventUuid);
@@ -978,17 +982,13 @@ public class EventController {
 			}
 		}
 
-		if (FacadeProvider.getEventFacade().isArchived(eventUuid) && !UiUtil.permitted(UserRight.EVENT_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editView.restrictEditableComponentsOnEditView(
-				UserRight.EVENT_EDIT,
-				null,
-				UserRight.EVENT_DELETE,
-				UserRight.EVENT_ARCHIVE,
-				FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
-				event.isInJurisdiction());
-		}
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.EVENT_EDIT,
+			null,
+			UserRight.EVENT_DELETE,
+			UserRight.EVENT_ARCHIVE,
+			FacadeProvider.getEventFacade().getEditPermissionType(eventUuid),
+			event.isInJurisdiction());
 
 		return editView;
 	}

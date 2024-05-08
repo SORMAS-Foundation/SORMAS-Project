@@ -142,6 +142,10 @@ public class ImmunizationController {
 
 		String uuid = immunizationDto.getUuid();
 
+		if (FacadeProvider.getImmunizationFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
 			immunizationDto.isPseudonymized(),
 			immunizationDto.isInJurisdiction(),
@@ -207,24 +211,16 @@ public class ImmunizationController {
 		// Initialize 'Archive' button
 		if (UiUtil.permitted(UserRight.IMMUNIZATION_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					immunizationDto,
-					ArchiveHandlers.forImmunization(),
-					editComponent,
-					() -> navigateToImmunization(uuid));
+				.addArchivingButton(immunizationDto, ArchiveHandlers.forImmunization(), editComponent, () -> navigateToImmunization(uuid));
 		}
 
-		if (FacadeProvider.getImmunizationFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editComponent.restrictEditableComponentsOnEditView(
-				UserRight.IMMUNIZATION_EDIT,
-				null,
-				UserRight.IMMUNIZATION_DELETE,
-				UserRight.IMMUNIZATION_ARCHIVE,
-				FacadeProvider.getImmunizationFacade().getEditPermissionType(uuid),
-				immunizationDto.isInJurisdiction());
-		}
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.IMMUNIZATION_EDIT,
+			null,
+			UserRight.IMMUNIZATION_DELETE,
+			UserRight.IMMUNIZATION_ARCHIVE,
+			FacadeProvider.getImmunizationFacade().getEditPermissionType(uuid),
+			immunizationDto.isInJurisdiction());
 
 		return editComponent;
 	}

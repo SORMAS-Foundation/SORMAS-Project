@@ -260,9 +260,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
 		Event event = service.getByUuid(uuid);
-		return (detailedReferences)
-			? convertToDetailedReferenceDto(event, createPseudonymizer(event))
-			: toPseudonymizedDto(event);
+		return (detailedReferences) ? convertToDetailedReferenceDto(event, createPseudonymizer(event)) : toPseudonymizedDto(event);
 	}
 
 	@Override
@@ -1054,9 +1052,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._EVENT_ARCHIVE,
-		UserRight._EVENT_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._EVENT_ARCHIVE)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public ProcessedEntity dearchive(String entityUuid, String dearchiveReason) {
 		ProcessedEntity processedEntity = dearchive(Collections.singletonList(entityUuid), dearchiveReason).get(0);
@@ -1065,14 +1061,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._EVENT_ARCHIVE,
-		UserRight._EVENT_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._EVENT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> eventUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEntities = super.dearchive(eventUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
 
-		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
-		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+		if (userService.hasRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(eventUuids, dearchiveReason);
+
+			List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+			eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
 
 		return processedEntities;
 	}

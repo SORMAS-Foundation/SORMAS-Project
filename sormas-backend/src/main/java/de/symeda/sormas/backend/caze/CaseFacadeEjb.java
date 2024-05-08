@@ -2845,9 +2845,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._CASE_ARCHIVE,
-		UserRight._CASE_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public ProcessedEntity dearchive(String entityUuid, String dearchiveReason, boolean includeContacts) {
 		ProcessedEntity processedEntity = dearchive(Collections.singletonList(entityUuid), dearchiveReason, includeContacts).get(0);
@@ -2856,15 +2854,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._CASE_ARCHIVE,
-		UserRight._CASE_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
-		List<ProcessedEntity> processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
 
-		if (includeContacts) {
-			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
-			contactService.dearchive(caseContacts, dearchiveReason);
+		if (userService.hasRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+			if (includeContacts) {
+				List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
+				contactService.dearchive(caseContacts, dearchiveReason);
+			}
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
 		}
 
 		return processedEntities;

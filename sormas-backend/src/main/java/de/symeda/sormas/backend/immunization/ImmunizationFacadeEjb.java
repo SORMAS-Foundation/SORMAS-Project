@@ -774,11 +774,17 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._IMMUNIZATION_ARCHIVE,
-		UserRight._IMMUNIZATION_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._IMMUNIZATION_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@LocalBean

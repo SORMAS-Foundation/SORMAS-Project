@@ -132,6 +132,10 @@ public class TravelEntryController {
 
 	public CommitDiscardWrapperComponent<TravelEntryDataForm> getTravelEntryDataEditComponent(String travelEntryUuid) {
 
+		if (FacadeProvider.getTravelEntryFacade().isArchived(travelEntryUuid) && !UiUtil.permitted(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		TravelEntryDto travelEntry = findTravelEntry(travelEntryUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getManuallyDeletionInfo(travelEntryUuid);
@@ -179,17 +183,13 @@ public class TravelEntryController {
 				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntryUuid));
 		}
 
-		if (FacadeProvider.getTravelEntryFacade().isArchived(travelEntryUuid) && !UiUtil.permitted(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editComponent.restrictEditableComponentsOnEditView(
-				UserRight.TRAVEL_ENTRY_EDIT,
-				null,
-				UserRight.TRAVEL_ENTRY_DELETE,
-				UserRight.TRAVEL_ENTRY_ARCHIVE,
-				FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
-				travelEntry.isInJurisdiction());
-		}
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.TRAVEL_ENTRY_EDIT,
+			null,
+			UserRight.TRAVEL_ENTRY_DELETE,
+			UserRight.TRAVEL_ENTRY_ARCHIVE,
+			FacadeProvider.getTravelEntryFacade().getEditPermissionType(travelEntryUuid),
+			travelEntry.isInJurisdiction());
 
 		return editComponent;
 	}

@@ -912,6 +912,11 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
+
+		if (FacadeProvider.getCaseFacade().isArchived(caseUuid) && !UiUtil.permitted(UserRight.CASE_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		CaseDataDto caze = findCase(caseUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getCaseFacade().getAutomaticDeletionInfo(caseUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getCaseFacade().getManuallyDeletionInfo(caseUuid);
@@ -963,17 +968,13 @@ public class CaseController {
 			appendSpecialCommands(caze, editView);
 		}
 
-		if (FacadeProvider.getCaseFacade().isArchived(caseUuid) && !UiUtil.permitted(UserRight.CASE_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editView.restrictEditableComponentsOnEditView(
-				UserRight.CASE_EDIT,
-				null,
-				UserRight.CASE_DELETE,
-				UserRight.CASE_ARCHIVE,
-				FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
-				caze.isInJurisdiction());
-		}
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.CASE_EDIT,
+			null,
+			UserRight.CASE_DELETE,
+			UserRight.CASE_ARCHIVE,
+			FacadeProvider.getCaseFacade().getEditPermissionType(caze.getUuid()),
+			caze.isInJurisdiction());
 
 		return editView;
 	}

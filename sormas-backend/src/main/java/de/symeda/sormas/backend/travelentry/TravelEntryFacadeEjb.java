@@ -484,11 +484,17 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed({
-		UserRight._TRAVEL_ENTRY_ARCHIVE,
-		UserRight._TRAVEL_ENTRY_VIEW_ARCHIVED })
+	@RightsAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override
