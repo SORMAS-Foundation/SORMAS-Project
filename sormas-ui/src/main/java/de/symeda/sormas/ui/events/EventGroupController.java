@@ -229,6 +229,10 @@ public class EventGroupController {
 
 	public CommitDiscardWrapperComponent<?> getEventGroupEditComponent(String uuid) {
 
+		if (FacadeProvider.getEventGroupFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.EVENTGROUP_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		EventGroupDto eventGroup = FacadeProvider.getEventGroupFacade().getEventGroupByUuid(uuid);
 		EventGroupDataForm eventGroupEditForm = new EventGroupDataForm(false);
 		eventGroupEditForm.setValue(eventGroup);
@@ -271,17 +275,13 @@ public class EventGroupController {
 
 		editView.addDiscardListener(SormasUI::refreshView);
 
-		if (FacadeProvider.getEventGroupFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.EVENTGROUP_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editView.restrictEditableComponentsOnEditView(
-				UserRight.EVENTGROUP_EDIT,
-				null,
-				UserRight.EVENTGROUP_DELETE,
-				UserRight.EVENTGROUP_ARCHIVE,
-				editPermission,
-				true);
-		}
+		editView.restrictEditableComponentsOnEditView(
+			UserRight.EVENTGROUP_EDIT,
+			null,
+			UserRight.EVENTGROUP_DELETE,
+			UserRight.EVENTGROUP_ARCHIVE,
+			editPermission,
+			true);
 
 		return editView;
 
@@ -324,7 +324,7 @@ public class EventGroupController {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						FacadeProvider.getEventGroupFacade().archiveEventGroup(uuid, true);
+						FacadeProvider.getEventGroupFacade().archiveEventGroup(uuid);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageEventGroupArchived),
@@ -347,7 +347,7 @@ public class EventGroupController {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						FacadeProvider.getEventGroupFacade().dearchiveEventGroup(uuid, false);
+						FacadeProvider.getEventGroupFacade().dearchiveEventGroup(uuid);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageEventGroupDearchived),

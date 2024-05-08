@@ -104,6 +104,10 @@ public class EnvironmentController {
 		UserRight editUserRight,
 		boolean isEditAllowed) {
 
+		if (FacadeProvider.getEnvironmentFacade().isArchived(environmentUuid) && !UiUtil.permitted(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getByUuid(environmentUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getAutomaticDeletionInfo(environmentUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getManuallyDeletionInfo(environmentUuid);
@@ -183,17 +187,13 @@ public class EnvironmentController {
 			}
 		}
 
-		if (FacadeProvider.getEnvironmentFacade().isArchived(environmentUuid) && !UiUtil.permitted(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		} else {
-			editComponent.restrictEditableComponentsOnEditView(
-				UserRight.ENVIRONMENT_EDIT,
-				null,
-				UserRight.ENVIRONMENT_DELETE,
-				UserRight.ENVIRONMENT_ARCHIVE,
-				FacadeProvider.getEnvironmentFacade().getEditPermissionType(environmentDto.getUuid()),
-				true);
-		}
+		editComponent.restrictEditableComponentsOnEditView(
+			UserRight.ENVIRONMENT_EDIT,
+			null,
+			UserRight.ENVIRONMENT_DELETE,
+			UserRight.ENVIRONMENT_ARCHIVE,
+			FacadeProvider.getEnvironmentFacade().getEditPermissionType(environmentDto.getUuid()),
+			true);
 
 		return editComponent;
 	}

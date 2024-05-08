@@ -67,9 +67,9 @@ public interface EventGroupFacade {
 
 	void deleteEventGroup(String uuid);
 
-	void archiveEventGroup(String uuid, boolean archive);
+	void archiveEventGroup(String uuid);
 
-	void dearchiveEventGroup(String uuid, boolean archive);
+	void dearchiveEventGroup(String uuid);
 
 	List<RegionReferenceDto> getEventGroupRelatedRegions(String uuid);
 
