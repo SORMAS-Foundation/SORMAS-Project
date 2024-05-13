@@ -26,13 +26,9 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class SelfReportsView extends AbstractView {
 
 	private static final long serialVersionUID = -6229689625299341177L;
-
 	public static final String VIEW_NAME = "selfreports";
-
 	private final ViewConfiguration viewConfiguration;
-
 	private final SelfReportCriteria gridCriteria;
-
 	private final SelfReportGridComponent gridComponent;
 
 	public SelfReportsView() {
@@ -41,6 +37,7 @@ public class SelfReportsView extends AbstractView {
 		setSizeFull();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+
 		gridCriteria = ViewModelProviders.of(getClass())
 			.getOrDefault(SelfReportCriteria.class, () -> new SelfReportCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE));
 
@@ -49,6 +46,7 @@ public class SelfReportsView extends AbstractView {
 			navigateTo(null, true);
 		});
 		addComponent(gridComponent);
+
 	}
 
 	@Override
