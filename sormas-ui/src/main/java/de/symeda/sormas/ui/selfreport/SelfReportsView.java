@@ -37,7 +37,6 @@ public class SelfReportsView extends AbstractView {
 		setSizeFull();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
-
 		gridCriteria = ViewModelProviders.of(getClass())
 			.getOrDefault(SelfReportCriteria.class, () -> new SelfReportCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE));
 
@@ -46,7 +45,6 @@ public class SelfReportsView extends AbstractView {
 			navigateTo(null, true);
 		});
 		addComponent(gridComponent);
-
 	}
 
 	@Override

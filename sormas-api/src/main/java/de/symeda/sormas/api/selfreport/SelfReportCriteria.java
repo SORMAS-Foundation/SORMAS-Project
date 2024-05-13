@@ -32,9 +32,6 @@ public class SelfReportCriteria extends BaseCriteria implements Serializable {
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String REPORT_DATE = "reportDate";
-	public static final String INVESTIGATION_STATUS = "investigationStatus";
-	public static final String RELEVANCE_STATUS = "relevanceStatus";
-
 	private static final long serialVersionUID = 7245463026500908524L;
 
 	private String freeText;

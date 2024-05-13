@@ -120,7 +120,6 @@ public class SelfReportGridComponent extends VerticalLayout {
 				criteria.getRelevanceStatus(),
 				UserRight.SELF_REPORT_DELETE,
 				relevanceStatus -> {
-					//TODO: add delete reason column
 					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
 						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatus.equals(EntityRelevanceStatus.DELETED));
 					}

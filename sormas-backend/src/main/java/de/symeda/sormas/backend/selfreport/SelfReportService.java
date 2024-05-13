@@ -84,11 +84,9 @@ public class SelfReportService extends AbstractCoreAdoService<SelfReport, SelfRe
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SelfReport.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SelfReport.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SelfReport.EMAIL), textFilter),
-
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
-
 					CriteriaBuilderHelper.ilike(cb, from.get(SelfReport.PHONE_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(SelfReport.NATIONAL_HEALTH_ID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);

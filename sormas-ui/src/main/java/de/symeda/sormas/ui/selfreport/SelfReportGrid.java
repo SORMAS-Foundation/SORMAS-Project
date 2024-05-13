@@ -61,7 +61,6 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 		}
 
 		initColumns(criteria);
-
 	}
 
 	protected void initColumns(SelfReportCriteria criteria) {
