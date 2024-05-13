@@ -13091,4 +13091,13 @@ ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
 
 INSERT INTO schema_version (version_number, comment) VALUES (545, '#13043 - Bulk action - send emails with uploaded attached documents');
 
+-- 2024-04-24 Extend the contacts with Case Reference Number & add case reference number to cases #13067
+
+ALTER TABLE cases ADD COLUMN casereferencenumber text;
+ALTER TABLE cases_history ADD COLUMN casereferencenumber text;
+ALTER TABLE contact ADD COLUMN casereferencenumber text;
+ALTER TABLE contact_history ADD COLUMN casereferencenumber text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (546, 'Extend the contacts with Case Reference Number & add case reference number to cases #13067');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

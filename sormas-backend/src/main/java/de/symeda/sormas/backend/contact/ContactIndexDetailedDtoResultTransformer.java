@@ -53,7 +53,7 @@ public class ContactIndexDetailedDtoResultTransformer implements ResultTransform
                 (String) tuple[++index], (Date) tuple[++index],
                 (CaseClassification) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (Date) tuple[++index],
-                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (DeletionReason) tuple[++index], (String) tuple[++index], (Boolean) tuple[++index], (Boolean) tuple[++index],
+                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (DeletionReason) tuple[++index], (String) tuple[++index], (Boolean) tuple[++index], (Boolean) tuple[++index],
                 (Sex) tuple[++index], (Integer) tuple[++index], (ApproximateAgeType) tuple[++index],
                 (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (String) tuple[++index], (String) tuple[++index], (ContactRelation) tuple[++index], (Integer) tuple[++index]

@@ -180,6 +180,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			removeColumn(DELETE_REASON_COLUMN);
 		}
 
+		if (!UiUtil.enabled(FeatureType.SELF_REPORTING)) {
+			removeColumn(ContactIndexDto.CASE_REFERENCE_NUMBER);
+		}
+
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
@@ -202,6 +206,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.EXTERNAL_ID,
 					ContactIndexDto.EXTERNAL_TOKEN,
 					ContactIndexDto.INTERNAL_TOKEN,
+					ContactIndexDto.CASE_REFERENCE_NUMBER,
 					DISEASE_SHORT,
 					ContactIndexDto.CONTACT_CLASSIFICATION,
 					ContactIndexDto.CONTACT_STATUS),

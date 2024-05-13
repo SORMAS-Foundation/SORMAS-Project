@@ -189,6 +189,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			removeColumn(DELETE_REASON_COLUMN);
 		}
 
+		if (!UiUtil.enabled(FeatureType.SELF_REPORTING)) {
+			removeColumn(CaseIndexDto.CASE_REFERENCE_NUMBER);
+		}
+
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
@@ -215,6 +219,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					CaseIndexDto.EXTERNAL_ID,
 					CaseIndexDto.EXTERNAL_TOKEN,
 					CaseIndexDto.INTERNAL_TOKEN,
+					CaseIndexDto.CASE_REFERENCE_NUMBER,
 					DISEASE_SHORT,
 					CaseIndexDto.DISEASE_VARIANT,
 					CaseIndexDto.CASE_CLASSIFICATION,
