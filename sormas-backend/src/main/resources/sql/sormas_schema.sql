@@ -11681,7 +11681,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (475, 'Make region a
 UPDATE deletionconfiguration SET deletionPeriod = 7 WHERE deletionPeriod IS NOT NULL AND deletionPeriod < 7;
 ALTER TABLE deletionconfiguration ADD CONSTRAINT chk_min_deletion_period CHECK (deletionPeriod IS NULL OR deletionPeriod >= 7);
 
-INSERT INTO schema_version (version_number, comment) VALUES (476, 'Minimum deletion period 7 days #9471');
+INSERT INTO schema_version (version_number, comment)
+VALUES (476, 'Minimumdeletion period 7 days #9471');
 
 -- 2022-07-25 S2S_added sample after sharing a case/contact does not get shared #9771
 ALTER TABLE sharerequestinfo ADD COLUMN datatype varchar(255);
@@ -13090,5 +13091,22 @@ ALTER TABLE documents_history DROP COLUMN relatedentity_type;
 ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
 
 INSERT INTO schema_version (version_number, comment) VALUES (545, '#13043 - Bulk action - send emails with uploaded attached documents');
+
+-- 2024-05-07 #13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'SELF_REPORT_ARCIVE'
+FROM userroles
+WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+
+ALTER TABLE selfreports
+    ADD COLUMN diseaseDetails        text,
+    ADD COLUMN diseaseVariantDetails text;
+
+ALTER TABLE selfreports_history
+    ADD COLUMN diseaseDetails        text,
+    ADD COLUMN diseaseVariantDetails text;
+
+INSERT INTO schema_version (version_number, comment)
+VALUES (547, '#13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

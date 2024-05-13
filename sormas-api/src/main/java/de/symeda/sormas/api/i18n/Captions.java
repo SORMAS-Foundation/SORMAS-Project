@@ -2182,6 +2182,7 @@ public interface Captions {
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String selectOtherSample = "selectOtherSample";
 	String selectSimilarSample = "selectSimilarSample";
+	String SelfReport = "SelfReport";
 	String SelfReport_address = "SelfReport.address";
 	String SelfReport_birthdateDD = "SelfReport.birthdateDD";
 	String SelfReport_birthdateMM = "SelfReport.birthdateMM";
@@ -2204,6 +2205,7 @@ public interface Captions {
 	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
 	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
 	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
+	String selfReportSelfReportsList = "selfReportSelfReportsList";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";

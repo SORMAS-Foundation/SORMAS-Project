@@ -72,7 +72,9 @@ public class SelfReport extends CoreAdo {
 	private Date reportDate;
 	private String caseReference;
 	private Disease disease;
+	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	private String diseaseVariantDetails;
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -127,10 +129,28 @@ public class SelfReport extends CoreAdo {
 		this.disease = disease;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	@Column
 	@Convert(converter = DiseaseVariantConverter.class)
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
