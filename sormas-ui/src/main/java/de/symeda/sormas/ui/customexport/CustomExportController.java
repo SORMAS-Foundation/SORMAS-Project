@@ -47,7 +47,10 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.CONTACT,
-			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption),
+			ImportExportUtils.getContactExportProperties(
+				ContactDownloadUtil::getPropertyCaption,
+				FacadeProvider.getConfigFacade().getCountryLocale(),
+				FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent()
@@ -62,7 +65,10 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.TASK,
-			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption),
+			ImportExportUtils.getTaskExportProperties(
+				TaskDownloadUtil::getPropertyCaption,
+				FacadeProvider.getConfigFacade().getCountryLocale(),
+				FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent().open(TaskDownloadUtil.createTaskExportResource(taskCriteria, selectedRows, exportConfig), null, true));
@@ -76,7 +82,10 @@ public class CustomExportController {
 		Window customExportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationsLayout customExportsLayout = new ExportConfigurationsLayout(
 			ExportType.PERSON,
-			ImportExportUtils.getPersonExportProperties(PersonDownloadUtil::getPropertyCaption),
+			ImportExportUtils.getPersonExportProperties(
+				PersonDownloadUtil::getPropertyCaption,
+				FacadeProvider.getConfigFacade().getCountryLocale(),
+				FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			customExportWindow::close);
 		customExportsLayout.setExportCallback(
 			exportConfig -> Page.getCurrent().open(PersonDownloadUtil.createPersonExportResource(personCriteria, exportConfig), null, true));

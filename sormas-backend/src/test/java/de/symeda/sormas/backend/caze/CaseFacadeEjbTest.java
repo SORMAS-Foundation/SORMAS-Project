@@ -1369,7 +1369,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		ExportConfigurationDto config = new ExportConfigurationDto();
 		config.setProperties(
-			ImportExportUtils.getCaseExportProperties((a, b) -> "Case", withFollowUp, withClinicalCourse, withTherapy)
+			ImportExportUtils
+				.getCaseExportProperties(
+					(a, b) -> "Case",
+					withFollowUp,
+					withClinicalCourse,
+					withTherapy,
+					getConfigFacade().getCountryLocale(),
+					getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));

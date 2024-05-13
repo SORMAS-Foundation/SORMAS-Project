@@ -862,7 +862,11 @@ public class ContactsView extends AbstractView implements HasName {
 		ExportConfigurationDto config = ExportConfigurationDto.build(UiUtil.getUserReference(), ExportType.CASE);
 
 		config.setProperties(
-			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption)
+			ImportExportUtils
+				.getContactExportProperties(
+					ContactDownloadUtil::getPropertyCaption,
+					FacadeProvider.getConfigFacade().getCountryLocale(),
+					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
