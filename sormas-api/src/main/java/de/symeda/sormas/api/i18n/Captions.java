@@ -2190,11 +2190,16 @@ public interface Captions {
 	String SelfReport_birthdateMM = "SelfReport.birthdateMM";
 	String SelfReport_birthdateYYYY = "SelfReport.birthdateYYYY";
 	String SelfReport_comment = "SelfReport.comment";
+	String SelfReport_contactDate = "SelfReport.contactDate";
+	String SelfReport_dateOfSymptoms = "SelfReport.dateOfSymptoms";
+	String SelfReport_dateOfTest = "SelfReport.dateOfTest";
+	String SelfReport_dateWorkplace = "SelfReport.dateWorkplace";
 	String SelfReport_disease = "SelfReport.disease";
 	String SelfReport_diseaseVariant = "SelfReport.diseaseVariant";
 	String SelfReport_email = "SelfReport.email";
 	String SelfReport_firstName = "SelfReport.firstName";
 	String SelfReport_investigationStatus = "SelfReport.investigationStatus";
+	String SelfReport_isolationDate = "SelfReport.isolationDate";
 	String SelfReport_lastName = "SelfReport.lastName";
 	String SelfReport_nationalHealthId = "SelfReport.nationalHealthId";
 	String SelfReport_phoneNumber = "SelfReport.phoneNumber";
@@ -2203,6 +2208,7 @@ public interface Captions {
 	String SelfReport_responsibleUser = "SelfReport.responsibleUser";
 	String SelfReport_sex = "SelfReport.sex";
 	String SelfReport_type = "SelfReport.type";
+	String SelfReport_workplace = "SelfReport.workplace";
 	String selfReportActiveEnvironments = "selfReportActiveEnvironments";
 	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
 	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
