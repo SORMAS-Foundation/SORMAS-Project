@@ -20,13 +20,18 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.location.Location;
 
 @Stateless
 @LocalBean
@@ -62,8 +67,52 @@ public class SelfReportService extends AbstractCoreAdoService<SelfReport, SelfRe
 
 		CriteriaBuilder cb = selfReportQueryContext.getCriteriaBuilder();
 		From<?, SelfReport> from = selfReportQueryContext.getRoot();
+		final SelfReportJoins joins = selfReportQueryContext.getJoins();
+		Join<SelfReport, Location> location = joins.getAddress();
 
 		Predicate filter = null;
+
+		if (StringUtils.isNotEmpty(criteria.getFreeText())) {
+			String[] textFilters = criteria.getFreeText().split("\\s+");
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.ilike(cb, from.get(SelfReport.CASE_REFERENCE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SelfReport.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SelfReport.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SelfReport.EMAIL), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(SelfReport.PHONE_NUMBER), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(SelfReport.NATIONAL_HEALTH_ID), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
+		}
+
+		if (criteria.getType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(SelfReport.TYPE), criteria.getType()));
+		}
+
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(SelfReport.DISEASE), criteria.getDisease()));
+		}
+
+		if (criteria.getDiseaseVariant() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(SelfReport.DISEASE_VARIANT), criteria.getDiseaseVariant()));
+		}
+
+		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(SelfReport.REPORT_DATE), criteria.getReportDateFrom(), criteria.getReportDateTo()));
+		} else if (criteria.getReportDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(SelfReport.REPORT_DATE), criteria.getReportDateFrom()));
+		} else if (criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(SelfReport.REPORT_DATE), criteria.getReportDateTo()));
+		}
 
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
