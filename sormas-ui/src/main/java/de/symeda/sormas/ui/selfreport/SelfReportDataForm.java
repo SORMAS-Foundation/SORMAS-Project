@@ -45,6 +45,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -79,6 +80,9 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		+ loc(ADDRESS_HEADER_LOC)
 		+ divsCss(VSPACE_3, fluidRowLocs(SelfReportDto.ADDRESS))
 		+ fluidRowLocs(SelfReportDto.EMAIL, SelfReportDto.PHONE_NUMBER)
+		+ fluidRowLocs(SelfReportDto.DATE_OF_TEST, SelfReportDto.DATE_OF_SYMPTOMS)
+		+ fluidRowLocs(SelfReportDto.WORKPLACE, SelfReportDto.DATE_WORKPLACE)
+		+ fluidRowLocs(SelfReportDto.ISOLATION_DATE, SelfReportDto.CONTACT_DATE)
 		+ fluidRowLocs(SelfReportDto.COMMENT)
 		+ fluidRowLocs(SelfReportDto.RESPONSIBLE_USER, "")
 		+ fluidRowLocs(SelfReportDto.DELETION_REASON)
@@ -171,6 +175,16 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		phoneNumberField
 			.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phoneNumberField.getCaption())));
 		setSoftRequired(true, SelfReportDto.EMAIL, SelfReportDto.PHONE_NUMBER);
+
+		addFields(
+			SelfReportDto.DATE_OF_TEST,
+			SelfReportDto.DATE_OF_SYMPTOMS,
+			SelfReportDto.WORKPLACE,
+			SelfReportDto.DATE_WORKPLACE,
+			SelfReportDto.ISOLATION_DATE,
+			SelfReportDto.CONTACT_DATE);
+		setSoftRequired(true, SelfReportDto.DATE_OF_TEST, SelfReportDto.DATE_OF_SYMPTOMS);
+		FieldHelper.setVisibleWhen(getFieldGroup(), SelfReportDto.CONTACT_DATE, SelfReportDto.TYPE, SelfReportType.CONTACT, true);
 
 		addField(SelfReportDto.COMMENT, TextArea.class).setRows(6);
 

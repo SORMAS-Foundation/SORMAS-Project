@@ -351,6 +351,12 @@ public class SelfReportFacadeEjb
 		target.setEmail(source.getEmail());
 		target.setPhoneNumber(source.getPhoneNumber());
 		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
+		target.setDateOfTest(source.getDateOfTest());
+		target.setDateOfSymptoms(source.getDateOfSymptoms());
+		target.setWorkplace(source.getWorkplace());
+		target.setDateWorkplace(source.getDateWorkplace());
+		target.setIsolationDate(source.getIsolationDate());
+		target.setContactDate(source.getContactDate());
 		target.setComment(source.getComment());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setInvestigationStatus(source.getInvestigationStatus());
@@ -389,6 +395,12 @@ public class SelfReportFacadeEjb
 		target.setEmail(source.getEmail());
 		target.setPhoneNumber(source.getPhoneNumber());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		target.setDateOfTest(source.getDateOfTest());
+		target.setDateOfSymptoms(source.getDateOfSymptoms());
+		target.setWorkplace(source.getWorkplace());
+		target.setDateWorkplace(source.getDateWorkplace());
+		target.setIsolationDate(source.getIsolationDate());
+		target.setContactDate(source.getContactDate());
 		target.setComment(source.getComment());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setInvestigationStatus(source.getInvestigationStatus());

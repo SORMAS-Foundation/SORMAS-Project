@@ -64,8 +64,14 @@ public class SelfReportDto extends PseudonymizableDto {
 	public static final String EMAIL = "email";
 	public static final String PHONE_NUMBER = "phoneNumber";
 	public static final String ADDRESS = "address";
-	public static final String RESPONSIBLE_USER = "responsibleUser";
+	public static final String DATE_OF_TEST = "dateOfTest";
+	public static final String DATE_OF_SYMPTOMS = "dateOfSymptoms";
+	public static final String WORKPLACE = "workplace";
+	public static final String DATE_WORKPLACE = "dateWorkplace";
+	public static final String ISOLATION_DATE = "isolationDate";
+	public static final String CONTACT_DATE = "contactDate";
 	public static final String COMMENT = "comment";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PROCESSING_STATUS = "processingStatus";
 	public static final String DELETED = "deleted";
@@ -117,6 +123,13 @@ public class SelfReportDto extends PseudonymizableDto {
 	@EmbeddedSensitiveData
 	@Valid
 	private LocationDto address;
+	private Date dateOfTest;
+	private Date dateOfSymptoms;
+	@SensitiveData
+	private String workplace;
+	private Date dateWorkplace;
+	private Date isolationDate;
+	private Date contactDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	@SensitiveData
 	private String comment;
@@ -277,6 +290,54 @@ public class SelfReportDto extends PseudonymizableDto {
 
 	public void setAddress(LocationDto address) {
 		this.address = address;
+	}
+
+	public Date getDateOfTest() {
+		return dateOfTest;
+	}
+
+	public void setDateOfTest(Date dateOfTest) {
+		this.dateOfTest = dateOfTest;
+	}
+
+	public Date getDateOfSymptoms() {
+		return dateOfSymptoms;
+	}
+
+	public void setDateOfSymptoms(Date dateOfSymptoms) {
+		this.dateOfSymptoms = dateOfSymptoms;
+	}
+
+	public String getWorkplace() {
+		return workplace;
+	}
+
+	public void setWorkplace(String workplace) {
+		this.workplace = workplace;
+	}
+
+	public Date getDateWorkplace() {
+		return dateWorkplace;
+	}
+
+	public void setDateWorkplace(Date dateWorkplace) {
+		this.dateWorkplace = dateWorkplace;
+	}
+
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
+	}
+
+	public Date getContactDate() {
+		return contactDate;
+	}
+
+	public void setContactDate(Date contactDate) {
+		this.contactDate = contactDate;
 	}
 
 	public String getComment() {
