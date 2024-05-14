@@ -125,6 +125,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.UUID) +
 					fluidRowLocs(ContactDto.EXTERNAL_ID, ContactDto.EXTERNAL_TOKEN) +
 					fluidRowLocs(ContactDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
+					fluidRowLocs(ContactDto.CASE_REFERENCE_NUMBER, "") +
 					fluidRowLocs(3, ContactDto.REPORTING_USER, 4, ContactDto.REPORT_DATE_TIME, 4,ContactDto.REPORTING_DISTRICT, 1, "") +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
@@ -200,7 +201,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease)
+				.andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 
 		this.viewMode = viewMode;
@@ -239,6 +242,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
 		addField(ContactDto.INTERNAL_TOKEN, TextField.class);
+		addField(ContactDto.CASE_REFERENCE_NUMBER, TextField.class);
 
 		UserField reportingUser = addField(CaseDataDto.REPORTING_USER, UserField.class);
 		reportingUser.setParentPseudonymizedSupplier(() -> getValue().isPseudonymized());

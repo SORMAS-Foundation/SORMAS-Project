@@ -772,6 +772,7 @@ public class ContactFacadeEjb
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
+			contact.get(Contact.CASE_REFERENCE_NUMBER),
 			joins.getPerson().get(Person.BIRTH_NAME),
 			joins.getPersonBirthCountry().get(Country.ISO_CODE),
 			joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1551,6 +1552,7 @@ public class ContactFacadeEjb
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1891,6 +1893,7 @@ public class ContactFacadeEjb
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));

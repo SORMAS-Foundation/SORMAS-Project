@@ -862,6 +862,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
 				caseRoot.get(Case.INTERNAL_TOKEN),
+				caseRoot.get(Case.CASE_REFERENCE_NUMBER),
 				joins.getPerson().get(Person.BIRTH_NAME),
 				joins.getPersonBirthCountry().get(Country.ISO_CODE),
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -3103,6 +3104,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -3302,6 +3304,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());

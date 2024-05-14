@@ -9242,6 +9242,10 @@ components:
           enum:
           - FULFILLED
           - NOT_FULFILLED
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         changeDate:
           type: string
           format: date-time
@@ -10342,6 +10346,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         city:
           type: string
         completeness:
@@ -10607,6 +10613,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         completeness:
           type: number
           format: float
@@ -11552,6 +11560,10 @@ components:
           type: string
           maxLength: 4096
           minLength: 0
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
         changeDate:
@@ -11962,6 +11974,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -12202,6 +12216,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:

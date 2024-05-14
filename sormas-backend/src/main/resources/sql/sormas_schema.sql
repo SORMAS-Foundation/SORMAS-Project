@@ -13091,6 +13091,15 @@ ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
 
 INSERT INTO schema_version (version_number, comment) VALUES (545, '#13043 - Bulk action - send emails with uploaded attached documents');
 
+-- 2024-04-24 Extend the contacts with Case Reference Number & add case reference number to cases #13067
+
+ALTER TABLE cases ADD COLUMN casereferencenumber text;
+ALTER TABLE cases_history ADD COLUMN casereferencenumber text;
+ALTER TABLE contact ADD COLUMN casereferencenumber text;
+ALTER TABLE contact_history ADD COLUMN casereferencenumber text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (546, 'Extend the contacts with Case Reference Number & add case reference number to cases #13067');
+
 -- 2024-04-30 #13034 Add user rights to view archived entities
 
 DO $$
@@ -13185,6 +13194,6 @@ DO $$
     END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (546, 'Add user rights to view archived entities #13034', false);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (547, 'Add user rights to view archived entities #13034', false);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

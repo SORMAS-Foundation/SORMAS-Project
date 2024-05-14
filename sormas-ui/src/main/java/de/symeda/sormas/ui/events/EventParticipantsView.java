@@ -447,7 +447,8 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 					ExportType.EVENT_PARTICIPANTS,
 					ImportExportUtils.getEventParticipantExportProperties(
 						EventParticipantDownloadUtil::getPropertyCaption,
-						FacadeProvider.getConfigFacade().getCountryLocale()),
+						FacadeProvider.getConfigFacade().getCountryLocale(),
+						FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 					customExportWindow::close);
 				customExportsLayout.setExportCallback(
 					(exportConfig) -> Page.getCurrent()
