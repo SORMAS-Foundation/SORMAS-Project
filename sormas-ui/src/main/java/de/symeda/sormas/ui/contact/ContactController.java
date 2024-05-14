@@ -651,10 +651,6 @@ public class ContactController {
 		final ViewMode viewMode,
 		boolean isPsuedonymized) {
 
-		if (FacadeProvider.getContactFacade().isArchived(contactUuid) && !UiUtil.permitted(UserRight.CONTACT_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		}
-
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);

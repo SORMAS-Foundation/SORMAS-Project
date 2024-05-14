@@ -120,6 +120,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -166,6 +167,65 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			ValidationRuntimeException.class,
 			() -> creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null));
+	}
+
+	@Test
+	public void testGetByUuid() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CONTACT_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user1.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact1 =
+			creator.createContact(user1.toReference(), user1.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+
+		ContactFacadeEjb.ContactFacadeEjbLocal cut = getBean(ContactFacadeEjb.ContactFacadeEjbLocal.class);
+		cut.archive(contact1.getUuid(), null);
+
+		//user1 has CONTACT_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getContactFacade().getByUuid(contact1.getUuid()).getUuid(), contact1.getUuid());
+
+		//user2 does not have CONTACT_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getContactFacade().getContactByUuid(contact1.getUuid()));
 	}
 
 	@Test

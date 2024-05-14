@@ -316,6 +316,15 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	public ContactDto getContactByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
