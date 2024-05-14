@@ -104,6 +104,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String CASE_REFERENCE_NUMBER = "caseReferenceNumber";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -233,6 +234,9 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
+	private String caseReferenceNumber;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
@@ -662,6 +666,14 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 
 	public void setInternalToken(String internalToken) {
 		this.internalToken = internalToken;
+	}
+
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public void setCaseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
 	}
 
 	public RegionReferenceDto getRegion() {

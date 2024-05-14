@@ -57,6 +57,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String CASE_REFERENCE_NUMBER = "caseReferenceNumber";
 	public static final String COMPLETENESS = "completeness";
 	public static final String REGION_UUID = "regionUuid";
 	public static final String DISTRICT_UUID = "districtUuid";
@@ -89,6 +90,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
+	private String caseReferenceNumber;
 	private String regionName;
 	private String districtName;
 	private String caseRegionName;
@@ -108,7 +110,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 						   String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID, String externalToken, String internalToken, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
+						   String externalID, String externalToken, String internalToken,String caseReferenceNumber, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 						   int visitCount
 	) {
 	//@formatter:on
@@ -141,6 +143,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.externalID = externalID;
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
+		this.caseReferenceNumber = caseReferenceNumber;
 		this.regionName = regionName;
 		this.districtName = districtName;
 		this.caseRegionName = caseRegionName;
@@ -338,6 +341,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	public void setInternalToken(String internalToken) {
 		this.internalToken = internalToken;
+	}
+
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public void setCaseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
 	}
 
 	public String getRegionName() {

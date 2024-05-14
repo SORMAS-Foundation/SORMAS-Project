@@ -313,6 +313,7 @@ public interface Captions {
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
 	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
+	String CaseData_caseReferenceNumber = "CaseData.caseReferenceNumber";
 	String CaseData_changeDate = "CaseData.changeDate";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
@@ -634,6 +635,7 @@ public interface Captions {
 	String Contact_caseClassification = "Contact.caseClassification";
 	String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
 	String Contact_caseOrEventInformation = "Contact.caseOrEventInformation";
+	String Contact_caseReferenceNumber = "Contact.caseReferenceNumber";
 	String Contact_caze = "Contact.caze";
 	String Contact_caze_ageSex = "Contact.caze.ageSex";
 	String Contact_caze_caseClassification = "Contact.caze.caseClassification";

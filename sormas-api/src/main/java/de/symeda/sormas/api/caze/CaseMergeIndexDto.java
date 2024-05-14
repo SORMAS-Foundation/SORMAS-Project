@@ -20,7 +20,7 @@ public class CaseMergeIndexDto extends CaseIndexDto {
 
 	//@formatter:off
 	public CaseMergeIndexDto(
-			long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personUuid, String personFirstName, String personLastName, Disease disease,
+			long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String caseReferenceNumber, String personUuid, String personFirstName, String personLastName, Disease disease,
 			DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 			PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
 			String districtUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
@@ -37,6 +37,7 @@ public class CaseMergeIndexDto extends CaseIndexDto {
 			externalID,
 			externalToken,
 			internalToken,
+			caseReferenceNumber,
 			personUuid,
 			personFirstName,
 			personLastName,

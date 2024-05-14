@@ -70,7 +70,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseRegionName,
 								   String caseDistrictName,
 								   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-								   String externalID, String externalToken, String internalToken, DeletionReason deletionReason, String otherDeleteReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
+								   String externalID, String externalToken, String internalToken, String caseReferenceNumber, DeletionReason deletionReason, String otherDeleteReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
@@ -81,7 +81,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		super(uuid, personUuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
 			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccinationStatus, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount);
+			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, caseReferenceNumber, deletionReason, otherDeleteReason,isInJurisdiction, isCaseInJurisdiction , visitCount);
 
 		//@formatter:on
 
