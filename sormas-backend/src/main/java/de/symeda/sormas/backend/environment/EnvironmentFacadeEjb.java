@@ -458,6 +458,15 @@ public class EnvironmentFacadeEjb
 		return service.getAllActiveUuids(user);
 	}
 
+	@Override
+	public EnvironmentDto getEnvironmentByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EnvironmentFacadeEjbLocal extends EnvironmentFacadeEjb {
