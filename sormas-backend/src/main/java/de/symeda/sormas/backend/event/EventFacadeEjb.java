@@ -259,6 +259,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		Event event = service.getByUuid(uuid);
 		return (detailedReferences) ? convertToDetailedReferenceDto(event, createPseudonymizer(event)) : toPseudonymizedDto(event);
 	}

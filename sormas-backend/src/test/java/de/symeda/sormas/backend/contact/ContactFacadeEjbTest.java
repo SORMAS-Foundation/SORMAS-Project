@@ -170,7 +170,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetByUuid() {
+	public void testGetContactByUuidForArchivedContact() {
 		RDCF rdcf = creator.createRDCF();
 
 		UserDto user1 = creator.createUser(

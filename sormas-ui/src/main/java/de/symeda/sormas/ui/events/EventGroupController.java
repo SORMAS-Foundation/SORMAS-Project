@@ -51,7 +51,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -228,10 +227,6 @@ public class EventGroupController {
 	}
 
 	public CommitDiscardWrapperComponent<?> getEventGroupEditComponent(String uuid) {
-
-		if (FacadeProvider.getEventGroupFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.EVENTGROUP_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		}
 
 		EventGroupDto eventGroup = FacadeProvider.getEventGroupFacade().getEventGroupByUuid(uuid);
 		EventGroupDataForm eventGroupEditForm = new EventGroupDataForm(false);

@@ -60,8 +60,11 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -95,6 +98,69 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 				null,
 				Disease.EVD,
 				rdcf));
+	}
+
+	@Test
+	public void testGetEventByUuidForArchivedEvent() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.EVENT_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT);
+
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user1.toReference(),
+			user1.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf);
+
+		EventFacadeEjb.EventFacadeEjbLocal cut = getBean(EventFacadeEjb.EventFacadeEjbLocal.class);
+		cut.archive(event.getUuid(), null);
+
+		//user1 has EVENT_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getEventFacade().getEventByUuid(event.getUuid(), false).getUuid(), event.getUuid());
+
+		//user2 does not have EVENT_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getEventFacade().getEventByUuid(event.getUuid(), false));
 	}
 
 	@Test

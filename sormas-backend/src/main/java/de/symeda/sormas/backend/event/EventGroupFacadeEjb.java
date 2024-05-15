@@ -139,6 +139,10 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public EventGroupDto getEventGroupByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.EVENTGROUP_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		return toDto(eventGroupService.getByUuid(uuid));
 	}
 

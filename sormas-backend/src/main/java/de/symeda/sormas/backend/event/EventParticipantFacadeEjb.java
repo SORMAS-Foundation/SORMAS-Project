@@ -280,7 +280,10 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		// todo plainly duplicated from AbstractCoreFacadeEjb.getByUuid
+		if (isArchived(uuid) && !userService.hasRight(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		return toPseudonymizedDto(service.getByUuid(uuid));
 	}
 

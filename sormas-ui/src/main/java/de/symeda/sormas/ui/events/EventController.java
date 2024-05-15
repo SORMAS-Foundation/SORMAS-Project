@@ -890,10 +890,6 @@ public class EventController {
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, Consumer<EventStatus> saveCallback) {
 
-		if (FacadeProvider.getEventFacade().isArchived(eventUuid) && !UiUtil.permitted(UserRight.EVENT_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		}
-
 		EventDto event = findEvent(eventUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventFacade().getManuallyDeletionInfo(eventUuid);

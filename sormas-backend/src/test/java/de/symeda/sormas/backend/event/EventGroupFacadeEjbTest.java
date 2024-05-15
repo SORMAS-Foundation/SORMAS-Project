@@ -18,10 +18,12 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -36,10 +38,16 @@ import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventGroupIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
@@ -63,6 +71,73 @@ public class EventGroupFacadeEjbTest extends AbstractBeanTest {
 
 		cut.deleteEventGroup(group.getUuid());
 		assertNull(cut.getEventGroupByUuid(group.getUuid()));
+	}
+
+	@Test
+	public void testGetEventGroupByUuidForArchivedGroup() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.EVENTGROUP_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT);
+
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user1.toReference(),
+			user1.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf);
+
+		EventGroupDto eventGroup = createEventGroup();
+
+		EventGroupFacadeEjb.EventGroupFacadeEjbLocal cut = getBean(EventGroupFacadeEjb.EventGroupFacadeEjbLocal.class);
+		cut.linkEventToGroup(event.toReference(), eventGroup.toReference());
+
+		cut.archiveEventGroup(eventGroup.getUuid());
+
+		//user1 has EVENTGROUP_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getEventGroupFacade().getEventGroupByUuid(eventGroup.getUuid()).getUuid(), eventGroup.getUuid());
+
+		//user2 does not have EVENTGROUP_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getEventGroupFacade().getEventGroupByUuid(eventGroup.getUuid()));
 	}
 
 	@Test
