@@ -300,6 +300,15 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+	public ImmunizationDto getImmunizationByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
+	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);

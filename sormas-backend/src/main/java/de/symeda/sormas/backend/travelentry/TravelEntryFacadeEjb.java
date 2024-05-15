@@ -118,6 +118,15 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	public TravelEntryDto getTravelEntryByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
+	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);

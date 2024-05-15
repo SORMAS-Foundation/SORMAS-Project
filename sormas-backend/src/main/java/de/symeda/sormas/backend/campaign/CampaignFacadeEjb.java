@@ -150,6 +150,15 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
+	public CampaignDto getCampaignByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
+	@Override
 	public long count(CampaignCriteria campaignCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

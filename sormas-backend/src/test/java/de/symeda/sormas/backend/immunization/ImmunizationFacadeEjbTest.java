@@ -46,7 +46,10 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -105,6 +108,61 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDiseases(Collections.singleton(Disease.CORONAVIRUS));
 		getUserFacade().saveUser(covidLimitedDistrictUser, false);
+	}
+
+	@Test
+	public void testGetImmunizationByUuidForArchivedImmunization() {
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.IMMUNIZATION_VIEW,
+			UserRight.IMMUNIZATION_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.IMMUNIZATION_VIEW);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+		ImmunizationDto immunizationDto = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			user1.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+
+		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal cut = getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
+		cut.archive(immunizationDto.getUuid(), null);
+
+		//user1 has IMMUNIZATION_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getImmunizationFacade().getImmunizationByUuid(immunizationDto.getUuid()).getUuid(), immunizationDto.getUuid());
+
+		//user2 does not have IMMUNIZATION_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getImmunizationFacade().getImmunizationByUuid(immunizationDto.getUuid()));
 	}
 
 	@Test

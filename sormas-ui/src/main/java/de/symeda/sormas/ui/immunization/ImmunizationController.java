@@ -21,7 +21,6 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
@@ -141,10 +140,6 @@ public class ImmunizationController {
 		Consumer<Runnable> actionCallback) {
 
 		String uuid = immunizationDto.getUuid();
-
-		if (FacadeProvider.getImmunizationFacade().isArchived(uuid) && !UiUtil.permitted(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		}
 
 		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
 			immunizationDto.isPseudonymized(),

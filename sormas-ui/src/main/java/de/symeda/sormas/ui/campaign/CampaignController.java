@@ -34,7 +34,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
@@ -111,10 +110,6 @@ public class CampaignController {
 	}
 
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
-
-		if (FacadeProvider.getCampaignFacade().isArchived(campaignDto.getUuid()) && !UiUtil.permitted(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
-		}
 
 		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
 		boolean isCreate = false;
