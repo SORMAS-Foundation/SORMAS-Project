@@ -971,7 +971,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public TaskDto getByUuid(String uuid) {
+	public TaskDto getTaskByUuid(String uuid) {
 		if (isArchived(uuid) && !userService.hasRight(UserRight.TASK_VIEW_ARCHIVED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
 		}

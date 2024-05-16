@@ -531,7 +531,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Follow-up status and duration should be set to no follow-up and null
 		// respectively because
 		// Measles does not require a follow-up
-		contact = getContactFacade().getByUuid(contact.getUuid());
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertNull(contact.getFollowUpUntil());
 	}
@@ -612,8 +612,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());
-		doneTask = getTaskFacade().getByUuid(doneTask.getUuid());
+		pendingTask = getTaskFacade().getTaskByUuid(pendingTask.getUuid());
+		doneTask = getTaskFacade().getTaskByUuid(doneTask.getUuid());
 
 		// Case should have the new region, district, community and facility set
 		assertEquals(caze.getRegion().getUuid(), newRDCF.region.getUuid());
@@ -1461,11 +1461,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// Database should contain the created case, contact, task and sample
 		assertNotNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()));
-		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
+		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getPathogenTestFacade().getByUuid(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 
 		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
@@ -1476,8 +1476,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
 		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
-		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getCaseDataByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 
 		getCaseFacade().restore(caze.getUuid());
@@ -1490,9 +1490,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
-		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
-		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
+		assertNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()).getDeletionReason());
+		assertNull(getCaseFacade().getCaseDataByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -1962,7 +1962,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
 
 		// Travel entry
-		travelEntry = getTravelEntryFacade().getByUuid(travelEntry.getUuid());
+		travelEntry = getTravelEntryFacade().getTravelEntryByUuid(travelEntry.getUuid());
 		assertEquals(mergedCase.toReference(), travelEntry.getResultingCase());
 	}
 
@@ -3017,8 +3017,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
-		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
-		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getCaseDataByUuid(caze.getUuid()).getDeletionReason());
+		assertEquals("test reason", getCaseFacade().getCaseDataByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -3353,12 +3353,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		getCaseFacade().saveBulkCase(Arrays.asList(case1.getUuid(), case2.getUuid()), bulkEditData, true, true, false, false, false, false);
 
-		case1 = getCaseFacade().getByUuid(case1.getUuid());
+		case1 = getCaseFacade().getCaseDataByUuid(case1.getUuid());
 		assertThat(case1.getDisease(), is(Disease.CORONAVIRUS));
 		assertThat(case1.getDiseaseVariant(), is(diseaseVariant));
 		assertThat(case1.getDiseaseVariantDetails(), is("test variant details"));
 
-		case2 = getCaseFacade().getByUuid(case2.getUuid());
+		case2 = getCaseFacade().getCaseDataByUuid(case2.getUuid());
 		assertThat(case2.getDisease(), is(Disease.CORONAVIRUS));
 		assertThat(case2.getDiseaseVariant(), is(diseaseVariant));
 		assertThat(case2.getDiseaseVariantDetails(), is("test variant details"));
@@ -3366,7 +3366,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// unset variant
 		bulkEditData.setDiseaseVariant(null);
 		getCaseFacade().saveBulkCase(Collections.singletonList(case1.getUuid()), bulkEditData, true, true, false, false, false, false);
-		case1 = getCaseFacade().getByUuid(case1.getUuid());
+		case1 = getCaseFacade().getCaseDataByUuid(case1.getUuid());
 		assertThat(case1.getDisease(), is(Disease.CORONAVIRUS));
 		assertThat(case1.getDiseaseVariant(), is(nullValue()));
 		assertThat(case1.getDiseaseVariantDetails(), is(nullValue()));
@@ -3388,7 +3388,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		bulkEditData.setDisease(Disease.ANTHRAX);
 
 		getCaseFacade().saveBulkCase(Collections.singletonList(caze.getUuid()), bulkEditData, true, false, false, false, false, false);
-		caze = getCaseFacade().getByUuid(caze.getUuid());
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertThat(caze.getDisease(), is(Disease.ANTHRAX));
 		assertThat(caze.getDiseaseVariant(), is(nullValue()));
 		assertThat(caze.getDiseaseVariantDetails(), is(nullValue()));

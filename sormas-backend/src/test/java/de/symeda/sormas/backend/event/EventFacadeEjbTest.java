@@ -201,16 +201,16 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
-		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
-		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
+		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getEventByUuid(event.getUuid(), false).getDeletionReason());
+		assertEquals("test reason", getEventFacade().getEventByUuid(event.getUuid(), false).getOtherDeletionReason());
 
 		getEventFacade().restore(event.getUuid());
 
 		assertFalse(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertFalse(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
-		assertNull(getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
-		assertNull(getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
+		assertNull(getEventFacade().getEventByUuid(event.getUuid(), false).getDeletionReason());
+		assertNull(getEventFacade().getEventByUuid(event.getUuid(), false).getOtherDeletionReason());
 	}
 
 	@Test

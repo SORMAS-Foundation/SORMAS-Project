@@ -221,7 +221,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		//user1 has CONTACT_VIEW_ARCHIVED right
 		loginWith(user1);
-		assertEquals(getContactFacade().getByUuid(contact1.getUuid()).getUuid(), contact1.getUuid());
+		assertEquals(getContactFacade().getContactByUuid(contact1.getUuid()).getUuid(), contact1.getUuid());
 
 		//user2 does not have CONTACT_VIEW_ARCHIVED right
 		loginWith(user2);
@@ -624,8 +624,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getSampleFacade().saveSample(sample2);
 
 		// Database should contain the created contact, visit and task
-		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertNotNull(getVisitFacade().getByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
@@ -635,20 +635,20 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		// Can't delete visit because it might be associated with other contacts as well
 		//		assertNull(getVisitFacade().getByUuid(visit.getUuid()));
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
-		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
-		assertEquals("test reason", getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
+		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getContactByUuid(contact.getUuid()).getDeletionReason());
+		assertEquals("test reason", getContactFacade().getContactByUuid(contact.getUuid()).getOtherDeletionReason());
 
 		getContactFacade().restore(contact.getUuid());
 
 		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
-		assertNull(getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
-		assertNull(getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
+		assertNull(getContactFacade().getContactByUuid(contact.getUuid()).getDeletionReason());
+		assertNull(getContactFacade().getContactByUuid(contact.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -893,7 +893,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		DistrictReferenceDto districtReferenceDto,
 		CaseReferenceDto caze) {
 
-		ContactDto contactDto = getContactFacade().getByUuid(contactUuid);
+		ContactDto contactDto = getContactFacade().getContactByUuid(contactUuid);
 		contactDto.setRegion(regionReferenceDto);
 		contactDto.setDistrict(districtReferenceDto);
 		contactDto.setCaze(caze);
@@ -1967,7 +1967,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		getContactFacade().merge(leadContact.getUuid(), otherContact.getUuid());
 
-		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+		ContactDto mergedContact = getContactFacade().getContactByUuid(leadContact.getUuid());
 		assertEquals(I18nProperties.getString(Strings.messageSystemFollowUpCanceled), mergedContact.getFollowUpComment());
 	}
 
@@ -2088,7 +2088,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// 3. Test
 
-		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+		ContactDto mergedContact = getContactFacade().getContactByUuid(leadContact.getUuid());
 
 		PersonDto mergedPerson = getPersonFacade().getByUuid(mergedContact.getPerson().getUuid());
 

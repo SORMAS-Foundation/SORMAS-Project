@@ -169,11 +169,11 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		//user1 has TASK_VIEW_ARCHIVED right
 		loginWith(user1);
-		assertEquals(getTaskFacade().getByUuid(task.getUuid()).getUuid(), task.getUuid());
+		assertEquals(getTaskFacade().getTaskByUuid(task.getUuid()).getUuid(), task.getUuid());
 
 		//user2 does not have TASK_VIEW_ARCHIVED right
 		loginWith(user2);
-		assertThrows(AccessDeniedException.class, () -> getTaskFacade().getByUuid(task.getUuid()));
+		assertThrows(AccessDeniedException.class, () -> getTaskFacade().getTaskByUuid(task.getUuid()));
 	}
 
 	@Test
@@ -194,12 +194,12 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		// Database should contain the created task
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 
 		getTaskFacade().delete(task.getUuid());
 
 		// Database should not contain the created task
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 	}
 
 	@Test
