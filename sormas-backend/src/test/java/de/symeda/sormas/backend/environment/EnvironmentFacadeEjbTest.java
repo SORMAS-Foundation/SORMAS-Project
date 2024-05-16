@@ -29,7 +29,7 @@ class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EnvironmentDto environment = creator.createEnvironment("Test Environment", EnvironmentMedia.WATER, user.toReference(), rdcf);
 
-		EnvironmentDto saved = getEnvironmentFacade().getByUuid(environment.getUuid());
+		EnvironmentDto saved = getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid());
 
 		assertEquals(environment.getEnvironmentName(), saved.getEnvironmentName());
 		assertEquals(environment.getEnvironmentMedia(), saved.getEnvironmentMedia());
