@@ -135,11 +135,10 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(
-		ImmunizationDto immunizationDto,
-		Consumer<Runnable> actionCallback) {
+	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(String uuid, Consumer<Runnable> actionCallback) {
 
-		String uuid = immunizationDto.getUuid();
+		//String uuid = immunizationDto.getUuid();
+		ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getImmunizationByUuid(uuid);
 
 		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
 			immunizationDto.isPseudonymized(),
@@ -241,7 +240,7 @@ public class ImmunizationController {
 	}
 
 	private ImmunizationDto findImmunization(String uuid) {
-		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
+		return FacadeProvider.getImmunizationFacade().getImmunizationByUuid(uuid);
 	}
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {

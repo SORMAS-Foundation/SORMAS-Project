@@ -190,7 +190,7 @@ public class TravelEntryController {
 	}
 
 	private TravelEntryDto findTravelEntry(String uuid) {
-		return FacadeProvider.getTravelEntryFacade().getByUuid(uuid);
+		return FacadeProvider.getTravelEntryFacade().getTravelEntryByUuid(uuid);
 	}
 
 	public TitleLayout getTravelEntryViewTitleLayout(String uuid) {
