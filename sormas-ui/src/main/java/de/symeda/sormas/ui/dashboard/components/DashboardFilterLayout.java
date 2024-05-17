@@ -50,11 +50,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -137,7 +137,7 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 	}
 
 	protected void createRegionFilter(String description) {
-		if (UserProvider.getCurrent().getUser().getRegion() == null && UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.getUser().getRegion() == null && UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptRegion));
 			regionFilter.setDescription(description);
@@ -153,14 +153,12 @@ public abstract class DashboardFilterLayout<P extends AbstractDashboardDataProvi
 	}
 
 	protected void createDistrictFilter(String description) {
-		if (UserProvider.getCurrent().getUser().getRegion() != null
-			&& UserProvider.getCurrent().getUser().getDistrict() == null
-			&& UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		UserDto user = UiUtil.getUser();
+		if (user.getRegion() != null && user.getDistrict() == null && UiUtil.disabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptDistrict));
 			districtFilter.setDescription(description);
-			districtFilter
-				.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UiUtil.getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue()));
 			// save height
 			//districtFilter.setCaption(I18nProperties.getString(Strings.entityDistrict));

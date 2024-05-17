@@ -26,7 +26,7 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DocumentTemplateReceiver
@@ -57,7 +57,7 @@ public class DocumentTemplateReceiver
 
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + "_template_upload" + DateHelper.formatDateForExport(new Date()) + "_"
-				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".docx";
+				+ DataHelper.getShortUuid(UiUtil.getUserUuid()) + ".docx";
 			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 
 			return new FileOutputStream(file);

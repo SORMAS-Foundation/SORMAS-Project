@@ -7,7 +7,7 @@ The **offline** functionality was also one of the core requirements in the devel
 This makes it possible for users to use the app freely and, for example, to synchronise the recorded data with the server in the evening.
 
 The app covers **all essential functionalities of SORMAS** and the complete data collection in the areas of
-cases, contacts, events, samples, messages, mSERS and tasks.
+cases, contacts, events, samples, messages, aggregate reports and tasks.
 
 The app is predominantly used on **7 or 10 inch** tablets and requires Android 8.0 or newer.
 To manage the large number of devices used within a country and to simplify support, it is possible to use a mobile device management (MDM) solution.

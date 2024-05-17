@@ -54,7 +54,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -615,11 +615,6 @@ public class StartupShutdownService {
 	private void syncUsers() {
 
 		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
-
-		if (!authProvider.isUserSyncSupported()) {
-			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
-			return;
-		}
 
 		if (!authProvider.isUserSyncAtStartupEnabled()) {
 			logger.info("User sync at startup is disabled. Enable this in SORMAS properties if the active Authentication Provider supports it");

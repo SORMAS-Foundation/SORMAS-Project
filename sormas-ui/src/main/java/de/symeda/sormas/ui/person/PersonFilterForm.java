@@ -5,6 +5,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -16,7 +17,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -61,14 +62,20 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		UserDto user = currentUserDto();
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
-			regionField = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.REGION, 140));
+			regionField = addField(
+				getContent(),
+				FieldConfiguration.withCaptionAndPixelSized(PersonCriteria.REGION, I18nProperties.getCaption(Captions.personRegionPrompt), 140));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
-		final ComboBox districtFilter = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.DISTRICT, 140));
+		final ComboBox districtFilter = addField(
+			getContent(),
+			FieldConfiguration.withCaptionAndPixelSized(PersonCriteria.DISTRICT, I18nProperties.getCaption(Captions.personDistrictPrompt), 140));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
-		addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.COMMUNITY, 140));
+		addField(
+			getContent(),
+			FieldConfiguration.withCaptionAndPixelSized(PersonCriteria.COMMUNITY, I18nProperties.getCaption(Captions.personCommunityPrompt), 140));
 	}
 
 	@Override
@@ -123,7 +130,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 	protected void applyDependenciesOnNewValue(PersonCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		final JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 
 		final ComboBox districtFilter = getField(PersonCriteria.DISTRICT);
 		final ComboBox communityFilter = getField(PersonCriteria.COMMUNITY);

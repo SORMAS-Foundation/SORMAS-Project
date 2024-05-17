@@ -23,7 +23,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -49,7 +49,7 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 	public AggregateReportsView() {
 		super(VIEW_NAME);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportCriteria.class);
@@ -76,7 +76,7 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EDIT)) {
+		if (UiUtil.permitted(UserRight.AGGREGATE_REPORT_EDIT)) {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
@@ -95,7 +95,7 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 			addHeaderComponent(btnEdit);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EXPORT)) {
+		if (UiUtil.permitted(UserRight.AGGREGATE_REPORT_EXPORT)) {
 			btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnExport);

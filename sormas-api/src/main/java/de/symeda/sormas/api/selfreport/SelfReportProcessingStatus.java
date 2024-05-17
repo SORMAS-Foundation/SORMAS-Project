@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,18 +13,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.caze.surveillancereport;
+package de.symeda.sormas.api.selfreport;
 
-import java.util.List;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import de.symeda.sormas.api.caze.ReinfectionDetail;
-import de.symeda.sormas.ui.utils.CheckBoxTree;
+public enum SelfReportProcessingStatus {
+	UNPROCESSED,
+	PROCESSED;
 
-public class CaseReinfectionCheckBoxTree extends CheckBoxTree<ReinfectionDetail> {
-
-	private static final long serialVersionUID = -616241015036432230L;
-
-	public CaseReinfectionCheckBoxTree(List<CheckBoxElement<ReinfectionDetail>> checkBoxElements, Runnable valueChangeCallback) {
-		super(checkBoxElements, true, valueChangeCallback);
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

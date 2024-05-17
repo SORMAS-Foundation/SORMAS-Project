@@ -618,6 +618,9 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getContactRegion().get(Region.NAME),
 			joins.getContactDistrict().get(District.NAME),
 			joins.getContactCommunity().get(Community.NAME),
+			joins.getContactCaseJoins().getResponsibleRegion().get(Region.NAME),
+			joins.getContactCaseJoins().getResponsibleDistrict().get(District.NAME),
+			joins.getContactCaseJoins().getResponsibleCommunity().get(Community.NAME),
 			joins.getContact().get(Contact.REPORT_DATE_TIME),
 			joins.getContact().get(Contact.LAST_CONTACT_DATE),
 			joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
@@ -1098,8 +1101,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void handleAssociatedEntityChanges(Sample newSample, boolean syncShares) {
 
-		if (newSample.getAssociatedCase() != null && userService.hasRight(UserRight.CASE_EDIT)) {
-			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+		if (newSample.getAssociatedCase() != null) {
+			caseFacade.onCaseSampleChanged(newSample.getAssociatedCase(), syncShares);
 		}
 
 		if (newSample.getAssociatedContact() != null && userService.hasRight(UserRight.CONTACT_EDIT)) {

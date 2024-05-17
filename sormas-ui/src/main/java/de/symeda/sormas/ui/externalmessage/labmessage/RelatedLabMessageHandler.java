@@ -53,7 +53,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.externalmessage.CorrectionPanel;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
@@ -117,8 +117,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 	@Override
 	protected void handleShortcut(ExternalMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain) {
 		// Currently, related entities are only looked at when there is just one sample report in the lab message
-		List<PathogenTestDto> newPathogenTests =
-			LabMessageProcessingHelper.buildPathogenTests(sample, 0, labMessage, mapper, UserProvider.getCurrent().getUser());
+		List<PathogenTestDto> newPathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, 0, labMessage, mapper, UiUtil.getUser());
 		showEditSampleWindow(sample, true, newPathogenTests, labMessage, mapper, s -> chain.next(true), chain::cancel);
 	}
 
@@ -245,7 +244,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		});
 
 		pathogenTestCreateComponent.getWrappedComponent()
-			.setValue(LabMessageProcessingHelper.buildPathogenTest(testReport, mapper, sample, UserProvider.getCurrent().getUser()));
+			.setValue(LabMessageProcessingHelper.buildPathogenTest(testReport, mapper, sample, UiUtil.getUser()));
 		ControllerProvider.getSampleController().setViaLimsFieldChecked(pathogenTestCreateComponent.getWrappedComponent());
 
 		showFormWithLabMessage(

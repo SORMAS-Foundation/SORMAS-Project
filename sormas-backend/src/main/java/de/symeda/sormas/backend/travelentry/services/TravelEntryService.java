@@ -376,7 +376,8 @@ public class TravelEntryService extends BaseTravelEntryService {
 					CriteriaBuilderHelper.ilike(cb, from.get(TravelEntry.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(TravelEntry.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.NATIONAL_HEALTH_ID), textFilter)));
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
 

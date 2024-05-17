@@ -67,7 +67,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
@@ -128,7 +128,7 @@ public class ExternalMessageProcessingUIHelper {
 			},
 				callback::cancel,
 				false,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
+				UiUtil.enabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
 					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
 					: null);
 	}
@@ -305,7 +305,7 @@ public class ExternalMessageProcessingUIHelper {
 
 		// always add at least one PathogenTest
 		if (existingTests.isEmpty() && newTestsToAdd.isEmpty()) {
-			newTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, mapper, sample, UserProvider.getCurrent().getUser()));
+			newTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, mapper, sample, UiUtil.getUser()));
 		}
 
 		Label newTestSeparator = new Label("<br/><hr/><br/>", ContentMode.HTML);

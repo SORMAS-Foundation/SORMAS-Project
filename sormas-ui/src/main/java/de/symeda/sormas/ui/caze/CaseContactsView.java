@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.contact.ContactsView.buildDetailedExportConfiguration;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -48,13 +50,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.AbstractContactGrid;
 import de.symeda.sormas.ui.contact.ContactGrid;
@@ -94,6 +97,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private DetailSubComponentWrapper gridLayout;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
+	private final ExportConfigurationDto detailedExportConfiguration;
 
 	public CaseContactsView() {
 
@@ -103,6 +107,7 @@ public class CaseContactsView extends AbstractCaseView {
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 		viewConfiguration.setInEagerMode(true);
 		criteria = ViewModelProviders.of(CaseContactsView.class).get(ContactCriteria.class);
+		detailedExportConfiguration = buildDetailedExportConfiguration();
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -114,14 +119,16 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter = ComboBoxHelper.createComboBoxV7();
 		classificationFilter.setWidth(240, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
+		classificationFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
-		UserDto user = UserProvider.getCurrent().getUser();
+		UserDto user = UiUtil.getUser();
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
+			regionFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -139,6 +146,7 @@ public class CaseContactsView extends AbstractCaseView {
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
+		districtFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> criteria.district((DistrictReferenceDto) e.getProperty().getValue()));
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
@@ -168,6 +176,7 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter = ComboBoxHelper.createComboBoxV7();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
+		officerFilter.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
 		if (user.getRegion() != null) {
 			officerFilter.addItems(
@@ -179,6 +188,7 @@ public class CaseContactsView extends AbstractCaseView {
 		searchField.setWidth(150, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
+		searchField.setDescription(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> criteria.setContactOrCaseLike(e.getText()));
 		topLayout.addComponent(searchField);
 
@@ -186,6 +196,7 @@ public class CaseContactsView extends AbstractCaseView {
 		personLikeField.setWidth(150, Unit.PIXELS);
 		personLikeField.setNullRepresentation("");
 		personLikeField.setInputPrompt(I18nProperties.getString(Strings.promptRelatedPersonLikeField));
+		personLikeField.setDescription(I18nProperties.getString(Strings.promptRelatedPersonLikeField));
 		personLikeField.addTextChangeListener(e -> criteria.setPersonLike(e.getText()));
 		topLayout.addComponent(personLikeField);
 
@@ -245,7 +256,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		if (isEditAllowed) {
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
@@ -253,26 +264,26 @@ public class CaseContactsView extends AbstractCaseView {
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
 						ControllerProvider.getContactController()
 							.showBulkContactDataEditComponent(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
-					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+					}, UiUtil.permitted(UserRight.CONTACT_EDIT)),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, selectedItem -> {
 						ControllerProvider.getContactController()
 							.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
-					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+					}, UiUtil.permitted(UserRight.CONTACT_EDIT)),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, selectedItem -> {
 						ControllerProvider.getContactController()
 							.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), getCaseRef().getUuid(), grid);
-					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+					}, UiUtil.permitted(UserRight.CONTACT_EDIT)),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getContactController()
 							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), (AbstractContactGrid<?>) grid);
-					}, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)));
+					}, UiUtil.permitted(UserRight.CONTACT_DELETE)));
 
 				statusFilterLayout.addComponent(bulkOperationsDropdown);
 				statusFilterLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
 				statusFilterLayout.setExpandRatio(bulkOperationsDropdown, 1);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+			if (UiUtil.permitted(UserRight.CONTACT_IMPORT)) {
 				Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 					Window popupWindow = VaadinUiUtil.showPopupWindow(
 						new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
@@ -284,12 +295,12 @@ public class CaseContactsView extends AbstractCaseView {
 
 				statusFilterLayout.addComponent(importButton);
 				statusFilterLayout.setComponentAlignment(importButton, Alignment.MIDDLE_RIGHT);
-				if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (!UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 					statusFilterLayout.setExpandRatio(importButton, 1);
 				}
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+			if (UiUtil.permitted(UserRight.CONTACT_EXPORT)) {
 				VerticalLayout exportLayout = new VerticalLayout();
 				exportLayout.setSpacing(true);
 				exportLayout.setMargin(true);
@@ -300,7 +311,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 				statusFilterLayout.addComponent(exportButton);
 				statusFilterLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
-				if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+				if (!UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 					statusFilterLayout.setExpandRatio(exportButton, 1);
 				}
 				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
@@ -310,7 +321,7 @@ public class CaseContactsView extends AbstractCaseView {
 				addExportButton(streamResource, exportButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Descriptions.descExportButton);
 
 				StreamResource extendedExportStreamResource =
-					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
+					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, detailedExportConfiguration);
 				addExportButton(
 					extendedExportStreamResource,
 					exportButton,
@@ -335,7 +346,7 @@ public class CaseContactsView extends AbstractCaseView {
 				exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+			if (UiUtil.permitted(UserRight.CONTACT_CREATE)) {
 				final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(this.getCaseRef().getUuid());
 				final ExpandableButton lineListingButton =
 					new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow(caseDto));

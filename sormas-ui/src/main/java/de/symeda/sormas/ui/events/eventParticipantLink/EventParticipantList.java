@@ -13,7 +13,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class EventParticipantList extends PaginationList<EventParticipantListEntryDto> {
@@ -52,7 +52,7 @@ public class EventParticipantList extends PaginationList<EventParticipantListEnt
 			if (isActiveEventParticipant) {
 				listEntry.setActive();
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT) && !isActiveEventParticipant) {
+			if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_EDIT) && !isActiveEventParticipant) {
 				listEntry.addEditListener(
 					i,
 					(Button.ClickListener) event -> ControllerProvider.getEventParticipantController()

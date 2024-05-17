@@ -32,7 +32,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -93,10 +92,8 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-
-		if (currentUserProvider != null && currentUserProvider.hasRegionJurisdictionLevel()) {
-			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
+		if (UiUtil.hasRegionJurisdictionLevel()) {
+			RegionReferenceDto userRegion = UiUtil.getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);
 			updateDistricts(userRegion);
@@ -153,8 +150,7 @@ public class LineListingLayout extends VerticalLayout {
 			EventParticipantLineDto eventParticipantLineDto = line.getBean();
 			LineDto<EventParticipantDto> result = new LineDto<>();
 
-			final EventParticipantDto eventParticipant =
-				EventParticipantDto.build(eventDto.toReference(), UserProvider.getCurrent().getUserReference());
+			final EventParticipantDto eventParticipant = EventParticipantDto.build(eventDto.toReference(), UiUtil.getUserReference());
 			eventParticipant.setInvolvementDescription(eventParticipantLineDto.getInvolvementDescription());
 
 			if (eventDto.getEventLocation() == null

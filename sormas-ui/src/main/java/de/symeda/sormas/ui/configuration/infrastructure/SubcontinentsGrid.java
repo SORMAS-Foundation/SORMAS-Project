@@ -22,7 +22,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentCriteria;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -39,7 +39,7 @@ public class SubcontinentsGrid extends FilteredGrid<SubcontinentIndexDto, Subcon
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		super.setCriteria(criteria, true);
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -54,8 +54,7 @@ public class SubcontinentsGrid extends FilteredGrid<SubcontinentIndexDto, Subcon
 			SubcontinentIndexDto.DEFAULT_NAME);
 		getColumn(SubcontinentIndexDto.DEFAULT_NAME).setHidden(true);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
+		if (UiUtil.permitted(FeatureType.EDIT_INFRASTRUCTURE_DATA, UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editSubcontinent(e.getUuid()));
 		}
 

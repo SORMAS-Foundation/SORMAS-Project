@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;

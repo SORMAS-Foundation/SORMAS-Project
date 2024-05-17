@@ -16,13 +16,12 @@
 package de.symeda.sormas.ui.docgeneration;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 
 public class DocGenerationHelper {
 
 	public static boolean isDocGenerationAllowed() {
-		UserProvider currentUser = UserProvider.getCurrent();
-		return currentUser != null && currentUser.hasUserRight(UserRight.QUARANTINE_ORDER_CREATE);
+		return UiUtil.permitted(UserRight.QUARANTINE_ORDER_CREATE);
 	}
 
 	public static boolean isFileSizeLimitExceeded(long length, long fileSizeLimitMb) {

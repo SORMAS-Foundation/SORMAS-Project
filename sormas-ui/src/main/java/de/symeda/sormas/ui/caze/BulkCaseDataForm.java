@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -167,6 +167,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 		// Disease
 		diseaseCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDisease));
+		diseaseCheckBox.setReadOnly(!UiUtil.permitted(UserRight.CASE_CHANGE_DISEASE));
 		getContent().addComponent(diseaseCheckBox, DISEASE_CHECKBOX);
 		ComboBox diseaseField = addDiseaseField(CaseBulkEditData.DISEASE, false);
 		diseaseField.setEnabled(false);
@@ -243,10 +244,13 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 
 		// Classification
 		classificationCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseClassification));
+		classificationCheckBox.setReadOnly(!UiUtil.permitted(UserRight.CASE_CLASSIFY));
 		getContent().addComponent(classificationCheckBox, CLASSIFICATION_CHECKBOX);
 		investigationStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkInvestigationStatus));
+		investigationStatusCheckBox.setReadOnly(!UiUtil.permitted(UserRight.CASE_INVESTIGATE));
 		getContent().addComponent(investigationStatusCheckBox, INVESTIGATION_STATUS_CHECKBOX);
 		outcomeCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseOutcome));
+		outcomeCheckBox.setReadOnly(!UiUtil.permitted(UserRight.CASE_CLASSIFY));
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
 		NullableOptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassification.setEnabled(false);
@@ -290,6 +294,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		}
 
 		healthFacilityCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkFacility));
+		healthFacilityCheckbox.setReadOnly(!UiUtil.permitted(UserRight.CASE_TRANSFER));
 		getContent().addComponent(healthFacilityCheckbox, HEALTH_FACILITY_CHECKBOX);
 
 		region = addInfrastructureField(CaseBulkEditData.REGION);

@@ -206,3 +206,71 @@ Feature: User roles checks
     And I set the Relevance Status Filter to "Active cases" on Case Directory page
     And I search for the last "restored" case on Case directory page
     And I check that number of displayed cases results is 1
+
+  @tmsLink=HSP-5532 @env_de
+  Scenario: Test user rights view in UI
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from Users Page
+    Then I get count for all row number for User Roles tab
+    Then I set user role filter to Bestehende Fälle anzeigen in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Neue Fälle erstellen in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Bestehende Fälle bearbeiten in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Fälle abschließen in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Fälle aus dem System löschen in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Fälle in SORMAS importieren in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Fälle von SORMAS exportieren in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Falluntersuchungsstatus bearbeiten in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    Then I set user role filter to Falldefinitionskategorie und Verlauf der Erkrankung bearbeiten in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+
+  @tmsLink=HSP-5532 @env_de
+  Scenario: Test user jurisdiction level view in UI
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from Users Page
+    Then I set jurisdiction level filter to Keine in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Nation in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Bundesland in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Landkreis/Kreisfreie Stadt in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Gemeinde in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Einreiseort in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Einrichtung in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Labor in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+    Then I set jurisdiction level filter to Externes Labor in User Roles tab
+    Then I check that all row in table has right jurisdiction level for User Roles tab
+
+  @tmsLink=HSP-5532 @env_de
+  Scenario: Test user enabled/disabled view in UI
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from Users Page
+    Then I get count for all row number for User Roles tab
+    And I set enabled filter to Enabled in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+    And I set enabled filter to Disabled in User Roles tab
+    And I check that current row counter for chosen option is less then row number without filtering
+
+  @tmsLink=HSP-5532 @env_de
+  Scenario: Test user roles export
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on User roles tab from Users Page
+    Then I export user roles xlsx file
+    When I check if downloaded xlsx file is correct

@@ -67,7 +67,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,6 +165,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -272,6 +273,8 @@ public class ContactFacadeEjb
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
@@ -762,6 +765,7 @@ public class ContactFacadeEjb
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
+			contact.get(Contact.CASE_REFERENCE_NUMBER),
 			joins.getPerson().get(Person.BIRTH_NAME),
 			joins.getPersonBirthCountry().get(Country.ISO_CODE),
 			joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1286,7 +1290,7 @@ public class ContactFacadeEjb
 		return orderList;
 	}
 
-	private Expression<Object> jurisdictionSelector(ContactQueryContext qc) {
+	private Expression<Boolean> jurisdictionSelector(ContactQueryContext qc) {
 		return JurisdictionHelper.booleanSelector(qc.getCriteriaBuilder(), service.inJurisdictionOrOwned(qc));
 	}
 
@@ -1541,6 +1545,7 @@ public class ContactFacadeEjb
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1881,6 +1886,7 @@ public class ContactFacadeEjb
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -2222,8 +2228,10 @@ public class ContactFacadeEjb
 		// 4 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
 		for (Document document : documents) {
-			document.setRelatedEntityUuid(leadContact.getUuid());
-
+			document.getRelatedEntities()
+				.stream()
+				.filter(documentRelatedEntity -> documentRelatedEntity.getRelatedEntityUuid().equals(otherContact.getUuid()))
+				.forEach(a -> a.setRelatedEntityUuid(leadContact.getUuid()));
 			documentService.ensurePersisted(document);
 		}
 	}

@@ -83,7 +83,7 @@ public class CaseReferenceDto extends ReferenceDto implements IsCase {
 		return shortUuid;
 	}
 
-	public String getName() {
+	public String buildNameCaption() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
 }

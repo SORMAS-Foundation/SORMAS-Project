@@ -227,6 +227,7 @@ public interface Captions {
 	String bulkDiseaseVariant = "bulkDiseaseVariant";
 	String bulkEdit = "bulkEdit";
 	String bulkEditAssignee = "bulkEditAssignee";
+	String bulkEmailSend = "bulkEmailSend";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
 	String bulkEventManagementStatus = "bulkEventManagementStatus";
 	String bulkEventParticipantsToContacts = "bulkEventParticipantsToContacts";
@@ -312,6 +313,7 @@ public interface Captions {
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
 	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
+	String CaseData_caseReferenceNumber = "CaseData.caseReferenceNumber";
 	String CaseData_changeDate = "CaseData.changeDate";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
@@ -633,6 +635,7 @@ public interface Captions {
 	String Contact_caseClassification = "Contact.caseClassification";
 	String Contact_caseIdExternalSystem = "Contact.caseIdExternalSystem";
 	String Contact_caseOrEventInformation = "Contact.caseOrEventInformation";
+	String Contact_caseReferenceNumber = "Contact.caseReferenceNumber";
 	String Contact_caze = "Contact.caze";
 	String Contact_caze_ageSex = "Contact.caze.ageSex";
 	String Contact_caze_caseClassification = "Contact.caze.caseClassification";
@@ -1425,6 +1428,8 @@ public interface Captions {
 	String ExternalEmailOptions_attachedDocuments = "ExternalEmailOptions.attachedDocuments";
 	String ExternalEmailOptions_recipientEmail = "ExternalEmailOptions.recipientEmail";
 	String ExternalEmailOptions_templateName = "ExternalEmailOptions.templateName";
+	String ExternalEmailOptionsWithAttachments_attachedDocuments = "ExternalEmailOptionsWithAttachments.attachedDocuments";
+	String ExternalEmailOptionsWithAttachments_templateName = "ExternalEmailOptionsWithAttachments.templateName";
 	String externalEmailSentBy = "externalEmailSentBy";
 	String externalEmailSentTo = "externalEmailSentTo";
 	String externalEmailUsedTemplate = "externalEmailUsedTemplate";
@@ -1699,6 +1704,7 @@ public interface Captions {
 	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
 	String mainMenuSamples = "mainMenuSamples";
+	String mainMenuSelfReports = "mainMenuSelfReports";
 	String mainMenuShareRequests = "mainMenuShareRequests";
 	String mainMenuStatistics = "mainMenuStatistics";
 	String mainMenuTasks = "mainMenuTasks";
@@ -1889,6 +1895,7 @@ public interface Captions {
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
+	String personCommunityPrompt = "personCommunityPrompt";
 	String PersonContactDetail = "PersonContactDetail";
 	String PersonContactDetail_additionalInformation = "PersonContactDetail.additionalInformation";
 	String PersonContactDetail_contactInformation = "PersonContactDetail.contactInformation";
@@ -1905,6 +1912,7 @@ public interface Captions {
 	String personContactDetailThirdParty = "personContactDetailThirdParty";
 	String personContactDetailThisPerson = "personContactDetailThisPerson";
 	String personCreateNew = "personCreateNew";
+	String personDistrictPrompt = "personDistrictPrompt";
 	String personFindMatching = "personFindMatching";
 	String personLinkToCases = "personLinkToCases";
 	String personLinkToContacts = "personLinkToContacts";
@@ -1914,6 +1922,7 @@ public interface Captions {
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
+	String personRegionPrompt = "personRegionPrompt";
 	String personSearchAndSelect = "personSearchAndSelect";
 	String personSelect = "personSelect";
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
@@ -2175,6 +2184,28 @@ public interface Captions {
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String selectOtherSample = "selectOtherSample";
 	String selectSimilarSample = "selectSimilarSample";
+	String SelfReport_address = "SelfReport.address";
+	String SelfReport_birthdateDD = "SelfReport.birthdateDD";
+	String SelfReport_birthdateMM = "SelfReport.birthdateMM";
+	String SelfReport_birthdateYYYY = "SelfReport.birthdateYYYY";
+	String SelfReport_comment = "SelfReport.comment";
+	String SelfReport_disease = "SelfReport.disease";
+	String SelfReport_diseaseVariant = "SelfReport.diseaseVariant";
+	String SelfReport_email = "SelfReport.email";
+	String SelfReport_firstName = "SelfReport.firstName";
+	String SelfReport_investigationStatus = "SelfReport.investigationStatus";
+	String SelfReport_lastName = "SelfReport.lastName";
+	String SelfReport_nationalHealthId = "SelfReport.nationalHealthId";
+	String SelfReport_phoneNumber = "SelfReport.phoneNumber";
+	String SelfReport_processingStatus = "SelfReport.processingStatus";
+	String SelfReport_reportDate = "SelfReport.reportDate";
+	String SelfReport_responsibleUser = "SelfReport.responsibleUser";
+	String SelfReport_sex = "SelfReport.sex";
+	String SelfReport_type = "SelfReport.type";
+	String selfReportActiveEnvironments = "selfReportActiveEnvironments";
+	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
+	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
+	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
@@ -2799,6 +2830,7 @@ public interface Captions {
 	String View_samples_archive = "View.samples.archive";
 	String View_samples_data = "View.samples.data";
 	String View_samples_sub = "View.samples.sub";
+	String View_selfreports = "View.selfreports";
 	String View_shareRequests = "View.shareRequests";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";

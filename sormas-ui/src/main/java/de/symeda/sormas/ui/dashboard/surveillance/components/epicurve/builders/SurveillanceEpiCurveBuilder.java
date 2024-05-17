@@ -14,7 +14,7 @@ import de.symeda.sormas.ui.dashboard.diagram.EpiCurveSeriesElement;
 public abstract class SurveillanceEpiCurveBuilder extends AbstractEpiCurveBuilder<DashboardCriteria, DashboardDataProvider> {
 
 	public SurveillanceEpiCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
-		super(Captions.dashboardNumberOfContacts, epiCurveGrouping);
+		super(Captions.dashboardNumberOfCases, epiCurveGrouping);
 	}
 
 	@Override

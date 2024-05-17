@@ -64,6 +64,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
@@ -1751,19 +1752,31 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF() {
-		return createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
+		return createRDCF("Region", "District", "Community", "Facility", FacilityType.HOSPITAL, "PointOfEntry", false);
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
-		return createRDCF(regionName, districtName, communityName, facilityName, null);
+		return createRDCF(regionName, districtName, communityName, facilityName, FacilityType.HOSPITAL, null, false);
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName, String pointOfEntryName) {
+		return createRDCF(regionName, districtName, communityName, facilityName, FacilityType.HOSPITAL, pointOfEntryName, false);
+	}
 
-		Region region = createRegion(regionName);
-		District district = createDistrict(districtName, region);
-		Community community = createCommunity(communityName, district);
-		Facility facility = createFacility(facilityName, region, district, community);
+	public RDCF createRDCF(
+		String regionName,
+		String districtName,
+		String communityName,
+		String facilityName,
+		FacilityType facilityType,
+		String pointOfEntryName,
+		boolean withExternalIds) {
+
+		Region region = createRegion(regionName, withExternalIds ? regionName + "_externalId" : null);
+		District district = createDistrict(districtName, region, withExternalIds ? districtName + "_externalId" : null);
+		Community community = createCommunity(communityName, district, withExternalIds ? communityName + "_externalId" : null);
+		Facility facility =
+			createFacility(facilityName, facilityType, region, district, community, withExternalIds ? facilityName + "_externalId" : null);
 
 		PointOfEntry pointOfEntry = null;
 		if (pointOfEntryName != null) {
@@ -2086,10 +2099,9 @@ public class TestDataCreator {
 		document.setName(name);
 		document.setMimeType(contentType);
 		document.setSize(size);
-		document.setRelatedEntityType(relatedEntityType);
-		document.setRelatedEntityUuid(relatedEntityUuid);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
 
-		return beanTest.getDocumentFacade().saveDocument(document, content);
+		return beanTest.getDocumentFacade().saveDocument(document, content, Collections.singletonList(documentRelatedEntities));
 	}
 
 	public ExportConfigurationDto createExportConfiguration(String name, ExportType exportType, Set<String> properites, UserReferenceDto user) {

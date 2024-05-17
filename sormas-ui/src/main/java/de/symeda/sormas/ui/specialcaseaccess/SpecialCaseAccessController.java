@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.AbstractCaseGrid;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -53,7 +53,7 @@ public class SpecialCaseAccessController {
 	}
 
 	public void create(CaseReferenceDto caze, Runnable callback) {
-		SpecialCaseAccessDto specialCaseAccess = SpecialCaseAccessDto.build(caze, UserProvider.getCurrent().getUserReference());
+		SpecialCaseAccessDto specialCaseAccess = SpecialCaseAccessDto.build(caze, UiUtil.getUserReference());
 
 		openEditWindow(
 			specialCaseAccess,
@@ -76,7 +76,7 @@ public class SpecialCaseAccessController {
 			return;
 		}
 
-		SpecialCaseAccessDto specialCaseAccess = SpecialCaseAccessDto.build(null, UserProvider.getCurrent().getUserReference());
+		SpecialCaseAccessDto specialCaseAccess = SpecialCaseAccessDto.build(null, UiUtil.getUserReference());
 		openEditWindow(specialCaseAccess, Strings.headingCreateSpecailCaseAccess, true, true, editedAccess -> {
 			boolean anyAssignedToUser = FacadeProvider.getSpecialCaseAccessFacade()
 				.isAnyAssignedToUser(cases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()), editedAccess.getAssignedTo());

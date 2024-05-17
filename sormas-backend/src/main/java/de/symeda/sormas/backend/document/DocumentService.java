@@ -24,6 +24,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -65,11 +66,12 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
 		from.fetch(Document.UPLOADING_USER);
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
 		Predicate filter = cb.and(
 			cb.isFalse(from.get(Document.DELETED)),
-			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
-			cb.in(from.get(Document.RELATED_ENTITY_UUID)).value(uuids));
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), type),
+			cb.in(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_UUID)).value(uuids));
 
 		cq.where(filter);
 
@@ -102,8 +104,9 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 		CriteriaQuery<Document> cq = cb.createQuery(getElementClass());
 		Root<Document> from = cq.from(getElementClass());
 		from.fetch(Document.UPLOADING_USER);
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
-        cq.where(buildRelatedEntityFilter(type, uuid, cb, from));
+		cq.where(buildRelatedEntityFilter(type, uuid, cb, from, relatedEntitiesJoin));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
@@ -126,50 +129,60 @@ public class DocumentService extends AdoServiceWithUserFilterAndJurisdiction<Doc
 			cq.orderBy(cb.desc(from.get(Document.CHANGE_DATE)));
 		}
 		cq.distinct(true);
+		List<Document> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+
+	public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DocumentReferenceDto> cq = cb.createQuery(DocumentReferenceDto.class);
+		Root<Document> from = cq.from(getElementClass());
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
+
+		cq.multiselect(from.get(Document.UUID), from.get(Document.NAME));
+
+		cq.where(
+			CriteriaBuilderHelper
+				.and(cb, buildRelatedEntityFilter(type, uuid, cb, from, relatedEntitiesJoin), buildExtensionFilter(fileExtensions, cb, from)));
+
+		cq.orderBy(cb.asc(cb.lower(from.get(DocumentDto.NAME))));
+
 		return em.createQuery(cq).getResultList();
 	}
 
-    public List<DocumentReferenceDto> getReferencesRelatedToEntity(DocumentRelatedEntityType type, String uuid, Set<String> fileExtensions) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<DocumentReferenceDto> cq = cb.createQuery(DocumentReferenceDto.class);
-        Root<Document> from = cq.from(getElementClass());
+	private static Predicate buildRelatedEntityFilter(
+		DocumentRelatedEntityType type,
+		String uuid,
+		CriteriaBuilder cb,
+		Root<Document> from,
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin) {
+		return cb.and(
+			cb.isFalse(from.get(Document.DELETED)),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), type),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_UUID), uuid));
+	}
 
-        cq.multiselect(from.get(Document.UUID), from.get(Document.NAME));
+	private static Predicate buildExtensionFilter(Set<String> fileExtensions, CriteriaBuilder cb, Root<Document> from) {
+		if (fileExtensions == null) {
+			return null;
+		}
 
-        cq.where(CriteriaBuilderHelper.and(cb, buildRelatedEntityFilter(type, uuid, cb, from), buildExtensionFilter(fileExtensions, cb, from)));
+		Predicate[] predicates =
+			fileExtensions.stream().map(extension -> cb.like(from.get(Document.NAME), "%" + extension)).toArray(Predicate[]::new);
 
-        cq.orderBy(cb.asc(cb.lower(from.get(DocumentDto.NAME))));
-
-        return em.createQuery(cq).getResultList();
-    }
-
-    private static Predicate buildRelatedEntityFilter(DocumentRelatedEntityType type, String uuid, CriteriaBuilder cb, Root<Document> from) {
-        return cb.and(
-                cb.isFalse(from.get(Document.DELETED)),
-                cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
-                cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid));
-    }
-
-    private static Predicate buildExtensionFilter(Set<String> fileExtensions, CriteriaBuilder cb, Root<Document> from) {
-        if (fileExtensions == null) {
-            return null;
-        }
-
-        Predicate[] predicates =
-                fileExtensions.stream().map(extension -> cb.like(from.get(Document.NAME), "%" + extension)).toArray(Predicate[]::new);
-
-        return cb.or(predicates);
-    }
+		return cb.or(predicates);
+	}
 
 	public String isExisting(DocumentRelatedEntityType type, String uuid, String name) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Document> from = cq.from(getElementClass());
+		Join<Document, DocumentRelatedEntity> relatedEntitiesJoin = from.join(Document.RELATED_ENTITIES);
 
 		Predicate filter = cb.and(
 			cb.isFalse(from.get(Document.DELETED)),
-			cb.equal(from.get(Document.RELATED_ENTITY_TYPE), type),
-			cb.equal(from.get(Document.RELATED_ENTITY_UUID), uuid),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_TYPE), type),
+			cb.equal(relatedEntitiesJoin.get(DocumentRelatedEntity.RELATED_ENTITY_UUID), uuid),
 			cb.equal(from.get(Document.NAME), name));
 
 		cq.where(filter);

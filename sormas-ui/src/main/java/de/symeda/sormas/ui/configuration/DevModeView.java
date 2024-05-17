@@ -102,7 +102,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitLogic;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.configuration.generate.config.CaseGenerationConfig;
 import de.symeda.sormas.ui.configuration.generate.config.ContactGenerationConfig;
 import de.symeda.sormas.ui.configuration.generate.config.EventGenerationConfig;
@@ -1008,8 +1008,7 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
 
 			// report
-			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-			caze.setReportingUser(userReference);
+			caze.setReportingUser(UiUtil.getUserReference());
 			caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
 			// region & facility
@@ -1087,7 +1086,7 @@ public class DevModeView extends AbstractConfigurationView {
 
 		long dt = System.nanoTime();
 
-		UserReferenceDto user = UserProvider.getCurrent().getUserReference();
+		UserReferenceDto user = UiUtil.getUserReference();
 
 		List<CaseReferenceDto> cases = FacadeProvider.getCaseFacade()
 			.getRandomCaseReferences(
@@ -1329,7 +1328,7 @@ public class DevModeView extends AbstractConfigurationView {
 				contact.setDiseaseDetails("RD " + (random().nextInt(20) + 1));
 			}
 
-			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+			UserReferenceDto userReference = UiUtil.getUserReference();
 			contact.setReportingUser(userReference);
 			contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
@@ -1507,7 +1506,7 @@ public class DevModeView extends AbstractConfigurationView {
 			event.setEventDesc("Event generated using DevMode on " + LocalDate.now());
 
 			// report
-			UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+			UserReferenceDto userReference = UiUtil.getUserReference();
 			event.setReportingUser(userReference);
 			event.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 
@@ -1523,7 +1522,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// EventParticipants
 			int numParticipants = randomInt(minParticipantsPerEvent, maxParticipantsPerEvent);
 			for (int j = 0; j < numParticipants; j++) {
-				EventParticipantDto eventParticipant = EventParticipantDto.build(event.toReference(), UserProvider.getCurrent().getUserReference());
+				EventParticipantDto eventParticipant = EventParticipantDto.build(event.toReference(), UiUtil.getUserReference());
 				// person
 				// instead of creating new persons everytime, it would be nice if some persons came of the original database
 				PersonDto person = PersonDto.build();
@@ -1540,7 +1539,7 @@ public class DevModeView extends AbstractConfigurationView {
 						CaseDataDto caze = CaseDataDto.buildFromEventParticipant(eventParticipant, person, event.getDisease());
 						fillEntity(caze, referenceDateTime);
 						caze.setDisease(event.getDisease());
-						caze.setReportingUser(UserProvider.getCurrent().getUserReference());
+						caze.setReportingUser(UiUtil.getUserReference());
 						caze.setReportDate(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 						caze.setResponsibleRegion(eventGenerationConfig.getRegion());
@@ -1567,7 +1566,7 @@ public class DevModeView extends AbstractConfigurationView {
 						ContactDto contact = ContactDto.build(eventParticipant);
 						contact.setDisease(event.getDisease());
 						contact.setCaze(random(cases));
-						contact.setReportingUser(UserProvider.getCurrent().getUserReference());
+						contact.setReportingUser(UiUtil.getUserReference());
 						contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 						FacadeProvider.getContactFacade().save(contact);

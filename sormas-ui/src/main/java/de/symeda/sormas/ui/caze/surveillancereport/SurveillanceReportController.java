@@ -30,7 +30,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -63,7 +63,7 @@ public class SurveillanceReportController {
 			new CommitDiscardWrapperComponent<>(surveillanceReportForm, true, surveillanceReportForm.getFieldGroup());
 		editView.setEditable(isEditAllowed);
 
-		if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 			ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(report.toReference());
 
 			if (externalMessage != null) {

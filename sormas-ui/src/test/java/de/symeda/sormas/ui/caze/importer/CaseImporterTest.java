@@ -96,7 +96,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(5, getCaseFacade().count(null));
@@ -104,7 +104,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// Failed import of 5 cases because of errors
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_errors.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
 		assertEquals(5, getCaseFacade().count(null));
@@ -123,7 +123,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
 			}
 		};
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
@@ -157,7 +157,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, input.getSimilarCases().get(0), ImportSimilarityResultOption.PICK));
 			}
 		};
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
@@ -177,7 +177,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CANCEL));
 			}
 		};
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.CANCELED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
@@ -210,7 +210,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, input.getSimilarCases().get(0), ImportSimilarityResultOption.OVERRIDE));
 			}
 		};
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, getCaseFacade().count(null));
@@ -243,7 +243,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 			}
 		};
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importResult);
 		assertEquals(5, getCaseFacade().count(null));
@@ -258,7 +258,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// Similarity: create -> pass
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(6, getCaseFacade().count(null));
@@ -271,7 +271,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_different_infrastructure.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		InputStream errorStream = new ByteArrayInputStream(
 			((CaseImporterTest.CaseImporterExtension) caseImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
@@ -286,7 +286,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 cases from a commented CSV file
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_success.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user);
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(12, getCaseFacade().count(null));
@@ -306,7 +306,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, false, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(5, getCaseFacade().count(null));
@@ -314,7 +314,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 cases from commented CSV file
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_comment_line_listing.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, false, user);
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 		assertEquals(10, getCaseFacade().count(null));
@@ -335,14 +335,14 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// csv with missing header
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_one_data_line_missing_header.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.CANCELED_WITH_ERRORS, importResult);
 
 		// csv with wrong separator
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_success.csv").toURI());
 		caseImporter = new CaseImporterExtension(csvFile, true, user, ValueSeparator.SEMICOLON);
-		importResult = caseImporter.runImport();
+		importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.CANCELED_WITH_ERRORS, importResult);
 
@@ -364,7 +364,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// import of 3 cases with different address types
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_address_type.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		PersonDto casePerson1 = getPersonFacade().getByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-1").get(0).getPerson().getUuid());
 		PersonDto casePerson2 = getPersonFacade().getByUuid(getCaseFacade().getByExternalId("SL-DEF-GHI-19-2").get(0).getPerson().getUuid());
@@ -396,7 +396,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// import of 3 cases with different number of samples
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_samples.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 
@@ -434,7 +434,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// import of 3 cases with different number of samples and pathogen tests
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_pathogen_tests.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 
@@ -484,7 +484,7 @@ public class CaseImporterTest extends AbstractUiBeanTest {
 		// import of 3 cases with different number of vaccinations
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_case_import_test_vaccinations.csv").toURI());
 		CaseImporterExtension caseImporter = new CaseImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = caseImporter.runImport();
+		ImportResultStatus importResult = caseImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, caseImporter.stringBuilder.toString());
 

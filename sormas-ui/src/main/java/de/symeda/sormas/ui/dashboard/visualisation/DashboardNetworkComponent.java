@@ -38,7 +38,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -67,7 +67,7 @@ public class DashboardNetworkComponent extends VerticalLayout {
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 
 		return FacadeProvider.getVisualizationFacade()
-			.buildTransmissionChainJson(fromDate, toDate, region, district, diseases, UserProvider.getCurrent().getUser().getLanguage());
+			.buildTransmissionChainJson(fromDate, toDate, region, district, diseases, UiUtil.getUser().getLanguage());
 	}
 
 	public DashboardNetworkComponent(DashboardDataProvider dashboardDataProvider) {

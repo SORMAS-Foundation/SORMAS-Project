@@ -81,6 +81,7 @@ public enum FeatureType {
 		null,
 		ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE, FeatureTypeProperty.MAX_CHANGE_DATE_PERIOD, -1)),
 	ENVIRONMENT_MANAGEMENT(true, false, null, null, null),
+	SELF_REPORTING(true, false, null, null, null),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
@@ -266,6 +267,7 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
+	AUTH_PROVIDER_TO_SORMAS_USER_SYNC(true, false, null, null, null),
 
 	// REGION- AND DISEASE-BASED FEATURES
 	LINE_LISTING(false, false, null, null, null),

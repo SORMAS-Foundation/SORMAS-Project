@@ -50,7 +50,6 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleGridComponent;
 import de.symeda.sormas.ui.samples.humansample.HumanSampleGrid;
@@ -94,11 +93,11 @@ public class SamplesView extends AbstractView implements HasName {
 		setSizeFull();
 		addComponent(sampleListComponent);
 
-		if (isHumanSampleView() && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT)) {
+		if (isHumanSampleView() && UiUtil.permitted(UserRight.SAMPLE_EXPORT)) {
 			addHumanSampleExportButton();
 		}
 
-		if (isEnvironmentSampleView() && UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EXPORT)) {
+		if (isEnvironmentSampleView() && UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
@@ -111,7 +110,7 @@ public class SamplesView extends AbstractView implements HasName {
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			addBulkModeButtons();
 		}
 	}

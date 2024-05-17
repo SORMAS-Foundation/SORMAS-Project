@@ -33,7 +33,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SampleGridComponent;
 import de.symeda.sormas.ui.samples.SamplesView;
@@ -176,7 +176,7 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+			if (UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(220, Unit.PIXELS);
@@ -190,7 +190,7 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
 					I18nProperties.getCaption(Captions.environmentSampleAllActiveAndArchivedSamples));
 
-				if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_DELETE)) {
+				if (UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_DELETE)) {
 					relevanceStatusFilter
 						.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.environmentSampleDeletedSamples));
 				} else {
@@ -198,6 +198,10 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 				}
 
 				relevanceStatusFilter.addValueChangeListener(e -> {
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					}
+
 					criteria.setRelevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					samplesView.navigateTo(criteria);
 				});
@@ -205,23 +209,27 @@ public class EnvironmentSampleGridComponent extends SampleGridComponent<Environm
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getEnvironmentSampleController()
-								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkDelete),
+							VaadinIcons.TRASH,
+							selectedItem -> ControllerProvider.getEnvironmentSampleController()
+								.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_DELETE)));
 				} else {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, selectedItem -> {
-							ControllerProvider.getEnvironmentSampleController()
-								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria));
-						}));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkRestore),
+							VaadinIcons.ARROW_BACKWARD,
+							selectedItem -> ControllerProvider.getEnvironmentSampleController()
+								.restoreSelectedSamples(grid.asMultiSelect().getSelectedItems(), grid, () -> samplesView.navigateTo(criteria)),
+							UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_DELETE)));
 				}
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());

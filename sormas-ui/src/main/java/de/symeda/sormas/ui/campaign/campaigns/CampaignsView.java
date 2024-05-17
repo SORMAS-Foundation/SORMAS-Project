@@ -34,7 +34,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -78,7 +78,7 @@ public class CampaignsView extends AbstractCampaignView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
+		if (UiUtil.permitted(UserRight.CAMPAIGN_EDIT)) {
 			validateFormsButton = ButtonHelper.createIconButton(Captions.campaignValidateForms, VaadinIcons.CHECK_CIRCLE, e -> {
 				FacadeProvider.getCampaignFormMetaFacade().validateAllFormMetas();
 				Notification.show(I18nProperties.getString(Strings.messageAllCampaignFormsValid), Type.TRAY_NOTIFICATION);
@@ -123,8 +123,9 @@ public class CampaignsView extends AbstractCampaignView {
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.campaignActiveCampaigns));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.campaignAllActiveAndArchivedCampaigns));
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+		relevanceStatusFilter
+			.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.campaignAllActiveAndArchivedCampaigns));
+		if (UiUtil.permitted(UserRight.CAMPAIGN_DELETE)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.campaignDeletedCampaigns));
 		} else {
 			relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);

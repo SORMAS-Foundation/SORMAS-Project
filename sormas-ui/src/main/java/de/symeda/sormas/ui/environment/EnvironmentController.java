@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.environment;
 
-import java.util.Objects;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -34,6 +32,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -57,17 +56,15 @@ public class EnvironmentController {
 	}
 
 	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent() {
-		UserProvider curentUser = UserProvider.getCurrent();
+		UserProvider curentUser = UiUtil.getCurrentUserProvider();
 
 		if (curentUser != null) {
 			EnvironmentCreateForm createForm;
 			createForm = new EnvironmentCreateForm();
 			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
 			createForm.setValue(environment);
-			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView = new CommitDiscardWrapperComponent<>(
-				createForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_CREATE),
-				createForm.getFieldGroup());
+			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
+				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
 
 			editView.addCommitListener(() -> {
 				if (!createForm.getFieldGroup().isModified()) {
@@ -113,7 +110,7 @@ public class EnvironmentController {
 		EnvironmentDataForm environmentDataForm = new EnvironmentDataForm(
 			environmentDto.isPseudonymized(),
 			environmentDto.isInJurisdiction(),
-			isEditAllowed && UserProvider.getCurrent().hasUserRight(editUserRight));
+			UiUtil.permitted(isEditAllowed, editUserRight));
 		environmentDataForm.setValue(environmentDto);
 
 		CommitDiscardWrapperComponent<EnvironmentDataForm> editComponent =
@@ -123,7 +120,7 @@ public class EnvironmentController {
 			if (!environmentDataForm.getFieldGroup().isModified()) {
 				EnvironmentDto dto = environmentDataForm.getValue();
 
-				final UserDto user = UserProvider.getCurrent().getUser();
+				final UserDto user = UiUtil.getUser();
 				final RegionReferenceDto userRegion = user.getRegion();
 				final DistrictReferenceDto userDistrict = user.getDistrict();
 				final RegionReferenceDto environmentRegion = dto.getLocation().getRegion();
@@ -162,13 +159,10 @@ public class EnvironmentController {
 			}
 		}
 
-		if (Objects.requireNonNull(UserProvider.getCurrent())
-			.getUserRoles()
-			.stream()
-			.anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
-			|| DataHelper.equal(environmentDto.getResponsibleUser(), UserProvider.getCurrent().getUserReference())) {
+		if (UiUtil.getUserRoles().stream().anyMatch(userRoleDto -> !userRoleDto.isRestrictAccessToAssignedEntities())
+			|| DataHelper.equal(environmentDto.getResponsibleUser(), UiUtil.getUserReference())) {
 			// Initialize 'Delete' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_DELETE)) {
+			if (UiUtil.permitted(UserRight.ENVIRONMENT_DELETE)) {
 				editComponent.addDeleteWithReasonOrRestoreListener(
 					EnvironmentsView.VIEW_NAME,
 					null,
@@ -178,7 +172,7 @@ public class EnvironmentController {
 			}
 
 			// Initialize 'Archive' button
-			if (UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_ARCHIVE)) {
+			if (UiUtil.permitted(UserRight.ENVIRONMENT_ARCHIVE)) {
 				ControllerProvider.getArchiveController()
 					.addArchivingButton(
 						environmentDto,

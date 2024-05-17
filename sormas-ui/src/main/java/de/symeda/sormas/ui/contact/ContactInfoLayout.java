@@ -29,7 +29,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
@@ -70,7 +70,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 				contactDto.getPerson().buildCaption(),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 
 				final HorizontalLayout ageSexRow = new HorizontalLayout();
 				ageSexRow.setMargin(false);
@@ -104,7 +104,7 @@ public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 		secondColumn.setMargin(false);
 		secondColumn.setSpacing(true);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 
 			addDescLabel(
 				secondColumn,

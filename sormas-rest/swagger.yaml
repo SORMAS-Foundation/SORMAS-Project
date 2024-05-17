@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.95.0-SNAPSHOT
+  version: 1.97.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -7180,6 +7180,10 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - SELF_REPORT_VIEW
+                  - SELF_REPORT_CREATE
+                  - SELF_REPORT_EDIT
+                  - SELF_REPORT_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7397,6 +7401,10 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - SELF_REPORT_VIEW
+                  - SELF_REPORT_CREATE
+                  - SELF_REPORT_EDIT
+                  - SELF_REPORT_DELETE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -9234,6 +9242,10 @@ components:
           enum:
           - FULFILLED
           - NOT_FULFILLED
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         changeDate:
           type: string
           format: date-time
@@ -10334,6 +10346,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         city:
           type: string
         completeness:
@@ -10599,6 +10613,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         completeness:
           type: number
           format: float
@@ -10816,8 +10832,6 @@ components:
         firstName:
           type: string
         lastName:
-          type: string
-        name:
           type: string
         uuid:
           type: string
@@ -11546,6 +11560,10 @@ components:
           type: string
           maxLength: 4096
           minLength: 0
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
         changeDate:
@@ -11956,6 +11974,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -12196,6 +12216,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -13980,19 +14002,6 @@ components:
           minLength: 0
         pseudonymized:
           type: boolean
-        relatedEntityType:
-          type: string
-          enum:
-          - CASE
-          - CONTACT
-          - ACTION
-          - EVENT
-          - TRAVEL_ENTRY
-        relatedEntityUuid:
-          type: string
-          maxLength: 36
-          minLength: 20
-          pattern: "^[0-9a-zA-Z-]*$"
         size:
           type: integer
           format: int64
@@ -14006,8 +14015,6 @@ components:
       required:
       - mimeType
       - name
-      - relatedEntityType
-      - relatedEntityUuid
       - size
       - uploadingUser
     EnvironmentDto:
@@ -17140,6 +17147,7 @@ components:
             - DASHBOARD_SAMPLES
             - LIMITED_SYNCHRONIZATION
             - ENVIRONMENT_MANAGEMENT
+            - SELF_REPORTING
             - ASSIGN_TASKS_TO_HIGHER_LEVEL
             - CASE_FOLLOWUP
             - DOCUMENTS
@@ -17174,6 +17182,7 @@ components:
             - INFRASTRUCTURE_TYPE_AREA
             - OUTBREAKS
             - PERSON_MANAGEMENT
+            - AUTH_PROVIDER_TO_SORMAS_USER_SYNC
             - LINE_LISTING
             - EVENT_GROUPS_MODIFICATION_NOTIFICATIONS
             - EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS
@@ -17290,6 +17299,7 @@ components:
           - DASHBOARD_SAMPLES
           - LIMITED_SYNCHRONIZATION
           - ENVIRONMENT_MANAGEMENT
+          - SELF_REPORTING
           - ASSIGN_TASKS_TO_HIGHER_LEVEL
           - CASE_FOLLOWUP
           - DOCUMENTS
@@ -17324,6 +17334,7 @@ components:
           - INFRASTRUCTURE_TYPE_AREA
           - OUTBREAKS
           - PERSON_MANAGEMENT
+          - AUTH_PROVIDER_TO_SORMAS_USER_SYNC
           - LINE_LISTING
           - EVENT_GROUPS_MODIFICATION_NOTIFICATIONS
           - EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS
@@ -25468,6 +25479,10 @@ components:
             - ENVIRONMENT_PATHOGEN_TEST_CREATE
             - ENVIRONMENT_PATHOGEN_TEST_EDIT
             - ENVIRONMENT_PATHOGEN_TEST_DELETE
+            - SELF_REPORT_VIEW
+            - SELF_REPORT_CREATE
+            - SELF_REPORT_EDIT
+            - SELF_REPORT_DELETE
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

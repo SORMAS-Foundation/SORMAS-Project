@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static java.util.function.Predicate.not;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
@@ -78,8 +79,18 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
 	private static final String LIMITED_DISEASES_HEADING_LOC = "limitedDiseasesHeadingLoc";
-	private static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
+	public static final String RESTRICT_DISEASES_CHECKBOX_LOC = "restrictDiseasesCheckboxLoc";
 	private static final String RESTRICT_DISEASES_DESCRIPTION_LOC = "restrictDiseasesDescriptionLoc";
+	public static List<String> excludedFields = Arrays.asList(
+		UserDto.USER_ROLES,
+		UserDto.REGION,
+		UserDto.DISTRICT,
+		UserDto.COMMUNITY,
+		UserDto.HEALTH_FACILITY,
+		UserDto.POINT_OF_ENTRY,
+		UserDto.ASSOCIATED_OFFICER,
+		UserDto.LABORATORY,
+		UserDto.LIMITED_DISEASES);
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -241,6 +252,14 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addFieldListeners(UserDto.LAST_NAME, e -> suggestUserName());
         addFieldListeners(UserDto.USER_ROLES, e -> updateFieldsByUserRole());
         updateFieldsByUserRole();
+
+        if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+            this.getFieldGroup().getFields().forEach(userField ->{
+                if (!excludedFields.contains(userField.getId())) {
+                    userField.setEnabled(false);
+                }
+            });
+        }
     }
 
 	@Override

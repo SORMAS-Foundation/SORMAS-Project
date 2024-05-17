@@ -22,22 +22,22 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -52,16 +52,18 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -106,8 +108,6 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		EnvironmentSampleDto.RECEIVAL_DATE,
 		EnvironmentSampleDto.LAB_SAMPLE_ID,
 		EnvironmentSampleDto.SPECIMEN_CONDITION);
-
-	private CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree;
 
 	private final boolean isCreate;
 
@@ -182,8 +182,8 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		TextField phValueField = addField(EnvironmentSampleDto.PH_VALUE);
 		phValueField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, phValueField.getCaption()));
 
-		final Component weatherConditionsLayout = buildWeatherConditionComponent();
-		getContent().addComponent(weatherConditionsLayout, EnvironmentSampleDto.WEATHER_CONDITIONS);
+		CheckBoxTree<WeatherCondition> weatherConditionCheckBoxTree = addField(EnvironmentSampleDto.WEATHER_CONDITIONS, CheckBoxTree.class);
+		weatherConditionCheckBoxTree.setEnumType(WeatherCondition.class, null);
 
 		addField(EnvironmentSampleDto.HEAVY_RAIN, NullableOptionGroup.class);
 
@@ -263,14 +263,14 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
 
 		initializeAccessAndAllowedAccesses();
+		addValidators();
 	}
 
 	private void disableFieldsBasedOnRights(EnvironmentSampleDto sample) {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel jurisdictionLevel = currentUserProvider.getJurisdictionLevel();
-		boolean hasEditReceivalRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
-		boolean hasEditDispatchRight = currentUserProvider.hasUserRight(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
-		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), currentUserProvider.getUser());
+		JurisdictionLevel jurisdictionLevel = UiUtil.getJurisdictionLevel();
+		boolean hasEditReceivalRight = UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_EDIT_RECEIVAL);
+		boolean hasEditDispatchRight = UiUtil.permitted(UserRight.ENVIRONMENT_SAMPLE_EDIT_DISPATCH);
+		boolean isOwner = isCreate || DataHelper.isSame(sample.getReportingUser(), UiUtil.getUser());
 		boolean canEditDispatchField =
 			isCreate || (hasEditDispatchRight && (isOwner || jurisdictionLevel.getOrder() <= JurisdictionLevel.REGION.getOrder()));
 
@@ -286,39 +286,12 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 				}
 			}
 		});
-		if (!(canEditDispatchField)) {
-			weatherConditionCheckBoxTree.setEnabled(false);
-		}
-	}
-
-	@Override
-	public void commit() throws SourceException, Validator.InvalidValueException {
-		super.commit();
-		getValue().setWeatherConditions(weatherConditionCheckBoxTree.getValues());
 	}
 
 	@Override
 	public void setValue(EnvironmentSampleDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
-		weatherConditionCheckBoxTree.setValues(newFieldValue.getWeatherConditions());
-		weatherConditionCheckBoxTree.initCheckboxes();
-
 		disableFieldsBasedOnRights(newFieldValue);
-	}
-
-	@NotNull
-	private Component buildWeatherConditionComponent() {
-		final VerticalLayout weatherConditionsLayout = new VerticalLayout();
-		CssStyles.style(weatherConditionsLayout, CssStyles.VSPACE_3);
-		Label weatherConditionsLabel =
-			new Label(I18nProperties.getPrefixCaption(EnvironmentSampleDto.I18N_PREFIX, EnvironmentSampleDto.WEATHER_CONDITIONS));
-		CssStyles.style(weatherConditionsLabel, CssStyles.VAADIN_CAPTION);
-		weatherConditionsLayout.addComponent(weatherConditionsLabel);
-		weatherConditionCheckBoxTree = new CheckBoxTree<>(
-			Arrays.stream(WeatherCondition.values()).map(c -> new CheckBoxTree.CheckBoxElement<>(null, c)).collect(Collectors.toList()));
-		weatherConditionCheckBoxTree.setValues(new EnumMap<>(WeatherCondition.class));
-		weatherConditionsLayout.addComponent(weatherConditionCheckBoxTree);
-		return weatherConditionsLayout;
 	}
 
 	protected void defaultValueChangeListener(EnvironmentSampleDto sample) {
@@ -326,5 +299,80 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 		Label reportInfoLabel = new Label(reportInfoText);
 		reportInfoLabel.setEnabled(false);
 		getContent().addComponent(reportInfoLabel, REPORT_INFO_LOC);
+	}
+
+	private void addValidators() {
+		// Validators
+		final DateField sampleDateField = getField(EnvironmentSampleDto.SAMPLE_DATE_TIME);
+		final DateField dispatchDate = getField(EnvironmentSampleDto.DISPATCH_DATE);
+		final DateField reveivalDate = getField(EnvironmentSampleDto.RECEIVAL_DATE);
+
+		sampleDateField.addValidator(
+			new DateComparisonValidator(
+				sampleDateField,
+				dispatchDate,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, sampleDateField.getCaption(), dispatchDate.getCaption())));
+		sampleDateField.addValidator(
+			new DateComparisonValidator(
+				sampleDateField,
+				reveivalDate,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, sampleDateField.getCaption(), reveivalDate.getCaption())));
+		dispatchDate.addValidator(
+			new DateComparisonValidator(
+				dispatchDate,
+				sampleDateField,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, dispatchDate.getCaption(), sampleDateField.getCaption())));
+		dispatchDate.addValidator(
+			new DateComparisonValidator(
+				dispatchDate,
+				reveivalDate,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, dispatchDate.getCaption(), reveivalDate.getCaption())));
+		reveivalDate.addValidator(
+			new DateComparisonValidator(
+				reveivalDate,
+				sampleDateField,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, reveivalDate.getCaption(), sampleDateField.getCaption())));
+		reveivalDate.addValidator(
+			new DateComparisonValidator(
+				reveivalDate,
+				dispatchDate,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, reveivalDate.getCaption(), dispatchDate.getCaption())));
+
+		sampleDateField.addValidator(
+			new DateComparisonValidator(
+				sampleDateField,
+				this::getEarliestPathogenTestDate,
+				true,
+				false,
+				() -> I18nProperties.getValidationError(
+					Validations.environmentSampleDateTimeAfterPathogenTestDateTime,
+					DateFormatHelper.formatLocalDateTime(this.getEarliestPathogenTestDate()))));
+
+		List<AbstractField<Date>> validatedFields = Arrays.asList(sampleDateField, dispatchDate, reveivalDate);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
+	}
+
+	private Date getEarliestPathogenTestDate() {
+		List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllByEnvironmentSample(getValue().toReference());
+		if (pathogenTests.isEmpty()) {
+			return null;
+		}
+		return pathogenTests.stream().map(PathogenTestDto::getTestDateTime).filter(Objects::nonNull).min(Date::compareTo).orElseGet(() -> null);
 	}
 }

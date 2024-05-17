@@ -9,7 +9,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 @SuppressWarnings("serial")
@@ -25,7 +25,7 @@ public class AdditionalTestListComponent extends SideComponent {
 		addComponent(list);
 		list.reload();
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.ADDITIONAL_TEST_CREATE)) {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.additionalTestNewTest),
 				() -> ControllerProvider.getAdditionalTestController().openCreateComponent(sampleUuid, list::reload),

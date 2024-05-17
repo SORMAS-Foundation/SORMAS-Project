@@ -43,7 +43,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -84,8 +84,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			SurveillanceReportDto report = displayedEntries.get(i);
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
 
-			boolean isEditable = UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)
-				&& isEditAllowed
+			boolean isEditable = UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT)
 				&& !report.isOwnershipHandedOver()
 				&& (report.getSormasToSormasOriginInfo() == null || report.getSormasToSormasOriginInfo().isOwnershipHandedOver());
 
@@ -96,7 +95,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 				isEditable);
 
 			listEntry.setEnabled(isEditable);
-			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewExternalMessageButton(listEntry);
 			}
 			listLayout.addComponent(listEntry);
@@ -104,7 +103,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 	}
 
 	private void addViewExternalMessageButton(SurveillanceReportListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 			ExternalMessageDto externalMessage =
 				FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(listEntry.getReport().toReference());
 			if (externalMessage != null) {
@@ -126,7 +125,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 		public SurveillanceReportListEntry(SurveillanceReportDto report) {
 			this.report = report;
 			this.fieldAccessCheckers = UiFieldAccessCheckers
-				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(report.isInJurisdiction()), report.isPseudonymized());
+				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(report.isInJurisdiction()), report.isPseudonymized());
 
 			VerticalLayout mainLayout = new VerticalLayout();
 			mainLayout.setWidth(100, Unit.PERCENTAGE);
@@ -134,7 +133,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			mainLayout.setSpacing(false);
 			addComponentToField(mainLayout);
 
-			Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+			Language userLanguage = UiUtil.getUser().getLanguage();
 			mainLayout.addComponent(createRow(null, report.getReportingType(), SurveillanceReportDto.REPORTING_TYPE));
 			mainLayout.addComponent(
 				createRow(

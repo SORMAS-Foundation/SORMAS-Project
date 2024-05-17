@@ -41,6 +41,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -56,6 +57,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -65,7 +67,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
@@ -606,5 +610,48 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(userReferenceDtos.contains(userDto));
 		assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
+
+	@Test
+	public void testGetEventsByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		EventDto event1 = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		creator.createEventParticipant(event1.toReference(), personDto1, "firstPerson", user.toReference());
+
+		EventDto event2 = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		creator.createEventParticipant(event2.toReference(), personDto2, "secondPerson", user.toReference());
+
+		EventDto event3 = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		creator.createEventParticipant(event3.toReference(), personDto3, "thirdPerson", user.toReference());
+
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.setFreeTextEventParticipants("firstNationalId");
+
+		List<EventIndexDto> eventIndexDtos1 = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(1, eventIndexDtos1.size());
+		assertEquals(event1.getUuid(), eventIndexDtos1.get(0).getUuid());
+
+		eventCriteria.setFreeTextEventParticipants("National");
+		List<EventIndexDto> eventIndexDtosNational = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(2, eventIndexDtosNational.size());
+
+		eventCriteria.setFreeTextEventParticipants(null);
+		List<EventIndexDto> eventIndexDtosAll = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(3, eventIndexDtosAll.size());
 	}
 }
