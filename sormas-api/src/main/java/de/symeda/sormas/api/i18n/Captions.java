@@ -2185,6 +2185,7 @@ public interface Captions {
 	String selectOtherSample = "selectOtherSample";
 	String selectSimilarSample = "selectSimilarSample";
 	String SelfReport_address = "SelfReport.address";
+	String SelfReport_birthdate = "SelfReport.birthdate";
 	String SelfReport_birthdateDD = "SelfReport.birthdateDD";
 	String SelfReport_birthdateMM = "SelfReport.birthdateMM";
 	String SelfReport_birthdateYYYY = "SelfReport.birthdateYYYY";

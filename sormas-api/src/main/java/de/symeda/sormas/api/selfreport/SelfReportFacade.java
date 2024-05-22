@@ -15,10 +15,16 @@
 
 package de.symeda.sormas.api.selfreport;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
 
 @Remote
 public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
+
+	List<SelfReportExportDto> getExportList(SelfReportCriteria selfReportCriteria, Collection<String> selectedRows, int first, int max);
+
 }

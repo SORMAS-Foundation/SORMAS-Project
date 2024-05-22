@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.selfreport;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportExportDto;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
@@ -208,6 +210,62 @@ public class SelfReportFacadeEjb
 		cq.orderBy(orderList);
 
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_EXPORT)
+	public List<SelfReportExportDto> getExportList(SelfReportCriteria selfReportCriteria, Collection<String> selectedRows, int first, int max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<SelfReport> selfReport = cq.from(SelfReport.class);
+
+		final SelfReportQueryContext selfReportQueryContext = new SelfReportQueryContext(cb, cq, selfReport);
+		final SelfReportJoins selfReportJoins = selfReportQueryContext.getJoins();
+		final Join<SelfReport, Location> location = selfReportJoins.getAddress();
+		final Join<Location, District> district = selfReportJoins.getAddressJoins().getDistrict();
+		Join<SelfReport, User> responsibleUser = selfReportJoins.getResponsibleUser();
+
+		List<SelfReportExportDto> selfReports = new ArrayList<>();
+
+		cq.multiselect(
+			selfReport.get(SelfReport.UUID),
+			selfReport.get(SelfReport.TYPE),
+			selfReport.get(SelfReport.REPORT_DATE),
+			selfReport.get(SelfReport.CASE_REFERENCE),
+			selfReport.get(SelfReport.DISEASE),
+			selfReport.get(SelfReport.DISEASE_VARIANT),
+			selfReport.get(SelfReport.FIRST_NAME),
+			selfReport.get(SelfReport.LAST_NAME),
+			selfReport.get(SelfReport.SEX),
+			district.get(District.NAME),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.POSTAL_CODE),
+			location.get(Location.CITY),
+			selfReport.get(SelfReport.BIRTHDATE_DD),
+			selfReport.get(SelfReport.BIRTHDATE_MM),
+			selfReport.get(SelfReport.BIRTHDATE_YYYY),
+			selfReport.get(SelfReport.NATIONAL_HEALTH_ID),
+			selfReport.get(SelfReport.EMAIL),
+			selfReport.get(SelfReport.PHONE_NUMBER),
+			selfReport.get(SelfReport.COMMENT),
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME),
+			selfReport.get(SelfReport.INVESTIGATION_STATUS),
+			selfReport.get(SelfReport.PROCESSING_STATUS),
+			selfReport.get(SelfReport.DELETION_REASON),
+			selfReport.get(SelfReport.OTHER_DELETION_REASON));
+
+		Predicate filter = service.buildCriteriaFilter(selfReportCriteria, selfReportQueryContext);
+
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, selfReport.get(SelfReport.UUID));
+		cq.where(filter);
+		cq.orderBy(cb.desc(selfReport.get(SelfReport.REPORT_DATE)), cb.desc(selfReport.get(SelfReport.ID)));
+
+		selfReports.addAll(QueryHelper.getResultList(em, cq, new SelfReportExportDtoResultTransformer(), null, null));
+
+		return selfReports;
 	}
 
 	private List<Order> getOrderList(List<SortProperty> sortProperties, SelfReportQueryContext selfReportQueryContext) {

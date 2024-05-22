@@ -663,6 +663,7 @@ public interface Strings {
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
+	String headingImportSelfReports = "headingImportSelfReports";
 	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
