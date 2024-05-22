@@ -13102,7 +13102,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (546, 'Extend the co
 
 -- 2024-05-07 #13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)
 INSERT INTO userroles_userrights (userrole_id, userright)
-SELECT id, 'SELF_REPORT_ARCIVE'
+SELECT id, 'SELF_REPORT_ARCHIVE'
 FROM userroles
 WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
 
