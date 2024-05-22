@@ -28,17 +28,7 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -56,12 +46,13 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	protected final Button createButton;
 	protected final Button cancelButton;
-	protected ComboBox<String> templateSelector;
-	protected final VerticalLayout additionalVariablesComponent;
-	protected final VerticalLayout additionalParametersComponent;
-	protected FileDownloader fileDownloader;
-	protected DocumentVariables documentVariables;
-	private CheckBox checkBoxUploadGeneratedDoc;
+	public ComboBox<String> templateSelector;
+	public final VerticalLayout additionalVariablesComponent;
+	public final VerticalLayout additionalParametersComponent;
+	public FileDownloader fileDownloader;
+	public DocumentVariables documentVariables;
+	public CheckBox checkBoxUploadGeneratedDoc;
+	public HorizontalLayout buttonBar;
 
 	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction, boolean isMultiFilesMode) {
 		additionalVariablesComponent = new VerticalLayout();
@@ -97,7 +88,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCancel));
 		cancelButton.addClickListener((e) -> closeWindow());
 
-		HorizontalLayout buttonBar = new HorizontalLayout();
+		buttonBar = new HorizontalLayout();
 		buttonBar.addComponents(cancelButton, createButton);
 
 		templateSelector = new ComboBox<>(captionTemplateSelector);
@@ -122,7 +113,9 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 						showTextfields();
 					}
 					performTemplateUpdates();
-					setStreamResource(templateFile, fileNameFunction.apply(templateFile));
+					if (fileNameFunction != null) {
+						setStreamResource(templateFile, fileNameFunction.apply(templateFile));
+					}
 				} catch (IOException | DocumentTemplateException ex) {
 					LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
 					new Notification(I18nProperties.getString(Strings.errorOccurred), ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)

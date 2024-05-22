@@ -19,17 +19,11 @@ import static java.util.Arrays.asList;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -42,12 +36,7 @@ import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 
 import de.symeda.sormas.api.DocumentHelper;
-import de.symeda.sormas.api.document.DocumentCriteria;
-import de.symeda.sormas.api.document.DocumentDto;
-import de.symeda.sormas.api.document.DocumentFacade;
-import de.symeda.sormas.api.document.DocumentReferenceDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
-import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.document.*;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FileContentsDoNotMatchExtensionException;
@@ -202,12 +191,17 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_DELETE)
 	public void deleteDocument(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
-		documentRelatedEntityService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
+		deleteRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
 		Document document = documentService.getByUuid(documentUuid);
 		if (document.getRelatedEntities().isEmpty()) {
 			// The document is only marked as delete here; actual deletion will be done in document storage cleanup via cron job
 			documentService.markAsDeleted(document);
 		}
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	private void deleteRelatedEntity(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
+		documentRelatedEntityService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
 	}
 
 	@Override
