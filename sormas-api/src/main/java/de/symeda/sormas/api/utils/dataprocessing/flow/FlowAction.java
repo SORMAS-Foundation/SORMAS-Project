@@ -13,18 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfreport;
+package de.symeda.sormas.api.utils.dataprocessing.flow;
 
-import javax.ejb.Remote;
+import java.util.concurrent.CompletionStage;
 
-import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 
-@Remote
-public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
+public interface FlowAction<T, R> {
 
-	void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze);
-
-	void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef);
+	CompletionStage<ProcessingResult<R>> apply(ProcessingResult<T> currentResult);
 }

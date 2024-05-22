@@ -13,18 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfreport;
+package de.symeda.sormas.api.utils.dataprocessing;
 
-import javax.ejb.Remote;
+import java.util.concurrent.CompletableFuture;
 
-import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
+public class HandlerCallback<T> {
 
-@Remote
-public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
+	public final CompletableFuture<ProcessingResult<T>> futureResult;
 
-	void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze);
+	public HandlerCallback() {
+		this.futureResult = new CompletableFuture<>();
+	}
 
-	void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef);
+	public void done(T result) {
+		futureResult.complete(ProcessingResult.continueWith(result));
+	}
+
+	public void cancel() {
+		futureResult.complete(ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, null));
+	}
 }

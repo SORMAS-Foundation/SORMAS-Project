@@ -39,23 +39,28 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
+import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
 import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -77,6 +82,10 @@ public class SelfReportFacadeEjb
 
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private ContactService contactService;
 
 	public SelfReportFacadeEjb() {
 	}
@@ -328,6 +337,24 @@ public class SelfReportFacadeEjb
 	@RightsAllowed(UserRight._SELF_REPORT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
 		return super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	public void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze) {
+		SelfReport selfReport = service.getByReferenceDto(selfReportRef);
+		selfReport.setProcessingStatus(SelfReportProcessingStatus.PROCESSED);
+		selfReport.setResultingCaze(caseService.getByReferenceDto(caze));
+
+		service.ensurePersisted(selfReport);
+	}
+
+	@Override
+	public void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef) {
+		SelfReport selfReport = service.getByReferenceDto(selfReportRef);
+		selfReport.setProcessingStatus(SelfReportProcessingStatus.PROCESSED);
+		selfReport.setResultingContact(contactService.getByReferenceDto(contactRef));
+
+		service.ensurePersisted(selfReport);
 	}
 
 	@Override

@@ -1041,6 +1041,8 @@ public interface Strings {
 	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSelectOrCreatePersonForLabMessageWithoutMatches = "infoSelectOrCreatePersonForLabMessageWithoutMatches";
+	String infoSelfReportCreateEntry = "infoSelfReportCreateEntry";
+	String infoSelfReportSelectOrCreateEntry = "infoSelfReportSelectOrCreateEntry";
 	String infoSimilarImmunization = "infoSimilarImmunization";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";

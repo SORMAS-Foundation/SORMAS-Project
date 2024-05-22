@@ -13,18 +13,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.selfreport;
+package de.symeda.sormas.ui.selfreport.processing;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.processing.EntrySelectionComponent;
+import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
-import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
+public class EntrySelectionComponentForSelfReport extends EntrySelectionComponent {
 
-@Remote
-public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
+	private static final long serialVersionUID = 5256354894814802005L;
 
-	void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze);
+	public EntrySelectionComponentForSelfReport(EntrySelectionField.Options selectableOptions) {
+		super(selectableOptions, Strings.infoSelfReportSelectOrCreateEntry, Strings.infoSelfReportCreateEntry);
+	}
 
-	void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef);
+	@Override
+	protected void createAndAddSearchFieldComponents() {
+
+	}
 }
