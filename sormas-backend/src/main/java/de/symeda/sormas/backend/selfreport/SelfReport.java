@@ -72,7 +72,9 @@ public class SelfReport extends CoreAdo {
 	private Date reportDate;
 	private String caseReference;
 	private Disease disease;
+	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	private String diseaseVariantDetails;
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -83,6 +85,12 @@ public class SelfReport extends CoreAdo {
 	private String email;
 	private String phoneNumber;
 	private Location address;
+	private Date dateOfTest;
+	private Date dateOfSymptoms;
+	private String workplace;
+	private Date dateWorkplace;
+	private Date isolationDate;
+	private Date contactDate;
 	private String comment;
 	private User responsibleUser;
 	private SelfReportInvestigationStatus investigationStatus;
@@ -127,10 +135,28 @@ public class SelfReport extends CoreAdo {
 		this.disease = disease;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	@Column
 	@Convert(converter = DiseaseVariantConverter.class)
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
@@ -225,6 +251,60 @@ public class SelfReport extends CoreAdo {
 
 	public void setAddress(Location address) {
 		this.address = address;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfTest() {
+		return dateOfTest;
+	}
+
+	public void setDateOfTest(Date dateOfTest) {
+		this.dateOfTest = dateOfTest;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfSymptoms() {
+		return dateOfSymptoms;
+	}
+
+	public void setDateOfSymptoms(Date dateOfSymptoms) {
+		this.dateOfSymptoms = dateOfSymptoms;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getWorkplace() {
+		return workplace;
+	}
+
+	public void setWorkplace(String workplace) {
+		this.workplace = workplace;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateWorkplace() {
+		return dateWorkplace;
+	}
+
+	public void setDateWorkplace(Date dateWorkplace) {
+		this.dateWorkplace = dateWorkplace;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getContactDate() {
+		return contactDate;
+	}
+
+	public void setContactDate(Date contactDate) {
+		this.contactDate = contactDate;
 	}
 
 	@Column(length = CHARACTER_LIMIT_BIG)

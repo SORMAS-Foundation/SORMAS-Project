@@ -912,6 +912,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>SELF_REPORT_ARCHIVE</role-name>
+        <group-name>SELF_REPORT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SELF_REPORT_EXPORT</role-name>
         <group-name>SELF_REPORT_EXPORT</group-name>
     </security-role-mapping>

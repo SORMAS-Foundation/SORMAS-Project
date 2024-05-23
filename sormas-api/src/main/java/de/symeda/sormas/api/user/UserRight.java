@@ -234,6 +234,7 @@ public enum UserRight {
 	SELF_REPORT_CREATE(UserRightGroup.SELF_REPORT, UserRight._SELF_REPORT_VIEW),
 	SELF_REPORT_EDIT(UserRightGroup.SELF_REPORT, UserRight._SELF_REPORT_VIEW),
 	SELF_REPORT_DELETE(UserRightGroup.SELF_REPORT, UserRight._SELF_REPORT_VIEW),
+	SELF_REPORT_ARCHIVE(UserRightGroup.SELF_REPORT, UserRight._SELF_REPORT_VIEW),
     SELF_REPORT_IMPORT(UserRightGroup.SELF_REPORT, UserRight._SELF_REPORT_VIEW),
     SELF_REPORT_EXPORT(UserRightGroup.SELF_REPORT, UserRight._SELF_REPORT_VIEW),
 
@@ -470,6 +471,7 @@ public enum UserRight {
 	public static final String _SELF_REPORT_CREATE = "SELF_REPORT_CREATE";
 	public static final String _SELF_REPORT_EDIT = "SELF_REPORT_EDIT";
 	public static final String _SELF_REPORT_DELETE = "SELF_REPORT_DELETE";
+	public static final String _SELF_REPORT_ARCHIVE = "SELF_REPORT_ARCHIVE";
 	public static final String _SELF_REPORT_IMPORT = "SELF_REPORT_IMPORT";
 	public static final String _SELF_REPORT_EXPORT = "SELF_REPORT_EXPORT";
 

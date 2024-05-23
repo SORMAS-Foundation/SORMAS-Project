@@ -13100,4 +13100,32 @@ ALTER TABLE contact_history ADD COLUMN casereferencenumber text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (546, 'Extend the contacts with Case Reference Number & add case reference number to cases #13067');
 
+-- 2024-05-07 #13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'SELF_REPORT_ARCHIVE'
+FROM userroles
+WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+
+ALTER TABLE selfreports
+    ADD COLUMN diseaseDetails        text,
+    ADD COLUMN diseaseVariantDetails text,
+    ADD COLUMN dateOfTest            timestamp,
+    ADD COLUMN dateOfSymptoms        timestamp,
+    ADD COLUMN workplace             text,
+    ADD COLUMN dateWorkplace         timestamp,
+    ADD COLUMN isolationDate         timestamp,
+    ADD COLUMN contactDate           timestamp;
+
+ALTER TABLE selfreports_history
+    ADD COLUMN diseaseDetails        text,
+    ADD COLUMN diseaseVariantDetails text,
+    ADD COLUMN dateOfTest            timestamp,
+    ADD COLUMN dateOfSymptoms        timestamp,
+    ADD COLUMN workplace             text,
+    ADD COLUMN dateWorkplace         timestamp,
+    ADD COLUMN isolationDate         timestamp,
+    ADD COLUMN contactDate           timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (547, '#13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
