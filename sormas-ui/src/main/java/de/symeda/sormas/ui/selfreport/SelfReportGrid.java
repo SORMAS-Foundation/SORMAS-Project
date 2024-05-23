@@ -34,10 +34,12 @@ import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -61,6 +63,9 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 		}
 
 		initColumns(criteria);
+
+		addItemClickListener(
+			new ShowDetailsListener<>(SelfReportIndexDto.UUID, e -> ControllerProvider.getSelfReportController().navigateToSelfReport(e.getUuid())));
 	}
 
 	protected void initColumns(SelfReportCriteria criteria) {

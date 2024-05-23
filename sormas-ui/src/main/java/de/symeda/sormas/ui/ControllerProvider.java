@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.samples.AdditionalTestController;
 import de.symeda.sormas.ui.samples.PathogenTestController;
 import de.symeda.sormas.ui.samples.environmentsample.EnvironmentSampleController;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
+import de.symeda.sormas.ui.selfreport.SelfReportController;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasController;
 import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
@@ -97,6 +98,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final ExternalEmailController externalEmailController;
 	private final CustomizableEnumController customizableEnumController;
 	private final SpecialCaseAccessController specialCaseAccessController;
+	private final SelfReportController selfReportController;
 
 	public ControllerProvider() {
 		super();
@@ -139,6 +141,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		externalEmailController = new ExternalEmailController();
 		customizableEnumController = new CustomizableEnumController();
 		specialCaseAccessController = new SpecialCaseAccessController();
+		selfReportController = new SelfReportController();
 	}
 
 	protected static ControllerProvider get() {
@@ -295,5 +298,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SpecialCaseAccessController getSpecialCaseAccessController() {
 		return get().specialCaseAccessController;
+	}
+
+	public static SelfReportController getSelfReportController() {
+		return get().selfReportController;
 	}
 }

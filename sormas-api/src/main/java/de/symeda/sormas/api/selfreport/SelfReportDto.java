@@ -17,12 +17,13 @@ package de.symeda.sormas.api.selfreport;
 
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -31,51 +32,117 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
-public class SelfReportDto extends EntityDto {
+public class SelfReportDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 604507951783731873L;
 
 	public static final String I18N_PREFIX = "SelfReport";
 
+	public static final String TYPE = "type";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String CASE_REFERENCE = "caseReference";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String SEX = "sex";
+	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
+	public static final String EMAIL = "email";
+	public static final String PHONE_NUMBER = "phoneNumber";
 	public static final String ADDRESS = "address";
+	public static final String DATE_OF_TEST = "dateOfTest";
+	public static final String DATE_OF_SYMPTOMS = "dateOfSymptoms";
+	public static final String WORKPLACE = "workplace";
+	public static final String DATE_WORKPLACE = "dateWorkplace";
+	public static final String ISOLATION_DATE = "isolationDate";
+	public static final String CONTACT_DATE = "contactDate";
+	public static final String COMMENT = "comment";
+	public static final String RESPONSIBLE_USER = "responsibleUser";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String PROCESSING_STATUS = "processingStatus";
+	public static final String DELETED = "deleted";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@NotNull(message = Validations.requiredField)
 	private SelfReportType type;
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@SensitiveData
 	private String caseReference;
 	@NotNull(message = Validations.requiredField)
 	private Disease disease;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String diseaseVariantDetails;
 	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@PersonalData
+	@SensitiveData
 	private String firstName;
 	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@PersonalData
+	@SensitiveData
 	private String lastName;
 	@NotNull(message = Validations.requiredField)
 	private Sex sex;
+	@PersonalData
+	@SensitiveData
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountries
+	@SensitiveData
 	private String nationalHealthId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@SensitiveData
 	private String email;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@SensitiveData
 	private String phoneNumber;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Valid
 	private LocationDto address;
+	private Date dateOfTest;
+	private Date dateOfSymptoms;
+	@SensitiveData
+	private String workplace;
+	private Date dateWorkplace;
+	private Date isolationDate;
+	private Date contactDate;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
-	private UserReferenceDto responsibleUser;
+	@SensitiveData
 	private String comment;
+	private UserReferenceDto responsibleUser;
 	@NotNull(message = Validations.requiredField)
 	private SelfReportInvestigationStatus investigationStatus;
 	@NotNull(message = Validations.requiredField)
 	private SelfReportProcessingStatus processingStatus;
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@SensitiveData
+	private String otherDeletionReason;
 
 	public static SelfReportDto build(SelfReportType type) {
 		SelfReportDto dto = new SelfReportDto();
@@ -121,8 +188,24 @@ public class SelfReportDto extends EntityDto {
 		this.disease = disease;
 	}
 
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
@@ -209,6 +292,54 @@ public class SelfReportDto extends EntityDto {
 		this.address = address;
 	}
 
+	public Date getDateOfTest() {
+		return dateOfTest;
+	}
+
+	public void setDateOfTest(Date dateOfTest) {
+		this.dateOfTest = dateOfTest;
+	}
+
+	public Date getDateOfSymptoms() {
+		return dateOfSymptoms;
+	}
+
+	public void setDateOfSymptoms(Date dateOfSymptoms) {
+		this.dateOfSymptoms = dateOfSymptoms;
+	}
+
+	public String getWorkplace() {
+		return workplace;
+	}
+
+	public void setWorkplace(String workplace) {
+		this.workplace = workplace;
+	}
+
+	public Date getDateWorkplace() {
+		return dateWorkplace;
+	}
+
+	public void setDateWorkplace(Date dateWorkplace) {
+		this.dateWorkplace = dateWorkplace;
+	}
+
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
+	}
+
+	public Date getContactDate() {
+		return contactDate;
+	}
+
+	public void setContactDate(Date contactDate) {
+		this.contactDate = contactDate;
+	}
+
 	public String getComment() {
 		return comment;
 	}
@@ -239,5 +370,29 @@ public class SelfReportDto extends EntityDto {
 
 	public void setProcessingStatus(SelfReportProcessingStatus processingStatus) {
 		this.processingStatus = processingStatus;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }
