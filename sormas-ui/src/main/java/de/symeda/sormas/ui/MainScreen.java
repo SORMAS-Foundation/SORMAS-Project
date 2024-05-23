@@ -329,6 +329,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
+			ControllerProvider.getSelfReportController().registerViews(navigator);
 			menu.addView(
 				SelfReportsView.class,
 				SelfReportsView.VIEW_NAME,

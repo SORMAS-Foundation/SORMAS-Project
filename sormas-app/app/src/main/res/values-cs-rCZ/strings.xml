@@ -42,7 +42,7 @@
     <string name="action_confirm">Potvrdit</string>
     <string name="action_create">Vytvořit</string>
     <string name="action_create_case_from_contact">Vytvořit případ pro tuto kontaktní osobu</string>
-    <string name="action_create_case_from_event_participant">Create a case for this event participant</string>
+    <string name="action_create_case_from_event_participant">Vytvořit případ pro tohoto účastníka události</string>
     <string name="action_create_treatment">Vytvořit léčbu</string>
     <string name="action_edit_data">Upravit data</string>
     <string name="action_delete">Vymazat</string>
@@ -80,7 +80,7 @@
     <string name="action_new_task">Nový úkol</string>
     <string name="action_not_executable">Nevykonatelný</string>
     <string name="action_ok">OK</string>
-    <string name="action_open_event_participant_case">Open Case of Event Participant</string>
+    <string name="action_open_event_participant_case">Otevřít případ účastníka události</string>
     <string name="action_open_prescription">Otevřít předpis</string>
     <string name="action_open_resulting_case">Otevřít výsledný případ</string>
     <string name="action_open_source_case">Otevřít zdroj případu</string>
@@ -279,14 +279,14 @@
     <string name="caption_sync_pulled">%1$s taženo</string>
     <string name="caption_sync_pushed">%1$s/%2$s nahráno</string>
     <string name="caption_sync_deleted">%1$s smazáno</string>
-    <string name="caption_event_search_field">ID, title, description</string>
+    <string name="caption_event_search_field">ID, název, popis</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
     <string name="confirmation_extend_quarantine">Opravdu chcete rozšířit karanténu?</string>
     <string name="confirmation_reduce_quarantine">Opravdu chcete omezit karanténu?</string>
     <string name="confirmation_extend_followup">Chtěli byste také, aby bylo období následných kroků odpovídajícím způsobem prodlouženo?</string>
-    <string name="confirmation_environment_location_change">Changing the location of this environment could make you lose access to its details and/or disallow you to edit in the future. Are you sure you want to proceed?</string>
+    <string name="confirmation_environment_location_change">Změna umístění tohoto prostředí by mohla způsobit ztrátu přístupu k jeho podrobnostem a/nebo znemožnit budoucí úpravy. Opravdu chcete pokračovat?</string>
     <string name="description_epi_week">Epi týden</string>
     <string name="description_first_name">Jméno</string>
     <string name="description_last_name">Příjmení</string>
@@ -353,8 +353,8 @@
     <string name="heading_error_notification_dialog">Jejda, neco se pokazilo.</string>
     <string name="heading_event_edit">Upravit Udalost</string>
     <string name="heading_event_new">Nová udalost</string>
-    <string name="heading_event_participant">Event Participant</string>
-    <string name="heading_event_participant_new">New Event Participant</string>
+    <string name="heading_event_participant">Účastník události</string>
+    <string name="heading_event_participant_new">Nový účastník události</string>
     <string name="heading_event_read">Číst událost</string>
     <string name="heading_event_summary">Shrnutí události</string>
     <string name="heading_events_list">Výpis událostí</string>
@@ -393,9 +393,9 @@
     <string name="heading_sample_edit">Upravit vzorek</string>
     <string name="heading_sample_new">Nový vzorek</string>
     <string name="heading_sample_read">Číst vzorek</string>
-    <string name="heading_environment_sample_read">Read Environment Sample</string>
-    <string name="heading_environment_sample_edit">Edit Environment Sample</string>
-    <string name="heading_environment_sample_new">New Environment Sample</string>
+    <string name="heading_environment_sample_read">Číst vzorek prostředí</string>
+    <string name="heading_environment_sample_edit">Upravit vzorek prostředí</string>
+    <string name="heading_environment_sample_new">Nový vzorek prostředí</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
     <string name="heading_environment_sample_list">Seznam vzorků prostředí</string>
@@ -455,7 +455,7 @@
     <string name="heading_laboratory_sample">Laboratorní vzorek</string>
     <string name="heading_sample_measurements">Měření vzorku</string>
     <string name="heading_location_sampling_site">Umístění místa odběru vzorků</string>
-    <string name="heading_sample_management">Sample management</string>
+    <string name="heading_sample_management">Správa vzorků</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
@@ -533,7 +533,7 @@
     <string name="main_menu_immunizations">Imunizace</string>
     <string name="main_menu_settings">Nastavení</string>
     <string name="main_menu_tasks">Úkoly</string>
-    <string name="main_menu_aggregate_reports">mSERS</string>
+    <string name="main_menu_aggregate_reports">Aggregate</string>
     <string name="message_already_saving">Již se ukládá..</string>
     <string name="message_aggregate_report_found">Upozornění: Pro výše uvedená kritéria byly nalezeny duplicitní zprávy. Nemoci označené červenou již mají hlášení.</string>
     <string name="message_aggregate_report_expired_age_groups">Věkové skupiny označené jako \"Vypršelo\" jsou založeny na existujících datech pro věkovou skupinu, která se již nepoužívá.</string>
