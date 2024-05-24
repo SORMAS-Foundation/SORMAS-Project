@@ -32,7 +32,6 @@ import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
-import de.symeda.sormas.backend.docgeneration.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +67,7 @@ import de.symeda.sormas.backend.common.messaging.EmailService;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.docgeneration.*;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.EmailTemplateTexts;
 import de.symeda.sormas.backend.document.*;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
@@ -240,13 +240,9 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 				Files.delete(personalizedFile.toPath());
 			}
 
-			emailAttachments.keySet().forEach(tempEncryptedFile -> {
-				try {
-					Files.delete(tempEncryptedFile.toPath());
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
+			for (File tempEncryptedFile : emailAttachments.keySet()) {
+				Files.delete(tempEncryptedFile.toPath());
+			}
 
 			logger.error("Error sending email", e);
 			throw new ExternalEmailException(I18nProperties.getString(Strings.errorSendingExternalEmail));
