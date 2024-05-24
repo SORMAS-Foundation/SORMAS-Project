@@ -562,6 +562,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getPersonFacade().save(personDto2);
 		CaseDataDto caze2 = creator.createCase(userDto.toReference(), personDto2.toReference(), rdcf);
 
+		//there are two invocations for each case included in the bulk email selection
 		Mockito.doAnswer(invocation -> {
 			assertThat(invocation.getArgument(0), is("testEmail@email.com"));
 			assertThat(invocation.getArgument(1), is("Email subject in template"));
@@ -664,29 +665,16 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getPersonFacade().save(personDto2);
 		CaseDataDto caze2 = creator.createCase(userDto.toReference(), personDto2.toReference(), rdcf);
 
+		//there are two invocations for each case included in the bulk email selection
 		Mockito.doAnswer(invocation -> {
-			assertThat(invocation.getArgument(0), is("testEmail@email.com"));
-			assertThat(invocation.getArgument(1), is("Email subject in template"));
-
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail.cmp"), writer, "UTF-8");
-			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
-
-			assertThat(invocation.getArgument(2), is(expectedContent));
+			//only the number of attachments is tested. The other parameters of emailService.sendEmail are tested 
+			// in a similar test "testSendBulkEmailToCasePerson"
 			assertThat(invocation.getArgument(3), aMapWithSize(2));
-
 			return null;
 		}).doAnswer(invocation -> {
-			assertThat(invocation.getArgument(0), is("testEmail2@email.com"));
-			assertThat(invocation.getArgument(1), is("Email subject in template"));
-
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail2.cmp"), writer, "UTF-8");
-			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
-
-			assertThat(invocation.getArgument(2), is(expectedContent));
+			//only the number of attachments is tested. The other parameters of emailService.sendEmail are tested 
+			// in a similar test "testSendBulkEmailToCasePerson"
 			assertThat(invocation.getArgument(3), aMapWithSize(2));
-
 			return null;
 		}
 
@@ -774,31 +762,18 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		getPersonFacade().save(personDto2);
 		CaseDataDto caze2 = creator.createCase(userDto.toReference(), personDto2.toReference(), rdcf);
 
+		//there are two invocations for each case included in the bulk email selection
 		Mockito.doAnswer(invocation -> {
-			assertThat(invocation.getArgument(0), is("testEmail@email.com"));
-			assertThat(invocation.getArgument(1), is("Email subject in template"));
-
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail.cmp"), writer, "UTF-8");
-			String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
-
-			assertThat(invocation.getArgument(2), is(expectedContent));
+			//only the number of attachments is tested. The other parameters of emailService.sendEmail are tested 
+			// in a similar test "testSendBulkEmailToCasePerson"
 			assertThat(invocation.getArgument(3), aMapWithSize(1));
-
 			return null;
 		}).doAnswer(invocation -> {
-					assertThat(invocation.getArgument(0), is("testEmail2@email.com"));
-					assertThat(invocation.getArgument(1), is("Email subject in template"));
-
-					StringWriter writer = new StringWriter();
-					IOUtils.copy(getClass().getResourceAsStream("/docgeneration/emailTemplates/cases/CaseEmail2.cmp"), writer, "UTF-8");
-					String expectedContent = updateLineSeparatorsBasedOnOS(writer.toString());
-
-					assertThat(invocation.getArgument(2), is(expectedContent));
-					assertThat(invocation.getArgument(3), aMapWithSize(1));
-
-					return null;
-				}
+			//only the number of attachments is tested. The other parameters of emailService.sendEmail are tested 
+			// in a similar test "testSendBulkEmailToCasePerson"
+			assertThat(invocation.getArgument(3), aMapWithSize(1));
+			return null;
+		}
 
 		).when(emailService).sendEmail(any(), any(), any(), any());
 
@@ -807,7 +782,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		selectedEntries.add(new CaseReferenceDto(caze2.getUuid()));
 
 		ExternalEmailOptionsWithAttachmentsDto options =
-				new ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE);
+			new ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE);
 		options.setTemplateName("CaseEmail.txt");
 		QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptions = new QuarantineOrderDocumentOptionsDto();
 		quarantineOrderDocumentOptions.setTemplateFile("Quarantine.docx");
@@ -823,7 +798,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		Mockito.verify(emailService, Mockito.times(2)).sendEmail(any(), any(), any(), any());
 
 		List<ManualMessageLogIndexDto> messageLogs =
-				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze1.toReference()));
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze1.toReference()));
 		assertThat(messageLogs, hasSize(1));
 		assertThat(messageLogs.get(0).getUsedTemplate(), is("CaseEmail.txt"));
 		assertThat(messageLogs.get(0).getEmailAddress(), is("testEmail@email.com"));
@@ -832,7 +807,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		assertThat(messageLogs.get(0).getAttachedDocuments(), hasItem(DataHelper.getShortUuid(caze1.getUuid()) + "-" + "Quarantine.docx"));
 
 		List<ManualMessageLogIndexDto> messageLogs2 =
-				getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze2.toReference()));
+			getManualMessageLogFacade().getIndexList(new ManualMessageLogCriteria().messageType(MessageType.EMAIL).caze(caze2.toReference()));
 		assertThat(messageLogs2, hasSize(1));
 		assertThat(messageLogs2.get(0).getUsedTemplate(), is("CaseEmail.txt"));
 		assertThat(messageLogs2.get(0).getEmailAddress(), is("testEmail2@email.com"));
@@ -843,7 +818,8 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		List<Document> allDocuments = getDocumentService().getAll();
 		List<String> relatedEntityUuids = new ArrayList<>();
 		allDocuments.stream().forEach(document -> {
-			relatedEntityUuids.addAll(document.getRelatedEntities().stream().map(DocumentRelatedEntity::getRelatedEntityUuid).collect(Collectors.toList()));
+			relatedEntityUuids
+				.addAll(document.getRelatedEntities().stream().map(DocumentRelatedEntity::getRelatedEntityUuid).collect(Collectors.toList()));
 		});
 
 		assertThat(relatedEntityUuids, hasItem(caze1.getUuid()));
