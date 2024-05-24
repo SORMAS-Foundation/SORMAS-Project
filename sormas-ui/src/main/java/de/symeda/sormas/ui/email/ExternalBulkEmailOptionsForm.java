@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jetbrains.annotations.Nullable;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.google.common.io.ByteStreams;
@@ -80,7 +81,6 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected Upload upload;
 	private PopupButton mainButton;
 
-	private List<ReferenceDto> referenceDtos;
 	private RootEntityType rootEntityType;
 
 	private QuarantineOrderLayout attachDocTemplateLayout;
@@ -88,13 +88,11 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected ExternalBulkEmailOptionsForm(
 		DocumentWorkflow documentWorkflow,
 		DocumentRelatedEntityType documentRelatedEntityType,
-		List<ReferenceDto> selectionReference,
 		RootEntityType rootEntityType) {
 		super(ExternalEmailOptionsWithAttachmentsDto.class, ExternalEmailOptionsWithAttachmentsDto.I18N_PREFIX, false);
 		this.documentWorkflow = documentWorkflow;
 		this.documentRelatedEntityType = documentRelatedEntityType;
 		this.attachedDocumentsField = new MultiSelectFiles<>();
-		this.referenceDtos = selectionReference;
 		this.rootEntityType = rootEntityType;
 
 		addFields();
@@ -122,8 +120,15 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 			attachedDocumentsField = addField(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS, MultiSelectFiles.class);
 		}
 
-		String filename = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.DOCUMENTS, ".zip");
+		DocumentWorkflow templatesWorkflow = getDocumentTemplateWorkflow();
+		if (templatesWorkflow != null) {
+			attachDocTemplateLayout = new QuarantineOrderLayout(templatesWorkflow);
+			getContent().addComponent(attachDocTemplateLayout, CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
+		}
+	}
 
+	@Nullable
+	private DocumentWorkflow getDocumentTemplateWorkflow() {
 		DocumentWorkflow templatesWorkflow;
 		switch (documentWorkflow) {
 		case CASE_EMAIL:
@@ -135,12 +140,7 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 		default:
 			templatesWorkflow = null;
 		}
-
-		if (templatesWorkflow != null) {
-
-			attachDocTemplateLayout = new QuarantineOrderLayout(templatesWorkflow);
-			getContent().addComponent(attachDocTemplateLayout, CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
-		}
+		return templatesWorkflow;
 	}
 
 	@Override

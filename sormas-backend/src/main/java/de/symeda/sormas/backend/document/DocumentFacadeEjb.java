@@ -191,19 +191,13 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_DELETE)
 	public void deleteDocument(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
-		deleteRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
+		documentRelatedEntityService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
 		Document document = documentService.getByUuid(documentUuid);
 		if (document.getRelatedEntities().isEmpty()) {
 			// The document is only marked as delete here; actual deletion will be done in document storage cleanup via cron job
 			documentService.markAsDeleted(document);
 		}
 	}
-
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	private void deleteRelatedEntity(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
-		documentRelatedEntityService.deleteDocumentRelatedEntity(documentUuid, relatedEntityUuid, relatedEntityType);
-	}
-
 	@Override
 	public List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
 		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);

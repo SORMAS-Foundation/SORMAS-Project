@@ -123,10 +123,8 @@ public class ExternalEmailController {
 		Consumer<List<T>> bulkOperationDoneCallback,
 		Function<T, ReferenceDto> mapToReference) {
 
-		List<ReferenceDto> selectionRefUuid = getReferenceDtos(rootEntityType, selectionReference);
-
 		ExternalBulkEmailOptionsForm optionsForm =
-			new ExternalBulkEmailOptionsForm(documentWorkflow, documentRelatedEntityType, selectionRefUuid, rootEntityType);
+			new ExternalBulkEmailOptionsForm(documentWorkflow, documentRelatedEntityType, rootEntityType);
 		ExternalEmailOptionsWithAttachmentsDto defaultValue = new ExternalEmailOptionsWithAttachmentsDto(documentWorkflow, rootEntityType);
 		optionsForm.setValue(defaultValue);
 

@@ -850,9 +850,6 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		assertThat(relatedEntityUuids, hasItem(caze2.getUuid()));
 	}
 
-
-
-
 	private DocumentDto createDocument(String fileName, DocumentRelatedEntityType relatedEntityType, String relatedEntityUuid) throws IOException {
 		return createDocument(fileName, relatedEntityType, relatedEntityUuid, new byte[0]);
 	}

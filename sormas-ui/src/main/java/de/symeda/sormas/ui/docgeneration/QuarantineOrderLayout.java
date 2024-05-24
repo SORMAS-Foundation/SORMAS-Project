@@ -238,25 +238,26 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	public QuarantineOrderDocumentOptionsDto getFieldValues() {
-		QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptionsDto = new QuarantineOrderDocumentOptionsDto();
-		quarantineOrderDocumentOptionsDto.setExtraProperties(readAdditionalVariables());
+		QuarantineOrderDocumentOptionsDto options = new QuarantineOrderDocumentOptionsDto();
+		options.setDocumentWorkflow(workflow);
+		options.setExtraProperties(readAdditionalVariables());
 		if (sampleSelector != null) {
-			quarantineOrderDocumentOptionsDto.setSample(new SampleReferenceDto(sampleSelector.getValue().getUuid()));
+			options.setSample(new SampleReferenceDto(sampleSelector.getValue().getUuid()));
 		}
 		if (pathogenTestSelector != null) {
-			quarantineOrderDocumentOptionsDto.setPathogenTest(new PathogenTestReferenceDto(pathogenTestSelector.getValue().getUuid()));
+			options.setPathogenTest(new PathogenTestReferenceDto(pathogenTestSelector.getValue().getUuid()));
 		}
 		if (templateSelector != null) {
-			quarantineOrderDocumentOptionsDto.setTemplateFile(templateSelector.getValue());
+			options.setTemplateFile(templateSelector.getValue());
 		}
-		quarantineOrderDocumentOptionsDto.setShouldUploadGeneratedDoc(shouldUploadGeneratedDocument());
+		options.setShouldUploadGeneratedDoc(shouldUploadGeneratedDocument());
 
 		if (vaccinationSelector != null) {
-			quarantineOrderDocumentOptionsDto.setVaccinationReference(
+			options.setVaccinationReference(
 				new VaccinationReferenceDto(vaccinationSelector.getValue().getUuid(), vaccinationSelector.getValue().getCaption()));
 		}
 
-		return quarantineOrderDocumentOptionsDto;
+		return options;
 	}
 
 	public interface DocumentStreamSupplier {
