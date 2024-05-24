@@ -9,6 +9,8 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 public class SelfReportExportDto extends AbstractUuidDto {
@@ -17,65 +19,57 @@ public class SelfReportExportDto extends AbstractUuidDto {
 
 	public static final String I18N_PREFIX = "SelfReportExport";
 
-	public static final String ID = "id";
-	public static final String UUID = "uuid";
-	public static final String CREATION_DATE = "creationDate";
-	public static final String CHANGE_DATE = "changeDate";
-
-	public static final String TYPE = "type";
-	public static final String REPORT_DATE = "reportDate";
-
-	//TODO: define case reference caption
-	public static final String CASE_REFERENCE = "caseReference";
-	public static final String DISEASE = "disease";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
-	public static final String FIRST_NAME = "firstName";
-	public static final String LAST_NAME = "lastName";
-	public static final String SEX = "sex";
-	public static final String BIRTH_DATE = "birthdate";
-
-	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
-	public static final String EMAIL = "email";
-	public static final String PHONE_NUMBER = "phoneNumber";
-	public static final String ADDRESS = "address";
-	public static final String COMMENT = "comment";
-	public static final String RESPONSIBLE_USER = "responsibleUser";
-	public static final String INVESTIGATION_STATUS = "investigationStatus";
-	public static final String PROCESSING_STATUS = "processingStatus";
-
-	// District.NAME,
-	// Location.STREET,
-	// Location.HOUSE_NUMBER,
-	// Location.POSTAL_CODE,
-	// Location.CITY,
-
-	// selfReport.get(SelfReport.DELETION_REASON),
-	// selfReport.get(SelfReport.OTHER_DELETION_REASON)),
-
 	private SelfReportType type;
 	private Date reportDate;
+	@SensitiveData
 	private String caseReference;
 	private Disease disease;
+	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
+	private String diseaseVariantDetails;
+	@PersonalData
+	@SensitiveData
 	private String firstName;
+	@PersonalData
+	@SensitiveData
 	private String lastName;
 	private Sex sex;
-
 	private String district;
+	@PersonalData
+	@SensitiveData
 	private String street;
+	@PersonalData
+	@SensitiveData
 	private String houseNumber;
+	@PersonalData
+	@SensitiveData
 	private String postalCode;
+	@PersonalData
+	@SensitiveData
 	private String city;
-
+	@PersonalData
+	@SensitiveData
 	private BirthDateDto birthDate;
+	@SensitiveData
 	private String nationalHealthId;
+	@SensitiveData
 	private String email;
+	@SensitiveData
 	private String phoneNumber;
+	private Date dateOfTest;
+	private Date dateOfSymptoms;
+	@SensitiveData
+	private String workplace;
+	private Date dateWorkplace;
+	private Date isolationDate;
+	private Date contactDate;
+	@SensitiveData
 	private String comment;
 	private UserReferenceDto responsibleUser;
 	private SelfReportInvestigationStatus investigationStatus;
 	private SelfReportProcessingStatus processingStatus;
 	private DeletionReason deletionReason;
+	@SensitiveData
 	private String otherDeletionReason;
 
 	public SelfReportExportDto(
@@ -84,21 +78,27 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		Date reportDate,
 		String caseReference,
 		Disease disease,
+		String diseaseDetails,
 		DiseaseVariant diseaseVariant,
+		String diseaseVariantDetails,
 		String firstName,
 		String lastName,
 		Sex sex,
-
 		String district,
 		String street,
 		String houseNumber,
 		String postalCode,
 		String city,
-
 		BirthDateDto birthDate,
 		String nationalHealthId,
 		String email,
 		String phoneNumber,
+		Date dateOfTest,
+		Date dateOfSymptoms,
+		String workplace,
+		Date dateWorkplace,
+		Date isolationDate,
+		Date contactDate,
 		String comment,
 		UserReferenceDto responsibleUser,
 		SelfReportInvestigationStatus investigationStatus,
@@ -111,7 +111,9 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.reportDate = reportDate;
 		this.caseReference = caseReference;
 		this.disease = disease;
+		this.diseaseDetails = diseaseDetails;
 		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantDetails = diseaseVariantDetails;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
@@ -124,6 +126,12 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.nationalHealthId = nationalHealthId;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.dateOfTest = dateOfTest;
+		this.dateOfSymptoms = dateOfSymptoms;
+		this.workplace = workplace;
+		this.dateWorkplace = dateWorkplace;
+		this.isolationDate = isolationDate;
+		this.contactDate = contactDate;
 		this.comment = comment;
 		this.responsibleUser = responsibleUser;
 		this.investigationStatus = investigationStatus;
@@ -133,7 +141,6 @@ public class SelfReportExportDto extends AbstractUuidDto {
 	}
 
 	@Order(0)
-	//TODO: Add @ExportProperty, @ExportGroup
 	public String getUuid() {
 		return super.getUuid();
 	}
@@ -175,6 +182,15 @@ public class SelfReportExportDto extends AbstractUuidDto {
 	}
 
 	@Order(5)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Order(6)
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
@@ -183,7 +199,16 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	@Order(6)
+	@Order(7)
+	public String getDiseaseVariantDetails() {
+		return diseaseVariantDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
+	}
+
+	@Order(8)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -192,7 +217,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.firstName = firstName;
 	}
 
-	@Order(7)
+	@Order(9)
 	public String getLastName() {
 		return lastName;
 	}
@@ -201,7 +226,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.lastName = lastName;
 	}
 
-	@Order(8)
+	@Order(10)
 	public Sex getSex() {
 		return sex;
 	}
@@ -210,7 +235,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.sex = sex;
 	}
 
-	@Order(9)
+	@Order(11)
 	public String getDistrict() {
 		return district;
 	}
@@ -219,7 +244,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.district = district;
 	}
 
-	@Order(10)
+	@Order(12)
 	public String getStreet() {
 		return street;
 	}
@@ -228,7 +253,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.street = street;
 	}
 
-	@Order(11)
+	@Order(13)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
@@ -237,7 +262,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.houseNumber = houseNumber;
 	}
 
-	@Order(12)
+	@Order(14)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -246,7 +271,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.postalCode = postalCode;
 	}
 
-	@Order(13)
+	@Order(15)
 	public String getCity() {
 		return city;
 	}
@@ -255,16 +280,17 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.city = city;
 	}
 
-	@Order(14)
+	@Order(16)
 	public BirthDateDto getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(BirthDateDto birthdate) {
-		this.birthDate = birthdate;
+	public void setBirthDate(BirthDateDto birthDate) {
+		this.birthDate = birthDate;
 	}
 
-	@Order(15)
+	@Order(17)
+
 	public String getNationalHealthId() {
 		return nationalHealthId;
 	}
@@ -273,7 +299,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.nationalHealthId = nationalHealthId;
 	}
 
-	@Order(16)
+	@Order(18)
 	public String getEmail() {
 		return email;
 	}
@@ -282,7 +308,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.email = email;
 	}
 
-	@Order(17)
+	@Order(19)
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -291,7 +317,61 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.phoneNumber = phoneNumber;
 	}
 
-	@Order(18)
+	@Order(20)
+	public Date getDateOfTest() {
+		return dateOfTest;
+	}
+
+	public void setDateOfTest(Date dateOfTest) {
+		this.dateOfTest = dateOfTest;
+	}
+
+	@Order(21)
+	public Date getDateOfSymptoms() {
+		return dateOfSymptoms;
+	}
+
+	public void setDateOfSymptoms(Date dateOfSymptoms) {
+		this.dateOfSymptoms = dateOfSymptoms;
+	}
+
+	@Order(22)
+	public String getWorkplace() {
+		return workplace;
+	}
+
+	public void setWorkplace(String workplace) {
+		this.workplace = workplace;
+	}
+
+	@Order(23)
+	public Date getDateWorkplace() {
+		return dateWorkplace;
+	}
+
+	public void setDateWorkplace(Date dateWorkplace) {
+		this.dateWorkplace = dateWorkplace;
+	}
+
+	@Order(24)
+	public Date getIsolationDate() {
+		return isolationDate;
+	}
+
+	public void setIsolationDate(Date isolationDate) {
+		this.isolationDate = isolationDate;
+	}
+
+	@Order(25)
+	public Date getContactDate() {
+		return contactDate;
+	}
+
+	public void setContactDate(Date contactDate) {
+		this.contactDate = contactDate;
+	}
+
+	@Order(26)
 	public String getComment() {
 		return comment;
 	}
@@ -300,7 +380,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.comment = comment;
 	}
 
-	@Order(19)
+	@Order(27)
 	public UserReferenceDto getResponsibleUser() {
 		return responsibleUser;
 	}
@@ -309,7 +389,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.responsibleUser = responsibleUser;
 	}
 
-	@Order(20)
+	@Order(28)
 	public SelfReportInvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
@@ -318,7 +398,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.investigationStatus = investigationStatus;
 	}
 
-	@Order(21)
+	@Order(29)
 	public SelfReportProcessingStatus getProcessingStatus() {
 		return processingStatus;
 	}
@@ -327,7 +407,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.processingStatus = processingStatus;
 	}
 
-	@Order(22)
+	@Order(30)
 	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
@@ -336,7 +416,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.deletionReason = deletionReason;
 	}
 
-	@Order(23)
+	@Order(31)
 	public String getOtherDeletionReason() {
 		return otherDeletionReason;
 	}

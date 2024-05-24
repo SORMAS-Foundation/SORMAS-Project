@@ -27,14 +27,15 @@ public class SelfReportExportDtoResultTransformer implements ResultTransformer {
 		//@formatter:off
         return new SelfReportExportDto(
                 (String) tuple[++index], (SelfReportType) tuple[++index], (Date) tuple[++index],
-                (String) tuple[++index], (Disease) tuple[++index], (DiseaseVariant) tuple[++index],
-                (String) tuple[++index], (String) tuple[++index], (Sex) tuple[++index], (String) tuple[++index],
-                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
-                new BirthDateDto((Integer)tuple[++index], (Integer) tuple[++index], (Integer) tuple[++index]),
-                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
-                new UserReferenceDto((String) tuple[++index], (String) tuple[++index], (String) tuple[++index]),
-                (SelfReportInvestigationStatus) tuple[++index], (SelfReportProcessingStatus) tuple[++index],
-                (DeletionReason) tuple[++index], (String) tuple[++index]);
+                (String) tuple[++index], (Disease) tuple[++index], (String) tuple[++index], (DiseaseVariant) tuple[++index],
+                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (Sex) tuple[++index], 
+                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], 
+                (String) tuple[++index], new BirthDateDto((Integer)tuple[++index], (Integer) tuple[++index], 
+                (Integer) tuple[++index]), (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
+                (Date) tuple[++index], (Date) tuple[++index], (String) tuple[++index], (Date) tuple[++index],
+                (Date) tuple[++index], (Date) tuple[++index], (String) tuple[++index], new UserReferenceDto((String) tuple[++index],
+                (String) tuple[++index], (String) tuple[++index]), (SelfReportInvestigationStatus) tuple[++index], 
+                (SelfReportProcessingStatus) tuple[++index], (DeletionReason) tuple[++index], (String) tuple[++index]);
         //@formatter:on
 	}
 

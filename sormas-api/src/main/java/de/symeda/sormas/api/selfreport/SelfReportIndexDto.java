@@ -36,7 +36,7 @@ public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizab
 	public static final String DISEASE = "disease";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
-	public static final String BIRTH_DATE = "birthdate";
+	public static final String BIRTH_DATE = "birthDate";
 	public static final String SEX = "sex";
 	public static final String DISTRICT = "district";
 	public static final String STREET = "street";

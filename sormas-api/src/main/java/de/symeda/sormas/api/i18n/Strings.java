@@ -278,6 +278,7 @@ public interface Strings {
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
 	String entitySelfReport = "entitySelfReport";
+	String entitySelfReports = "entitySelfReports";
 	String entityStatistics = "entityStatistics";
 	String entitySubcontinents = "entitySubcontinents";
 	String entityTask = "entityTask";
