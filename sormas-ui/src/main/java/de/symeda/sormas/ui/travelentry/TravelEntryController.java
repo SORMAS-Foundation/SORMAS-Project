@@ -270,7 +270,8 @@ public class TravelEntryController {
 					DocumentRelatedEntityType.TRAVEL_ENTRY,
 					selectedRows,
 					bulkOperationCallback(travelEntryGrid, travelEntryGrid::reload, null),
-					TravelEntryIndexDto::toReference);
+					TravelEntryIndexDto::toReference,
+					null);
 		}
 	}
 }

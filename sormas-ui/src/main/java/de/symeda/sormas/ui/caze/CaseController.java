@@ -15,13 +15,7 @@
 
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -33,18 +27,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
@@ -53,28 +37,14 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseBulkEditData;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseSelectionDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.caze.*;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.contact.*;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -113,11 +83,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.visit.VisitDto;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.ViewModelProvider;
-import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.*;
 import de.symeda.sormas.ui.caze.components.linelisting.LineListingLayout;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryForm;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
@@ -133,17 +99,7 @@ import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
-import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ArchiveHandlers;
-import de.symeda.sormas.ui.utils.BulkOperationHandler;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
-import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.*;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -1591,7 +1547,8 @@ public class CaseController {
 					DocumentRelatedEntityType.CASE,
 					selectedRows,
 					bulkOperationCallback(caseGrid, null),
-					CaseIndexDto::toReference);
+					CaseIndexDto::toReference,
+					DocumentWorkflow.QUARANTINE_ORDER_CASE);
 		}
 	}
 

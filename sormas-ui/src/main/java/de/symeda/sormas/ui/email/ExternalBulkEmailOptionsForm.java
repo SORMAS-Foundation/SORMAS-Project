@@ -85,15 +85,18 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 
 	private QuarantineOrderLayout attachDocTemplateLayout;
 
+	private final DocumentWorkflow templatesWorkflow;
+
 	protected ExternalBulkEmailOptionsForm(
 		DocumentWorkflow documentWorkflow,
 		DocumentRelatedEntityType documentRelatedEntityType,
-		RootEntityType rootEntityType) {
+		RootEntityType rootEntityType, DocumentWorkflow templatesWorkflow) {
 		super(ExternalEmailOptionsWithAttachmentsDto.class, ExternalEmailOptionsWithAttachmentsDto.I18N_PREFIX, false);
 		this.documentWorkflow = documentWorkflow;
 		this.documentRelatedEntityType = documentRelatedEntityType;
 		this.attachedDocumentsField = new MultiSelectFiles<>();
 		this.rootEntityType = rootEntityType;
+		this.templatesWorkflow = templatesWorkflow;
 
 		addFields();
 		hideValidationUntilNextCommit();
@@ -120,27 +123,10 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 			attachedDocumentsField = addField(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS, MultiSelectFiles.class);
 		}
 
-		DocumentWorkflow templatesWorkflow = getDocumentTemplateWorkflow();
 		if (templatesWorkflow != null) {
 			attachDocTemplateLayout = new QuarantineOrderLayout(templatesWorkflow);
 			getContent().addComponent(attachDocTemplateLayout, CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
 		}
-	}
-
-	@Nullable
-	private DocumentWorkflow getDocumentTemplateWorkflow() {
-		DocumentWorkflow templatesWorkflow;
-		switch (documentWorkflow) {
-		case CASE_EMAIL:
-			templatesWorkflow = DocumentWorkflow.QUARANTINE_ORDER_CASE;
-			break;
-		case CONTACT_EMAIL:
-			templatesWorkflow = DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
-			break;
-		default:
-			templatesWorkflow = null;
-		}
-		return templatesWorkflow;
 	}
 
 	@Override

@@ -23,12 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +51,6 @@ import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import javax.ws.rs.NotSupportedException;
 
 public class ExternalEmailController {
 
@@ -121,10 +114,11 @@ public class ExternalEmailController {
 		DocumentRelatedEntityType documentRelatedEntityType,
 		Collection<T> selectionReference,
 		Consumer<List<T>> bulkOperationDoneCallback,
-		Function<T, ReferenceDto> mapToReference) {
+		Function<T, ReferenceDto> mapToReference,
+		DocumentWorkflow templatesWorkflow) {
 
 		ExternalBulkEmailOptionsForm optionsForm =
-			new ExternalBulkEmailOptionsForm(documentWorkflow, documentRelatedEntityType, rootEntityType);
+			new ExternalBulkEmailOptionsForm(documentWorkflow, documentRelatedEntityType, rootEntityType, templatesWorkflow);
 		ExternalEmailOptionsWithAttachmentsDto defaultValue = new ExternalEmailOptionsWithAttachmentsDto(documentWorkflow, rootEntityType);
 		optionsForm.setValue(defaultValue);
 
@@ -164,30 +158,5 @@ public class ExternalEmailController {
 		});
 
 		optionsCommitDiscard.addDiscardListener(optionsPopup::close);
-	}
-
-	@NotNull
-	private static <T extends HasUuid> List<ReferenceDto> getReferenceDtos(RootEntityType rootEntityType, Collection<T> selectionReference) {
-		List<ReferenceDto> selectionRefUuid;
-		switch (rootEntityType) {
-		case ROOT_CASE:
-			selectionRefUuid = selectionReference.stream().map(selection -> new CaseReferenceDto(selection.getUuid())).collect(Collectors.toList());
-			break;
-		case ROOT_CONTACT:
-			selectionRefUuid =
-				selectionReference.stream().map(selection -> new ContactReferenceDto(selection.getUuid())).collect(Collectors.toList());
-			break;
-		case ROOT_EVENT_PARTICIPANT:
-			selectionRefUuid =
-				selectionReference.stream().map(selection -> new EventParticipantReferenceDto(selection.getUuid())).collect(Collectors.toList());
-			break;
-		case ROOT_TRAVEL_ENTRY:
-			selectionRefUuid =
-				selectionReference.stream().map(selection -> new TravelEntryReferenceDto(selection.getUuid())).collect(Collectors.toList());
-			break;
-		default:
-			throw new IllegalArgumentException("Unexpected association: " + rootEntityType.getEntityName());
-		}
-		return selectionRefUuid;
 	}
 }

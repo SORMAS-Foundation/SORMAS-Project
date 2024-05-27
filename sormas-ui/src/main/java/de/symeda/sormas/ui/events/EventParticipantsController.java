@@ -41,12 +41,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.*;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -61,12 +56,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.eventParticipantsLineListing.layout.LineListingLayout;
-import de.symeda.sormas.ui.utils.ArchiveHandlers;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DeletableUtils;
-import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.*;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -490,7 +480,8 @@ public class EventParticipantsController {
 					null,
 					selectedRows,
 					bulkOperationCallback(eventParticipantsGrid, eventParticipantsGrid::reload, null),
-					EventParticipantIndexDto::toReference);
+					EventParticipantIndexDto::toReference,
+					null);
 		}
 	}
 }
