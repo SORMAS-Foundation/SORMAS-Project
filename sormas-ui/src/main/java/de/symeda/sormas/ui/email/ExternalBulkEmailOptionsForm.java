@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.jetbrains.annotations.Nullable;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.google.common.io.ByteStreams;
@@ -45,7 +44,6 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
 import de.symeda.sormas.api.DocumentHelper;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -60,7 +58,11 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderLayout;
 import de.symeda.sormas.ui.importer.DocumentMultiFileUpload;
-import de.symeda.sormas.ui.utils.*;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.MultiSelectFiles;
 
 public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmailOptionsWithAttachmentsDto> {

@@ -26,7 +26,12 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.docgeneneration.*;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
