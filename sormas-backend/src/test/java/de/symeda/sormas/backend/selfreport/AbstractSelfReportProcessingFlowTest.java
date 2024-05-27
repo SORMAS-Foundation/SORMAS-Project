@@ -193,8 +193,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 			getCaseFacade().save(caze);
 
-			HandlerCallback<EntitySelection<CaseDataDto>> callback = invocation.getArgument(1);
-			callback.done(new EntitySelection<>(caze, true));
+			HandlerCallback<CaseDataDto> callback = invocation.getArgument(1);
+			callback.done(caze);
 			return null;
 		}).when(handleCreateCase).handle(caseCaptor.capture(), any());
 
@@ -204,7 +204,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		assertThat(caseCaptor.getValue().getUuid(), is(result.getData().getCaze().getEntity().getUuid()));
 
 		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(selfReport.toReference());
-		assertThat(savedSelfReport.getResultingCaze().getUuid(), is(caseCaptor.getValue().getUuid()));
+		assertThat(savedSelfReport.getResultingCase().getUuid(), is(caseCaptor.getValue().getUuid()));
 	}
 
 	@Test
@@ -246,7 +246,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		assertThat(result.getData().getCaze().getEntity().getUuid(), is(caze.getUuid()));
 
 		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(selfReport.toReference());
-		assertThat(savedSelfReport.getResultingCaze().getUuid(), is(caze.toReference().getUuid()));
+		assertThat(savedSelfReport.getResultingCase().getUuid(), is(caze.toReference().getUuid()));
 	}
 
 	@Test
@@ -288,8 +288,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 			getContactFacade().save(contact);
 
-			HandlerCallback<EntitySelection<ContactDto>> callback = invocation.getArgument(1);
-			callback.done(new EntitySelection<>(contact, true));
+			HandlerCallback<ContactDto> callback = invocation.getArgument(1);
+			callback.done(contact);
 			return null;
 		}).when(handleCreateContact).handle(contactCaptor.capture(), any());
 
@@ -375,22 +375,33 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 			}
 
 			@Override
-			protected void handlePickOrCreateCase(List<CaseSelectionDto> similarCases, HandlerCallback<PickOrCreateEntryResult> callback) {
+			protected void handlePickOrCreateCase(
+				List<CaseSelectionDto> similarCases,
+				SelfReportDto selfReport,
+				HandlerCallback<PickOrCreateEntryResult> callback) {
 				handlePickOrCreateCase.handle(similarCases, callback);
 			}
 
 			@Override
-			protected void handleCreateCase(CaseDataDto caze, HandlerCallback<EntitySelection<CaseDataDto>> callback) {
+			protected void handleCreateCase(
+				CaseDataDto caze,
+				PersonDto person,
+				boolean isNewPerson,
+				SelfReportDto selfReport,
+				HandlerCallback<CaseDataDto> callback) {
 				handleCreateCase.handle(caze, callback);
 			}
 
 			@Override
-			protected void handlePickOrCreateContact(List<SimilarContactDto> similarContacts, HandlerCallback<PickOrCreateEntryResult> callback) {
+			protected void handlePickOrCreateContact(
+				List<SimilarContactDto> similarContacts,
+				SelfReportDto selfReport,
+				HandlerCallback<PickOrCreateEntryResult> callback) {
 				handlePickOrCreateContact.handle(similarContacts, callback);
 			}
 
 			@Override
-			protected void handleCreateContact(ContactDto contact, HandlerCallback<EntitySelection<ContactDto>> callback) {
+			protected void handleCreateContact(ContactDto contact, PersonDto person, boolean isNewPerson, SelfReportDto selfReport, HandlerCallback<ContactDto> callback) {
 				handleCreateContact.handle(contact, callback);
 			}
 		};
@@ -457,16 +468,16 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 	private static Answer<?> answerCreateCase() {
 		return invocation -> {
-			HandlerCallback<EntitySelection<CaseDataDto>> callback = invocation.getArgument(invocation.getArguments().length - 1);
-			callback.done(new EntitySelection<>(invocation.getArgument(0, CaseDataDto.class), true));
+			HandlerCallback<CaseDataDto> callback = invocation.getArgument(invocation.getArguments().length - 1);
+			callback.done(invocation.getArgument(0, CaseDataDto.class));
 			return null;
 		};
 	}
 
 	private static Answer<?> answerCreateContact() {
 		return invocation -> {
-			HandlerCallback<EntitySelection<ContactDto>> callback = invocation.getArgument(invocation.getArguments().length - 1);
-			callback.done(new EntitySelection<>(invocation.getArgument(0, ContactDto.class), true));
+			HandlerCallback<ContactDto> callback = invocation.getArgument(invocation.getArguments().length - 1);
+			callback.done(invocation.getArgument(0, ContactDto.class));
 			return null;
 		};
 	}
@@ -487,10 +498,10 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 	private interface CreateCaseHandler {
 
-		void handle(CaseDataDto caze, HandlerCallback<EntitySelection<CaseDataDto>> callback);
+		void handle(CaseDataDto caze, HandlerCallback<CaseDataDto> callback);
 	}
 	private interface CreateContactHandler {
 
-		void handle(ContactDto caze, HandlerCallback<EntitySelection<ContactDto>> callback);
+		void handle(ContactDto caze, HandlerCallback<ContactDto> callback);
 	}
 }

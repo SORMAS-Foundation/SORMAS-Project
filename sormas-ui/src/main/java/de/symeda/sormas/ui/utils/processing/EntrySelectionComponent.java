@@ -25,7 +25,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -38,15 +37,21 @@ public abstract class EntrySelectionComponent extends VerticalLayout {
 
 	private final String infoSelectOrCreateString;
 	private final String infoCreateString;
+	private final String propertyI18nPrefix;
 
 	private EntrySelectionField entrySelectionField;
 	private HorizontalLayout searchDetailsLayout;
 
-	public EntrySelectionComponent(EntrySelectionField.Options selectableOptions, String infoSelectOrCreateString, String infoCreateString) {
+	public EntrySelectionComponent(
+		EntrySelectionField.Options selectableOptions,
+		String infoSelectOrCreateString,
+		String infoCreateString,
+		String propertyI18nPrefix) {
 
 		this.selectableOptions = selectableOptions;
 		this.infoSelectOrCreateString = infoSelectOrCreateString;
 		this.infoCreateString = infoCreateString;
+		this.propertyI18nPrefix = propertyI18nPrefix;
 
 		setSpacing(true);
 		setMargin(false);
@@ -88,7 +93,7 @@ public abstract class EntrySelectionComponent extends VerticalLayout {
 		if (value != null) {
 			label.setValue(value.toString());
 		}
-		label.setCaption(I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, property));
+		label.setCaption(I18nProperties.getPrefixCaption(propertyI18nPrefix, property));
 		label.setWidthUndefined();
 
 		searchDetailsLayout.addComponent(label);

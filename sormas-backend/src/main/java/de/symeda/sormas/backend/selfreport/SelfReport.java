@@ -100,7 +100,7 @@ public class SelfReport extends CoreAdo {
 	private SelfReportInvestigationStatus investigationStatus;
 	private SelfReportProcessingStatus processingStatus;
 
-	private Case resultingCaze;
+	private Case resultingCase;
 	private Contact resultingContact;
 
 	@Enumerated(EnumType.STRING)
@@ -353,12 +353,12 @@ public class SelfReport extends CoreAdo {
 	}
 
 	@OneToOne(fetch = FetchType.LAZY)
-	public Case getResultingCaze() {
-		return resultingCaze;
+	public Case getResultingCase() {
+		return resultingCase;
 	}
 
-	public void setResultingCaze(Case resultingCaze) {
-		this.resultingCaze = resultingCaze;
+	public void setResultingCase(Case resultingCaze) {
+		this.resultingCase = resultingCaze;
 	}
 
 	@OneToOne(fetch = FetchType.LAZY)

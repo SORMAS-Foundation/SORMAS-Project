@@ -27,4 +27,6 @@ public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIn
 	void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze);
 
 	void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef);
+
+    boolean isProcessed(SelfReportReferenceDto reference);
 }

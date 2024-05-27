@@ -38,6 +38,7 @@ import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportInvestigationStatus;
+import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
 import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -147,6 +148,7 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 	private Component buildProcessColumn(SelfReportIndexDto indexDto) {
 		if (UiUtil.permitted(UserRight.SELF_REPORT_PROCESS)
 			&& indexDto.getInvestigationStatus() == SelfReportInvestigationStatus.COMPLETED
+			&& indexDto.getProcessingStatus() != SelfReportProcessingStatus.PROCESSED
 			&& ((indexDto.getType() == SelfReportType.CASE && UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT)))
 			|| (indexDto.getType() == SelfReportType.CONTACT && UiUtil.permitted(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT))) {
 			// build process button

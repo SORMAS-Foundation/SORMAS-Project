@@ -78,6 +78,7 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionComponentForExternalMessage;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
 import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
@@ -139,7 +140,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (optionsBuilder.size() > 1) {
-			showPickOrCreateEntryWindow(optionsBuilder.build(), labMessage, callback);
+			showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), callback);
 		} else {
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
 		}

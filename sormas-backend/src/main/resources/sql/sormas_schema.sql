@@ -13136,4 +13136,14 @@ WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVI
 
 INSERT INTO schema_version (version_number, comment) VALUES (548, '#13083 Add a manual processing for self Reporting');
 
+-- 2024-05-22 #13083 Add a manual processing for self Reporting
+
+ALTER TABLE selfreports
+    ADD COLUMN resultingcase_id bigint,
+    ADD CONSTRAINT fk_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases (id),
+    ADD COLUMN resultingcontact_id bigint,
+    ADD CONSTRAINT fk_resultingcontact_id FOREIGN KEY (resultingcontact_id) REFERENCES contact (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -134,12 +134,15 @@ public abstract class AbstractSelfReportProcessingFlow {
 
 		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
 
-		handlePickOrCreateCase(similarCases, callback);
+		handlePickOrCreateCase(similarCases, selfReport, callback);
 
 		return callback.futureResult;
 	}
 
-	protected abstract void handlePickOrCreateCase(List<CaseSelectionDto> similarCases, HandlerCallback<PickOrCreateEntryResult> callback);
+	protected abstract void handlePickOrCreateCase(
+		List<CaseSelectionDto> similarCases,
+		SelfReportDto selfReport,
+		HandlerCallback<PickOrCreateEntryResult> callback);
 
 	private CompletionStage<ProcessingResult<PickOrCreateEntryResult>> pickOrCreateContact(
 		SelfReportDto selfReport,
@@ -150,42 +153,59 @@ public abstract class AbstractSelfReportProcessingFlow {
 
 		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
 
-		handlePickOrCreateContact(similarContacts, callback);
+		handlePickOrCreateContact(similarContacts, selfReport, callback);
 
 		return callback.futureResult;
 	}
 
-	protected abstract void handlePickOrCreateContact(List<SimilarContactDto> similarContacts, HandlerCallback<PickOrCreateEntryResult> callback);
+	protected abstract void handlePickOrCreateContact(
+		List<SimilarContactDto> similarContacts,
+		SelfReportDto selfReport,
+		HandlerCallback<PickOrCreateEntryResult> callback);
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> createCase(
 		SelfReportDto selfReport,
 		SelfReportProcessingResult previousResult) {
+		EntitySelection<PersonDto> personSelection = previousResult.getPerson();
 		CaseDataDto caze = buildCase(selfReport, previousResult);
 
-		HandlerCallback<EntitySelection<CaseDataDto>> callback = new HandlerCallback<>();
-		handleCreateCase(caze, callback);
+		HandlerCallback<CaseDataDto> callback = new HandlerCallback<>();
+		handleCreateCase(caze, personSelection.getEntity(), personSelection.isNew(), selfReport, callback);
 
-		return mapHandlerResult(callback, previousResult, caseSelection -> {
-			logger.debug("[SELF REPORT PROCESSING] Continue processing with case: {}", caseSelection);
-			return previousResult.withCase(caseSelection.getEntity(), caseSelection.isNew());
+		return mapHandlerResult(callback, previousResult, cratedCase -> {
+			logger.debug("[SELF REPORT PROCESSING] Continue processing with case: {}", cratedCase);
+			return previousResult.withCase(cratedCase, true);
 		});
 	}
+
+	protected abstract void handleCreateCase(
+		CaseDataDto caze,
+		PersonDto person,
+		boolean isNewPerson,
+		SelfReportDto selfReport,
+		HandlerCallback<CaseDataDto> callback);
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> createContact(
 		SelfReportDto selfReport,
 		SelfReportProcessingResult previousResult) {
+		EntitySelection<PersonDto> personSelection = previousResult.getPerson();
 		ContactDto contact = buildContact(selfReport, previousResult);
 
-		HandlerCallback<EntitySelection<ContactDto>> callback = new HandlerCallback<>();
-		handleCreateContact(contact, callback);
+		HandlerCallback<ContactDto> callback = new HandlerCallback<>();
+		handleCreateContact(contact, personSelection.getEntity(), personSelection.isNew(), selfReport, callback);
 
-		return mapHandlerResult(callback, previousResult, contactSelection -> {
-			logger.debug("[SELF REPORT PROCESSING] Continue processing with case: {}", contactSelection);
-			return previousResult.withContact(contactSelection.getEntity(), contactSelection.isNew());
+		return mapHandlerResult(callback, previousResult, createdContact -> {
+			logger.debug("[SELF REPORT PROCESSING] Continue processing with contact: {}", createdContact);
+			return previousResult.withContact(createdContact, true);
 		});
 	}
 
-	protected abstract void handleCreateContact(ContactDto contact, HandlerCallback<EntitySelection<ContactDto>> callback);
+	protected abstract void handleCreateContact(
+		ContactDto contact,
+		PersonDto person,
+		boolean isNewPerson,
+		SelfReportDto selfReport,
+		HandlerCallback<ContactDto> callback);
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> pickCase(
 		CaseSelectionDto selectedCase,
@@ -255,8 +275,6 @@ public abstract class AbstractSelfReportProcessingFlow {
 
 		return contact;
 	}
-
-	protected abstract void handleCreateCase(CaseDataDto caze, HandlerCallback<EntitySelection<CaseDataDto>> callback);
 
 	protected <T> CompletionStage<ProcessingResult<SelfReportProcessingResult>> mapHandlerResult(
 		HandlerCallback<T> callback,

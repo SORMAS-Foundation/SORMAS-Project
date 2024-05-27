@@ -343,7 +343,7 @@ public class SelfReportFacadeEjb
 	public void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze) {
 		SelfReport selfReport = service.getByReferenceDto(selfReportRef);
 		selfReport.setProcessingStatus(SelfReportProcessingStatus.PROCESSED);
-		selfReport.setResultingCaze(caseService.getByReferenceDto(caze));
+		selfReport.setResultingCase(caseService.getByReferenceDto(caze));
 
 		service.ensurePersisted(selfReport);
 	}
@@ -355,6 +355,14 @@ public class SelfReportFacadeEjb
 		selfReport.setResultingContact(contactService.getByReferenceDto(contactRef));
 
 		service.ensurePersisted(selfReport);
+	}
+
+	@Override
+	public boolean isProcessed(SelfReportReferenceDto reference) {
+		return service.exists(
+			(cb, root, cq) -> cb.and(
+				cb.equal(root.get(SelfReport.UUID), reference.getUuid()),
+				cb.equal(root.get(SelfReport.PROCESSING_STATUS), SelfReportProcessingStatus.PROCESSED)));
 	}
 
 	@Override

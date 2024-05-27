@@ -30,7 +30,7 @@ public class EntrySelectionComponentForExternalMessage extends EntrySelectionCom
 	private final ExternalMessageDto externalMessageDto;
 
 	public EntrySelectionComponentForExternalMessage(ExternalMessageDto externalMessageDto, EntrySelectionField.Options selectableOptions) {
-		super(selectableOptions, Strings.infoSelectOrCreateEntry, Strings.infoCreateEntry);
+		super(selectableOptions, Strings.infoSelectOrCreateEntry, Strings.infoCreateEntry, ExternalMessageDto.I18N_PREFIX);
 		this.externalMessageDto = externalMessageDto;
 
 		initContent();

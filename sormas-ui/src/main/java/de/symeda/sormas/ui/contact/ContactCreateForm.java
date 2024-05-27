@@ -394,6 +394,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		personCreateForm.setPerson(person);
 	}
 
+	public void setPerson(PersonDto person, boolean isNewPerson) {
+		personCreateForm.setPerson(person, isNewPerson);
+	}
+
 	public void setPersonDetailsReadOnly() {
 		personCreateForm.setPersonDetailsReadOnly();
 	}

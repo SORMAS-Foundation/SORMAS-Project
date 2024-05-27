@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.utils.processing;
 import com.vaadin.server.Sizeable;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -29,7 +28,6 @@ import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionComponentForExternalMessage;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -52,23 +50,19 @@ public final class ProcessingUiHelper {
 	}
 
 	public static void showPickOrCreateEntryWindow(
-		EntrySelectionField.Options options,
-		ExternalMessageDto labMessage,
+		EntrySelectionComponent entrySelectionComponent,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
 
-		EntrySelectionComponentForExternalMessage selectField = new EntrySelectionComponentForExternalMessage(labMessage, options);
+		final CommitDiscardWrapperComponent<EntrySelectionComponent> commitDiscardComponent = new CommitDiscardWrapperComponent<>(entrySelectionComponent);
+		commitDiscardComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		commitDiscardComponent.setWidth(1280, Sizeable.Unit.PIXELS);
 
-		final CommitDiscardWrapperComponent<EntrySelectionComponentForExternalMessage> selectionField =
-			new CommitDiscardWrapperComponent<>(selectField);
-		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+		commitDiscardComponent.addCommitListener(() -> callback.done(entrySelectionComponent.getSelectionResult()));
+		commitDiscardComponent.addDiscardListener(callback::cancel);
 
-		selectionField.addCommitListener(() -> callback.done(selectField.getSelectionResult()));
-		selectionField.addDiscardListener(callback::cancel);
+		entrySelectionComponent.setSelectionChangeCallback(commitAllowed -> commitDiscardComponent.getCommitButton().setEnabled(commitAllowed));
+		commitDiscardComponent.getCommitButton().setEnabled(false);
 
-		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
-		selectionField.getCommitButton().setEnabled(false);
-
-		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry), true);
+		VaadinUiUtil.showModalPopupWindow(commitDiscardComponent, I18nProperties.getString(Strings.headingPickOrCreateEntry), true);
 	}
 }
