@@ -127,6 +127,7 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 
 		if (templatesWorkflow != null) {
 			attachDocTemplateLayout = new QuarantineOrderLayout(templatesWorkflow);
+			attachDocTemplateLayout.setMargin(false);
 			getContent().addComponent(attachDocTemplateLayout, CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
 		}
 	}
