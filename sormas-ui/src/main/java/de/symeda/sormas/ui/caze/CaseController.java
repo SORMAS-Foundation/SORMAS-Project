@@ -1592,7 +1592,8 @@ public class CaseController {
 					DocumentRelatedEntityType.CASE,
 					selectedRows,
 					bulkOperationCallback(caseGrid, null),
-					CaseIndexDto::toReference);
+					CaseIndexDto::toReference,
+					DocumentWorkflow.QUARANTINE_ORDER_CASE);
 		}
 	}
 

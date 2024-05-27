@@ -899,7 +899,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public QuarantineOrderFacade getQuarantineOrderFacade() {
-		return getBean(QuarantineOrderFacadeEjb.class);
+		return getBean(QuarantineOrderFacadeEjb.QuarantineOrderFacadeEjbLocal.class);
 	}
 
 	public EventDocumentFacade getEventDocumentFacade() {

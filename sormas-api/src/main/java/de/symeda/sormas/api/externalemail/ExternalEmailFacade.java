@@ -38,7 +38,7 @@ public interface ExternalEmailFacade {
 	List<DocumentReferenceDto> getAttachableDocuments(DocumentWorkflow documentWorkflow, String relatedEntityUuid);
 
 	void sendEmail(@Valid ExternalEmailOptionsDto options)
-		throws DocumentTemplateException, ExternalEmailException, AttachmentException, ValidationException;
+            throws DocumentTemplateException, ExternalEmailException, AttachmentException, ValidationException, IOException;
 
 	List<ProcessedEntity> sendBulkEmail(@Valid ExternalEmailOptionsWithAttachmentsDto options, List<ReferenceDto> rootEntityReferences)
 		throws IOException;

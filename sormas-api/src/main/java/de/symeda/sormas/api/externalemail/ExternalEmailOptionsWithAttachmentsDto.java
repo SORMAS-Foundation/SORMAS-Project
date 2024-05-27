@@ -21,14 +21,17 @@
 package de.symeda.sormas.api.externalemail;
 
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.Set;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.i18n.Validations;
 
@@ -51,6 +54,8 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 	@Size(min = 1, message = Validations.requiredField)
 	private String templateName;
 	private Set<EmailAttachementDto> attachedDocuments;
+
+	private QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptionsDto;
 
 	public ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow documentWorkflow, RootEntityType rootEntityType) {
 		this.documentWorkflow = documentWorkflow;
@@ -79,5 +84,13 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 
 	public void setAttachedDocuments(Set<EmailAttachementDto> attachedDocuments) {
 		this.attachedDocuments = attachedDocuments;
+	}
+
+	public QuarantineOrderDocumentOptionsDto getQuarantineOrderDocumentOptionsDto() {
+		return quarantineOrderDocumentOptionsDto;
+	}
+
+	public void setQuarantineOrderDocumentOptionsDto(QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptionsDto) {
+		this.quarantineOrderDocumentOptionsDto = quarantineOrderDocumentOptionsDto;
 	}
 }

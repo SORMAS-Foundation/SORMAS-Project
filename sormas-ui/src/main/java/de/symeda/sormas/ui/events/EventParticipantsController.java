@@ -490,7 +490,8 @@ public class EventParticipantsController {
 					null,
 					selectedRows,
 					bulkOperationCallback(eventParticipantsGrid, eventParticipantsGrid::reload, null),
-					EventParticipantIndexDto::toReference);
+					EventParticipantIndexDto::toReference,
+					null);
 		}
 	}
 }

@@ -819,7 +819,8 @@ public class ContactController {
 					DocumentRelatedEntityType.CONTACT,
 					selectedRows,
 					bulkOperationCallback(null, contactGrid, null),
-					ContactIndexDto::toReference);
+					ContactIndexDto::toReference,
+					DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
 		}
 	}
 
