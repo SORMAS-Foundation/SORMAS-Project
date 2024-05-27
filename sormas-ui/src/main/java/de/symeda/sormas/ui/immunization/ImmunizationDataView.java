@@ -35,9 +35,10 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 	protected void initView(String params) {
 		setHeightUndefined();
 
-		ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
+		//ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
 
-		editComponent = ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(immunization, this::showUnsavedChangesPopup);
+		editComponent =
+			ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(getReference().getUuid(), this::showUnsavedChangesPopup);
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -49,6 +50,7 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 
 		container.addComponent(layout);
 
+		ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getImmunizationByUuid(getReference().getUuid());
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade()
 			.isAnyFeatureConfigured(
 				FeatureType.SORMAS_TO_SORMAS_SHARE_CASES,

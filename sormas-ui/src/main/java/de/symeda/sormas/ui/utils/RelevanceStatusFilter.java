@@ -45,8 +45,14 @@ public final class RelevanceStatusFilter {
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(activeCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(archivedCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(allActiveAndArchivedCaption));
+
+		if (UiUtil.permitted(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(archivedCaption));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(allActiveAndArchivedCaption));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		}
 
 		if (UiUtil.permitted(deleteUserRight)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(deletedCaption));

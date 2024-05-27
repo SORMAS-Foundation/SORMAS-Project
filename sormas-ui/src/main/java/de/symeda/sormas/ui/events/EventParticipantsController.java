@@ -270,7 +270,7 @@ public class EventParticipantsController {
 					eventParticipant,
 					ArchiveHandlers.forEventParticipant(),
 					editComponent,
-					() -> navigateToData(eventParticipant.getUuid()));
+					() -> navigateToData(eventParticipantUuid));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(

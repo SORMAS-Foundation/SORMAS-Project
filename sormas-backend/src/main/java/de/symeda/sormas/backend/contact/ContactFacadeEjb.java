@@ -316,6 +316,15 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	public ContactDto getContactByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -665,7 +674,14 @@ public class ContactFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+		if (userService.hasRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override

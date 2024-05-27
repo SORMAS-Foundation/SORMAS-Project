@@ -243,7 +243,7 @@ public class CampaignController {
 	}
 
 	private CampaignDto getCampaign(String uuid) {
-		return FacadeProvider.getCampaignFacade().getByUuid(uuid);
+		return FacadeProvider.getCampaignFacade().getCampaignByUuid(uuid);
 	}
 
 	public void navigateToCampaign(String uuid) {
