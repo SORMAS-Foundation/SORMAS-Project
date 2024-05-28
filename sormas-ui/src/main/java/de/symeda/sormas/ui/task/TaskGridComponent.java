@@ -156,8 +156,15 @@ public class TaskGridComponent extends VerticalLayout {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.taskActiveTasks));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.taskArchivedTasks));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.taskAllTasks));
+
+				if (UiUtil.permitted(UserRight.TASK_VIEW_ARCHIVED)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.taskArchivedTasks));
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.taskAllTasks));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					tasksView.navigateTo(criteria);
@@ -203,7 +210,7 @@ public class TaskGridComponent extends VerticalLayout {
 						mi -> ControllerProvider.getTaskController()
 							.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), grid, () -> tasksView.navigateTo(criteria)),
 						hasBulkOperationsRight
-							&& UiUtil.permitted(UserRight.TASK_ARCHIVE)
+							&& UiUtil.permitted(UserRight.TASK_ARCHIVE, UserRight.TASK_VIEW_ARCHIVED)
 							&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);

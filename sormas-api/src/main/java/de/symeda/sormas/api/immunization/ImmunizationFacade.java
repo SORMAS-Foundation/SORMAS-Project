@@ -31,6 +31,8 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> getDeletedUuidsSince(Date since);
 
+	ImmunizationDto getImmunizationByUuid(String uuid);
+
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
 
 	void updateImmunizationStatuses();

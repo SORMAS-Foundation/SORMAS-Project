@@ -1462,6 +1462,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		return getByUuid(uuid);
 	}
 
@@ -2857,11 +2861,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
-		List<ProcessedEntity> processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
 
-		if (includeContacts) {
-			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
-			contactService.dearchive(caseContacts, dearchiveReason);
+		if (userService.hasRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+			if (includeContacts) {
+				List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
+				contactService.dearchive(caseContacts, dearchiveReason);
+			}
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
 		}
 
 		return processedEntities;

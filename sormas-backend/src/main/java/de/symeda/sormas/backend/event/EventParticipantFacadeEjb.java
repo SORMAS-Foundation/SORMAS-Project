@@ -280,7 +280,10 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		// todo plainly duplicated from AbstractCoreFacadeEjb.getByUuid
+		if (isArchived(uuid) && !userService.hasRight(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		return toPseudonymizedDto(service.getByUuid(uuid));
 	}
 
@@ -1335,7 +1338,15 @@ public class EventParticipantFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override

@@ -60,7 +60,7 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(getReference().getUuid());
+		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getCampaignByUuid(getReference().getUuid());
 		editComponent = ControllerProvider.getCampaignController().getCampaignComponent(campaignDto, () -> {
 			Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignSaved), campaignDto.getName()), TRAY_NOTIFICATION);
 		});

@@ -122,9 +122,16 @@ public class CampaignsView extends AbstractCampaignView {
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.campaignActiveCampaigns));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
-		relevanceStatusFilter
-			.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.campaignAllActiveAndArchivedCampaigns));
+
+		if (UiUtil.permitted(UserRight.CAMPAIGN_VIEW_ARCHIVED)) {
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
+			relevanceStatusFilter
+				.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.campaignAllActiveAndArchivedCampaigns));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		}
+
 		if (UiUtil.permitted(UserRight.CAMPAIGN_DELETE)) {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.campaignDeletedCampaigns));
 		} else {
