@@ -132,6 +132,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
@@ -226,6 +227,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
 	private static final String TRAVEL_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_travel_entry_template.csv";
 	private static final String ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME = "import_environment_template.csv";
+	private static final String SELF_REPORT_IMPORT_TEMPLATE_FILE_NAME = "import_self_report_template.csv";
 
 	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
 	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
@@ -527,6 +529,19 @@ public class ImportFacadeEjb implements ImportFacade {
 		appendListOfFields(importColumns, EnvironmentDto.class, "", separator, featureConfigurations);
 
 		writeTemplate(Paths.get(getEnvironmentImportTemplateFilePath()), importColumns, true);
+	}
+
+	@Override
+	public void generateSelfReportImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, SelfReportDto.class, "", separator, featureConfigurations);
+
+		writeTemplate(Paths.get(getSelfReportImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
@@ -880,6 +895,16 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public String getEnvironmentImportTemplateFileName() {
 		return getImportTemplateFileName(ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSelfReportImportTemplateFilePath() {
+		return getImportTemplateFilePath(SELF_REPORT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSelfReportImportTemplateFileName() {
+		return getImportTemplateFileName(SELF_REPORT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	/**

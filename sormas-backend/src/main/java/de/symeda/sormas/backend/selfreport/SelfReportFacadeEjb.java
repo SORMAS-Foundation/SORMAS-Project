@@ -45,6 +45,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportExportDto;
@@ -340,6 +341,69 @@ public class SelfReportFacadeEjb
 
 	@Override
 	public void validate(SelfReportDto dto) throws ValidationRuntimeException {
+		/*
+		 * if (dto.getEnvironmentMedia() != EnvironmentMedia.WATER
+		 * && (dto.getWaterType() != null || dto.getInfrastructureDetails() != null || MapUtils.isNotEmpty(dto.getWaterUse()))) {
+		 * throw new ValidationRuntimeException(
+		 * I18nProperties.getValidationError(
+		 * Validations.environmentWaterFieldsSetWithNotWaterMedia,
+		 * String.join(
+		 * ", ",
+		 * I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_TYPE),
+		 * I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.INFRASTUCTURE_DETAILS),
+		 * I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_USE))));
+		 * }
+		 */
+
+		if (dto.getType() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.TYPE)));
+		}
+
+		if (dto.getReportDate() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.REPORT_DATE)));
+		}
+
+		if (dto.getDisease() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.DISEASE)));
+		}
+
+		if (dto.getFirstName() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.FIRST_NAME)));
+		}
+
+		if (dto.getLastName() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.LAST_NAME)));
+		}
+
+		if (dto.getSex() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.SEX)));
+		}
+
+		if (dto.getInvestigationStatus() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.INVESTIGATION_STATUS)));
+		}
+
+		if (dto.getProcessingStatus() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.PROCESSING_STATUS)));
+		}
 
 	}
 
