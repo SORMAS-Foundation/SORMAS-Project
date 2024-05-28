@@ -18,6 +18,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 	private static final long serialVersionUID = 1L;
 
 	public static final String I18N_PREFIX = "SelfReportExport";
+	public static final String BIRTH_DATE = "birthdate";
 
 	private SelfReportType type;
 	private Date reportDate;
