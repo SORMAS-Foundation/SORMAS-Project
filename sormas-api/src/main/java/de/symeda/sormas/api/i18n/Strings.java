@@ -1702,6 +1702,11 @@ public interface Strings {
 	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
+	String promptSelfReportDateFrom = "promptSelfReportDateFrom";
+	String promptSelfReportDateTo = "promptSelfReportDateTo";
+	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
+	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
+	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";

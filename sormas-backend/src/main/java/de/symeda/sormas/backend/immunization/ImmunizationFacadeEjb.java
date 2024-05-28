@@ -300,6 +300,15 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+	public ImmunizationDto getImmunizationByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
+	}
+
+	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
@@ -776,7 +785,15 @@ public class ImmunizationFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._IMMUNIZATION_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@LocalBean

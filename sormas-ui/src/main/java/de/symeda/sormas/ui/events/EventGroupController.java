@@ -91,14 +91,14 @@ public class EventGroupController {
 			Strings.messageAllEventsAlreadyLinkedToGroup,
 			Strings.infoBulkProcessFinishedWithSkipsOutsideJurisdictionOrNotEligible,
 			Strings.infoBulkProcessFinishedWithoutSuccess)
-			.doBulkOperation(
-				batch -> FacadeProvider.getEventGroupFacade()
-					.linkEventsToGroups(
-						batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
-						eventGroupUuids,
-						alreadyLinkedEventUuidsToGroup),
-				new ArrayList<>(eventReferences),
-				callback);
+				.doBulkOperation(
+					batch -> FacadeProvider.getEventGroupFacade()
+						.linkEventsToGroups(
+							batch.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList()),
+							eventGroupUuids,
+							alreadyLinkedEventUuidsToGroup),
+					new ArrayList<>(eventReferences),
+					callback);
 	}
 
 	public void create(EventReferenceDto eventReference) {
@@ -319,7 +319,7 @@ public class EventGroupController {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						FacadeProvider.getEventGroupFacade().archiveOrDearchiveEventGroup(uuid, true);
+						FacadeProvider.getEventGroupFacade().archiveEventGroup(uuid);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageEventGroupArchived),
@@ -342,7 +342,7 @@ public class EventGroupController {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						FacadeProvider.getEventGroupFacade().archiveOrDearchiveEventGroup(uuid, false);
+						FacadeProvider.getEventGroupFacade().dearchiveEventGroup(uuid);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageEventGroupDearchived),

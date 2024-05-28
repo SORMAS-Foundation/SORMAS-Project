@@ -139,6 +139,10 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public EventGroupDto getEventGroupByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.EVENTGROUP_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		return toDto(eventGroupService.getByUuid(uuid));
 	}
 
@@ -550,25 +554,16 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	@RightsAllowed(UserRight._EVENTGROUP_ARCHIVE)
-	public void archiveOrDearchiveEventGroup(String uuid, boolean archive) {
-		User currentUser = userService.getCurrentUser();
+	public void archiveEventGroup(String uuid) {
+		archiveOrDearchiveEventGroup(uuid, true);
+	}
 
-		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
-
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
-			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
-			for (RegionReferenceDto region : regions) {
-				if (!userService.hasRegion(region)) {
-					throw new UnsupportedOperationException(
-						"User " + currentUser.getUuid() + " is not allowed to " + (archive ? "" : "de")
-							+ "archive event groups related to another region.");
-				}
-			}
+	@Override
+	@RightsAllowed(UserRight._EVENTGROUP_ARCHIVE)
+	public void dearchiveEventGroup(String uuid) {
+		if (userService.hasRight(UserRight.EVENTGROUP_VIEW_ARCHIVED)) {
+			archiveOrDearchiveEventGroup(uuid, false);
 		}
-
-		eventGroup.setArchived(archive);
-		eventGroupService.ensurePersisted(eventGroup);
 	}
 
 	@Override
@@ -728,6 +723,27 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			caption += " (" + user.getUserEmail() + ")";
 		}
 		return caption;
+	}
+
+	private void archiveOrDearchiveEventGroup(String uuid, boolean archive) {
+		User currentUser = userService.getCurrentUser();
+
+		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
+			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
+			for (RegionReferenceDto region : regions) {
+				if (!userService.hasRegion(region)) {
+					throw new UnsupportedOperationException(
+						"User " + currentUser.getUuid() + " is not allowed to " + (archive ? "" : "de")
+							+ "archive event groups related to another region.");
+				}
+			}
+		}
+
+		eventGroup.setArchived(archive);
+		eventGroupService.ensurePersisted(eventGroup);
 	}
 
 	public static EventGroupDto toDto(EventGroup source) {

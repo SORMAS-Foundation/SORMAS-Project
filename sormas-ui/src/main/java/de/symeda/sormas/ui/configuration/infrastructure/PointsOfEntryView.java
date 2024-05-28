@@ -292,10 +292,17 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				relevanceStatusFilter.addItems(EntityRelevanceStatus.getAllExceptDeleted());
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.pointOfEntryActivePointsOfEntry));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryArchivedPointsOfEntry));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryAllPointsOfEntry));
+
+				if (UiUtil.permitted(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+					relevanceStatusFilter
+						.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryArchivedPointsOfEntry));
+					relevanceStatusFilter
+						.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryAllPointsOfEntry));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
+
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
@@ -316,8 +323,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 									grid,
 									grid::reload,
 									() -> navigateTo(criteria)),
-							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE)
-								&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE) && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
@@ -328,7 +334,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 									grid,
 									grid::reload,
 									() -> navigateTo(criteria)),
-							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE)
+							UiUtil.permitted(UserRight.INFRASTRUCTURE_ARCHIVE, UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)
 								&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());

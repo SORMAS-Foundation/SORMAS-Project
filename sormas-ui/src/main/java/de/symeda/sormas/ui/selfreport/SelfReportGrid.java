@@ -29,6 +29,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -73,13 +74,16 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 			setCriteria(criteria);
 		}
 
-		initColumns();
+		initColumns(criteria);
+
+		addItemClickListener(
+			new ShowDetailsListener<>(SelfReportIndexDto.UUID, e -> ControllerProvider.getSelfReportController().navigateToSelfReport(e.getUuid())));
 
 		addItemClickListener(
 			new ShowDetailsListener<>(SelfReportIndexDto.UUID, e -> ControllerProvider.getSelfReportController().navigateToSelfReport(e.getUuid())));
 	}
 
-	protected void initColumns() {
+	protected void initColumns(SelfReportCriteria criteria) {
 		Column<SelfReportIndexDto, String> addressColumn = addColumn(
 			entry -> Stream.of(entry.getStreet(), entry.getHouseNumber(), entry.getPostalCode(), entry.getCity())
 				.filter(StringUtils::isNotBlank)
@@ -98,6 +102,7 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 		deleteColumn.setId(DELETE_REASON_COLUMN);
 		deleteColumn.setSortable(false);
 		deleteColumn.setCaption(I18nProperties.getCaption(Captions.deletionReason));
+		deleteColumn.setHidden(!criteria.getRelevanceStatus().equals(EntityRelevanceStatus.DELETED));
 
 		setColumns(
 			SelfReportIndexDto.UUID,

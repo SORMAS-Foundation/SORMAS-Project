@@ -102,7 +102,7 @@ public class TaskController {
 	public void edit(TaskIndexDto taskIndex, Runnable callback, boolean editedFromTaskGrid, Disease disease) {
 
 		// get fresh data
-		TaskDto task = FacadeProvider.getTaskFacade().getByUuid(taskIndex.getUuid());
+		TaskDto task = FacadeProvider.getTaskFacade().getTaskByUuid(taskIndex.getUuid());
 
 		TaskEditForm form = new TaskEditForm(false, editedFromTaskGrid, disease);
 		form.setValue(task);

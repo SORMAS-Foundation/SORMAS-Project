@@ -691,9 +691,15 @@ public class CasesView extends AbstractView implements HasName {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.caseActiveCases));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases));
+
+				if (UiUtil.permitted(UserRight.CASE_VIEW_ARCHIVED)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
+					relevanceStatusFilter
+						.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
 
 				if (UiUtil.permitted(UserRight.CASE_DELETE)) {
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.caseDeletedCases));
@@ -743,22 +749,24 @@ public class CasesView extends AbstractView implements HasName {
 								}, hasBulkOperationsRight));
 						}
 						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
-								grid.bulkActionHandler(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
+								VaadinIcons.ARCHIVE,
+								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
-									true);
-							},
+									true),
 								hasBulkOperationsRight
 									&& UiUtil.permitted(UserRight.CASE_ARCHIVE)
 									&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
-								grid.bulkActionHandler(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
+								VaadinIcons.ARCHIVE,
+								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
-									true);
-							},
+									true),
 								hasBulkOperationsRight
-									&& UiUtil.permitted(UserRight.CASE_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CASE_ARCHIVE, UserRight.CASE_VIEW_ARCHIVED)
 									&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {

@@ -149,11 +149,17 @@ public class ImmunizationsView extends AbstractView {
 			relevanceStatusFilter.setTextInputAllowed(false);
 			relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.immunizationActiveImmunizations));
-			relevanceStatusFilter
-				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.immunizationArchivedImmunizations));
-			relevanceStatusFilter.setItemCaption(
-				EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-				I18nProperties.getCaption(Captions.immunizationAllActiveAndArchivedImmunizations));
+
+			if (UiUtil.permitted(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.immunizationArchivedImmunizations));
+				relevanceStatusFilter.setItemCaption(
+					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+					I18nProperties.getCaption(Captions.immunizationAllActiveAndArchivedImmunizations));
+			} else {
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+			}
 			relevanceStatusFilter.setCaption("");
 
 			if (UiUtil.permitted(UserRight.IMMUNIZATION_DELETE)) {

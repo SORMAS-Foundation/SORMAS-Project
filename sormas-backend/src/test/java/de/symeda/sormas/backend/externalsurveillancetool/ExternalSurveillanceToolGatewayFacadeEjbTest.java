@@ -509,7 +509,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getPathogenTestFacade().getByUuid(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 
 		stubFor(
 			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
@@ -526,7 +526,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
 		assertTrue(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 
@@ -540,7 +540,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends SormasToSormas
 		assertFalse(getPathogenTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertNull(getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}

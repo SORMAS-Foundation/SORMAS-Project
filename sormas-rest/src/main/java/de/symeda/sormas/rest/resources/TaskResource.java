@@ -92,7 +92,7 @@ public class TaskResource extends EntityDtoResource<TaskDto> {
 	@GET
 	@Path("/{uuid}")
 	public TaskDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getTaskFacade().getByUuid(uuid);
+		return FacadeProvider.getTaskFacade().getTaskByUuid(uuid);
 	}
 
 	@GET

@@ -168,14 +168,14 @@ public class TravelEntryController {
 				TravelEntriesView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityTravelEntry),
-				travelEntry.getUuid(),
+				travelEntryUuid,
 				FacadeProvider.getTravelEntryFacade());
 		}
 
 		// Initialize 'Archive' button
 		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntry.getUuid()));
+				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntryUuid));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -190,7 +190,7 @@ public class TravelEntryController {
 	}
 
 	private TravelEntryDto findTravelEntry(String uuid) {
-		return FacadeProvider.getTravelEntryFacade().getByUuid(uuid);
+		return FacadeProvider.getTravelEntryFacade().getTravelEntryByUuid(uuid);
 	}
 
 	public TitleLayout getTravelEntryViewTitleLayout(String uuid) {
@@ -270,7 +270,8 @@ public class TravelEntryController {
 					DocumentRelatedEntityType.TRAVEL_ENTRY,
 					selectedRows,
 					bulkOperationCallback(travelEntryGrid, travelEntryGrid::reload, null),
-					TravelEntryIndexDto::toReference);
+					TravelEntryIndexDto::toReference,
+					null);
 		}
 	}
 }
