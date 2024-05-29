@@ -263,9 +263,7 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
 
 		layout.setMargin(true);
-		popupWindow.addCloseListener(event -> {
-			popUpWindow.close();
-		});
+		popupWindow.addCloseListener(event -> popUpWindow.close());
 	}
 
 	
