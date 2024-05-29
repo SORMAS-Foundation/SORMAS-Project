@@ -29,12 +29,13 @@ public class PasswordValidator {
         return password.length() >= 8 && hasDigits(password) && hasSpecialCharacters(password);
     }
 
-    private static boolean hasDigits(String password) {
-        return password.matches(".*\\d.*");
-    }
 
+    private static boolean hasDigits(String password) {
+        return password.chars().anyMatch(Character::isDigit);
+    }
+    
     private static boolean hasSpecialCharacters(String password) {
-        return password.matches(".*[^a-zA-Z0-9 ].*");
+        return password.chars().anyMatch(ch -> !Character.isLetterOrDigit(ch) && !Character.isWhitespace(ch));
     }
 
     private static boolean hasTwoDigits(String password) {
