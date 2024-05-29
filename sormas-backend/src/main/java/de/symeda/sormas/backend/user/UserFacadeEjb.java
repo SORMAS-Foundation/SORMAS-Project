@@ -972,7 +972,6 @@ public class UserFacadeEjb implements UserFacade {
 	
 	@Override
 	@PermitAll
-	//@RightsAllowed(UserRight._USER_EDIT)
 	public boolean validatePassword(String uuid, String password) {
 		User user = userService.getCurrentUser();
 		if (user != null) {
