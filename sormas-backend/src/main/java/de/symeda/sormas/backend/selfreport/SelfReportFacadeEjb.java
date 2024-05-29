@@ -42,12 +42,15 @@ import org.apache.commons.lang3.NotImplementedException;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -281,14 +284,50 @@ public class SelfReportFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._SELF_REPORT_DELETE)
+	public void delete(String uuid, DeletionDetails deletionDetails) {
+		SelfReport selfReport = service.getByUuid(uuid);
+
+		if (!service.inJurisdictionOrOwned(selfReport)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.messageSelfReportOutsideJurisdictionDeletionDenied));
+		}
+
+		service.delete(selfReport, deletionDetails);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_DELETE)
+	public void restore(String uuid) {
+		super.restore(uuid);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_DELETE)
 	public List<ProcessedEntity> delete(List<String> uuids, DeletionDetails deletionDetails) {
-		return null;
+		throw new NotImplementedException();
 	}
 
 	@Override
 	@RightsAllowed(UserRight._SELF_REPORT_DELETE)
 	public List<ProcessedEntity> restore(List<String> uuids) {
-		return null;
+		throw new NotImplementedException();
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_ARCHIVE)
+	public ProcessedEntity archive(String entityUuid, Date endOfProcessingDate) {
+		return super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_ARCHIVE)
+	public List<ProcessedEntity> archive(List<String> entityUuids) {
+		return super.archive(entityUuids);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_ARCHIVE)
+	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
+		return super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -299,7 +338,9 @@ public class SelfReportFacadeEjb
 		target.setReportDate(source.getReportDate());
 		target.setCaseReference(source.getCaseReference());
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setSex(source.getSex());
@@ -310,10 +351,20 @@ public class SelfReportFacadeEjb
 		target.setEmail(source.getEmail());
 		target.setPhoneNumber(source.getPhoneNumber());
 		target.setAddress(locationFacade.fillOrBuildEntity(source.getAddress(), target.getAddress(), checkChangeDate));
+		target.setDateOfTest(source.getDateOfTest());
+		target.setDateOfSymptoms(source.getDateOfSymptoms());
+		target.setWorkplace(source.getWorkplace());
+		target.setDateWorkplace(source.getDateWorkplace());
+		target.setIsolationDate(source.getIsolationDate());
+		target.setContactDate(source.getContactDate());
 		target.setComment(source.getComment());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setProcessingStatus(source.getProcessingStatus());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -331,7 +382,9 @@ public class SelfReportFacadeEjb
 		target.setReportDate(source.getReportDate());
 		target.setCaseReference(source.getCaseReference());
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
 		target.setSex(source.getSex());
@@ -342,10 +395,20 @@ public class SelfReportFacadeEjb
 		target.setEmail(source.getEmail());
 		target.setPhoneNumber(source.getPhoneNumber());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		target.setDateOfTest(source.getDateOfTest());
+		target.setDateOfSymptoms(source.getDateOfSymptoms());
+		target.setWorkplace(source.getWorkplace());
+		target.setDateWorkplace(source.getDateWorkplace());
+		target.setIsolationDate(source.getIsolationDate());
+		target.setContactDate(source.getContactDate());
 		target.setComment(source.getComment());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setProcessingStatus(source.getProcessingStatus());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -357,7 +420,11 @@ public class SelfReportFacadeEjb
 
 	@Override
 	protected void pseudonymizeDto(SelfReport source, SelfReportDto dto, Pseudonymizer<SelfReportDto> pseudonymizer, boolean inJurisdiction) {
-
+		if (dto != null) {
+			pseudonymizer.pseudonymizeDto(SelfReportDto.class, dto, inJurisdiction, e -> {
+				pseudonymizer.pseudonymizeUser(source.getResponsibleUser(), userService.getCurrentUser(), dto::setResponsibleUser, dto);
+			});
+		}
 	}
 
 	@Override
@@ -366,7 +433,11 @@ public class SelfReportFacadeEjb
 		SelfReportDto existingDto,
 		SelfReport entity,
 		Pseudonymizer<SelfReportDto> pseudonymizer) {
-
+		if (existingDto != null) {
+			boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
+			pseudonymizer.restorePseudonymizedValues(SelfReportDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restoreUser(entity.getResponsibleUser(), userService.getCurrentUser(), dto, dto::setResponsibleUser);
+		}
 	}
 
 	@Override

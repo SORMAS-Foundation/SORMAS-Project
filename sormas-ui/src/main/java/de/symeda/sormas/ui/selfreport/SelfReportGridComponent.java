@@ -23,6 +23,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
@@ -49,14 +50,17 @@ public class SelfReportGridComponent extends VerticalLayout {
 		Runnable filterChangeHandler,
 		Runnable filterResetHandler) {
 
+		setSizeFull();
+		setSpacing(false);
+
+		grid = new SelfReportGrid(criteria, viewConfiguration);
+		grid.addDataSizeChangeListener(e -> updateStatusButtons(criteria));
+
 		filterForm = new SelfReportFilterForm();
 		filterForm.addResetHandler(e -> filterResetHandler.run());
 		filterForm.addApplyHandler(e -> filterChangeHandler.run());
 
 		HorizontalLayout statusFilterBar = buildStatusFilterBar(criteria, filterChangeHandler);
-
-		grid = new SelfReportGrid(criteria, viewConfiguration);
-		grid.addDataSizeChangeListener(e -> updateStatusButtons(criteria));
 
 		addComponents(filterForm, statusFilterBar, grid);
 		setExpandRatio(grid, 1);
@@ -114,8 +118,11 @@ public class SelfReportGridComponent extends VerticalLayout {
 				Captions.selfReportAllActiveAndArchivedEnvironments,
 				Captions.selfReportDeletedEnvironments,
 				criteria.getRelevanceStatus(),
-				UserRight.ENVIRONMENT_DELETE,
+				UserRight.SELF_REPORT_DELETE,
 				relevanceStatus -> {
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatus.equals(EntityRelevanceStatus.DELETED));
+					}
 					criteria.setRelevanceStatus(relevanceStatus);
 					filterChangeHandler.run();
 				}));

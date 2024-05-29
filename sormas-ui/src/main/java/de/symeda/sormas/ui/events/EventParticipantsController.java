@@ -270,7 +270,7 @@ public class EventParticipantsController {
 					eventParticipant,
 					ArchiveHandlers.forEventParticipant(),
 					editComponent,
-					() -> navigateToData(eventParticipant.getUuid()));
+					() -> navigateToData(eventParticipantUuid));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -490,7 +490,8 @@ public class EventParticipantsController {
 					null,
 					selectedRows,
 					bulkOperationCallback(eventParticipantsGrid, eventParticipantsGrid::reload, null),
-					EventParticipantIndexDto::toReference);
+					EventParticipantIndexDto::toReference,
+					null);
 		}
 	}
 }

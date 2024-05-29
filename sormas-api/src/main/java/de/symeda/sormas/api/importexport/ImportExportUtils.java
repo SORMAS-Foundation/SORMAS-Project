@@ -20,7 +20,6 @@ package de.symeda.sormas.api.importexport;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -33,10 +32,12 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 
 public final class ImportExportUtils {
 
@@ -51,82 +52,71 @@ public final class ImportExportUtils {
 		final boolean withFollowUp,
 		final boolean withClinicalCourse,
 		final boolean withTherapy,
-		String countryLocale) {
-		return getExportProperties(CaseExportDto.class, new PropertyTypeFilter() {
-
-			@Override
-			public boolean accept(ExportGroupType groupType) {
-				if (ExportGroupType.CLINICAL_COURSE == groupType && !withClinicalCourse) {
-					return false;
-				} else if (ExportGroupType.THERAPY == groupType && !withTherapy) {
-					return false;
-				}
-
-				return ExportGroupType.FOLLOW_UP != groupType || withFollowUp;
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
+		return getExportProperties(CaseExportDto.class, groupType -> {
+			if (ExportGroupType.CLINICAL_COURSE == groupType && !withClinicalCourse) {
+				return false;
+			} else if (ExportGroupType.THERAPY == groupType && !withTherapy) {
+				return false;
 			}
-		}, propertyCaptionProvider, countryLocale);
+
+			return ExportGroupType.FOLLOW_UP != groupType || withFollowUp;
+		}, propertyCaptionProvider, countryLocale, activeServerFeatureConfigurations);
 	}
 
 	public static List<ExportPropertyMetaInfo> getEventExportProperties(
 		PropertyCaptionProvider propertyCaptionProvider,
 		final boolean withEventGroups,
-		String countryLocale) {
-		return getExportProperties(EventExportDto.class, new PropertyTypeFilter() {
-
-			@Override
-			public boolean accept(ExportGroupType groupType) {
-				return ExportGroupType.EVENT_GROUP != groupType || withEventGroups;
-			}
-		}, propertyCaptionProvider, countryLocale);
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
+		return getExportProperties(
+			EventExportDto.class,
+			groupType -> ExportGroupType.EVENT_GROUP != groupType || withEventGroups,
+			propertyCaptionProvider,
+			countryLocale,
+			activeServerFeatureConfigurations);
 	}
 
-	public static List<ExportPropertyMetaInfo> getContactExportProperties(PropertyCaptionProvider propertyCaptionProvider, String countryLocale) {
-		return getExportProperties(ContactExportDto.class, new PropertyTypeFilter() {
-
-			@Override
-			public boolean accept(ExportGroupType type) {
-				return true;
-			}
-		}, propertyCaptionProvider, countryLocale);
+	public static List<ExportPropertyMetaInfo> getContactExportProperties(
+		PropertyCaptionProvider propertyCaptionProvider,
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
+		return getExportProperties(ContactExportDto.class, type -> true, propertyCaptionProvider, countryLocale, activeServerFeatureConfigurations);
 	}
 
 	public static List<ExportPropertyMetaInfo> getEventParticipantExportProperties(
 		PropertyCaptionProvider propertyCaptionProvider,
-		String countryLocale) {
-		return getExportProperties(EventParticipantExportDto.class, new PropertyTypeFilter() {
-
-			@Override
-			public boolean accept(ExportGroupType type) {
-				return true;
-			}
-		}, propertyCaptionProvider, countryLocale);
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
+		return getExportProperties(
+			EventParticipantExportDto.class,
+			type -> true,
+			propertyCaptionProvider,
+			countryLocale,
+			activeServerFeatureConfigurations);
 	}
 
-	public static List<ExportPropertyMetaInfo> getTaskExportProperties(PropertyCaptionProvider propertyCaptionProvider, String countryLocale) {
-		return getExportProperties(TaskExportDto.class, new PropertyTypeFilter() {
-
-			@Override
-			public boolean accept(ExportGroupType type) {
-				return true;
-			}
-		}, propertyCaptionProvider, countryLocale);
+	public static List<ExportPropertyMetaInfo> getTaskExportProperties(
+		PropertyCaptionProvider propertyCaptionProvider,
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
+		return getExportProperties(TaskExportDto.class, type -> true, propertyCaptionProvider, countryLocale, activeServerFeatureConfigurations);
 	}
 
-	public static List<ExportPropertyMetaInfo> getPersonExportProperties(PropertyCaptionProvider propertyCaptionProvider, String countryLocale) {
-		return getExportProperties(PersonExportDto.class, new PropertyTypeFilter() {
-
-			@Override
-			public boolean accept(ExportGroupType type) {
-				return true;
-			}
-		}, propertyCaptionProvider, countryLocale);
+	public static List<ExportPropertyMetaInfo> getPersonExportProperties(
+		PropertyCaptionProvider propertyCaptionProvider,
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
+		return getExportProperties(PersonExportDto.class, type -> true, propertyCaptionProvider, countryLocale, activeServerFeatureConfigurations);
 	}
 
 	private static List<ExportPropertyMetaInfo> getExportProperties(
 		Class<?> exportDtoClass,
 		PropertyTypeFilter filterExportGroup,
 		PropertyCaptionProvider propertyCaptionProvider,
-		String countryLocale) {
+		String countryLocale,
+		List<FeatureConfigurationDto> activeServerFeatureConfigurations) {
 		List<Method> readMethods = new ArrayList<>();
 		for (Method method : exportDtoClass.getDeclaredMethods()) {
 			if ((!method.getName().startsWith("get") && !method.getName().startsWith("is")) || !method.isAnnotationPresent(ExportGroup.class)) {
@@ -134,20 +124,16 @@ public final class ImportExportUtils {
 			}
 			readMethods.add(method);
 		}
-		Collections.sort(readMethods, new Comparator<Method>() {
-
-			@Override
-			public int compare(Method m1, Method m2) {
-				return Integer.compare(getOrderValue(m1), getOrderValue(m2));
-			}
-		});
+		readMethods.sort(Comparator.comparingInt(ImportExportUtils::getOrderValue));
 
 		CountryFieldVisibilityChecker countryFieldVisibilityChecker = new CountryFieldVisibilityChecker(countryLocale);
+		FeatureTypeFieldVisibilityChecker featureTypeFieldVisibilityChecker =
+			new FeatureTypeFieldVisibilityChecker(activeServerFeatureConfigurations);
 		Set<String> combinedProperties = new HashSet<>();
 		List<ExportPropertyMetaInfo> properties = new ArrayList<>();
 		for (Method method : readMethods) {
 
-			if (!countryFieldVisibilityChecker.isVisible(method)) {
+			if (!countryFieldVisibilityChecker.isVisible(method) || !featureTypeFieldVisibilityChecker.isVisible(method)) {
 				continue;
 			}
 

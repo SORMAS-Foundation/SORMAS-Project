@@ -110,7 +110,7 @@ public class ImmunizationResource extends EntityDtoResource<ImmunizationDto> {
 	@GET
 	@Path("/{uuid}")
 	public ImmunizationDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
+		return FacadeProvider.getImmunizationFacade().getImmunizationByUuid(uuid);
 	}
 
 	@POST

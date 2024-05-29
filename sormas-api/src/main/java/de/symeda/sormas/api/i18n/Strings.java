@@ -84,6 +84,7 @@ public interface Strings {
 	String confirmationArchivePointsOfEntry = "confirmationArchivePointsOfEntry";
 	String confirmationArchiveRegion = "confirmationArchiveRegion";
 	String confirmationArchiveRegions = "confirmationArchiveRegions";
+	String confirmationArchiveSelfReport = "confirmationArchiveSelfReport";
 	String confirmationArchiveSubcontinent = "confirmationArchiveSubcontinent";
 	String confirmationArchiveSubcontinents = "confirmationArchiveSubcontinents";
 	String confirmationArchiveTask = "confirmationArchiveTask";
@@ -126,6 +127,7 @@ public interface Strings {
 	String confirmationDearchivePointsOfEntry = "confirmationDearchivePointsOfEntry";
 	String confirmationDearchiveRegion = "confirmationDearchiveRegion";
 	String confirmationDearchiveRegions = "confirmationDearchiveRegions";
+	String confirmationDearchiveSelfReport = "confirmationDearchiveSelfReport";
 	String confirmationDearchiveSubcontinent = "confirmationDearchiveSubcontinent";
 	String confirmationDearchiveSubcontinents = "confirmationDearchiveSubcontinents";
 	String confirmationDearchiveTask = "confirmationDearchiveTask";
@@ -277,6 +279,7 @@ public interface Strings {
 	String entityRegions = "entityRegions";
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
+	String entitySelfReport = "entitySelfReport";
 	String entityStatistics = "entityStatistics";
 	String entitySubcontinents = "entitySubcontinents";
 	String entityTask = "entityTask";
@@ -418,6 +421,7 @@ public interface Strings {
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
 	String headingArchiveEventParticipant = "headingArchiveEventParticipant";
 	String headingArchiveImmunization = "headingArchiveImmunization";
+	String headingArchiveSelfReport = "headingArchiveSelfReport";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingAutomaticDeletionStarted = "headingAutomaticDeletionStarted";
 	String headingBulkEmailMaxAttachedFiles = "headingBulkEmailMaxAttachedFiles";
@@ -538,6 +542,7 @@ public interface Strings {
 	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
 	String headingDearchiveEventParticipant = "headingDearchiveEventParticipant";
 	String headingDearchiveImmunization = "headingDearchiveImmunization";
+	String headingDearchiveSelfReport = "headingDearchiveSelfReport";
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
@@ -712,6 +717,7 @@ public interface Strings {
 	String headingNoPrescriptionsSelected = "headingNoPrescriptionsSelected";
 	String headingNoRowsSelected = "headingNoRowsSelected";
 	String headingNoSamplesSelected = "headingNoSamplesSelected";
+	String headingNoSelfReportsSelected = "headingNoSelfReportsSelected";
 	String headingNoTasksSelected = "headingNoTasksSelected";
 	String headingNoTravelEntriesSelected = "headingNoTravelEntriesSelected";
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
@@ -1407,6 +1413,7 @@ public interface Strings {
 	String messageNoPrescriptionsSelected = "messageNoPrescriptionsSelected";
 	String messageNoRowsSelected = "messageNoRowsSelected";
 	String messageNoSamplesSelected = "messageNoSamplesSelected";
+	String messageNoSelfReportsSelected = "messageNoSelfReportsSelected";
 	String messageNoTasksSelected = "messageNoTasksSelected";
 	String messageNoTravelEntriesSelected = "messageNoTravelEntriesSelected";
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
@@ -1459,6 +1466,9 @@ public interface Strings {
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSamplesRestored = "messageSamplesRestored";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
+	String messageSelfReportArchived = "messageSelfReportArchived";
+	String messageSelfReportDearchived = "messageSelfReportDearchived";
+	String messageSelfReportOutsideJurisdictionDeletionDenied = "messageSelfReportOutsideJurisdictionDeletionDenied";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";
@@ -1700,6 +1710,11 @@ public interface Strings {
 	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
+	String promptSelfReportDateFrom = "promptSelfReportDateFrom";
+	String promptSelfReportDateTo = "promptSelfReportDateTo";
+	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
+	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
+	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";

@@ -85,7 +85,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		TaskDto task = createCaseTask(caze);
 
-		assertNotPseudonymized(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotPseudonymized(getTaskFacade().getTaskByUuid(task.getUuid()));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		TaskDto task = createCaseTask(caze);
 
-		assertPseudonymized(getTaskFacade().getByUuid(task.getUuid()));
+		assertPseudonymized(getTaskFacade().getTaskByUuid(task.getUuid()));
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2);
 		TaskDto task = createContactTask(contact);
 
-		TaskDto savedTask = getTaskFacade().getByUuid(task.getUuid());
+		TaskDto savedTask = getTaskFacade().getTaskByUuid(task.getUuid());
 		assertThat(savedTask.getContact().getCaption(), containsString("James SMITH to case John Doe"));
 	}
 
@@ -131,7 +131,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1);
 		TaskDto task = createContactTask(contact);
 
-		TaskDto savedTask = getTaskFacade().getByUuid(task.getUuid());
+		TaskDto savedTask = getTaskFacade().getTaskByUuid(task.getUuid());
 		assertThat(savedTask.getContact().getCaption(), is(DataHelper.getShortUuid(savedTask.getContact().getUuid())));
 	}
 
@@ -395,7 +395,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		creator.createSpecialCaseAccess(caze.toReference(), user1.toReference(), user2.toReference(), DateHelper.addDays(new Date(), 1));
 		TaskDto task = createCaseTask(caze);
 
-		assertNotPseudonymized(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotPseudonymized(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertNotPseudonymized(getTaskFacade().getByUuids(Collections.singletonList(task.getUuid())).get(0));
 		assertNotPseudonymized(getTaskFacade().getAllActiveTasksAfter(new Date(0)).get(0));
 		assertThat(getTaskFacade().getIndexList(new TaskCriteria(), null, null, null).get(0).isPseudonymized(), is(false));

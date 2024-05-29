@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.importexport.ExportEntity;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -219,6 +221,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
+	private String caseReferenceNumber;
 
 	@PersonalData
 	@SensitiveData
@@ -259,7 +262,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 							String phone, String phoneOwner, String emailAddress, String otherContactDetails, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
-							VaccinationStatus vaccinationStatus, String externalID, String externalToken, String internalToken,
+							VaccinationStatus vaccinationStatus, String externalID, String externalToken, String internalToken, String caseReferenceNumber,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
 							SymptomJournalStatus symptomJournalStatus,
@@ -348,6 +351,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 		this.externalID = externalID;
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
+		this.caseReferenceNumber = caseReferenceNumber;
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
@@ -1199,6 +1203,14 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 	}
 
 	@Order(122)
+	@ExportProperty(ContactDto.CASE_REFERENCE_NUMBER)
+	@ExportGroup(ExportGroupType.CORE)
+	@DependingOnFeatureType(featureType = FeatureType.SELF_REPORTING)
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	@Order(123)
 	@ExportProperty({
 		ContactDto.PERSON,
 		PersonDto.SYMPTOM_JOURNAL_STATUS })

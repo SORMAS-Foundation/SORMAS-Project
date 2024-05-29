@@ -209,7 +209,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			documentService.markAsDeleted(document);
 		}
 	}
-
 	@Override
 	public List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
 		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);

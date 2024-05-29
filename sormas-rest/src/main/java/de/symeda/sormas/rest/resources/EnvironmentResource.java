@@ -52,7 +52,7 @@ public class EnvironmentResource extends EntityDtoResource<EnvironmentDto> {
 	@GET
 	@Path("/{uuid}")
 	public EnvironmentDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getEnvironmentFacade().getByUuid(uuid);
+		return FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(uuid);
 	}
 
 	@GET

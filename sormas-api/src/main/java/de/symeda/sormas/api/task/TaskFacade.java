@@ -62,7 +62,7 @@ public interface TaskFacade extends PermanentlyDeletableFacade, ArchivableFacade
 
 	Map<String, Long> getPendingTaskCountPerUser(List<String> userUuids);
 
-	TaskDto getByUuid(String uuid);
+	TaskDto getTaskByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
 

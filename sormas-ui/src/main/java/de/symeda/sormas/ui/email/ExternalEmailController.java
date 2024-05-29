@@ -99,6 +99,8 @@ public class ExternalEmailController {
 			} catch (AttachmentException | ValidationException e) {
 				logger.warn("Email could not be sent", e);
 				Notification.show(I18nProperties.getString(Strings.errorOccurred), e.getMessage(), Notification.Type.WARNING_MESSAGE);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		});
 
@@ -112,9 +114,11 @@ public class ExternalEmailController {
 		DocumentRelatedEntityType documentRelatedEntityType,
 		Collection<T> selectionReference,
 		Consumer<List<T>> bulkOperationDoneCallback,
-		Function<T, ReferenceDto> mapToReference) {
+		Function<T, ReferenceDto> mapToReference,
+		DocumentWorkflow templatesWorkflow) {
 
-		ExternalBulkEmailOptionsForm optionsForm = new ExternalBulkEmailOptionsForm(documentWorkflow, documentRelatedEntityType);
+		ExternalBulkEmailOptionsForm optionsForm =
+			new ExternalBulkEmailOptionsForm(documentWorkflow, documentRelatedEntityType, rootEntityType, templatesWorkflow);
 		ExternalEmailOptionsWithAttachmentsDto defaultValue = new ExternalEmailOptionsWithAttachmentsDto(documentWorkflow, rootEntityType);
 		optionsForm.setValue(defaultValue);
 
@@ -140,18 +144,14 @@ public class ExternalEmailController {
 				null,
 				Strings.messageBulkEmailsNoEligible,
 				Strings.messageBulkEmailsFinishedWithSkips,
-				Strings.messageBulkEmailsFinishedWithoutSuccess)
-				.doBulkOperation(
-					selectedEntries -> {
-						try {
-							return FacadeProvider.getExternalEmailFacade()
-								.sendBulkEmail(options, selectedEntries.stream().map(mapToReference).collect(Collectors.toList()));
-						} catch (IOException e) {
-							throw new RuntimeException(e);
-						}
-					},
-					selectedEntitiesCpy,
-					bulkOperationDoneCallback);
+				Strings.messageBulkEmailsFinishedWithoutSuccess).doBulkOperation(selectedEntries -> {
+					try {
+						return FacadeProvider.getExternalEmailFacade()
+							.sendBulkEmail(options, selectedEntries.stream().map(mapToReference).collect(Collectors.toList()));
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}, selectedEntitiesCpy, bulkOperationDoneCallback);
 
 			optionsPopup.close();
 			Notification.show(null, I18nProperties.getString(Strings.notificationExternalEmailSent), Notification.Type.TRAY_NOTIFICATION);

@@ -65,6 +65,10 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
@@ -123,6 +127,7 @@ public class ContactsView extends AbstractView implements HasName {
 	private int followUpRangeInterval = 14;
 	private boolean buttonPreviousOrNextClick = false;
 	private Date followUpToDate;
+	private final ExportConfigurationDto detailedExportConfiguration;
 
 	private Set<String> getSelectedRows() {
 		AbstractContactGrid<?> contactGrid = (AbstractContactGrid<?>) this.grid;
@@ -153,6 +158,9 @@ public class ContactsView extends AbstractView implements HasName {
 				? new ContactGridDetailed(criteria, getClass(), ContactsViewConfiguration.class)
 				: new ContactGrid(criteria, getClass(), ContactsViewConfiguration.class);
 		}
+
+		detailedExportConfiguration = buildDetailedExportConfiguration();
+
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -227,7 +235,7 @@ public class ContactsView extends AbstractView implements HasName {
 			}
 			{
 				StreamResource extendedExportStreamResource =
-					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
+					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, detailedExportConfiguration);
 
 				addExportButton(
 					extendedExportStreamResource,
@@ -487,10 +495,16 @@ public class ContactsView extends AbstractView implements HasName {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.contactActiveContacts));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
-				relevanceStatusFilter.setItemCaption(
-					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-					I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+
+				if (UiUtil.permitted(UserRight.CONTACT_VIEW_ARCHIVED)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
+					relevanceStatusFilter.setItemCaption(
+						EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+						I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
 
 				if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.contactDeletedContacts));
@@ -568,7 +582,7 @@ public class ContactsView extends AbstractView implements HasName {
 										.dearchiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight
-									&& UiUtil.permitted(UserRight.CONTACT_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CONTACT_ARCHIVE, UserRight.CONTACT_VIEW_ARCHIVED)
 									&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.sormasToSormasShare),
@@ -848,5 +862,20 @@ public class ContactsView extends AbstractView implements HasName {
 	@Override
 	public String getName() {
 		return VIEW_NAME;
+	}
+
+	public static ExportConfigurationDto buildDetailedExportConfiguration() {
+		ExportConfigurationDto config = ExportConfigurationDto.build(UiUtil.getUserReference(), ExportType.CASE);
+
+		config.setProperties(
+			ImportExportUtils
+				.getContactExportProperties(
+					ContactDownloadUtil::getPropertyCaption,
+					FacadeProvider.getConfigFacade().getCountryLocale(),
+					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
+				.stream()
+				.map(ExportPropertyMetaInfo::getPropertyId)
+				.collect(Collectors.toSet()));
+		return config;
 	}
 }

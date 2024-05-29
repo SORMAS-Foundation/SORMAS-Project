@@ -7020,8 +7020,9 @@ paths:
                   - CASE_VIEW
                   - CASE_CREATE
                   - CASE_EDIT
-                  - CASE_ARCHIVE
                   - CASE_DELETE
+                  - CASE_ARCHIVE
+                  - CASE_VIEW_ARCHIVED
                   - CASE_IMPORT
                   - CASE_EXPORT
                   - CASE_INVESTIGATE
@@ -7037,8 +7038,9 @@ paths:
                   - IMMUNIZATION_VIEW
                   - IMMUNIZATION_CREATE
                   - IMMUNIZATION_EDIT
-                  - IMMUNIZATION_ARCHIVE
                   - IMMUNIZATION_DELETE
+                  - IMMUNIZATION_ARCHIVE
+                  - IMMUNIZATION_VIEW_ARCHIVED
                   - PERSON_VIEW
                   - PERSON_EDIT
                   - PERSON_DELETE
@@ -7062,8 +7064,9 @@ paths:
                   - CONTACT_VIEW
                   - CONTACT_CREATE
                   - CONTACT_EDIT
-                  - CONTACT_ARCHIVE
                   - CONTACT_DELETE
+                  - CONTACT_ARCHIVE
+                  - CONTACT_VIEW_ARCHIVED
                   - CONTACT_IMPORT
                   - CONTACT_EXPORT
                   - CONTACT_CONVERT
@@ -7081,26 +7084,30 @@ paths:
                   - TASK_EXPORT
                   - TASK_ASSIGN
                   - TASK_ARCHIVE
+                  - TASK_VIEW_ARCHIVED
                   - ACTION_CREATE
                   - ACTION_DELETE
                   - ACTION_EDIT
                   - EVENT_VIEW
                   - EVENT_CREATE
                   - EVENT_EDIT
-                  - EVENT_ARCHIVE
                   - EVENT_DELETE
+                  - EVENT_ARCHIVE
+                  - EVENT_VIEW_ARCHIVED
                   - EVENT_IMPORT
                   - EVENT_EXPORT
                   - EVENT_RESPONSIBLE
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
                   - EVENTPARTICIPANT_EDIT
-                  - EVENTPARTICIPANT_ARCHIVE
                   - EVENTPARTICIPANT_DELETE
+                  - EVENTPARTICIPANT_ARCHIVE
+                  - EVENTPARTICIPANT_VIEW_ARCHIVED
                   - EVENTPARTICIPANT_IMPORT
                   - EVENTGROUP_CREATE
                   - EVENTGROUP_EDIT
                   - EVENTGROUP_ARCHIVE
+                  - EVENTGROUP_VIEW_ARCHIVED
                   - EVENTGROUP_DELETE
                   - EVENTGROUP_LINK
                   - USER_VIEW
@@ -7114,8 +7121,9 @@ paths:
                   - INFRASTRUCTURE_VIEW
                   - INFRASTRUCTURE_CREATE
                   - INFRASTRUCTURE_EDIT
-                  - INFRASTRUCTURE_ARCHIVE
                   - INFRASTRUCTURE_IMPORT
+                  - INFRASTRUCTURE_ARCHIVE
+                  - INFRASTRUCTURE_VIEW_ARCHIVED
                   - INFRASTRUCTURE_EXPORT
                   - POPULATION_MANAGE
                   - DASHBOARD_SURVEILLANCE_VIEW
@@ -7150,22 +7158,26 @@ paths:
                   - CAMPAIGN_VIEW
                   - CAMPAIGN_EDIT
                   - CAMPAIGN_ARCHIVE
+                  - CAMPAIGN_VIEW_ARCHIVED
                   - CAMPAIGN_DELETE
                   - CAMPAIGN_FORM_DATA_VIEW
                   - CAMPAIGN_FORM_DATA_EDIT
                   - CAMPAIGN_FORM_DATA_ARCHIVE
                   - CAMPAIGN_FORM_DATA_DELETE
+                  - CAMPAIGN_FORM_DATA_VIEW_ARCHIVED
                   - CAMPAIGN_FORM_DATA_EXPORT
                   - TRAVEL_ENTRY_MANAGEMENT_ACCESS
                   - TRAVEL_ENTRY_VIEW
                   - TRAVEL_ENTRY_CREATE
                   - TRAVEL_ENTRY_EDIT
                   - TRAVEL_ENTRY_ARCHIVE
+                  - TRAVEL_ENTRY_VIEW_ARCHIVED
                   - TRAVEL_ENTRY_DELETE
                   - ENVIRONMENT_VIEW
                   - ENVIRONMENT_CREATE
                   - ENVIRONMENT_EDIT
                   - ENVIRONMENT_ARCHIVE
+                  - ENVIRONMENT_VIEW_ARCHIVED
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
@@ -7184,6 +7196,7 @@ paths:
                   - SELF_REPORT_CREATE
                   - SELF_REPORT_EDIT
                   - SELF_REPORT_DELETE
+                  - SELF_REPORT_ARCHIVE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7241,8 +7254,9 @@ paths:
                   - CASE_VIEW
                   - CASE_CREATE
                   - CASE_EDIT
-                  - CASE_ARCHIVE
                   - CASE_DELETE
+                  - CASE_ARCHIVE
+                  - CASE_VIEW_ARCHIVED
                   - CASE_IMPORT
                   - CASE_EXPORT
                   - CASE_INVESTIGATE
@@ -7258,8 +7272,9 @@ paths:
                   - IMMUNIZATION_VIEW
                   - IMMUNIZATION_CREATE
                   - IMMUNIZATION_EDIT
-                  - IMMUNIZATION_ARCHIVE
                   - IMMUNIZATION_DELETE
+                  - IMMUNIZATION_ARCHIVE
+                  - IMMUNIZATION_VIEW_ARCHIVED
                   - PERSON_VIEW
                   - PERSON_EDIT
                   - PERSON_DELETE
@@ -7283,8 +7298,9 @@ paths:
                   - CONTACT_VIEW
                   - CONTACT_CREATE
                   - CONTACT_EDIT
-                  - CONTACT_ARCHIVE
                   - CONTACT_DELETE
+                  - CONTACT_ARCHIVE
+                  - CONTACT_VIEW_ARCHIVED
                   - CONTACT_IMPORT
                   - CONTACT_EXPORT
                   - CONTACT_CONVERT
@@ -7302,26 +7318,30 @@ paths:
                   - TASK_EXPORT
                   - TASK_ASSIGN
                   - TASK_ARCHIVE
+                  - TASK_VIEW_ARCHIVED
                   - ACTION_CREATE
                   - ACTION_DELETE
                   - ACTION_EDIT
                   - EVENT_VIEW
                   - EVENT_CREATE
                   - EVENT_EDIT
-                  - EVENT_ARCHIVE
                   - EVENT_DELETE
+                  - EVENT_ARCHIVE
+                  - EVENT_VIEW_ARCHIVED
                   - EVENT_IMPORT
                   - EVENT_EXPORT
                   - EVENT_RESPONSIBLE
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
                   - EVENTPARTICIPANT_EDIT
-                  - EVENTPARTICIPANT_ARCHIVE
                   - EVENTPARTICIPANT_DELETE
+                  - EVENTPARTICIPANT_ARCHIVE
+                  - EVENTPARTICIPANT_VIEW_ARCHIVED
                   - EVENTPARTICIPANT_IMPORT
                   - EVENTGROUP_CREATE
                   - EVENTGROUP_EDIT
                   - EVENTGROUP_ARCHIVE
+                  - EVENTGROUP_VIEW_ARCHIVED
                   - EVENTGROUP_DELETE
                   - EVENTGROUP_LINK
                   - USER_VIEW
@@ -7335,8 +7355,9 @@ paths:
                   - INFRASTRUCTURE_VIEW
                   - INFRASTRUCTURE_CREATE
                   - INFRASTRUCTURE_EDIT
-                  - INFRASTRUCTURE_ARCHIVE
                   - INFRASTRUCTURE_IMPORT
+                  - INFRASTRUCTURE_ARCHIVE
+                  - INFRASTRUCTURE_VIEW_ARCHIVED
                   - INFRASTRUCTURE_EXPORT
                   - POPULATION_MANAGE
                   - DASHBOARD_SURVEILLANCE_VIEW
@@ -7371,22 +7392,26 @@ paths:
                   - CAMPAIGN_VIEW
                   - CAMPAIGN_EDIT
                   - CAMPAIGN_ARCHIVE
+                  - CAMPAIGN_VIEW_ARCHIVED
                   - CAMPAIGN_DELETE
                   - CAMPAIGN_FORM_DATA_VIEW
                   - CAMPAIGN_FORM_DATA_EDIT
                   - CAMPAIGN_FORM_DATA_ARCHIVE
                   - CAMPAIGN_FORM_DATA_DELETE
+                  - CAMPAIGN_FORM_DATA_VIEW_ARCHIVED
                   - CAMPAIGN_FORM_DATA_EXPORT
                   - TRAVEL_ENTRY_MANAGEMENT_ACCESS
                   - TRAVEL_ENTRY_VIEW
                   - TRAVEL_ENTRY_CREATE
                   - TRAVEL_ENTRY_EDIT
                   - TRAVEL_ENTRY_ARCHIVE
+                  - TRAVEL_ENTRY_VIEW_ARCHIVED
                   - TRAVEL_ENTRY_DELETE
                   - ENVIRONMENT_VIEW
                   - ENVIRONMENT_CREATE
                   - ENVIRONMENT_EDIT
                   - ENVIRONMENT_ARCHIVE
+                  - ENVIRONMENT_VIEW_ARCHIVED
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
@@ -7405,6 +7430,7 @@ paths:
                   - SELF_REPORT_CREATE
                   - SELF_REPORT_EDIT
                   - SELF_REPORT_DELETE
+                  - SELF_REPORT_ARCHIVE
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -9242,6 +9268,10 @@ components:
           enum:
           - FULFILLED
           - NOT_FULFILLED
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         changeDate:
           type: string
           format: date-time
@@ -10342,6 +10372,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         city:
           type: string
         completeness:
@@ -10607,6 +10639,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         completeness:
           type: number
           format: float
@@ -11552,6 +11586,10 @@ components:
           type: string
           maxLength: 4096
           minLength: 0
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
         changeDate:
@@ -11962,6 +12000,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -12202,6 +12242,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -25303,8 +25345,9 @@ components:
             - CASE_VIEW
             - CASE_CREATE
             - CASE_EDIT
-            - CASE_ARCHIVE
             - CASE_DELETE
+            - CASE_ARCHIVE
+            - CASE_VIEW_ARCHIVED
             - CASE_IMPORT
             - CASE_EXPORT
             - CASE_INVESTIGATE
@@ -25320,8 +25363,9 @@ components:
             - IMMUNIZATION_VIEW
             - IMMUNIZATION_CREATE
             - IMMUNIZATION_EDIT
-            - IMMUNIZATION_ARCHIVE
             - IMMUNIZATION_DELETE
+            - IMMUNIZATION_ARCHIVE
+            - IMMUNIZATION_VIEW_ARCHIVED
             - PERSON_VIEW
             - PERSON_EDIT
             - PERSON_DELETE
@@ -25345,8 +25389,9 @@ components:
             - CONTACT_VIEW
             - CONTACT_CREATE
             - CONTACT_EDIT
-            - CONTACT_ARCHIVE
             - CONTACT_DELETE
+            - CONTACT_ARCHIVE
+            - CONTACT_VIEW_ARCHIVED
             - CONTACT_IMPORT
             - CONTACT_EXPORT
             - CONTACT_CONVERT
@@ -25364,26 +25409,30 @@ components:
             - TASK_EXPORT
             - TASK_ASSIGN
             - TASK_ARCHIVE
+            - TASK_VIEW_ARCHIVED
             - ACTION_CREATE
             - ACTION_DELETE
             - ACTION_EDIT
             - EVENT_VIEW
             - EVENT_CREATE
             - EVENT_EDIT
-            - EVENT_ARCHIVE
             - EVENT_DELETE
+            - EVENT_ARCHIVE
+            - EVENT_VIEW_ARCHIVED
             - EVENT_IMPORT
             - EVENT_EXPORT
             - EVENT_RESPONSIBLE
             - EVENTPARTICIPANT_VIEW
             - EVENTPARTICIPANT_CREATE
             - EVENTPARTICIPANT_EDIT
-            - EVENTPARTICIPANT_ARCHIVE
             - EVENTPARTICIPANT_DELETE
+            - EVENTPARTICIPANT_ARCHIVE
+            - EVENTPARTICIPANT_VIEW_ARCHIVED
             - EVENTPARTICIPANT_IMPORT
             - EVENTGROUP_CREATE
             - EVENTGROUP_EDIT
             - EVENTGROUP_ARCHIVE
+            - EVENTGROUP_VIEW_ARCHIVED
             - EVENTGROUP_DELETE
             - EVENTGROUP_LINK
             - USER_VIEW
@@ -25397,8 +25446,9 @@ components:
             - INFRASTRUCTURE_VIEW
             - INFRASTRUCTURE_CREATE
             - INFRASTRUCTURE_EDIT
-            - INFRASTRUCTURE_ARCHIVE
             - INFRASTRUCTURE_IMPORT
+            - INFRASTRUCTURE_ARCHIVE
+            - INFRASTRUCTURE_VIEW_ARCHIVED
             - INFRASTRUCTURE_EXPORT
             - POPULATION_MANAGE
             - DASHBOARD_SURVEILLANCE_VIEW
@@ -25433,22 +25483,26 @@ components:
             - CAMPAIGN_VIEW
             - CAMPAIGN_EDIT
             - CAMPAIGN_ARCHIVE
+            - CAMPAIGN_VIEW_ARCHIVED
             - CAMPAIGN_DELETE
             - CAMPAIGN_FORM_DATA_VIEW
             - CAMPAIGN_FORM_DATA_EDIT
             - CAMPAIGN_FORM_DATA_ARCHIVE
             - CAMPAIGN_FORM_DATA_DELETE
+            - CAMPAIGN_FORM_DATA_VIEW_ARCHIVED
             - CAMPAIGN_FORM_DATA_EXPORT
             - TRAVEL_ENTRY_MANAGEMENT_ACCESS
             - TRAVEL_ENTRY_VIEW
             - TRAVEL_ENTRY_CREATE
             - TRAVEL_ENTRY_EDIT
             - TRAVEL_ENTRY_ARCHIVE
+            - TRAVEL_ENTRY_VIEW_ARCHIVED
             - TRAVEL_ENTRY_DELETE
             - ENVIRONMENT_VIEW
             - ENVIRONMENT_CREATE
             - ENVIRONMENT_EDIT
             - ENVIRONMENT_ARCHIVE
+            - ENVIRONMENT_VIEW_ARCHIVED
             - ENVIRONMENT_DELETE
             - ENVIRONMENT_IMPORT
             - ENVIRONMENT_EXPORT
@@ -25467,6 +25521,7 @@ components:
             - SELF_REPORT_CREATE
             - SELF_REPORT_EDIT
             - SELF_REPORT_DELETE
+            - SELF_REPORT_ARCHIVE
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

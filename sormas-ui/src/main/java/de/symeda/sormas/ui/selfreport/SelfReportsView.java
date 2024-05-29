@@ -26,13 +26,9 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class SelfReportsView extends AbstractView {
 
 	private static final long serialVersionUID = -6229689625299341177L;
-
 	public static final String VIEW_NAME = "selfreports";
-
 	private final ViewConfiguration viewConfiguration;
-
 	private final SelfReportCriteria gridCriteria;
-
 	private final SelfReportGridComponent gridComponent;
 
 	public SelfReportsView() {

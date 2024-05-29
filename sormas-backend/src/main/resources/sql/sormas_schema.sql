@@ -13091,4 +13091,137 @@ ALTER TABLE documents_history DROP COLUMN relatedentity_uuid;
 
 INSERT INTO schema_version (version_number, comment) VALUES (545, '#13043 - Bulk action - send emails with uploaded attached documents');
 
+-- 2024-04-24 Extend the contacts with Case Reference Number & add case reference number to cases #13067
+
+ALTER TABLE cases ADD COLUMN casereferencenumber text;
+ALTER TABLE cases_history ADD COLUMN casereferencenumber text;
+ALTER TABLE contact ADD COLUMN casereferencenumber text;
+ALTER TABLE contact_history ADD COLUMN casereferencenumber text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (546, 'Extend the contacts with Case Reference Number & add case reference number to cases #13067');
+
+-- 2024-05-07 #13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'SELF_REPORT_ARCHIVE'
+FROM userroles
+WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+
+ALTER TABLE selfreports
+    ADD COLUMN diseaseDetails        text,
+    ADD COLUMN diseaseVariantDetails text,
+    ADD COLUMN dateOfTest            timestamp,
+    ADD COLUMN dateOfSymptoms        timestamp,
+    ADD COLUMN workplace             text,
+    ADD COLUMN dateWorkplace         timestamp,
+    ADD COLUMN isolationDate         timestamp,
+    ADD COLUMN contactDate           timestamp;
+
+ALTER TABLE selfreports_history
+    ADD COLUMN diseaseDetails        text,
+    ADD COLUMN diseaseVariantDetails text,
+    ADD COLUMN dateOfTest            timestamp,
+    ADD COLUMN dateOfSymptoms        timestamp,
+    ADD COLUMN workplace             text,
+    ADD COLUMN dateWorkplace         timestamp,
+    ADD COLUMN isolationDate         timestamp,
+    ADD COLUMN contactDate           timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (547, '#13085 Add an edit/delete/archive functionality for Self Reporting messages (UI)');
+
+-- 2024-04-30 #13034 Add user rights to view archived entities
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id FROM userroles
+            LOOP
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CASE_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('CASE_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'TASK_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('TASK_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CONTACT_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('CONTACT_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENT_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENT_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENTPARTICIPANT_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENTPARTICIPANT_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENTGROUP_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENTGROUP_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'IMMUNIZATION_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('IMMUNIZATION_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'TRAVEL_ENTRY_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('TRAVEL_ENTRY_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CAMPAIGN_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('CAMPAIGN_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CAMPAIGN_FORM_DATA_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('CAMPAIGN_FORM_DATA_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'ENVIRONMENT_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('ENVIRONMENT_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'INFRASTRUCTURE_ARCHIVE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('INFRASTRUCTURE_VIEW_ARCHIVED')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (548, 'Add user rights to view archived entities #13034', false);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

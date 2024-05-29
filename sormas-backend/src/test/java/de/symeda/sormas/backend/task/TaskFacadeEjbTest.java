@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
@@ -73,6 +74,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -119,6 +121,62 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetByUuidForArchivedTask() {
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.TASK_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.TASK_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.TASK_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT);
+
+		TaskDto task = creator.createTask(
+			TaskContext.GENERAL,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user1.toReference());
+
+		TaskFacadeEjb.TaskFacadeEjbLocal cut = getBean(TaskFacadeEjb.TaskFacadeEjbLocal.class);
+		cut.archive(task.getUuid());
+
+		//user1 has TASK_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getTaskFacade().getTaskByUuid(task.getUuid()).getUuid(), task.getUuid());
+
+		//user2 does not have TASK_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getTaskFacade().getTaskByUuid(task.getUuid()));
+	}
+
+	@Test
 	public void testSampleDeletion() {
 
 		RDCF rdcf = creator.createRDCF();
@@ -136,12 +194,12 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.addDays(new Date(), 1),
 			user.toReference());
 		// Database should contain the created task
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 
 		getTaskFacade().delete(task.getUuid());
 
 		// Database should not contain the created task
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 	}
 
 	@Test
