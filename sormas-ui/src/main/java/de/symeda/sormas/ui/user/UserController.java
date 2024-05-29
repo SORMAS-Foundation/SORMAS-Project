@@ -17,39 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WARNING;
-
-import java.util.Collection;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import de.symeda.sormas.ui.UserProvider;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -65,13 +42,17 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.utils.BulkOperationHandler;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.*;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static de.symeda.sormas.ui.utils.CssStyles.*;
 
 public class UserController {
 
@@ -270,10 +251,7 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);
-
-		popupWindow.addCloseListener(event -> {
-			popUpWindow.close();
-		});
+		popupWindow.addCloseListener(event -> popUpWindow.close());
 	}
 
 	private void showPasswordChangeInternalSuccessPopup(String passwordSuccessMessage) {
@@ -309,9 +287,7 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 		popupWindow.setWidth(450, Unit.PIXELS);
 		layout.setMargin(true);
 
-		popupWindow.addCloseListener(event -> {
-			popUpWindow.close();
-		});
+		popupWindow.addCloseListener(event -> popUpWindow.close());
 	}
 
 	private void refreshView() {
@@ -441,11 +417,7 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 				passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
 			}
 		});
-
-		component.addDiscardListener(()->{
-			popUpWindow.close();
-		});
-
+		component.addDiscardListener(()-> popUpWindow.close());
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

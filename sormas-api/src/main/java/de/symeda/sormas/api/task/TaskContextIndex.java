@@ -25,7 +25,7 @@ import de.symeda.sormas.api.audit.AuditedClass;
 import java.io.Serializable;
 
 @AuditedClass
-public class TaskContextIndex implements Serializable, Cloneable {
+public class TaskContextIndex implements Serializable{
 
     @AuditIncludeProperty
     private TaskContext taskContext;
@@ -39,6 +39,8 @@ public class TaskContextIndex implements Serializable, Cloneable {
         this.taskContext = taskContext;
     }
 
+
+
     public TaskContext getTaskContext() {
         return taskContext;
     }
@@ -47,15 +49,15 @@ public class TaskContextIndex implements Serializable, Cloneable {
         return uuid;
     }
 
-    @Override
-    public TaskContextIndex clone() {
-        try {
-            TaskContextIndex clone = (TaskContextIndex) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
+    // Copy constructor
+    public TaskContextIndex(TaskContextIndex other) {
+        this.taskContext = other.taskContext; // Enum instances can be directly assigned
+        this.uuid = other.uuid;
     }
+    // Copy factory method
+    public static TaskContextIndex copyOf(TaskContextIndex other) {
+        return new TaskContextIndex(other);
+    }
+
 }
 

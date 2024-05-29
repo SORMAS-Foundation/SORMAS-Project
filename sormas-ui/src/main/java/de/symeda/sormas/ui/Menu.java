@@ -119,7 +119,7 @@ public class Menu extends CssLayout {
 		// settings menu item
 		MenuBar settingsMenu = new MenuBar();
 		settingsMenu.setId(Captions.actionSettings);
-		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, (Command) selectedItem -> showSettingsPopup(user));
+		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG, (Command) selectedItem -> showSettingsPopup());
 
 		settingsMenu.addStyleNames("user-menu", "settings-menu");
 		menuPart.addComponent(settingsMenu);
@@ -138,7 +138,7 @@ public class Menu extends CssLayout {
 		addComponent(menuPart);
 	}
 
-	private void showSettingsPopup(UserDto user) {
+	private void showSettingsPopup() {
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));

@@ -668,7 +668,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
 		ensurePersisted(user);
 		return password;
-	};
+	}
 
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
 

@@ -2,6 +2,9 @@ package de.symeda.sormas.backend.util;
 
 public class PasswordValidator {
 
+    private PasswordValidator() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
     public static String  checkPasswordStrength(String password) {
         // Define your password strength rules here
         boolean strongPassword = isStrongPassword(password);

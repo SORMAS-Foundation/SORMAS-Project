@@ -54,7 +54,6 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import javax.ws.rs.ForbiddenException;
 
-import de.symeda.sormas.api.task.TaskContextIndex;
 import de.symeda.sormas.backend.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -959,7 +958,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return null;
 	}
-  
+
 	@PermitAll
 	@Override
 	public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
@@ -969,7 +968,7 @@ public class UserFacadeEjb implements UserFacade {
 				return getUserRoles(toDto(user));
 			}
 		}
-		return null;
+		return Collections.emptySet();
 	}
 	
 	@Override

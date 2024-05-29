@@ -192,7 +192,7 @@ public class UserDto extends EntityDto {
 		return confirmPassword;
 	}
 
-	public void PasswordStrength(String passwordStrength) {
+	public void setPasswordStrength(String passwordStrength) {
 		this.passwordStrength = passwordStrength;
 	}
 

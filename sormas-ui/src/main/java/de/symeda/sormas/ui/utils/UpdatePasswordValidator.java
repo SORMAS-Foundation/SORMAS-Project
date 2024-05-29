@@ -17,7 +17,7 @@ public class UpdatePasswordValidator extends AbstractValidator<String> {
 
 	@Override
 	protected boolean isValidValue(String password) {
-		String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+		String pattern = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 		return password == null || password.isEmpty() || password.matches(pattern);
 	}
 
