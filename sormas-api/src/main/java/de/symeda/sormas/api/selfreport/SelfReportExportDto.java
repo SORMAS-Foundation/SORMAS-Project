@@ -35,7 +35,6 @@ public class SelfReportExportDto extends AbstractUuidDto {
 	@SensitiveData
 	private String lastName;
 	private Sex sex;
-	private String district;
 	@PersonalData
 	@SensitiveData
 	private String street;
@@ -85,7 +84,6 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		String firstName,
 		String lastName,
 		Sex sex,
-		String district,
 		String street,
 		String houseNumber,
 		String postalCode,
@@ -118,7 +116,6 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
-		this.district = district;
 		this.street = street;
 		this.houseNumber = houseNumber;
 		this.postalCode = postalCode;
@@ -237,15 +234,6 @@ public class SelfReportExportDto extends AbstractUuidDto {
 	}
 
 	@Order(11)
-	public String getDistrict() {
-		return district;
-	}
-
-	public void setDistrict(String district) {
-		this.district = district;
-	}
-
-	@Order(12)
 	public String getStreet() {
 		return street;
 	}
@@ -254,7 +242,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.street = street;
 	}
 
-	@Order(13)
+	@Order(12)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
@@ -263,7 +251,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.houseNumber = houseNumber;
 	}
 
-	@Order(14)
+	@Order(13)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -272,7 +260,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.postalCode = postalCode;
 	}
 
-	@Order(15)
+	@Order(14)
 	public String getCity() {
 		return city;
 	}
@@ -281,7 +269,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.city = city;
 	}
 
-	@Order(16)
+	@Order(15)
 	public BirthDateDto getBirthDate() {
 		return birthDate;
 	}
@@ -290,7 +278,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.birthDate = birthDate;
 	}
 
-	@Order(17)
+	@Order(16)
 
 	public String getNationalHealthId() {
 		return nationalHealthId;
@@ -300,7 +288,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.nationalHealthId = nationalHealthId;
 	}
 
-	@Order(18)
+	@Order(17)
 	public String getEmail() {
 		return email;
 	}
@@ -309,7 +297,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.email = email;
 	}
 
-	@Order(19)
+	@Order(18)
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -318,7 +306,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.phoneNumber = phoneNumber;
 	}
 
-	@Order(20)
+	@Order(19)
 	public Date getDateOfTest() {
 		return dateOfTest;
 	}
@@ -327,7 +315,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.dateOfTest = dateOfTest;
 	}
 
-	@Order(21)
+	@Order(20)
 	public Date getDateOfSymptoms() {
 		return dateOfSymptoms;
 	}
@@ -336,7 +324,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.dateOfSymptoms = dateOfSymptoms;
 	}
 
-	@Order(22)
+	@Order(21)
 	public String getWorkplace() {
 		return workplace;
 	}
@@ -345,7 +333,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.workplace = workplace;
 	}
 
-	@Order(23)
+	@Order(22)
 	public Date getDateWorkplace() {
 		return dateWorkplace;
 	}
@@ -354,7 +342,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.dateWorkplace = dateWorkplace;
 	}
 
-	@Order(24)
+	@Order(23)
 	public Date getIsolationDate() {
 		return isolationDate;
 	}
@@ -363,7 +351,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.isolationDate = isolationDate;
 	}
 
-	@Order(25)
+	@Order(24)
 	public Date getContactDate() {
 		return contactDate;
 	}
@@ -372,7 +360,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.contactDate = contactDate;
 	}
 
-	@Order(26)
+	@Order(25)
 	public String getComment() {
 		return comment;
 	}
@@ -381,7 +369,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.comment = comment;
 	}
 
-	@Order(27)
+	@Order(26)
 	public UserReferenceDto getResponsibleUser() {
 		return responsibleUser;
 	}
@@ -390,7 +378,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.responsibleUser = responsibleUser;
 	}
 
-	@Order(28)
+	@Order(27)
 	public SelfReportInvestigationStatus getInvestigationStatus() {
 		return investigationStatus;
 	}
@@ -399,7 +387,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.investigationStatus = investigationStatus;
 	}
 
-	@Order(29)
+	@Order(28)
 	public SelfReportProcessingStatus getProcessingStatus() {
 		return processingStatus;
 	}
@@ -408,7 +396,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.processingStatus = processingStatus;
 	}
 
-	@Order(30)
+	@Order(29)
 	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
@@ -417,7 +405,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.deletionReason = deletionReason;
 	}
 
-	@Order(31)
+	@Order(30)
 	public String getOtherDeletionReason() {
 		return otherDeletionReason;
 	}

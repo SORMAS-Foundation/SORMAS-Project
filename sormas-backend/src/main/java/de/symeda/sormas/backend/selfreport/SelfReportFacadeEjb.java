@@ -243,7 +243,6 @@ public class SelfReportFacadeEjb
 			selfReport.get(SelfReport.FIRST_NAME),
 			selfReport.get(SelfReport.LAST_NAME),
 			selfReport.get(SelfReport.SEX),
-			district.get(District.NAME),
 			location.get(Location.STREET),
 			location.get(Location.HOUSE_NUMBER),
 			location.get(Location.POSTAL_CODE),
