@@ -71,7 +71,7 @@ public interface ImportFacade {
 
 	void generateEnvironmentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateSelfReportImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
+	void generateSelfReportImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException, NoSuchFieldException;
 
 	String getCaseImportTemplateFileName();
 

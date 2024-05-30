@@ -148,12 +148,10 @@ import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.parser.ImportParserService;
-import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
@@ -195,12 +193,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
-	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private AreaFacadeEjbLocal areaFacade;
-	@EJB
-	private EnumService enumService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -532,14 +524,30 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateSelfReportImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+	public void generateSelfReportImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException, NoSuchFieldException {
 
 		createExportDirectoryIfNecessary();
 
 		char separator = configFacade.getCsvSeparator();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		appendListOfFields(importColumns, SelfReportDto.class, "", separator, featureConfigurations);
+
+		appendListOfFields(
+			importColumns,
+			SelfReportDto.class,
+			"",
+			separator,
+			featureConfigurations,
+			SelfReportDto.class.getDeclaredField("investigationStatus"),
+			SelfReportDto.class.getDeclaredField("processingStatus"),
+			SelfReportDto.class.getDeclaredField("deleted"),
+			SelfReportDto.class.getDeclaredField("deletionReason"),
+			SelfReportDto.class.getDeclaredField("otherDeletionReason"),
+			SelfReportDto.class.getDeclaredField("INVESTIGATION_STATUS"),
+			SelfReportDto.class.getDeclaredField("PROCESSING_STATUS"),
+			SelfReportDto.class.getDeclaredField("DELETED"),
+			SelfReportDto.class.getDeclaredField("DELETION_REASON"),
+			SelfReportDto.class.getDeclaredField("OTHER_DELETION_REASON"));
 
 		writeTemplate(Paths.get(getSelfReportImportTemplateFilePath()), importColumns, true);
 	}
@@ -760,12 +768,21 @@ public class ImportFacadeEjb implements ImportFacade {
 		Class<?> clazz,
 		String prefix,
 		char separator,
-		List<FeatureConfigurationDto> featureConfigurations) {
+		List<FeatureConfigurationDto> featureConfigurations,
+		Field... excludedFields) {
 
+		Field[] fields;
 		FieldVisibilityCheckers visibilityChecker =
 			FieldVisibilityCheckers.withCountry(configFacade.getCountryCode()).add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
-		for (Field field : clazz.getDeclaredFields()) {
+		List<Field> excluded = Arrays.asList(excludedFields);
+		if (excludedFields.length > 1) {
+			fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> !excluded.contains(field)).toArray(Field[]::new);
+		} else {
+			fields = clazz.getDeclaredFields();
+		}
+
+		for (Field field : fields) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}
