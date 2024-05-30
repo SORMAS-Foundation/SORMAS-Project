@@ -145,8 +145,9 @@ public class SelfReportController {
 		SelfReportDto selfReport = FacadeProvider.getSelfReportFacade().getByUuid(uuid);
 		SelfReportProcessingFLow flow = new SelfReportProcessingFLow(getSelfReportProcessingFacade());
 
+		boolean isCaseReport = selfReport.getType() == SelfReportType.CASE;
 		CompletionStage<ProcessingResult<SelfReportProcessingResult>> result =
-			selfReport.getType() == SelfReportType.CASE ? flow.runCaseFlow(selfReport) : flow.runContactFlow(selfReport);
+			isCaseReport ? flow.runCaseFlow(selfReport) : flow.runContactFlow(selfReport);
 
 		result.handle((processingResult, throwable) -> {
 			if (throwable != null) {
@@ -157,7 +158,17 @@ public class SelfReportController {
 					I18nProperties.getString(Strings.errorWasReported),
 					Notification.Type.ERROR_MESSAGE);
 			} else {
-				SormasUI.get().getNavigator().navigateTo(SelfReportsView.VIEW_NAME);
+				SelfReportProcessingResult processingResultData = processingResult.getData();
+
+				if (processingResultData.isOpenEntityOnDone()) {
+					if (isCaseReport) {
+						ControllerProvider.getCaseController().navigateToCase(processingResultData.getCaze().getEntity().getUuid());
+					} else {
+						ControllerProvider.getContactController().navigateToData(processingResultData.getContact().getEntity().getUuid());
+					}
+				} else {
+					SormasUI.get().getNavigator().navigateTo(SelfReportsView.VIEW_NAME);
+				}
 			}
 
 			return null;

@@ -25,6 +25,7 @@ public class SelfReportProcessingResult {
 	private EntitySelection<PersonDto> person;
 	private EntitySelection<CaseDataDto> caze;
 	private EntitySelection<ContactDto> contact;
+	private boolean openEntityOnDone;
 
 	public SelfReportProcessingResult withPerson(PersonDto person, boolean isNew) {
 		this.person = new EntitySelection<>(person, isNew);
@@ -52,5 +53,14 @@ public class SelfReportProcessingResult {
 
 	public EntitySelection<ContactDto> getContact() {
 		return contact;
+	}
+
+	public boolean isOpenEntityOnDone() {
+		return openEntityOnDone;
+	}
+
+	public SelfReportProcessingResult openEntityOnDone(boolean openEntityOnDone) {
+		this.openEntityOnDone = openEntityOnDone;
+		return this;
 	}
 }

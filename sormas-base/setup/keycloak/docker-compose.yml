@@ -40,7 +40,7 @@ services:
     volumes:
       - ${SORMAS_PATH}/keycloak/psqldata:/var/lib/postgresql/data
     ports:
-      - 5433:5432
+      - 5435:5432
     expose:
       - 5432
     restart: unless-stopped

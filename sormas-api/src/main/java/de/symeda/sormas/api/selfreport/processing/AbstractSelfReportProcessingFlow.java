@@ -185,12 +185,12 @@ public abstract class AbstractSelfReportProcessingFlow {
 		EntitySelection<PersonDto> personSelection = previousResult.getPerson();
 		CaseDataDto caze = buildCase(selfReport, previousResult);
 
-		HandlerCallback<CaseDataDto> callback = new HandlerCallback<>();
+		HandlerCallback<EntityAndOptions<CaseDataDto>> callback = new HandlerCallback<>();
 		handleCreateCase(caze, personSelection.getEntity(), personSelection.isNew(), selfReport, callback);
 
-		return mapHandlerResult(callback, previousResult, cratedCase -> {
-			logger.debug("[SELF REPORT PROCESSING] Continue processing with case: {}", cratedCase);
-			return previousResult.withCase(cratedCase, true);
+		return mapHandlerResult(callback, previousResult, caseResult -> {
+			logger.debug("[SELF REPORT PROCESSING] Continue processing with case: {}", caseResult);
+			return previousResult.withCase(caseResult.entity, true).openEntityOnDone(caseResult.openOnDone);
 		});
 	}
 
@@ -199,7 +199,7 @@ public abstract class AbstractSelfReportProcessingFlow {
 		PersonDto person,
 		boolean isNewPerson,
 		SelfReportDto selfReport,
-		HandlerCallback<CaseDataDto> callback);
+		HandlerCallback<EntityAndOptions<CaseDataDto>> callback);
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> createContact(
 		SelfReportDto selfReport,
@@ -207,12 +207,12 @@ public abstract class AbstractSelfReportProcessingFlow {
 		EntitySelection<PersonDto> personSelection = previousResult.getPerson();
 		ContactDto contact = buildContact(selfReport, previousResult);
 
-		HandlerCallback<ContactDto> callback = new HandlerCallback<>();
+		HandlerCallback<EntityAndOptions<ContactDto>> callback = new HandlerCallback<>();
 		handleCreateContact(contact, personSelection.getEntity(), personSelection.isNew(), selfReport, callback);
 
-		return mapHandlerResult(callback, previousResult, createdContact -> {
-			logger.debug("[SELF REPORT PROCESSING] Continue processing with contact: {}", createdContact);
-			return previousResult.withContact(createdContact, true);
+		return mapHandlerResult(callback, previousResult, creationResult -> {
+			logger.debug("[SELF REPORT PROCESSING] Continue processing with contact: {}", creationResult);
+			return previousResult.withContact(creationResult.entity, true).openEntityOnDone(creationResult.openOnDone);
 		});
 	}
 
@@ -221,14 +221,17 @@ public abstract class AbstractSelfReportProcessingFlow {
 		PersonDto person,
 		boolean isNewPerson,
 		SelfReportDto selfReport,
-		HandlerCallback<ContactDto> callback);
+		HandlerCallback<EntityAndOptions<ContactDto>> callback);
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> pickCase(
 		CaseSelectionDto selectedCase,
 		SelfReportProcessingResult previousResult) {
 		CaseDataDto caze = processingFacade.getCaseDataByUuid(selectedCase.getUuid());
 
-		return CompletableFuture.completedFuture(ProcessingResult.continueWith(previousResult.withCase(caze, false)));
+		SelfReportProcessingResult result = previousResult.withCase(caze, false);
+		logger.debug("[SELF REPORT PROCESSING] Continue processing with case: {}", result);
+
+		return CompletableFuture.completedFuture(ProcessingResult.continueWith(result));
 	}
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> pickContact(
@@ -236,7 +239,10 @@ public abstract class AbstractSelfReportProcessingFlow {
 		SelfReportProcessingResult previousResult) {
 		ContactDto contact = processingFacade.getContactByUuid(selectedContact.getUuid());
 
-		return CompletableFuture.completedFuture(ProcessingResult.continueWith(previousResult.withContact(contact, false)));
+		SelfReportProcessingResult result = previousResult.withContact(contact, false);
+		logger.debug("[SELF REPORT PROCESSING] Continue processing with contact: {}", result);
+
+		return CompletableFuture.completedFuture(ProcessingResult.continueWith(result));
 	}
 
 	private CaseDataDto buildCase(SelfReportDto selfReport, SelfReportProcessingResult previousResult) {
@@ -311,14 +317,21 @@ public abstract class AbstractSelfReportProcessingFlow {
 		SelfReportDto selfReport) {
 		ProcessingResultStatus status = result.getStatus();
 
+		logger.debug("[SELF REPORT PROCESSING] Processing finished with status {}: {}", status, result);
+
 		if (status.isDone()) {
 			CaseDataDto caze = result.getData().getCaze().getEntity();
 			processingFacade.markSelfReportAsProcessed(selfReport.toReference(), caze.toReference());
+			logger.debug("[SELF REPORT PROCESSING] Self report marked as processed");
 
 			if (processingFacade.existsContactToLinkToCase(caze.getCaseReferenceNumber())) {
+				logger.debug("[SELF REPORT PROCESSING] Contacts found to be linked to the resulting case");
 				return confirmLinkContactsToCase().thenCompose(r -> {
 					if (Boolean.TRUE.equals(r)) {
 						processingFacade.linkContactsToCaseByReferenceNumber(caze.toReference());
+						logger.debug("[SELF REPORT PROCESSING] Contacts linked to the resulting case");
+					} else {
+						logger.debug("[SELF REPORT PROCESSING] Contacts not linked to the resulting case");
 					}
 					return result.asCompletedFuture();
 				});
@@ -335,15 +348,22 @@ public abstract class AbstractSelfReportProcessingFlow {
 		SelfReportDto selfReport) {
 		ProcessingResultStatus status = result.getStatus();
 
+		logger.debug("[SELF REPORT PROCESSING] Processing finished with status {}: {}", status, result);
+
 		if (status.isDone()) {
 			ContactDto contact = result.getData().getContact().getEntity();
 			processingFacade.markSelfReportAsProcessed(selfReport.toReference(), contact.toReference());
+			logger.debug("[SELF REPORT PROCESSING] Self report marked as processed");
 
 			List<CaseIndexDto> casesWithReferenceNumber = processingFacade.getCasesWithReferenceNumber(selfReport.getCaseReference());
 			if (casesWithReferenceNumber.size() == 1) {
+				logger.debug("[SELF REPORT PROCESSING] A single case found to link the contact to");
 				return confirmLinkContactToCaseByReferenceNumber().thenCompose(r -> {
 					if (Boolean.TRUE.equals(r)) {
+						logger.debug("[SELF REPORT PROCESSING] Contact linked to the case");
 						processingFacade.linkContactToCase(contact.toReference(), casesWithReferenceNumber.get(0).toReference());
+					} else {
+						logger.debug("[SELF REPORT PROCESSING] Contact not linked to the case");
 					}
 					return result.asCompletedFuture();
 				});
@@ -354,4 +374,15 @@ public abstract class AbstractSelfReportProcessingFlow {
 	}
 
 	protected abstract CompletionStage<Boolean> confirmLinkContactToCaseByReferenceNumber();
+
+	public static class EntityAndOptions<T> {
+
+		private final T entity;
+		private final boolean openOnDone;
+
+		public EntityAndOptions(T entity, boolean openOnDone) {
+			this.entity = entity;
+			this.openOnDone = openOnDone;
+		}
+	}
 }

@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOr
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 import javax.naming.CannotProceedException;
 
@@ -29,6 +30,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -61,6 +63,7 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.selfreport.SelfReportDataForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -121,21 +124,29 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 		PersonDto person,
 		boolean isNewPerson,
 		SelfReportDto selfReport,
-		HandlerCallback<CaseDataDto> callback) {
+		HandlerCallback<EntityAndOptions<CaseDataDto>> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
 			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, null, true);
 		CaseCreateForm caseCreateForm = caseCreateComponent.getWrappedComponent();
 
-		caseCreateComponent.addCommitListener(() -> callback.done(caseCreateForm.getValue()));
 		caseCreateComponent.addDiscardListener(callback::cancel);
 
 		caseCreateForm.setValue(caze);
 		caseCreateForm.setSymptoms(caze.getSymptoms());
 		caseCreateForm.setPerson(person, isNewPerson);
 
-		showFormWithSelfReport(selfReport, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
+		showFormWithSelfReport(
+			selfReport,
+			caseCreateComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreateNewCase),
+			false,
+			Captions.actionSaveAndOpenCase,
+			(open) -> {
+				callback.done(new EntityAndOptions<>(caseCreateForm.getValue(), open));
+			});
 	}
 
 	@Override
@@ -144,22 +155,28 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 		PersonDto person,
 		boolean isNewPerson,
 		SelfReportDto selfReport,
-		HandlerCallback<ContactDto> callback) {
+		HandlerCallback<EntityAndOptions<ContactDto>> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent =
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
-		ContactCreateForm contactCreaForm = contactCreateComponent.getWrappedComponent();
-		contactCreateComponent.addCommitListener(() -> {
-			callback.done(contactCreaForm.getValue());
-		});
+		ContactCreateForm contactCreateForm = contactCreateComponent.getWrappedComponent();
 		contactCreateComponent.addDiscardListener(callback::cancel);
 
-		contactCreaForm.setValue(contact);
-		contactCreaForm.setPerson(person, isNewPerson);
+		contactCreateForm.setValue(contact);
+		contactCreateForm.setPerson(person, isNewPerson);
 
-		showFormWithSelfReport(selfReport, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
+		showFormWithSelfReport(
+			selfReport,
+			contactCreateComponent,
+			window,
+			I18nProperties.getString(Strings.headingCreateNewContact),
+			false,
+			Captions.actionSaveAndOpenContact,
+			(open) -> {
+				callback.done(new EntityAndOptions<>(contactCreateForm.getValue(), open));
+			});
 	}
 
 	@Override
@@ -194,17 +211,30 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 		CommitDiscardWrapperComponent<? extends Component> editComponent,
 		Window window,
 		String heading,
-		boolean discardOnClose) {
+		boolean discardOnClose,
+		String saveAndOpenCaptionTag,
+		Consumer<Boolean> commitHandler) {
 
 		addProcessedInMeantimeCheck(editComponent, selfReport);
-		SelfReportDataForm form = new SelfReportDataForm(selfReport.getDisease(), selfReport.isInJurisdiction(), selfReport.isPseudonymized());
-		form.setWidth(550, Sizeable.Unit.PIXELS);
-
-		form.addStyleName(CssStyles.VSPACE_TOP_3);
 		editComponent.addStyleName(CssStyles.VSPACE_TOP_3);
 
+		// add save and open button
+		HorizontalLayout buttonsPanel = editComponent.getButtonsPanel();
+		buttonsPanel.addComponent(
+			createSaveAndOpenButton(editComponent, saveAndOpenCaptionTag, () -> commitHandler.accept(true)),
+			buttonsPanel.getComponentCount() - 1);
+		// add the commit handler after adding save and open to avoid calling it twice: `createSaveAndOpenButton` copies commit button listeners
+		editComponent.getCommitButton().addClickListener((e) -> commitHandler.accept(false));
+
+		// self report selfReportForm
+		SelfReportDataForm selfReportForm =
+			new SelfReportDataForm(selfReport.getDisease(), selfReport.isInJurisdiction(), selfReport.isPseudonymized());
+		selfReportForm.setWidth(550, Sizeable.Unit.PIXELS);
+		selfReportForm.addStyleName(CssStyles.VSPACE_TOP_3);
+
+		// layout
 		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
-		horizontalSplitPanel.setFirstComponent(form);
+		horizontalSplitPanel.setFirstComponent(selfReportForm);
 		horizontalSplitPanel.setSecondComponent(editComponent);
 		horizontalSplitPanel.setSplitPosition(569, Sizeable.Unit.PIXELS); // This is just the position it needs to avoid vertical scroll bars.
 		horizontalSplitPanel.addStyleName("lab-message-processing");
@@ -222,8 +252,9 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 		window.setCaption(heading);
 		UI.getCurrent().addWindow(window);
 
-		form.setValue(selfReport);
-		form.setEnabled(false);
+		// set value on self report form
+		selfReportForm.setValue(selfReport);
+		selfReportForm.setEnabled(false);
 
 		// discard on close without clicking discard/commit button
 		Registration closeListener = window.addCloseListener(e -> {
@@ -238,6 +269,27 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 			closeListener.remove();
 			window.close();
 		});
+	}
+
+	private static Button createSaveAndOpenButton(
+		CommitDiscardWrapperComponent<? extends Component> editComponent,
+		String saveAndOpenCaptionTag,
+		Runnable commitHandler) {
+		Button saveAndOpenButton = ButtonHelper.createButton("");
+
+		// Copy every existing listener from the old commit button to the newly added one
+		for (Object listener : editComponent.getCommitButton().getListeners(Button.ClickEvent.class)) {
+			saveAndOpenButton.addClickListener((Button.ClickListener) listener);
+		}
+
+		saveAndOpenButton.addClickListener(clickEvent -> commitHandler.run());
+		saveAndOpenButton.setCaption(I18nProperties.getCaption(saveAndOpenCaptionTag));
+
+		saveAndOpenButton.setStyleName(editComponent.getCommitButton().getStyleName());
+
+		saveAndOpenButton.setId("saveAndOpenButton");
+
+		return saveAndOpenButton;
 	}
 
 	public static void addProcessedInMeantimeCheck(CommitDiscardWrapperComponent<? extends Component> createComponent, SelfReportDto selfReportDto) {

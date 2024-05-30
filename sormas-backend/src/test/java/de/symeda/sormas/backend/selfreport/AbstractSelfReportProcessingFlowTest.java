@@ -55,6 +55,7 @@ import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
 import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.selfreport.processing.AbstractSelfReportProcessingFlow;
+import de.symeda.sormas.api.selfreport.processing.AbstractSelfReportProcessingFlow.EntityAndOptions;
 import de.symeda.sormas.api.selfreport.processing.SelfReportProcessingFacade;
 import de.symeda.sormas.api.selfreport.processing.SelfReportProcessingResult;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -203,14 +204,15 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 			getCaseFacade().save(caze);
 
-			HandlerCallback<CaseDataDto> callback = invocation.getArgument(1);
-			callback.done(caze);
+			HandlerCallback<EntityAndOptions<CaseDataDto>> callback = invocation.getArgument(1);
+			callback.done(new EntityAndOptions<>(caze, true));
 			return null;
 		}).when(handleCreateCase).handle(caseCaptor.capture(), any());
 
 		ProcessingResult<SelfReportProcessingResult> result = runCaseFlow(selfReport);
 		assertProcessed(result, selfReport);
 		assertThat(result.getData().getCaze().isNew(), is(true));
+		assertThat(result.getData().isOpenEntityOnDone(), is(true));
 		assertThat(caseCaptor.getValue().getUuid(), is(result.getData().getCaze().getEntity().getUuid()));
 
 		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(selfReport.toReference());
@@ -256,8 +258,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 			CaseDataDto caze = invocation.getArgument(0);
 			getCaseFacade().save(caze);
 
-			HandlerCallback<CaseDataDto> callback = invocation.getArgument(1);
-			callback.done(caze);
+			HandlerCallback<EntityAndOptions<CaseDataDto>> callback = invocation.getArgument(1);
+			callback.done(new EntityAndOptions<>(caze, false));
 			return null;
 		}).when(handleCreateCase).handle(caseCaptor.capture(), any());
 
@@ -354,8 +356,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 			getContactFacade().save(contact);
 
-			HandlerCallback<ContactDto> callback = invocation.getArgument(1);
-			callback.done(contact);
+			HandlerCallback<EntityAndOptions<ContactDto>> callback = invocation.getArgument(1);
+			callback.done(new EntityAndOptions<>(contact, true));
 			return null;
 		}).when(handleCreateContact).handle(contactCaptor.capture(), any());
 
@@ -363,6 +365,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		assertProcessed(result, selfReport);
 		assertThat(result.getData().getContact().isNew(), is(true));
 		assertThat(contactCaptor.getValue().getUuid(), is(result.getData().getContact().getEntity().getUuid()));
+		assertThat(result.getData().isOpenEntityOnDone(), is(true));
 
 		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(selfReport.toReference());
 		assertThat(savedSelfReport.getResultingContact().getUuid(), is(contactCaptor.getValue().getUuid()));
@@ -463,8 +466,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 			ContactDto contact = invocation.getArgument(0);
 			getContactFacade().save(contact);
 
-			HandlerCallback<ContactDto> callback = invocation.getArgument(1);
-			callback.done(contact);
+			HandlerCallback<EntityAndOptions<ContactDto>> callback = invocation.getArgument(1);
+			callback.done(new EntityAndOptions<>(contact, false));
 			return null;
 		}).when(handleCreateContact).handle(any(), any());
 		ProcessingResult<SelfReportProcessingResult> result = runContactFlow(contactReport);
@@ -530,7 +533,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 				PersonDto person,
 				boolean isNewPerson,
 				SelfReportDto selfReport,
-				HandlerCallback<CaseDataDto> callback) {
+				HandlerCallback<EntityAndOptions<CaseDataDto>> callback) {
 				handleCreateCase.handle(caze, callback);
 			}
 
@@ -548,7 +551,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 				PersonDto person,
 				boolean isNewPerson,
 				SelfReportDto selfReport,
-				HandlerCallback<ContactDto> callback) {
+				HandlerCallback<EntityAndOptions<ContactDto>> callback) {
 				handleCreateContact.handle(contact, callback);
 			}
 
@@ -631,16 +634,16 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 	private static Answer<?> answerCreateCase() {
 		return invocation -> {
-			HandlerCallback<CaseDataDto> callback = invocation.getArgument(invocation.getArguments().length - 1);
-			callback.done(invocation.getArgument(0, CaseDataDto.class));
+			HandlerCallback<EntityAndOptions<CaseDataDto>> callback = invocation.getArgument(invocation.getArguments().length - 1);
+			callback.done(new EntityAndOptions<>(invocation.getArgument(0, CaseDataDto.class), false));
 			return null;
 		};
 	}
 
 	private static Answer<?> answerCreateContact() {
 		return invocation -> {
-			HandlerCallback<ContactDto> callback = invocation.getArgument(invocation.getArguments().length - 1);
-			callback.done(invocation.getArgument(0, ContactDto.class));
+			HandlerCallback<EntityAndOptions<ContactDto>> callback = invocation.getArgument(invocation.getArguments().length - 1);
+			callback.done(new EntityAndOptions<>(invocation.getArgument(0, ContactDto.class), false));
 			return null;
 		};
 	}
@@ -661,11 +664,11 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 	private interface CreateCaseHandler {
 
-		void handle(CaseDataDto caze, HandlerCallback<CaseDataDto> callback);
+		void handle(CaseDataDto caze, HandlerCallback<EntityAndOptions<CaseDataDto>> callback);
 	}
 	private interface CreateContactHandler {
 
-		void handle(ContactDto caze, HandlerCallback<ContactDto> callback);
+		void handle(ContactDto caze, HandlerCallback<EntityAndOptions<ContactDto>> callback);
 	}
 
 	private interface ConfirmContinueWithoutProcessingReferencedCaseReportHandler {
