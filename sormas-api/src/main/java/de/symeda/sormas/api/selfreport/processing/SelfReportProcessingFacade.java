@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.api.selfreport.processing;
 
+import java.util.List;
+
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -26,6 +30,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
+import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
 import de.symeda.sormas.api.utils.dataprocessing.AbstractProcessingFacade;
@@ -59,5 +64,26 @@ public abstract class SelfReportProcessingFacade extends AbstractProcessingFacad
 
 	public FacilityReferenceDto getNoneFacility() {
 		return facilityFacade.getReferenceByUuid(FacilityDto.NONE_FACILITY_UUID);
+	}
+
+	public boolean existsContactToLinkToCase(String caseReferenceNumber) {
+		return selfReportFacade.existsUnlinkedCOntactWithCaseReferenceNumber(caseReferenceNumber);
+	}
+
+	public void linkContactsToCaseByReferenceNumber(CaseReferenceDto caze) {
+		selfReportFacade.linkContactsToCaseByReferenceNumber(caze);
+	}
+
+	public boolean existsReferencedCaseReport(SelfReportDto selfReport) {
+		return selfReportFacade.existsReferencedCaseReport(selfReport.getCaseReference());
+	}
+
+	public List<CaseIndexDto> getCasesWithReferenceNumber(String caseReference) {
+		// return the first 2 to make it more performant, only the first one is needed and only if there is a single one
+		return caseFacade.getIndexList(new CaseCriteria().caseReferenceNumber(caseReference), 0, 2, null);
+	}
+
+	public void linkContactToCase(ContactReferenceDto contactRef, CaseReferenceDto caseRef) {
+		contactFacade.linkContactToCase(contactRef, caseRef);
 	}
 }

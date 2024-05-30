@@ -147,6 +147,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 */
 	private Set<String> contactUuidsForMerge;
 
+	private String caseReferenceNumber;
+	private Boolean withCase;
+
 	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
 	}
@@ -750,6 +753,25 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria contactUuidsForMerge(Set<String> contactUuidsForMerge) {
 		this.contactUuidsForMerge = contactUuidsForMerge;
 
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public ContactCriteria caseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
+		return this;
+	}
+
+	public Boolean getWithCase() {
+		return withCase;
+	}
+
+	public ContactCriteria withCase(Boolean withNoCase) {
+		this.withCase = withNoCase;
 		return this;
 	}
 }

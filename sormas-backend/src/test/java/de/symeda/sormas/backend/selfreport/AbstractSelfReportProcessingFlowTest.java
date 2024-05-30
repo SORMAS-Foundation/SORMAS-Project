@@ -18,11 +18,15 @@ package de.symeda.sormas.backend.selfreport;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static wiremock.org.hamcrest.MatcherAssert.assertThat;
+import static wiremock.org.hamcrest.Matchers.hasSize;
 import static wiremock.org.hamcrest.Matchers.is;
 import static wiremock.org.hamcrest.Matchers.not;
+import static wiremock.org.hamcrest.Matchers.nullValue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
@@ -36,7 +40,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -76,6 +82,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 	private CreateCaseHandler handleCreateCase;
 	@Mock
 	private CreateContactHandler handleCreateContact;
+	@Mock
+	private ConfirmContinueWithoutProcessingReferencedCaseReportHandler confirmContinueWithoutProcessingReferencedCaseReport;
 
 	private TestDataCreator.RDCF rdcf;
 	private UserDto survOff;
@@ -99,6 +107,8 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		pickOrCreateContactResult.setNewContact(true);
 		doAnswer(answerPickOrCreateCase(pickOrCreateContactResult)).when(handlePickOrCreateContact).handle(any(), any());
 		doAnswer(answerCreateContact()).when(handleCreateContact).handle(any(), any());
+
+		doAnswer((i) -> CompletableFuture.completedFuture(true)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
 	}
 
 	@Test
@@ -205,6 +215,62 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(selfReport.toReference());
 		assertThat(savedSelfReport.getResultingCase().getUuid(), is(caseCaptor.getValue().getUuid()));
+	}
+
+	@Test
+	public void testCreateCaseAndLinkContacts() throws ExecutionException, InterruptedException {
+		// enable hide jusrisdiction fields feature
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.HIDE_JURISDICTION_FIELDS);
+
+		SelfReportDto selfReport = createSelfReport(SelfReportType.CASE);
+
+		ContactDto contactToLink =
+			creator.createContact(survOff.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS, contact -> {
+				contact.setCaseReferenceNumber(selfReport.getCaseReference());
+			});
+
+		ContactDto contactLinkedToOtherCase =
+			creator.createContact(survOff.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS, contact -> {
+				contact.setCaseReferenceNumber(selfReport.getCaseReference());
+				contact.setCaze(creator.createCase(survOff.toReference(), creator.createPerson().toReference(), rdcf).toReference());
+			});
+
+		ContactDto contactWithDifferentCaseRef =
+			creator.createContact(survOff.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS, contact -> {
+				contact.setCaseReferenceNumber("otherCaseRef");
+			});
+
+		doAnswer(invocation -> {
+			PersonDto person = invocation.getArgument(0);
+			getPersonFacade().save(person);
+
+			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
+			callback.done(new EntitySelection<>(person, true));
+
+			return null;
+		}).when(handlePickOrCreatePerson).handle(any(), any());
+		ArgumentCaptor<CaseDataDto> caseCaptor = ArgumentCaptor.forClass(CaseDataDto.class);
+		doAnswer(invocation -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			getCaseFacade().save(caze);
+
+			HandlerCallback<CaseDataDto> callback = invocation.getArgument(1);
+			callback.done(caze);
+			return null;
+		}).when(handleCreateCase).handle(caseCaptor.capture(), any());
+
+		ProcessingResult<SelfReportProcessingResult> result = runCaseFlow(selfReport);
+		assertProcessed(result, selfReport);
+
+		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(selfReport.toReference());
+		getCaseFacade().getByUuid(savedSelfReport.getResultingCase().getUuid());
+
+		List<ContactIndexDto> caseContacts =
+			getContactFacade().getIndexList(new ContactCriteria().caze(savedSelfReport.getResultingCase().toReference()), null, null, null);
+		assertThat(caseContacts, hasSize(1));
+		assertThat(caseContacts.get(0).getUuid(), is(contactToLink.getUuid()));
 	}
 
 	@Test
@@ -337,6 +403,82 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		assertThat(savedSelfReport.getResultingContact().getUuid(), is(contact.toReference().getUuid()));
 	}
 
+	@Test
+	public void testCancelContactProcessing() throws ExecutionException, InterruptedException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		// create both case and contact reports with hte same case reference number
+		SelfReportDto caseReport = createSelfReport(SelfReportType.CASE);
+		SelfReportDto contactReport = createSelfReport(SelfReportType.CONTACT);
+
+		doAnswer((i) -> CompletableFuture.completedFuture(false)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
+		ProcessingResult<SelfReportProcessingResult> result = runContactFlow(contactReport);
+
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
+
+		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(contactReport.toReference());
+		assertThat(savedSelfReport.getProcessingStatus(), is(SelfReportProcessingStatus.UNPROCESSED));
+		assertThat(savedSelfReport.getResultingContact(), is(nullValue()));
+	}
+
+	@Test
+	public void testContactProcessingContinueWithSameReferenceCaseReport() throws ExecutionException, InterruptedException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		// create both case and contact reports with hte same case reference number
+		SelfReportDto caseReport = createSelfReport(SelfReportType.CASE);
+		SelfReportDto contactReport = createSelfReport(SelfReportType.CONTACT);
+
+		doAnswer((i) -> CompletableFuture.completedFuture(true)).when(confirmContinueWithoutProcessingReferencedCaseReport).handle();
+		ProcessingResult<SelfReportProcessingResult> result = runContactFlow(contactReport);
+
+		assertProcessed(result, contactReport);
+	}
+
+	@Test
+	public void testContactProcessingLinkToExistingCase() throws ExecutionException, InterruptedException {
+		// enable hide jusrisdiction fields feature
+		FeatureConfigurationIndexDto indexFeatureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(indexFeatureConfiguration, FeatureType.HIDE_JURISDICTION_FIELDS);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		SelfReportDto contactReport = createSelfReport(SelfReportType.CONTACT);
+		CaseDataDto cazeWithRefNumber = creator.createCase(survOff.toReference(), creator.createPerson().toReference(), rdcf, c -> {
+			c.setCaseReferenceNumber(contactReport.getCaseReference());
+		});
+
+		doAnswer(invocation -> {
+			PersonDto person = invocation.getArgument(0);
+			getPersonFacade().save(person);
+
+			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
+			callback.done(new EntitySelection<>(person, true));
+
+			return null;
+		}).when(handlePickOrCreatePerson).handle(any(), any());
+
+		doAnswer(invocation -> {
+			ContactDto contact = invocation.getArgument(0);
+			getContactFacade().save(contact);
+
+			HandlerCallback<ContactDto> callback = invocation.getArgument(1);
+			callback.done(contact);
+			return null;
+		}).when(handleCreateContact).handle(any(), any());
+		ProcessingResult<SelfReportProcessingResult> result = runContactFlow(contactReport);
+
+		assertProcessed(result, contactReport);
+
+		SelfReport savedSelfReport = getSelfReportService().getByReferenceDto(contactReport.toReference());
+
+		List<ContactIndexDto> caseContacts =
+			getContactFacade().getIndexList(new ContactCriteria().caze(cazeWithRefNumber.toReference()), null, null, null);
+		assertThat(caseContacts, hasSize(1));
+		assertThat(caseContacts.get(0).getUuid(), is(savedSelfReport.getResultingContact().getUuid()));
+	}
+
 	private void assertProcessed(ProcessingResult<SelfReportProcessingResult> result, SelfReportDto selfReport) {
 		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 		assertThat(getSelfReportFacade().getByUuid(selfReport.getUuid()).getProcessingStatus(), is(SelfReportProcessingStatus.PROCESSED));
@@ -401,8 +543,28 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 			}
 
 			@Override
-			protected void handleCreateContact(ContactDto contact, PersonDto person, boolean isNewPerson, SelfReportDto selfReport, HandlerCallback<ContactDto> callback) {
+			protected void handleCreateContact(
+				ContactDto contact,
+				PersonDto person,
+				boolean isNewPerson,
+				SelfReportDto selfReport,
+				HandlerCallback<ContactDto> callback) {
 				handleCreateContact.handle(contact, callback);
+			}
+
+			@Override
+			protected CompletionStage<Boolean> confirmLinkContactsToCase() {
+				return CompletableFuture.completedFuture(true);
+			}
+
+			@Override
+			protected CompletionStage<Boolean> confirmContinueWithoutProcessingReferencedCaseReport() {
+				return confirmContinueWithoutProcessingReferencedCaseReport.handle();
+			}
+
+			@Override
+			protected CompletionStage<Boolean> confirmLinkContactToCaseByReferenceNumber() {
+				return CompletableFuture.completedFuture(true);
 			}
 		};
 	}
@@ -413,6 +575,7 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 		selfReport.setReportDate(new Date());
 		selfReport.setDisease(Disease.CORONAVIRUS);
 		selfReport.setDiseaseDetails("Details");
+		selfReport.setCaseReference("1234567");
 
 		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
 		Mockito
@@ -503,5 +666,10 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 	private interface CreateContactHandler {
 
 		void handle(ContactDto caze, HandlerCallback<ContactDto> callback);
+	}
+
+	private interface ConfirmContinueWithoutProcessingReferencedCaseReportHandler {
+
+		CompletionStage<Boolean> handle();
 	}
 }

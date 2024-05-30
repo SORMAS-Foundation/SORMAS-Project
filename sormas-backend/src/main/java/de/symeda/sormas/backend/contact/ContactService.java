@@ -1488,6 +1488,15 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(contactCriteria.getWithOwnership()), from, cb, cqc.getQuery()));
 		}
+		if (StringUtils.isNotBlank(contactCriteria.getCaseReferenceNumber())) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.CASE_REFERENCE_NUMBER), contactCriteria.getCaseReferenceNumber()));
+		}
+		if (Boolean.FALSE.equals(contactCriteria.getWithCase())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Contact.CAZE)));
+		} else if (Boolean.TRUE.equals(contactCriteria.getWithCase())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(Contact.CAZE)));
+		}
 
 		filter = CriteriaBuilderHelper.andInValues(contactCriteria.getUuids(), filter, cb, from.get(Contact.UUID));
 

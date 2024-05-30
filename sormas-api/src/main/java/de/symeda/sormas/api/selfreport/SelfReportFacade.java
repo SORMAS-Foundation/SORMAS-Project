@@ -29,4 +29,10 @@ public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIn
 	void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef);
 
     boolean isProcessed(SelfReportReferenceDto reference);
+
+	boolean existsUnlinkedCOntactWithCaseReferenceNumber(String caseReferenceNumber);
+
+	void linkContactsToCaseByReferenceNumber(CaseReferenceDto caze);
+
+	boolean existsReferencedCaseReport(String caseReference);
 }

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -77,7 +78,8 @@ public abstract class AbstractSelfReportProcessingFlow {
 			throw new IllegalArgumentException("SelfReportDto must be of type CONTACT");
 		}
 
-		return new FlowThen<>().then(ignored -> pickOrCreatePerson(selfReport, new SelfReportProcessingResult()))
+		return new FlowThen<>().then(ignored -> checkAndConfirmReferencedCaseReport(selfReport))
+			.then(ignored -> pickOrCreatePerson(selfReport, new SelfReportProcessingResult()))
 			.thenSwitch(personResult -> pickOrCreateContact(selfReport, personResult.getData()))
 			.when(
 				PickOrCreateEntryResult::isNewContact,
@@ -90,6 +92,20 @@ public abstract class AbstractSelfReportProcessingFlow {
 			.getResult()
 			.thenCompose(res -> this.handleContactProcessingDone(res, selfReport));
 	}
+
+	private CompletionStage<ProcessingResult<Void>> checkAndConfirmReferencedCaseReport(SelfReportDto selfReport) {
+		if (processingFacade.existsReferencedCaseReport(selfReport)) {
+			return confirmContinueWithoutProcessingReferencedCaseReport().thenApply(r -> {
+				if (Boolean.TRUE.equals(r)) {
+					return ProcessingResult.continueWith(null);
+				}
+				return ProcessingResult.of(ProcessingResultStatus.CANCELED, null);
+			});
+		}
+		return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
+	}
+
+	protected abstract CompletionStage<Boolean> confirmContinueWithoutProcessingReferencedCaseReport();
 
 	protected CompletionStage<ProcessingResult<SelfReportProcessingResult>> pickOrCreatePerson(
 		SelfReportDto selfReport,
@@ -296,11 +312,23 @@ public abstract class AbstractSelfReportProcessingFlow {
 		ProcessingResultStatus status = result.getStatus();
 
 		if (status.isDone()) {
-			processingFacade.markSelfReportAsProcessed(selfReport.toReference(), result.getData().getCaze().getEntity().toReference());
+			CaseDataDto caze = result.getData().getCaze().getEntity();
+			processingFacade.markSelfReportAsProcessed(selfReport.toReference(), caze.toReference());
+
+			if (processingFacade.existsContactToLinkToCase(caze.getCaseReferenceNumber())) {
+				return confirmLinkContactsToCase().thenCompose(r -> {
+					if (Boolean.TRUE.equals(r)) {
+						processingFacade.linkContactsToCaseByReferenceNumber(caze.toReference());
+					}
+					return result.asCompletedFuture();
+				});
+			}
 		}
 
 		return result.asCompletedFuture();
 	}
+
+	protected abstract CompletionStage<Boolean> confirmLinkContactsToCase();
 
 	private CompletionStage<ProcessingResult<SelfReportProcessingResult>> handleContactProcessingDone(
 		ProcessingResult<SelfReportProcessingResult> result,
@@ -308,9 +336,22 @@ public abstract class AbstractSelfReportProcessingFlow {
 		ProcessingResultStatus status = result.getStatus();
 
 		if (status.isDone()) {
-			processingFacade.markSelfReportAsProcessed(selfReport.toReference(), result.getData().getContact().getEntity().toReference());
+			ContactDto contact = result.getData().getContact().getEntity();
+			processingFacade.markSelfReportAsProcessed(selfReport.toReference(), contact.toReference());
+
+			List<CaseIndexDto> casesWithReferenceNumber = processingFacade.getCasesWithReferenceNumber(selfReport.getCaseReference());
+			if (casesWithReferenceNumber.size() == 1) {
+				return confirmLinkContactToCaseByReferenceNumber().thenCompose(r -> {
+					if (Boolean.TRUE.equals(r)) {
+						processingFacade.linkContactToCase(contact.toReference(), casesWithReferenceNumber.get(0).toReference());
+					}
+					return result.asCompletedFuture();
+				});
+			}
 		}
 
 		return result.asCompletedFuture();
 	}
+
+	protected abstract CompletionStage<Boolean> confirmLinkContactToCaseByReferenceNumber();
 }

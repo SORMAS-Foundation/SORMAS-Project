@@ -38,11 +38,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,14 +54,17 @@ import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
 import de.symeda.sormas.api.selfreport.SelfReportReferenceDto;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
@@ -363,6 +368,41 @@ public class SelfReportFacadeEjb
 			(cb, root, cq) -> cb.and(
 				cb.equal(root.get(SelfReport.UUID), reference.getUuid()),
 				cb.equal(root.get(SelfReport.PROCESSING_STATUS), SelfReportProcessingStatus.PROCESSED)));
+	}
+
+	@Override
+	public boolean existsUnlinkedCOntactWithCaseReferenceNumber(String caseReferenceNumber) {
+		if (StringUtils.isBlank(caseReferenceNumber)) {
+			return false;
+		}
+
+		return contactService.exists(
+			(cb, root, cq) -> cb.and(
+				cb.notEqual(root.get(Contact.DELETED), true),
+				cb.notEqual(root.get(Contact.ARCHIVED), true),
+				cb.equal(root.get(Contact.CASE_REFERENCE_NUMBER), caseReferenceNumber),
+				cb.isNull(root.get(Contact.CAZE))));
+	}
+
+	@Override
+	public void linkContactsToCaseByReferenceNumber(CaseReferenceDto cazeRef) {
+		Case caze = caseService.getByReferenceDto(cazeRef);
+		contactService.findBy(new ContactCriteria().caseReferenceNumber(caze.getCaseReferenceNumber()).withCase(false), userService.getCurrentUser())
+			.forEach(contact -> {
+				contact.setCaze(caze);
+				contactService.ensurePersisted(contact);
+			});
+	}
+
+	@Override
+	public boolean existsReferencedCaseReport(String caseReference) {
+		return service.exists(
+			(cb, root, cq) -> cb.and(
+				cb.notEqual(root.get(SelfReport.DELETED), true),
+				cb.notEqual(root.get(SelfReport.ARCHIVED), true),
+				cb.equal(root.get(SelfReport.TYPE), SelfReportType.CASE),
+				cb.equal(root.get(SelfReport.CASE_REFERENCE), caseReference),
+				cb.not(cb.equal(root.get(SelfReport.PROCESSING_STATUS), SelfReportProcessingStatus.PROCESSED))));
 	}
 
 	@Override

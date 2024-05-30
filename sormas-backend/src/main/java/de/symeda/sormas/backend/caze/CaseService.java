@@ -942,6 +942,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(caseCriteria.getWithOwnership()), from, cb, cq));
 		}
+		if (StringUtils.isNotBlank(caseCriteria.getCaseReferenceNumber())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_NUMBER), caseCriteria.getCaseReferenceNumber()));
+		}
 
 		filter = CriteriaBuilderHelper.and(
 			cb,

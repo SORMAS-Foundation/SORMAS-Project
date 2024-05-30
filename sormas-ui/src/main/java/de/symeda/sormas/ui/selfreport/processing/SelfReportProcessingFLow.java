@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOr
 import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
 
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 import javax.naming.CannotProceedException;
 
@@ -26,6 +27,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -42,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -157,6 +160,33 @@ public class SelfReportProcessingFLow extends AbstractSelfReportProcessingFlow {
 		contactCreaForm.setPerson(person, isNewPerson);
 
 		showFormWithSelfReport(selfReport, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmLinkContactsToCase() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingSelfReportContactsWithCaseReferenceFound),
+			new Label(I18nProperties.getString(Strings.confirmationSelfReportLinkContactsByCaseReference), ContentMode.HTML),
+			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionNo));
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmContinueWithoutProcessingReferencedCaseReport() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingSelfReportCaseReportWithSameReferenceFound),
+			new Label(I18nProperties.getString(Strings.confirmationSelfReportCaseReportWithSameReferenceFound), ContentMode.HTML),
+			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionNo));
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmLinkContactToCaseByReferenceNumber() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingSelfReportCaseWithSameReferenceNumberFound),
+			new Label(I18nProperties.getString(Strings.confirmationSelfReportLinkContactToCaseWithSameReferenceNumber), ContentMode.HTML),
+			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionNo));
 	}
 
 	public static void showFormWithSelfReport(

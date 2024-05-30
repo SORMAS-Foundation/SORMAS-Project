@@ -95,6 +95,9 @@ public class SelfReportController {
 		editComponent.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				FacadeProvider.getSelfReportFacade().save(selfReport);
+
+				Notification.show(I18nProperties.getString(Strings.messageSelfReportSaved), Notification.Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 

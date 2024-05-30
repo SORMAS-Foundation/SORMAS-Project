@@ -154,8 +154,8 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 		if (UiUtil.permitted(UserRight.SELF_REPORT_PROCESS)
 			&& indexDto.getInvestigationStatus() == SelfReportInvestigationStatus.COMPLETED
 			&& indexDto.getProcessingStatus() != SelfReportProcessingStatus.PROCESSED
-			&& ((indexDto.getType() == SelfReportType.CASE && UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT)))
-			|| (indexDto.getType() == SelfReportType.CONTACT && UiUtil.permitted(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT))) {
+			&& ((indexDto.getType() == SelfReportType.CASE && UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT))
+				|| (indexDto.getType() == SelfReportType.CONTACT && UiUtil.permitted(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)))) {
 			// build process button
 			return ButtonHelper.createButton(Captions.selfReportProcess, e -> {
 				ControllerProvider.getSelfReportController().processSelfReport(indexDto.getUuid());

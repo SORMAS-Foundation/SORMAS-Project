@@ -2405,6 +2405,15 @@ public class ContactFacadeEjb
 		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
 	}
 
+	@Override
+	@RightsAllowed(UserRight._CONTACT_EDIT)
+	public void linkContactToCase(ContactReferenceDto contactRef, CaseReferenceDto caseRef) {
+		Contact contact = service.getByUuid(contactRef.getUuid());
+		Case caze = caseService.getByUuid(caseRef.getUuid());
+		contact.setCaze(caze);
+		service.ensurePersisted(contact);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {

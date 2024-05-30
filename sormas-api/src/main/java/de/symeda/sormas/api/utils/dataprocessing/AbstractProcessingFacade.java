@@ -43,7 +43,7 @@ public abstract class AbstractProcessingFacade {
 
 	private final FeatureConfigurationFacade featureConfigurationFacade;
 	protected final CaseFacade caseFacade;
-	private final ContactFacade contactFacade;
+	protected final ContactFacade contactFacade;
 	protected final RegionFacade regionFacade;
 	protected final DistrictFacade districtFacade;
 	protected final CommunityFacade communityFacade;
