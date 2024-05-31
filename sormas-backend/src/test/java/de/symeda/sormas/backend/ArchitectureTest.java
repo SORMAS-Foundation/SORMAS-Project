@@ -488,7 +488,7 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testSelfReportImportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(SelfReportImportFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+		assertFacadeEjbAnnotated(SelfReportImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

@@ -529,7 +529,6 @@ public class ImportFacadeEjb implements ImportFacade {
 		createExportDirectoryIfNecessary();
 
 		char separator = configFacade.getCsvSeparator();
-
 		List<ImportColumn> importColumns = new ArrayList<>();
 
 		appendListOfFields(

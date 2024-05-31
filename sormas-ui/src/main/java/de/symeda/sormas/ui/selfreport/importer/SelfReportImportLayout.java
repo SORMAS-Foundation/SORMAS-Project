@@ -25,8 +25,7 @@ public class SelfReportImportLayout extends AbstractImportLayout {
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		//TODO: change the import guide
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Environment_Import_Guide.pdf"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Self_Report_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getSelfReportImportTemplateFilePath(), importFacade.getSelfReportImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_self_report_import_", file -> {
 			resetDownloadErrorReportButton();
