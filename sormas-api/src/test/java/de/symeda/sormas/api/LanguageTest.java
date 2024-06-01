@@ -44,7 +44,7 @@ public class LanguageTest {
 		assertThat(Language.fromLocaleString("de"), is(Language.DE));
 		assertThat(Language.fromLocaleString("DE"), is(Language.DE));
 		assertThat(Language.fromLocaleString("fi"), is(Language.FI));
-		assertThat(Language.fromLocaleString("es"), is(Language.ES_EC));
+		assertThat(Language.fromLocaleString("es"), is(Language.ES_BO));
 		assertThat(Language.fromLocaleString("fr"), is(Language.FR));
 		assertThat(Language.fromLocaleString("it"), is(Language.IT));
 
