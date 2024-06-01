@@ -25045,7 +25045,7 @@
           },
           "language" : {
             "type" : "string",
-            "enum" : [ "EN", "EN_NG", "EN_GH", "EN_AF", "FR", "FR_CH", "FR_TN", "DE", "DE_CH", "ES_EC", "ES_CU", "IT", "IT_CH", "FI", "PS", "FA", "CZ", "UR_PK" ]
+            "enum" : [ "EN", "EN_NG", "EN_GH", "EN_AF", "FR", "FR_CH", "FR_TN", "DE", "DE_CH", "ES_BO", "ES_EC", "ES_CU", "IT", "IT_CH", "FI", "PS", "FA", "CZ", "UR_PK" ]
           },
           "lastName" : {
             "type" : "string",
