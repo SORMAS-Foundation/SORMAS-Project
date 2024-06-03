@@ -78,8 +78,6 @@ public class SelfReportFacadeEjb
 
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
-	@EJB
-	private SelfReportService selfReportService;
 
 	public SelfReportFacadeEjb() {
 	}
@@ -277,7 +275,7 @@ public class SelfReportFacadeEjb
 
 	@Override
 	public List<SelfReportListEntryDto> getEntriesList(SelfReportCriteria selfReportCriteria, Integer first, Integer max) {
-		return selfReportService.getEntriesList(selfReportCriteria, first, max);
+		return service.getEntriesList(selfReportCriteria, first, max);
 	}
 
 	@Override

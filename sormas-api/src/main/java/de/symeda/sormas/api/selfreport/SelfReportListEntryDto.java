@@ -1,61 +1,57 @@
 package de.symeda.sormas.api.selfreport;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+
 public class SelfReportListEntryDto extends PseudonymizableIndexDto implements Serializable {
 
-    public static final String I18N_PREFIX = "SelfReport";
+	public static final String I18N_PREFIX = "SelfReport";
 
+	private Date reportingDate;
+	private String caseReference;
+	private Disease disease;
+	private Date dateOfTest;
 
+	public SelfReportListEntryDto(String uuid, Date reportingDate, String caseReference, Disease disease, Date dateOfTest) {
+		super(uuid);
+		this.reportingDate = reportingDate;
+		this.caseReference = caseReference;
+		this.disease = disease;
+		this.dateOfTest = dateOfTest;
+	}
 
+	public Date getReportingDate() {
+		return reportingDate;
+	}
 
-    private Date reportingDate;
-    private String caseReference;
-    private Disease disease;
-    private Date dateOfTest;
+	public void setReportingDate(Date reportingDate) {
+		this.reportingDate = reportingDate;
+	}
 
+	public String getCaseReference() {
+		return caseReference;
+	}
 
-    public SelfReportListEntryDto(String uuid, Date reportingDate, String caseReference, Disease disease, Date dateOfTest) {
-        super(uuid);
-        this.reportingDate = reportingDate;
-        this.caseReference = caseReference;
-        this.disease = disease;
-        this.dateOfTest = dateOfTest;
-    }
+	public void setCaseReference(String caseReference) {
+		this.caseReference = caseReference;
+	}
 
-    public Date getReportingDate() {
-        return reportingDate;
-    }
+	public Disease getDisease() {
+		return disease;
+	}
 
-    public void setReportingDate(Date reportingDate) {
-        this.reportingDate = reportingDate;
-    }
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
 
-    public String getCaseReference() {
-        return caseReference;
-    }
+	public Date getDateOfTest() {
+		return dateOfTest;
+	}
 
-    public void setCaseReference(String caseReference) {
-        this.caseReference = caseReference;
-    }
-
-    public Disease getDisease() {
-        return disease;
-    }
-
-    public void setDisease(Disease disease) {
-        this.disease = disease;
-    }
-
-    public Date getDateOfTest() {
-        return dateOfTest;
-    }
-
-    public void setDateOfTest(Date dateOfTest) {
-        this.dateOfTest = dateOfTest;
-    }
+	public void setDateOfTest(Date dateOfTest) {
+		this.dateOfTest = dateOfTest;
+	}
 }
