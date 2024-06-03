@@ -352,7 +352,7 @@ public class SelfReport extends CoreAdo {
 		this.processingStatus = processingStatus;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Case getResultingCase() {
 		return resultingCase;
 	}
@@ -361,7 +361,7 @@ public class SelfReport extends CoreAdo {
 		this.resultingCase = resultingCaze;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	public Contact getResultingContact() {
 		return resultingContact;
 	}
