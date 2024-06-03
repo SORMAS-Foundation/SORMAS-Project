@@ -70,7 +70,6 @@ public class ImportParserService {
 	private final PropertyTypeBasedParsers classBasedParsers;
 	private final FormatterBasedParsers formatBasedParsers;
 
-	//TODO: check if I need this
 	public ImportParserService() {
 		classBasedParsers = PropertyTypeBasedParsers.Builder.of(PropertyTypeBasedParsers.class)
 			.withParser(Enum.class, this::parseEnum)

@@ -989,7 +989,6 @@ public abstract class AbstractBeanTest {
 		return getBean(EnvironmentFacadeEjbLocal.class);
 	}
 
-	//TOOD: check if is needed
 	public SelfReportFacadeEjb.SelfReportFacadeEjbLocal getSelfReportFacade() {
 		return getBean(SelfReportFacadeEjb.SelfReportFacadeEjbLocal.class);
 	}
