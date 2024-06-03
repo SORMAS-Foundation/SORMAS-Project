@@ -340,19 +340,6 @@ public class SelfReportFacadeEjb
 
 	@Override
 	public void validate(SelfReportDto dto) throws ValidationRuntimeException {
-		/*
-		 * if (dto.getEnvironmentMedia() != EnvironmentMedia.WATER
-		 * && (dto.getWaterType() != null || dto.getInfrastructureDetails() != null || MapUtils.isNotEmpty(dto.getWaterUse()))) {
-		 * throw new ValidationRuntimeException(
-		 * I18nProperties.getValidationError(
-		 * Validations.environmentWaterFieldsSetWithNotWaterMedia,
-		 * String.join(
-		 * ", ",
-		 * I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_TYPE),
-		 * I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.INFRASTUCTURE_DETAILS),
-		 * I18nProperties.getPrefixCaption(EnvironmentDto.I18N_PREFIX, EnvironmentDto.WATER_USE))));
-		 * }
-		 */
 
 		if (dto.getType() == null) {
 			throw new ValidationRuntimeException(
