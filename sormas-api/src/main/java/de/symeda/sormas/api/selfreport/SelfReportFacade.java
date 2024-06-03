@@ -19,6 +19,10 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
 
+import java.util.List;
+
 @Remote
 public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
+
+    List<SelfReportListEntryDto> getEntriesList(SelfReportCriteria selfReportCriteria, Integer first, Integer max);
 }

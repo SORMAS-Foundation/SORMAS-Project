@@ -68,9 +68,11 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -166,6 +168,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
+	public static final String SELF_REPORT ="selfReport";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -265,6 +268,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	private Date previousQuarantineTo;
 	private String quarantineChangeComment;
+
+	private List<SelfReport> selfReport;
 
 	@Diseases({
 		Disease.AFP,
@@ -1089,5 +1094,14 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	@OneToMany(mappedBy = SelfReport.RESULTING_CONTACT, fetch = FetchType.LAZY)
+	public List<SelfReport> getSelfReport() {
+		return selfReport;
+	}
+
+	public void setSelfReport(List<SelfReport> selfReport) {
+		this.selfReport = selfReport;
 	}
 }

@@ -777,6 +777,7 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectPerson = "headingSelectPerson";
 	String headingSelectSourceCase = "headingSelectSourceCase";
+	String headingSelfReportSideComponent = "headingSelfReportSideComponent";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingShareRequestCases = "headingShareRequestCases";
 	String headingShareRequestContacts = "headingShareRequestContacts";

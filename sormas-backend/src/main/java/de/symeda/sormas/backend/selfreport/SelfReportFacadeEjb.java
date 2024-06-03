@@ -37,6 +37,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.selfreport.SelfReportListEntryDto;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
@@ -77,6 +78,8 @@ public class SelfReportFacadeEjb
 
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private SelfReportService selfReportService;
 
 	public SelfReportFacadeEjb() {
 	}
@@ -270,6 +273,11 @@ public class SelfReportFacadeEjb
 		}
 
 		return orderList;
+	}
+
+	@Override
+	public List<SelfReportListEntryDto> getEntriesList(SelfReportCriteria selfReportCriteria, Integer first, Integer max) {
+		return selfReportService.getEntriesList(selfReportCriteria, first, max);
 	}
 
 	@Override

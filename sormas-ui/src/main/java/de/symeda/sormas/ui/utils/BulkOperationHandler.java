@@ -42,7 +42,7 @@ public class BulkOperationHandler<T extends HasUuid> {
 	/**
 	 * Amount of DTOs that have to be selected for the progress layout to be displayed.
 	 */
-	public static final int BULK_ACTION_PROGRESS_THRESHOLD = 40;
+	public static final int BULK_ACTION_PROGRESS_THRESHOLD = 3;
 	private boolean cancelAfterCurrentBatch;
 	private boolean cancelButtonClicked;
 	private final Lock cancelLock = new ReentrantLock();

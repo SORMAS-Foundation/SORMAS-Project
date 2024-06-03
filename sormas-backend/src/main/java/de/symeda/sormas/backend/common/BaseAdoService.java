@@ -486,7 +486,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 				hints.put("javax.persistence.fetchgraph", entityGraph);
 				return em.find(getElementClass(), id, hints);
 			} else {
-				return em.find(getElementClass(), id);
+				ADO ado = em.find(getElementClass(), id);
+				return ado;
 			}
 		} else {
 			return null;
