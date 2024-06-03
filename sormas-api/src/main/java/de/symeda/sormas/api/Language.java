@@ -19,6 +19,7 @@ public enum Language {
 	FR_TN(new Locale("fr", "TN"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	DE(new Locale("de", "DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
 	DE_CH(new Locale("de", "CH"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
+	ES_BO(new Locale("es", "BO"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	ES_EC(new Locale("es", "EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	ES_CU(new Locale("es", "CU"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	IT(new Locale("it", "IT"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
