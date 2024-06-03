@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -29,9 +28,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
-import de.symeda.sormas.api.selfreport.SelfReportExportDto;
 import de.symeda.sormas.api.selfreport.SelfReportImportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.UserRight;
@@ -76,26 +73,25 @@ public class SelfReportImportFacadeEjb implements SelfReportImportFacade {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
 		}
 
-		//TODO: refactor the check part - not working for empty
+		SelfReportDto selfReport;
 		if (values[0].isBlank() || !EnumUtils.isValidEnum(SelfReportType.class, values[0])) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.invalidSelfReportType));
+			selfReport = SelfReportDto.build(null);
 		} else {
 			SelfReportType type = SelfReportType.valueOf(values[0]);
-			final SelfReportDto selfReport = SelfReportDto.build(type);
-			ImportLineResultDto<SelfReportDto> importResult =
-				buildSelfReport(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, selfReport);
-
-			if (importResult.isError()) {
-				return importResult;
-			}
-
-			ImportLineResultDto<SelfReportDto> validationResult = validateSelfReport(selfReport);
-			if (validationResult.isError()) {
-				return validationResult;
-			}
-
-			return saveSelfReport(selfReport);
+			selfReport = SelfReportDto.build(type);
 		}
+		ImportLineResultDto<SelfReportDto> importResult = buildSelfReport(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, selfReport);
+
+		if (importResult.isError()) {
+			return importResult;
+		}
+
+		ImportLineResultDto<SelfReportDto> validationResult = validateSelfReport(selfReport);
+		if (validationResult.isError()) {
+			return validationResult;
+		}
+
+		return saveSelfReport(selfReport);
 	}
 
 	private ImportLineResultDto<SelfReportDto> buildSelfReport(
@@ -173,15 +169,6 @@ public class SelfReportImportFacadeEjb implements SelfReportImportFacade {
 			try {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
-				} else if (SelfReportExportDto.BIRTH_DATE.equals(headerPathElementName)) {
-
-					//TODO: test this one
-					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
-					if (birthDateDto != null) {
-						selfReport.setBirthdateDD(birthDateDto.getDateOfBirthDD());
-						selfReport.setBirthdateMM(birthDateDto.getDateOfBirthMM());
-						selfReport.setBirthdateYYYY(birthDateDto.getDateOfBirthYYYY());
-					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
