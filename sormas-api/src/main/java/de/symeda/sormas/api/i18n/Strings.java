@@ -281,6 +281,7 @@ public interface Strings {
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
 	String entitySelfReport = "entitySelfReport";
+	String entitySelfReports = "entitySelfReports";
 	String entityStatistics = "entityStatistics";
 	String entitySubcontinents = "entitySubcontinents";
 	String entityTask = "entityTask";
@@ -671,6 +672,7 @@ public interface Strings {
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
+	String headingImportSelfReports = "headingImportSelfReports";
 	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";

@@ -54,7 +54,9 @@ public class SelfReport extends CoreAdo {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String CASE_REFERENCE = "caseReference";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String SEX = "sex";
@@ -65,6 +67,12 @@ public class SelfReport extends CoreAdo {
 	public static final String EMAIL = "email";
 	public static final String PHONE_NUMBER = "phoneNumber";
 	public static final String ADDRESS = "address";
+	public static final String DATE_OF_TEST = "dateOfTest";
+	public static final String DATE_OF_SYMPTOMS = "dateOfSymptoms";
+	public static final String WORKPLACE = "workplace";
+	public static final String DATE_WORKPLACE = "dateWorkplace";
+	public static final String ISOLATION_DATE = "isolationDate";
+	public static final String CONTACT_DATE = "contactDate";
 	public static final String COMMENT = "comment";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";

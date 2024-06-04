@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.selfreport;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
@@ -28,11 +31,14 @@ public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIn
 
 	void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef);
 
-    boolean isProcessed(SelfReportReferenceDto reference);
+	boolean isProcessed(SelfReportReferenceDto reference);
 
 	boolean existsUnlinkedCOntactWithCaseReferenceNumber(String caseReferenceNumber);
 
 	void linkContactsToCaseByReferenceNumber(CaseReferenceDto caze);
 
 	boolean existsReferencedCaseReport(String caseReference);
+
+	List<SelfReportExportDto> getExportList(SelfReportCriteria selfReportCriteria, Collection<String> selectedRows, int first, int max);
+
 }

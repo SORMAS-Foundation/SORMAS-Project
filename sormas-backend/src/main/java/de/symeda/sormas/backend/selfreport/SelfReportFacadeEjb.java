@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.selfreport;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,8 +49,10 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportExportDto;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
@@ -227,6 +230,69 @@ public class SelfReportFacadeEjb
 		return QueryHelper.getResultList(em, cq, first, max).stream().map(t -> t.get(0, Long.class)).collect(Collectors.toList());
 	}
 
+	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_EXPORT)
+	public List<SelfReportExportDto> getExportList(SelfReportCriteria selfReportCriteria, Collection<String> selectedRows, int first, int max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+		final Root<SelfReport> selfReport = cq.from(SelfReport.class);
+
+		final SelfReportQueryContext selfReportQueryContext = new SelfReportQueryContext(cb, cq, selfReport);
+		final SelfReportJoins selfReportJoins = selfReportQueryContext.getJoins();
+		final Join<SelfReport, Location> location = selfReportJoins.getAddress();
+		final Join<Location, District> district = selfReportJoins.getAddressJoins().getDistrict();
+		Join<SelfReport, User> responsibleUser = selfReportJoins.getResponsibleUser();
+
+		List<SelfReportExportDto> selfReports = new ArrayList<>();
+
+		cq.multiselect(
+			selfReport.get(SelfReport.UUID),
+			selfReport.get(SelfReport.TYPE),
+			selfReport.get(SelfReport.REPORT_DATE),
+			selfReport.get(SelfReport.CASE_REFERENCE),
+			selfReport.get(SelfReport.DISEASE),
+			selfReport.get(SelfReport.DISEASE_DETAILS),
+			selfReport.get(SelfReport.DISEASE_VARIANT),
+			selfReport.get(SelfReport.DISEASE_VARIANT_DETAILS),
+			selfReport.get(SelfReport.FIRST_NAME),
+			selfReport.get(SelfReport.LAST_NAME),
+			selfReport.get(SelfReport.SEX),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.POSTAL_CODE),
+			location.get(Location.CITY),
+			selfReport.get(SelfReport.BIRTHDATE_DD),
+			selfReport.get(SelfReport.BIRTHDATE_MM),
+			selfReport.get(SelfReport.BIRTHDATE_YYYY),
+			selfReport.get(SelfReport.NATIONAL_HEALTH_ID),
+			selfReport.get(SelfReport.EMAIL),
+			selfReport.get(SelfReport.PHONE_NUMBER),
+			selfReport.get(SelfReport.DATE_OF_TEST),
+			selfReport.get(SelfReport.DATE_OF_SYMPTOMS),
+			selfReport.get(SelfReport.WORKPLACE),
+			selfReport.get(SelfReport.DATE_WORKPLACE),
+			selfReport.get(SelfReport.ISOLATION_DATE),
+			selfReport.get(SelfReport.CONTACT_DATE),
+			selfReport.get(SelfReport.COMMENT),
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME),
+			selfReport.get(SelfReport.INVESTIGATION_STATUS),
+			selfReport.get(SelfReport.PROCESSING_STATUS),
+			selfReport.get(SelfReport.DELETION_REASON),
+			selfReport.get(SelfReport.OTHER_DELETION_REASON));
+
+		Predicate filter = service.buildCriteriaFilter(selfReportCriteria, selfReportQueryContext);
+
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, selfReport.get(SelfReport.UUID));
+		cq.where(filter);
+		cq.orderBy(cb.desc(selfReport.get(SelfReport.REPORT_DATE)), cb.desc(selfReport.get(SelfReport.ID)));
+
+		selfReports.addAll(QueryHelper.getResultList(em, cq, new SelfReportExportDtoResultTransformer(), null, null));
+
+		return selfReports;
+	}
+
 	private List<Order> getOrderList(List<SortProperty> sortProperties, SelfReportQueryContext selfReportQueryContext) {
 
 		List<Order> orderList = new ArrayList<>();
@@ -288,6 +354,56 @@ public class SelfReportFacadeEjb
 
 	@Override
 	public void validate(SelfReportDto dto) throws ValidationRuntimeException {
+
+		if (dto.getType() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.TYPE)));
+		}
+
+		if (dto.getReportDate() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.REPORT_DATE)));
+		}
+
+		if (dto.getDisease() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.DISEASE)));
+		}
+
+		if (dto.getFirstName() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.FIRST_NAME)));
+		}
+
+		if (dto.getLastName() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.LAST_NAME)));
+		}
+
+		if (dto.getSex() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.SEX)));
+		}
+
+		if (dto.getInvestigationStatus() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.INVESTIGATION_STATUS)));
+		}
+
+		if (dto.getProcessingStatus() == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.required,
+					I18nProperties.getPrefixCaption(SelfReportDto.I18N_PREFIX, SelfReportDto.PROCESSING_STATUS)));
+		}
 
 	}
 

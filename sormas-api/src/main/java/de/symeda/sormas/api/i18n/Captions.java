@@ -2186,6 +2186,7 @@ public interface Captions {
 	String selectSimilarSample = "selectSimilarSample";
 	String SelfReport = "SelfReport";
 	String SelfReport_address = "SelfReport.address";
+	String SelfReport_birthDate = "SelfReport.birthDate";
 	String SelfReport_birthdateDD = "SelfReport.birthdateDD";
 	String SelfReport_birthdateMM = "SelfReport.birthdateMM";
 	String SelfReport_birthdateYYYY = "SelfReport.birthdateYYYY";
@@ -2196,7 +2197,9 @@ public interface Captions {
 	String SelfReport_dateOfTest = "SelfReport.dateOfTest";
 	String SelfReport_dateWorkplace = "SelfReport.dateWorkplace";
 	String SelfReport_disease = "SelfReport.disease";
+	String SelfReport_diseaseDetails = "SelfReport.diseaseDetails";
 	String SelfReport_diseaseVariant = "SelfReport.diseaseVariant";
+	String SelfReport_diseaseVariantDetails = "SelfReport.diseaseVariantDetails";
 	String SelfReport_email = "SelfReport.email";
 	String SelfReport_firstName = "SelfReport.firstName";
 	String SelfReport_investigationStatus = "SelfReport.investigationStatus";

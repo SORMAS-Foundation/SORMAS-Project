@@ -88,6 +88,7 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.selfreport.SelfReportFacade;
+import de.symeda.sormas.api.selfreport.SelfReportImportFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
@@ -532,6 +533,10 @@ public class FacadeProvider {
 
 	public static SelfReportFacade getSelfReportFacade() {
 		return get().lookupEjbRemote(SelfReportFacade.class);
+	}
+
+	public static SelfReportImportFacade getSelfReportImportFacade() {
+		return get().lookupEjbRemote(SelfReportImportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

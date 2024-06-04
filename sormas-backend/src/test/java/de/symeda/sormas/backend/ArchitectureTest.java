@@ -76,6 +76,7 @@ import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.selfreport.SelfReportFacadeEjb;
+import de.symeda.sormas.backend.selfreport.SelfReportImportFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb;
@@ -483,6 +484,11 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testSelfReportFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(SelfReportFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testSelfReportImportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SelfReportImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

@@ -114,7 +114,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		addField(SelfReportDto.REPORT_DATE).setRequired(true);
 		addField(SelfReportDto.CASE_REFERENCE);
 
-		//desease related fields
+		//disease related fieldss
 		ComboBox diseaseField = addDiseaseField(SelfReportDto.DISEASE, false);
 		addField(SelfReportDto.DISEASE_DETAILS, TextField.class);
 		diseaseField.setRequired(true);
