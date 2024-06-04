@@ -24,6 +24,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.selfreport.SelfReportFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.incoming.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
@@ -68,13 +69,15 @@ public class CoreEntityDeletionService {
 		EventFacadeEjb.EventFacadeEjbLocal eventFacadeEjb,
 		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacadeEjb,
 		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb,
-		TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacadeEjb) {
+		TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacadeEjb,
+		SelfReportFacadeEjb.SelfReportFacadeEjbLocal selfReportFacadeEjb) {
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CASE, caseFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.CONTACT, contactFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.EVENT, eventFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.EVENT_PARTICIPANT, eventParticipantFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.IMMUNIZATION, immunizationFacadeEjb));
 		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.TRAVEL_ENTRY, travelEntryFacadeEjb));
+		coreEntityFacades.add(EntityTypeFacadePair.of(DeletableEntityType.SELF_REPORT, selfReportFacadeEjb));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -146,7 +149,8 @@ public class CoreEntityDeletionService {
 			|| deletableEntityType == DeletableEntityType.CASE
 			|| deletableEntityType == DeletableEntityType.CONTACT
 			|| deletableEntityType == DeletableEntityType.EVENT
-			|| deletableEntityType == DeletableEntityType.EVENT_PARTICIPANT;
+			|| deletableEntityType == DeletableEntityType.EVENT_PARTICIPANT
+			|| deletableEntityType == DeletableEntityType.SELF_REPORT;
 	}
 
 	@SuppressWarnings("rawtypes")

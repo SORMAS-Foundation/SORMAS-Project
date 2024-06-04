@@ -46,6 +46,7 @@ import de.symeda.sormas.api.DocumentHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.docgeneration.QuarantineOrderLayout;
 import de.symeda.sormas.ui.importer.DocumentMultiFileUpload;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -67,9 +69,12 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 
 	private static final String UPLOAD_LOC = "uploadLoc";
 	public static final int MAX_ATTACHMENT_NUMBER = 5;
+	public static final String CUSTOM_EMAIL_ATTACHMENT_DOCUMENT = "customEmailAttachmentDocument";
+
 	private static final String HTML_LAYOUT = fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE_NAME)
 		+ fluidRowLocs(UPLOAD_LOC)
-		+ fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS);
+		+ fluidRowLocs(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS)
+		+ fluidRowLocs(CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
 
 	private final DocumentWorkflow documentWorkflow;
 	private final DocumentRelatedEntityType documentRelatedEntityType;
@@ -78,11 +83,22 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected Upload upload;
 	private PopupButton mainButton;
 
-	protected ExternalBulkEmailOptionsForm(DocumentWorkflow documentWorkflow, DocumentRelatedEntityType documentRelatedEntityType) {
+	private RootEntityType rootEntityType;
+
+	private QuarantineOrderLayout attachDocTemplateLayout;
+
+	private final DocumentWorkflow templatesWorkflow;
+
+	protected ExternalBulkEmailOptionsForm(
+		DocumentWorkflow documentWorkflow,
+		DocumentRelatedEntityType documentRelatedEntityType,
+		RootEntityType rootEntityType, DocumentWorkflow templatesWorkflow) {
 		super(ExternalEmailOptionsWithAttachmentsDto.class, ExternalEmailOptionsWithAttachmentsDto.I18N_PREFIX, false);
 		this.documentWorkflow = documentWorkflow;
 		this.documentRelatedEntityType = documentRelatedEntityType;
 		this.attachedDocumentsField = new MultiSelectFiles<>();
+		this.rootEntityType = rootEntityType;
+		this.templatesWorkflow = templatesWorkflow;
 
 		addFields();
 		hideValidationUntilNextCommit();
@@ -108,6 +124,21 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 		if (documentRelatedEntityType != null) {
 			attachedDocumentsField = addField(ExternalEmailOptionsWithAttachmentsDto.ATTACHED_DOCUMENTS, MultiSelectFiles.class);
 		}
+
+		if (templatesWorkflow != null) {
+			attachDocTemplateLayout = new QuarantineOrderLayout(templatesWorkflow);
+			attachDocTemplateLayout.setMargin(false);
+			getContent().addComponent(attachDocTemplateLayout, CUSTOM_EMAIL_ATTACHMENT_DOCUMENT);
+		}
+	}
+
+	@Override
+	public ExternalEmailOptionsWithAttachmentsDto getValue() {
+		ExternalEmailOptionsWithAttachmentsDto value = super.getValue();
+		if (attachDocTemplateLayout != null) {
+			value.setQuarantineOrderDocumentOptionsDto(attachDocTemplateLayout.getFieldValues());
+		}
+		return value;
 	}
 
 	private Button buildUploadButton() {

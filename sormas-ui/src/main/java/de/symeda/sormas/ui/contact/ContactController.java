@@ -652,7 +652,7 @@ public class ContactController {
 		boolean isPsuedonymized) {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
-		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getContactFacade().getManuallyDeletionInfo(contactUuid);
 
@@ -819,7 +819,8 @@ public class ContactController {
 					DocumentRelatedEntityType.CONTACT,
 					selectedRows,
 					bulkOperationCallback(null, contactGrid, null),
-					ContactIndexDto::toReference);
+					ContactIndexDto::toReference,
+					DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
 		}
 	}
 

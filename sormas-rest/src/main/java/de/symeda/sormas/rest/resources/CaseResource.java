@@ -178,7 +178,7 @@ public class CaseResource extends EntityDtoResource<CaseDataDto> {
 	@GET
 	@Path("/{uuid}")
 	public CaseDataDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getCaseFacade().getByUuid(uuid);
+		return FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 	}
 
 	@POST

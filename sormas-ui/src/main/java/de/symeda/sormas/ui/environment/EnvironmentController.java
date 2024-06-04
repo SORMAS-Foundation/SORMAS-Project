@@ -103,7 +103,7 @@ public class EnvironmentController {
 		UserRight editUserRight,
 		boolean isEditAllowed) {
 
-		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getByUuid(environmentUuid);
+		EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(environmentUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getAutomaticDeletionInfo(environmentUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEnvironmentFacade().getManuallyDeletionInfo(environmentUuid);
 
@@ -209,6 +209,6 @@ public class EnvironmentController {
 	}
 
 	private EnvironmentDto findEnvironment(String uuid) {
-		return FacadeProvider.getEnvironmentFacade().getByUuid(uuid);
+		return FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(uuid);
 	}
 }

@@ -51,6 +51,8 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
+import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportFacade;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -93,6 +95,10 @@ public final class ArchiveHandlers {
 
 	public static CoreEntityArchiveHandler<TravelEntryDto, TravelEntryFacade> forTravelEntry() {
 		return new CoreEntityArchiveHandler<>(FacadeProvider.getTravelEntryFacade(), ArchiveMessages.TRAVEL_ENTRY);
+	}
+
+	public static CoreEntityArchiveHandler<SelfReportDto, SelfReportFacade> forSelfReport() {
+		return new CoreEntityArchiveHandler<>(FacadeProvider.getSelfReportFacade(), ArchiveMessages.SELF_REPORT);
 	}
 
 	public static TaskArchiveHandler forTask() {

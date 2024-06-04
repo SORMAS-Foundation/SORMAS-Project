@@ -13,6 +13,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CASE_VIEW_ARCHIVED</role-name>
+        <group-name>CASE_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CASE_EDIT</role-name>
         <group-name>CASE_EDIT</group-name>
     </security-role-mapping>
@@ -90,6 +95,11 @@
     <security-role-mapping>
         <role-name>IMMUNIZATION_VIEW</role-name>
         <group-name>IMMUNIZATION_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>IMMUNIZATION_VIEW_ARCHIVED</role-name>
+        <group-name>IMMUNIZATION_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -228,6 +238,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CONTACT_VIEW_ARCHIVED</role-name>
+        <group-name>CONTACT_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CONTACT_ARCHIVE</role-name>
         <group-name>CONTACT_ARCHIVE</group-name>
     </security-role-mapping>
@@ -328,6 +343,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>TASK_VIEW_ARCHIVED</role-name>
+        <group-name>TASK_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>ACTION_CREATE</role-name>
         <group-name>ACTION_CREATE</group-name>
     </security-role-mapping>
@@ -350,6 +370,11 @@
     <security-role-mapping>
         <role-name>EVENT_VIEW</role-name>
         <group-name>EVENT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_VIEW_ARCHIVED</role-name>
+        <group-name>EVENT_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -413,6 +438,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_VIEW_ARCHIVED</role-name>
+        <group-name>EVENTPARTICIPANT_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EVENTGROUP_CREATE</role-name>
         <group-name>EVENTGROUP_CREATE</group-name>
     </security-role-mapping>
@@ -435,6 +465,11 @@
     <security-role-mapping>
         <role-name>EVENTGROUP_DELETE</role-name>
         <group-name>EVENTGROUP_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_VIEW_ARCHIVED</role-name>
+        <group-name>EVENTGROUP_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -525,6 +560,11 @@
     <security-role-mapping>
         <role-name>INFRASTRUCTURE_VIEW</role-name>
         <group-name>INFRASTRUCTURE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_VIEW_ARCHIVED</role-name>
+        <group-name>INFRASTRUCTURE_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -703,6 +743,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CAMPAIGN_VIEW_ARCHIVED</role-name>
+        <group-name>CAMPAIGN_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CAMPAIGN_EDIT</role-name>
         <group-name>CAMPAIGN_EDIT</group-name>
     </security-role-mapping>
@@ -720,6 +765,11 @@
     <security-role-mapping>
         <role-name>CAMPAIGN_FORM_DATA_VIEW</role-name>
         <group-name>CAMPAIGN_FORM_DATA_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_FORM_DATA_VIEW_ARCHIVED</role-name>
+        <group-name>CAMPAIGN_FORM_DATA_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -798,6 +848,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_VIEW_ARCHIVED</role-name>
+        <group-name>TRAVEL_ENTRY_VIEW_ARCHIVED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>TRAVEL_ENTRY_CREATE</role-name>
         <group-name>TRAVEL_ENTRY_CREATE</group-name>
     </security-role-mapping>
@@ -835,6 +890,11 @@
     <security-role-mapping>
         <role-name>ENVIRONMENT_ARCHIVE</role-name>
         <group-name>ENVIRONMENT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ENVIRONMENT_VIEW_ARCHIVED</role-name>
+        <group-name>ENVIRONMENT_VIEW_ARCHIVED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -926,6 +986,11 @@
     <security-role-mapping>
         <role-name>SELF_REPORT_DELETE</role-name>
         <group-name>SELF_REPORT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SELF_REPORT_ARCHIVE</role-name>
+        <group-name>SELF_REPORT_ARCHIVE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
