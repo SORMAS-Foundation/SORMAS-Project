@@ -2189,6 +2189,7 @@ public interface Captions {
 	String SelfReport_birthdateDD = "SelfReport.birthdateDD";
 	String SelfReport_birthdateMM = "SelfReport.birthdateMM";
 	String SelfReport_birthdateYYYY = "SelfReport.birthdateYYYY";
+	String SelfReport_caseReference = "SelfReport.caseReference";
 	String SelfReport_comment = "SelfReport.comment";
 	String SelfReport_contactDate = "SelfReport.contactDate";
 	String SelfReport_dateOfSymptoms = "SelfReport.dateOfSymptoms";
@@ -2213,6 +2214,7 @@ public interface Captions {
 	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
 	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
 	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
+	String selfReportProcess = "selfReportProcess";
 	String selfReportSelfReportsList = "selfReportSelfReportsList";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";

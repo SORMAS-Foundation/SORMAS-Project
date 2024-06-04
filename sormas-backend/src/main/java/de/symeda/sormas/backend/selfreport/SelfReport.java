@@ -38,7 +38,9 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.selfreport.SelfReportInvestigationStatus;
 import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
 import de.symeda.sormas.api.selfreport.SelfReportType;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
@@ -75,6 +77,7 @@ public class SelfReport extends CoreAdo {
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
+	// person data
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -85,6 +88,7 @@ public class SelfReport extends CoreAdo {
 	private String email;
 	private String phoneNumber;
 	private Location address;
+	// end person data
 	private Date dateOfTest;
 	private Date dateOfSymptoms;
 	private String workplace;
@@ -95,6 +99,9 @@ public class SelfReport extends CoreAdo {
 	private User responsibleUser;
 	private SelfReportInvestigationStatus investigationStatus;
 	private SelfReportProcessingStatus processingStatus;
+
+	private Case resultingCase;
+	private Contact resultingContact;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -343,5 +350,23 @@ public class SelfReport extends CoreAdo {
 
 	public void setProcessingStatus(SelfReportProcessingStatus processingStatus) {
 		this.processingStatus = processingStatus;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Case getResultingCase() {
+		return resultingCase;
+	}
+
+	public void setResultingCase(Case resultingCaze) {
+		this.resultingCase = resultingCaze;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Contact getResultingContact() {
+		return resultingContact;
+	}
+
+	public void setResultingContact(Contact resultingContact) {
+		this.resultingContact = resultingContact;
 	}
 }

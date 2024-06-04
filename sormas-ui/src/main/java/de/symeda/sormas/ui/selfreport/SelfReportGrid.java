@@ -15,14 +15,19 @@
 
 package de.symeda.sormas.ui.selfreport;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,9 +38,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
+import de.symeda.sormas.api.selfreport.SelfReportInvestigationStatus;
+import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -46,6 +55,9 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportCriteria> {
 
 	private static final long serialVersionUID = 2818016255621440844L;
+
+	private static final String PROCESS_COLUMN = "process";
+	private static final String PLACEHOLDER_SPACE = String.join("", Collections.nCopies(35, "&nbsp"));
 
 	public SelfReportGrid(SelfReportCriteria criteria, ViewConfiguration viewConfiguration) {
 		super(SelfReportIndexDto.class);
@@ -66,6 +78,9 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 
 		addItemClickListener(
 			new ShowDetailsListener<>(SelfReportIndexDto.UUID, e -> ControllerProvider.getSelfReportController().navigateToSelfReport(e.getUuid())));
+
+		addItemClickListener(
+			new ShowDetailsListener<>(SelfReportIndexDto.UUID, e -> ControllerProvider.getSelfReportController().navigateToSelfReport(e.getUuid())));
 	}
 
 	protected void initColumns(SelfReportCriteria criteria) {
@@ -74,6 +89,8 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 				.filter(StringUtils::isNotBlank)
 				.collect(Collectors.joining(", ")));
 		addressColumn.setId(SelfReportDto.ADDRESS);
+
+		addComponentColumn(this::buildProcessColumn).setId(PROCESS_COLUMN).setSortable(false);
 
 		Column<SelfReportIndexDto, String> deleteColumn = addColumn(entry -> {
 			if (entry.getDeletionReason() != null) {
@@ -102,6 +119,7 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 			SelfReportIndexDto.EMAIL,
 			SelfReportIndexDto.RESPONSIBLE_USER,
 			SelfReportIndexDto.PROCESSING_STATUS,
+			PROCESS_COLUMN,
 			DELETE_REASON_COLUMN);
 
 		((Column<SelfReportIndexDto, String>) getColumn(SelfReportIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -131,4 +149,23 @@ public class SelfReportGrid extends FilteredGrid<SelfReportIndexDto, SelfReportC
 	public void reload() {
 		getDataProvider().refreshAll();
 	}
+
+	private Component buildProcessColumn(SelfReportIndexDto indexDto) {
+		if (UiUtil.permitted(UserRight.SELF_REPORT_PROCESS)
+			&& indexDto.getInvestigationStatus() == SelfReportInvestigationStatus.COMPLETED
+			&& indexDto.getProcessingStatus() != SelfReportProcessingStatus.PROCESSED
+			&& ((indexDto.getType() == SelfReportType.CASE && UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT))
+				|| (indexDto.getType() == SelfReportType.CONTACT && UiUtil.permitted(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)))) {
+			// build process button
+			return ButtonHelper.createButton(Captions.selfReportProcess, e -> {
+				ControllerProvider.getSelfReportController().processSelfReport(indexDto.getUuid());
+			}, ValoTheme.BUTTON_PRIMARY);
+		} else {
+			// build placeholder necessary to circumvent a vaadin scaling issue (see #7681)
+			Label placeholder = new Label(PLACEHOLDER_SPACE);
+			placeholder.setContentMode(ContentMode.HTML);
+			return placeholder;
+		}
+	}
+
 }

@@ -15,7 +15,13 @@
 
 package de.symeda.sormas.ui.selfreport;
 
+import java.util.concurrent.CompletionStage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -25,17 +31,24 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.selfreport.SelfReportType;
+import de.symeda.sormas.api.selfreport.processing.SelfReportProcessingFacade;
+import de.symeda.sormas.api.selfreport.processing.SelfReportProcessingResult;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.selfreport.processing.SelfReportProcessingFLow;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class SelfReportController {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SelfReportsView.VIEW_NAME, SelfReportsView.class);
@@ -82,6 +95,9 @@ public class SelfReportController {
 		editComponent.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				FacadeProvider.getSelfReportFacade().save(selfReport);
+
+				Notification.show(I18nProperties.getString(Strings.messageSelfReportSaved), Notification.Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
 			}
 		});
 
@@ -123,5 +139,57 @@ public class SelfReportController {
 			true);
 
 		return editComponent;
+	}
+
+	public void processSelfReport(String uuid) {
+		SelfReportDto selfReport = FacadeProvider.getSelfReportFacade().getByUuid(uuid);
+		SelfReportProcessingFLow flow = new SelfReportProcessingFLow(getSelfReportProcessingFacade());
+
+		boolean isCaseReport = selfReport.getType() == SelfReportType.CASE;
+		CompletionStage<ProcessingResult<SelfReportProcessingResult>> result =
+			isCaseReport ? flow.runCaseFlow(selfReport) : flow.runContactFlow(selfReport);
+
+		result.handle((processingResult, throwable) -> {
+			if (throwable != null) {
+				logger.error("Unexpected exception while processing self report", throwable);
+
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
+			} else {
+				SelfReportProcessingResult processingResultData = processingResult.getData();
+
+				if (processingResultData.isOpenEntityOnDone()) {
+					if (isCaseReport) {
+						ControllerProvider.getCaseController().navigateToCase(processingResultData.getCaze().getEntity().getUuid());
+					} else {
+						ControllerProvider.getContactController().navigateToData(processingResultData.getContact().getEntity().getUuid());
+					}
+				} else {
+					SormasUI.get().getNavigator().navigateTo(SelfReportsView.VIEW_NAME);
+				}
+			}
+
+			return null;
+		});
+	}
+
+	private static SelfReportProcessingFacade getSelfReportProcessingFacade() {
+		return new SelfReportProcessingFacade(
+			FacadeProvider.getFeatureConfigurationFacade(),
+			FacadeProvider.getCaseFacade(),
+			FacadeProvider.getContactFacade(),
+			FacadeProvider.getRegionFacade(),
+			FacadeProvider.getDistrictFacade(),
+			FacadeProvider.getCommunityFacade(),
+			FacadeProvider.getFacilityFacade(),
+			FacadeProvider.getSelfReportFacade()) {
+
+			@Override
+			public boolean hasAllUserRights(UserRight... userRights) {
+				return UiUtil.getCurrentUserProvider().hasAllUserRights(userRights);
+			}
+		};
 	}
 }

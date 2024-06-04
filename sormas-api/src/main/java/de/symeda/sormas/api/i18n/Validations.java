@@ -203,6 +203,7 @@ public interface Validations {
 	String required = "required";
 	String requiredField = "requiredField";
 	String sampleDateTimeAfterPathogenTestDateTime = "sampleDateTimeAfterPathogenTestDateTime";
+	String selfReportAlreadyProcessedError = "selfReportAlreadyProcessedError";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	String sormasToSormasAcceptCaseBeforeContact = "sormasToSormasAcceptCaseBeforeContact";

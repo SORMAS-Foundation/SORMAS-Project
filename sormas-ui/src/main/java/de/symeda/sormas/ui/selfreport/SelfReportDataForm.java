@@ -89,7 +89,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		+ fluidRowLocs(SelfReportDto.OTHER_DELETION_REASON);
 	private LocationEditForm addressForm;
 
-	protected SelfReportDataForm(Disease disease, boolean inJurisdiction, boolean isPseudonymized) {
+	public SelfReportDataForm(Disease disease, boolean inJurisdiction, boolean isPseudonymized) {
 		super(
 			SelfReportDto.class,
 			SelfReportDto.I18N_PREFIX,
