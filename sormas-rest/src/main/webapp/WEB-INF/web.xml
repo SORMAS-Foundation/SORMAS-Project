@@ -785,6 +785,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>SELF_REPORT_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>DOCUMENT_VIEW</role-name>
 	</security-role>
 

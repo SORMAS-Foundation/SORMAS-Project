@@ -19,9 +19,9 @@ import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProc
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMultipleSamplesPopup;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreateEntryWindow;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
+import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreateEntryWindow;
+import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,8 +55,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
-import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
@@ -71,13 +69,16 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionComponentForExternalMessage;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
 import de.symeda.sormas.ui.samples.humansample.SampleController;
 import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
@@ -85,6 +86,7 @@ import de.symeda.sormas.ui.samples.humansample.SampleEditPathogenTestListHandler
 import de.symeda.sormas.ui.samples.humansample.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
 /**
  * Lab message processing flow implemented with vaadin dialogs/components for handling confirmation and object edit/save steps
@@ -138,7 +140,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (optionsBuilder.size() > 1) {
-			showPickOrCreateEntryWindow(optionsBuilder.build(), labMessage, callback);
+			showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), callback);
 		} else {
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
 		}

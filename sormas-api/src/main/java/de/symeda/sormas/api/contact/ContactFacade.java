@@ -156,4 +156,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		boolean contactOfficerChange);
 
 	long getContactCount(CaseReferenceDto caze);
+
+	void linkContactToCase(ContactReferenceDto contactRef, CaseReferenceDto caseRef);
 }

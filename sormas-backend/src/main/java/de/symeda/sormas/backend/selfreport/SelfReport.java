@@ -80,6 +80,7 @@ public class SelfReport extends CoreAdo {
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
+	// person data
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -90,6 +91,7 @@ public class SelfReport extends CoreAdo {
 	private String email;
 	private String phoneNumber;
 	private Location address;
+	// end person data
 	private Date dateOfTest;
 	private Date dateOfSymptoms;
 	private String workplace;
@@ -102,7 +104,6 @@ public class SelfReport extends CoreAdo {
 	private SelfReportProcessingStatus processingStatus;
 
 	private Case resultingCase;
-
 	private Contact resultingContact;
 
 	@Enumerated(EnumType.STRING)
@@ -359,8 +360,8 @@ public class SelfReport extends CoreAdo {
 		return resultingCase;
 	}
 
-	public void setResultingCase(Case resultingCase) {
-		this.resultingCase = resultingCase;
+	public void setResultingCase(Case resultingCaze) {
+		this.resultingCase = resultingCaze;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

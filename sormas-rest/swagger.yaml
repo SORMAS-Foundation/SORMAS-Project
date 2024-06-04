@@ -7197,6 +7197,7 @@ paths:
                   - SELF_REPORT_EDIT
                   - SELF_REPORT_DELETE
                   - SELF_REPORT_ARCHIVE
+                  - SELF_REPORT_PROCESS
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7431,6 +7432,7 @@ paths:
                   - SELF_REPORT_EDIT
                   - SELF_REPORT_DELETE
                   - SELF_REPORT_ARCHIVE
+                  - SELF_REPORT_PROCESS
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -8904,6 +8906,8 @@ components:
           enum:
           - IN_COUNTRY
           - POINT_OF_ENTRY
+        caseReferenceNumber:
+          type: string
         caseUuidsForMerge:
           type: array
           items:
@@ -9928,6 +9932,8 @@ components:
           enum:
           - IN_COUNTRY
           - POINT_OF_ENTRY
+        caseReferenceNumber:
+          type: string
         caseUuidsForMerge:
           type: array
           items:
@@ -11315,6 +11321,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
         community:
@@ -11559,6 +11567,8 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+        withCase:
+          type: boolean
         withExtendedQuarantine:
           type: boolean
         withOwnership:
@@ -25083,6 +25093,7 @@ components:
           - FR_TN
           - DE
           - DE_CH
+          - ES_BO
           - ES_EC
           - ES_CU
           - IT
@@ -25522,6 +25533,7 @@ components:
             - SELF_REPORT_EDIT
             - SELF_REPORT_DELETE
             - SELF_REPORT_ARCHIVE
+            - SELF_REPORT_PROCESS
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE

@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -25,23 +22,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseSelectionDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
-import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
+import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 
 public abstract class AbstractProcessingFlow {
 
@@ -149,23 +142,6 @@ public abstract class AbstractProcessingFlow {
 		return personDto;
 	}
 
-	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessageDto) {
-
-		if (processingFacade.isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
-			|| !processingFacade.hasAllUserRights(UserRight.CASE_CREATE, UserRight.CASE_EDIT)) {
-			return Collections.emptyList();
-		}
-
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.person(selectedPerson);
-		caseCriteria.disease(externalMessageDto.getDisease());
-		CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
-		caseSimilarityCriteria.caseCriteria(caseCriteria);
-		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
-
-		return processingFacade.getSimilarCases(caseSimilarityCriteria);
-	}
-
 	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto externalMessageDto) {
 
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), externalMessageDto.getDisease());
@@ -200,23 +176,6 @@ public abstract class AbstractProcessingFlow {
 		}
 
 		return caseDto;
-	}
-
-	public static class HandlerCallback<T> {
-
-		public final CompletableFuture<ProcessingResult<T>> futureResult;
-
-		public HandlerCallback() {
-			this.futureResult = new CompletableFuture<>();
-		}
-
-		public void done(T result) {
-			futureResult.complete(ProcessingResult.continueWith(result));
-		}
-
-		public void cancel() {
-			futureResult.complete(ProcessingResult.withStatus(ProcessingResultStatus.CANCELED, null));
-		}
 	}
 
 }

@@ -21,16 +21,10 @@ import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseSelectionDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFacade;
-import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
-import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -47,19 +41,15 @@ import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -70,20 +60,14 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
-import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.dataprocessing.AbstractProcessingFacade;
 
-public abstract class ExternalMessageProcessingFacade {
+public abstract class ExternalMessageProcessingFacade extends AbstractProcessingFacade {
 
 	protected final ExternalMessageFacade externalMessageFacade;
 	protected final ConfigFacade configFacade;
-	protected final FeatureConfigurationFacade featureConfigurationFacade;
 	protected final PersonFacade personFacade;
-	protected final CaseFacade caseFacade;
-	protected final RegionFacade regionFacade;
-	protected final DistrictFacade districtFacade;
-	protected final CommunityFacade communityFacade;
 	protected final FacilityFacade facilityFacade;
-	private final ContactFacade contactFacade;
 	private final EventFacade eventFacade;
 	private final EventParticipantFacade eventParticipantFacade;
 	private final SampleFacade sampleFacade;
@@ -110,16 +94,11 @@ public abstract class ExternalMessageProcessingFacade {
 		CustomizableEnumFacade customizableEnumFacade,
 		CountryFacade countryFacade,
 		SurveillanceReportFacade surveillanceReportFacade) {
+		super(featureConfigurationFacade, caseFacade, contactFacade, regionFacade, districtFacade, communityFacade);
 		this.externalMessageFacade = externalMessageFacade;
 		this.configFacade = configFacade;
-		this.featureConfigurationFacade = featureConfigurationFacade;
 		this.personFacade = personFacade;
-		this.caseFacade = caseFacade;
-		this.regionFacade = regionFacade;
-		this.districtFacade = districtFacade;
-		this.communityFacade = communityFacade;
 		this.facilityFacade = facilityFacade;
-		this.contactFacade = contactFacade;
 		this.eventFacade = eventFacade;
 		this.eventParticipantFacade = eventParticipantFacade;
 		this.sampleFacade = sampleFacade;
@@ -131,28 +110,6 @@ public abstract class ExternalMessageProcessingFacade {
 
 	public boolean existsForwardedExternalMessageWith(String reportId) {
 		return externalMessageFacade.existsForwardedExternalMessageWith(reportId);
-	}
-
-	public boolean isFeatureDisabled(FeatureType featureType) {
-		return featureConfigurationFacade.isFeatureDisabled(featureType);
-	}
-
-	public abstract boolean hasAllUserRights(UserRight... userRights);
-
-	public List<CaseSelectionDto> getSimilarCases(CaseSimilarityCriteria caseSimilarityCriteria) {
-		return caseFacade.getSimilarCases(caseSimilarityCriteria);
-	}
-
-	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return caseFacade.getCaseDataByUuid(uuid);
-	}
-
-	public List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria contactSimilarityCriteria) {
-		return contactFacade.getMatchingContacts(contactSimilarityCriteria);
-	}
-
-	public ContactDto getContactByUuid(String uuid) {
-		return contactFacade.getByUuid(uuid);
 	}
 
 	public List<EventIndexDto> getEventsByCriteria(EventCriteria eventCriteria) {
@@ -250,21 +207,5 @@ public abstract class ExternalMessageProcessingFacade {
 	public PersonDto getPersonByContext(PersonContext personContext, String personUuid) {
 		return personFacade.getByContext(personContext, personUuid);
 
-	}
-
-	public boolean isFeatureEnabled(FeatureType featureType) {
-		return featureConfigurationFacade.isFeatureEnabled(featureType);
-	}
-
-	public RegionReferenceDto getDefaultRegionReference() {
-		return regionFacade.getDefaultInfrastructureReference();
-	}
-
-	public DistrictReferenceDto getDefaultDistrictReference() {
-		return districtFacade.getDefaultInfrastructureReference();
-	}
-
-	public CommunityReferenceDto getDefaultCommunityReference() {
-		return communityFacade.getDefaultInfrastructureReference();
 	}
 }

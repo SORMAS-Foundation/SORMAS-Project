@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,11 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.processing.flow;
+package de.symeda.sormas.api.utils.dataprocessing;
 
-import java.util.concurrent.CompletionStage;
+public enum ProcessingResultStatus {
 
-public interface FlowAction<T, R> {
+	CONTINUE(false, false),
+	CANCELED(true, false),
+	CANCELED_WITH_CORRECTIONS(true, false),
+	DONE(false, true);
 
-	CompletionStage<ProcessingResult<R>> apply(ProcessingResult<T> currentResult);
+	private final boolean canceled;
+	private final boolean done;
+
+	ProcessingResultStatus(boolean canceled, boolean done) {
+		this.canceled = canceled;
+		this.done = done;
+	}
+
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	public boolean isDone() {
+		return done;
+	}
 }
