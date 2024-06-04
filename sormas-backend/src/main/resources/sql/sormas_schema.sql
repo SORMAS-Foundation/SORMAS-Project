@@ -13236,6 +13236,10 @@ ALTER TABLE selfreports
     ADD COLUMN resultingcontact_id bigint,
     ADD CONSTRAINT fk_resultingcontact_id FOREIGN KEY (resultingcontact_id) REFERENCES contact (id);
 
+ALTER TABLE selfreports_history
+    ADD COLUMN resultingcase_id    bigint,
+    ADD COLUMN resultingcontact_id bigint;
+
 INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

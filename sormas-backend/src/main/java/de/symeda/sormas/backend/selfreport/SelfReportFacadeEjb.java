@@ -345,6 +345,7 @@ public class SelfReportFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_PROCESS)
 	public void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze) {
 		SelfReport selfReport = service.getByReferenceDto(selfReportRef);
 		selfReport.setProcessingStatus(SelfReportProcessingStatus.PROCESSED);
@@ -354,6 +355,7 @@ public class SelfReportFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_PROCESS)
 	public void markProcessed(SelfReportReferenceDto selfReportRef, ContactReferenceDto contactRef) {
 		SelfReport selfReport = service.getByReferenceDto(selfReportRef);
 		selfReport.setProcessingStatus(SelfReportProcessingStatus.PROCESSED);
@@ -385,6 +387,7 @@ public class SelfReportFacadeEjb
 	}
 
 	@Override
+	@RightsAllowed(UserRight._SELF_REPORT_PROCESS)
 	public void linkContactsToCaseByReferenceNumber(CaseReferenceDto cazeRef) {
 		Case caze = caseService.getByReferenceDto(cazeRef);
 		contactService.findBy(new ContactCriteria().caseReferenceNumber(caze.getCaseReferenceNumber()).withCase(false), userService.getCurrentUser())
