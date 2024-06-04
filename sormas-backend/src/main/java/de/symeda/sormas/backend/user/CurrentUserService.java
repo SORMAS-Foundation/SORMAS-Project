@@ -59,6 +59,7 @@ public class CurrentUserService {
 		}
 
 		User cachedUser = userCache.get(currentUsername);
+
 		if (cachedUser != null) {
 			return cachedUser;
 		}

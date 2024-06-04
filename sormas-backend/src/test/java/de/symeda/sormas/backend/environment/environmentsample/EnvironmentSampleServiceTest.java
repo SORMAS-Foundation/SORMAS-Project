@@ -58,7 +58,6 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 			u.setFirstName("Lab");
 			u.setLastName("User");
 			u.setUserName("LabUser");
-
 			u.setLaboratory(lab1.toReference());
 		});
 		FacilityDto lab2 = creator.createFacility("Lab2", rdcf1.region, rdcf1.district, rdcf1.community, FacilityType.LABORATORY);

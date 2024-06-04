@@ -58,7 +58,6 @@ import de.symeda.sormas.backend.util.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -408,7 +407,7 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getUserReferences(null, null, !includeInactive).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	private List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndexCriteria taskContextIndexCriteria) {
+	protected List<UserReferenceDto> getAssignableUsersBasedOnContext(TaskContextIndexCriteria taskContextIndexCriteria) {
 		List<UserReferenceDto> availableUsers = new ArrayList<>();
 		if (taskContextIndexCriteria.getUuid() == null) {
 			taskContextIndexCriteria = new TaskContextIndexCriteria(TaskContext.GENERAL);
@@ -572,8 +571,8 @@ public class UserFacadeEjb implements UserFacade {
 		});
 	}
 
-	private <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(
-		JurisdictionOverEntitySubqueryBuilder<ADO> subqueryBuilder) {
+	protected <ADO extends AbstractDomainObject> List<UserReferenceDto> getUsersHavingEntityInJurisdiction(
+			JurisdictionOverEntitySubqueryBuilder<ADO> subqueryBuilder) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -664,8 +663,7 @@ public class UserFacadeEjb implements UserFacade {
 		return toDto(user);
 	}
 
-	@Nullable
-	private User validateUserRoles(Set<UserRoleReferenceDto> roles, boolean isUserSettingsUpdate, User user, boolean isUserUpdate) {
+	protected void validateUserRoles(Set<UserRoleReferenceDto> roles, boolean isUserSettingsUpdate, User user, boolean isUserUpdate) {
 		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(roles);
 
 		try {
@@ -694,7 +692,6 @@ public class UserFacadeEjb implements UserFacade {
 				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
 			}
 		}
-		return oldUser;
 	}
 
 	@Override
@@ -835,7 +832,7 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private User fillOrBuildEntity(UserDto source, User target, boolean checkChangeDate) {
+	protected User fillOrBuildEntity(UserDto source, User target, boolean checkChangeDate) {
 		boolean targetWasNull = isNull(target);
 
 		target = DtoHelper.fillOrBuildEntity(source, target, userService::createUser, checkChangeDate);
@@ -871,7 +868,7 @@ public class UserFacadeEjb implements UserFacade {
 		return target;
 	}
 
-	private void fillEntityUserRoles(User target, UserDto source) {
+	protected void fillEntityUserRoles(User target, UserDto source) {
 		//Make sure userroles of target are attached
 		Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
 		target.setUserRoles(userRoles);
@@ -1024,7 +1021,7 @@ public class UserFacadeEjb implements UserFacade {
 		});
 	}
 
-	private List<User> getPossibleUsersBasedOnCasesResponsibleDistrict(List<Case> cases) {
+	protected List<User> getPossibleUsersBasedOnCasesResponsibleDistrict(List<Case> cases) {
 		List<String> responsibleDistrictsUuidsAmongCases = cases.stream()
 			.map(Case::getResponsibleDistrict)
 			.collect(Collectors.toSet())
@@ -1040,7 +1037,7 @@ public class UserFacadeEjb implements UserFacade {
 		return possibleUserForReplacement;
 	}
 
-	private List<User> getPossibleUsersBasedOnCasesDistrict(List<Case> cases) {
+	protected List<User> getPossibleUsersBasedOnCasesDistrict(List<Case> cases) {
 		List<String> districtsUuidsAmongCases = cases.stream()
 			.map(Case::getDistrict)
 			.collect(Collectors.toSet())
@@ -1072,7 +1069,7 @@ public class UserFacadeEjb implements UserFacade {
 		return possibleUserForReplacement;
 	}
 
-	private Set<User> getPossibleUsersBasedOnCasesFacility(List<Case> cases) {
+	protected Set<User> getPossibleUsersBasedOnCasesFacility(List<Case> cases) {
 		return cases.stream()
 			.map(Case::getHealthFacility)
 			.filter(Objects::nonNull)

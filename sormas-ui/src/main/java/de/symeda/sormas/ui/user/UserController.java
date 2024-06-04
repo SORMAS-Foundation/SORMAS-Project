@@ -243,49 +243,39 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 
 
 	private void showPasswordResetInternalSuccessPopup(String newPassword) {
-		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
-		Label passwordLabel = new Label(newPassword);
-		passwordLabel.addStyleName(CssStyles.H2);
-		layout.addComponent(passwordLabel);
-		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-		layout.setMargin(true);
-		popupWindow.addCloseListener(event -> popUpWindow.close());
+		showPopupWindow(I18nProperties.getString(Strings.headingNewPassword),newPassword,450,true);
 	}
 
 	private void showPasswordChangeInternalSuccessPopup(String passwordSuccessMessage) {
-		VerticalLayout layout = new VerticalLayout();
-		Label passwordLabel = new Label(passwordSuccessMessage);
-		passwordLabel.addStyleName(CssStyles.H2);
-		layout.addComponent(passwordLabel);
-		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
-
-		layout.setMargin(true);
-		popupWindow.addCloseListener(event -> popUpWindow.close());
+		showPopupWindow(I18nProperties.getString(Strings.headingChangePassword), passwordSuccessMessage,null,true);
 	}
 
-	
+	private void showPopupWindow(String header,String message,Integer width,Boolean closeable) {
+		VerticalLayout layout = new VerticalLayout();
+		Label messageLabel = new Label(message);
+		messageLabel.addStyleName(CssStyles.H2);
+		layout.addComponent(messageLabel);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+
+		popupWindow.setCaption(header);
+		if(width!=null) {
+			popupWindow.setWidth(width, Unit.PIXELS);
+		}
+
+		layout.setMargin(true);
+		if(closeable) {
+			popupWindow.addCloseListener(event -> popUpWindow.close());
+		}
+
+
+	}
 
 	private void showAccountCreatedSuccessful() {
-		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label(I18nProperties.getString(Strings.messageActivateAccount)));
-		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewAccount));
-		popupWindow.setWidth(350, Unit.PIXELS);
-		layout.setMargin(true);
+		showPopupWindow(I18nProperties.getString(Strings.headingNewAccount), I18nProperties.getString(Strings.messageActivateAccount),350,false);
 	}
 
 	private void showPasswordResetExternalSuccessPopup() {
-		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordResetEmailLink)));
-		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-		popupWindow.setWidth(450, Unit.PIXELS);
-		layout.setMargin(true);
-
-		popupWindow.addCloseListener(event -> popUpWindow.close());
+		showPopupWindow(I18nProperties.getString(Strings.headingNewPassword), I18nProperties.getString(Strings.messagePasswordResetEmailLink),450,true);
 	}
 
 	private void refreshView() {
@@ -409,9 +399,8 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 			passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(event.getText()));
 			if (passwordStrengthDesc.getValue().contains("Strong")) {
 				passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
-			} else if (passwordStrengthDesc.getValue().contains("Moderate")) {
-				passwordStrengthDesc.setStyleName(LABEL_WARNING);
-			} else {
+			}
+			else {
 				passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
 			}
 		});

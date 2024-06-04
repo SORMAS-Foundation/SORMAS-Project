@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Annotation;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -851,14 +852,40 @@ public abstract class AbstractBeanTest {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 		// load into cache, to work-around CurrentUserService.fetchUser @Transactional annotation not working in tests
 		getCurrentUserService().getCurrentUser();
+
 		return user;
 	}
+
+//	protected UserDto loginWith(UserDto user) {
+//		if (user == null) {
+//			throw new IllegalArgumentException("User cannot be null");
+//		}
+//
+//		String userName = user.getUserName();
+//		if (userName == null) {
+//			throw new IllegalArgumentException("User name cannot be null");
+//		}
+//
+//		// Ensure MockProducer.getPrincipal() is not null
+//		Principal principal = MockProducer.getPrincipal();
+//		if (principal == null) {
+//			throw new IllegalStateException("Principal cannot be null");
+//		}
+//
+//		when(principal.getName()).thenReturn(userName);
+//
+//		// Load into cache, to work-around CurrentUserService.fetchUser @Transactional annotation not working in tests
+//		getCurrentUserService().getCurrentUser();
+//		return user;
+//	}
+
 
 	protected UserDto useNationalUserLogin() {
 		return loginWith(creator.createNationalUser());
 	}
 
 	protected UserDto useNationalAdminLogin() {
+
 		if (nationalAdmin == null) {
 			// we don't use TestDataCreator.createUser here, because we first need any user to have the user right to access backend facades
 			User user = new User();
@@ -874,7 +901,9 @@ public abstract class AbstractBeanTest {
 
 			getUserService().persist(user);
 			nationalAdmin = getUserFacade().getByUuid(user.getUuid());
+
 		}
+
 		return loginWith(nationalAdmin);
 	}
 

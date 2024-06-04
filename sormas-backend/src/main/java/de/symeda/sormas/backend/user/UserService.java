@@ -197,7 +197,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	 * @param userRights
 	 */
 	public List<UserReference> getUserReferences(List<String> regionUuids, List<String> districtUuids, boolean activeOnly, UserRight... userRights) {
-
 		return getUserReferences(regionUuids, districtUuids, null, activeOnly, userRights);
 	}
 

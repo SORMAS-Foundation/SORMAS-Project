@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import de.symeda.sormas.api.utils.PasswordHelper;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -2515,4 +2516,29 @@ public class TestDataCreator {
 			this.pointOfEntry = pointOfEntry;
 		}
 	}
+
+
+	public User createTestUser() {
+		User user = new User();
+		user.setUserName("testuser");
+		user.setFirstName("Test");
+		user.setLastName("User");
+		user.setUuid(DataHelper.createUuid());
+		String password = "password";
+		String seed = "seed";
+		String encodedPassword = PasswordHelper.encodePassword(password, seed); // Assume PasswordHelper is the correct utility for encoding
+		user.setPassword(encodedPassword);
+		user.setSeed(seed);
+		user.setActive(true);
+		user.setUserRoles(
+				new HashSet<>(Arrays.asList(
+						getUserRole(DefaultUserRole.ADMIN),
+						getUserRole(DefaultUserRole.NATIONAL_USER))));
+
+		beanTest.getUserService().persist(user);
+		return user;
+	}
+
+
+
 }

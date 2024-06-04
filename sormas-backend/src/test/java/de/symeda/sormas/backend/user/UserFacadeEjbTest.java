@@ -20,42 +20,28 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+
 import javax.persistence.EntityNotFoundException;
+
 import javax.validation.ValidationException;
+
+import de.symeda.sormas.api.user.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserCriteria;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
-import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -187,7 +173,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		AuthProvider authProvider = mock(AuthProvider.class);
 
 		MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
-		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
+		when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
@@ -223,20 +209,20 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		}
 
 		for (User user : testUsers) {
-			loginWith(UserFacadeEjb.toDto(user));
+			loginWith(getUserFacade().toDto(user));
 			List<UserDto> persistedDefaultUsers = getUserFacade().getUsersWithDefaultPassword();
 
 			if (user.hasUserRight(UserRight.USER_EDIT)) {
 				assertEquals(defaultUsers.size(), persistedDefaultUsers.size());
 				for (User defUser : defaultUsers) {
-					assertThat(persistedDefaultUsers, hasItem(UserFacadeEjb.toDto(defUser)));
+					assertThat(persistedDefaultUsers, hasItem(getUserFacade().toDto(defUser)));
 				}
 				for (User randomUser : randomUsers) {
-					assertThat(persistedDefaultUsers, not(hasItem(UserFacadeEjb.toDto(randomUser))));
+					assertThat(persistedDefaultUsers, not(hasItem(getUserFacade().toDto(randomUser))));
 				}
 			} else if (defaultUsers.contains(user)) {
 				assertEquals(1, persistedDefaultUsers.size());
-				assertEquals(UserFacadeEjb.toDto(user), persistedDefaultUsers.get(0));
+				assertEquals(getUserFacade().toDto(user), persistedDefaultUsers.get(0));
 			} else {
 				assertEquals(0, persistedDefaultUsers.size());
 			}
@@ -457,6 +443,9 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	}
 
+
+
+
 	@Test
 	void getUserRights() {
 
@@ -480,4 +469,105 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		loginWith(nationalAdmin);
 		assertThrows(EntityNotFoundException.class, () -> getUserFacade().getUserRights("12345"));
 	}
+
+
+		@Test
+		public void testUpdateUserPassword() {
+			// Arrange
+			User testUser =creator.createTestUser();
+
+			String newPassword="newPassword";
+			String currentPassword=testUser.getPassword();
+			String uuid=testUser.getUuid();
+			String result = getUserFacade().updateUserPassword(uuid, newPassword , currentPassword);
+
+			// Assert
+			assertEquals(newPassword, result);
+
+			// Verify the password was updated in the database
+			User updatedUser = getUserService().getByUuid(uuid);
+
+			assertNotEquals(currentPassword, updatedUser.getPassword()); // Password should be different
+			UserDto updatedUserDto = getUserFacade().getByUuid(uuid);
+
+			loginWith(updatedUserDto); // Login again with changed password
+			assertTrue(getUserFacade().validatePassword(uuid,newPassword)); // Validate the new password
+
+		}
+
+
+	@Test
+	public void testGeneratePassword() {
+		// Act
+		String result = getUserFacade().generatePassword();
+
+		// Assert
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+	}
+
+	@Test
+	void testGetValidLoginRoles_ValidUser() {
+		// Arrange
+		User user = creator.createTestUser();
+
+		// Act
+		Set<UserRoleDto> result = getUserFacade().getValidLoginRoles(user.getUserName(), "password");
+
+		// Assert
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+	}
+
+	@Test
+	void testGetValidLoginRoles_InvalidUser() {
+		// Act
+		Set<UserRoleDto> result = getUserFacade().getValidLoginRoles("testuser", "password");
+
+		// Assert
+		assertNotNull(result);
+		assertTrue(result.isEmpty());
+	}
+
+
+	@Test
+	void testValidatePassword_Valid() {
+		// Arrange
+
+		User user= creator.createTestUser();
+		// Act
+		UserDto loggedInUser = getUserFacade().getByUuid(user.getUuid());
+		loginWith(loggedInUser);
+		boolean result = getUserFacade().validatePassword(loggedInUser.getUuid(), "password"); // Use plain password for validation
+
+		// Assert
+		assertTrue(result);
+	}
+
+
+	@Test
+	void testValidatePassword_Invalid() {
+		// Act
+		boolean result = getUserFacade().validatePassword("uuid", "password");
+
+		// Assert
+		assertFalse(result);
+	}
+
+
+
+
+	@Test
+	void testCheckPasswordStrength_Strong() {
+		String result = getUserFacade().checkPasswordStrength("Verystrongassword134$");
+		assertEquals("Password Strength is Strong", result);
+	}
+
+	@Test
+	void testCheckPasswordStrength_Weak() {
+		String result = getUserFacade().checkPasswordStrength("weak");
+		assertEquals("Password Strength is Weak", result);
+	}
+
+
 }

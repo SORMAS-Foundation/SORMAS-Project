@@ -34,6 +34,8 @@ public class PasswordResetEvent {
 		this.user = user;
 	}
 
+
+
 	public User getUser() {
 		return user;
 	}
