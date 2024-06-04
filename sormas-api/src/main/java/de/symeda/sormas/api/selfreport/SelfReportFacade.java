@@ -24,8 +24,12 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 
+import java.util.List;
+
 @Remote
 public interface SelfReportFacade extends CoreFacade<SelfReportDto, SelfReportIndexDto, SelfReportReferenceDto, SelfReportCriteria> {
+
+    List<SelfReportListEntryDto> getEntriesList(SelfReportCriteria selfReportCriteria, Integer first, Integer max);
 
 	void markProcessed(SelfReportReferenceDto selfReportRef, CaseReferenceDto caze);
 

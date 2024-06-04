@@ -785,6 +785,7 @@ public interface Strings {
 	String headingSelfReportCaseReportWithSameReferenceFound = "headingSelfReportCaseReportWithSameReferenceFound";
 	String headingSelfReportCaseWithSameReferenceNumberFound = "headingSelfReportCaseWithSameReferenceNumberFound";
 	String headingSelfReportContactsWithCaseReferenceFound = "headingSelfReportContactsWithCaseReferenceFound";
+	String headingSelfReportSideComponent = "headingSelfReportSideComponent";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingShareRequestCases = "headingShareRequestCases";
 	String headingShareRequestContacts = "headingShareRequestContacts";

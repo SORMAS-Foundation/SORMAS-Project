@@ -38,6 +38,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.selfreport.SelfReportListEntryDto;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -350,6 +351,11 @@ public class SelfReportFacadeEjb
 		}
 
 		return orderList;
+	}
+
+	@Override
+	public List<SelfReportListEntryDto> getEntriesList(SelfReportCriteria selfReportCriteria, Integer first, Integer max) {
+		return service.getEntriesList(selfReportCriteria, first, max);
 	}
 
 	@Override
