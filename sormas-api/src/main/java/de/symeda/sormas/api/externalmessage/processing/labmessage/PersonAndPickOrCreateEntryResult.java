@@ -18,8 +18,8 @@ package de.symeda.sormas.api.externalmessage.processing.labmessage;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 
 public class PersonAndPickOrCreateEntryResult {
 

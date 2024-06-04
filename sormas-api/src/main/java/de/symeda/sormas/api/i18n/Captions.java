@@ -2217,6 +2217,7 @@ public interface Captions {
 	String selfReportAllActiveAndArchivedEnvironments = "selfReportAllActiveAndArchivedEnvironments";
 	String selfReportArchivedEnvironments = "selfReportArchivedEnvironments";
 	String selfReportDeletedEnvironments = "selfReportDeletedEnvironments";
+	String selfReportProcess = "selfReportProcess";
 	String selfReportSelfReportsList = "selfReportSelfReportsList";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";

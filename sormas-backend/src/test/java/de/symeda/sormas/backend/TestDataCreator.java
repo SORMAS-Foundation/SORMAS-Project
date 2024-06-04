@@ -1755,6 +1755,10 @@ public class TestDataCreator {
 		return createRDCF("Region", "District", "Community", "Facility", FacilityType.HOSPITAL, "PointOfEntry", false);
 	}
 
+	public RDCF createRDCF(boolean deafultRdcf) {
+		return createRDCF("Region", "District", "Community", "Facility", FacilityType.HOSPITAL, "PointOfEntry", false, deafultRdcf);
+	}
+
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
 		return createRDCF(regionName, districtName, communityName, facilityName, FacilityType.HOSPITAL, null, false);
 	}
@@ -1771,10 +1775,22 @@ public class TestDataCreator {
 		FacilityType facilityType,
 		String pointOfEntryName,
 		boolean withExternalIds) {
+		return createRDCF(regionName, districtName, communityName, facilityName, facilityType, pointOfEntryName, withExternalIds, false);
+	}
 
-		Region region = createRegion(regionName, withExternalIds ? regionName + "_externalId" : null);
-		District district = createDistrict(districtName, region, withExternalIds ? districtName + "_externalId" : null);
-		Community community = createCommunity(communityName, district, withExternalIds ? communityName + "_externalId" : null);
+	public RDCF createRDCF(
+		String regionName,
+		String districtName,
+		String communityName,
+		String facilityName,
+		FacilityType facilityType,
+		String pointOfEntryName,
+		boolean withExternalIds,
+		boolean defaultRdcf) {
+
+		Region region = createRegion(regionName, withExternalIds ? regionName + "_externalId" : null, defaultRdcf);
+		District district = createDistrict(districtName, region, withExternalIds ? districtName + "_externalId" : null, defaultRdcf);
+		Community community = createCommunity(communityName, district, withExternalIds ? communityName + "_externalId" : null, defaultRdcf);
 		Facility facility =
 			createFacility(facilityName, facilityType, region, district, community, withExternalIds ? facilityName + "_externalId" : null);
 
@@ -1848,11 +1864,12 @@ public class TestDataCreator {
 	}
 
 	public Region createRegion(String regionName) {
-		return createRegion(regionName, null);
+		return createRegion(regionName, null, false);
 	}
 
-	public Region createRegion(String regionName, String externalId) {
+	public Region createRegion(String regionName, String externalId, boolean deafultRegion) {
 		Region region = getRegion(regionName, externalId);
+		region.setDefaultInfrastructure(deafultRegion);
 		beanTest.getRegionService().persist(region);
 		return region;
 	}
@@ -1875,11 +1892,12 @@ public class TestDataCreator {
 	}
 
 	public District createDistrict(String districtName, Region region) {
-		return createDistrict(districtName, region, null);
+		return createDistrict(districtName, region, null, false);
 	}
 
-	public District createDistrict(String districtName, Region region, String externalId) {
+	public District createDistrict(String districtName, Region region, String externalId, boolean defaultDistrict) {
 		District district = getDistrict(districtName, region, externalId);
+		district.setDefaultInfrastructure(defaultDistrict);
 		beanTest.getDistrictService().persist(district);
 		return district;
 	}
@@ -1903,11 +1921,12 @@ public class TestDataCreator {
 	}
 
 	public Community createCommunity(String communityName, District district) {
-		return createCommunity(communityName, district, null);
+		return createCommunity(communityName, district, null, false);
 	}
 
-	public Community createCommunity(String communityName, District district, String externalId) {
+	public Community createCommunity(String communityName, District district, String externalId, boolean defaultCommunity) {
 		Community community = getCommunity(communityName, district, externalId);
+		community.setDefaultInfrastructure(defaultCommunity);
 		beanTest.getCommunityService().persist(community);
 		return community;
 	}
