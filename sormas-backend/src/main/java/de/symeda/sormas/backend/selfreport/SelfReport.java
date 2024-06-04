@@ -79,7 +79,6 @@ public class SelfReport extends CoreAdo {
 	public static final String PROCESSING_STATUS = "processingStatus";
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String RESULTING_CONTACT = "resultingContact";
-	public static final String DATE_OF_TEST = "dateOfTest";
 
 	private SelfReportType type;
 	private Date reportDate;
