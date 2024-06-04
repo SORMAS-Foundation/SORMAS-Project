@@ -7198,6 +7198,8 @@ paths:
                   - SELF_REPORT_DELETE
                   - SELF_REPORT_ARCHIVE
                   - SELF_REPORT_PROCESS
+                  - SELF_REPORT_IMPORT
+                  - SELF_REPORT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7433,6 +7435,8 @@ paths:
                   - SELF_REPORT_DELETE
                   - SELF_REPORT_ARCHIVE
                   - SELF_REPORT_PROCESS
+                  - SELF_REPORT_IMPORT
+                  - SELF_REPORT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -25534,6 +25538,8 @@ components:
             - SELF_REPORT_DELETE
             - SELF_REPORT_ARCHIVE
             - SELF_REPORT_PROCESS
+            - SELF_REPORT_IMPORT
+            - SELF_REPORT_EXPORT
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE
