@@ -29,7 +29,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportImportFacade;
-import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -73,9 +72,6 @@ public class SelfReportImportFacadeEjb implements SelfReportImportFacade {
 		}
 
 		SelfReportDto selfReport = SelfReportDto.build(null);
-		if (!values[0].isBlank()) {
-			selfReport.setType(SelfReportType.valueOf(values[0]));
-		}
 		ImportLineResultDto<SelfReportDto> importResult = buildSelfReport(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, selfReport);
 
 		if (importResult.isError()) {
