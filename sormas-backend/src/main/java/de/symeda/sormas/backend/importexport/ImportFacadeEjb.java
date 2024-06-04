@@ -537,16 +537,11 @@ public class ImportFacadeEjb implements ImportFacade {
 			"",
 			separator,
 			featureConfigurations,
-			SelfReportDto.class.getDeclaredField("investigationStatus"),
-			SelfReportDto.class.getDeclaredField("processingStatus"),
-			SelfReportDto.class.getDeclaredField("deleted"),
-			SelfReportDto.class.getDeclaredField("deletionReason"),
-			SelfReportDto.class.getDeclaredField("otherDeletionReason"),
-			SelfReportDto.class.getDeclaredField("INVESTIGATION_STATUS"),
-			SelfReportDto.class.getDeclaredField("PROCESSING_STATUS"),
-			SelfReportDto.class.getDeclaredField("DELETED"),
-			SelfReportDto.class.getDeclaredField("DELETION_REASON"),
-			SelfReportDto.class.getDeclaredField("OTHER_DELETION_REASON"));
+			SelfReportDto.INVESTIGATION_STATUS,
+			SelfReportDto.PROCESSING_STATUS,
+			SelfReportDto.DELETED,
+			SelfReportDto.DELETION_REASON,
+			SelfReportDto.OTHER_DELETION_REASON);
 
 		writeTemplate(Paths.get(getSelfReportImportTemplateFilePath()), importColumns, true);
 	}
@@ -768,15 +763,15 @@ public class ImportFacadeEjb implements ImportFacade {
 		String prefix,
 		char separator,
 		List<FeatureConfigurationDto> featureConfigurations,
-		Field... excludedFields) {
+		String... excludedFields) {
 
 		Field[] fields;
 		FieldVisibilityCheckers visibilityChecker =
 			FieldVisibilityCheckers.withCountry(configFacade.getCountryCode()).add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
-		List<Field> excluded = Arrays.asList(excludedFields);
+		List<String> excluded = Arrays.asList(excludedFields);
 		if (excludedFields.length > 1) {
-			fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> !excluded.contains(field)).toArray(Field[]::new);
+			fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> !excluded.contains(field.getName())).toArray(Field[]::new);
 		} else {
 			fields = clazz.getDeclaredFields();
 		}

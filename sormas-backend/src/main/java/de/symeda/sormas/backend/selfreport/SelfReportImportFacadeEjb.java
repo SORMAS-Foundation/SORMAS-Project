@@ -12,7 +12,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,12 +72,9 @@ public class SelfReportImportFacadeEjb implements SelfReportImportFacade {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
 		}
 
-		SelfReportDto selfReport;
-		if (values[0].isBlank() || !EnumUtils.isValidEnum(SelfReportType.class, values[0])) {
-			selfReport = SelfReportDto.build(null);
-		} else {
-			SelfReportType type = SelfReportType.valueOf(values[0]);
-			selfReport = SelfReportDto.build(type);
+		SelfReportDto selfReport = SelfReportDto.build(null);
+		if (!values[0].isBlank()) {
+			selfReport.setType(SelfReportType.valueOf(values[0]));
 		}
 		ImportLineResultDto<SelfReportDto> importResult = buildSelfReport(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, selfReport);
 
