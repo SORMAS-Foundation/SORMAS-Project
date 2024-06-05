@@ -42,6 +42,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.backend.selfreport.SelfReport;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
@@ -244,6 +245,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String CREATION_VERSION = "creationVersion";
 	public static final String SPECIAL_CASE_ACCESSES = "specialCaseAccesses";
+	public static final String SELF_REPORT = "selfReport";
 
 	private Person person;
 	private String description;
@@ -425,6 +427,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Map<String, String> externalData;
 
 	private List<SpecialCaseAccess> specialCaseAccesses = new ArrayList<>(0);
+
+	private List<SelfReport> selfReport;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -1764,5 +1768,14 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSpecialCaseAccesses(List<SpecialCaseAccess> specialCaseAccesses) {
 		this.specialCaseAccesses = specialCaseAccesses;
+	}
+
+	@OneToMany(mappedBy = SelfReport.RESULTING_CASE, fetch = FetchType.LAZY)
+	public List<SelfReport> getSelfReport() {
+		return selfReport;
+	}
+
+	public void setSelfReport(List<SelfReport> selfReport) {
+		this.selfReport = selfReport;
 	}
 }

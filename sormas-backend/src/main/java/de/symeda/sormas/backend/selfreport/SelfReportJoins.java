@@ -19,7 +19,9 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.QueryJoins;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.user.User;
@@ -29,6 +31,10 @@ public class SelfReportJoins extends QueryJoins<SelfReport> {
 	private Join<SelfReport, Location> address;
 	private LocationJoins addressJoins;
 	private Join<SelfReport, User> responsibleUser;
+
+	private Join<SelfReport, Case> caseJoin;
+
+	private Join<SelfReport, Contact> contactJoin;
 
 	public SelfReportJoins(From<?, SelfReport> root) {
 		super(root);
@@ -56,5 +62,21 @@ public class SelfReportJoins extends QueryJoins<SelfReport> {
 
 	private void setResponsibleUser(Join<SelfReport, User> responsibleUser) {
 		this.responsibleUser = responsibleUser;
+	}
+
+	public Join<SelfReport, Case> getCaseJoin() {
+		return getOrCreate(caseJoin, SelfReport.RESULTING_CASE, JoinType.LEFT, this::setCaseJoin);
+	}
+
+	public void setCaseJoin(Join<SelfReport, Case> caseJoin) {
+		this.caseJoin = caseJoin;
+	}
+
+	public Join<SelfReport, Contact> getContactJoin() {
+		return getOrCreate(contactJoin, SelfReport.RESULTING_CONTACT, JoinType.LEFT, this::setContactJoin);
+	}
+
+	public void setContactJoin(Join<SelfReport, Contact> contactJoin) {
+		this.contactJoin = contactJoin;
 	}
 }

@@ -19,12 +19,15 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
@@ -43,6 +46,8 @@ import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListCompone
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
+import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponent;
+import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessSideComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -74,6 +79,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 	public static final String SPECIAL_ACCESSES_LOC = "specialAccesses";
+	public static final String SELF_REPORT_LOC = "selfReport";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -110,7 +116,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			DOCUMENTS_LOC,
 			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
 			EXTERNAL_EMAILS_LOC,
-			SPECIAL_ACCESSES_LOC);
+			SPECIAL_ACCESSES_LOC,
+			SELF_REPORT_LOC);
 
 		container.addComponent(layout);
 
@@ -226,6 +233,11 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			SpecialCaseAccessSideComponent specialAccessListComponent = new SpecialCaseAccessSideComponent(getCaseRef());
 			layout.addSidePanelComponent(new SideComponentLayout(specialAccessListComponent), SPECIAL_ACCESSES_LOC);
 		}
+
+		SelfReportListComponent selfReportListComponent =
+			new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
+		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
+		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, caseEditAllowed);

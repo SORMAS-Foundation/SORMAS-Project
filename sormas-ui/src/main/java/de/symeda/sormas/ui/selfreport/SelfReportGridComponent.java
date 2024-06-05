@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.selfreport;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportIndexDto;
 import de.symeda.sormas.api.selfreport.SelfReportInvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -147,5 +149,13 @@ public class SelfReportGridComponent extends VerticalLayout {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getDataSize())));
 		}
+	}
+
+	public SelfReportGrid getGrid() {
+		return grid;
+	}
+
+	public Set<SelfReportIndexDto> getSelectedItems() {
+		return grid.asMultiSelect().getSelectedItems();
 	}
 }

@@ -26,6 +26,7 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
@@ -78,7 +79,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		super(
 			I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder),
 			fileNameFunction,
-			isNull(sampleCriteria) && isNull(documentListComponent));
+			isNull(sampleCriteria) && isNull(documentListComponent),
+			false);
 		this.workflow = workflow;
 		this.documentStreamSupplier = documentStreamSupplier;
 
@@ -97,12 +99,14 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	public QuarantineOrderLayout(DocumentWorkflow workflow) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), null, true);
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), null, true, true);
 
 		this.workflow = workflow;
 		this.documentStreamSupplier = null;
 		init();
 		buttonBar.setVisible(false);
+		checkBoxUploadGeneratedDoc.setValue(true);
+		checkBoxUploadGeneratedDoc.setStyleName(CssStyles.VSPACE_3);
 	}
 
 	protected void createSampleSelector(SampleCriteria sampleCriteria) {

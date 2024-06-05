@@ -89,7 +89,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		+ fluidRowLocs(SelfReportDto.OTHER_DELETION_REASON);
 	private LocationEditForm addressForm;
 
-	protected SelfReportDataForm(Disease disease, boolean inJurisdiction, boolean isPseudonymized) {
+	public SelfReportDataForm(Disease disease, boolean inJurisdiction, boolean isPseudonymized) {
 		super(
 			SelfReportDto.class,
 			SelfReportDto.I18N_PREFIX,
@@ -114,7 +114,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		addField(SelfReportDto.REPORT_DATE).setRequired(true);
 		addField(SelfReportDto.CASE_REFERENCE);
 
-		//desease related fields
+		//disease related fieldss
 		ComboBox diseaseField = addDiseaseField(SelfReportDto.DISEASE, false);
 		addField(SelfReportDto.DISEASE_DETAILS, TextField.class);
 		diseaseField.setRequired(true);

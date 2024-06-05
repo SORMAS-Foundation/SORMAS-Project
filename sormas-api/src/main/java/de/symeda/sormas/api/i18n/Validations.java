@@ -140,12 +140,15 @@ public interface Validations {
 	String importRegionAlreadyExists = "importRegionAlreadyExists";
 	String importRegionNotInServerCountry = "importRegionNotInServerCountry";
 	String importRegionNotUnique = "importRegionNotUnique";
+	String importSelfReportPropertyTypeNotAllowed = "importSelfReportPropertyTypeNotAllowed";
+	String importSelfReportUnexpectedError = "importSelfReportUnexpectedError";
 	String importSubcontinentAlreadyExists = "importSubcontinentAlreadyExists";
 	String importSubcontinentNotUnique = "importSubcontinentNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String invalidNationalHealthId = "invalidNationalHealthId";
+	String invalidSelfReportType = "invalidSelfReportType";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String jurisdictionChangeUserAssignment = "jurisdictionChangeUserAssignment";
 	String latitudeBetween = "latitudeBetween";
@@ -203,6 +206,7 @@ public interface Validations {
 	String required = "required";
 	String requiredField = "requiredField";
 	String sampleDateTimeAfterPathogenTestDateTime = "sampleDateTimeAfterPathogenTestDateTime";
+	String selfReportAlreadyProcessedError = "selfReportAlreadyProcessedError";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	String sormasToSormasAcceptCaseBeforeContact = "sormasToSormasAcceptCaseBeforeContact";

@@ -688,6 +688,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		personCreateForm.setPerson(person);
 	}
 
+	public void setPerson(PersonDto person, boolean isNewPerson) {
+		personCreateForm.setPerson(person, isNewPerson);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;

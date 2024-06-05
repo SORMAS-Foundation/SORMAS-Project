@@ -132,6 +132,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
@@ -147,12 +148,10 @@ import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.parser.ImportParserService;
-import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
@@ -195,12 +194,6 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private AreaFacadeEjbLocal areaFacade;
-	@EJB
-	private EnumService enumService;
-	@EJB
 	private RegionService regionService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
@@ -226,6 +219,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
 	private static final String TRAVEL_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_travel_entry_template.csv";
 	private static final String ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME = "import_environment_template.csv";
+	private static final String SELF_REPORT_IMPORT_TEMPLATE_FILE_NAME = "import_self_report_template.csv";
 
 	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
 	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
@@ -530,6 +524,29 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateSelfReportImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException, NoSuchFieldException {
+
+		createExportDirectoryIfNecessary();
+
+		char separator = configFacade.getCsvSeparator();
+		List<ImportColumn> importColumns = new ArrayList<>();
+
+		appendListOfFields(
+			importColumns,
+			SelfReportDto.class,
+			"",
+			separator,
+			featureConfigurations,
+			SelfReportDto.INVESTIGATION_STATUS,
+			SelfReportDto.PROCESSING_STATUS,
+			SelfReportDto.DELETED,
+			SelfReportDto.DELETION_REASON,
+			SelfReportDto.OTHER_DELETION_REASON);
+
+		writeTemplate(Paths.get(getSelfReportImportTemplateFilePath()), importColumns, true);
+	}
+
+	@Override
 	public String getCaseImportTemplateFileName() {
 		return getImportTemplateFileName(CASE_IMPORT_TEMPLATE_FILE_NAME);
 	}
@@ -745,12 +762,21 @@ public class ImportFacadeEjb implements ImportFacade {
 		Class<?> clazz,
 		String prefix,
 		char separator,
-		List<FeatureConfigurationDto> featureConfigurations) {
+		List<FeatureConfigurationDto> featureConfigurations,
+		String... excludedFields) {
 
+		Field[] fields;
 		FieldVisibilityCheckers visibilityChecker =
 			FieldVisibilityCheckers.withCountry(configFacade.getCountryCode()).add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
-		for (Field field : clazz.getDeclaredFields()) {
+		List<String> excluded = Arrays.asList(excludedFields);
+		if (excludedFields.length > 1) {
+			fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> !excluded.contains(field.getName())).toArray(Field[]::new);
+		} else {
+			fields = clazz.getDeclaredFields();
+		}
+
+		for (Field field : fields) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}
@@ -880,6 +906,16 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public String getEnvironmentImportTemplateFileName() {
 		return getImportTemplateFileName(ENVIRONMENT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSelfReportImportTemplateFilePath() {
+		return getImportTemplateFilePath(SELF_REPORT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSelfReportImportTemplateFileName() {
+		return getImportTemplateFileName(SELF_REPORT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	/**

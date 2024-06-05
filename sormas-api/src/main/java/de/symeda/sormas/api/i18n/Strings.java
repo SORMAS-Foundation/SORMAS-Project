@@ -179,6 +179,9 @@ public interface Strings {
 	String confirmationRestoreEntities = "confirmationRestoreEntities";
 	String confirmationRevokeSormasToSormasShareRequest = "confirmationRevokeSormasToSormasShareRequest";
 	String confirmationSeeAllPersons = "confirmationSeeAllPersons";
+	String confirmationSelfReportCaseReportWithSameReferenceFound = "confirmationSelfReportCaseReportWithSameReferenceFound";
+	String confirmationSelfReportLinkContactsByCaseReference = "confirmationSelfReportLinkContactsByCaseReference";
+	String confirmationSelfReportLinkContactToCaseWithSameReferenceNumber = "confirmationSelfReportLinkContactToCaseWithSameReferenceNumber";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSinceExternalMessages = "confirmationSinceExternalMessages";
 	String confirmationUnclearExternalMessage = "confirmationUnclearExternalMessage";
@@ -278,6 +281,7 @@ public interface Strings {
 	String entitySample = "entitySample";
 	String entitySamples = "entitySamples";
 	String entitySelfReport = "entitySelfReport";
+	String entitySelfReports = "entitySelfReports";
 	String entityStatistics = "entityStatistics";
 	String entitySubcontinents = "entitySubcontinents";
 	String entityTask = "entityTask";
@@ -668,6 +672,7 @@ public interface Strings {
 	String headingImportPointsOfEntry = "headingImportPointsOfEntry";
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
+	String headingImportSelfReports = "headingImportSelfReports";
 	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
@@ -777,6 +782,10 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectPerson = "headingSelectPerson";
 	String headingSelectSourceCase = "headingSelectSourceCase";
+	String headingSelfReportCaseReportWithSameReferenceFound = "headingSelfReportCaseReportWithSameReferenceFound";
+	String headingSelfReportCaseWithSameReferenceNumberFound = "headingSelfReportCaseWithSameReferenceNumberFound";
+	String headingSelfReportContactsWithCaseReferenceFound = "headingSelfReportContactsWithCaseReferenceFound";
+	String headingSelfReportSideComponent = "headingSelfReportSideComponent";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingShareRequestCases = "headingShareRequestCases";
 	String headingShareRequestContacts = "headingShareRequestContacts";
@@ -1041,6 +1050,8 @@ public interface Strings {
 	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSelectOrCreatePersonForLabMessageWithoutMatches = "infoSelectOrCreatePersonForLabMessageWithoutMatches";
+	String infoSelfReportCreateEntry = "infoSelfReportCreateEntry";
+	String infoSelfReportSelectOrCreateEntry = "infoSelfReportSelectOrCreateEntry";
 	String infoSimilarImmunization = "infoSimilarImmunization";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
@@ -1461,6 +1472,7 @@ public interface Strings {
 	String messageSelfReportArchived = "messageSelfReportArchived";
 	String messageSelfReportDearchived = "messageSelfReportDearchived";
 	String messageSelfReportOutsideJurisdictionDeletionDenied = "messageSelfReportOutsideJurisdictionDeletionDenied";
+	String messageSelfReportSaved = "messageSelfReportSaved";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
 	String messageSormasToSormasSimilarCaseFound = "messageSormasToSormasSimilarCaseFound";
 	String messageSormasToSormasSimilarCaseToContactFound = "messageSormasToSormasSimilarCaseToContactFound";

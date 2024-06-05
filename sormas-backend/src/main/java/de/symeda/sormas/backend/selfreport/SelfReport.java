@@ -38,7 +38,9 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.selfreport.SelfReportInvestigationStatus;
 import de.symeda.sormas.api.selfreport.SelfReportProcessingStatus;
 import de.symeda.sormas.api.selfreport.SelfReportType;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
@@ -52,7 +54,9 @@ public class SelfReport extends CoreAdo {
 	public static final String REPORT_DATE = "reportDate";
 	public static final String CASE_REFERENCE = "caseReference";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String SEX = "sex";
@@ -63,10 +67,18 @@ public class SelfReport extends CoreAdo {
 	public static final String EMAIL = "email";
 	public static final String PHONE_NUMBER = "phoneNumber";
 	public static final String ADDRESS = "address";
+	public static final String DATE_OF_TEST = "dateOfTest";
+	public static final String DATE_OF_SYMPTOMS = "dateOfSymptoms";
+	public static final String WORKPLACE = "workplace";
+	public static final String DATE_WORKPLACE = "dateWorkplace";
+	public static final String ISOLATION_DATE = "isolationDate";
+	public static final String CONTACT_DATE = "contactDate";
 	public static final String COMMENT = "comment";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PROCESSING_STATUS = "processingStatus";
+	public static final String RESULTING_CASE = "resultingCase";
+	public static final String RESULTING_CONTACT = "resultingContact";
 
 	private SelfReportType type;
 	private Date reportDate;
@@ -75,6 +87,7 @@ public class SelfReport extends CoreAdo {
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
+	// person data
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -85,6 +98,7 @@ public class SelfReport extends CoreAdo {
 	private String email;
 	private String phoneNumber;
 	private Location address;
+	// end person data
 	private Date dateOfTest;
 	private Date dateOfSymptoms;
 	private String workplace;
@@ -95,6 +109,9 @@ public class SelfReport extends CoreAdo {
 	private User responsibleUser;
 	private SelfReportInvestigationStatus investigationStatus;
 	private SelfReportProcessingStatus processingStatus;
+
+	private Case resultingCase;
+	private Contact resultingContact;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -343,5 +360,23 @@ public class SelfReport extends CoreAdo {
 
 	public void setProcessingStatus(SelfReportProcessingStatus processingStatus) {
 		this.processingStatus = processingStatus;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Case getResultingCase() {
+		return resultingCase;
+	}
+
+	public void setResultingCase(Case resultingCaze) {
+		this.resultingCase = resultingCaze;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Contact getResultingContact() {
+		return resultingContact;
+	}
+
+	public void setResultingContact(Contact resultingContact) {
+		this.resultingContact = resultingContact;
 	}
 }

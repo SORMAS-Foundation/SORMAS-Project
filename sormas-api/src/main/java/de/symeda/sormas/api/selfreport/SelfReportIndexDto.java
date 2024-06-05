@@ -27,6 +27,8 @@ import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 public class SelfReportIndexDto extends AbstractUuidDto implements Pseudonymizable {
 
+	public static final String I18N_PREFIX = "SelfReport";
+
 	private static final long serialVersionUID = -4984417669514467918L;
 
 	public static final String TYPE = "type";
