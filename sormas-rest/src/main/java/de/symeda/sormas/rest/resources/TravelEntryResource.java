@@ -58,7 +58,7 @@ public class TravelEntryResource extends EntityDtoResource<TravelEntryDto> {
 	@GET
 	@Path("/{uuid}")
 	public TravelEntryDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getTravelEntryFacade().getByUuid(uuid);
+		return FacadeProvider.getTravelEntryFacade().getTravelEntryByUuid(uuid);
 	}
 
 	@DELETE

@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.backend.externalmessage.processing.labmessage;
 
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.DONE;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.CANCELED;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -68,13 +68,9 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
-import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
@@ -95,6 +91,10 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 

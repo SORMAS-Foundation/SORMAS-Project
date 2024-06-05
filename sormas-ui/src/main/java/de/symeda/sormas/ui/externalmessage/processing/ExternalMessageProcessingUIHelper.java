@@ -51,13 +51,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
-import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -66,6 +62,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
@@ -81,6 +79,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
@@ -114,37 +113,19 @@ public class ExternalMessageProcessingUIHelper {
 			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
-	public static void showPickOrCreatePersonWindow(
-		PersonDto person,
-		AbstractProcessingFlow.HandlerCallback<ExternalMessageProcessingResult.EntitySelection<PersonDto>> callback) {
-		ControllerProvider.getPersonController()
-			.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
-				PersonDto selectedPersonDto = selectedPersonRef.getUuid().equals(person.getUuid())
-					? person
-					: FacadeProvider.getPersonFacade().getByUuid(selectedPersonRef.getUuid());
-
-				callback.done(
-					new ExternalMessageProcessingResult.EntitySelection<>(selectedPersonDto, person.getUuid().equals(selectedPersonRef.getUuid())));
-			},
-				callback::cancel,
-				false,
-				UiUtil.enabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
-					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
-					: null);
-	}
-
 	public static void showPickOrCreateEntryWindow(
 		EntrySelectionField.Options options,
 		ExternalMessageDto labMessage,
-		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback) {
+		HandlerCallback<PickOrCreateEntryResult> callback) {
 
-		EntrySelectionField selectField = new EntrySelectionField(labMessage, options);
+		EntrySelectionComponentForExternalMessage selectField = new EntrySelectionComponentForExternalMessage(labMessage, options);
 
-		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+		final CommitDiscardWrapperComponent<EntrySelectionComponentForExternalMessage> selectionField =
+			new CommitDiscardWrapperComponent<>(selectField);
 		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
 
-		selectionField.addCommitListener(() -> callback.done(selectField.getValue()));
+		selectionField.addCommitListener(() -> callback.done(selectField.getSelectionResult()));
 		selectionField.addDiscardListener(callback::cancel);
 
 		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
@@ -158,7 +139,7 @@ public class ExternalMessageProcessingUIHelper {
 		PersonDto person,
 		ExternalMessageDto labMessage,
 		ExternalMessageMapper mapper,
-		AbstractProcessingFlow.HandlerCallback<CaseDataDto> callback) {
+		HandlerCallback<CaseDataDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =

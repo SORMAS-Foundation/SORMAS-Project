@@ -1002,6 +1002,12 @@ public class StartupShutdownService {
 		} catch (IOException e) {
 			logger.error("Could not create environment import template .csv file.");
 		}
+
+		try {
+			importFacade.generateSelfReportImportTemplateFile(featureConfigurations);
+		} catch (IOException | NoSuchFieldException e) {
+			logger.error("Could not create self report import template .csv file.");
+		}
 	}
 
 	private void createMissingDiseaseConfigurations() {

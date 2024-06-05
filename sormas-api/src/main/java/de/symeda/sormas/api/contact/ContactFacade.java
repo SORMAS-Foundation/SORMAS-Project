@@ -55,6 +55,8 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<String> getAllActiveUuids();
 
+	ContactDto getContactByUuid(String uuid);
+
 	void generateContactFollowUpTasks();
 
 	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
@@ -154,4 +156,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		boolean contactOfficerChange);
 
 	long getContactCount(CaseReferenceDto caze);
+
+	void linkContactToCase(ContactReferenceDto contactRef, CaseReferenceDto caseRef);
 }

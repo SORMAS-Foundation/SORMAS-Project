@@ -156,6 +156,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	 */
 	private Set<String> caseUuidsForMerge;
 
+	private String caseReferenceNumber;
+
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
 	}
@@ -791,6 +793,16 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public CaseCriteria caseUuidsForMerge(Set<String> caseUuidsForMerge) {
 		this.caseUuidsForMerge = caseUuidsForMerge;
 
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public CaseCriteria caseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
 		return this;
 	}
 }

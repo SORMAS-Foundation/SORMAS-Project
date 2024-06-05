@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,28 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.processing.flow;
+package de.symeda.sormas.api.utils.dataprocessing;
 
-public enum ProcessingResultStatus {
+public class EntitySelection<T> {
 
-	CONTINUE(false, false),
-	CANCELED(true, false),
-	CANCELED_WITH_CORRECTIONS(true, false),
-	DONE(false, true);
+	private final T entity;
+	private final boolean isNew;
 
-	private final boolean canceled;
-	private final boolean done;
-
-	ProcessingResultStatus(boolean canceled, boolean done) {
-		this.canceled = canceled;
-		this.done = done;
+	public EntitySelection(T entity, boolean isNew) {
+		this.entity = entity;
+		this.isNew = isNew;
 	}
 
-	public boolean isCanceled() {
-		return canceled;
+	public T getEntity() {
+		return entity;
 	}
 
-	public boolean isDone() {
-		return done;
+	public boolean isNew() {
+		return isNew;
+	}
+
+	@Override
+	public String toString() {
+		return "EntitySelection{" + "entity=" + entity + ", isNew=" + isNew + '}';
 	}
 }

@@ -1375,10 +1375,12 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.INTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Contact.CASE_REFERENCE_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.INTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.CASE_REFERENCE_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
@@ -1485,6 +1487,15 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		if (contactCriteria.getWithOwnership() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, createOwnershipPredicate(Boolean.TRUE.equals(contactCriteria.getWithOwnership()), from, cb, cqc.getQuery()));
+		}
+		if (StringUtils.isNotBlank(contactCriteria.getCaseReferenceNumber())) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.CASE_REFERENCE_NUMBER), contactCriteria.getCaseReferenceNumber()));
+		}
+		if (Boolean.FALSE.equals(contactCriteria.getWithCase())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Contact.CAZE)));
+		} else if (Boolean.TRUE.equals(contactCriteria.getWithCase())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(Contact.CAZE)));
 		}
 
 		filter = CriteriaBuilderHelper.andInValues(contactCriteria.getUuids(), filter, cb, from.get(Contact.UUID));

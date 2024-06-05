@@ -313,8 +313,14 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 		relevanceStatusFilter.setNullSelectionAllowed(false);
 		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventParticipantActiveCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
-		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
+
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED)) {
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(eventParticipantAllCaption));
+		} else {
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+			relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+		}
 
 		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			relevanceStatusFilter
@@ -368,6 +374,11 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 					});
 				}));
 			}
+
+			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+				grid.bulkActionHandler(items -> ControllerProvider.getEventParticipantController().sendEmailsToAllSelectedItems(items, grid), true);
+			}, UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
+
 		} else if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			bulkActions.add(new MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 				grid.bulkActionHandler(items -> {
@@ -436,7 +447,8 @@ public class EventParticipantsView extends AbstractEventView implements HasName 
 					ExportType.EVENT_PARTICIPANTS,
 					ImportExportUtils.getEventParticipantExportProperties(
 						EventParticipantDownloadUtil::getPropertyCaption,
-						FacadeProvider.getConfigFacade().getCountryLocale()),
+						FacadeProvider.getConfigFacade().getCountryLocale(),
+						FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 					customExportWindow::close);
 				customExportsLayout.setExportCallback(
 					(exportConfig) -> Page.getCurrent()

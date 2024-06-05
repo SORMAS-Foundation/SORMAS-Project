@@ -27,13 +27,14 @@ import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PersonAndPickOrCreateEntryResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 
 public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
@@ -64,9 +65,9 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 
 		PersonDto person = previousResult.getPerson();
 		PersonReferenceDto personRef = person.toReference();
-		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
+		List<CaseSelectionDto> similarCases = processingFacade.getSimilarCases(personRef, externalMessage.getDisease());
 
-		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback = new AbstractProcessingFlow.HandlerCallback<>();
+		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
 
 		handlePickOrCreateEntry(similarCases, externalMessage, callback);
 
@@ -82,7 +83,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 	protected abstract void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
 		ExternalMessageDto externalMessage,
-		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback);
+		HandlerCallback<PickOrCreateEntryResult> callback);
 
 	private CompletionStage<ProcessingResult<CaseDataDto>> createCase(PersonDto person, ExternalMessageDto externalMessage) {
 

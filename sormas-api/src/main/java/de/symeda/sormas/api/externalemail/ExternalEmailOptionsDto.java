@@ -16,7 +16,6 @@
 package de.symeda.sormas.api.externalemail;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
@@ -25,6 +24,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
@@ -38,21 +38,23 @@ public class ExternalEmailOptionsDto implements Serializable {
 
 	public static final String TEMPLATE_NAME = "templateName";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
-    public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
+	public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
 
 	@NotNull(message = Validations.requiredField)
 	private final DocumentWorkflow documentWorkflow;
 	@NotNull(message = Validations.requiredField)
 	private final RootEntityType rootEntityType;
 	@NotNull(message = Validations.requiredField)
-	private final ReferenceDto rootEntityReference;
+	private ReferenceDto rootEntityReference;
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
 	private String templateName;
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
 	private String recipientEmail;
-    private Set<DocumentReferenceDto> attachedDocuments;
+	private Set<DocumentReferenceDto> attachedDocuments;
+
+	private QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptions;
 
 	public ExternalEmailOptionsDto(DocumentWorkflow documentWorkflow, RootEntityType rootEntityType, ReferenceDto rootEntityReference) {
 		this.documentWorkflow = documentWorkflow;
@@ -72,6 +74,10 @@ public class ExternalEmailOptionsDto implements Serializable {
 		return rootEntityReference;
 	}
 
+	public void setRootEntityReference(ReferenceDto rootEntityReference) {
+		this.rootEntityReference = rootEntityReference;
+	}
+
 	public String getTemplateName() {
 		return templateName;
 	}
@@ -88,11 +94,19 @@ public class ExternalEmailOptionsDto implements Serializable {
 		this.recipientEmail = recipientEmail;
 	}
 
-    public Set<DocumentReferenceDto> getAttachedDocuments() {
-        return attachedDocuments;
-    }
+	public Set<DocumentReferenceDto> getAttachedDocuments() {
+		return attachedDocuments;
+	}
 
-    public void setAttachedDocuments(Set<DocumentReferenceDto> attachedDocuments) {
-        this.attachedDocuments = attachedDocuments;
-    }
+	public void setAttachedDocuments(Set<DocumentReferenceDto> attachedDocuments) {
+		this.attachedDocuments = attachedDocuments;
+	}
+
+	public QuarantineOrderDocumentOptionsDto getQuarantineOrderDocumentOptions() {
+		return quarantineOrderDocumentOptions;
+	}
+
+	public void setQuarantineOrderDocumentOptions(QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptions) {
+		this.quarantineOrderDocumentOptions = quarantineOrderDocumentOptions;
+	}
 }

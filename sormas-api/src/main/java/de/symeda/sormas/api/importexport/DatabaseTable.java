@@ -129,6 +129,7 @@ public enum DatabaseTable {
 	WEEKLY_REPORT_ENTRIES(DatabaseTableType.SORMAS, WEEKLY_REPORTS, "weekly_report_entries"),
 
 	DOCUMENTS(DatabaseTableType.SORMAS, "documents", dependingOnFeature(FeatureType.DOCUMENTS)),
+	DOCUMENT_RELATED_ENTITIES(DatabaseTableType.SORMAS, DOCUMENTS, "document_related_entities"),
 
 	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION,
 		"export_configurations",

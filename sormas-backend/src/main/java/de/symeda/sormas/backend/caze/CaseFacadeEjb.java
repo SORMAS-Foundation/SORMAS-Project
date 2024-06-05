@@ -254,6 +254,7 @@ import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -475,6 +476,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private ExternalShareInfoService externalShareInfoService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
@@ -859,6 +862,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
 				caseRoot.get(Case.INTERNAL_TOKEN),
+				caseRoot.get(Case.CASE_REFERENCE_NUMBER),
 				joins.getPerson().get(Person.BIRTH_NAME),
 				joins.getPersonBirthCountry().get(Country.ISO_CODE),
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1458,6 +1462,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		return getByUuid(uuid);
 	}
 
@@ -2853,11 +2861,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
-		List<ProcessedEntity> processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
 
-		if (includeContacts) {
-			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
-			contactService.dearchive(caseContacts, dearchiveReason);
+		if (userService.hasRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+			if (includeContacts) {
+				List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
+				contactService.dearchive(caseContacts, dearchiveReason);
+			}
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
 		}
 
 		return processedEntities;
@@ -3095,6 +3108,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -3294,6 +3308,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
 		target.setInternalToken(source.getInternalToken());
+		target.setCaseReferenceNumber(source.getCaseReferenceNumber());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -3888,8 +3903,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// 6 Documents
 		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, otherCase.getUuid());
 		for (Document document : documents) {
-			document.setRelatedEntityUuid(leadCaseData.getUuid());
 
+			document.getRelatedEntities()
+				.stream()
+				.filter(documentRelatedEntity -> documentRelatedEntity.getRelatedEntityUuid().equals(otherCase.getUuid()))
+				.forEach(a -> a.setRelatedEntityUuid(leadCase.getUuid()));
 			documentService.ensurePersisted(document);
 		}
 

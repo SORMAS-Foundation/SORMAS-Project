@@ -24,6 +24,7 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
 import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -46,6 +47,7 @@ public class SelfReportFacadeEjbTest extends AbstractBeanTest {
 		dto.setDisease(Disease.CORONAVIRUS);
 		dto.setFirstName("John");
 		dto.setLastName("Doe");
+		dto.setSex(Sex.MALE);
 
 		return getSelfReportFacade().save(dto);
 	}

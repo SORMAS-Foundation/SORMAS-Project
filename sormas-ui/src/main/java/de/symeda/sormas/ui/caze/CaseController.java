@@ -76,6 +76,9 @@ import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -690,6 +693,7 @@ public class CaseController {
 			caze.setResponsibleDistrict(healthFacility.getDistrict());
 			caze.setResponsibleCommunity(healthFacility.getCommunity());
 			caze.setHealthFacility(healthFacility.toReference());
+			caze.setFacilityType(healthFacility.getType());
 		} else if (convertedTravelEntry == null) {
 			caze.setResponsibleRegion(user.getRegion());
 			caze.setResponsibleDistrict(user.getDistrict());
@@ -907,6 +911,7 @@ public class CaseController {
 	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
+
 		CaseDataDto caze = findCase(caseUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getCaseFacade().getAutomaticDeletionInfo(caseUuid);
 		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getCaseFacade().getManuallyDeletionInfo(caseUuid);
@@ -1569,6 +1574,26 @@ public class CaseController {
 						Notification.show(null, I18nProperties.getString(Strings.notificationSmsSent), Type.TRAY_NOTIFICATION);
 					}
 				});
+		}
+	}
+
+	public void sendEmailsToAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, AbstractCaseGrid<?> caseGrid) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoCasesSelected),
+				I18nProperties.getString(Strings.messageNoCasesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			ControllerProvider.getExternalEmailController()
+				.sendBulkEmail(
+					DocumentWorkflow.CASE_EMAIL,
+					RootEntityType.ROOT_CASE,
+					DocumentRelatedEntityType.CASE,
+					selectedRows,
+					bulkOperationCallback(caseGrid, null),
+					CaseIndexDto::toReference,
+					DocumentWorkflow.QUARANTINE_ORDER_CASE);
 		}
 	}
 

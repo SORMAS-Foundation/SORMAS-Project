@@ -49,7 +49,7 @@ public class ContactIndexDtoResultTransformer implements ResultTransformer {
                 (String) tuple[++index], (Date) tuple[++index],
                 (CaseClassification) tuple[++index], (String) tuple[++index], (String) tuple[++index],
                 (Date) tuple[++index],
-                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (DeletionReason) tuple[++index], (String) tuple[++index], (Boolean) tuple[++index], (Boolean) tuple[++index],
+                (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (DeletionReason) tuple[++index], (String) tuple[++index], (Boolean) tuple[++index], (Boolean) tuple[++index],
                 (Integer) tuple[++index]
         );
         //@formatter:on

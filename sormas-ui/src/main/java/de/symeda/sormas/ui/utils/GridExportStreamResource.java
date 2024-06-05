@@ -50,6 +50,7 @@ import com.vaadin.ui.Notification.Type;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -195,6 +196,10 @@ public class GridExportStreamResource {
 						ageAndBirthDate.getDateOfBirthDD(),
 						ageAndBirthDate.getDateOfBirthMM(),
 						ageAndBirthDate.getDateOfBirthYYYY());
+				} else if (value instanceof BirthDateDto) {
+					BirthDateDto birthDate = (BirthDateDto) value;
+					valueString =
+						DateFormatHelper.formatDate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY());
 				} else if (value instanceof Label) {
 					valueString = ((Label) value).getValue();
 				} else if (value instanceof ReferenceDto) {

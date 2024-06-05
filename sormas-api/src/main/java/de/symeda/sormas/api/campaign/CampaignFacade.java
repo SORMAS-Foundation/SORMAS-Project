@@ -14,6 +14,8 @@ public interface CampaignFacade extends CoreFacade<CampaignDto, CampaignIndexDto
 
 	CampaignReferenceDto getLastStartedCampaign();
 
+	CampaignDto getCampaignByUuid(String uuid);
+
 	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid);
 
 	List<String> getAllActiveUuids();

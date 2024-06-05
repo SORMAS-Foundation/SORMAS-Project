@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import de.symeda.sormas.api.action.ActionReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -81,9 +83,9 @@ public class DocGenerationHelper {
 		document.setName(fileName);
 		document.setMimeType(mimeType);
 		document.setSize(length);
-		document.setRelatedEntityType(relatedEntityType);
-		document.setRelatedEntityUuid(relatedEntityUuid);
-		documentFacade.saveDocument(document, bytes);
+		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, relatedEntityUuid);
+
+		documentFacade.saveDocument(document, bytes, Collections.singletonList(documentRelatedEntities));
 	}
 
 }

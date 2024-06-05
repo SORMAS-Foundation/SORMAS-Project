@@ -61,6 +61,7 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentRelatedEntity;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventGroup;
@@ -199,6 +200,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.WEEKLY_REPORTS, WeeklyReport.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.WEEKLY_REPORT_ENTRIES, WeeklyReportEntry.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DOCUMENTS, Document.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.DOCUMENT_RELATED_ENTITIES, DocumentRelatedEntity.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EXPORT_CONFIGURATIONS, ExportConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.FEATURE_CONFIGURATIONS, FeatureConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DISEASE_CONFIGURATIONS, DiseaseConfiguration.TABLE_NAME);

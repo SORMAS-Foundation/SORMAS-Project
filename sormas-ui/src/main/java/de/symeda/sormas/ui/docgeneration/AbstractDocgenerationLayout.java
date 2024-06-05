@@ -56,14 +56,23 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	protected final Button createButton;
 	protected final Button cancelButton;
-	protected ComboBox<String> templateSelector;
-	protected final VerticalLayout additionalVariablesComponent;
-	protected final VerticalLayout additionalParametersComponent;
-	protected FileDownloader fileDownloader;
-	protected DocumentVariables documentVariables;
-	private CheckBox checkBoxUploadGeneratedDoc;
+	public ComboBox<String> templateSelector;
+	public final VerticalLayout additionalVariablesComponent;
+	public final VerticalLayout additionalParametersComponent;
+	public FileDownloader fileDownloader;
+	public DocumentVariables documentVariables;
+	public CheckBox checkBoxUploadGeneratedDoc;
+	public HorizontalLayout buttonBar;
 
-	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction, boolean isMultiFilesMode) {
+	public boolean isCheckBoxAfterTemplateSelector;
+
+	public AbstractDocgenerationLayout(
+		String captionTemplateSelector,
+		Function<String, String> fileNameFunction,
+		boolean isMultiFilesMode,
+		boolean isCheckBoxAfterTemplateSelector) {
+
+		this.isCheckBoxAfterTemplateSelector = isCheckBoxAfterTemplateSelector;
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
 		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
@@ -75,6 +84,32 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		hideTextfields();
 		hideAdditionalParameters();
 
+		if (isCheckBoxAfterTemplateSelector) {
+			addTemplateSelector(captionTemplateSelector, fileNameFunction);
+			addCheckboxUploadButton(isMultiFilesMode);
+		} else {
+			addCheckboxUploadButton(isMultiFilesMode);
+			addTemplateSelector(captionTemplateSelector, fileNameFunction);
+		}
+
+		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
+		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		createButton.setIcon(VaadinIcons.FILE_TEXT);
+		createButton.setEnabled(false);
+
+		cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCancel));
+		cancelButton.addClickListener((e) -> closeWindow());
+
+		buttonBar = new HorizontalLayout();
+		buttonBar.addComponents(cancelButton, createButton);
+
+		addComponent(additionalParametersComponent);
+		addComponent(additionalVariablesComponent);
+		addComponent(buttonBar);
+		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
+	}
+
+	private void addCheckboxUploadButton(boolean isMultiFilesMode) {
 		if (UiUtil.permitted(UserRight.DOCUMENT_UPLOAD)) {
 			checkBoxUploadGeneratedDoc = new CheckBox(
 				I18nProperties.getPrefixCaption(
@@ -88,18 +123,9 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 			checkBoxUploadGeneratedDoc.setWidth(400, Unit.PIXELS);
 			addComponent(checkBoxUploadGeneratedDoc);
 		}
+	}
 
-		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
-		createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		createButton.setIcon(VaadinIcons.FILE_TEXT);
-		createButton.setEnabled(false);
-
-		cancelButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCancel));
-		cancelButton.addClickListener((e) -> closeWindow());
-
-		HorizontalLayout buttonBar = new HorizontalLayout();
-		buttonBar.addComponents(cancelButton, createButton);
-
+	private void addTemplateSelector(String captionTemplateSelector, Function<String, String> fileNameFunction) {
 		templateSelector = new ComboBox<>(captionTemplateSelector);
 		templateSelector.setWidth(100F, Unit.PERCENTAGE);
 		templateSelector.addValueChangeListener(e -> {
@@ -122,7 +148,9 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 						showTextfields();
 					}
 					performTemplateUpdates();
-					setStreamResource(templateFile, fileNameFunction.apply(templateFile));
+					if (fileNameFunction != null) {
+						setStreamResource(templateFile, fileNameFunction.apply(templateFile));
+					}
 				} catch (IOException | DocumentTemplateException ex) {
 					LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
 					new Notification(I18nProperties.getString(Strings.errorOccurred), ex.getMessage(), Notification.Type.ERROR_MESSAGE, false)
@@ -133,10 +161,6 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		templateSelector.addStyleName(CssStyles.SOFT_REQUIRED);
 
 		addComponent(templateSelector);
-		addComponent(additionalParametersComponent);
-		addComponent(additionalVariablesComponent);
-		addComponent(buttonBar);
-		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
 	}
 
 	protected void init() {
@@ -218,4 +242,12 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected abstract StreamResource createStreamResource(String templateFile, String filename);
 
 	protected abstract String getWindowCaption();
+
+	public boolean isCheckBoxAfterTemplateSelector() {
+		return isCheckBoxAfterTemplateSelector;
+	}
+
+	public void setCheckBoxAfterTemplateSelector(boolean checkBoxAfterTemplateSelector) {
+		isCheckBoxAfterTemplateSelector = checkBoxAfterTemplateSelector;
+	}
 }

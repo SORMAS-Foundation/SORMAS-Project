@@ -215,12 +215,19 @@ public class TravelEntriesView extends AbstractView {
 			relevanceStatusFilter.setNullSelectionAllowed(false);
 			relevanceStatusFilter.setTextInputAllowed(false);
 			relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.travelEntryActiveTravelEntries));
-			relevanceStatusFilter
-				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
-			relevanceStatusFilter.setItemCaption(
-				EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-				I18nProperties.getCaption(Captions.travelEntryAllActiveAndArchivedTravelEntries));
+
+			if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED)) {
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
+				relevanceStatusFilter.setItemCaption(
+					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+					I18nProperties.getCaption(Captions.travelEntryAllActiveAndArchivedTravelEntries));
+			} else {
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+			}
 			relevanceStatusFilter.setCaption("");
 
 			if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE)) {
@@ -257,6 +264,11 @@ public class TravelEntriesView extends AbstractView {
 							items -> ControllerProvider.getTravelEntryController()
 								.deleteAllSelectedItems(items, (TravelEntryGrid) grid, () -> navigateTo(criteria)),
 							true)));
+				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+					grid.bulkActionHandler(
+						items -> ControllerProvider.getTravelEntryController().sendEmailsToAllSelectedItems(items, (TravelEntryGrid) grid),
+						true);
+				}, UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 			} else {
 				bulkActions.add(
 					new MenuBarHelper.MenuBarItem(

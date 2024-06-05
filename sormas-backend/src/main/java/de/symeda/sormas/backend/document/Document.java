@@ -16,15 +16,20 @@ package de.symeda.sormas.backend.document;
 
 import static de.symeda.sormas.backend.document.Document.TABLE_NAME;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CronService;
 import de.symeda.sormas.backend.user.User;
@@ -37,10 +42,9 @@ public class Document extends AbstractDomainObject {
 	public static final String DELETED = "deleted";
 	public static final String UPLOADING_USER = "uploadingUser";
 	public static final String NAME = "name";
-    public static final String MIME_TYPE = "mimeType";
+	public static final String MIME_TYPE = "mimeType";
 	public static final String SIZE = "size";
-	public static final String RELATED_ENTITY_UUID = "relatedEntityUuid";
-	public static final String RELATED_ENTITY_TYPE = "relatedEntityType";
+	public static final String RELATED_ENTITIES = "relatedEntities";
 
 	private boolean deleted;
 	private User uploadingUser;
@@ -48,8 +52,7 @@ public class Document extends AbstractDomainObject {
 	private String mimeType;
 	private long size;
 	private String storageReference;
-	private String relatedEntityUuid;
-	private DocumentRelatedEntityType relatedEntityType;
+	private Set<DocumentRelatedEntity> relatedEntities = new HashSet<>();
 
 	/**
 	 * Indicates whether the document is marked for deletion.
@@ -123,22 +126,13 @@ public class Document extends AbstractDomainObject {
 		this.storageReference = storageReference;
 	}
 
-	@Column(name = "relatedentity_uuid")
-	public String getRelatedEntityUuid() {
-		return relatedEntityUuid;
+	@OneToMany(mappedBy = DocumentRelatedEntity.DOCUMENT, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	public Set<DocumentRelatedEntity> getRelatedEntities() {
+		return relatedEntities;
 	}
 
-	public void setRelatedEntityUuid(String relatedEntityUuid) {
-		this.relatedEntityUuid = relatedEntityUuid;
-	}
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "relatedentity_type")
-	public DocumentRelatedEntityType getRelatedEntityType() {
-		return relatedEntityType;
-	}
-
-	public void setRelatedEntityType(DocumentRelatedEntityType relatedEntityType) {
-		this.relatedEntityType = relatedEntityType;
+	public void setRelatedEntities(Set<DocumentRelatedEntity> documentRelatedEntities) {
+		this.relatedEntities = documentRelatedEntities;
 	}
 }

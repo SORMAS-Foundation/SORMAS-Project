@@ -30,6 +30,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
@@ -373,7 +374,15 @@ public class EnvironmentFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override
@@ -447,6 +456,15 @@ public class EnvironmentFacadeEjb
 		}
 
 		return service.getAllActiveUuids(user);
+	}
+
+	@Override
+	public EnvironmentDto getEnvironmentByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
 	}
 
 	@LocalBean

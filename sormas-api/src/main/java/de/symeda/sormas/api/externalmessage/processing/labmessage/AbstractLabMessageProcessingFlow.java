@@ -33,7 +33,6 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -50,10 +49,6 @@ import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -66,6 +61,11 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
+import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to choose between multiple options like create or select a
@@ -399,19 +399,6 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		ExternalMessageDto externalMessageDto,
 		HandlerCallback<PickOrCreateEntryResult> callback);
 
-	private List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, ExternalMessageDto externalMessage) {
-
-		if (processingFacade.isFeatureDisabled(FeatureType.CONTACT_TRACING)
-			|| !processingFacade.hasAllUserRights(UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT)) {
-			return Collections.emptyList();
-		}
-		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-		contactSimilarityCriteria.setPerson(selectedPerson);
-		contactSimilarityCriteria.setDisease(externalMessage.getDisease());
-
-		return processingFacade.getMatchingContacts(contactSimilarityCriteria);
-	}
-
 	private List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
 
 		if (processingFacade.isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)
@@ -499,8 +486,8 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		ExternalMessageDto externalMessage) {
 
 		PersonReferenceDto personRef = previousResult.getPerson().toReference();
-		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
-		List<SimilarContactDto> similarContacts = getSimilarContacts(personRef, externalMessage);
+		List<CaseSelectionDto> similarCases = processingFacade.getSimilarCases(personRef, externalMessage.getDisease());
+		List<SimilarContactDto> similarContacts = processingFacade.getSimilarContacts(personRef, externalMessage.getDisease());
 		List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(personRef, externalMessage);
 
 		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
