@@ -780,8 +780,20 @@
 		<role-name>SELF_REPORT_DELETE</role-name>
 	</security-role>
 
+    <security-role>
+        <role-name>SELF_REPORT_EXPORT</role-name>
+    </security-role>
+
+    <security-role>
+        <role-name>SELF_REPORT_IMPORT</role-name>
+    </security-role>
+
 	<security-role>
 		<role-name>SELF_REPORT_ARCHIVE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SELF_REPORT_PROCESS</role-name>
 	</security-role>
 
 	<security-role>

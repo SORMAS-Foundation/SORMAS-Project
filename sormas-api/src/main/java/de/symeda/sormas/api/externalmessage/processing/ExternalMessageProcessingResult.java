@@ -26,6 +26,7 @@ import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 
 public class ExternalMessageProcessingResult {
 
@@ -170,30 +171,6 @@ public class ExternalMessageProcessingResult {
 		return "ExternalMessageProcessingResult{" + "selectedPerson=" + selectedPerson + ", selectedCase=" + selectedCase + ", selectedContact="
 			+ selectedContact + ", selectedEvent=" + selectedEvent + ", selectedEventParticipant=" + selectedEventParticipant + ", samples=" + samples
 			+ '}';
-	}
-
-	public static class EntitySelection<T> {
-
-		private final T entity;
-		private final boolean isNew;
-
-		public EntitySelection(T entity, boolean isNew) {
-			this.entity = entity;
-			this.isNew = isNew;
-		}
-
-		public T getEntity() {
-			return entity;
-		}
-
-		public boolean isNew() {
-			return isNew;
-		}
-
-		@Override
-		public String toString() {
-			return "EntitySelection{" + "entity=" + entity + ", isNew=" + isNew + '}';
-		}
 	}
 
 	public static class SampleSelection extends EntitySelection<SampleDto> {

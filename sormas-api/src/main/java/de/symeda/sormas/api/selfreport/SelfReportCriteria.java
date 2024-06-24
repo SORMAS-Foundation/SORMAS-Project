@@ -20,7 +20,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -43,6 +46,9 @@ public class SelfReportCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date reportDateFrom;
 	private Date reportDateTo;
+
+	private CaseReferenceDto caze;
+	private ContactReferenceDto contact;
 
 	@IgnoreForUrl
 	public String getFreeText() {
@@ -132,5 +138,23 @@ public class SelfReportCriteria extends BaseCriteria implements Serializable {
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
 		this.dateFilterOption = dateFilterOption;
+	}
+
+	public CaseReferenceDto getCaze() {
+		return caze;
+	}
+
+	public SelfReportCriteria setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
+		return this;
+	}
+
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public SelfReportCriteria setContact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
 	}
 }

@@ -17,12 +17,20 @@ package de.symeda.sormas.backend.selfreport;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
+import de.symeda.sormas.api.selfreport.SelfReportListEntryDto;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -32,6 +40,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.location.Location;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -132,10 +145,56 @@ public class SelfReportService extends AbstractCoreAdoService<SelfReport, SelfRe
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(SelfReport.INVESTIGATION_STATUS), criteria.getInvestigationStatus()));
 		}
 
+		if (criteria.getCaze() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaseJoin().get(Case.UUID), criteria.getCaze().getUuid()));
+		}
+
+		if (criteria.getContact() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContactJoin().get(Contact.UUID), criteria.getContact().getUuid()));
+		}
+
 		return filter;
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, SelfReport> root) {
 		return cb.isFalse(root.get(SelfReport.DELETED));
+	}
+
+	public List<SelfReportListEntryDto> getEntriesList(SelfReportCriteria selfReportCriteria, Integer first, Integer max) {
+		if (selfReportCriteria == null) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Tuple> cq = cb.createQuery(Tuple.class);
+		final Root<SelfReport> selfReport = cq.from(SelfReport.class);
+
+		SelfReportQueryContext selfReportQueryContext = new SelfReportQueryContext(cb, cq, selfReport);
+		SelfReportJoins joins = selfReportQueryContext.getJoins();
+
+		cq.distinct(true);
+
+		List<Selection<?>> selections = new ArrayList<>(
+			Arrays.asList(
+				selfReport.get(SelfReport.UUID),
+				selfReport.get(SelfReport.REPORT_DATE),
+				selfReport.get(SelfReport.CASE_REFERENCE),
+				selfReport.get(SelfReport.DISEASE),
+				selfReport.get(SelfReport.DATE_OF_TEST)));
+
+		cq.multiselect(selections);
+
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, selfReport), createUserFilter(selfReportQueryContext));
+
+		Predicate criteriaFilter = buildCriteriaFilter(selfReportCriteria, selfReportQueryContext);
+
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<SelfReportListEntryDto> resultList = QueryHelper.getResultList(em, cq, new SelfReportEntryDtoResultTransformer(), first, max);
+		return resultList;
 	}
 }

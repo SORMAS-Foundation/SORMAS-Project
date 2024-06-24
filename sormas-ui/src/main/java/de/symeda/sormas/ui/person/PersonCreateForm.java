@@ -314,12 +314,16 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	public void setPerson(PersonDto person) {
+		setPerson(person, true);
+	}
+
+	public void setPerson(PersonDto person, boolean isNewPerson) {
 
 		this.person = person;
 
 		if (showHomeAddressForm) {
-			enterHomeAddressNow.setEnabled(person == null || LocationHelper.checkIsEmptyLocation(person.getAddress()));
-			if (this.person == null) {
+			enterHomeAddressNow.setEnabled(person == null || isNewPerson || LocationHelper.checkIsEmptyLocation(person.getAddress()));
+			if (person == null || isNewPerson) {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);

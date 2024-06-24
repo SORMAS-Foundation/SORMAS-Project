@@ -13224,4 +13224,22 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (548, 'Add user rights to view archived entities #13034', false);
 
+-- 2024-05-14 #13083 Add a manual processing for self Reporting
+INSERT INTO userroles_userrights (userrole_id, userright)
+SELECT id, 'SELF_REPORT_PROCESS'
+FROM userroles
+WHERE userroles.linkeddefaultuserrole in ('NATIONAL_USER', 'SURVEILLANCE_SUPERVISOR');
+
+ALTER TABLE selfreports
+    ADD COLUMN resultingcase_id bigint,
+    ADD CONSTRAINT fk_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases (id),
+    ADD COLUMN resultingcontact_id bigint,
+    ADD CONSTRAINT fk_resultingcontact_id FOREIGN KEY (resultingcontact_id) REFERENCES contact (id);
+
+ALTER TABLE selfreports_history
+    ADD COLUMN resultingcase_id    bigint,
+    ADD COLUMN resultingcontact_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

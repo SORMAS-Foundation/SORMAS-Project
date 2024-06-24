@@ -64,7 +64,15 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	public CheckBox checkBoxUploadGeneratedDoc;
 	public HorizontalLayout buttonBar;
 
-	public AbstractDocgenerationLayout(String captionTemplateSelector, Function<String, String> fileNameFunction, boolean isMultiFilesMode) {
+	public boolean isCheckBoxAfterTemplateSelector;
+
+	public AbstractDocgenerationLayout(
+		String captionTemplateSelector,
+		Function<String, String> fileNameFunction,
+		boolean isMultiFilesMode,
+		boolean isCheckBoxAfterTemplateSelector) {
+
+		this.isCheckBoxAfterTemplateSelector = isCheckBoxAfterTemplateSelector;
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
 		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
@@ -76,18 +84,12 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		hideTextfields();
 		hideAdditionalParameters();
 
-		if (UiUtil.permitted(UserRight.DOCUMENT_UPLOAD)) {
-			checkBoxUploadGeneratedDoc = new CheckBox(
-				I18nProperties.getPrefixCaption(
-					ExportConfigurationDto.I18N_PREFIX,
-					isMultiFilesMode
-						? Captions.DocumentTemplate_uploadGeneratedDocumentsToEntities
-						: Captions.DocumentTemplate_uploadGeneratedDocumentToEntity));
-			checkBoxUploadGeneratedDoc.setValue(false);
-			checkBoxUploadGeneratedDoc.setEnabled(true);
-			checkBoxUploadGeneratedDoc.setStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
-			checkBoxUploadGeneratedDoc.setWidth(400, Unit.PIXELS);
-			addComponent(checkBoxUploadGeneratedDoc);
+		if (isCheckBoxAfterTemplateSelector) {
+			addTemplateSelector(captionTemplateSelector, fileNameFunction);
+			addCheckboxUploadButton(isMultiFilesMode);
+		} else {
+			addCheckboxUploadButton(isMultiFilesMode);
+			addTemplateSelector(captionTemplateSelector, fileNameFunction);
 		}
 
 		createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionCreate));
@@ -101,6 +103,29 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		buttonBar = new HorizontalLayout();
 		buttonBar.addComponents(cancelButton, createButton);
 
+		addComponent(additionalParametersComponent);
+		addComponent(additionalVariablesComponent);
+		addComponent(buttonBar);
+		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
+	}
+
+	private void addCheckboxUploadButton(boolean isMultiFilesMode) {
+		if (UiUtil.permitted(UserRight.DOCUMENT_UPLOAD)) {
+			checkBoxUploadGeneratedDoc = new CheckBox(
+				I18nProperties.getPrefixCaption(
+					ExportConfigurationDto.I18N_PREFIX,
+					isMultiFilesMode
+						? Captions.DocumentTemplate_uploadGeneratedDocumentsToEntities
+						: Captions.DocumentTemplate_uploadGeneratedDocumentToEntity));
+			checkBoxUploadGeneratedDoc.setValue(false);
+			checkBoxUploadGeneratedDoc.setEnabled(true);
+			checkBoxUploadGeneratedDoc.setStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+			checkBoxUploadGeneratedDoc.setWidth(400, Unit.PIXELS);
+			addComponent(checkBoxUploadGeneratedDoc);
+		}
+	}
+
+	private void addTemplateSelector(String captionTemplateSelector, Function<String, String> fileNameFunction) {
 		templateSelector = new ComboBox<>(captionTemplateSelector);
 		templateSelector.setWidth(100F, Unit.PERCENTAGE);
 		templateSelector.addValueChangeListener(e -> {
@@ -136,10 +161,6 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		templateSelector.addStyleName(CssStyles.SOFT_REQUIRED);
 
 		addComponent(templateSelector);
-		addComponent(additionalParametersComponent);
-		addComponent(additionalVariablesComponent);
-		addComponent(buttonBar);
-		setComponentAlignment(buttonBar, Alignment.BOTTOM_RIGHT);
 	}
 
 	protected void init() {
@@ -221,4 +242,12 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	protected abstract StreamResource createStreamResource(String templateFile, String filename);
 
 	protected abstract String getWindowCaption();
+
+	public boolean isCheckBoxAfterTemplateSelector() {
+		return isCheckBoxAfterTemplateSelector;
+	}
+
+	public void setCheckBoxAfterTemplateSelector(boolean checkBoxAfterTemplateSelector) {
+		isCheckBoxAfterTemplateSelector = checkBoxAfterTemplateSelector;
+	}
 }

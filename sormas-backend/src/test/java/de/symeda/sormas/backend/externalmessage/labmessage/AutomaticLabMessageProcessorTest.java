@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.DONE;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.CANCELED;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -38,7 +38,6 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -54,6 +53,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;

@@ -28,9 +28,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -40,6 +42,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -56,6 +60,8 @@ import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListCompone
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
+import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponent;
+import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -85,6 +91,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
+	public static final String SELF_REPORT_LOC = "selfReport";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -124,7 +131,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			SORMAS_TO_SORMAS_LOC,
 			DOCUMENTS_LOC,
 			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
-			EXTERNAL_EMAILS_LOC);
+			EXTERNAL_EMAILS_LOC,
+			SELF_REPORT_LOC);
 
 		container.addComponent(layout);
 
@@ -292,6 +300,11 @@ public class ContactDataView extends AbstractContactView implements HasName {
 				ExternalEmailSideComponent.forContact(contactDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
+
+		SelfReportListComponent selfReportListComponent =
+			new SelfReportListComponent(SelfReportType.CONTACT, new SelfReportCriteria().setContact(new ContactReferenceDto(contactDto.getUuid())));
+		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
+		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
 
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, contactEditAllowed);

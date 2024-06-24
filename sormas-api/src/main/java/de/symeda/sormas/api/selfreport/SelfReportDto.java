@@ -395,4 +395,8 @@ public class SelfReportDto extends PseudonymizableDto {
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
 	}
+
+	public SelfReportReferenceDto toReference() {
+		return new SelfReportReferenceDto(getUuid());
+	}
 }

@@ -56,8 +56,8 @@
     <string name="action_edit_contact">Editar contacto</string>
     <string name="action_edit_environment">Editar Entorno</string>
     <string name="action_edit_event">Editar evento</string>
-    <string name="action_edit_sample">Editar Ejemplo</string>
-    <string name="action_edit_environment_sample">Editar ejemplo de entorno</string>
+    <string name="action_edit_sample">Editar Muestra</string>
+    <string name="action_edit_environment_sample">Editar muestra de entorno</string>
     <string name="action_forgot_PIN">¿Olvidaste el PIN?</string>
     <string name="action_help">Ayuda</string>
     <string name="action_install_app">Instalar</string>
@@ -75,8 +75,8 @@
     <string name="action_new_contact">Nuevo contacto</string>
     <string name="action_new_environment">Nuevo Medio Ambiente</string>
     <string name="action_new_event">Nuevo evento</string>
-    <string name="action_new_sample">Nuevo ejemplo</string>
-    <string name="action_new_environment_sample">Nuevo ejemplo de entorno</string>
+    <string name="action_new_sample">Nueva Muestra</string>
+    <string name="action_new_environment_sample">Nueva muestra de entorno</string>
     <string name="action_new_task">Nueva tarea</string>
     <string name="action_not_executable">No Ejecutable</string>
     <string name="action_ok">Ok</string>
@@ -103,7 +103,7 @@
     <string name="action_save_event_participant">Guardar participante del evento</string>
     <string name="action_save_prescription">Guardar prescripción</string>
     <string name="action_save_sample">Guardar muestra</string>
-    <string name="action_save_environment_sample">Guardar ejemplo de entorno</string>
+    <string name="action_save_environment_sample">Guardar muestra de entorno</string>
     <string name="action_save_task">Guardar tarea</string>
     <string name="action_save_treatment">Guardar aviso</string>
     <string name="action_save_visit">Guardar visita de seguimiento</string>
@@ -133,13 +133,13 @@
     <string name="caption_case_contacts">Contactos del Caso</string>
     <string name="caption_case_epidemiological_data">Información epidemiológica</string>
     <string name="caption_case_fatality_rate">Tasa de letalidad</string>
-    <string name="caption_case_health_conditions">Condiciones preexistentes</string>
+    <string name="caption_case_health_conditions">Antecedentes Patogénicos</string>
     <string name="caption_case_hospitalization">Información de la hospitalización</string>
     <string name="caption_case_information">Información del caso</string>
     <string name="caption_case_maternal_history">Historia materna</string>
     <string name="caption_case_port_health_info">Información sobre salud portuaria</string>
     <string name="caption_case_prescriptions">Prescripción</string>
-    <string name="caption_case_samples">Ejemplos de caso</string>
+    <string name="caption_case_samples">Muestras del caso</string>
     <string name="caption_case_tasks">Tareas del caso</string>
     <string name="caption_case_events">Eventos de Caso</string>
     <string name="caption_case_immunizations">Inmunizaciones del Caso</string>
@@ -173,7 +173,7 @@
     <string name="caption_environment_information">Información del entorno</string>
     <string name="caption_environment_samples">Muestras de entorno</string>
     <string name="caption_environment_tasks">Tareas de entorno</string>
-    <string name="caption_environment_sample_information">Información de ejemplo de entorno</string>
+    <string name="caption_environment_sample_information">Información de la muestra de entorno</string>
     <string name="caption_event_description">Descripción</string>
     <string name="caption_event_information">Información del evento</string>
     <string name="caption_event_location">Ubicación</string>
@@ -184,7 +184,7 @@
     <string name="caption_event_period">Fecha del evento</string>
     <string name="caption_event_tasks">Tareas del evento</string>
     <string name="caption_executed_by">Ejecutado por</string>
-    <string name="caption_facility_or_home">Lugar de estancia</string>
+    <string name="caption_facility_or_home">Lugar de residencia</string>
     <string name="caption_fatalities">Fallecidos</string>
     <string name="caption_first_name">Nombre</string>
     <string name="caption_sex">Sexo</string>
@@ -201,7 +201,7 @@
     <string name="caption_new_case">Nuevo Caso</string>
     <string name="caption_new_contact">Nuevo contacto</string>
     <string name="caption_new_event_participant">Nuevo participante del evento</string>
-    <string name="caption_new_sample">Nuevo ejemplo</string>
+    <string name="caption_new_sample">Nueva Muestra</string>
     <string name="caption_new_pathogen_test">Nueva prueba de patógeno</string>
     <string name="caption_new_task">Nueva tarea</string>
     <string name="caption_not_a_contact">No es un contacto</string>
@@ -227,7 +227,7 @@
     <string name="caption_resulting_case_uuid">UUID del caso resultante</string>
     <string name="caption_resync">SYNC</string>
     <string name="caption_rumor">Señales</string>
-    <string name="caption_sample_information">Información de ejemplo</string>
+    <string name="caption_sample_information">Información de la muestra</string>
     <string name="caption_settings_server_url">URL del servidor</string>
     <string name="caption_smallpox_vaccination_scar_img">Cicatrices de vena de viruela pequeña</string>
     <string name="caption_suspected_case">Caso sospecha</string>
@@ -301,7 +301,7 @@
     <string name="entity_case">Caso</string>
     <string name="entity_contact">Contacto</string>
     <string name="entity_event">Evento</string>
-    <string name="entity_sample">Ejemplo</string>
+    <string name="entity_sample">Muestra</string>
     <string name="entity_task">Tarea</string>
     <string name="error_case_transfer">Ocurrió un error mientras se trataba de transferir el caso.</string>
     <string name="error_case_referring_from_poe">Ocurrió un error mientras se trataba de remitir el caso.</string>
@@ -365,7 +365,7 @@
     <string name="heading_gathering">Recolectando</string>
     <string name="heading_gps_activation">Activar GPS</string>
     <string name="heading_gps_permission">Permitir acceso GPS</string>
-    <string name="heading_health_conditions">Condiciones preexistentes</string>
+    <string name="heading_health_conditions">Antecedentes Patogénicos</string>
     <string name="heading_help">Ayuda</string>
     <string name="heading_informant_reports">Infomres de reportes</string>
     <string name="heading_install_app">Listo para instalar</string>
@@ -390,15 +390,15 @@
     <string name="heading_refer_case_from_poe">Referir Caso desde Punto de Entrada</string>
     <string name="heading_reset_PIN">Reset PIN</string>
     <string name="heading_response_management">Gestión de Respuestas &amp; Sistema de Análisis</string>
-    <string name="heading_sample_edit">Editar Ejemplo</string>
-    <string name="heading_sample_new">Nuevo ejemplo</string>
+    <string name="heading_sample_edit">Editar Muestra</string>
+    <string name="heading_sample_new">Nueva Muestra</string>
     <string name="heading_sample_read">Leer muestra</string>
     <string name="heading_environment_sample_read">Leer muestra de entorno</string>
-    <string name="heading_environment_sample_edit">Editar ejemplo de entorno</string>
-    <string name="heading_environment_sample_new">Nuevo ejemplo de entorno</string>
-    <string name="heading_sample_summary">Resumen de Ejemplo</string>
-    <string name="heading_samples_list">Lista de ejemplo</string>
-    <string name="heading_environment_sample_list">Lista de Ejemplo de Entorno</string>
+    <string name="heading_environment_sample_edit">Editar muestra de entorno</string>
+    <string name="heading_environment_sample_new">Nueva muestra de entorno</string>
+    <string name="heading_sample_summary">Resumen de la muestra</string>
+    <string name="heading_samples_list">Lista de muestras</string>
+    <string name="heading_environment_sample_list">Lista de muestras de Entorno</string>
     <string name="heading_environment_list">Listado de entorno</string>
     <string name="heading_environment_edit">Editar Entorno</string>
     <string name="heading_environment_new">Nuevo entorno</string>
@@ -415,7 +415,7 @@
     <string name="heading_pathogen_tests_list">Lista de pruebas de patógeno</string>
     <string name="heading_sign_in">Iniciar sesión</string>
     <string name="heading_social_events">Eventos sociales</string>
-    <string name="heading_source_case">Caso origen</string>
+    <string name="heading_source_case">Caso índice</string>
     <string name="heading_source_of_information">Fuente de información</string>
     <string name="heading_surveillance_outbreak">Brote de Vigilancia</string>
     <string name="heading_symptoms">Síntomas &amp; Síntomas</string>
@@ -447,7 +447,7 @@
     <string name="heading_campaign_form_data_read">Leer datos de campaña</string>
     <string name="heading_campaign_form_data_summary">Resumen de datos de campaña</string>
     <string name="heading_campaign_form_meta_select">Seleccionar formulario de campaña</string>
-    <string name="heading_case_place_of_stay">Lugar de estancia</string>
+    <string name="heading_case_place_of_stay">Lugar de residencia</string>
     <string name="heading_vaccination">Vacunación</string>
     <string name="heading_vaccination_edit">Editar vacunación</string>
     <string name="heading_vaccination_new">Nueva vacuna</string>
@@ -455,7 +455,7 @@
     <string name="heading_laboratory_sample">Muestra laboratoria</string>
     <string name="heading_sample_measurements">Muestras de mediciones</string>
     <string name="heading_location_sampling_site">Ubicación del sitio de muestreo</string>
-    <string name="heading_sample_management">Gestión de ejemplo</string>
+    <string name="heading_sample_management">Gestión de muestras</string>
     <string name="hint_add_to_empty_list">Añade una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cuando abra la aplicación SORMAS.</string>
@@ -527,7 +527,7 @@
     <string name="main_menu_dashboard">Panel de Control</string>
     <string name="main_menu_events">Eventos</string>
     <string name="main_menu_reports">Informes</string>
-    <string name="main_menu_samples">Ejemplo</string>
+    <string name="main_menu_samples">Muestras</string>
     <string name="main_menu_environments">Entornos</string>
     <string name="main_menu_environment_samples">Muestras de entorno</string>
     <string name="main_menu_immunizations">Inmunizaciones</string>
@@ -653,7 +653,7 @@
     <string name="value_description_unknown">Descripción N/A</string>
     <string name="value_disease_unknown">Enfermedad N/A</string>
     <string name="value_event_unknown">Evento N/A</string>
-    <string name="value_executing_clinician_unknown">Médico clínico ejecutor N/A</string>
+    <string name="value_executing_clinician_unknown">Médico ejecutor N/A</string>
     <string name="value_facility_unknown">Establecimiento de salud N/A</string>
     <string name="value_frequency_unknown">Frecuencia N/A</string>
     <string name="value_sex_unknown">Sexo N/A</string>
@@ -667,7 +667,7 @@
     <string name="value_not_available">N/A</string>
     <string name="value_person_unknown">Persona N/A</string>
     <string name="value_point_of_entry_unknown">Punto de entrada N/A</string>
-    <string name="value_prescribing_clinician_unknown">Prescribiendo Clinician N/A</string>
+    <string name="value_prescribing_clinician_unknown">Prescripción Médica N/A</string>
     <string name="value_prescription_date_unknown">Prescripción de fecha N/A</string>
     <string name="value_prescription_period_unknown">Periodo de prescripción N/A</string>
     <string name="value_report_date_unknown">Fecha del informe N/A</string>
@@ -687,7 +687,7 @@
     <string name="value_visit_date_unknown">Fecha de visita N/A</string>
     <string name="value_visit_remarks_unknown">Comentarios N/A</string>
     <string name="value_visit_time_unknown">Tiempo de visita N/A</string>
-    <string name="value_visiting_person_unknown">Asistente clínico</string>
+    <string name="value_visiting_person_unknown">Asistente Médico N/A</string>
     <string name="value_investigation_status_unknown">Estado de la investigación N/A</string>
     <string name="sample_not_found">No se pudo encontrar la muestra</string>
     <string name="no_camera_permission">No hay permiso para cámaras</string>

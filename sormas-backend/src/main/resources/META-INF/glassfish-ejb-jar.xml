@@ -994,6 +994,21 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>SELF_REPORT_PROCESS</role-name>
+        <group-name>SELF_REPORT_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SELF_REPORT_EXPORT</role-name>
+        <group-name>SELF_REPORT_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SELF_REPORT_IMPORT</role-name>
+        <group-name>SELF_REPORT_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>DOCUMENT_VIEW</role-name>
         <group-name>DOCUMENT_VIEW</group-name>
     </security-role-mapping>

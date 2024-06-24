@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.97.0-SNAPSHOT
+  version: 1.98.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -7197,6 +7197,9 @@ paths:
                   - SELF_REPORT_EDIT
                   - SELF_REPORT_DELETE
                   - SELF_REPORT_ARCHIVE
+                  - SELF_REPORT_PROCESS
+                  - SELF_REPORT_IMPORT
+                  - SELF_REPORT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7431,6 +7434,9 @@ paths:
                   - SELF_REPORT_EDIT
                   - SELF_REPORT_DELETE
                   - SELF_REPORT_ARCHIVE
+                  - SELF_REPORT_PROCESS
+                  - SELF_REPORT_IMPORT
+                  - SELF_REPORT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -8904,6 +8910,8 @@ components:
           enum:
           - IN_COUNTRY
           - POINT_OF_ENTRY
+        caseReferenceNumber:
+          type: string
         caseUuidsForMerge:
           type: array
           items:
@@ -9928,6 +9936,8 @@ components:
           enum:
           - IN_COUNTRY
           - POINT_OF_ENTRY
+        caseReferenceNumber:
+          type: string
         caseUuidsForMerge:
           type: array
           items:
@@ -11315,6 +11325,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
         community:
@@ -11559,6 +11571,8 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+        withCase:
+          type: boolean
         withExtendedQuarantine:
           type: boolean
         withOwnership:
@@ -25083,6 +25097,7 @@ components:
           - FR_TN
           - DE
           - DE_CH
+          - ES_BO
           - ES_EC
           - ES_CU
           - IT
@@ -25522,6 +25537,9 @@ components:
             - SELF_REPORT_EDIT
             - SELF_REPORT_DELETE
             - SELF_REPORT_ARCHIVE
+            - SELF_REPORT_PROCESS
+            - SELF_REPORT_IMPORT
+            - SELF_REPORT_EXPORT
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE
