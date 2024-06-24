@@ -16,7 +16,7 @@ public abstract class SurveillanceEpiCurveBuilder extends AbstractEpiCurveBuilde
 
 
 	public SurveillanceEpiCurveBuilder(EpiCurveGrouping epiCurveGrouping) {
-		super(Captions.dashboardNumberOfContacts, epiCurveGrouping);
+		super(Captions.dashboardNumberOfCases, epiCurveGrouping);
 	}
 
 	@Override

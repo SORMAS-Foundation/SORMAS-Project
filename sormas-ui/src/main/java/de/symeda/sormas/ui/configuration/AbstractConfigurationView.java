@@ -29,7 +29,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumValuesView;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
 import de.symeda.sormas.ui.configuration.docgeneration.emailtemplate.EmailTemplatesView;
@@ -65,17 +64,16 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 		Class<? extends AbstractConfigurationView> firstAccessibleView = null;
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.OUTBREAKS, UserRight.OUTBREAK_VIEW)) {
 			navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 			firstAccessibleView = OutbreaksView.class;
 		}
 
-		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		boolean isCaseSurveillanceEnabled = UiUtil.enabled(FeatureType.CASE_SURVEILANCE);
 		boolean isAnySurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isAnySurveillanceEnabled();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+		if (UiUtil.permitted(UserRight.INFRASTRUCTURE_VIEW)) {
+			if (UiUtil.enabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				navigator.addView(AreasView.VIEW_NAME, AreasView.class);
 			}
 			if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
@@ -94,7 +92,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
+			if (UiUtil.permitted(UserRight.POPULATION_MANAGE)) {
 				navigator.addView(PopulationDataView.VIEW_NAME, PopulationDataView.class);
 			}
 		}
@@ -103,12 +101,12 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 		//		}
 
-		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
+		if (isCaseSurveillanceEnabled && UiUtil.permitted(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : LineListingConfigurationView.class;
 		}
 
-		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+		if (isAnySurveillanceEnabled && UiUtil.permitted(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DocumentTemplatesView.class;
 		}
@@ -118,12 +116,12 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : EmailTemplatesView.class;
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
+		if (UiUtil.permitted(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
 			navigator.addView(CustomizableEnumValuesView.VIEW_NAME, CustomizableEnumValuesView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : CustomizableEnumValuesView.class;
 		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
+		if (FacadeProvider.getConfigFacade().isDevMode() && UiUtil.permitted(UserRight.DEV_MODE)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DevModeView.class;
 		}
@@ -135,18 +133,17 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubMenu menu, String params) {
 		menu.removeAllViews();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+		if (UiUtil.permitted(FeatureType.OUTBREAKS, UserRight.OUTBREAK_VIEW)) {
 			menu.addView(
 				OutbreaksView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				params);
 		}
 
-		boolean isCaseSurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+		boolean isCaseSurveillanceEnabled = UiUtil.enabled(FeatureType.CASE_SURVEILANCE);
 		boolean isAnySurveillanceEnabled = FacadeProvider.getFeatureConfigurationFacade().isAnySurveillanceEnabled();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+		if (UiUtil.permitted(UserRight.INFRASTRUCTURE_VIEW)) {
 			if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
 				menu.addView(
 					ContinentsView.VIEW_NAME,
@@ -164,7 +161,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 					null,
 					false);
 			}
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			if (UiUtil.enabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 				menu.addView(
 					AreasView.VIEW_NAME,
 					I18nProperties.getPrefixCaption("View", AreasView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -201,7 +198,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 					false);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
+			if (UiUtil.permitted(UserRight.POPULATION_MANAGE)) {
 				menu.addView(
 					PopulationDataView.VIEW_NAME,
 					I18nProperties.getPrefixCaption("View", PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -215,15 +212,15 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		//		}
 
-		if (isCaseSurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
-			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
+		if (isCaseSurveillanceEnabled && UiUtil.permitted(UserRight.LINE_LISTING_CONFIGURE)) {
+			RegionReferenceDto region = UiUtil.getUser().getRegion();
 			menu.addView(
 				LineListingConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				region != null ? region.getUuid() : null,
 				false);
 		}
-		if (isAnySurveillanceEnabled && UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
+		if (isAnySurveillanceEnabled && UiUtil.permitted(UserRight.DOCUMENT_TEMPLATE_MANAGEMENT)) {
 			menu.addView(
 				DocumentTemplatesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DocumentTemplatesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -239,7 +236,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				false);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
+		if (UiUtil.permitted(UserRight.CUSTOMIZABLE_ENUM_MANAGEMENT)) {
 			menu.addView(
 				CustomizableEnumValuesView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", CustomizableEnumValuesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -247,7 +244,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				false);
 		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
+		if (FacadeProvider.getConfigFacade().isDevMode() && UiUtil.permitted(UserRight.DEV_MODE)) {
 			menu.addView(
 				DevModeView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

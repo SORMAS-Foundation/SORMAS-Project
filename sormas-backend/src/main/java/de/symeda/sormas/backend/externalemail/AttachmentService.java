@@ -26,14 +26,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -84,31 +83,32 @@ public class AttachmentService {
         return Set.of((PDF_FILE_EXTENSION + "," + DOCX_FILE_EXTENSION + "," + IMAGE_FILE_EXTENSTIONS).split(","));
     }
 
-    public Map<File, String> createEncryptedPdfs(List<de.symeda.sormas.backend.document.Document> sormasDocuments, String password) {
-        return sormasDocuments.stream().map(d -> {
-            String fileName = d.getName();
-            String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+	public Map<File, String> createEncryptedPdfs(Map<File, String> sormasDocuments, String password) {
+		Map<File, String> encryptedFiles = new HashMap<>(Collections.emptyMap());
 
-            try {
-                final File encryptedPdf;
-                File document = documentStorageService.getFile(d.getStorageReference());
-                if (fileExtension.equals(PDF_FILE_EXTENSION)) {
+		sormasDocuments.forEach((document, fileName) -> {
+			String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+
+			try {
+				final File encryptedPdf;
+				if (fileExtension.equals(PDF_FILE_EXTENSION)) {
 					encryptedPdf = encryptPdf(document, password);
                 } else {
                     PdfConverter converter = getConverter(fileExtension);
                     fileName = converter.getConvertedFileName(fileName);
                     File converted = converter.convert(document);
 					encryptedPdf = encryptPdf(converted, password);
-                    converted.delete();
-                }
+					converted.delete();
+				}
+				encryptedFiles.put(encryptedPdf, fileName);
+			} catch (IOException e) {
+				// not really expected to happen
+				throw new RuntimeException(e);
+			}
+		});
 
-                return new AbstractMap.SimpleEntry<>(encryptedPdf, fileName);
-            } catch (IOException e) {
-                // not really expected to happen
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
+		return encryptedFiles;
+	}
 
     private File encryptPdf(File pdf, String password) throws IOException {
         PDDocument pdd = Loader.loadPDF(pdf);

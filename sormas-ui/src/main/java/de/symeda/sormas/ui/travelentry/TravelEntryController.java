@@ -4,10 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 
@@ -16,6 +17,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -27,7 +31,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -80,17 +84,15 @@ public class TravelEntryController {
 			createForm = new TravelEntryCreateForm();
 		}
 
-		travelEntry.setReportingUser(UserProvider.getCurrent().getUserReference());
+		travelEntry.setReportingUser(UiUtil.getUserReference());
 		createForm.setValue(travelEntry);
 
 		if (caseReferenceDto != null) {
 			createForm.setDiseaseReadOnly(true);
 		}
 
-		final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.TRAVEL_ENTRY_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -161,19 +163,19 @@ public class TravelEntryController {
 		});
 
 		// Initialize 'Delete' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				TravelEntriesView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityTravelEntry),
-				travelEntry.getUuid(),
+				travelEntryUuid,
 				FacadeProvider.getTravelEntryFacade());
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntry.getUuid()));
+				.addArchivingButton(travelEntry, ArchiveHandlers.forTravelEntry(), editComponent, () -> navigateToTravelEntry(travelEntryUuid));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -188,7 +190,7 @@ public class TravelEntryController {
 	}
 
 	private TravelEntryDto findTravelEntry(String uuid) {
-		return FacadeProvider.getTravelEntryFacade().getByUuid(uuid);
+		return FacadeProvider.getTravelEntryFacade().getTravelEntryByUuid(uuid);
 	}
 
 	public TitleLayout getTravelEntryViewTitleLayout(String uuid) {
@@ -253,4 +255,23 @@ public class TravelEntryController {
 		};
 	}
 
+	public void sendEmailsToAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, TravelEntryGrid travelEntryGrid) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			ControllerProvider.getExternalEmailController()
+				.sendBulkEmail(
+					DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
+					RootEntityType.ROOT_TRAVEL_ENTRY,
+					DocumentRelatedEntityType.TRAVEL_ENTRY,
+					selectedRows,
+					bulkOperationCallback(travelEntryGrid, travelEntryGrid::reload, null),
+					TravelEntryIndexDto::toReference,
+					null);
+		}
+	}
 }

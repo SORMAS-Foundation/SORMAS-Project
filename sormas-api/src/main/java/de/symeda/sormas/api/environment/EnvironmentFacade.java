@@ -11,4 +11,6 @@ public interface EnvironmentFacade extends CoreFacade<EnvironmentDto, Environmen
 
 	List<String> getAllActiveUuids();
 
+	EnvironmentDto getEnvironmentByUuid(String uuid);
+
 }

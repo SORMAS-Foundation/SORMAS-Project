@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
@@ -69,23 +70,23 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 
-		DocumentTemplateEntities entities =
-			entitiesBuilder.getQuarantineOrderEntities(rootEntityType, rootEntityReference, sampleReference, pathogenTestReference, vaccinationReference);
+		DocumentTemplateEntities entities = entitiesBuilder
+			.getQuarantineOrderEntities(rootEntityType, rootEntityReference, sampleReference, pathogenTestReference, vaccinationReference);
 		byte[] documentToSave = documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities, extraProperties);
 		if (shouldUploadGeneratedDoc) {
-			uploadDocument(templateName, rootEntityReference, documentToSave);
+			uploadDocument(helper.getDocumentFileName(rootEntityReference, templateName), rootEntityReference, documentToSave);
 		}
 		return documentToSave;
 	}
 
-	private void uploadDocument(String templateName, ReferenceDto rootEntityReference, byte[] documentToSave) throws DocumentTemplateException {
+	public void uploadDocument(String fileName, ReferenceDto rootEntityReference, byte[] documentToSave) throws DocumentTemplateException {
 		try {
 			if (isFileSizeLimitExceeded(documentToSave.length)) {
 				return;
 			}
 
 			helper.saveDocument(
-				helper.getDocumentFileName(rootEntityReference, templateName),
+				fileName,
 				DocumentDto.MIME_TYPE_DEFAULT,
 				documentToSave.length,
 				helper.getDocumentRelatedEntityType(rootEntityReference),
@@ -129,7 +130,12 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities =
 			entitiesBuilder.getEventParticipantQuarantineOrderEntities(rootEntityReferences, eventDisease);
 
-		return getGeneratedDocuments(templateName, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT, quarantineOrderEntities, extraProperties, shouldUploadGeneratedDoc);
+		return getGeneratedDocuments(
+			templateName,
+			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
+			quarantineOrderEntities,
+			extraProperties,
+			shouldUploadGeneratedDoc);
 	}
 
 	private Map<ReferenceDto, byte[]> getGeneratedDocuments(
@@ -143,13 +149,10 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		Map<ReferenceDto, byte[]> documents = new HashMap<>(quarantineOrderEntities.size());
 
 		for (Map.Entry<ReferenceDto, DocumentTemplateEntities> entities : quarantineOrderEntities.entrySet()) {
-			byte[] documentContent = documentTemplateFacade.generateDocumentDocxFromEntities(
-				workflow,
-				templateName,
-				entities.getValue(),
-				extraProperties);
+			byte[] documentContent =
+				documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities.getValue(), extraProperties);
 			if (shouldUploadGeneratedDoc) {
-				uploadDocument(templateName, entities.getKey(), documentContent);
+				uploadDocument(helper.getDocumentFileName(entities.getKey(), templateName), entities.getKey(), documentContent);
 			}
 			documents.put(entities.getKey(), documentContent);
 		}
@@ -165,5 +168,10 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	@Override
 	public DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
 		return documentTemplateFacade.getDocumentVariables(documentWorkflow, templateName);
+	}
+
+	@LocalBean
+	@Stateless
+	public static class QuarantineOrderFacadeEjbLocal extends QuarantineOrderFacadeEjb {
 	}
 }

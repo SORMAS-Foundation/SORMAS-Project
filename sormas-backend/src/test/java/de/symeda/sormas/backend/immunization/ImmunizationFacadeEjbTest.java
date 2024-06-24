@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -43,13 +44,19 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 
 public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
@@ -104,6 +111,61 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetImmunizationByUuidForArchivedImmunization() {
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.IMMUNIZATION_VIEW,
+			UserRight.IMMUNIZATION_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.IMMUNIZATION_VIEW);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+		ImmunizationDto immunizationDto = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			user1.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+
+		ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal cut = getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
+		cut.archive(immunizationDto.getUuid(), null);
+
+		//user1 has IMMUNIZATION_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getImmunizationFacade().getImmunizationByUuid(immunizationDto.getUuid()).getUuid(), immunizationDto.getUuid());
+
+		//user2 does not have IMMUNIZATION_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getImmunizationFacade().getImmunizationByUuid(immunizationDto.getUuid()));
+	}
+
+	@Test
 	public void testValidateWithNullReportingUser() {
 		loginWith(districtUser1);
 
@@ -133,7 +195,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			MeansOfImmunization.VACCINATION,
 			ImmunizationManagementStatus.COMPLETED,
 			rdcf1);
-		ImmunizationDto actual = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
+		ImmunizationDto actual = getImmunizationFacade().getImmunizationByUuid(immunizationDto.getUuid());
 		assertEquals(immunizationDto.getUuid(), actual.getUuid());
 		assertEquals(immunizationDto.getPerson(), actual.getPerson());
 	}
@@ -260,7 +322,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(seenImmunization.getPerson().getLastName(), immunizationDto.getPerson().getLastName());
 
 		// assert getting non seen immunization in grid is pseudonymized
-		ImmunizationDto byUuid = getImmunizationFacade().getByUuid(nonSeenImmunization.getUuid());
+		ImmunizationDto byUuid = getImmunizationFacade().getImmunizationByUuid(nonSeenImmunization.getUuid());
 		assertEquals(nonSeenImmunization.getUuid(), byUuid.getUuid());
 		assertEquals("", byUuid.getPerson().getLastName());
 		assertEquals("", byUuid.getPerson().getFirstName());
@@ -425,29 +487,41 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		// immunizations before status automation update
 		assertEquals(5, getImmunizationFacade().getAllAfter(UtilDate.from(LocalDate.now().minusDays(2))).size());
-		assertEquals(ImmunizationStatus.NOT_ACQUIRED, getImmunizationFacade().getByUuid(nonAcquiredImmunization.getUuid()).getImmunizationStatus());
-		assertEquals(ImmunizationStatus.PENDING, getImmunizationFacade().getByUuid(pendingImmunization.getUuid()).getImmunizationStatus());
-		assertEquals(ImmunizationStatus.EXPIRED, getImmunizationFacade().getByUuid(expiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.NOT_ACQUIRED,
+			getImmunizationFacade().getImmunizationByUuid(nonAcquiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.PENDING,
+			getImmunizationFacade().getImmunizationByUuid(pendingImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.EXPIRED,
+			getImmunizationFacade().getImmunizationByUuid(expiredImmunization.getUuid()).getImmunizationStatus());
 		assertEquals(
 			ImmunizationStatus.ACQUIRED,
-			getImmunizationFacade().getByUuid(acquiredImmunizationStillValid.getUuid()).getImmunizationStatus());
+			getImmunizationFacade().getImmunizationByUuid(acquiredImmunizationStillValid.getUuid()).getImmunizationStatus());
 		assertEquals(
 			ImmunizationStatus.ACQUIRED,
-			getImmunizationFacade().getByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
+			getImmunizationFacade().getImmunizationByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
 
 		getImmunizationFacade().updateImmunizationStatuses();
 
 		// immunizations after status automation update
 		assertEquals(5, getImmunizationFacade().getAllAfter(UtilDate.from(LocalDate.now().minusDays(2))).size());
-		assertEquals(ImmunizationStatus.NOT_ACQUIRED, getImmunizationFacade().getByUuid(nonAcquiredImmunization.getUuid()).getImmunizationStatus());
-		assertEquals(ImmunizationStatus.PENDING, getImmunizationFacade().getByUuid(pendingImmunization.getUuid()).getImmunizationStatus());
-		assertEquals(ImmunizationStatus.EXPIRED, getImmunizationFacade().getByUuid(expiredImmunization.getUuid()).getImmunizationStatus());
 		assertEquals(
-			ImmunizationStatus.ACQUIRED,
-			getImmunizationFacade().getByUuid(acquiredImmunizationStillValid.getUuid()).getImmunizationStatus());
+			ImmunizationStatus.NOT_ACQUIRED,
+			getImmunizationFacade().getImmunizationByUuid(nonAcquiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.PENDING,
+			getImmunizationFacade().getImmunizationByUuid(pendingImmunization.getUuid()).getImmunizationStatus());
 		assertEquals(
 			ImmunizationStatus.EXPIRED,
-			getImmunizationFacade().getByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
+			getImmunizationFacade().getImmunizationByUuid(expiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.ACQUIRED,
+			getImmunizationFacade().getImmunizationByUuid(acquiredImmunizationStillValid.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.EXPIRED,
+			getImmunizationFacade().getImmunizationByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
 	}
 
 	@Test
@@ -573,7 +647,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			Arrays.asList(creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
 		getImmunizationFacade().save(immunization);
 
-		final ImmunizationDto immWithOneVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		final ImmunizationDto immWithOneVac = getImmunizationFacade().getImmunizationByUuid(immunization.getUuid());
 		assertEquals(1, immWithOneVac.getVaccinations().size());
 		assertEquals(ImmunizationManagementStatus.ONGOING, immWithOneVac.getImmunizationManagementStatus());
 		assertEquals(ImmunizationStatus.PENDING, immWithOneVac.getImmunizationStatus());
@@ -603,7 +677,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
 		getImmunizationFacade().save(immunization);
 
-		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getImmunizationByUuid(immunization.getUuid());
 		assertEquals(2, immWithTwoVac.getVaccinations().size());
 		assertEquals(ImmunizationManagementStatus.COMPLETED, immWithTwoVac.getImmunizationManagementStatus());
 		assertEquals(ImmunizationStatus.ACQUIRED, immWithTwoVac.getImmunizationStatus());
@@ -632,7 +706,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
 		getImmunizationFacade().save(immunization);
 
-		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getImmunizationByUuid(immunization.getUuid());
 		assertEquals(2, immWithTwoVac.getVaccinations().size());
 		assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
 		assertEquals(ImmunizationStatus.EXPIRED, immWithTwoVac.getImmunizationStatus());
@@ -661,7 +735,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
 		getImmunizationFacade().save(immunization);
 
-		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getImmunizationByUuid(immunization.getUuid());
 		assertEquals(2, immWithTwoVac.getVaccinations().size());
 		assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
 		assertEquals(ImmunizationStatus.NOT_ACQUIRED, immWithTwoVac.getImmunizationStatus());
@@ -776,5 +850,43 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		immunizationIndexDtos = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
 		assertEquals(1, immunizationIndexDtos.size());
 		assertEquals(immunizationDto2.getUuid(), immunizationIndexDtos.get(0).getUuid());
+	}
+
+	@Test
+	public void testGetCasesByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		final ImmunizationDto immunization1 =
+			getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person1, districtUser1.toReference(), rdcf1));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person2, districtUser1.toReference(), rdcf1));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getImmunizationFacade().save(creator.createImmunization(Disease.CORONAVIRUS, person3, districtUser1.toReference(), rdcf1));
+
+		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setNameAddressPhoneEmailLike("firstNationalId");
+
+		List<ImmunizationIndexDto> immunizationIndexDtos1 = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(1, immunizationIndexDtos1.size());
+		assertEquals(immunization1.getUuid(), immunizationIndexDtos1.get(0).getUuid());
+
+		immunizationCriteria.setNameAddressPhoneEmailLike("National");
+		List<ImmunizationIndexDto> immunizationIndexDtosNational = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(2, immunizationIndexDtosNational.size());
+
+		immunizationCriteria.setNameAddressPhoneEmailLike(null);
+		List<ImmunizationIndexDto> immunizationIndexDtosAll = getImmunizationFacade().getIndexList(immunizationCriteria, 0, 100, null);
+		assertEquals(3, immunizationIndexDtosAll.size());
 	}
 }

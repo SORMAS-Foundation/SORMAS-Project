@@ -56,7 +56,7 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test.csv").toURI());
 		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
-		ImportResultStatus importResult = importer.runImport();
+		ImportResultStatus importResult = importer.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(1, getTravelEntryFacade().count(null));
@@ -70,7 +70,7 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test_tab.csv").toURI());
 		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.TAB);
-		ImportResultStatus importResult = importer.runImport();
+		ImportResultStatus importResult = importer.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(1, getTravelEntryFacade().count(null));
@@ -87,7 +87,7 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_jurisdiction.csv").toURI());
 
 		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
-		ImportResultStatus importResult = importer.runImport();
+		ImportResultStatus importResult = importer.runImport().getStatus();
 
 		assertThat(importResult, is(ImportResultStatus.COMPLETED));
 
@@ -129,7 +129,7 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 			File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_poe.csv").toURI());
 
 			TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
-			importResult = importer.runImport();
+			importResult = importer.runImport().getStatus();
 		} finally {
 			// make sure server locale is reset
 			if (serverLocale == null) {
@@ -166,7 +166,7 @@ public class TravelEntryImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_poe.csv").toURI());
 
 		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
-		ImportResultStatus importResult = importer.runImport();
+		ImportResultStatus importResult = importer.runImport().getStatus();
 
 		assertThat(importResult, is(ImportResultStatus.COMPLETED_WITH_ERRORS));
 	}

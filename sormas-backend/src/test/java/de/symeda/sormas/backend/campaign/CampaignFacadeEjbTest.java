@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +15,10 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -44,6 +48,55 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 		campaign2.setStartDate(new Date(System.currentTimeMillis()));
 		campaign2 = getCampaignFacade().save(campaign2);
 		assertThat(getCampaignFacade().getAllAfter(null), contains(campaign1, campaign2));
+	}
+
+	@Test
+	public void testGetCampaignUuidForArchivedCampaign() {
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.CAMPAIGN_VIEW,
+			UserRight.CAMPAIGN_VIEW_ARCHIVED,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.CAMPAIGN_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT);
+
+		final CampaignDto campaign = creator.createCampaign(user1);
+		campaign.setStartDate(new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS));
+		getCampaignFacade().save(campaign);
+
+		CampaignFacadeEjb.CampaignFacadeEjbLocal cut = getBean(CampaignFacadeEjb.CampaignFacadeEjbLocal.class);
+		cut.archive(campaign.getUuid(), null);
+
+		//user1 has CAMPAIGN_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getCampaignFacade().getCampaignByUuid(campaign.getUuid()).getUuid(), campaign.getUuid());
+
+		//user2 does not have CAMPAIGN_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getCampaignFacade().getCampaignByUuid(campaign.getUuid()));
 	}
 
 	@Test

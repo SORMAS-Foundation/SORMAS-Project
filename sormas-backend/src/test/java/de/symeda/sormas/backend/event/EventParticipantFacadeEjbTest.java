@@ -73,7 +73,10 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -95,6 +98,75 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			ValidationRuntimeException.class,
 			() -> creator.createEventParticipant(event.toReference(), eventPerson, "event Director", null));
+	}
+
+	@Test
+	public void testGetEventParticipantByUuidForArchivedParticipant() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.EVENTPARTICIPANT_VIEW,
+			UserRight.EVENTPARTICIPANT_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.EVENTPARTICIPANT_VIEW);
+
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user1.toReference(),
+			user1.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf);
+
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user1.toReference());
+
+		EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal cut = getBean(EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal.class);
+		cut.archive(eventParticipant.getUuid(), null);
+
+		//user1 has EVENTPARTICIPANT_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()).getUuid(), eventParticipant.getUuid());
+
+		//user2 does not have EVENTPARTICIPANT_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 	}
 
 	@Test

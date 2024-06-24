@@ -24,6 +24,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.ImmunizationPickOrCreateField;
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
@@ -69,7 +70,7 @@ public class ImmunizationController {
 	}
 
 	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent() {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
 		if (currentUserProvider != null) {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm();
 			ImmunizationDto immunization = ImmunizationDto.build(null);
@@ -110,7 +111,7 @@ public class ImmunizationController {
 	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent(
 		PersonReferenceDto personReferenceDto,
 		Disease disease) {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
 		if (currentUserProvider != null) {
 			ImmunizationCreationForm createForm = new ImmunizationCreationForm(personReferenceDto, disease);
 			ImmunizationDto immunization = ImmunizationDto.build(personReferenceDto);
@@ -134,9 +135,10 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(
-		ImmunizationDto immunizationDto,
-		Consumer<Runnable> actionCallback) {
+	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(String uuid, Consumer<Runnable> actionCallback) {
+
+		//String uuid = immunizationDto.getUuid();
+		ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getImmunizationByUuid(uuid);
 
 		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(
 			immunizationDto.isPseudonymized(),
@@ -145,7 +147,6 @@ public class ImmunizationController {
 			actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
 		CommitDiscardWrapperComponent<ImmunizationDataForm> editComponent =
 			new CommitDiscardWrapperComponent<ImmunizationDataForm>(immunizationDataForm, true, immunizationDataForm.getFieldGroup()) {
 
@@ -156,8 +157,8 @@ public class ImmunizationController {
 				}
 			};
 
-		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
-		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(uuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(uuid);
 
 		editComponent.getButtonsPanel()
 			.addComponentAsFirst(
@@ -192,23 +193,19 @@ public class ImmunizationController {
 		});
 
 		// Initialize 'Delete' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				ImmunizationsView.VIEW_NAME,
 				null,
 				I18nProperties.getString(Strings.entityImmunization),
-				immunizationDto.getUuid(),
+				uuid,
 				FacadeProvider.getImmunizationFacade());
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
-				.addArchivingButton(
-					immunizationDto,
-					ArchiveHandlers.forImmunization(),
-					editComponent,
-					() -> navigateToImmunization(immunizationDto.getUuid()));
+				.addArchivingButton(immunizationDto, ArchiveHandlers.forImmunization(), editComponent, () -> navigateToImmunization(uuid));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -216,7 +213,7 @@ public class ImmunizationController {
 			null,
 			UserRight.IMMUNIZATION_DELETE,
 			UserRight.IMMUNIZATION_ARCHIVE,
-			FacadeProvider.getImmunizationFacade().getEditPermissionType(immunizationDto.getUuid()),
+			FacadeProvider.getImmunizationFacade().getEditPermissionType(uuid),
 			immunizationDto.isInJurisdiction());
 
 		return editComponent;
@@ -243,7 +240,7 @@ public class ImmunizationController {
 	}
 
 	private ImmunizationDto findImmunization(String uuid) {
-		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
+		return FacadeProvider.getImmunizationFacade().getImmunizationByUuid(uuid);
 	}
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {

@@ -1,4 +1,4 @@
-/*******************************************************************************
+s/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -163,6 +163,8 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	private Boolean includeNotACaseClassification;
 
+
+	private String caseReferenceNumber;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -802,48 +804,13 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		return this;
 	}
 
-	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
-		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
-	}
-
 	@IgnoreForUrl
-	public String getNameUuidEpidNumberLike() {
-		return nameUuidEpidNumberLike;
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
 	}
 
-	public CaseCriteria deleted(Boolean deleted) {
-		this.deleted = deleted;
+	public CaseCriteria caseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
 		return this;
-	}
-
-	@IgnoreForUrl
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-
-	public Boolean getExcludeSharedCases() {
-		return excludeSharedCases;
-	}
-
-	public void setExcludeSharedCases(Boolean excludeSharedCases) {
-		this.excludeSharedCases = excludeSharedCases;
-	}
-
-
-	public CaseCriteria caseClassification(CaseClassification caseClassification) {
-		setCaseClassification(caseClassification);
-		return this;
-	}
-
-
-
-	public CaseCriteria includeNotACaseClassification(Boolean includeNotACaseClassification) {
-		this.includeNotACaseClassification = includeNotACaseClassification;
-		return this;
-	}
-
-	public Boolean isIncludeNotACaseClassification() {
-		return includeNotACaseClassification;
 	}
 }

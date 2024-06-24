@@ -59,7 +59,7 @@ public class CountryImporterTest extends AbstractUiBeanTest {
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
 		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
 		assertEquals(1, getCountryFacade().count(new CountryCriteria()));
 	}
 

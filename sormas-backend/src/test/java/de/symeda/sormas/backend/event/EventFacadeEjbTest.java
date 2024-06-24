@@ -41,6 +41,7 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -56,16 +57,22 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
@@ -91,6 +98,69 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 				null,
 				Disease.EVD,
 				rdcf));
+	}
+
+	@Test
+	public void testGetEventByUuidForArchivedEvent() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.EVENT_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.EVENT_VIEW,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT);
+
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user1.toReference(),
+			user1.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf);
+
+		EventFacadeEjb.EventFacadeEjbLocal cut = getBean(EventFacadeEjb.EventFacadeEjbLocal.class);
+		cut.archive(event.getUuid(), null);
+
+		//user1 has EVENT_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getEventFacade().getEventByUuid(event.getUuid(), false).getUuid(), event.getUuid());
+
+		//user2 does not have EVENT_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getEventFacade().getEventByUuid(event.getUuid(), false));
 	}
 
 	@Test
@@ -131,16 +201,16 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
-		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
-		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
+		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getEventByUuid(event.getUuid(), false).getDeletionReason());
+		assertEquals("test reason", getEventFacade().getEventByUuid(event.getUuid(), false).getOtherDeletionReason());
 
 		getEventFacade().restore(event.getUuid());
 
 		assertFalse(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertFalse(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
-		assertNull(getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
-		assertNull(getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
+		assertNull(getEventFacade().getEventByUuid(event.getUuid(), false).getDeletionReason());
+		assertNull(getEventFacade().getEventByUuid(event.getUuid(), false).getOtherDeletionReason());
 	}
 
 	@Test
@@ -606,5 +676,48 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(userReferenceDtos.contains(userDto));
 		assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
+
+	@Test
+	public void testGetEventsByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		EventDto event1 = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		creator.createEventParticipant(event1.toReference(), personDto1, "firstPerson", user.toReference());
+
+		EventDto event2 = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		creator.createEventParticipant(event2.toReference(), personDto2, "secondPerson", user.toReference());
+
+		EventDto event3 = creator.createEvent(user.toReference(), Disease.CORONAVIRUS);
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		creator.createEventParticipant(event3.toReference(), personDto3, "thirdPerson", user.toReference());
+
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.setFreeTextEventParticipants("firstNationalId");
+
+		List<EventIndexDto> eventIndexDtos1 = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(1, eventIndexDtos1.size());
+		assertEquals(event1.getUuid(), eventIndexDtos1.get(0).getUuid());
+
+		eventCriteria.setFreeTextEventParticipants("National");
+		List<EventIndexDto> eventIndexDtosNational = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(2, eventIndexDtosNational.size());
+
+		eventCriteria.setFreeTextEventParticipants(null);
+		List<EventIndexDto> eventIndexDtosAll = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(3, eventIndexDtosAll.size());
 	}
 }

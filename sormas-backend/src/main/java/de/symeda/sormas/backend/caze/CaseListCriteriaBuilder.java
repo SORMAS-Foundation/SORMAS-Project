@@ -214,6 +214,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.EXTERNAL_ID),
 			root.get(Case.EXTERNAL_TOKEN),
 			root.get(Case.INTERNAL_TOKEN),
+			root.get(Case.CASE_REFERENCE_NUMBER),
 			joins.getPerson().get(Person.UUID),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
@@ -282,6 +283,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.EXTERNAL_ID:
 		case CaseIndexDto.EXTERNAL_TOKEN:
 		case CaseIndexDto.INTERNAL_TOKEN:
+		case CaseIndexDto.CASE_REFERENCE_NUMBER:
 		case CaseIndexDto.DISEASE_DETAILS:
 			return Collections.singletonList(cb.lower(caze.get(sortProperty.propertyName)));
 		case CaseIndexDto.PERSON_FIRST_NAME:

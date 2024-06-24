@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.immunization;
 
-import java.util.Objects;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
@@ -22,8 +20,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.immunization.components.layout.directory.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.layout.directory.ImmunizationDataLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -66,8 +65,7 @@ public class ImmunizationsView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_CREATE)) {
 			final ExpandableButton createButton =
 				new ExpandableButton(Captions.immunizationNewImmunization).expand(e -> ControllerProvider.getImmunizationController().create());
 			addHeaderComponent(createButton);
@@ -123,9 +121,9 @@ public class ImmunizationsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 
 		// Show active/archived/all dropdown
-		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (UiUtil.permitted(UserRight.IMMUNIZATION_VIEW)) {
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION)) {
+			if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.IMMUNIZATION)) {
 
 				int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 					.getProperty(
@@ -151,14 +149,20 @@ public class ImmunizationsView extends AbstractView {
 			relevanceStatusFilter.setTextInputAllowed(false);
 			relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.immunizationActiveImmunizations));
-			relevanceStatusFilter
-				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.immunizationArchivedImmunizations));
-			relevanceStatusFilter.setItemCaption(
-				EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-				I18nProperties.getCaption(Captions.immunizationAllActiveAndArchivedImmunizations));
+
+			if (UiUtil.permitted(UserRight.IMMUNIZATION_VIEW_ARCHIVED)) {
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.immunizationArchivedImmunizations));
+				relevanceStatusFilter.setItemCaption(
+					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+					I18nProperties.getCaption(Captions.immunizationAllActiveAndArchivedImmunizations));
+			} else {
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+				relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+			}
 			relevanceStatusFilter.setCaption("");
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
+			if (UiUtil.permitted(UserRight.IMMUNIZATION_DELETE)) {
 				relevanceStatusFilter
 					.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.immunizationDeletedImmunizations));
 			} else {
@@ -169,6 +173,12 @@ public class ImmunizationsView extends AbstractView {
 				if (relevanceStatusInfoLabel != null) {
 					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 				}
+
+				ImmunizationGrid grid = immunizationDataLayout.getGrid();
+				if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+					grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+				}
+
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 				navigateTo(criteria);
 			});

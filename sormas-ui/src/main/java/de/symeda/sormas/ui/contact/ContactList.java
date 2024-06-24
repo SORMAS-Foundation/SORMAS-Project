@@ -31,7 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
@@ -69,13 +69,13 @@ public class ContactList extends PaginationList<ContactIndexDto> {
 				listEntry.setActive();
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+			if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 				listEntry.addDeleteListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getContactController().deleteContact(listEntry.getContact(), this::reload));
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+			if (UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 				listEntry.addEditListener(
 					i,
 					(ClickListener) event -> ControllerProvider.getContactController().navigateToData(listEntry.getContact().getUuid()));

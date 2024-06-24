@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
 import de.symeda.sormas.ui.samples.SamplesView;
+import de.symeda.sormas.ui.selfreport.SelfReportsView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
@@ -127,6 +128,8 @@ public class MainScreen extends HorizontalLayout {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
 					defaultView = EnvironmentsView.VIEW_NAME;
+				} else if (permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
+					defaultView = SelfReportsView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;
 				} else {
@@ -306,7 +309,7 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.AIRPLANE);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
+		if (UiUtil.enabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
 			&& FacadeProvider.getSormasToSormasFacade().isProcessingShareEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
@@ -324,6 +327,16 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
+
+		if (permitted(FeatureType.SELF_REPORTING, UserRight.SELF_REPORT_VIEW)) {
+			ControllerProvider.getSelfReportController().registerViews(navigator);
+			menu.addView(
+				SelfReportsView.class,
+				SelfReportsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuSelfReports),
+				VaadinIcons.USER_CHECK);
+		}
+
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
@@ -336,13 +349,13 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.BAR_CHART);
 		}
 
-		if (UserProvider.getCurrent().hasUserAccess()) {
+		if (UiUtil.hasUserAccess()) {
 			AbstractUserView.registerViews(navigator);
 
 			menu.addView(UsersView.class, AbstractUserView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
 
-		if (UserProvider.getCurrent().hasConfigurationAccess()) {
+		if (UiUtil.hasConfigurationAccess()) {
 			Class<? extends AbstractConfigurationView> firstAccessibleView = AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
 				firstAccessibleView,
@@ -356,8 +369,8 @@ public class MainScreen extends HorizontalLayout {
 
 		// Add GDPR window
 		// possible to desactivate it with check
-		UserDto user = UserProvider.getCurrent().getUser();
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
+		UserDto user = UiUtil.getUser();
+		if (UiUtil.enabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
 			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);

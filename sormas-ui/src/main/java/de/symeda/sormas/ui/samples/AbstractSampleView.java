@@ -29,7 +29,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
@@ -57,17 +57,17 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 
 		final SampleDto sampleByUuid = FacadeProvider.getSampleFacade().getSampleByUuid(params);
 		final CaseReferenceDto caseRef = sampleByUuid.getAssociatedCase();
-		if (caseRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (caseRef != null && UiUtil.permitted(UserRight.CASE_VIEW)) {
 			menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getString(Strings.entityCase), caseRef.getUuid(), true);
 		}
 
 		final ContactReferenceDto contactRef = sampleByUuid.getAssociatedContact();
-		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (contactRef != null && UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getString(Strings.entityContact), contactRef.getUuid(), true);
 		}
 
 		EventParticipantReferenceDto eventParticipantRef = sampleByUuid.getAssociatedEventParticipant();
-		if (eventParticipantRef != null && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (eventParticipantRef != null && UiUtil.permitted(UserRight.EVENT_VIEW)) {
 			menu.addView(
 				EventParticipantDataView.VIEW_NAME,
 				I18nProperties.getString(Strings.entityEventParticipant),

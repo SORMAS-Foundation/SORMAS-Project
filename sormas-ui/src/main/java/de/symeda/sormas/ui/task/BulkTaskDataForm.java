@@ -51,7 +51,7 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -194,12 +194,12 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskDto> {
 		Set<Disease> selectedDiseases = this.selectedTasks.stream().map(TaskIndexDto::getDisease).collect(Collectors.toSet());
 		Disease selectedDisease = selectedDiseases.size() == 1 ? selectedDiseases.iterator().next() : null;
 
-		JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 		JurisdictionLevel highestAllowedJurisdictionLevel;
 
 		if (userJurisdictionLevel == JurisdictionLevel.NATION || userJurisdictionLevel == JurisdictionLevel.NONE) {
 			highestAllowedJurisdictionLevel = JurisdictionLevel.NATION;
-		} else if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
+		} else if (UiUtil.enabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
 			&& InfrastructureHelper.getSuperordinateJurisdiction(userJurisdictionLevel).getOrder() <= lowestCommonJurisdictionLevel.getOrder()) {
 			highestAllowedJurisdictionLevel = InfrastructureHelper.getSuperordinateJurisdiction(userJurisdictionLevel);
 		} else {

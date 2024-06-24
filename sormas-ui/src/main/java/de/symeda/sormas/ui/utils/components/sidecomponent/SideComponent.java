@@ -13,7 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -64,7 +64,6 @@ public class SideComponent extends VerticalLayout {
 	}
 
 	private boolean userHasRight(UserRight... userRights) {
-		UserProvider currentUser = UserProvider.getCurrent();
-		return Arrays.stream(userRights).anyMatch(currentUser::hasUserRight);
+		return Arrays.stream(userRights).anyMatch(UiUtil::permitted);
 	}
 }

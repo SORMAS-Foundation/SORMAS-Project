@@ -26,7 +26,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -90,9 +90,8 @@ public class DocumentList extends VerticalLayout {
 		res.addComponent(downloadButton);
 		res.setExpandRatio(downloadButton, 0);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_DELETE) && isDeleteAllowed) {
-			Button deleteButton = buildDeleteButton(document);
+		if (UiUtil.permitted(editRight, UserRight.DOCUMENT_DELETE) && isDeleteAllowed) {
+			Button deleteButton = buildDeleteButton(document, entityRef.getUuid(), relatedEntityType);
 			res.addComponent(deleteButton);
 			res.setExpandRatio(deleteButton, 0);
 		} else {
@@ -127,14 +126,14 @@ public class DocumentList extends VerticalLayout {
 		return viewButton;
 	}
 
-	private Button buildDeleteButton(DocumentDto document) {
+	private Button buildDeleteButton(DocumentDto document, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
 		return ButtonHelper.createIconButton(
 			"",
 			VaadinIcons.TRASH,
 			e -> VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), document.getName()), () -> {
 					try {
-						FacadeProvider.getDocumentFacade().deleteDocument(document.getUuid());
+						FacadeProvider.getDocumentFacade().deleteDocument(document.getUuid(), relatedEntityUuid, relatedEntityType);
 					} catch (IllegalArgumentException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocument),

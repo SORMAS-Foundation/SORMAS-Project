@@ -42,6 +42,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.backend.selfreport.SelfReport;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
@@ -175,6 +176,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String CASE_REFERENCE_NUMBER = "caseReferenceNumber";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -243,6 +245,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String DUPLICATE_OF = "duplicateOf";
 	public static final String CREATION_VERSION = "creationVersion";
 	public static final String SPECIAL_CASE_ACCESSES = "specialCaseAccesses";
+	public static final String SELF_REPORT = "selfReport";
 
 	private Person person;
 	private String description;
@@ -338,6 +341,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
+
+	private String caseReferenceNumber;
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
@@ -422,6 +427,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Map<String, String> externalData;
 
 	private List<SpecialCaseAccess> specialCaseAccesses = new ArrayList<>(0);
+
+	private List<SelfReport> selfReport;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -1216,6 +1223,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.internalToken = internalToken;
 	}
 
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public void setCaseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
+	}
+
 	@Column
 	public boolean isSharedToCountry() {
 		return sharedToCountry;
@@ -1752,5 +1768,14 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSpecialCaseAccesses(List<SpecialCaseAccess> specialCaseAccesses) {
 		this.specialCaseAccesses = specialCaseAccesses;
+	}
+
+	@OneToMany(mappedBy = SelfReport.RESULTING_CASE, fetch = FetchType.LAZY)
+	public List<SelfReport> getSelfReport() {
+		return selfReport;
+	}
+
+	public void setSelfReport(List<SelfReport> selfReport) {
+		this.selfReport = selfReport;
 	}
 }

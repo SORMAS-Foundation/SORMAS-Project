@@ -24,12 +24,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentFacade;
@@ -155,6 +156,8 @@ public class EnvironmentFacadeEjb
 				location.get(Location.CITY),
 				environment.get(Environment.REPORT_DATE),
 				environment.get(Environment.INVESTIGATION_STATUS),
+				environment.get(Environment.DELETION_REASON),
+				environment.get(Environment.OTHER_DELETION_REASON),
 				JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(environmentQueryContext)));
 
 			cq.where(environment.get(Environment.ID).in(batchedIds));
@@ -371,7 +374,15 @@ public class EnvironmentFacadeEjb
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> entityUuids, String dearchiveReason) {
-		return super.dearchive(entityUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
+
+		if (userService.hasRight(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(entityUuids, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(entityUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
+
+		return processedEntities;
 	}
 
 	@Override
@@ -445,6 +456,15 @@ public class EnvironmentFacadeEjb
 		}
 
 		return service.getAllActiveUuids(user);
+	}
+
+	@Override
+	public EnvironmentDto getEnvironmentByUuid(String uuid) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.ENVIRONMENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
+		return getByUuid(uuid);
 	}
 
 	@LocalBean

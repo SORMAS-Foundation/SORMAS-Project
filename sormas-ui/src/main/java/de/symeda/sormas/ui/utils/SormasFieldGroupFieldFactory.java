@@ -38,6 +38,7 @@ import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
+import de.symeda.sormas.ui.utils.components.MultiSelectFiles;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
@@ -164,6 +165,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			}
 		} else if (MultiSelect.class.isAssignableFrom(fieldType)) {
 			return (T) MultiSelect.create(type);
+		} else if (MultiSelectFiles.class.isAssignableFrom(fieldType)) {
+			return (T) MultiSelectFiles.create(type);
 		} else if (CheckboxSet.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckboxSet();
 		} else if (UserRoleNotificationCheckboxSet.class.isAssignableFrom(fieldType)) {
@@ -174,6 +177,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new CustomizableEnumPropertiesComponent();
 		} else if (UserField.class.isAssignableFrom(fieldType)) {
 			return (T) new UserField();
+		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
+			return (T) new CheckBoxTree<>();
 		}
 		return super.createField(type, fieldType);
 	}

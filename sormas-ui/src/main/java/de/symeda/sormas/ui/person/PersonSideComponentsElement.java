@@ -22,6 +22,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
@@ -97,17 +98,13 @@ public interface PersonSideComponentsElement {
 		ContactListComponent contactListComponent = null;
 		EventParticipantListComponent eventParticipantListComponent = null;
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.CASE_VIEW)) {
+		if (UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			caseListComponent =
 				new CaseListComponent(person, entityType == DeletableEntityType.CASE ? entityUuid : null, showUnsavedChangesPopup, isEditAllowed);
 			layout.addComponent(new SideComponentLayout(caseListComponent), CASES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.CONTACT_TRACING, UserRight.CONTACT_VIEW)) {
 			contactListComponent = new ContactListComponent(
 				person,
 				entityType == DeletableEntityType.CONTACT ? entityUuid : null,
@@ -116,10 +113,7 @@ public interface PersonSideComponentsElement {
 			layout.addComponent(new SideComponentLayout(contactListComponent), CONTACTS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.EVENT_VIEW)
-			&& currentUser.hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW, UserRight.EVENTPARTICIPANT_VIEW)) {
 			eventParticipantListComponent = new EventParticipantListComponent(
 				person,
 				entityType == DeletableEntityType.EVENT_PARTICIPANT ? entityUuid : null,
@@ -128,9 +122,7 @@ public interface PersonSideComponentsElement {
 			layout.addComponent(new SideComponentLayout(eventParticipantListComponent), EVENT_PARTICIPANTS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.SAMPLE_VIEW)
+		if (UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)
 			//restricts the sample component to be shown only on Person View
 			&& getClass().equals(PersonDataView.class)) {
 
@@ -159,9 +151,7 @@ public interface PersonSideComponentsElement {
 		}
 
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TRAVEL_ENTRIES)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			&& UiUtil.permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withPerson(person).build();
 			layout.addComponent(
 				new SideComponentLayout(
@@ -173,9 +163,7 @@ public interface PersonSideComponentsElement {
 				TRAVEL_ENTRIES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& currentUser != null
-			&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addComponent(

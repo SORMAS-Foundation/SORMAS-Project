@@ -46,7 +46,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIgnore;
@@ -383,13 +383,17 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	public boolean isFeatureDisabled(FeatureType featureType) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
 
-		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType), cb.isFalse(root.get(FeatureConfiguration.ENABLED))));
-		cq.select(cb.count(root));
+		cq.where(cb.and(cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType)));
+		cq.select(root.get(FeatureConfiguration.ENABLED));
+		List<Boolean> resultList = em.createQuery(cq).getResultList();
 
-		return em.createQuery(cq).getSingleResult() > 0;
+		if (resultList.isEmpty()) {
+			return !featureType.isEnabledDefault();
+		}
+		return resultList.stream().anyMatch(Boolean.FALSE::equals);
 	}
 
 	@Override

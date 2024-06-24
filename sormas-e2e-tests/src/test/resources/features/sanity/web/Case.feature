@@ -1989,7 +1989,7 @@ Feature: Case end to end tests
     And I click on edit sample icon of the 2 displayed sample on Edit Case page
     And I check that all editable fields are enabled for a sample
     And I navigate to case tab
-    Then I click on the "See samples for this person" button on Edit Case Page
+    Then I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 2
 
   @tmsLink=HSP-6420 @env_main

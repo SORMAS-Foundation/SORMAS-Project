@@ -26,6 +26,7 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
+import de.symeda.sormas.ui.utils.CssStyles;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -77,7 +79,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		super(
 			I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder),
 			fileNameFunction,
-			isNull(sampleCriteria) && isNull(documentListComponent));
+			isNull(sampleCriteria) && isNull(documentListComponent),
+			false);
 		this.workflow = workflow;
 		this.documentStreamSupplier = documentStreamSupplier;
 
@@ -93,6 +96,17 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			&& FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			createVaccinationSelector(vaccinationCriteria);
 		}
+	}
+
+	public QuarantineOrderLayout(DocumentWorkflow workflow) {
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), null, true, true);
+
+		this.workflow = workflow;
+		this.documentStreamSupplier = null;
+		init();
+		buttonBar.setVisible(false);
+		checkBoxUploadGeneratedDoc.setValue(true);
+		checkBoxUploadGeneratedDoc.setStyleName(CssStyles.VSPACE_3);
 	}
 
 	protected void createSampleSelector(SampleCriteria sampleCriteria) {
@@ -235,7 +249,30 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		}
 	}
 
-	interface DocumentStreamSupplier {
+	public QuarantineOrderDocumentOptionsDto getFieldValues() {
+		QuarantineOrderDocumentOptionsDto options = new QuarantineOrderDocumentOptionsDto();
+		options.setDocumentWorkflow(workflow);
+		options.setExtraProperties(readAdditionalVariables());
+		if (sampleSelector != null) {
+			options.setSample(new SampleReferenceDto(sampleSelector.getValue().getUuid()));
+		}
+		if (pathogenTestSelector != null) {
+			options.setPathogenTest(new PathogenTestReferenceDto(pathogenTestSelector.getValue().getUuid()));
+		}
+		if (templateSelector != null) {
+			options.setTemplateFile(templateSelector.getValue());
+		}
+		options.setShouldUploadGeneratedDoc(shouldUploadGeneratedDocument());
+
+		if (vaccinationSelector != null) {
+			options.setVaccinationReference(
+				new VaccinationReferenceDto(vaccinationSelector.getValue().getUuid(), vaccinationSelector.getValue().getCaption()));
+		}
+
+		return options;
+	}
+
+	public interface DocumentStreamSupplier {
 
 		InputStream getStream(
 			String templateFile,

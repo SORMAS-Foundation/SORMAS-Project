@@ -34,7 +34,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UserField;
@@ -63,7 +63,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			EventParticipantDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(event.getDisease()),
-			UiFieldAccessCheckers.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
 		this.event = event;
 
 		addFields();
@@ -132,7 +132,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	protected void setInternalValue(EventParticipantDto newValue) {
 		super.setInternalValue(newValue);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideJurisdictionFields();
 		}
 	}

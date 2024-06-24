@@ -68,9 +68,11 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -118,6 +120,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String INTERNAL_TOKEN = "internalToken";
+	public static final String CASE_REFERENCE_NUMBER = "caseReferenceNumber";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
@@ -165,6 +168,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
 	public static final String DUPLICATE_OF = "duplicateOf";
+	public static final String SELF_REPORT ="selfReport";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -201,6 +205,7 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
+	private String caseReferenceNumber;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -263,6 +268,8 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	private Date previousQuarantineTo;
 	private String quarantineChangeComment;
+
+	private List<SelfReport> selfReport;
 
 	@Diseases({
 		Disease.AFP,
@@ -634,6 +641,15 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setInternalToken(String internalToken) {
 		this.internalToken = internalToken;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getCaseReferenceNumber() {
+		return caseReferenceNumber;
+	}
+
+	public void setCaseReferenceNumber(String caseReferenceNumber) {
+		this.caseReferenceNumber = caseReferenceNumber;
 	}
 
 	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -1078,5 +1094,14 @@ public class Contact extends CoreAdo implements IsContact, SormasToSormasShareab
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	@OneToMany(mappedBy = SelfReport.RESULTING_CONTACT, fetch = FetchType.LAZY)
+	public List<SelfReport> getSelfReport() {
+		return selfReport;
+	}
+
+	public void setSelfReport(List<SelfReport> selfReport) {
+		this.selfReport = selfReport;
 	}
 }

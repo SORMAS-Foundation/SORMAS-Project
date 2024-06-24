@@ -31,7 +31,7 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 
 @SuppressWarnings("serial")
 public class ImportReceiver implements Receiver, StartedListener, SucceededListener {
@@ -79,7 +79,7 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 			}
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_"
-				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
+				+ DataHelper.getShortUuid(UiUtil.getUserUuid()) + ".csv";
 			file = new File(tempDirectory.resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {

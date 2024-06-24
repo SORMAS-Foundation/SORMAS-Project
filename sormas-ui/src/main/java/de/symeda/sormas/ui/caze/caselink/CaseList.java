@@ -12,7 +12,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class CaseList extends PaginationList<CaseListEntryDto> {
@@ -44,7 +44,6 @@ public class CaseList extends PaginationList<CaseListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		UserProvider currentUser = UserProvider.getCurrent();
 		List<CaseListEntryDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			final CaseListEntryDto caze = displayedEntries.get(i);
@@ -53,7 +52,7 @@ public class CaseList extends PaginationList<CaseListEntryDto> {
 			if (isActiveCase) {
 				listEntry.setActive();
 			}
-			if (currentUser != null && currentUser.hasUserRight(UserRight.CASE_EDIT) && !isActiveCase) {
+			if (UiUtil.permitted(UserRight.CASE_EDIT) && !isActiveCase) {
 				listEntry.addEditButton(
 					"edit-case-" + i,
 					(Button.ClickListener) event -> ControllerProvider.getCaseController().navigateToCase(listEntry.getCaseListEntryDto().getUuid()));

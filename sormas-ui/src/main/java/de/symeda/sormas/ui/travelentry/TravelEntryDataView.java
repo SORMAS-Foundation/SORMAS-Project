@@ -15,7 +15,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -72,8 +71,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		container.addComponent(layout);
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		boolean caseButtonVisible = currentUser != null && UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
+		boolean caseButtonVisible = UiUtil.permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE);
 		CaseReferenceDto resultingCase = travelEntryDto.getResultingCase();
 		if (resultingCase == null && caseButtonVisible) {
 			Button createCaseButton = ButtonHelper.createButton(Captions.travelEntryCreateCase, e -> showUnsavedChangesPopup(() -> {
@@ -91,8 +89,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		boolean editAllowed = isEditAllowed();
 		DocumentListComponent documentList = null;
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.DOCUMENTS, UserRight.DOCUMENT_VIEW)) {
 			documentList = new DocumentListComponent(
 				DocumentRelatedEntityType.TRAVEL_ENTRY,
 				getReference(),
@@ -105,8 +102,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, travelEntryDto, documentList);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			TaskListComponent taskList = new TaskListComponent(
 				TaskContext.TRAVEL_ENTRY,
 				getTravelEntryRef(),
@@ -119,7 +115,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
 			ExternalEmailSideComponent externalEmailSideComponent =
-					ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
+				ExternalEmailSideComponent.forTravelEntry(travelEntryDto, editAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 

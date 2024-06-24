@@ -37,7 +37,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.samples.SamplesViewConfiguration;
@@ -157,7 +156,7 @@ public class EnvironmentSampleGrid extends ReloadableGrid<EnvironmentSampleIndex
 				EnvironmentSampleIndexDto.UUID,
 				e -> ControllerProvider.getEnvironmentSampleController().navigateToSample(e.getUuid())));
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {

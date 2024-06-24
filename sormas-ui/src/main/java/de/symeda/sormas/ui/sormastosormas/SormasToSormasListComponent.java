@@ -58,7 +58,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -162,7 +162,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		header.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(header);
 
-		if (shareButtonClickListener != null && UserProvider.getCurrent().hasUserRight(UserRight.SORMAS_TO_SORMAS_SHARE) && isEditAllowed) {
+		if (shareButtonClickListener != null && UiUtil.permitted(isEditAllowed, UserRight.SORMAS_TO_SORMAS_SHARE)) {
 			Button shareButtonButton =
 				ButtonHelper.createIconButton(Captions.sormasToSormasShare, VaadinIcons.SHARE, shareButtonClickListener, ValoTheme.BUTTON_PRIMARY);
 
@@ -581,7 +581,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(data.creationDate));
 			infoLayout.addComponent(shareDateLabel);
 
-			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
+			if (UiUtil.enabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
 				Label statusLabel = new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + data.status);
 				infoLayout.addComponent(statusLabel);
 			}
@@ -603,8 +603,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			setExpandRatio(infoLayout, 1);
 
 			if (revokeCallback != null
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.SORMAS_TO_SORMAS_SHARE)
+				&& UiUtil.permitted(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT, UserRight.SORMAS_TO_SORMAS_SHARE)
 				&& data.shareUuid != null
 				&& data.status == ShareRequestStatus.PENDING
 				&& data.isDirectShare) {

@@ -12,6 +12,7 @@ import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
@@ -53,7 +54,7 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 				listEntry.setActive();
 			}
 			if (currentUser != null && !isActiveImmunization) {
-				boolean isEditableAndHasEditRight = isEditAllowed && currentUser.hasUserRight(UserRight.IMMUNIZATION_EDIT);
+				boolean isEditableAndHasEditRight = UiUtil.permitted(isEditAllowed, UserRight.IMMUNIZATION_EDIT);
 				listEntry.addActionButton(
 					listEntry.getImmunizationEntry().getUuid(),
 					(Button.ClickListener) event -> ControllerProvider.getImmunizationController()

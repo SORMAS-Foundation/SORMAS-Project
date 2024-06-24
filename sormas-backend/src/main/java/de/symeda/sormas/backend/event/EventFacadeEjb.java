@@ -126,6 +126,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -180,6 +181,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+	@EJB
+	private SpecialCaseAccessService specialCaseAccessService;
 
 	public EventFacadeEjb() {
 	}
@@ -256,10 +259,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
+		if (isArchived(uuid) && !userService.hasRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorAccessDenied));
+		}
+
 		Event event = service.getByUuid(uuid);
-		return (detailedReferences)
-			? convertToDetailedReferenceDto(event, createPseudonymizer(event))
-			: toPseudonymizedDto(event);
+		return (detailedReferences) ? convertToDetailedReferenceDto(event, createPseudonymizer(event)) : toPseudonymizedDto(event);
 	}
 
 	@Override
@@ -1062,10 +1067,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	@RightsAllowed(UserRight._EVENT_ARCHIVE)
 	public List<ProcessedEntity> dearchive(List<String> eventUuids, String dearchiveReason) {
-		List<ProcessedEntity> processedEntities = super.dearchive(eventUuids, dearchiveReason);
+		List<ProcessedEntity> processedEntities;
 
-		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
-		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+		if (userService.hasRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			processedEntities = super.dearchive(eventUuids, dearchiveReason);
+
+			List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+			eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+		} else {
+			processedEntities = service.buildProcessedEntities(eventUuids, ProcessedEntityStatus.ACCESS_DENIED_FAILURE);
+		}
 
 		return processedEntities;
 	}
@@ -1541,6 +1552,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public boolean isInJurisdictionOrOwned(String uuid) {
 		return service.inJurisdictionOrOwned(service.getByUuid(uuid));
+	}
+
+	@Override
+	public boolean hasParticipantWithSpecialAccess(EventReferenceDto eventRef) {
+		return specialCaseAccessService.hasEventParticipantWithSpecialAccess(eventRef);
 	}
 
 	@LocalBean

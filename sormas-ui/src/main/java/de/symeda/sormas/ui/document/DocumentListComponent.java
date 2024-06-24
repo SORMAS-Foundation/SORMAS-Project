@@ -25,7 +25,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.MultiFileUpload;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -33,7 +32,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.importer.DocumentMultiFileUpload;
 import de.symeda.sormas.ui.importer.DocumentUploadFinishedHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -58,8 +57,7 @@ public class DocumentListComponent extends SideComponent {
 		addComponent(documentList);
 		documentList.reload();
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasAllUserRights(editRight, UserRight.DOCUMENT_UPLOAD) && isEditAllowed) {
+		if (UiUtil.permitted(isEditAllowed, editRight, UserRight.DOCUMENT_UPLOAD)) {
 			Button uploadButton = buildUploadButton(relatedEntityType, entityRef);
 			addCreateButton(uploadButton);
 		}
@@ -74,7 +72,7 @@ public class DocumentListComponent extends SideComponent {
 		mainButton =
 			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
-		boolean multipleUpload = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
+		boolean multipleUpload = UiUtil.enabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
 
 		UploadStateWindow uploadStateWindow = new UploadStateWindow();
 		MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {

@@ -10,7 +10,7 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.html
   title: SORMAS REST API
-  version: 1.95.0-SNAPSHOT
+  version: 1.98.0-SNAPSHOT
 servers:
 - url: /sormas-rest
 paths:
@@ -7020,8 +7020,9 @@ paths:
                   - CASE_VIEW
                   - CASE_CREATE
                   - CASE_EDIT
-                  - CASE_ARCHIVE
                   - CASE_DELETE
+                  - CASE_ARCHIVE
+                  - CASE_VIEW_ARCHIVED
                   - CASE_IMPORT
                   - CASE_EXPORT
                   - CASE_INVESTIGATE
@@ -7037,8 +7038,9 @@ paths:
                   - IMMUNIZATION_VIEW
                   - IMMUNIZATION_CREATE
                   - IMMUNIZATION_EDIT
-                  - IMMUNIZATION_ARCHIVE
                   - IMMUNIZATION_DELETE
+                  - IMMUNIZATION_ARCHIVE
+                  - IMMUNIZATION_VIEW_ARCHIVED
                   - PERSON_VIEW
                   - PERSON_EDIT
                   - PERSON_DELETE
@@ -7052,7 +7054,6 @@ paths:
                   - SAMPLE_EXPORT
                   - SAMPLE_TRANSFER
                   - SAMPLE_EDIT_NOT_OWNED
-                  - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
                   - PATHOGEN_TEST_CREATE
                   - PATHOGEN_TEST_EDIT
                   - PATHOGEN_TEST_DELETE
@@ -7063,8 +7064,9 @@ paths:
                   - CONTACT_VIEW
                   - CONTACT_CREATE
                   - CONTACT_EDIT
-                  - CONTACT_ARCHIVE
                   - CONTACT_DELETE
+                  - CONTACT_ARCHIVE
+                  - CONTACT_VIEW_ARCHIVED
                   - CONTACT_IMPORT
                   - CONTACT_EXPORT
                   - CONTACT_CONVERT
@@ -7082,28 +7084,30 @@ paths:
                   - TASK_EXPORT
                   - TASK_ASSIGN
                   - TASK_ARCHIVE
+                  - TASK_VIEW_ARCHIVED
                   - ACTION_CREATE
                   - ACTION_DELETE
                   - ACTION_EDIT
                   - EVENT_VIEW
                   - EVENT_CREATE
                   - EVENT_EDIT
-                  - EVENT_ARCHIVE
                   - EVENT_DELETE
+                  - EVENT_ARCHIVE
+                  - EVENT_VIEW_ARCHIVED
                   - EVENT_IMPORT
                   - EVENT_EXPORT
-                  - PERFORM_BULK_OPERATIONS_EVENT
                   - EVENT_RESPONSIBLE
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
                   - EVENTPARTICIPANT_EDIT
-                  - EVENTPARTICIPANT_ARCHIVE
                   - EVENTPARTICIPANT_DELETE
+                  - EVENTPARTICIPANT_ARCHIVE
+                  - EVENTPARTICIPANT_VIEW_ARCHIVED
                   - EVENTPARTICIPANT_IMPORT
-                  - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
                   - EVENTGROUP_CREATE
                   - EVENTGROUP_EDIT
                   - EVENTGROUP_ARCHIVE
+                  - EVENTGROUP_VIEW_ARCHIVED
                   - EVENTGROUP_DELETE
                   - EVENTGROUP_LINK
                   - USER_VIEW
@@ -7117,8 +7121,9 @@ paths:
                   - INFRASTRUCTURE_VIEW
                   - INFRASTRUCTURE_CREATE
                   - INFRASTRUCTURE_EDIT
-                  - INFRASTRUCTURE_ARCHIVE
                   - INFRASTRUCTURE_IMPORT
+                  - INFRASTRUCTURE_ARCHIVE
+                  - INFRASTRUCTURE_VIEW_ARCHIVED
                   - INFRASTRUCTURE_EXPORT
                   - POPULATION_MANAGE
                   - DASHBOARD_SURVEILLANCE_VIEW
@@ -7153,22 +7158,26 @@ paths:
                   - CAMPAIGN_VIEW
                   - CAMPAIGN_EDIT
                   - CAMPAIGN_ARCHIVE
+                  - CAMPAIGN_VIEW_ARCHIVED
                   - CAMPAIGN_DELETE
                   - CAMPAIGN_FORM_DATA_VIEW
                   - CAMPAIGN_FORM_DATA_EDIT
                   - CAMPAIGN_FORM_DATA_ARCHIVE
                   - CAMPAIGN_FORM_DATA_DELETE
+                  - CAMPAIGN_FORM_DATA_VIEW_ARCHIVED
                   - CAMPAIGN_FORM_DATA_EXPORT
                   - TRAVEL_ENTRY_MANAGEMENT_ACCESS
                   - TRAVEL_ENTRY_VIEW
                   - TRAVEL_ENTRY_CREATE
                   - TRAVEL_ENTRY_EDIT
                   - TRAVEL_ENTRY_ARCHIVE
+                  - TRAVEL_ENTRY_VIEW_ARCHIVED
                   - TRAVEL_ENTRY_DELETE
                   - ENVIRONMENT_VIEW
                   - ENVIRONMENT_CREATE
                   - ENVIRONMENT_EDIT
                   - ENVIRONMENT_ARCHIVE
+                  - ENVIRONMENT_VIEW_ARCHIVED
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
@@ -7183,6 +7192,14 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - SELF_REPORT_VIEW
+                  - SELF_REPORT_CREATE
+                  - SELF_REPORT_EDIT
+                  - SELF_REPORT_DELETE
+                  - SELF_REPORT_ARCHIVE
+                  - SELF_REPORT_PROCESS
+                  - SELF_REPORT_IMPORT
+                  - SELF_REPORT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7206,7 +7223,6 @@ paths:
                   - EXTERNAL_MESSAGE_PROCESS
                   - EXTERNAL_MESSAGE_PUSH
                   - EXTERNAL_MESSAGE_DELETE
-                  - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
                   - OUTBREAK_VIEW
                   - OUTBREAK_EDIT
                   - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -7241,8 +7257,9 @@ paths:
                   - CASE_VIEW
                   - CASE_CREATE
                   - CASE_EDIT
-                  - CASE_ARCHIVE
                   - CASE_DELETE
+                  - CASE_ARCHIVE
+                  - CASE_VIEW_ARCHIVED
                   - CASE_IMPORT
                   - CASE_EXPORT
                   - CASE_INVESTIGATE
@@ -7258,8 +7275,9 @@ paths:
                   - IMMUNIZATION_VIEW
                   - IMMUNIZATION_CREATE
                   - IMMUNIZATION_EDIT
-                  - IMMUNIZATION_ARCHIVE
                   - IMMUNIZATION_DELETE
+                  - IMMUNIZATION_ARCHIVE
+                  - IMMUNIZATION_VIEW_ARCHIVED
                   - PERSON_VIEW
                   - PERSON_EDIT
                   - PERSON_DELETE
@@ -7273,7 +7291,6 @@ paths:
                   - SAMPLE_EXPORT
                   - SAMPLE_TRANSFER
                   - SAMPLE_EDIT_NOT_OWNED
-                  - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
                   - PATHOGEN_TEST_CREATE
                   - PATHOGEN_TEST_EDIT
                   - PATHOGEN_TEST_DELETE
@@ -7284,8 +7301,9 @@ paths:
                   - CONTACT_VIEW
                   - CONTACT_CREATE
                   - CONTACT_EDIT
-                  - CONTACT_ARCHIVE
                   - CONTACT_DELETE
+                  - CONTACT_ARCHIVE
+                  - CONTACT_VIEW_ARCHIVED
                   - CONTACT_IMPORT
                   - CONTACT_EXPORT
                   - CONTACT_CONVERT
@@ -7303,28 +7321,30 @@ paths:
                   - TASK_EXPORT
                   - TASK_ASSIGN
                   - TASK_ARCHIVE
+                  - TASK_VIEW_ARCHIVED
                   - ACTION_CREATE
                   - ACTION_DELETE
                   - ACTION_EDIT
                   - EVENT_VIEW
                   - EVENT_CREATE
                   - EVENT_EDIT
-                  - EVENT_ARCHIVE
                   - EVENT_DELETE
+                  - EVENT_ARCHIVE
+                  - EVENT_VIEW_ARCHIVED
                   - EVENT_IMPORT
                   - EVENT_EXPORT
-                  - PERFORM_BULK_OPERATIONS_EVENT
                   - EVENT_RESPONSIBLE
                   - EVENTPARTICIPANT_VIEW
                   - EVENTPARTICIPANT_CREATE
                   - EVENTPARTICIPANT_EDIT
-                  - EVENTPARTICIPANT_ARCHIVE
                   - EVENTPARTICIPANT_DELETE
+                  - EVENTPARTICIPANT_ARCHIVE
+                  - EVENTPARTICIPANT_VIEW_ARCHIVED
                   - EVENTPARTICIPANT_IMPORT
-                  - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
                   - EVENTGROUP_CREATE
                   - EVENTGROUP_EDIT
                   - EVENTGROUP_ARCHIVE
+                  - EVENTGROUP_VIEW_ARCHIVED
                   - EVENTGROUP_DELETE
                   - EVENTGROUP_LINK
                   - USER_VIEW
@@ -7338,8 +7358,9 @@ paths:
                   - INFRASTRUCTURE_VIEW
                   - INFRASTRUCTURE_CREATE
                   - INFRASTRUCTURE_EDIT
-                  - INFRASTRUCTURE_ARCHIVE
                   - INFRASTRUCTURE_IMPORT
+                  - INFRASTRUCTURE_ARCHIVE
+                  - INFRASTRUCTURE_VIEW_ARCHIVED
                   - INFRASTRUCTURE_EXPORT
                   - POPULATION_MANAGE
                   - DASHBOARD_SURVEILLANCE_VIEW
@@ -7374,22 +7395,26 @@ paths:
                   - CAMPAIGN_VIEW
                   - CAMPAIGN_EDIT
                   - CAMPAIGN_ARCHIVE
+                  - CAMPAIGN_VIEW_ARCHIVED
                   - CAMPAIGN_DELETE
                   - CAMPAIGN_FORM_DATA_VIEW
                   - CAMPAIGN_FORM_DATA_EDIT
                   - CAMPAIGN_FORM_DATA_ARCHIVE
                   - CAMPAIGN_FORM_DATA_DELETE
+                  - CAMPAIGN_FORM_DATA_VIEW_ARCHIVED
                   - CAMPAIGN_FORM_DATA_EXPORT
                   - TRAVEL_ENTRY_MANAGEMENT_ACCESS
                   - TRAVEL_ENTRY_VIEW
                   - TRAVEL_ENTRY_CREATE
                   - TRAVEL_ENTRY_EDIT
                   - TRAVEL_ENTRY_ARCHIVE
+                  - TRAVEL_ENTRY_VIEW_ARCHIVED
                   - TRAVEL_ENTRY_DELETE
                   - ENVIRONMENT_VIEW
                   - ENVIRONMENT_CREATE
                   - ENVIRONMENT_EDIT
                   - ENVIRONMENT_ARCHIVE
+                  - ENVIRONMENT_VIEW_ARCHIVED
                   - ENVIRONMENT_DELETE
                   - ENVIRONMENT_IMPORT
                   - ENVIRONMENT_EXPORT
@@ -7404,6 +7429,14 @@ paths:
                   - ENVIRONMENT_PATHOGEN_TEST_CREATE
                   - ENVIRONMENT_PATHOGEN_TEST_EDIT
                   - ENVIRONMENT_PATHOGEN_TEST_DELETE
+                  - SELF_REPORT_VIEW
+                  - SELF_REPORT_CREATE
+                  - SELF_REPORT_EDIT
+                  - SELF_REPORT_DELETE
+                  - SELF_REPORT_ARCHIVE
+                  - SELF_REPORT_PROCESS
+                  - SELF_REPORT_IMPORT
+                  - SELF_REPORT_EXPORT
                   - DOCUMENT_VIEW
                   - DOCUMENT_UPLOAD
                   - DOCUMENT_DELETE
@@ -7427,7 +7460,6 @@ paths:
                   - EXTERNAL_MESSAGE_PROCESS
                   - EXTERNAL_MESSAGE_PUSH
                   - EXTERNAL_MESSAGE_DELETE
-                  - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
                   - OUTBREAK_VIEW
                   - OUTBREAK_EDIT
                   - MANAGE_PUBLIC_EXPORT_CONFIGURATION
@@ -8878,6 +8910,8 @@ components:
           enum:
           - IN_COUNTRY
           - POINT_OF_ENTRY
+        caseReferenceNumber:
+          type: string
         caseUuidsForMerge:
           type: array
           items:
@@ -9242,6 +9276,10 @@ components:
           enum:
           - FULFILLED
           - NOT_FULFILLED
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
+          minLength: 0
         changeDate:
           type: string
           format: date-time
@@ -9898,6 +9936,8 @@ components:
           enum:
           - IN_COUNTRY
           - POINT_OF_ENTRY
+        caseReferenceNumber:
+          type: string
         caseUuidsForMerge:
           type: array
           items:
@@ -10342,6 +10382,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         city:
           type: string
         completeness:
@@ -10607,6 +10649,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         completeness:
           type: number
           format: float
@@ -10824,8 +10868,6 @@ components:
         firstName:
           type: string
         lastName:
-          type: string
-        name:
           type: string
         uuid:
           type: string
@@ -11283,6 +11325,8 @@ components:
           - CONFIRMED_NO_SYMPTOMS
           - CONFIRMED_UNKNOWN_SYMPTOMS
           - NO_CASE
+        caseReferenceNumber:
+          type: string
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
         community:
@@ -11527,6 +11571,8 @@ components:
           - VACCINATED
           - UNVACCINATED
           - UNKNOWN
+        withCase:
+          type: boolean
         withExtendedQuarantine:
           type: boolean
         withOwnership:
@@ -11553,6 +11599,10 @@ components:
         caseOrEventInformation:
           type: string
           maxLength: 4096
+          minLength: 0
+        caseReferenceNumber:
+          type: string
+          maxLength: 512
           minLength: 0
         caze:
           $ref: '#/components/schemas/CaseReferenceDto'
@@ -11964,6 +12014,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -12204,6 +12256,8 @@ components:
           type: string
         caseInJurisdiction:
           type: boolean
+        caseReferenceNumber:
+          type: string
         caseRegionName:
           type: string
         caze:
@@ -13988,19 +14042,6 @@ components:
           minLength: 0
         pseudonymized:
           type: boolean
-        relatedEntityType:
-          type: string
-          enum:
-          - CASE
-          - CONTACT
-          - ACTION
-          - EVENT
-          - TRAVEL_ENTRY
-        relatedEntityUuid:
-          type: string
-          maxLength: 36
-          minLength: 20
-          pattern: "^[0-9a-zA-Z-]*$"
         size:
           type: integer
           format: int64
@@ -14014,8 +14055,6 @@ components:
       required:
       - mimeType
       - name
-      - relatedEntityType
-      - relatedEntityUuid
       - size
       - uploadingUser
     EnvironmentDto:
@@ -17148,6 +17187,7 @@ components:
             - DASHBOARD_SAMPLES
             - LIMITED_SYNCHRONIZATION
             - ENVIRONMENT_MANAGEMENT
+            - SELF_REPORTING
             - ASSIGN_TASKS_TO_HIGHER_LEVEL
             - CASE_FOLLOWUP
             - DOCUMENTS
@@ -17182,6 +17222,7 @@ components:
             - INFRASTRUCTURE_TYPE_AREA
             - OUTBREAKS
             - PERSON_MANAGEMENT
+            - AUTH_PROVIDER_TO_SORMAS_USER_SYNC
             - LINE_LISTING
             - EVENT_GROUPS_MODIFICATION_NOTIFICATIONS
             - EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS
@@ -17298,6 +17339,7 @@ components:
           - DASHBOARD_SAMPLES
           - LIMITED_SYNCHRONIZATION
           - ENVIRONMENT_MANAGEMENT
+          - SELF_REPORTING
           - ASSIGN_TASKS_TO_HIGHER_LEVEL
           - CASE_FOLLOWUP
           - DOCUMENTS
@@ -17332,6 +17374,7 @@ components:
           - INFRASTRUCTURE_TYPE_AREA
           - OUTBREAKS
           - PERSON_MANAGEMENT
+          - AUTH_PROVIDER_TO_SORMAS_USER_SYNC
           - LINE_LISTING
           - EVENT_GROUPS_MODIFICATION_NOTIFICATIONS
           - EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS
@@ -25054,6 +25097,7 @@ components:
           - FR_TN
           - DE
           - DE_CH
+          - ES_BO
           - ES_EC
           - ES_CU
           - IT
@@ -25316,8 +25360,9 @@ components:
             - CASE_VIEW
             - CASE_CREATE
             - CASE_EDIT
-            - CASE_ARCHIVE
             - CASE_DELETE
+            - CASE_ARCHIVE
+            - CASE_VIEW_ARCHIVED
             - CASE_IMPORT
             - CASE_EXPORT
             - CASE_INVESTIGATE
@@ -25333,8 +25378,9 @@ components:
             - IMMUNIZATION_VIEW
             - IMMUNIZATION_CREATE
             - IMMUNIZATION_EDIT
-            - IMMUNIZATION_ARCHIVE
             - IMMUNIZATION_DELETE
+            - IMMUNIZATION_ARCHIVE
+            - IMMUNIZATION_VIEW_ARCHIVED
             - PERSON_VIEW
             - PERSON_EDIT
             - PERSON_DELETE
@@ -25348,7 +25394,6 @@ components:
             - SAMPLE_EXPORT
             - SAMPLE_TRANSFER
             - SAMPLE_EDIT_NOT_OWNED
-            - PERFORM_BULK_OPERATIONS_CASE_SAMPLES
             - PATHOGEN_TEST_CREATE
             - PATHOGEN_TEST_EDIT
             - PATHOGEN_TEST_DELETE
@@ -25359,8 +25404,9 @@ components:
             - CONTACT_VIEW
             - CONTACT_CREATE
             - CONTACT_EDIT
-            - CONTACT_ARCHIVE
             - CONTACT_DELETE
+            - CONTACT_ARCHIVE
+            - CONTACT_VIEW_ARCHIVED
             - CONTACT_IMPORT
             - CONTACT_EXPORT
             - CONTACT_CONVERT
@@ -25378,28 +25424,30 @@ components:
             - TASK_EXPORT
             - TASK_ASSIGN
             - TASK_ARCHIVE
+            - TASK_VIEW_ARCHIVED
             - ACTION_CREATE
             - ACTION_DELETE
             - ACTION_EDIT
             - EVENT_VIEW
             - EVENT_CREATE
             - EVENT_EDIT
-            - EVENT_ARCHIVE
             - EVENT_DELETE
+            - EVENT_ARCHIVE
+            - EVENT_VIEW_ARCHIVED
             - EVENT_IMPORT
             - EVENT_EXPORT
-            - PERFORM_BULK_OPERATIONS_EVENT
             - EVENT_RESPONSIBLE
             - EVENTPARTICIPANT_VIEW
             - EVENTPARTICIPANT_CREATE
             - EVENTPARTICIPANT_EDIT
-            - EVENTPARTICIPANT_ARCHIVE
             - EVENTPARTICIPANT_DELETE
+            - EVENTPARTICIPANT_ARCHIVE
+            - EVENTPARTICIPANT_VIEW_ARCHIVED
             - EVENTPARTICIPANT_IMPORT
-            - PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT
             - EVENTGROUP_CREATE
             - EVENTGROUP_EDIT
             - EVENTGROUP_ARCHIVE
+            - EVENTGROUP_VIEW_ARCHIVED
             - EVENTGROUP_DELETE
             - EVENTGROUP_LINK
             - USER_VIEW
@@ -25413,8 +25461,9 @@ components:
             - INFRASTRUCTURE_VIEW
             - INFRASTRUCTURE_CREATE
             - INFRASTRUCTURE_EDIT
-            - INFRASTRUCTURE_ARCHIVE
             - INFRASTRUCTURE_IMPORT
+            - INFRASTRUCTURE_ARCHIVE
+            - INFRASTRUCTURE_VIEW_ARCHIVED
             - INFRASTRUCTURE_EXPORT
             - POPULATION_MANAGE
             - DASHBOARD_SURVEILLANCE_VIEW
@@ -25449,22 +25498,26 @@ components:
             - CAMPAIGN_VIEW
             - CAMPAIGN_EDIT
             - CAMPAIGN_ARCHIVE
+            - CAMPAIGN_VIEW_ARCHIVED
             - CAMPAIGN_DELETE
             - CAMPAIGN_FORM_DATA_VIEW
             - CAMPAIGN_FORM_DATA_EDIT
             - CAMPAIGN_FORM_DATA_ARCHIVE
             - CAMPAIGN_FORM_DATA_DELETE
+            - CAMPAIGN_FORM_DATA_VIEW_ARCHIVED
             - CAMPAIGN_FORM_DATA_EXPORT
             - TRAVEL_ENTRY_MANAGEMENT_ACCESS
             - TRAVEL_ENTRY_VIEW
             - TRAVEL_ENTRY_CREATE
             - TRAVEL_ENTRY_EDIT
             - TRAVEL_ENTRY_ARCHIVE
+            - TRAVEL_ENTRY_VIEW_ARCHIVED
             - TRAVEL_ENTRY_DELETE
             - ENVIRONMENT_VIEW
             - ENVIRONMENT_CREATE
             - ENVIRONMENT_EDIT
             - ENVIRONMENT_ARCHIVE
+            - ENVIRONMENT_VIEW_ARCHIVED
             - ENVIRONMENT_DELETE
             - ENVIRONMENT_IMPORT
             - ENVIRONMENT_EXPORT
@@ -25479,6 +25532,14 @@ components:
             - ENVIRONMENT_PATHOGEN_TEST_CREATE
             - ENVIRONMENT_PATHOGEN_TEST_EDIT
             - ENVIRONMENT_PATHOGEN_TEST_DELETE
+            - SELF_REPORT_VIEW
+            - SELF_REPORT_CREATE
+            - SELF_REPORT_EDIT
+            - SELF_REPORT_DELETE
+            - SELF_REPORT_ARCHIVE
+            - SELF_REPORT_PROCESS
+            - SELF_REPORT_IMPORT
+            - SELF_REPORT_EXPORT
             - DOCUMENT_VIEW
             - DOCUMENT_UPLOAD
             - DOCUMENT_DELETE
@@ -25502,7 +25563,6 @@ components:
             - EXTERNAL_MESSAGE_PROCESS
             - EXTERNAL_MESSAGE_PUSH
             - EXTERNAL_MESSAGE_DELETE
-            - PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES
             - OUTBREAK_VIEW
             - OUTBREAK_EDIT
             - MANAGE_PUBLIC_EXPORT_CONFIGURATION

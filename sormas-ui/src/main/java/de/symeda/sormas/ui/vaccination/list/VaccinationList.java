@@ -30,7 +30,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
@@ -71,9 +71,8 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		boolean isEditableAndHasEditRight = UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.IMMUNIZATION_EDIT);
-		boolean isEditableAndHasDeleteRight =
-			UserProvider.getCurrent().hasAllUserRightsWithEditAllowedFlag(isEditAllowed, UserRight.IMMUNIZATION_DELETE);
+		boolean isEditableAndHasEditRight = UiUtil.permitted(isEditAllowed, UserRight.IMMUNIZATION_EDIT);
+		boolean isEditableAndHasDeleteRight = UiUtil.permitted(isEditAllowed, UserRight.IMMUNIZATION_DELETE);
 
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
@@ -90,7 +89,7 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 							FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
 							listEntry.getVaccination().getDisease(),
 							UiFieldAccessCheckers.forDataAccessLevel(
-								UserProvider.getCurrent().getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
+								UiUtil.getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
 								vaccination.isPseudonymized()),
 							true,
 							v -> SormasUI.refreshView(),

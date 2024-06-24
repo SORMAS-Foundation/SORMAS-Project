@@ -37,7 +37,6 @@ import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.email.ExternalEmailSideComponent;
@@ -108,7 +107,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 		boolean editAllowed = isEditAllowed();
 
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				sampleCriteria.eventParticipant(eventParticipantRef)
 					.disease(event.getDisease())
@@ -120,7 +119,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			VerticalLayout contactsLayout = new VerticalLayout();
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);
@@ -155,9 +154,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			sampleCriteria,
 			vaccinationCriteria);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)
-			&& event.getDisease() != null) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW) && event.getDisease() != null) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(

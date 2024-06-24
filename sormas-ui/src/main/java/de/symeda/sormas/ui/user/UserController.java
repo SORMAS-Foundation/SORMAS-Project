@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -46,6 +46,7 @@ import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -55,7 +56,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -77,6 +78,7 @@ public class UserController {
 	public void edit(UserDto user) {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid(), window::close);
+
 		window.setCaption(I18nProperties.getString(Strings.headingEditUser));
 		window.setContent(userComponent);
 		// user form is too big for typical screens
@@ -109,15 +111,14 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		UserProvider userProvider = UserProvider.getCurrent();
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
-			userEditForm,
-			userProvider.hasUserRight(UserRight.USER_EDIT),
-			userEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView =
+			new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
 		// Add reset password button
-		Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
-		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
+			editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		}
 
 		editView.addDiscardListener(closeWindowCallback::run);
 		editView.addCommitListener(() -> {
@@ -134,7 +135,7 @@ public class UserController {
 						}
 					});
 				}
-				if (DataHelper.isSame(user, userProvider.getUser())) {
+				if (DataHelper.isSame(user, UiUtil.getUser())) {
 
 					Set<UserRight> oldUserRights =
 						UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));
@@ -177,7 +178,11 @@ public class UserController {
 	}
 
 	private void saveUser(UserDto user) {
-		FacadeProvider.getUserFacade().saveUser(user, false);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			FacadeProvider.getUserFacade().saveUserRolesAndRestrictions(user, user.getUserRoles());
+		} else {
+			FacadeProvider.getUserFacade().saveUser(user, false);
+		}
 		refreshView();
 	}
 
@@ -185,10 +190,8 @@ public class UserController {
 
 		UserEditForm createForm = new UserEditForm(true);
 		createForm.setValue(UserDto.build());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView =
+			new CommitDiscardWrapperComponent<UserEditForm>(createForm, UiUtil.permitted(UserRight.USER_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 
@@ -317,7 +320,7 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
 		UserSettingsForm form = new UserSettingsForm();
-		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UiUtil.getUserUuid());
 		form.setValue(user);
 
 		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
@@ -343,8 +346,13 @@ public class UserController {
 	}
 
 	public void sync() {
-		Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
-		window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
+		if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			FacadeProvider.getUserFacade().syncUsersFromAuthenticationProvider();
+			SormasUI.refreshView();
+		} else {
+			Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
+			window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
+		}
 	}
 
 	public void enableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {

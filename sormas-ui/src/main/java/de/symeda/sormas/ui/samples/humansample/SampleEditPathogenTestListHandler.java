@@ -39,6 +39,8 @@ public class SampleEditPathogenTestListHandler {
 	}
 
 	public void saveAll(SampleReferenceDto sample) {
-		ControllerProvider.getPathogenTestController().savePathogenTests(pathogenTests, sample, true);
+		if (!pathogenTests.isEmpty()) {
+			ControllerProvider.getPathogenTestController().savePathogenTests(pathogenTests, sample, true);
+		}
 	}
 }

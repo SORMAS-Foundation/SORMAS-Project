@@ -3,6 +3,7 @@ package de.symeda.sormas.api.environment;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
@@ -28,6 +29,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 	public static final String CITY = "city";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private String externalId;
 	private String environmentName;
@@ -57,6 +60,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 	private InvestigationStatus investigationStatus;
 	private boolean inJurisdiction;
 	private boolean pseudonymized;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	public EnvironmentIndexDto(
 		String uuid,
@@ -72,6 +77,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 		String city,
 		Date reportDate,
 		InvestigationStatus investigationStatus,
+		DeletionReason deletionReason,
+		String otherDeletionReason,
 		boolean inJurisdiction) {
 
 		super(uuid);
@@ -87,6 +94,8 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 		this.city = city;
 		this.reportDate = reportDate;
 		this.investigationStatus = investigationStatus;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 		this.inJurisdiction = inJurisdiction;
 	}
 
@@ -188,6 +197,22 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	@Override

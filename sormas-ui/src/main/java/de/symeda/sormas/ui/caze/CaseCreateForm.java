@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
 import com.vaadin.ui.Label;
@@ -70,7 +70,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -123,7 +122,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
-        + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
+        + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
+        + fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
         fluidColumn(6, 0,
@@ -160,7 +160,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
 		this.showHomeAddressForm = showHomeAddressForm;
@@ -187,6 +188,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
 			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
 		}
+
+		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
@@ -337,8 +340,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			updateFacility();
 		});
 		facilityOrHome.addValueChangeListener(e -> {
-			FacilityReferenceDto healthFacility = UserProvider.getCurrent().getUser().getHealthFacility();
-			boolean hasOptionalHealthFacility = UserProvider.getCurrent().hasOptionalHealthFacility();
+			FacilityReferenceDto healthFacility = UiUtil.getUser().getHealthFacility();
+			boolean hasOptionalHealthFacility = UiUtil.hasOptionalHealthFacility();
 			if (hasOptionalHealthFacility && healthFacility != null) {
 				String facilityId = healthFacility.getUuid();
 				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facilityId);
@@ -386,7 +389,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityType.addValueChangeListener(e -> updateFacility());
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		JurisdictionLevel userJurisdictionLevel = UiUtil.getJurisdictionLevel();
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			regionCombo.setReadOnly(true);
 			responsibleRegionCombo.setReadOnly(true);
@@ -404,11 +407,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityTypeGroup.setReadOnly(true);
 			facilityType.setValue(FacilityType.HOSPITAL);
 			facilityType.setReadOnly(true);
-			facilityCombo.setValue(UserProvider.getCurrent().getUser().getHealthFacility());
+			facilityCombo.setValue(UiUtil.getUser().getHealthFacility());
 			facilityCombo.setReadOnly(true);
 		}
 
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
+		if (!UiUtil.isPortHealthUser()) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
@@ -499,7 +502,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		addValueChangeListener(e -> {
-			if (UserProvider.getCurrent().isPortHealthUser()) {
+			if (UiUtil.isPortHealthUser()) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
@@ -551,7 +554,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updateFacility() {
 
-		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY) {
+		if (UiUtil.getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY) {
 			return;
 		}
 
@@ -683,6 +686,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public void setPerson(PersonDto person) {
 		personCreateForm.setPerson(person);
+	}
+
+	public void setPerson(PersonDto person, boolean isNewPerson) {
+		personCreateForm.setPerson(person, isNewPerson);
 	}
 
 	@Override

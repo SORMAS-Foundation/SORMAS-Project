@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
+import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
+
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Window;
 
@@ -27,21 +29,22 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
-import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
 public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProcessingFlow {
 
 	public PhysiciansReportProcessingFlow(ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
-		super(UserProvider.getCurrent().getUser(), mapper, processingFacade);
+		super(UiUtil.getUser(), mapper, processingFacade);
 	}
 
 	@Override
@@ -55,8 +58,8 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 	}
 
 	@Override
-	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<ExternalMessageProcessingResult.EntitySelection<PersonDto>> callback) {
-		ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow(person, callback);
+	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+		showPickOrCreatePersonWindow(person, callback);
 	}
 
 	@Override

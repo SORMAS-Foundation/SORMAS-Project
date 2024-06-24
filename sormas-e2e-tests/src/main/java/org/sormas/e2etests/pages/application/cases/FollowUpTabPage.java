@@ -138,7 +138,7 @@ public class FollowUpTabPage {
   public static final By FIRST_SYMPTOM_INPUT = By.cssSelector("[id='onsetSymptom'] input");
   public static final By DATE_OF_ONSET_INPUT = By.cssSelector("[id='onsetDate'] input");
   public static final By SAVE_BUTTON = By.cssSelector("[id='commit']");
-  public static final By EDIT_VISIT_BUTTON = By.cssSelector("table span");
+  public static final By EDIT_VISIT_BUTTON = By.cssSelector(".v-icon.v-icon-edit");
   public static final By SPECIFY_OTHER_SYMPTOMS =
       By.cssSelector("[id='otherNonHemorrhagicSymptomsText']");
   public static final By CONTACT_PERSONS_PHONE_NUMBER =

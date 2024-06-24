@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.map;
 
-import static de.symeda.sormas.api.i18n.Captions.UserRole;
-import static java.util.Objects.nonNull;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -66,8 +63,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.map.*;
@@ -1032,7 +1028,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			refreshMapDashboard(true);
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (UiUtil.permitted(UserRight.CASE_VIEW)) {
 			HorizontalLayout showCasesLayout = new HorizontalLayout();
 			{
 				showCasesLayout.setMargin(false);
@@ -1066,7 +1062,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			caseClassificationOptions.setEnabled(showCases);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
 			CheckBox showConfirmedContactsCheckBox = new CheckBox();
 			showConfirmedContactsCheckBox.setId(Captions.dashboardShowConfirmedContacts);
 			CheckBox showUnconfirmedContactsCheckBox = new CheckBox();
@@ -1107,7 +1103,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			showUnconfirmedContactsCheckBox.setEnabled(showContacts);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (UiUtil.permitted(UserRight.EVENT_VIEW)) {
 			CheckBox showEventsCheckBox = new CheckBox();
 			showEventsCheckBox.setId(Captions.dashboardShowEvents);
 			CssStyles.style(showEventsCheckBox, CssStyles.VSPACE_3);
@@ -1120,9 +1116,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			layersLayout.addComponent(showEventsCheckBox);
 		}
 
-		if (nonNull(UserProvider.getCurrent())
-			&& UserProvider.getCurrent().hasNationJurisdictionLevel()
-			&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (UiUtil.hasNationJurisdictionLevel() && UiUtil.permitted(UserRight.CASE_VIEW)) {
 			OptionGroup regionMapVisualizationSelect = new OptionGroup();
 			regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 			regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

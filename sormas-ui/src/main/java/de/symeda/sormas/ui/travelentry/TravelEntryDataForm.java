@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -47,6 +47,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -438,8 +439,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		boolean inJurisdiction,
 		boolean withPersonalAndSensitive) {
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers
-				.forDataAccessLevel(UserProvider.getCurrent().getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
+			return UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();
@@ -454,7 +454,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 				if (caze != null) {
 					quarantineFrom.setValue(caze.getQuarantineFrom());
 					if (caze.getQuarantineTo() == null) {
-						boolean caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+						boolean caseFollowUpEnabled = UiUtil.enabled(FeatureType.CASE_FOLLOWUP);
 						if (caseFollowUpEnabled) {
 							quarantineTo.setValue(caze.getFollowUpUntil());
 						}
@@ -488,9 +488,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
 
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : JurisdictionLevel.NONE;
+		UserProvider currentUserProvider = UiUtil.getCurrentUserProvider();
+		JurisdictionLevel userJurisditionLevel = currentUserProvider != null ? UiUtil.getJurisdictionLevel() : JurisdictionLevel.NONE;
 
 		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			responsibleRegion.setReadOnly(true);

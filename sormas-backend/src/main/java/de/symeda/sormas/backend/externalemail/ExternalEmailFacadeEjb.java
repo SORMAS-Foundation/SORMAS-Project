@@ -17,41 +17,56 @@ package de.symeda.sormas.backend.externalemail;
 
 import static de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.splitTemplateContent;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflowType;
+import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.externalemail.AttachmentException;
 import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.externalemail.ExternalEmailFacade;
 import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
+import de.symeda.sormas.api.externalemail.ExternalEmailOptionsWithAttachmentsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -59,6 +74,7 @@ import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -67,12 +83,16 @@ import de.symeda.sormas.backend.common.messaging.EmailService;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.docgeneration.DocGenerationHelper;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateEntitiesBuilder;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.EmailTemplateTexts;
+import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.RootEntities;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentRelatedEntity;
+import de.symeda.sormas.backend.document.DocumentRelatedEntityService;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.document.DocumentStorageService;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -100,6 +120,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	@EJB
 	private DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 	@EJB
+	private QuarantineOrderFacadeEjb.QuarantineOrderFacadeEjbLocal quarantineOrderFacade;
+	@EJB
 	private DocumentTemplateEntitiesBuilder templateEntitiesBuilder;
 	@EJB
 	private EmailService emailService;
@@ -109,6 +131,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private DocumentFacadeEjbLocal documentFacade;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private DocumentRelatedEntityService documentRelatedEntityService;
 	@EJB
 	private DocumentStorageService documentStorageService;
 	@EJB
@@ -129,6 +153,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private TravelEntryService travelEntryService;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
+	@EJB
+	private DocGenerationHelper docGenerationHelper;
 
 	@Override
 	public List<String> getTemplateNames(DocumentWorkflow documentWorkflow) {
@@ -146,7 +172,13 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	}
 
 	@Override
-	public void sendEmail(@Valid ExternalEmailOptionsDto options) throws DocumentTemplateException, ExternalEmailException {
+	public void sendEmail(@Valid ExternalEmailOptionsDto options)
+		throws AttachmentException, DocumentTemplateException, ValidationException, ExternalEmailException, IOException {
+		sendEmail(options, true);
+	}
+
+	private void sendEmail(@Valid ExternalEmailOptionsDto options, boolean onlyLinkedDocumentsAsAttachments)
+		throws DocumentTemplateException, ExternalEmailException, AttachmentException, ValidationException, IOException {
 		validateOptions(options);
 
 		User currentUser = userService.getCurrentUser();
@@ -157,22 +189,47 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		PersonReferenceDto personRef = (PersonReferenceDto) documentEntities.getEntity(RootEntityType.ROOT_PERSON);
 		Person person = personService.getByReferenceDto(personRef);
 
-		Map<File, String> attachments = Collections.emptyMap();
+		if (StringUtils.isEmpty(options.getRecipientEmail())) {
+			if (StringUtils.isEmpty(person.getEmailAddress())) {
+				throw new ValidationException(I18nProperties.getString(Strings.errorExternalEmailMissingPersonEmailAddress));
+			}
+			options.setRecipientEmail(person.getEmailAddress());
+		}
+
+		File personalizedFile = null;
+		String personalizedFileName = null;
+		Map<File, String> filesToBeEncryped = new HashMap<>();
+
+		if (options.getQuarantineOrderDocumentOptions() != null && options.getQuarantineOrderDocumentOptions().getTemplateFile() != null) {
+			Map.Entry<File, String> fileFromTemplate = createFileFromTemplate(options);
+			personalizedFile = fileFromTemplate.getKey();
+			personalizedFileName = fileFromTemplate.getValue();
+			filesToBeEncryped.put(personalizedFile, personalizedFileName);
+		}
+
+		Map<File, String> emailAttachments = Collections.emptyMap();
 		Set<DocumentReferenceDto> attachedDocuments = options.getAttachedDocuments();
-		List<Document> sormasDocuments = Collections.emptyList();
+		List<Document> sormasDocuments;
+
+		if (CollectionUtils.isNotEmpty(attachedDocuments)) {
+			List<String> documentUuids = attachedDocuments.stream().map(DocumentReferenceDto::getUuid).collect(Collectors.toList());
+			sormasDocuments = documentService.getByUuids(documentUuids);
+			validateAttachedDocuments(sormasDocuments, options, onlyLinkedDocumentsAsAttachments);
+
+			sormasDocuments.forEach(doc -> {
+				File document = documentStorageService.getFile(doc.getStorageReference());
+				String fileName = doc.getName();
+				filesToBeEncryped.put(document, fileName);
+			});
+		}
 
 		String password = null;
 		PasswordType passwordType = null;
-		if (CollectionUtils.isNotEmpty(attachedDocuments)) {
+		if (!filesToBeEncryped.isEmpty()) {
 			Pair<String, PasswordType> passwordAndType = getPassword(person);
 			password = passwordAndType.getElement0();
 			passwordType = passwordAndType.getElement1();
-
-			List<String> documentUuids = attachedDocuments.stream().map(DocumentReferenceDto::getUuid).collect(Collectors.toList());
-			sormasDocuments = documentService.getByUuids(documentUuids);
-			validateAttachedDocuments(sormasDocuments, options);
-
-			attachments = attachmentService.createEncryptedPdfs(sormasDocuments, password);
+			emailAttachments = attachmentService.createEncryptedPdfs(filesToBeEncryped, password);
 		}
 
 		String generatedText =
@@ -180,7 +237,17 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		EmailTemplateTexts emailTexts = splitTemplateContent(generatedText);
 
 		try {
-			emailService.sendEmail(options.getRecipientEmail(), emailTexts.getSubject(), emailTexts.getContent(), attachments);
+			emailService.sendEmail(options.getRecipientEmail(), emailTexts.getSubject(), emailTexts.getContent(), emailAttachments);
+
+			if (personalizedFile != null) {
+				if (options.getQuarantineOrderDocumentOptions().getShouldUploadGeneratedDoc()) {
+					byte[] content;
+					content = FileUtils.readFileToByteArray(personalizedFile);
+					quarantineOrderFacade.uploadDocument(personalizedFileName, options.getRootEntityReference(), content);
+				}
+				//removes the file from temporary folder
+				Files.delete(personalizedFile.toPath());
+			}
 
 			if (passwordType == PasswordType.RANDOM) {
 				messagingService.sendManualMessage(
@@ -189,22 +256,148 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 					String.format(I18nProperties.getString(Strings.messageExternalEmailAttachmentPassword), password),
 					MessageType.SMS);
 			}
-		} catch (MessagingException | NotificationDeliveryFailedException e) {
+
+		} catch (MessagingException | NotificationDeliveryFailedException | IOException e) {
+
+			if (personalizedFile != null) {
+				//removes the file from temporary folder
+				Files.delete(personalizedFile.toPath());
+			}
+
+			for (File tempEncryptedFile : emailAttachments.keySet()) {
+				Files.delete(tempEncryptedFile.toPath());
+			}
+
 			logger.error("Error sending email", e);
 			throw new ExternalEmailException(I18nProperties.getString(Strings.errorSendingExternalEmail));
 		}
 
-		attachments.keySet().forEach(File::delete);
-		manualMessageLogService.ensurePersisted(createMessageLog(options, person.toReference(), currentUser, sormasDocuments));
+		emailAttachments.keySet().forEach(File::delete);
+
+		manualMessageLogService
+			.ensurePersisted(createMessageLog(options, person.toReference(), currentUser, new ArrayList<>(filesToBeEncryped.values())));
 	}
 
-	private static void validateAttachedDocuments(List<Document> sormasDocuments, ExternalEmailOptionsDto options) {
+	private Map.Entry<File, String> createFileFromTemplate(ExternalEmailOptionsDto emailOptions) throws DocumentTemplateException, IOException {
+		QuarantineOrderDocumentOptionsDto documentOptions = emailOptions.getQuarantineOrderDocumentOptions();
+		byte[] generatedDocument = quarantineOrderFacade.getGeneratedDocument(
+			documentOptions.getTemplateFile(),
+			documentOptions.getDocumentWorkflow(),
+			emailOptions.getRootEntityType(),
+			emailOptions.getRootEntityReference(),
+			null,
+			null,
+			null,
+			documentOptions.getExtraProperties(),
+			// document uploading will be handled in another place 
+			false);
+		String fileName = docGenerationHelper.getDocumentFileName(emailOptions.getRootEntityReference(), documentOptions.getTemplateFile());
+		File tempTemplateFile = Paths.get(configFacade.getTempFilesPath()).resolve(fileName).toFile();
+		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(tempTemplateFile.toPath()));
+		bufferedOutputStream.write(generatedDocument);
+		bufferedOutputStream.close();
+
+		Map.Entry<File, String> templateFile = Map.entry(tempTemplateFile, fileName);
+		return templateFile;
+	}
+
+	@Override
+	@PermitAll
+	public List<ProcessedEntity> sendBulkEmail(@Valid ExternalEmailOptionsWithAttachmentsDto options, List<ReferenceDto> rootReferences)
+		throws IOException {
+
+		List<DocumentDto> documentList = new ArrayList<>();
+		boolean attachmentsSavedInPreviousBatches = false;
+		if (options.getAttachedDocuments() != null) {
+			for (EmailAttachementDto attachement : options.getAttachedDocuments()) {
+				DocumentDto attachedDocument = attachement.getDocument();
+				//since the bulk email sending process is done in batches and the attached documents are saved before first email sent
+				//then the following situations could occur:
+				// 1) Let's say we have this situation: in the first batch there are no eligible entities (no emails are sent). From the above we also know
+				// that the attachments are saved before the starting of the batch. In this case the attachment must be removed from the file system since
+				// there is no relatedEntities to be linked to them
+				// 2) Point 1 is repeated for the second batch and further, until one eligible entity appears and an email is sent.
+				// 3) Once at least one email has been sent for all the next batches the attachments will be retrieved from the file system. The process
+				// of saving and removing the attachments is stopped.
+				DocumentDto foundDocument = documentFacade.getDocumentByUuid(attachement.getDocument().getUuid());
+				if (foundDocument != null) {
+					attachmentsSavedInPreviousBatches = true;
+				}
+
+				if (foundDocument != null) {
+					documentList.add(foundDocument);
+				} else {
+					DocumentDto newDocument = documentFacade.saveDocument(attachedDocument, attachement.getContent(), Collections.emptyList());
+					documentList.add(newDocument);
+				}
+			}
+		}
+
+		Set<DocumentReferenceDto> attachedDocuments = options.getAttachedDocuments() != null
+			? options.getAttachedDocuments().stream().map(EmailAttachementDto::getDocument).map(DocumentDto::toReference).collect(Collectors.toSet())
+			: null;
+
+		List<ProcessedEntity> processedEntities = rootReferences.stream().map(entityRef -> {
+			try {
+				ExternalEmailOptionsDto emailOptions =
+					new ExternalEmailOptionsDto(options.getDocumentWorkflow(), options.getRootEntityType(), entityRef);
+				emailOptions.setTemplateName(options.getTemplateName());
+
+				emailOptions.setAttachedDocuments(attachedDocuments);
+				emailOptions.setRootEntityReference(entityRef);
+
+				emailOptions.setQuarantineOrderDocumentOptions(options.getQuarantineOrderDocumentOptionsDto());
+
+				sendEmail(emailOptions, false);
+
+				if (emailOptions.getAttachedDocuments() != null) {
+					emailOptions.getAttachedDocuments().forEach(attachment -> {
+						Document document = documentService.getByUuid(attachment.getUuid());
+						DocumentRelatedEntity documentRelatedEntity = new DocumentRelatedEntity()
+							.build(getDocRelatedEntityType(emailOptions.getRootEntityType()), emailOptions.getRootEntityReference().getUuid());
+						documentRelatedEntity.setDocument(document);
+						documentRelatedEntityService.persist(documentRelatedEntity);
+					});
+				}
+			} catch (AttachmentException | ValidationException e) {
+				logger.warn("Email could not be sent", e);
+				return new ProcessedEntity(entityRef.getUuid(), ProcessedEntityStatus.NOT_ELIGIBLE);
+			} catch (Exception e) {
+				logger.error("Email could not be sent", e);
+				return new ProcessedEntity(entityRef.getUuid(), ProcessedEntityStatus.INTERNAL_FAILURE);
+			}
+			return new ProcessedEntity(entityRef.getUuid(), ProcessedEntityStatus.SUCCESS);
+		}).collect(Collectors.toList());
+
+		if (processedEntities.stream().noneMatch(processedEntity -> ProcessedEntityStatus.SUCCESS.equals(processedEntity.getProcessedEntityStatus()))
+			&& Boolean.FALSE.equals(attachmentsSavedInPreviousBatches)) {
+			documentList.forEach(documentDto -> {
+				Document toDeletedDocument = documentService.getByUuid(documentDto.getUuid());
+				documentStorageService.delete(toDeletedDocument.getStorageReference());
+				documentService.deletePermanent(toDeletedDocument);
+			});
+		}
+
+		return processedEntities;
+	}
+
+	private static void validateAttachedDocuments(
+		List<Document> sormasDocuments,
+		ExternalEmailOptionsDto options,
+		boolean onlyLinkedDocumentsAsAttachments) {
 		DocumentRelatedEntityType documentRelatedEntityType = DOCUMENT_WORKFLOW_DOCUMENT_RELATION_MAPPING.get(options.getDocumentWorkflow());
-		if (sormasDocuments.stream()
-			.anyMatch(
-				d -> d.getRelatedEntityType() != documentRelatedEntityType
-					&& !Objects.equals(d.getRelatedEntityUuid(), options.getRootEntityReference().getUuid()))) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.attachedDocumentNotRelatedToEntity));
+
+		//all attached documents must be linked to the root entity
+		if (onlyLinkedDocumentsAsAttachments) {
+			if (sormasDocuments.stream()
+				.anyMatch(
+					d -> d.getRelatedEntities()
+						.stream()
+						.noneMatch(
+							relatedEntity -> relatedEntity.getRelatedEntityType() == documentRelatedEntityType
+								&& relatedEntity.getRelatedEntityUuid().equals(options.getRootEntityReference().getUuid())))) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.attachedDocumentNotRelatedToEntity));
+			}
 		}
 	}
 
@@ -213,6 +406,11 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		Person person = personService.getByReferenceDto(personReferenceDto);
 
 		return getApplicablePasswordType(person) != PasswordType.NONE;
+	}
+
+	@Override
+	public Set<String> getAttachableFileExtensions() {
+		return attachmentService.getAttachableFileExtensions();
 	}
 
 	private PasswordType getApplicablePasswordType(Person person) {
@@ -234,7 +432,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		}
 	}
 
-	private Pair<String, PasswordType> getPassword(Person person) throws ExternalEmailException {
+	private Pair<String, PasswordType> getPassword(Person person) throws AttachmentException {
 		PasswordType passwordType = getApplicablePasswordType(person);
 
 		switch (passwordType) {
@@ -244,7 +442,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			return new Pair<>(generateRandomPassword(), passwordType);
 		case NONE:
 		default:
-			throw new ExternalEmailException(I18nProperties.getString(Strings.errorExternalEmailAttachmentCannotEncrypt));
+			throw new AttachmentException(I18nProperties.getString(Strings.errorExternalEmailAttachmentCannotEncrypt));
 		}
 	}
 
@@ -275,7 +473,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		ExternalEmailOptionsDto options,
 		PersonReferenceDto personRef,
 		User currentUser,
-		List<Document> attachedDocuments) {
+		List<String> attachedDocumentsName) {
 		ManualMessageLog log = new ManualMessageLog();
 
 		log.setMessageType(MessageType.EMAIL);
@@ -284,7 +482,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		log.setSentDate(new Date());
 		log.setEmailAddress(options.getRecipientEmail());
 		log.setUsedTemplate(options.getTemplateName());
-		log.setAttachedDocuments(attachedDocuments.stream().map(Document::getName).collect(Collectors.toList()));
+		log.setAttachedDocuments(attachedDocumentsName);
 
 		// `*Service::getByReferenceDto` does a null check, so we don't need to do it here
 		log.setCaze(caseService.getByReferenceDto(getRootEntityReference(options, RootEntityType.ROOT_CASE, CaseReferenceDto.class)));
@@ -312,7 +510,21 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			return false;
 		}
 
-		return LuxembourgNationalHealthIdValidator.isValid(nationalHealthId, person.getBirthdateYYYY(), person.getBirthdateMM(), person.getBirthdateDD());
+		return LuxembourgNationalHealthIdValidator
+			.isValid(nationalHealthId, person.getBirthdateYYYY(), person.getBirthdateMM(), person.getBirthdateDD());
+	}
+
+	private DocumentRelatedEntityType getDocRelatedEntityType(RootEntityType rootEntityType) {
+		switch (rootEntityType) {
+		case ROOT_CASE:
+			return DocumentRelatedEntityType.CASE;
+		case ROOT_CONTACT:
+			return DocumentRelatedEntityType.CONTACT;
+		case ROOT_TRAVEL_ENTRY:
+			return DocumentRelatedEntityType.TRAVEL_ENTRY;
+		default:
+			throw new RuntimeException("Root entity type" + rootEntityType.name() + " does not support documents");
+		}
 	}
 
 	@Stateless

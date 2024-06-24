@@ -44,7 +44,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 		DocumentListComponent documentListComponent,
 		Function<String, String> fileNameFunction,
 		DocumentInputStreamSupplier documentInputStreamSupplier) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction, isNull(documentListComponent));
+		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction, isNull(documentListComponent), false);
 
 		this.documentListComponent = documentListComponent;
 		this.documentInputStreamSupplier = documentInputStreamSupplier;

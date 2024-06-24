@@ -7,7 +7,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -54,16 +54,14 @@ public class EnvironmentDataView extends AbstractEnvironmentView implements HasN
 
 		boolean isEditAllowed = isEditAllowed();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
 				new TaskListComponent(TaskContext.ENVIRONMENT, getEnvironmentRef(), null, this::showUnsavedChangesPopup, isEditAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
+		if (UiUtil.permitted(FeatureType.SAMPLES_LAB, UserRight.ENVIRONMENT_SAMPLE_VIEW)) {
 			EnvironmentSampleListComponent sampleList = new EnvironmentSampleListComponent(environment, isEditAllowed, this::showUnsavedChangesPopup);
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(sampleList, SAMPLES_LOC);

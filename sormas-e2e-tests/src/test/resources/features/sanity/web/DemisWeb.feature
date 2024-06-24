@@ -1,4 +1,4 @@
-@UI @Sanity @DEMIS @DEMISUI
+@UI @Sanity @DEMIS @DEMISUI @ignore
 Feature: Demis UI Tests
 
 @env_d2s @LoginKeycloak

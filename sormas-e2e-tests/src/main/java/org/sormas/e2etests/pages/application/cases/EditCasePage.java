@@ -52,6 +52,8 @@ public class EditCasePage {
       By.cssSelector("[id='Proben f\u00FCr diese Person ansehen']");
   public static final By SEE_CONTACTS_FOR_THIS_PERSON_BUTTON =
       By.cssSelector("[id='See contacts for this person']");
+  public static final By SEE_SAMPLES_FOR_THIS_CASE_BUTTON =
+      By.cssSelector("[id='See samples for this case']");
   public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
   public static final By EDIT_SAMPLE_PENCIL_BUTTON = By.cssSelector("div[id^='edit-sample']");
   public static final By EYE_SAMPLE_BUTTON = By.cssSelector("div[id^='view-sample']");

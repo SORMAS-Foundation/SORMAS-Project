@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
@@ -196,7 +197,7 @@ public class LineListingLayout extends VerticalLayout {
 			contact.setContactProximity(layoutBean.getLineField().getTypeOfContact());
 			contact.setRelationToCase(layoutBean.getLineField().getRelationToCase());
 			if (UserProvider.getCurrent() != null) {
-				contact.setReportingUser(UserProvider.getCurrent().getUserReference());
+				contact.setReportingUser(UiUtil.getUserReference());
 			}
 			result.setEntity(contact);
 

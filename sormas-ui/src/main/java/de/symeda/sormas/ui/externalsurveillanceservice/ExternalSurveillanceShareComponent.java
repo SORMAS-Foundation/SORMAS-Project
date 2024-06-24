@@ -29,7 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
@@ -84,7 +84,7 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		HorizontalLayout headerLayout = new HorizontalLayout(header);
 		headerLayout.setComponentAlignment(header, Alignment.MIDDLE_LEFT);
 
-		if (sendHandler != null && UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)) {
+		if (sendHandler != null && UiUtil.permitted(UserRight.EXTERNAL_SURVEILLANCE_SHARE)) {
 			Button sendButton = ButtonHelper.createIconButton(
 				Captions.ExternalSurveillanceToolGateway_send,
 				VaadinIcons.OUTBOX,
@@ -96,7 +96,7 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_DELETE)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_SURVEILLANCE_DELETE)) {
 			if (caseUuid != null) {
 				if (deleteHandler != null && isVisibleDeleteButtonForCase(caseUuid)) {
 					addDeleteButtonToLayout(deleteHandler, headerLayout);

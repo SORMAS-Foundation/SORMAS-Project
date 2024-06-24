@@ -230,9 +230,5 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	Pair<RegionReferenceDto, DistrictReferenceDto> getRegionAndDistrictRefsOf(CaseReferenceDto caze);
 
-    List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
-
-    String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean b, boolean b1);
-
-    Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
+	boolean hasCurrentUserSpecialAccess(CaseReferenceDto caze);
 }

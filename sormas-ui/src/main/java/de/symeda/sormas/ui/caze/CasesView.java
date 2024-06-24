@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.UiUtil.permitted;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
@@ -23,7 +24,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -84,7 +84,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
@@ -161,10 +160,10 @@ public class CasesView extends AbstractView implements HasName {
 
 		super(VIEW_NAME);
 
-		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		hasClinicalCourseRight = UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW);
-		hasTherapyRight = UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW);
-		hasExportSamplesRight = UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT);
+		caseFollowUpEnabled = UiUtil.enabled(FeatureType.CASE_FOLLOWUP);
+		hasClinicalCourseRight = UiUtil.permitted(UserRight.CLINICAL_COURSE_VIEW);
+		hasTherapyRight = UiUtil.permitted(UserRight.THERAPY_VIEW);
+		hasExportSamplesRight = UiUtil.permitted(UserRight.SAMPLE_EXPORT);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -240,7 +239,7 @@ public class CasesView extends AbstractView implements HasName {
 	}
 
 	private ExportConfigurationDto buildDetailedExportConfiguration() {
-		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), ExportType.CASE);
+		ExportConfigurationDto config = ExportConfigurationDto.build(UiUtil.getUserReference(), ExportType.CASE);
 
 		config.setProperties(
 			ImportExportUtils
@@ -249,7 +248,8 @@ public class CasesView extends AbstractView implements HasName {
 					caseFollowUpEnabled,
 					hasClinicalCourseRight,
 					hasTherapyRight,
-					FacadeProvider.getConfigFacade().getCountryLocale())
+					FacadeProvider.getConfigFacade().getCountryLocale(),
+					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
 				.collect(Collectors.toSet()));
@@ -273,7 +273,7 @@ public class CasesView extends AbstractView implements HasName {
 		openGuideButton.setWidth(100, Unit.PERCENTAGE);
 		moreButton.addMenuEntry(openGuideButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
+		if (UiUtil.permitted(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
 			importLayout.setSpacing(true);
 			importLayout.setMargin(true);
@@ -288,7 +288,7 @@ public class CasesView extends AbstractView implements HasName {
 
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
+		if (UiUtil.permitted(UserRight.CASE_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -367,7 +367,7 @@ public class CasesView extends AbstractView implements HasName {
 			}
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				&& UiUtil.permitted(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportCaseDto.class,
 					null,
@@ -390,7 +390,8 @@ public class CasesView extends AbstractView implements HasName {
 							caseFollowUpEnabled,
 							hasClinicalCourseRight,
 							hasTherapyRight,
-							FacadeProvider.getConfigFacade().getCountryLocale()),
+							FacadeProvider.getConfigFacade().getCountryLocale(),
+							FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
 						(exportConfig) -> Page.getCurrent()
@@ -456,7 +457,7 @@ public class CasesView extends AbstractView implements HasName {
 			addHeaderComponent(btnLeaveBulkEditMode);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MERGE)) {
+		if (UiUtil.permitted(UserRight.CASE_MERGE)) {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
 				Captions.caseMergeDuplicates,
 				VaadinIcons.COMPRESS_SQUARE,
@@ -473,7 +474,7 @@ public class CasesView extends AbstractView implements HasName {
 		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
 		moreButton.addMenuEntry(searchSpecificCaseButton);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+		if (UiUtil.permitted(UserRight.CASE_CREATE)) {
 			final ExpandableButton lineListingButton =
 				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getCaseController().openLineListingWindow());
 			addHeaderComponent(lineListingButton);
@@ -669,9 +670,8 @@ public class CasesView extends AbstractView implements HasName {
 			}
 
 			// Show active/archived/all dropdown
-			if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-
-				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CASE)) {
+			if (UiUtil.permitted(UserRight.CASE_VIEW)) {
+				if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CASE)) {
 					int daysAfterCaseGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 						.getProperty(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 					if (daysAfterCaseGetsArchived > 0) {
@@ -691,11 +691,17 @@ public class CasesView extends AbstractView implements HasName {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.caseActiveCases));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
-				relevanceStatusFilter
-					.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases));
 
-				if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
+				if (UiUtil.permitted(UserRight.CASE_VIEW_ARCHIVED)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
+					relevanceStatusFilter
+						.setItemCaption(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED, I18nProperties.getCaption(Captions.caseAllActiveAndArchivedCases));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
+
+				if (UiUtil.permitted(UserRight.CASE_DELETE)) {
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.caseDeletedCases));
 				} else {
 					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
@@ -704,6 +710,11 @@ public class CasesView extends AbstractView implements HasName {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					}
+
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					}
+
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
@@ -714,7 +725,7 @@ public class CasesView extends AbstractView implements HasName {
 				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
 				// Bulk operation dropdown
 				if (isBulkEditAllowed()) {
-					boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES);
+					boolean hasBulkOperationsRight = UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS);
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
@@ -722,19 +733,15 @@ public class CasesView extends AbstractView implements HasName {
 						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, mi -> {
 							grid.bulkActionHandler(
 								items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items, (AbstractCaseGrid<?>) grid));
-						}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)));
+						}, hasBulkOperationsRight && UiUtil.permitted(UserRight.CASE_EDIT)));
 						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 							grid.bulkActionHandler(
 								items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
 								true);
-						}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
+						}, hasBulkOperationsRight && UiUtil.permitted(UserRight.CASE_DELETE)));
 
-						final boolean externalMessagesEnabled =
-							FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 						final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
-						if (isSmsServiceSetUp
-							&& externalMessagesEnabled
-							&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
+						if (isSmsServiceSetUp && UiUtil.permitted(FeatureType.MANUAL_EXTERNAL_MESSAGES, UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 							menuBarItems.add(
 								new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.messagesSendSMS), VaadinIcons.MOBILE_RETRO, mi -> {
 									grid.bulkActionHandler(
@@ -742,22 +749,24 @@ public class CasesView extends AbstractView implements HasName {
 								}, hasBulkOperationsRight));
 						}
 						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
-								grid.bulkActionHandler(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
+								VaadinIcons.ARCHIVE,
+								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
-									true);
-							},
+									true),
 								hasBulkOperationsRight
-									&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CASE_ARCHIVE)
 									&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveCoreEntity), VaadinIcons.ARCHIVE, mi -> {
-								grid.bulkActionHandler(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
+								VaadinIcons.ARCHIVE,
+								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
-									true);
-							},
+									true),
 								hasBulkOperationsRight
-									&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CASE_ARCHIVE, UserRight.CASE_VIEW_ARCHIVED)
 									&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
@@ -781,7 +790,7 @@ public class CasesView extends AbstractView implements HasName {
 										ControllerProvider.getCaseController().sendCasesToExternalSurveillanceTool(items, (AbstractCaseGrid<?>) grid);
 									});
 								},
-								UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
+								UiUtil.permitted(UserRight.EXTERNAL_SURVEILLANCE_SHARE)
 									&& FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 						if (isDocGenerationAllowed()) {
@@ -812,7 +821,7 @@ public class CasesView extends AbstractView implements HasName {
 									}));
 						}
 
-						if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+						if (permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE)) {
 							menuBarItems.add(
 								new MenuBarHelper.MenuBarItem(
 									I18nProperties.getCaption(Captions.bulkLinkToEvent),
@@ -821,23 +830,29 @@ public class CasesView extends AbstractView implements HasName {
 										items -> ControllerProvider.getCaseController()
 											.linkSelectedCasesToEvent(items, (AbstractCaseGrid<?>) grid))));
 						}
+
+						if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
+							menuBarItems.add(
+								new MenuBarHelper.MenuBarItem(
+									I18nProperties.getCaption(Captions.bulkSpecialCaseAccess),
+									VaadinIcons.RASTER_LOWER_LEFT,
+									mi -> grid.bulkActionHandler(
+										items -> ControllerProvider.getSpecialCaseAccessController()
+											.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
+						}
+						menuBarItems
+							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().sendEmailsToAllSelectedItems(items, (AbstractCaseGrid<?>) grid),
+									true);
+							}, hasBulkOperationsRight && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 					} else {
 						menuBarItems
 							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkRestore), VaadinIcons.ARROW_BACKWARD, mi -> {
 								grid.bulkActionHandler(
 									items -> ControllerProvider.getCaseController().restoreSelectedCases(items, (AbstractCaseGrid<?>) grid),
 									true);
-							}, hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)));
-					}
-
-					if (UiUtil.permitted(UserRight.GRANT_SPECIAL_CASE_ACCESS)) {
-						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.bulkSpecialCaseAccess),
-								VaadinIcons.RASTER_LOWER_LEFT,
-								mi -> grid.bulkActionHandler(
-									items -> ControllerProvider.getSpecialCaseAccessController()
-										.createForSelectedCases(items, (AbstractCaseGrid<?>) grid))));
+							}, hasBulkOperationsRight && UiUtil.permitted(UserRight.CASE_DELETE)));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
@@ -920,9 +935,8 @@ public class CasesView extends AbstractView implements HasName {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
-				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser());
+		return UiUtil.enabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
+			&& (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) || FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser());
 	}
 
 	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {

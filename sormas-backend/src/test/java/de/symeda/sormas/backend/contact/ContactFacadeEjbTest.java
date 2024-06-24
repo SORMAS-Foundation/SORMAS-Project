@@ -48,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
@@ -119,6 +120,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -133,8 +135,10 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -163,6 +167,65 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			ValidationRuntimeException.class,
 			() -> creator.createContact(null, null, contactPerson.toReference(), caze, new Date(), new Date(), null));
+	}
+
+	@Test
+	public void testGetContactByUuidForArchivedContact() {
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CONTACT_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user1.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact1 =
+			creator.createContact(user1.toReference(), user1.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+
+		ContactFacadeEjb.ContactFacadeEjbLocal cut = getBean(ContactFacadeEjb.ContactFacadeEjbLocal.class);
+		cut.archive(contact1.getUuid(), null);
+
+		//user1 has CONTACT_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getContactFacade().getContactByUuid(contact1.getUuid()).getUuid(), contact1.getUuid());
+
+		//user2 does not have CONTACT_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getContactFacade().getContactByUuid(contact1.getUuid()));
 	}
 
 	@Test
@@ -561,8 +624,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getSampleFacade().saveSample(sample2);
 
 		// Database should contain the created contact, visit and task
-		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
-		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
+		assertNotNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertNotNull(getVisitFacade().getByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
@@ -572,20 +635,20 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		// Can't delete visit because it might be associated with other contacts as well
 		//		assertNull(getVisitFacade().getByUuid(visit.getUuid()));
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
-		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
-		assertEquals("test reason", getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
+		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getContactByUuid(contact.getUuid()).getDeletionReason());
+		assertEquals("test reason", getContactFacade().getContactByUuid(contact.getUuid()).getOtherDeletionReason());
 
 		getContactFacade().restore(contact.getUuid());
 
 		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNull(getTaskFacade().getTaskByUuid(task.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
-		assertNull(getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
-		assertNull(getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
+		assertNull(getContactFacade().getContactByUuid(contact.getUuid()).getDeletionReason());
+		assertNull(getContactFacade().getContactByUuid(contact.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -830,7 +893,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		DistrictReferenceDto districtReferenceDto,
 		CaseReferenceDto caze) {
 
-		ContactDto contactDto = getContactFacade().getByUuid(contactUuid);
+		ContactDto contactDto = getContactFacade().getContactByUuid(contactUuid);
 		contactDto.setRegion(regionReferenceDto);
 		contactDto.setDistrict(districtReferenceDto);
 		contactDto.setCaze(caze);
@@ -1904,7 +1967,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		getContactFacade().merge(leadContact.getUuid(), otherContact.getUuid());
 
-		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+		ContactDto mergedContact = getContactFacade().getContactByUuid(leadContact.getUuid());
 		assertEquals(I18nProperties.getString(Strings.messageSystemFollowUpCanceled), mergedContact.getFollowUpComment());
 	}
 
@@ -2025,7 +2088,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// 3. Test
 
-		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+		ContactDto mergedContact = getContactFacade().getContactByUuid(leadContact.getUuid());
 
 		PersonDto mergedPerson = getPersonFacade().getByUuid(mergedContact.getPerson().getUuid());
 
@@ -2214,6 +2277,46 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactCriteria.setPersonLike("detail2");
 		contactIndexDetailedDtos = getContactFacade().getIndexDetailedList(contactCriteria, 0, 100, null);
 		assertEquals(0, contactIndexDetailedDtos.size());
+	}
+
+	@Test
+	public void testGetContactsByPersonNationalHealthId() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		ContactDto contact1 = getContactFacade().save(creator.createContact(user.toReference(), person1));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getContactFacade().save(creator.createContact(user.toReference(), person2));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getContactFacade().save(creator.createContact(user.toReference(), person3));
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setPersonLike("firstNationalId");
+
+		List<ContactIndexDto> contactIndexDtos1 = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		assertEquals(1, contactIndexDtos1.size());
+		assertEquals(contact1.getUuid(), contactIndexDtos1.get(0).getUuid());
+
+		contactCriteria.setPersonLike("National");
+		List<ContactIndexDto> contactIndexDtosNational = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		assertEquals(2, contactIndexDtosNational.size());
+
+		contactCriteria.setPersonLike(null);
+		List<ContactIndexDto> contactIndexDtosAll = getContactFacade().getIndexList(contactCriteria, 0, 100, null);
+		assertEquals(3, contactIndexDtosAll.size());
 	}
 
 	@Test

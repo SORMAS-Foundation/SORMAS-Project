@@ -28,9 +28,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -40,6 +42,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -47,7 +51,6 @@ import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -57,6 +60,8 @@ import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListCompone
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
+import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponent;
+import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -86,6 +91,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 	public static final String DOCUMENTS_LOC = "documents";
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
+	public static final String SELF_REPORT_LOC = "selfReport";
 
 	private CommitDiscardWrapperComponent<ContactDataForm> editComponent;
 
@@ -125,7 +131,8 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			SORMAS_TO_SORMAS_LOC,
 			DOCUMENTS_LOC,
 			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
-			EXTERNAL_EMAILS_LOC);
+			EXTERNAL_EMAILS_LOC,
+			SELF_REPORT_LOC);
 
 		container.addComponent(layout);
 
@@ -137,7 +144,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 
 		final String uuid = contactDto.getUuid();
 		boolean editAllowed = isEditAllowed();
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE) && editAllowed) {
+		if (UiUtil.permitted(UserRight.CONTACT_REASSIGN_CASE) && editAllowed) {
 			HorizontalLayout buttonsLayout = new HorizontalLayout();
 			buttonsLayout.setSpacing(true);
 
@@ -204,15 +211,14 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(buttonsLayout, CASE_BUTTONS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
+		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
 				new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease(), this::showUnsavedChangesPopup, editAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
+		if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
 				this::showUnsavedChangesPopup,
@@ -222,8 +228,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {
 			VerticalLayout eventsLayout = new VerticalLayout();
 			eventsLayout.setMargin(false);
 			eventsLayout.setSpacing(false);
@@ -235,8 +240,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(eventsLayout, EVENTS_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		if (UiUtil.permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
@@ -276,8 +280,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 
 		final EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().getEditPermissionType(uuid);
 		DocumentListComponent documentList = null;
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.DOCUMENT_VIEW)) {
+		if (UiUtil.permitted(FeatureType.DOCUMENTS, UserRight.DOCUMENT_VIEW)) {
 			boolean isDocumentDeleteAllowed =
 				EditPermissionType.ALLOWED.equals(contactEditAllowed) || EditPermissionType.WITHOUT_OWNERSHIP.equals(contactEditAllowed);
 			documentList = new DocumentListComponent(
@@ -298,6 +301,11 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 
+		SelfReportListComponent selfReportListComponent =
+			new SelfReportListComponent(SelfReportType.CONTACT, new SelfReportCriteria().setContact(new ContactReferenceDto(contactDto.getUuid())));
+		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
+		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
+
 		final boolean deleted = FacadeProvider.getContactFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, contactEditAllowed);
 	}
@@ -307,7 +315,7 @@ public class ContactDataView extends AbstractContactView implements HasName {
 
 		if (contactDataForm.getValue().getResultingCase() == null) {
 			if (!ContactClassification.NO_CONTACT.equals(contactDataForm.getValue().getContactClassification())) {
-				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
+				if (UiUtil.permitted(UserRight.CONTACT_CONVERT)) {
 					contactDataForm.getToCaseButton().addClickListener(event -> {
 						if (!ContactClassification.CONFIRMED.equals(contactDataForm.getValue().getContactClassification())) {
 							VaadinUiUtil.showSimplePopupWindow(

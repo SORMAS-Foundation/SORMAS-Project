@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -34,13 +35,17 @@ import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -83,6 +88,58 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Off2",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+	}
+
+	@Test
+	public void testGetTravelEntryByUuidForArchivedEntry() {
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
+			UserRight.TRAVEL_ENTRY_VIEW,
+			UserRight.TRAVEL_ENTRY_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
+			UserRight.TRAVEL_ENTRY_VIEW);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+
+		TravelEntryDto travelEntry = creator
+			.createTravelEntry(person.toReference(), user1.toReference(), Disease.CORONAVIRUS, rdcf1.region, rdcf1.district, rdcf1.pointOfEntry);
+
+		TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal cut = getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
+		cut.archive(travelEntry.getUuid(), null);
+
+		//user1 has TRAVEL_ENTRY_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getTravelEntryFacade().getTravelEntryByUuid(travelEntry.getUuid()).getUuid(), travelEntry.getUuid());
+
+		//user2 does not have TRAVEL_ENTRY_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getTravelEntryFacade().getTravelEntryByUuid(travelEntry.getUuid()));
 	}
 
 	@Test
@@ -296,5 +353,41 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			assertThat(result.get(0).getCaption(), equalTo("Hello"));
 			assertThat(result.get(0).getValue(), equalTo("World"));
 		}
+	}
+
+	@Test
+	public void testGetCasesByPersonNationalHealthId() {
+		PersonReferenceDto person1 = creator.createPerson().toReference();
+		PersonDto personDto1 = getPersonFacade().getByUuid(person1.getUuid());
+		personDto1.setNationalHealthId("firstNationalId");
+		getPersonFacade().save(personDto1);
+		final TravelEntryDto travelEntry1 = getTravelEntryFacade().save(creator.createTravelEntry(person1, districtUser1.toReference(), rdcf1, null));
+
+		PersonReferenceDto person2 = creator.createPerson().toReference();
+		PersonDto personDto2 = getPersonFacade().getByUuid(person2.getUuid());
+		personDto2.setNationalHealthId("secondNationalId");
+		getPersonFacade().save(personDto2);
+		getTravelEntryFacade().save(creator.createTravelEntry(person2, districtUser1.toReference(), rdcf1, null));
+
+		PersonReferenceDto person3 = creator.createPerson().toReference();
+		PersonDto personDto3 = getPersonFacade().getByUuid(person3.getUuid());
+		personDto3.setNationalHealthId("third");
+		getPersonFacade().save(personDto3);
+		getTravelEntryFacade().save(creator.createTravelEntry(person3, districtUser1.toReference(), rdcf1, null));
+
+		TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+		travelEntryCriteria.setNameUuidExternalIDLike("firstNationalId");
+
+		List<TravelEntryIndexDto> travelEntryIndexDtos1 = getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, 100, null);
+		assertEquals(1, travelEntryIndexDtos1.size());
+		assertEquals(travelEntry1.getUuid(), travelEntryIndexDtos1.get(0).getUuid());
+
+		travelEntryCriteria.setNameUuidExternalIDLike("National");
+		List<TravelEntryIndexDto> travelEntryIndexDtosNational = getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, 100, null);
+		assertEquals(2, travelEntryIndexDtosNational.size());
+
+		travelEntryCriteria.setNameUuidExternalIDLike(null);
+		List<TravelEntryIndexDto> travelEntryIndexDtosAll = getTravelEntryFacade().getIndexList(travelEntryCriteria, 0, 100, null);
+		assertEquals(3, travelEntryIndexDtosAll.size());
 	}
 }

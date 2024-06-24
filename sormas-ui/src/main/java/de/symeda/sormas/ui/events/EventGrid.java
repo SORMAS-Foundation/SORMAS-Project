@@ -43,7 +43,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.groups.EventGroupsValueProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -73,10 +73,10 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		EventsViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(EventsViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
-		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		boolean eventGroupsFeatureEnabled = UiUtil.enabled(FeatureType.EVENT_GROUPS);
 		boolean externalSurveillanceToolShareEnabled = FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled();
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT)) {
+		if (isInEagerMode() && UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -97,8 +97,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
-		boolean showPendingTasks = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW);
+		boolean showPendingTasks = UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW);
 		if (showPendingTasks) {
 			Column<EventIndexDto, String> pendingTasksColumn = addColumn(
 				entry -> String.format(
@@ -170,7 +169,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.CONTACT_COUNT,
 				EventIndexDto.CONTACT_COUNT_SOURCE_IN_EVENT));
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENT_DELETE)) {
 			Column<EventIndexDto, String> deleteColumn = addColumn(entry -> {
 				if (entry.getDeletionReason() != null) {
 					return entry.getDeletionReason() + (entry.getOtherDeletionReason() != null ? ": " + entry.getOtherDeletionReason() : "");
@@ -237,7 +236,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
+		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			getColumn(EventIndexDto.REGION).setHidden(true);
 			getColumn(EventIndexDto.DISTRICT).setHidden(true);
 			getColumn(EventIndexDto.COMMUNITY).setHidden(true);

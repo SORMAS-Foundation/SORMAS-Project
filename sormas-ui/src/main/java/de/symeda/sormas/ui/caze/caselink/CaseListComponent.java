@@ -15,7 +15,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
@@ -28,7 +28,7 @@ public class CaseListComponent extends SideComponent {
 
 		super(I18nProperties.getString(Strings.entityCases), actionCallback);
 
-		if (isEditAllowed && UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
+		if (UiUtil.permitted(isEditAllowed, UserRight.CASE_CREATE)) {
 			addCreateButton(I18nProperties.getCaption(Captions.caseNewCase), () -> {
 				ControllerProvider.getCaseController().createFromPersonReference(personReferenceDto);
 			}, UserRight.CASE_CREATE);

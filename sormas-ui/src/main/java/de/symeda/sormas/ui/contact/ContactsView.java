@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.UiUtil.permitted;
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
 
@@ -64,12 +65,16 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
@@ -122,6 +127,7 @@ public class ContactsView extends AbstractView implements HasName {
 	private int followUpRangeInterval = 14;
 	private boolean buttonPreviousOrNextClick = false;
 	private Date followUpToDate;
+	private final ExportConfigurationDto detailedExportConfiguration;
 
 	private Set<String> getSelectedRows() {
 		AbstractContactGrid<?> contactGrid = (AbstractContactGrid<?>) this.grid;
@@ -152,6 +158,9 @@ public class ContactsView extends AbstractView implements HasName {
 				? new ContactGridDetailed(criteria, getClass(), ContactsViewConfiguration.class)
 				: new ContactGrid(criteria, getClass(), ContactsViewConfiguration.class);
 		}
+
+		detailedExportConfiguration = buildDetailedExportConfiguration();
+
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -190,7 +199,7 @@ public class ContactsView extends AbstractView implements HasName {
 
 		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_IMPORT)) {
+		if (viewConfiguration.getViewType().isContactOverview() && UiUtil.permitted(UserRight.CONTACT_IMPORT)) {
 			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new ContactsImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportContacts));
@@ -205,7 +214,7 @@ public class ContactsView extends AbstractView implements HasName {
 			moreButton.addMenuEntry(importButton);
 		}
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (viewConfiguration.getViewType().isContactOverview() && UiUtil.permitted(UserRight.CONTACT_EXPORT)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
@@ -226,7 +235,7 @@ public class ContactsView extends AbstractView implements HasName {
 			}
 			{
 				StreamResource extendedExportStreamResource =
-					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, null);
+					ContactDownloadUtil.createContactExportResource(grid.getCriteria(), this::getSelectedRows, detailedExportConfiguration);
 
 				addExportButton(
 					extendedExportStreamResource,
@@ -237,7 +246,7 @@ public class ContactsView extends AbstractView implements HasName {
 					Descriptions.descDetailedExportButton);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
+			if (UiUtil.permitted(UserRight.VISIT_EXPORT)) {
 				StreamResource followUpVisitsExportStreamResource =
 					DownloadUtil.createVisitsExportStreamResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACT_FOLLOW_UPS);
 
@@ -261,7 +270,7 @@ public class ContactsView extends AbstractView implements HasName {
 			}
 
 			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.BAG_EXPORT)) {
+				&& UiUtil.permitted(UserRight.BAG_EXPORT)) {
 				StreamResource bagExportResource = DownloadUtil.createCsvExportStreamResource(
 					BAGExportContactDto.class,
 					null,
@@ -318,7 +327,7 @@ public class ContactsView extends AbstractView implements HasName {
 			});
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_MERGE)) {
+		if (UiUtil.permitted(UserRight.CONTACT_MERGE)) {
 			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
 				Captions.contactMergeDuplicates,
 				VaadinIcons.COMPRESS_SQUARE,
@@ -328,7 +337,7 @@ public class ContactsView extends AbstractView implements HasName {
 			moreButton.addMenuEntry(mergeDuplicatesButton);
 		}
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
+		if (viewConfiguration.getViewType().isContactOverview() && UiUtil.permitted(UserRight.CONTACT_CREATE)) {
 			final ExpandableButton lineListingButton =
 				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow());
 			addHeaderComponent(lineListingButton);
@@ -460,9 +469,8 @@ public class ContactsView extends AbstractView implements HasName {
 			}
 
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
-
-				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CONTACT)) {
+			if (UiUtil.permitted(UserRight.CONTACT_VIEW)) {
+				if (UiUtil.enabled(FeatureType.AUTOMATIC_ARCHIVING, DeletableEntityType.CONTACT)) {
 					int daysAfterContactGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
 						.getProperty(
 							FeatureType.AUTOMATIC_ARCHIVING,
@@ -487,12 +495,18 @@ public class ContactsView extends AbstractView implements HasName {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.contactActiveContacts));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
-				relevanceStatusFilter.setItemCaption(
-					EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
-					I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
 
-				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
+				if (UiUtil.permitted(UserRight.CONTACT_VIEW_ARCHIVED)) {
+					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
+					relevanceStatusFilter.setItemCaption(
+						EntityRelevanceStatus.ACTIVE_AND_ARCHIVED,
+						I18nProperties.getCaption(Captions.contactAllActiveAndArchiveContacts));
+				} else {
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ARCHIVED);
+					relevanceStatusFilter.removeItem(EntityRelevanceStatus.ACTIVE_AND_ARCHIVED);
+				}
+
+				if (UiUtil.permitted(UserRight.CONTACT_DELETE)) {
 					relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.DELETED, I18nProperties.getCaption(Captions.contactDeletedContacts));
 				} else {
 					relevanceStatusFilter.removeItem(EntityRelevanceStatus.DELETED);
@@ -502,6 +516,11 @@ public class ContactsView extends AbstractView implements HasName {
 					if (relevanceStatusInfoLabel != null) {
 						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					}
+
+					if (grid.getColumn(grid.DELETE_REASON_COLUMN) != null) {
+						grid.getColumn(grid.DELETE_REASON_COLUMN).setHidden(!relevanceStatusFilter.getValue().equals(EntityRelevanceStatus.DELETED));
+					}
+
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
@@ -512,7 +531,7 @@ public class ContactsView extends AbstractView implements HasName {
 			if (isBulkEditAllowed()) {
 				statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				boolean hasBulkOperationsRight = UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS);
+				boolean hasBulkOperationsRight = UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS);
 
 				List<MenuBarHelper.MenuBarItem> bulkActions;
 				if (criteria.getRelevanceStatus() != EntityRelevanceStatus.DELETED) {
@@ -524,28 +543,28 @@ public class ContactsView extends AbstractView implements HasName {
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController()
 										.showBulkContactDataEditComponent(items, null, (AbstractContactGrid<?>) grid)),
-								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+								hasBulkOperationsRight && UiUtil.permitted(UserRight.CONTACT_EDIT)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkCancelFollowUp),
 								VaadinIcons.CLOSE,
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController()
 										.cancelFollowUpOfAllSelectedItems(items, null, (AbstractContactGrid<?>) grid)),
-								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+								hasBulkOperationsRight && UiUtil.permitted(UserRight.CONTACT_EDIT)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLostToFollowUp),
 								VaadinIcons.UNLINK,
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController()
 										.setAllSelectedItemsToLostToFollowUp(items, null, (AbstractContactGrid<?>) grid)),
-								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)),
+								hasBulkOperationsRight && UiUtil.permitted(UserRight.CONTACT_EDIT)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkDelete),
 								VaadinIcons.TRASH,
 								mi -> grid.bulkActionHandler(
 									items -> ControllerProvider.getContactController().deleteAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
-								hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)),
+								hasBulkOperationsRight && UiUtil.permitted(UserRight.CONTACT_DELETE)),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 								VaadinIcons.ARCHIVE,
@@ -553,7 +572,7 @@ public class ContactsView extends AbstractView implements HasName {
 									items -> ControllerProvider.getContactController().archiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight
-									&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CONTACT_ARCHIVE)
 									&& EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
@@ -563,7 +582,7 @@ public class ContactsView extends AbstractView implements HasName {
 										.dearchiveAllSelectedItems(items, (AbstractContactGrid<?>) grid),
 									true),
 								hasBulkOperationsRight
-									&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)
+									&& UiUtil.permitted(UserRight.CONTACT_ARCHIVE, UserRight.CONTACT_VIEW_ARCHIVED)
 									&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.sormasToSormasShare),
@@ -602,7 +621,7 @@ public class ContactsView extends AbstractView implements HasName {
 								})));
 					}
 
-					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+					if (permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_CREATE, UserRight.EVENTPARTICIPANT_CREATE)) {
 						bulkActions.add(
 							new MenuBarHelper.MenuBarItem(
 								I18nProperties.getCaption(Captions.bulkLinkToEvent),
@@ -611,6 +630,12 @@ public class ContactsView extends AbstractView implements HasName {
 									items -> ControllerProvider.getContactController()
 										.linkSelectedContactsToEvent(items, (AbstractContactGrid<?>) grid))));
 					}
+
+					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEmailSend), VaadinIcons.ENVELOPE, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getContactController().sendEmailsToAllSelectedItems(items, (AbstractContactGrid<?>) grid),
+							true);
+					}, hasBulkOperationsRight && UiUtil.permitted(UserRight.EXTERNAL_EMAIL_SEND)));
 				} else {
 					bulkActions = List.of(
 						new MenuBarHelper.MenuBarItem(
@@ -619,7 +644,7 @@ public class ContactsView extends AbstractView implements HasName {
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getContactController().restoreSelectedContacts(items, (AbstractContactGrid<?>) grid),
 								true),
-							hasBulkOperationsRight && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)));
+							hasBulkOperationsRight && UiUtil.permitted(UserRight.CONTACT_DELETE)));
 				}
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
@@ -699,10 +724,9 @@ public class ContactsView extends AbstractView implements HasName {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
+		return UiUtil.enabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
 			&& viewConfiguration.getViewType().isContactOverview()
-			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				|| FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser());
+			&& (UiUtil.permitted(UserRight.PERFORM_BULK_OPERATIONS) || FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser());
 	}
 
 	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {
@@ -838,5 +862,20 @@ public class ContactsView extends AbstractView implements HasName {
 	@Override
 	public String getName() {
 		return VIEW_NAME;
+	}
+
+	public static ExportConfigurationDto buildDetailedExportConfiguration() {
+		ExportConfigurationDto config = ExportConfigurationDto.build(UiUtil.getUserReference(), ExportType.CASE);
+
+		config.setProperties(
+			ImportExportUtils
+				.getContactExportProperties(
+					ContactDownloadUtil::getPropertyCaption,
+					FacadeProvider.getConfigFacade().getCountryLocale(),
+					FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations())
+				.stream()
+				.map(ExportPropertyMetaInfo::getPropertyId)
+				.collect(Collectors.toSet()));
+		return config;
 	}
 }

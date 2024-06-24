@@ -19,7 +19,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
 
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;

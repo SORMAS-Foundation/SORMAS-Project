@@ -44,7 +44,9 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(@Valid UserDto dto, boolean isCurrentUser);
+	UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate);
+
+	UserDto saveUserRolesAndRestrictions(UserDto user, Set<UserRoleReferenceDto> userRoles);
 
 	boolean isLoginUnique(String uuid, String userName);
 
@@ -164,4 +166,8 @@ public interface UserFacade {
 	 * @return A set containing the user rights associated to all user roles assigned to the user
 	 */
 	List<UserRight> getUserRights(String userUuid);
+
+	void syncUsersFromAuthenticationProvider();
+
+	boolean isSyncEnabled();
 }

@@ -24,6 +24,9 @@ public class UserRolesPage {
   public static By USER_RIGHTS_INPUT = By.cssSelector("#userRights input");
   public static By USER_RIGHTS_COMBOBOX = By.cssSelector("#userRights div");
   public static By JURISDICTION_LEVEL_COMBOBOX = By.cssSelector("#jurisdictionLevel div");
+  public static final By ENABLED_USER_COMBOBOX = By.cssSelector("#enabled div");
+  public static final By EXPORT_USER_ROLES = By.id("exportUserRoles");
+  public static final By USER_ROLE_TABLE_GRID = By.xpath("//table[@role='grid']");
   public static final By USER_ROLE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static By NEW_USER_ROLE_BUTTON = By.cssSelector("div #userRoleNewUserRole");
   public static By USER_ROLE_TEMPLATE_COMBOBOX =
@@ -113,6 +116,11 @@ public class UserRolesPage {
     return By.xpath(String.format("//td[contains(text(), '%s')]", caption));
   }
 
+  public static By getJurisdictionLevelCaptionByText(String caption) {
+    return By.xpath(String.format("//td[text()='%s']", caption));
+  }
+  // td[text()='Keine']
+  // td[text()='Nation']
   public static By USER_MANAGEMENT_TAB = By.cssSelector("div#tab-user-users");
   public static By USER_ROLE_DISABLE_BUTTON = By.cssSelector("#actionDisable");
   public static By USER_ROLE_ENABLE_BUTTON = By.cssSelector("#actionEnable");

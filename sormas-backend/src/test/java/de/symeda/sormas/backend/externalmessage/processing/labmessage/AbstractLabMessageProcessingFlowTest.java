@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.backend.externalmessage.processing.labmessage;
 
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
-import static de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResultStatus.DONE;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.CANCELED;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
+import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -56,6 +56,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -67,13 +68,9 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
-import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult.EntitySelection;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.api.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
@@ -81,6 +78,7 @@ import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelate
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
@@ -93,6 +91,10 @@ import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
+import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
+import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
+import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -2703,6 +2705,115 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		assertThat(result.getData().getSamples().get(0).getEntity(), is(sample));
 		assertThat(result.getData().getSamples().get(0).getSampleReport(), is(labMessage.getSampleReports().get(0)));
 		assertThat(result.getData().getSamples().get(0).isNew(), is(false));
+	}
+
+	@Test
+	public void testCaseSurveillanceReportCreation() throws ExecutionException, InterruptedException {
+		getFacilityService().createConstantFacilities();
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setReporterName("ReporterLab");
+		});
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+
+			getCallbackParam(invocation).done(getCaseFacade().save(caze));
+			return null;
+		}).when(handleCreateCase).handle(any(), any(), any());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		ExternalMessageDto savedMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		SurveillanceReportDto surveillanceReport = getSurveillanceReportFacade().getByUuid(savedMessage.getSurveillanceReport().getUuid());
+
+		assertThat(surveillanceReport.getFacility(), is(getFacilityFacade().getByUuid(FacilityDto.OTHER_FACILITY_UUID)));
+		assertThat(surveillanceReport.getFacilityType(), is(FacilityType.LABORATORY));
+		assertThat(surveillanceReport.getFacilityDetails(), is("ReporterLab"));
+		assertThat(surveillanceReport.getFacilityRegion(), is(result.getData().getCase().getResponsibleRegion()));
+		assertThat(surveillanceReport.getFacilityDistrict(), is(result.getData().getCase().getResponsibleDistrict()));
+	}
+
+	@Test
+	public void testCaseSurveillanceReportHasReporterFacility() throws ExecutionException, InterruptedException {
+		getFacilityService().createConstantFacilities();
+
+		TestDataCreator.RDCF rdcfSample =
+			creator.createRDCF("Region", "District", "Community", "Facility", FacilityType.LABORATORY, "PointOfEntry", true);
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setReporterName(rdcfSample.facility.getCaption());
+			m.setReporterExternalIds(List.of(rdcfSample.facility.getExternalId()));
+		});
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+
+			getCallbackParam(invocation).done(getCaseFacade().save(caze));
+			return null;
+		}).when(handleCreateCase).handle(any(), any(), any());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		ExternalMessageDto savedMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		SurveillanceReportDto surveillanceReport = getSurveillanceReportFacade().getByUuid(savedMessage.getSurveillanceReport().getUuid());
+
+		assertThat(surveillanceReport.getFacility(), is(rdcfSample.facility));
+		assertThat(surveillanceReport.getFacilityType(), is(FacilityType.LABORATORY));
+		assertThat(surveillanceReport.getFacilityDetails(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityRegion(), is(rdcfSample.region));
+		assertThat(surveillanceReport.getFacilityDistrict(), is(rdcfSample.district));
+	}
+
+	@Test
+	public void testCaseSurveillanceReportUnknownFacility() throws ExecutionException, InterruptedException {
+		getFacilityService().createConstantFacilities();
+
+		TestDataCreator.RDCF rdcf1 = creator.createRDCF("Region", "District", "Community", "Facility", FacilityType.LABORATORY, "PointOfEntry", true);
+
+		TestDataCreator.RDCF rdcf2 = creator.createRDCF("Region", "District", "Community", "Facility", FacilityType.LABORATORY, "PointOfEntry", true);
+
+		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setReporterName(rdcf2.facility.getCaption());
+			// multiple reporters means no facility can be determined
+			m.setReporterExternalIds(List.of(rdcf1.facility.getExternalId(), rdcf2.facility.getExternalId()));
+		});
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+
+			getCallbackParam(invocation).done(getCaseFacade().save(caze));
+			return null;
+		}).when(handleCreateCase).handle(any(), any(), any());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		ExternalMessageDto savedMessage = getExternalMessageFacade().getByUuid(labMessage.getUuid());
+		SurveillanceReportDto surveillanceReport = getSurveillanceReportFacade().getByUuid(savedMessage.getSurveillanceReport().getUuid());
+
+		assertThat(surveillanceReport.getFacility(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityType(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityDetails(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityRegion(), is(nullValue()));
+		assertThat(surveillanceReport.getFacilityDistrict(), is(nullValue()));
 	}
 
 	private ProcessingResult<ExternalMessageProcessingResult> runFlow(ExternalMessageDto labMessage) throws ExecutionException, InterruptedException {

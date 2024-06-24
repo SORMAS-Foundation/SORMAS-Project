@@ -50,7 +50,7 @@ public class GeneralActionsSteps implements En {
     When(
         "Total number of read only fields should be {int}",
         (Integer number) -> {
-          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
+          TimeUnit.SECONDS.sleep(4); // waiting for page loaded
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(READ_ONLY_FIELDS),
               number.intValue(),

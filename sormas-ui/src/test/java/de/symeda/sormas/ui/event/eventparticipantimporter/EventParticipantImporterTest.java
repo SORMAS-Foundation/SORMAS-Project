@@ -111,7 +111,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_success.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
@@ -191,7 +191,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new PersonImportSimilarityResult(entries.get(0), ImportSimilarityResultOption.PICK));
 			}
 		};
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		EventParticipantIndexDto importedEventParticipant =
 			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
@@ -264,7 +264,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new PersonImportSimilarityResult(entries.get(0), ImportSimilarityResultOption.PICK));
 			}
 		};
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		EventParticipantIndexDto importedEventParticipant =
 			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
@@ -320,7 +320,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		EventParticipantIndexDto importedEventParticipant =
 			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
@@ -376,7 +376,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 				resultConsumer.accept((T) new PersonImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
 			}
 		};
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(0, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
@@ -416,7 +416,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_comment_success.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
@@ -456,7 +456,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 		// import of 3 event participants with different address types
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_address_types.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		List<EventParticipantDto> eventParticipants = getEventParticipantFacade().getByEventUuids(Collections.singletonList(eventRef.getUuid()));
 
@@ -520,7 +520,7 @@ public class EventParticipantImporterTest extends AbstractUiBeanTest {
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_vaccinations.csv").toURI());
 		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
-		ImportResultStatus importResult = eventParticipantImporter.runImport();
+		ImportResultStatus importResult = eventParticipantImporter.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, eventParticipantImporter.stringBuilder.toString());
 		assertEquals(ImportResultStatus.COMPLETED, importResult);

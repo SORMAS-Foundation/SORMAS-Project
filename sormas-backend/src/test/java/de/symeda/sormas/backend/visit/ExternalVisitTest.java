@@ -42,6 +42,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
@@ -377,6 +378,8 @@ public class ExternalVisitTest extends AbstractBeanTest {
 	 * https://github.com/sormas-foundation/SORMAS-Project/discussions/categories/development-support!
 	 */
 	public void testGetFollowUpEndDatesCasesOnly() {
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
+
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
 		final PersonDto person2 = creator.createPerson();
@@ -479,6 +482,7 @@ public class ExternalVisitTest extends AbstractBeanTest {
 
 		loginWith(externalVisitsUser);
 
+		createFeatureConfiguration(FeatureType.CASE_FOLLOWUP, true);
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
 		assertThat(followUpEndDtos, hasSize(4));

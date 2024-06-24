@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.environment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -13,19 +14,22 @@ import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
 class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetByUuid() {
+	public void testGetEnvironmentByUuid() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		EnvironmentDto environment = creator.createEnvironment("Test Environment", EnvironmentMedia.WATER, user.toReference(), rdcf);
 
-		EnvironmentDto saved = getEnvironmentFacade().getByUuid(environment.getUuid());
+		EnvironmentDto saved = getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid());
 
 		assertEquals(environment.getEnvironmentName(), saved.getEnvironmentName());
 		assertEquals(environment.getEnvironmentMedia(), saved.getEnvironmentMedia());
@@ -34,8 +38,58 @@ class EnvironmentFacadeEjbTest extends AbstractBeanTest {
 
 		getEnvironmentFacade().save(environment);
 
-		saved = getEnvironmentFacade().getByUuid(environment.getUuid());
+		saved = getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid());
 		assertEquals(environment.getInvestigationStatus(), saved.getInvestigationStatus());
+	}
+
+	@Test
+	public void testGetEnvironmentByUuidForArchivedEnvironment() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+
+		UserDto user1 = creator.createUser(
+			null,
+			null,
+			null,
+			"User1",
+			"User1",
+			"User1",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CASE_VIEW_ARCHIVED,
+			UserRight.ENVIRONMENT_VIEW,
+			UserRight.ENVIRONMENT_VIEW_ARCHIVED);
+
+		UserDto user2 = creator.createUser(
+			null,
+			null,
+			null,
+			"User",
+			"User",
+			"User",
+			JurisdictionLevel.NATION,
+			UserRight.CASE_VIEW,
+			UserRight.PERSON_VIEW,
+			UserRight.PERSON_EDIT,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.ENVIRONMENT_VIEW);
+
+		EnvironmentDto environment = creator.createEnvironment("Test Environment", EnvironmentMedia.WATER, user1.toReference(), rdcf);
+
+		EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal cut = getBean(EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal.class);
+		cut.archive(environment.getUuid(), null);
+
+		//user1 has ENVIRONMENT_VIEW_ARCHIVED right
+		loginWith(user1);
+		assertEquals(getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid()).getUuid(), environment.getUuid());
+
+		//user2 does not have ENVIRONMENT_VIEW_ARCHIVED right
+		loginWith(user2);
+		assertThrows(AccessDeniedException.class, () -> getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid()));
 	}
 
 	@Test

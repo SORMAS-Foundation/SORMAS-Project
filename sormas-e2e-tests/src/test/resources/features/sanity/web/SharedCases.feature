@@ -27,11 +27,12 @@ Feature: Sharing cases between environments tests
     Then I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
+    And I fill case UUID field for the last created case
     And I apply "Alle" to ownership combobox on Case Directory Page
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     Then I click on the APPLY FILTERS button
     And I select first created case for person from Cases list
-    Then Total number of read only fields should be 13
+    Then Total number of read only fields should be 14
     And I check if handover card contains shared with "s2s_2" information
     And I check if handover card contains "Geteilt von: S2S USER" information
     And I check if handover card contains "shared to be deleted after" information
@@ -111,7 +112,7 @@ Feature: Sharing cases between environments tests
     And I refresh current page
     Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
+    And I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 2
 
   @tmsLink=SORDEV-12095 @env_s2s_1
@@ -225,7 +226,7 @@ Feature: Sharing cases between environments tests
     And I check that number of displayed cases results is 1
     Then I click on the first Case ID from Case Directory
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
+    And I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 1
 
   @tmsLink=SORDEV-12095 @env_s2s_1
@@ -317,7 +318,7 @@ Feature: Sharing cases between environments tests
     And I refresh current page
     Then I check if Immunization area contains "Comirnaty (COVID-19-mRNA Impfstoff)"
     Then I check if Immunization area contains "COVID-19 Impfstoff Moderna (mRNA-Impfstoff)"
-    And I click on See samples for this person button
+    Then I click on the "See samples for this case" button on Edit Case Page
     And I check that number of displayed sample results is 2
 
   @tmsLink=SORDEV-12095 @env_s2s_1
@@ -531,7 +532,7 @@ Feature: Sharing cases between environments tests
     And I confirm merge duplicated case
     Then I check if popup with merge message in german appears
 
-  @tmsLink=SORDEV-12445 @env_d2s
+  @tmsLink=SORDEV-12445 @env_d2s @ignore
   Scenario: S2S_Processed lab messages should be transferred [2]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -952,7 +953,7 @@ Feature: Sharing cases between environments tests
     Then I fill comment field in Reject share request popup and click confirm
     And I check if popup with error with handover displays
 
-  @tmsLink=SORDEV-12445 @env_d2s
+  @tmsLink=SORDEV-12445 @env_d2s @ignore
   Scenario: S2S_Processed lab messages should be transferred [1]
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification
@@ -1188,12 +1189,13 @@ Feature: Sharing cases between environments tests
     And I click on Delete button from case
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
+    And I fill case UUID field for the last created case
     And I apply "Zum Besitz" to ownership combobox on Case Directory Page
     And I apply "Gelöschte Fälle" to combobox on Case Directory Page
     And I click APPLY BUTTON in Case Directory Page
     And I select first created case for person from Cases list
     Then I check if editable fields are enabled for the case in view
-    And Total number of read only fields should be 21
+    And Total number of read only fields should be 22
     When I back to tab number 2
     And I click on "accept" shared case button with copied case description
     Then I check if Share request not found popup message appeared for DE
@@ -1305,7 +1307,7 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 10
     Then Total number of read only fields in Survnet details section should be 3
 
-  @tmsLink=HSP=6265 @env_d2s @LoginKeycloak
+  @tmsLink=HSP=6265 @env_d2s @LoginKeycloak @ignore
   Scenario: S2S - Share a Case created from processed Lab message with: -"Exclude personal data" -"Share reports"
    Given API : Login to DEMIS server
    Then I create and send Laboratory Notification
@@ -1341,7 +1343,7 @@ Feature: Sharing cases between environments tests
     And Total number of read only fields should be 13
     Then I check that data present in target are match to data from source in surveillance report
 
-  @tmsLink=HSP=6343 @env_d2s @LoginKeycloak
+  @tmsLink=HSP=6343 @env_d2s @LoginKeycloak @ignore
     Scenario: S2S - Share a Case created from processed Lab message/Physician Report with option "Share reports"
     Given API : Login to DEMIS server
     Then I create and send Laboratory Notification

@@ -35,7 +35,7 @@ import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.highcharts.HighChart;
 
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
@@ -437,7 +437,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private CampaignDiagramTranslations getCampaignDiagramTranslations() {
-		Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+		Language userLanguage = UiUtil.getUser().getLanguage();
 		CampaignDiagramTranslations translations = null;
 		if (userLanguage != null && diagramDefinition.getCampaignDiagramTranslations() != null) {
 			translations = diagramDefinition.getCampaignDiagramTranslations()

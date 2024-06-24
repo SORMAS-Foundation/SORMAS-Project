@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -39,6 +39,8 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -57,7 +59,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.events.eventParticipantsLineListing.layout.LineListingLayout;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -83,7 +85,7 @@ public class EventParticipantsController {
 	}
 
 	public EventParticipantDto createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+		final EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UiUtil.getUserReference());
 		return createEventParticipant(eventRef, doneConsumer, eventParticipant, true);
 	}
 
@@ -103,10 +105,8 @@ public class EventParticipantsController {
 		EventParticipantCreateForm createForm =
 			new EventParticipantCreateForm(!FacadeProvider.getEventFacade().hasRegionAndDistrict(eventRef.getUuid()));
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.EVENTPARTICIPANT_CREATE), createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -250,7 +250,7 @@ public class EventParticipantsController {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteWithReasonOrRestoreListener(
 				EventParticipantsView.VIEW_NAME + "/" + eventParticipant.getEvent().getUuid(),
 				null,
@@ -264,13 +264,13 @@ public class EventParticipantsController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
+		if (UiUtil.permitted(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
 			ControllerProvider.getArchiveController()
 				.addArchivingButton(
 					eventParticipant,
 					ArchiveHandlers.forEventParticipant(),
 					editComponent,
-					() -> navigateToData(eventParticipant.getUuid()));
+					() -> navigateToData(eventParticipantUuid));
 		}
 
 		editComponent.restrictEditableComponentsOnEditView(
@@ -296,7 +296,7 @@ public class EventParticipantsController {
 
 				EventParticipantDto dto = editForm.getValue();
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid(), false);
-				UserDto user = UserProvider.getCurrent().getUser();
+				UserDto user = UiUtil.getUser();
 
 				RegionReferenceDto userRegion = user.getRegion();
 				DistrictReferenceDto userDistrict = user.getDistrict();
@@ -472,6 +472,26 @@ public class EventParticipantsController {
 			notification.setDelayMsec(1000);
 			notification.show(Page.getCurrent());
 			ControllerProvider.getEventParticipantController().navigateToIndex(eventUuid);
+		}
+	}
+
+	public void sendEmailsToAllSelectedItems(Collection<EventParticipantIndexDto> selectedRows, EventParticipantsGrid eventParticipantsGrid) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			ControllerProvider.getExternalEmailController()
+				.<EventParticipantIndexDto> sendBulkEmail(
+					DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
+					RootEntityType.ROOT_EVENT_PARTICIPANT,
+					null,
+					selectedRows,
+					bulkOperationCallback(eventParticipantsGrid, eventParticipantsGrid::reload, null),
+					EventParticipantIndexDto::toReference,
+					null);
 		}
 	}
 }

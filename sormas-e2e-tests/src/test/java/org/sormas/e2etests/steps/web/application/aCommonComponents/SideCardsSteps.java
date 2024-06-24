@@ -167,6 +167,7 @@ public class SideCardsSteps implements En {
     When(
         "I check if Immunization area contains {string}",
         (String name) -> {
+            TimeUnit.SECONDS.sleep(2); //waiting for page loaded
           softly.assertTrue(
               webDriverHelpers.isElementPresent(checkTextInImmunizationSideComponent(name)),
               "Element is not present");
