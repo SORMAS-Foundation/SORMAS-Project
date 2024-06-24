@@ -29,7 +29,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
@@ -69,7 +68,6 @@ public class DashboardController {
 	}
 
 
-
 	public void navigateToDisease(Disease disease,DashboardDataProvider dashboardDataProvider) {
 		Date dateFrom = dashboardDataProvider.getFromDate();
 
@@ -86,26 +84,18 @@ public class DashboardController {
 		String dateToAsISO = df.format(dateTo);
 
 		NewCaseDateType newCaseDateType = dashboardDataProvider.getNewCaseDateType();
-
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		String regionId = null;
 		if(Objects.nonNull(region)&&region.getUuid()!=null){
 			regionId= region.getUuid();
 		}
 		System.out.println(regionId);
-
-
-//
 		String paramData = dateFromAsISO+"/"+dateToAsISO+"/"+type+"/"+caseClassification+"/"+newCaseDateType+"/"+regionId;
-//
-		DiseaseDetailsView.setData(paramData);
+		DiseaseDetailsView.setDiseaseDetailsData(paramData);
 		//DiseaseDetailsView.setProvider(dashboardDataProvider);
 
 		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
-
 		SormasUI.get().getNavigator().navigateTo(navigationState);
-
-
 
 	}
 }

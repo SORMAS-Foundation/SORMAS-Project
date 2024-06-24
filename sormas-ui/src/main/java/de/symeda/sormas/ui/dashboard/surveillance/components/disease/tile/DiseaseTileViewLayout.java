@@ -28,7 +28,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 
 public class DiseaseTileViewLayout extends CssLayout {
 
-	private DashboardDataProvider dashboardDataProvider;
+	private final DashboardDataProvider dashboardDataProvider;
 
 	private static final long serialVersionUID = 6582975657305031105L;
 

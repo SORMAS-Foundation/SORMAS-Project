@@ -23,7 +23,7 @@ import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.datetypeselector.DateTypeSelectorComponent;
 
-public class DiseaseFilterLayout extends DashboardFilterLayout {
+public class DiseaseFilterLayout extends DashboardFilterLayout<DashboardDataProvider> {
     public static final String DATE_TYPE_SELECTOR_FILTER = "dateTypeSelectorFilter";
 
     public static final String INFO_LABEL = "infoLabel";

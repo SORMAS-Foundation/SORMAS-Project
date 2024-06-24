@@ -148,9 +148,6 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 		this.caseClassification = caseClassification;
 	}
 
-
-
-
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
