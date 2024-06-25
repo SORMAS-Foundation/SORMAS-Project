@@ -33,14 +33,6 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 @Remote
 public interface DiseaseFacade {
 
-//    List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
-//            RegionReferenceDto regionRef,
-//            DistrictReferenceDto districtRef,
-//            Date from,
-//            Date to,
-//            Date previousFromDate,
-//            Date previousToDate);
-
 
     DiseaseBurdenDto getDiseaseForDashboard(
             RegionReferenceDto regionRef,
@@ -53,6 +45,7 @@ public interface DiseaseFacade {
             CriteriaDateType newCaseDateType,
             CaseClassification caseClassification
     );
+
     //
     DiseaseBurdenDto getDiseaseGridForDashboard(
             RegionReferenceDto regionRef,

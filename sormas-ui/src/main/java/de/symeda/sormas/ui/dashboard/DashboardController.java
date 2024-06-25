@@ -78,7 +78,7 @@ public class DashboardController {
 		CaseClassification caseClassification= dashboardDataProvider.getCaseClassification();
 //
 		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); // Quoted "Z" to indicate UTC, no timezone offset
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); // Quoted "Z" to indicate UTC, no timezone offset
 		df.setTimeZone(tz);
 		String dateFromAsISO = df.format(dateFrom);
 		String dateToAsISO = df.format(dateTo);

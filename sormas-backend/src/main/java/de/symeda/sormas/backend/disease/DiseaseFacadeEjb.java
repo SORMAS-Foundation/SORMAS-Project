@@ -81,66 +81,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-//	@Override
-//	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
-//			RegionReferenceDto regionRef,
-//			DistrictReferenceDto districtRef,
-//			Date from,
-//			Date to,
-//			Date previousFrom,
-//			Date previousTo) {
-//
-//		//diseases
-//		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
-//
-//		//new cases
-//		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, null).region(regionRef).district(districtRef);
-//
-//		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
-//
-//		//events
-//		Map<Disease, Long> events =
-//				eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
-//
-//		//outbreaks
-//		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade
-//				.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
-//
-//		//last report district
-//		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, true, true);
-//
-//		//case fatalities
-//		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);
-//
-//		//previous cases
-//		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
-//		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
-//
-//
-//		//build diseasesBurden
-//		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {
-//			Long caseCount = newCases.getOrDefault(disease, 0L);
-//			Long previousCaseCount = previousCases.getOrDefault(disease, 0L);
-//			Long eventCount = events.getOrDefault(disease, 0L);
-//			Long outbreakDistrictCount = outbreakDistrictsCount.getOrDefault(disease, 0L);
-//			Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
-//			District lastReportedDistrict = lastReportedDistricts.getOrDefault(disease, null);
-//
-//			String lastReportedDistrictName = lastReportedDistrict == null ? "" : lastReportedDistrict.getName();
-//
-//			return new DiseaseBurdenDto(
-//					disease,
-//					caseCount,
-//					previousCaseCount,
-//					eventCount,
-//					outbreakDistrictCount,
-//					caseFatalityCount,
-//					lastReportedDistrictName);
-//
-//		}).collect(Collectors.toList());
-//
-//		return diseasesBurden;
-//	}
+
 
 	@Override
 	public DiseaseBurdenDto getDiseaseForDashboard(
@@ -156,9 +97,8 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 
 		DashboardCriteria dashboardCriteria =
-				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType);
-				dashboardCriteria.setDateTo(toDate);
-				dashboardCriteria.setDateFrom(fromDate);
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
+
 
 		Map<Disease, Long> newCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
@@ -238,9 +178,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 		//new cases
 		DashboardCriteria dashboardCriteria =
-				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType);
-		dashboardCriteria.setDateTo(toDate);
-		dashboardCriteria.setDateFrom(fromDate);
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);;
 
 		//Load count all dead/ fatalities
 		Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(dashboardCriteria);

@@ -20,9 +20,6 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 	private CaseClassification caseClassification;
 	private NewDateFilterType dateFilterType;
 
-	private Date dateFrom;
-	private Date dateTo;
-
 	private CaseOutcome outcome;
 	public DashboardCriteria(NewCaseDateType dateTypeClass) {
 		super(DashboardCriteria.class);
@@ -90,14 +87,6 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 		this.dateFilterType = dateFilterType;
 		return this;
 	}
-
-	public void setDateFrom(Date dateFrom) {
-		this.dateFrom = dateFrom;
-	}
-
-	public void setDateTo(Date dateTo) {
-		this.dateTo = dateTo;
-  }
 
 	public void setOutcome(CaseOutcome outcome) {
 		this.outcome = outcome;

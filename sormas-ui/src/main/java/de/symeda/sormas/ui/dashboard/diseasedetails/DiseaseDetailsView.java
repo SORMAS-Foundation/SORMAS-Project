@@ -83,15 +83,17 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 	}
 
 	private void setDateFilters(String dateFrom, String dateTo) {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		try {
 			if (dateFrom != null) {
 				Date startDate = dateFormat.parse(dateFrom);
-				dashboardDataProvider.setFromDate(DateHelper.getStartOfDay(startDate));
+				//dashboardDataProvider.setFromDate(DateHelper.getStartOfDay(startDate));
+				dashboardDataProvider.setFromDate(startDate);
 			}
 			if (dateTo != null) {
 				Date endDate = dateFormat.parse(dateTo);
-				dashboardDataProvider.setToDate(DateHelper.getEndOfDay(endDate));
+				//dashboardDataProvider.setToDate(DateHelper.getEndOfDay(endDate));
+				dashboardDataProvider.setToDate(endDate);
 			}
 		} catch (ParseException e) {
 			LOGGER.log(Level.SEVERE, "Date parsing error", e);
