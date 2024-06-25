@@ -87,12 +87,10 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 		try {
 			if (dateFrom != null) {
 				Date startDate = dateFormat.parse(dateFrom);
-				//dashboardDataProvider.setFromDate(DateHelper.getStartOfDay(startDate));
 				dashboardDataProvider.setFromDate(startDate);
 			}
 			if (dateTo != null) {
 				Date endDate = dateFormat.parse(dateTo);
-				//dashboardDataProvider.setToDate(DateHelper.getEndOfDay(endDate));
 				dashboardDataProvider.setToDate(endDate);
 			}
 		} catch (ParseException e) {
