@@ -109,8 +109,10 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 
 	private void setCaseClassification(String caseClassification) {
 		try {
-			CaseClassification classification = CaseClassification.valueOf(caseClassification.replace(" ", "_").toUpperCase().trim());
-			dashboardDataProvider.setCaseClassification(classification);
+			if(caseClassification!=null) {
+				CaseClassification classification = CaseClassification.valueOf(caseClassification.replace(" ", "_").toUpperCase().trim());
+				dashboardDataProvider.setCaseClassification(classification);
+			}
 		} catch (IllegalArgumentException e) {
 			LOGGER.log(Level.WARNING, "Unsupported case classification: " + caseClassification, e);
 			dashboardDataProvider.setCaseClassification(CaseClassification.NOT_CLASSIFIED);

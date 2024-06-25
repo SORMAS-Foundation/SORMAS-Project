@@ -2519,7 +2519,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		if (caseCriteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
 		}
-		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
+		if (Boolean.TRUE.equals(caseCriteria.excludeSharedCases)) {
 			User currentUser = getCurrentUser();
 			if (currentUser != null) {
 				if (currentUser.getDistrict() != null) {
@@ -2574,9 +2574,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 
 		}
 
-		if (caseCriteria.isIncludeNotACaseClassification()==null||caseCriteria.isIncludeNotACaseClassification()==false) {
-			filter = and(cb, filter, cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
-		}
+//		if (caseCriteria.isIncludeNotACaseClassification()==null||caseCriteria.isIncludeNotACaseClassification()==false) {
+//			filter = and(cb, filter, cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+//		}
 
 
 		if (caseCriteria.getInvestigationStatus() != null) {
@@ -2654,25 +2654,25 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter = and(cb, filter, cb.equal(from.get(Case.ARCHIVED), true));
 			}
 		}
-		if (caseCriteria.getDeleted() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
-		}
-		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
-			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
-			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
-				if (!DataHelper.isNullOrEmpty(textFilter)) {
-					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
-							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
-							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
-							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
-							cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
-							cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
-					filter = and(cb, filter, likeFilters);
-				}
-			}
-		}
+//		if (caseCriteria.getDeleted() != null) {
+//			filter = and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
+//		}
+//		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
+//			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
+//			for (int i = 0; i < textFilters.length; i++) {
+//				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+//				if (!DataHelper.isNullOrEmpty(textFilter)) {
+//					Predicate likeFilters = cb.or(
+//							cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+//							cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+//							cb.like(cb.lower(from.get(Case.UUID)), textFilter),
+//							cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
+//							cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
+//							cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
+//					filter = and(cb, filter, likeFilters);
+//				}
+//			}
+//		}
 		if (caseCriteria.getReportingUserLike() != null) {
 			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {

@@ -67,6 +67,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1676,6 +1677,8 @@ public class ContactFacadeEjb
 
 		return service.getContactsForDashboard(region, district, disease, from, to);
 	}
+
+
 
 	@Override
 	public List<ContactDto> getByPersonUuids(List<String> personUuids) {

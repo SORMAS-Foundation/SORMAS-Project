@@ -106,14 +106,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		Date from,
 		Date to);
 
-	List<DashboardContactDto> getContactsForDashboard(
-			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef,
-			Disease disease,
-			Date from,
-			Date to,
-			CaseClassification caseClassification);
-
 	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria);
 
 	Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria);
