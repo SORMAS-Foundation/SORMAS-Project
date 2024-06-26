@@ -188,8 +188,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private ContactListCriteriaBuilder listCriteriaBuilder;
-	@EJB
-	private ContactService contactService;
+
 	@EJB
 	private EventParticipantService eventParticipantService;
 
@@ -1075,22 +1074,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc) {
 		return createUserFilterWithoutCase(qc, null);
 	}
-//	@Override
-//	@SuppressWarnings("rawtypes")
-//	@Deprecated
-//	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Sample, Sample> samplePath) {
-//		Predicate filter = createUserFilterWithoutCase(cb, new SampleJoins(samplePath));
-//
-//		// whoever created the case the sample is associated with or is assigned to it
-//		// is allowed to access it
-//		Join<Case, Case> casePath = samplePath.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-//
-//		Predicate caseFilter = caseService.createUserFilter(cb, cq, casePath);
-//		filter = or(cb, filter, caseFilter);
-//
-//		return filter;
-//	}
-
 
 
 	@SuppressWarnings("rawtypes")

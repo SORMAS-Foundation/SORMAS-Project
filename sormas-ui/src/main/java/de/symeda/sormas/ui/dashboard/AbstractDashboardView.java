@@ -18,14 +18,11 @@
 package de.symeda.sormas.ui.dashboard;
 
 import static de.symeda.sormas.ui.UiUtil.permitted;
-
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -36,7 +33,6 @@ import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
-import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -141,7 +137,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 				dashboardSwitcher.setItemCaption(DashboardType.DISEASE, I18nProperties.getEnumCaption(DashboardType.DISEASE));
 			}
 		//}
-;
+
 
 
 		dashboardSwitcher.setValue(dashboardType);
@@ -172,9 +168,6 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardLayout.setSizeFull();
 		dashboardLayout.setStyleName("crud-main-layout");
 
-		// Filter bar
-//		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
-//		dashboardLayout.addComponent(filterLayout);
 
 		addComponent(dashboardLayout);
 		setExpandRatio(dashboardLayout, 1);
@@ -208,8 +201,6 @@ public abstract class AbstractDashboardView extends AbstractView {
 	public void enter(ViewChangeEvent event) {
 			refreshDashboard();
 	}
-
-	//public abstract void refreshDashboard();
 
 	public void setDiseases(Disease disease) {
 		this.disease = disease;

@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -55,10 +54,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
-
 import de.symeda.sormas.api.sample.*;
 import org.apache.commons.collections4.CollectionUtils;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.IsCase;
@@ -70,8 +67,6 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -111,7 +106,6 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 
@@ -697,10 +691,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		// Lab users can see samples assigned to their laboratory
-		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
-			if (currentUser.getLaboratory() != null) {
-				filter = or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
-			}
+		if ((jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) && currentUser.getLaboratory() != null) {
+			filter = or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
 		}
 
 		// Only show samples of a specific disease if a limited disease is set
@@ -1307,8 +1299,6 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, SampleJoins joins) {
 		Predicate filter = null;
 		// user that reported it is not able to access it. Otherwise they would also need to access the case
-		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
-
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		// lab users can see samples assigned to their laboratory

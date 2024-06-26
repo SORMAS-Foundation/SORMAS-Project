@@ -24,7 +24,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 @AuditedClass
 public class DiseaseBurdenDto implements Serializable {
@@ -470,12 +469,4 @@ public class DiseaseBurdenDto implements Serializable {
 				+ activeCases + ", to=" + to + ", from=" + from + "]";
 	}
 
-
-
-
-//	public DiseaseBurdenDto getDiseaseGridForDashboard(RegionReferenceDto reference, Object object, Disease disease2,
-//			Date fromDate, Date toDate, Date previousFromDate, Date previousToDate) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 }

@@ -41,8 +41,6 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	Set<PersonAssociation> getPermittedAssociations();
 
-	List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease);
-
 	JournalPersonDto getPersonForJournal(String uuid);
 
 	PersonDto save(@Valid @NotNull PersonDto source, boolean skipValidation);
@@ -100,5 +98,4 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	void copyHomeAddress(PersonReferenceDto source, PersonReferenceDto target);
 
-    Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 }

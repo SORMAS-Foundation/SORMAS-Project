@@ -156,12 +156,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	 * Used for filtering merge-able cases to filter both lead and similar cases.
 	 */
 	private Set<String> caseUuidsForMerge;
-	private String nameUuidEpidNumberLike;
-
-	private Boolean deleted = Boolean.FALSE;
 	public Boolean excludeSharedCases;
-
-	private Boolean includeNotACaseClassification;
 
 
 	private String caseReferenceNumber;

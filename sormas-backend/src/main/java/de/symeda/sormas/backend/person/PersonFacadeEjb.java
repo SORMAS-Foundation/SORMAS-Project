@@ -304,16 +304,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		service.updateExternalData(externalData);
 	}
 
-	@Override
-	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
-		final User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-		final District district = districtService.getByReferenceDto(districtRef);
-		return toPseudonymizedDtos(service.getDeathsBetween(fromDate, toDate, district, disease, user));
-	}
-
 	public Long getPersonIdByUuid(String uuid) {
 		return Optional.of(uuid).map(u -> service.getIdByUuid(u)).orElse(null);
 	}
@@ -2067,35 +2057,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> root = cq.from(Case.class);
-		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
-
-		Predicate filter = caseService.createUserFilter(
-				cb,
-				cq,
-				root,
-				new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
-		filter = and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
-		filter = and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.multiselect(person.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(person));
-		cq.groupBy(person.get(Person.CAUSE_OF_DEATH_DISEASE));
-
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<Disease, Long> outbreaks = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-
-		return outbreaks;
-	}
 
     @LocalBean
 	@Stateless

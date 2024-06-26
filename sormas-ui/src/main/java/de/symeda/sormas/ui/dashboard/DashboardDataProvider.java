@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.dashboard.*;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
@@ -68,37 +67,16 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountByResultType;
 	private Map<EventStatus, Long> eventCountByStatus;
-
 	private Long contactsInQuarantineCount = 0L;
 	private Long contactsPlacedInQuarantineCount = 0L;
 	private Long casesInQuarantineCount = 0L;
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
 	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
-	private RegionReferenceDto region;
-	private DistrictReferenceDto district;
 	private DiseaseBurdenDto diseaseBurdenDetail;
-	private Map<PathogenTestResultType, Long> testResultCountByResultType;
-
-	private List<DashboardTestResultDto> testResults = new ArrayList<>();
-	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
-	private List<RegionDto> regionDtoList;
-
 	private CaseClassification caseClassification;
-
 	private NewDateFilterType dateFilterType;
-	private Date fromDate;
-	private Date toDate;
 
-	private final Class<? extends CriteriaDateType> dateTypeClass;
-
-	public DashboardDataProvider(Class<? extends CriteriaDateType> dateTypeClass) {
-		this.dateTypeClass = dateTypeClass;
-	}
-
-	public DashboardDataProvider() {
-		this.dateTypeClass = CriteriaDateType.class;
-	}
 	public void refreshData() {
 
 		// Update the entities lists according to the filters
@@ -272,9 +250,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private DashboardCriteria buildDashboardCriteria(Date fromDate, Date toDate) {
 		return buildDashboardCriteria().newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
 	}
-	public void setTestResultCountByResultType(Map<PathogenTestResultType, Long> testResults) {
-		this.testResultCountByResultType = testResults;
-	}
+
 	public List<DashboardCaseDto> getCases() {
 		return cases;
 	}
@@ -437,13 +413,6 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
 	}
-	public List<RegionDto> getRegionDtoList() {
-		return regionDtoList;
-	}
-
-	public void setRegionDtoList(List<RegionDto> regionDtoList) {
-		this.regionDtoList = regionDtoList;
-	}
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -481,27 +450,5 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		this.dateFilterType = dateFilterType;
 	}
 
-	public Date getFromDate() {
-		return fromDate;
-	}
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
-
-	public Date getToDate() {
-		return toDate;
-	}
-
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
-	}
-
-	public Date getPreviousFromDate() {
-		return previousFromDate;
-	}
-
-	public void setPreviousFromDate(Date previousFromDate) {
-		this.previousFromDate = previousFromDate;
-	}
 }

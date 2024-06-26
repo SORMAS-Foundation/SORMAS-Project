@@ -44,7 +44,6 @@ import java.util.TimeZone;
 public class DashboardController {
 
 	public DashboardController() {
-
 	}
 
 	public void registerViews(Navigator navigator) {
@@ -76,7 +75,7 @@ public class DashboardController {
 		NewDateFilterType type = dashboardDataProvider.getDateFilterType();
 
 		CaseClassification caseClassification= dashboardDataProvider.getCaseClassification();
-//
+
 		TimeZone tz = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); // Quoted "Z" to indicate UTC, no timezone offset
 		df.setTimeZone(tz);
@@ -89,10 +88,8 @@ public class DashboardController {
 		if(Objects.nonNull(region)&&region.getUuid()!=null){
 			regionId= region.getUuid();
 		}
-		System.out.println(regionId);
 		String paramData = dateFromAsISO+"/"+dateToAsISO+"/"+type+"/"+caseClassification+"/"+newCaseDateType+"/"+regionId;
 		DiseaseDetailsView.setDiseaseDetailsData(paramData);
-		//DiseaseDetailsView.setProvider(dashboardDataProvider);
 
 		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
 		SormasUI.get().getNavigator().navigateTo(navigationState);

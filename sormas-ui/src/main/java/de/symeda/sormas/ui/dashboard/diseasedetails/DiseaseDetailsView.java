@@ -6,17 +6,13 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-
 import static com.vaadin.navigator.ViewChangeListener.*;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -109,7 +105,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 
 	private void setCaseClassification(String caseClassification) {
 		try {
-			if(caseClassification!=null) {
+			if(caseClassification!=null && !caseClassification.equals("null")) {
 				CaseClassification classification = CaseClassification.valueOf(caseClassification.replace(" ", "_").toUpperCase().trim());
 				dashboardDataProvider.setCaseClassification(classification);
 			}

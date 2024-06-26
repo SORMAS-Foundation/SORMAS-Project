@@ -205,9 +205,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria) {
-		User user = userService.getCurrentUser();
+		//User user = userService.getCurrentUser();
 
-		return outbreakService.getOutbreakDistrictCountByDisease(criteria, user);
+		return outbreakService.getOutbreakDistrictCountByDisease(criteria);
 	}
 
 	@Override
@@ -215,9 +215,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Long getOutbreakDistrictCount(OutbreakCriteria criteria) {
-		User user = userService.getCurrentUser();
-
-		return outbreakService.getOutbreakDistrictCount(criteria, user);
+		return outbreakService.getOutbreakDistrictCount(criteria);
 	}
 
 	@LocalBean

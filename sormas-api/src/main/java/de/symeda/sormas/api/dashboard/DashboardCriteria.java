@@ -7,9 +7,9 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
-import java.util.Date;
 @AuditedClass
 public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> {
+
 
 	private CriteriaDateType newCaseDateType;
 	private EpiCurveGrouping epiCurveGrouping;
@@ -23,6 +23,7 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 	private CaseOutcome outcome;
 	public DashboardCriteria(NewCaseDateType dateTypeClass) {
 		super(DashboardCriteria.class);
+		this.dateTypeClass=dateTypeClass;
 	}
 
 	public DashboardCriteria() {
@@ -31,6 +32,8 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 
 	public DashboardCriteria(Class<? extends CriteriaDateType> dateTypeClass) {
 		super(DashboardCriteria.class);
+		this.criteriaDateType=dateTypeClass;
+
 	}
 
 

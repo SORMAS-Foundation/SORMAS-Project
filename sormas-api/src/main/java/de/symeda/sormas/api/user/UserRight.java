@@ -298,7 +298,7 @@ public enum UserRight {
 
 	//@formatter:on
 
-	private static final String _DISEASE_DETAILS_ACCESS ="DISEASE_DETAILS_ACCESS" ;
+	//private static final String _DISEASE_DETAILS_ACCESS ="DISEASE_DETAILS_ACCESS" ;
 	/*
 	 * Hint for SonarQube issues:
 	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.

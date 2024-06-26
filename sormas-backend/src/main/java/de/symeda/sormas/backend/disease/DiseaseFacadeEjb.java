@@ -19,20 +19,14 @@ package de.symeda.sormas.backend.disease;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
@@ -43,7 +37,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.DashboardService;
@@ -63,8 +56,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
-	//	@EJB
-//	private DashboardService dashboardService;
+
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
@@ -188,11 +180,7 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 
 		dashboardCriteria.setOutcome(CaseOutcome.NO_OUTCOME);
-		//caseCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		Map<Disease, Long> archievedCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
-
-		//dashboardCriteria.relevanceStatus(null);
-
 
 		dashboardCriteria.setOutcome(CaseOutcome.RECOVERED);
 		Map<Disease, Long> recoveredCase = dashboardService.getCaseCountByDisease(dashboardCriteria);

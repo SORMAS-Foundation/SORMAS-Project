@@ -13,7 +13,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -45,7 +44,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.event.EventQueryContext;
@@ -61,9 +59,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory;
-import org.hibernate.hql.spi.QueryTranslator;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 
@@ -78,8 +73,7 @@ public class DashboardService {
 	private CaseService caseService;
 	@EJB
 	private EventService eventService;
-	@EJB
-	private SampleService sampleService;
+
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
@@ -217,30 +211,6 @@ public class DashboardService {
 	}
 
 	public Map<Disease, Long> getCaseCountByDisease(DashboardCriteria dashboardCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(Case.class);
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-
-		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-
-		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.groupBy(caze.get(Case.DISEASE));
-		cq.multiselect(caze.get(Case.DISEASE), cb.count(caze));
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<Disease, Long> resultMap = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-
-		return resultMap;
-	}
-
-	public Map<Disease, Long> getCaseCountByDisease2(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);

@@ -43,7 +43,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilterAndJurisdiction;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -223,7 +222,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<Disease, District> outbreaksDistrict = new HashMap<>(); //results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (String) e[1]));
+		Map<Disease, District> outbreaksDistrict = new HashMap<>();
 
 		for (Object[] e : results) {
 			Disease disease = (Disease) e[0];
@@ -235,7 +234,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		return outbreaksDistrict;
 	}
 
-	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria, User user) {
+	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -254,7 +253,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 	}
 
-	public Long getOutbreakDistrictCount(OutbreakCriteria criteria, User user) {
+	public Long getOutbreakDistrictCount(OutbreakCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
