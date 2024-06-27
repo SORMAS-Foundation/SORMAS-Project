@@ -1076,59 +1076,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 
-	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
-
-		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
-		Predicate filter;
-		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(cb, cq, contactPath), userFilter);
-		} else {
-			filter = createUserFilterWithoutCase(cb, cq, contactPath);
-		}
-		return filter;
-	}
-
-	//@SuppressWarnings("rawtypes")
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
-
-		// National users can access all contacts in the system
-		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				//|| currentUser.hasAnyUserRole(UserRole.REST_USER
-		) {
-			if (currentUser.getLimitedDiseases() != null) {
-				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDiseases());
-			} else {
-				return null;
-			}
-		}
-
-		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
-
-		switch (jurisdictionLevel) {
-			case REGION:
-				final Region region = currentUser.getRegion();
-				if (region != null) {
-					filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
-				}
-				break;
-			case DISTRICT:
-				final District district = currentUser.getDistrict();
-				if (district != null) {
-					filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
-				}
-				break;
-			default:
-		}
-
-		return filter;
-	}
-
-
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
 
 		User currentUser = getCurrentUser();

@@ -26,11 +26,10 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 
 	protected DiseaseDetailsViewLayout diseaseDetailsViewLayout;
 
-	public static  String diseaseDetailsData;
+	private static String diseaseDetailsData;
 	public static void setDiseaseDetailsData(String newData) {
 		diseaseDetailsData =newData;
 	}
-
 
 	public DiseaseDetailsView() {
 		super(VIEW_NAME, DashboardType.DISEASE);

@@ -9,7 +9,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -131,8 +130,6 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 		recoveredCasesCountColumn.setRenderer(new HtmlRenderer()).setWidth(100);
 
 		recoveredCasesCountColumn.setHeaderCaption("RECOVER COUNT");
-		//recoveredCasesCountColumn.setHeaderCaption(makeDIvsNone( "RECOVER COUNT", "#bf8678ba", "#91675d"));
-
 		recoveredCasesColumn.setRenderer(new HtmlRenderer()).setWidth(100);
 
 		recoveredCasesColumn.setHeaderCaption("RECOVER CASES %");

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
-import static de.symeda.sormas.ui.UiUtil.permitted;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -36,6 +35,8 @@ import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
+
+import static de.symeda.sormas.ui.UiUtil.permitted;
 
 @SuppressWarnings("serial")
 public abstract class AbstractDashboardView extends AbstractView {
@@ -99,9 +100,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
 		super(viewName);
-
-//		addStyleName(DashboardCssStyles.DASHBOARD_SCREEN);
-
+		
 		dashboardDataProvider = new DashboardDataProvider();
 
 		if (dashboardDataProvider.getDashboardType() == null) {

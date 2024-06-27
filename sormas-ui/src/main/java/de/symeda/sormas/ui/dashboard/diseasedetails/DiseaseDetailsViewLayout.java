@@ -1,19 +1,16 @@
 package de.symeda.sormas.ui.dashboard.diseasedetails;
 
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
-
-import de.symeda.sormas.api.disease.DiseaseBurdenDto;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 import de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile.RegionalDiseaseBurdenGrid;
-import de.symeda.sormas.ui.dashboard.map.MapCaseDisplayMode;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-
-import java.util.function.Consumer;
 
 public class DiseaseDetailsViewLayout extends CustomLayout {
 
@@ -23,8 +20,6 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 	private static final String GRID_TABLE = "table";
 	private static final String GRID_VIEW_MORE = "viewMore";
 	private static final String MAP = "map";
-
-	private final DashboardDataProvider dashboardDataProvider;
 	private final DiseaseDetailsComponent diseaseDetailsComponent;
 	private final RegionalDiseaseBurdenGrid regionalDiseaseBurdenGrid;
 	private final DashboardMapComponent dashboardMapComponent;
@@ -32,9 +27,7 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 	private boolean isShowMore;
 	private Button button;
 	public DiseaseDetailsViewLayout(DashboardDataProvider dashboardDataProvider) {
-		this.dashboardDataProvider = dashboardDataProvider;
-//		this.setWidthFull();
-//		this.setSizeFull();
+
 		setWidth(100, Unit.PERCENTAGE);
 		setTemplateContents(
 			LayoutUtil.fluidRow(
@@ -96,7 +89,6 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 		mapLayout.setWidth(100, Unit.PERCENTAGE);
 		final int BASE_HEIGHT = 600;
 		mapLayout.setHeight(BASE_HEIGHT, Unit.PIXELS);
-//		mapLayout.setMargin(true);
 		mapLayout.setSpacing(false);
 
 		dashboardMapComponent.setMargin(false);
@@ -105,15 +97,6 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 		dashboardMapComponent.addStyleName("map-border-layout");
 		mapLayout.addComponent(dashboardMapComponent);
 		addComponent(mapLayout, MAP);
-	}
-
-	public void removeTopComponents() {
-		removeAllComponents();
-	}
-
-	public void addMapComponent() {
-		addComponent(dashboardMapComponent, "1");
-
 	}
 
 	public HorizontalLayout viewMoreLayout(String title){

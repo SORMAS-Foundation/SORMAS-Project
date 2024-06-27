@@ -102,10 +102,10 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 				,caseClassification);
 
 		setDiseaseBurdenDetail(dbd);
-		Long outbreakDistrictCount = 	FacadeProvider.getOutbreakFacade()
+		Long countOfOutbreakDistricts = 	FacadeProvider.getOutbreakFacade()
 				.getOutbreakDistrictCount(
 						new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate).caseClassification(caseClassification));
-		setOutbreakDistrictCount(outbreakDistrictCount);
+		setOutbreakDistrictCount(countOfOutbreakDistricts);
 
 		this.refreshDataForSelectedDisease();
 	}
@@ -346,22 +346,23 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	public void setLastReportedDistrict(String district) {
 		this.lastReportedDistrict = district;
 	}
-
+	@Override
 	public NewCaseDateType getNewCaseDateType() {
 		if (newCaseDateType == null) {
 			return NewCaseDateType.MOST_RELEVANT;
 		}
 		return newCaseDateType;
 	}
-
+	@Override
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
 
+	@Override
 	public DashboardType getDashboardType() {
 		return dashboardType;
 	}
-
+	@Override
 	public void setDashboardType(DashboardType dashboardType) {
 		this.dashboardType = dashboardType;
 	}
@@ -413,15 +414,15 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
 	}
-
+	@Override
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
-
+	@Override
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
-
+	@Override
 	public NewDateFilterType getDateFilterType() {
 		if (dateFilterType == NewDateFilterType.TODAY) {
 			setFromDate(DateHelper.getStartOfDay(new Date()));
@@ -445,7 +446,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		}
 		return dateFilterType;
 	}
-
+	@Override
 	public void setDateFilterType(NewDateFilterType dateFilterType) {
 		this.dateFilterType = dateFilterType;
 	}

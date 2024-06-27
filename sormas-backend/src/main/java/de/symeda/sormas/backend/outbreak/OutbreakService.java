@@ -201,7 +201,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		return filter;
 	}
 
-	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria, User user) {
+	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -223,14 +223,11 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		Map<Disease, District> outbreaksDistrict = new HashMap<>();
-
 		for (Object[] e : results) {
 			Disease disease = (Disease) e[0];
-			if (!outbreaksDistrict.containsKey(disease)) {
-				District district = (District) e[1];
-				outbreaksDistrict.put(disease, district);
-			}
+			outbreaksDistrict.computeIfAbsent(disease, k -> (District) e[1]);
 		}
+
 		return outbreaksDistrict;
 	}
 

@@ -669,10 +669,4 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 	}
 
-	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
-		// can see the participants of all accessible events
-		Predicate filter = eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT));
-
-		return filter;
-	}
 }

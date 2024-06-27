@@ -167,10 +167,9 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			regionDto = regionFacade.getByUuid(region.getUuid());
 		}
 
-
 		//new cases
 		DashboardCriteria dashboardCriteria =
-				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);;
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
 
 		//Load count all dead/ fatalities
 		Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(dashboardCriteria);
@@ -178,13 +177,11 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 
 		Map<Disease, Long> caseFatalities = dashboardService.getDeathCountByDisease(dashboardCriteria);
 
-
 		dashboardCriteria.setOutcome(CaseOutcome.NO_OUTCOME);
 		Map<Disease, Long> archievedCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 		dashboardCriteria.setOutcome(CaseOutcome.RECOVERED);
 		Map<Disease, Long> recoveredCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
-
 
 		dashboardCriteria.setOutcome(CaseOutcome.UNKNOWN);
 
@@ -200,7 +197,6 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 		Long recoveredCaseCount = recoveredCase.getOrDefault(disease, 0L);
 		Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
 		Long otherCaseCount = other.getOrDefault(disease, 0L)+unknown.getOrDefault(disease, 0L);
-
 
 		return new DiseaseBurdenDto(
 				regionDto,
