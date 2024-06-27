@@ -8,6 +8,7 @@ public enum MapCasePeriodOption {
     NEW_CASES,
     CASES_INCIDENCE;
 
+    @Override
     public String toString() {
         return I18nProperties.getEnumCaption(this);
     }

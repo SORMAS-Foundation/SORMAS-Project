@@ -119,8 +119,6 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	private BigDecimal districtValuesUpperQuartile;
 	private Consumer<Boolean> externalExpandListener;
 	private boolean emptyPopulationDistrictPresent;
-	//private  LeafletMap map;
-
 	private MapCasePeriodOption mapCasePeriodOption;
 	private  Label overlayMessageLabel;
 
@@ -213,7 +211,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			this.setMargin(true);
 
 			// Add components
-			addComponent(createHeader());
+			addComponent(createMapHeader());
 
 			CssLayout mapLayout = new CssLayout();
 			mapLayout.setSizeFull();
@@ -282,7 +280,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		// Map key dropdown button
 		legendDropdown = ButtonHelper.createPopupButton(Captions.dashboardMapKey, null, CssStyles.BUTTON_SUBTLE);
-		legendDropdown.setContent(createLegend());
+		legendDropdown.setContent(createMapLegend());
 
 		mapFooterLayout.addComponent(legendDropdown);
 		mapFooterLayout.setComponentAlignment(legendDropdown, Alignment.MIDDLE_RIGHT);
@@ -472,7 +470,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		return mapFooterLayout;
 	}
 
-	private VerticalLayout createLegend() {
+	private VerticalLayout createMapLegend() {
 		VerticalLayout legendLayout = new VerticalLayout();
 		legendLayout.setSpacing(false);
 		legendLayout.setMargin(true);
@@ -702,8 +700,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 			//disable arrow buttons if date is first or last item in the dropdown
 			int curDateIndex = ((List<?>) cmbPeriodFilter.getValue()).indexOf(date);
-			Boolean hasNextDate = ((List<?>) cmbPeriodFilter.getValue()).size() > 0 && curDateIndex < ((List<?>)cmbPeriodFilter.getValue()).size() - 1;
-			Boolean hasPrevDate = ((List<?>)cmbPeriodFilter.getValue()).size() > 0 && curDateIndex > 0;
+			Boolean hasNextDate = !((List<?>) cmbPeriodFilter.getValue()).isEmpty() && curDateIndex < ((List<?>)cmbPeriodFilter.getValue()).size() - 1;
+			Boolean hasPrevDate = !((List<?>)cmbPeriodFilter.getValue()).isEmpty() && curDateIndex > 0;
 			btnBack.setEnabled(hasPrevDate);
 			btnForward.setEnabled(hasNextDate);
 
@@ -712,8 +710,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			refreshMapDashboard();
 		});
 		cmbPeriodFilter.addValueChangeListener(e -> {
-			cmbPeriodFilter.setEnabled(((List<?>)cmbPeriodFilter.getValue()).size() > 0);
-			btnForward.setEnabled(((List<?>)cmbPeriodFilter.getValue()).size() > 0);
+			cmbPeriodFilter.setEnabled(!((List<?>)cmbPeriodFilter.getValue()).isEmpty());
+			btnForward.setEnabled(!((List<?>)cmbPeriodFilter.getValue()).isEmpty());
 		});
 
 		CssStyles.style(btnBack, ValoTheme.BUTTON_BORDERLESS);
@@ -1072,7 +1070,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		layersLayout.addComponent(showCurrentEpiSituationCB);
 	}
 
-	private HorizontalLayout createHeader() {
+	private HorizontalLayout createMapHeader() {
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		mapHeaderLayout.setSpacing(true);
@@ -1776,9 +1774,9 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		}
 if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 	if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
-		showMapOverlay(maxDisplayCount);
+		makeMapOverlayVisible(maxDisplayCount);
 	} else {
-		hideMapOverlay();
+		makeMapOverlayInvisible();
 
 		loadMapData(fromDate, toDate);
 	}
@@ -1789,13 +1787,13 @@ if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 		refreshMapDashboard(false);
 	}
 
-	private void showMapOverlay(int maxCount) {
+	private void makeMapOverlayVisible(int maxCount) {
 		overlayBackground.setVisible(true);
 		overlayLayout.setVisible(true);
 		overlayMessageLabel.setValue(String.format(I18nProperties.getString(Strings.warningDashboardMapTooManyMarkers), maxCount));
 	}
 
-	private void hideMapOverlay() {
+	private void makeMapOverlayInvisible() {
 		overlayBackground.setVisible(false);
 		overlayLayout.setVisible(false);
 	}

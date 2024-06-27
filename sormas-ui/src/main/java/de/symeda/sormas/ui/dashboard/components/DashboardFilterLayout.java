@@ -615,10 +615,6 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		}
 	}
 
-	public void setInfoLabelText(String text) {
-		infoLabel.setDescription(text);
-	}
-
 	public void setCriteria(DashboardCriteria criteria) {
 		regionFilter.setValue(criteria.getRegion());
 		caseClassificationFilter.setValue(criteria.getCaseClassification());

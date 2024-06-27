@@ -84,18 +84,6 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		}
 	}
 
-//	public BaseDashboardMapComponent(P dashboardDataProvider) {
-//
-//		setMargin(false);
-//		setSpacing(false);
-//		setSizeFull();
-//
-//		this.setMargin(true);
-//		this.dashboardDataProvider = dashboardDataProvider;
-//
-//	}
-
-
 	protected static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {
 		return buildLegendEntry(new Label(icon.getHtmlElement("16px"), ContentMode.HTML), labelCaption);
 	}
@@ -109,7 +97,6 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		if (!forced && maxDisplayCount >= 0) {
 			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
 		}
-
 
 		if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
 			showMapOverlay(maxDisplayCount);

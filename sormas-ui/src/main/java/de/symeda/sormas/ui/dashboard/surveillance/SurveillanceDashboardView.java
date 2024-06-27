@@ -17,14 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
-import com.vaadin.navigator.ViewChangeListener;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.surveillance.components.SurveillanceFilterLayout;
 
 @SuppressWarnings("serial")
@@ -84,13 +81,6 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 			}
 		});
 	}
-
-
-//	@Override
-//	public void enter(ViewChangeListener.ViewChangeEvent event) {
-//		filterLayout.reload(event);
-//		refreshDiseaseData();
-//	}
 
 	public void refreshDashboard() {
 		dashboardDataProvider.refreshData();

@@ -21,7 +21,6 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 	private final DashboardDataProvider dashboardDataProvider;
 	private final List<RegionDto> regionDtoList;
-	private List<DistrictReferenceDto> districtDtoList;
 
 
 	Grid.Column regionDistrictColumn;
@@ -150,7 +149,7 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 			String regionUuid=dashboardDataProvider.getRegion().getUuid();
 
-			districtDtoList = FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionUuid);
+			List<DistrictReferenceDto> districtDtoList = FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionUuid);
 
 			for (DistrictReferenceDto districtDto : districtDtoList){
 

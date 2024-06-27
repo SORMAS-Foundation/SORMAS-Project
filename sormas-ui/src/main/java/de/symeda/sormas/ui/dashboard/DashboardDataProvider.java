@@ -17,32 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import de.symeda.sormas.api.dashboard.*;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
-import org.apache.commons.lang3.time.DateUtils;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.dashboard.*;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DateHelper;
+import org.apache.commons.lang3.time.DateUtils;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 // FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
 public class DashboardDataProvider extends AbstractDashboardDataProvider<DashboardCriteria> {
@@ -235,12 +224,12 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria));
 		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventDashboardCriteria));
 
-		Long outbreakDistrictCount = FacadeProvider.getOutbreakFacade()
+		Long districtOutbreakCount = FacadeProvider.getOutbreakFacade()
 				.getOutbreakDistrictCount(
 						new OutbreakCriteria().region(region).district(district).disease(disease)
 								.reportedBetween(fromDate, toDate));
 
-		setOutbreakDistrictCount(outbreakDistrictCount);
+		setOutbreakDistrictCount(districtOutbreakCount);
 
 		refreshDataForQuarantinedCases();
 		refreshDataForConvertedContactsToCase();

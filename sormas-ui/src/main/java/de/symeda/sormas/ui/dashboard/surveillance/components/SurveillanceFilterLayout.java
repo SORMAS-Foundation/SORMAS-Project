@@ -39,14 +39,6 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 		dateTypeSelectorComponent.addValueChangeListener(listener);
 	}
 
-//	private void createDateTypeSelectorFilter() {
-//		dateTypeSelectorComponent =
-//			new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))
-//				.build();
-//		dateTypeSelectorComponent.setValue(NewCaseDateType.MOST_RELEVANT);
-//		addCustomComponent(dateTypeSelectorComponent, DATE_TYPE_SELECTOR_FILTER);
-//	}
-
 	private void createDateTypeSelectorFilter() {
 		dateTypeSelectorComponent =
 				new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))

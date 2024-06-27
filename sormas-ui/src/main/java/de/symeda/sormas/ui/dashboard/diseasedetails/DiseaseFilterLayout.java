@@ -23,10 +23,6 @@ public class DiseaseFilterLayout extends DashboardFilterLayout<DashboardDataProv
         super(dashboardView, dashboardDataProvider,DISEASE_FILTERS);
     }
 
-    @Override
-    public void populateLayout() {
-
-    }
 
     @Override
     public void setCriteria(DashboardCriteria criteria) {
