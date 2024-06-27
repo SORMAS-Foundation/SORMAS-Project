@@ -411,30 +411,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
-	@Override
-	public NewDateFilterType getDateFilterType() {
-		if (dateFilterType == NewDateFilterType.TODAY) {
-			setFromDate(DateHelper.getStartOfDay(new Date()));
-			setToDate(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.YESTERDAY) {
-			setFromDate(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 1)));
-			setToDate(DateHelper.getEndOfDay(DateHelper.subtractDays(new Date(), 1)));
-		}
-		if (dateFilterType == NewDateFilterType.THIS_WEEK) {
-			setFromDate(DateHelper.getStartOfWeek(new Date()));
-			setToDate(new Date());
-		}
-		if (dateFilterType == NewDateFilterType.LAST_WEEK) {
-			setFromDate(DateHelper.getStartOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
-			setToDate(DateHelper.getEndOfWeek(DateHelper.subtractWeeks(new Date(), 1)));
-		}
-		if (dateFilterType == NewDateFilterType.THIS_YEAR) {
-			setFromDate(DateHelper.getStartOfWeek(DateHelper.getStartOfYear(new Date())));
-			setToDate(new Date());
-		}
-		return dateFilterType;
-	}
+
 	@Override
 	public void setDateFilterType(NewDateFilterType dateFilterType) {
 		this.dateFilterType = dateFilterType;

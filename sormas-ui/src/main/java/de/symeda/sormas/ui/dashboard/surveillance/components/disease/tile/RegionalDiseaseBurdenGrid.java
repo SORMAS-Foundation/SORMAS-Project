@@ -259,7 +259,7 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 	}
 
 	public String makeDIvs(long number, long total, String lightColor, String deepColor) {
-
+		String  endDiv = " </div>";
 		String mainStyle = "text-align: center; height:15px; width: 100%; background:"+lightColor;
 		String progressPercentStyle = "position: absolute; width: 8%; color: #ffffff; font-weight: 700; margin: -1px;";
 		double regionalTotal = (double)number/total * 100;
@@ -270,22 +270,23 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 		if (number == 0 && total == 0) {
 			regionalTotal=0.0;
 			return "<div style='"+mainStyle+"; font-size: 11px; font-weight: 700; color:"+textColor+" '>"
-					+ decimalFormat.format(regionalTotal)+"% </div>"
-					+ element("div" , style, null) + "</div>";
+					+ decimalFormat.format(regionalTotal)+"% "+endDiv
+					+ element("div" , style, null) + endDiv;
 		}
 		return "<div style='"+mainStyle+"'><div style='"+progressPercentStyle+"'>"
-				+ decimalFormat.format(regionalTotal)+"% </div>"
-				+ element("div" , style, null) + "</div>";
+				+ decimalFormat.format(regionalTotal)+"% "+endDiv
+				+ element("div" , style, null) + endDiv;
 
 	}
 
 	public String makeDIvsCount(String num) {
+		String  endDiv = " </div>";
 
 		String mainStyle = "text-align: center; height:15px; width: 100%; ";
 		String regionalTotal = num;
 
 		return "<div style='"+mainStyle+"'>"
-				+ regionalTotal+"</div>";
+				+ regionalTotal+endDiv;
 	}
 
 	public String element(String type, String style, String content) {
