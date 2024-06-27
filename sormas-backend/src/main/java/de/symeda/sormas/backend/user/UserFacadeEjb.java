@@ -929,14 +929,13 @@ public class UserFacadeEjb implements UserFacade {
 		return updatePassword;
 
 	}
+
 	@PermitAll
 	@Override
 	public String generatePassword() {
 		return userService.generatePassword();
 
 	}
-
-
 	
 	@Override
 	@PermitAll
@@ -948,11 +947,10 @@ public class UserFacadeEjb implements UserFacade {
 	@PermitAll
 	@AuditIgnore
 	public Set<UserRight> getValidLoginRights(String userName, String password) {
-			User user = userService.getByUserName(userName);
+		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive() && DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
 			return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
 		}
-
 		return null;
 	}
 
@@ -960,10 +958,12 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
 		User user = userService.getByUserName(userName);
+
 		if (user != null && user.isActive()
 			&& (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed())))) {
 			return getUserRoles(toDto(user));
 		}
+
 		return Collections.emptySet();
 	}
 	
@@ -971,16 +971,21 @@ public class UserFacadeEjb implements UserFacade {
 	@PermitAll
 	public boolean validatePassword(String uuid, String password) {
 		User user = userService.getCurrentUser();
+
 		if (user != null) {
 			return DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()));
 		}
+
 		return false;
 	}
 
-	@PermitAll
-	@Override
 	public String checkPasswordStrength(String password) {
 		return PasswordValidator.checkPasswordStrength(password);
+	}
+	
+	@Override
+	public boolean isPasswordStrong(String password){
+		return PasswordValidator.isStrongPassword(password);
 	}
 
 	@PermitAll

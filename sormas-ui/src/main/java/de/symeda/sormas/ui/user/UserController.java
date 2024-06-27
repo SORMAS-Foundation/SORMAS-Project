@@ -236,7 +236,6 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 		} else {
 			showPasswordChangeInternalSuccessPopup(I18nProperties.getString(Strings.messagePasswordChange));
 		}
-
 		isGeneratePassword=false;
 	}
 
@@ -330,11 +329,8 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 	}
 
 	public Button createUpdatePasswordButton() {
-
 		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
-
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
@@ -397,7 +393,7 @@ public void showUpdatePassword(String userUuid, String userEmail, String passwor
 		final CommitDiscardWrapperComponent<UpdatePasswordForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		form.newPassword.addTextChangeListener(event -> {
 			passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(event.getText()));
-			if (passwordStrengthDesc.getValue().contains("Strong")) {
+			if (FacadeProvider.getUserFacade().isPasswordStrong(event.getText())) {
 				passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
 			}
 			else {

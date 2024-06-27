@@ -11,14 +11,12 @@ public class PasswordValidator {
         if (strongPassword) {
             return "Password Strength is Strong";
         }
-
-
         else {
             return "Password Strength is Weak";
         }
     }
 
-    private static boolean isStrongPassword(String password) {
+    public static boolean isStrongPassword(String password) {
         return password.length() >= 8 && hasDigits(password) && hasSpecialCharacters(password)&& hasCapitalLetter(password);
     }
 

@@ -62,6 +62,8 @@ public interface UserFacade {
 
 	String checkPasswordStrength(String password);
 
+	boolean isPasswordStrong(String password);
+
 	String generatePassword();
 
 	List<UserDto> getAllAfter(Date date);

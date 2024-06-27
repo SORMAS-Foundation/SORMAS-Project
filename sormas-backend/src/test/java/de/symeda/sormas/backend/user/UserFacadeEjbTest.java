@@ -507,7 +507,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void testGetValidLoginRoles_ValidUser() {
+	void testGetValidLoginRolesValidUser() {
 		// Arrange
 		User user = creator.createTestUser();
 
@@ -520,7 +520,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	void testGetValidLoginRoles_InvalidUser() {
+	void testGetValidLoginRolesInvalidUser() {
 		// Act
 		Set<UserRoleDto> result = getUserFacade().getValidLoginRoles("testuser", "password");
 
@@ -531,7 +531,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 
 	@Test
-	void testValidatePassword_Valid() {
+	void testValidatePasswordValid() {
 		// Arrange
 
 		User user= creator.createTestUser();
@@ -544,9 +544,8 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(result);
 	}
 
-
 	@Test
-	void testValidatePassword_Invalid() {
+	void testValidatePasswordInvalid() {
 		// Act
 		boolean result = getUserFacade().validatePassword("uuid", "password");
 
@@ -555,16 +554,14 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 
-
-
 	@Test
-	void testCheckPasswordStrength_Strong() {
+	void testCheckPasswordStrengthStrong() {
 		String result = getUserFacade().checkPasswordStrength("Verystrongassword134$");
 		assertEquals("Password Strength is Strong", result);
 	}
 
 	@Test
-	void testCheckPasswordStrength_Weak() {
+	void testCheckPasswordStrengthWeak() {
 		String result = getUserFacade().checkPasswordStrength("weak");
 		assertEquals("Password Strength is Weak", result);
 	}
