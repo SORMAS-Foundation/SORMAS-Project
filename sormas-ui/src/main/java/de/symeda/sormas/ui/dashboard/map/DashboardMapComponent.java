@@ -136,13 +136,10 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	}
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
-		//super(dashboardDataProvider);
 		super(
 			dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
 			dashboardDataProvider,
 			null);
-//
-		//this.dashboardDataProvider = dashboardDataProvider;
 		if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 
 			setMargin(false);
@@ -233,9 +230,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			overlayMessageLabel = new Label();
 			overlayMessageLabel.addStyleNames(CssStyles.ALIGN_CENTER, CssStyles.LABEL_WHITE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 
-			Button button = ButtonHelper.createButton(Captions.showPlacesOnMap, (e) -> {
-				refreshMapDashboard(true);
-			});
+			Button button = ButtonHelper.createButton(Captions.showPlacesOnMap, (e) -> refreshMapDashboard(true));
 
 			overlayLayout = new VerticalLayout(overlayMessageLabel, button);
 			overlayLayout.setStyleName(DashboardCssStyles.MAP_OVERLAY);
@@ -250,7 +245,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			addComponent(mapLayout);
 			setExpandRatio(mapLayout, 1);
 
-			addComponent(createFooter());
+			addComponent(createMapFooter());
 		}
 	}
 
@@ -279,7 +274,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	}
 
 
-	private HorizontalLayout createFooter() {
+	private HorizontalLayout createMapFooter() {
 		HorizontalLayout mapFooterLayout = new HorizontalLayout();
 		mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
 		mapFooterLayout.setSpacing(true);
@@ -790,13 +785,21 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		}
 
 		cmbPeriodFilter.setEnabled(true);
-//		checks if map has a case before rendering period dropdown
-		if (mapAndFacilityCases.size() == 0)
+
+		if (mapAndFacilityCases.isEmpty())
 			return;
 
+
 		List<Date> reportedDates = mapAndFacilityCases.stream().map(c -> c.getReportDate()).collect(Collectors.toList());
-		Date minDate = reportedDates.stream().min(Date::compareTo).get();
-		Date maxDate = reportedDates.stream().max(Date::compareTo).get();
+		Optional<Date> minDateOptional = reportedDates.stream().min(Date::compareTo);
+		Optional<Date> maxDateOptional = reportedDates.stream().max(Date::compareTo);
+
+		if (!minDateOptional.isPresent() || !maxDateOptional.isPresent()) {
+			return;
+		}
+
+		Date minDate = minDateOptional.get();
+		Date maxDate = maxDateOptional.get();
 
 		List<Date> dates;
 		String strDateFormat = "";
@@ -1796,4 +1799,5 @@ if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 		overlayBackground.setVisible(false);
 		overlayLayout.setVisible(false);
 	}
+
 }

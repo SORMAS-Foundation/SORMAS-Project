@@ -107,17 +107,12 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 		Long casePercental = dashboardDataProvider.getDiseaseBurdenDetail().getCaseCount();
 
-
 		regionDistrictColumn.setWidth(100);
 		regionDistrictColumn.setHeaderCaption("REGION NAME");
 
-
 		totalCountColumn.setRenderer(new HtmlRenderer()).setWidth(100);
 
-
 		totalColumn.setRenderer(new HtmlRenderer()).setWidth(100);
-
-
 
 		totalColumn.setHeaderCaption("TOTAL %");
 
@@ -141,14 +136,11 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 		deathColumn.setHeaderCaption("DEATH CASES %");
 
-
-
 		otherCountColumn.setRenderer(new HtmlRenderer()).setWidth(100);
 
 		otherColumn.setRenderer(new HtmlRenderer()).setWidth(100);
 
 		otherColumn.setHeaderCaption("OTHER CASES %");
-
 
 		if(dashboardDataProvider.getRegion()!=null) {
 
@@ -158,11 +150,9 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 			String regionUuid=dashboardDataProvider.getRegion().getUuid();
 
-
 			districtDtoList = FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionUuid);
 
 			for (DistrictReferenceDto districtDto : districtDtoList){
-
 
 				DiseaseBurdenDto diseaseBurdenDto = FacadeProvider.getDiseaseFacade().getDiseaseGridForDashboard(
 						null,
@@ -195,31 +185,27 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 				diseaseBurdenDto.setTotal(makeDIvs(Long.parseLong(total), casePercental, "#5a95f4bf","#2f7df9"));
 
-				diseaseBurdenDto.setTotalCount(makeDIvsCount(total, "#5a95f4bf","#2f7df9"));
+				diseaseBurdenDto.setTotalCount(makeDIvsCount(total));
 
 				diseaseBurdenDto.setActiveCases(makeDIvs(Long.parseLong(activeCases), casePercental,  "#feba0199", "#dfa507"));
 
-				diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases,  "#feba0199", "#dfa507"));
+				diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases));
 
 				diseaseBurdenDto.setRecovered(makeDIvs(Long.parseLong(recovered), casePercental, "#00e0a19c", "#038d66"));
 
-				diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered, "#00e0a19c", "#038d66"));
-
+				diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered));
 
 				diseaseBurdenDto.setDeaths(makeDIvs(Long.parseLong(deaths), casePercental,"#FFAEAE", "#FF4040"));
 
-				diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths,"#FFAEAE", "#FF4040"));
-
-
+				diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths));
 
 				diseaseBurdenDto.setOther(makeDIvs(Long.parseLong(other), casePercental,"#bf8678ba", "#91675d"));
 
-				diseaseBurdenDto.setOtherCount(makeDIvsCount(other,"#bf8678ba", "#91675d"));
+				diseaseBurdenDto.setOtherCount(makeDIvsCount(other));
 
 				diseaseBurdenDtoList.add(diseaseBurdenDto);
 			}
 		}else {
-
 
 			for (RegionDto regionDto : regionDtoList){
 				DiseaseBurdenDto diseaseBurdenDto = FacadeProvider.getDiseaseFacade().getDiseaseGridForDashboard(
@@ -234,7 +220,6 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 						dashboardDataProvider.getCaseClassification()
 				);
 
-
 				String total = diseaseBurdenDto.getTotal();
 
 				String activeCases = diseaseBurdenDto.getActiveCases();
@@ -245,101 +230,63 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 				String other = diseaseBurdenDto.getOther();
 
-
 				diseaseBurdenDto.setTotal(makeDIvs(Long.parseLong(total), casePercental, "#5a95f4bf","#2f7df9"));
 
-				diseaseBurdenDto.setTotalCount(makeDIvsCount(total, "#5a95f4bf","#2f7df9"));
+				diseaseBurdenDto.setTotalCount(makeDIvsCount(total));
 
 				diseaseBurdenDto.setActiveCases(makeDIvs(Long.parseLong(activeCases), casePercental,  "#feba0199", "#dfa507"));
 
-				diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases,  "#feba0199", "#dfa507"));
+				diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases));
 
 				diseaseBurdenDto.setRecovered(makeDIvs(Long.parseLong(recovered), casePercental, "#00e0a19c", "#038d66"));
 
-				diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered, "#00e0a19c", "#038d66"));
-
+				diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered));
 
 				diseaseBurdenDto.setDeaths(makeDIvs(Long.parseLong(deaths), casePercental,"#FFAEAE", "#FF4040"));
 
-				diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths,"#FFAEAE", "#FF4040"));
-
+				diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths));
 
 				diseaseBurdenDto.setOther(makeDIvs(Long.parseLong(other), casePercental,"#bf8678ba", "#91675d"));
 
-				diseaseBurdenDto.setOtherCount(makeDIvsCount(other,"#bf8678ba", "#91675d"));
+				diseaseBurdenDto.setOtherCount(makeDIvsCount(other));
 
 				diseaseBurdenDtoList.add(diseaseBurdenDto);
 			}
 		}
 
-		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<DiseaseBurdenDto>(DiseaseBurdenDto.class, diseaseBurdenDtoList);
+		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<>(DiseaseBurdenDto.class, diseaseBurdenDtoList);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 	}
 
 	public String makeDIvs(long number, long total, String lightColor, String deepColor) {
 
-
-
-
 		String mainStyle = "text-align: center; height:15px; width: 100%; background:"+lightColor;
 		String progressPercentStyle = "position: absolute; width: 8%; color: #ffffff; font-weight: 700; margin: -1px;";
 		double regionalTotal = (double)number/total * 100;
 
-//		String textColor = regionalTotal > 10 ? "#ffffff" : "#000000";
 		String textColor = "#ffffff";
 
 		String style = "height:15px; width:"+ decimalFormat.format(regionalTotal)+"%; color:"+textColor+"; font-size: 10px;"+"background:"+deepColor;
-		String content = decimalFormat.format(regionalTotal) +"%";
 		if (number == 0 && total == 0) {
 			regionalTotal=0.0;
 			return "<div style='"+mainStyle+"; font-size: 11px; font-weight: 700; color:"+textColor+" '>"
 					+ decimalFormat.format(regionalTotal)+"% </div>"
 					+ element("div" , style, null) + "</div>";
 		}
-//		return "<div style="+mainStyle+">" + "</div>";
 		return "<div style='"+mainStyle+"'><div style='"+progressPercentStyle+"'>"
 				+ decimalFormat.format(regionalTotal)+"% </div>"
 				+ element("div" , style, null) + "</div>";
 
-//		return "<div style='"+mainStyle+"'>" + element("div" , style, content) + "</div>";
 	}
 
-	public String makeDIvsCount(String num, String lightColor, String deepColor) {
-
-
-
-//		if (num.equals("0") )
-//			return ("0");
+	public String makeDIvsCount(String num) {
 
 		String mainStyle = "text-align: center; height:15px; width: 100%; ";
-		//+ " background:"+lightColor;
-		//String progressPercentStyle = "position: absolute; width: 20%; color: #ffffff; font-weight: 700; margin: -1px;";
 		String regionalTotal = num;
 
-//		String textColor = regionalTotal > 10 ? "#ffffff" : "#000000";
-		//String textColor = "#ffffff";
-
-		//String style = "height:15px; width:"+ regionalTotal+"; color:"+textColor+"; font-size: 10px;"+"background:"+deepColor;
-		//String content = regionalTotal ;
-
-//		return "<div style="+mainStyle+">" + "</div>";
 		return "<div style='"+mainStyle+"'>"
-				//+ "<div style='"+progressPercentStyle+"'>"
 				+ regionalTotal+"</div>";
-		//+ element("div" , style, null) + "</div>";
-
-//		return "<div style='"+mainStyle+"'>" + element("div" , style, content) + "</div>";
-	}
-
-	public String makeDIvsNone(String value, String lightColor, String deepColor) {
-
-		String mainStyle = "text-align: center; height:15px; width: 100%; ";
-
-		String regionalTotal = value;
-
-		return "<div style='"+mainStyle+"'>"+ regionalTotal+"</div>";
-
 	}
 
 	public String element(String type, String style, String content) {

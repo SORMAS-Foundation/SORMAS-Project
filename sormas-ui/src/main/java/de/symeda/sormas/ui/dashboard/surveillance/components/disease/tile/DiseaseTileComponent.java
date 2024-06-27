@@ -17,19 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile;
 
-import java.util.Date;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -49,13 +41,6 @@ public class DiseaseTileComponent extends VerticalLayout {
 
 		addTopLayout(diseaseBurden.getDisease(), diseaseBurden.getCaseCount(), diseaseBurden.getPreviousCaseCount(),
 				diseaseBurden.getOutbreakDistrictCount() > 0);
-//		addStatsLayout(
-//			diseaseBurden.getCaseDeathCount(),
-//			diseaseBurden.getEventCount(),
-//			diseaseBurden.getLastReportedDistrictName(),
-//			diseaseBurden.getDisease());
-
-
 		addStatsLayout(diseaseBurden, dashboardDataProvider);
 
 	}
@@ -159,37 +144,12 @@ public class DiseaseTileComponent extends VerticalLayout {
 		addComponent(layout);
 	}
 
-//	private void addStatsLayout(Long fatalities, Long events, String district, Disease disease) {
-//		VerticalLayout layout = new VerticalLayout();
-//		layout.setWidth(100, Unit.PERCENTAGE);
-//		layout.setMargin(false);
-//		layout.setSpacing(false);
-//		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
-//
-//		StatsItem lastReportItem =
-//			new StatsItem.Builder(Captions.dashboardLastReport, district.length() == 0 ? I18nProperties.getString(Strings.none) : district)
-//				.singleColumn(true)
-//				.build();
-//		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
-//		layout.addComponent(lastReportItem);
-//		layout.addComponent(new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build());
-//		StatsItem noOfEventsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
-//		noOfEventsItem.addStyleName(CssStyles.VSPACE_4);
-//		layout.addComponent(noOfEventsItem);
-//
-//		layout.addComponent(addDiseaseButton(disease));
-//
-//		addComponent(layout);
-//	}
-
 	private void addStatsLayout(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
 
 		Long fatalities = diseaseBurden.getCaseDeathCount();
 		Long events = diseaseBurden.getEventCount();
 		String district = diseaseBurden.getLastReportedDistrictName();
 		Disease disease = diseaseBurden.getDisease();
-		Date dateFrom = diseaseBurden.getFrom();
-		Date dateTo = diseaseBurden.getTo();
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(100, Unit.PERCENTAGE);
@@ -201,7 +161,6 @@ public class DiseaseTileComponent extends VerticalLayout {
 				district.length() == 0 ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
 		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
 		layout.addComponent(lastReportItem);
-
 
 		StatsItem fatality = new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build();
 		fatality.addStyleName(CssStyles.HSPACE_LEFT_5);
@@ -218,51 +177,14 @@ public class DiseaseTileComponent extends VerticalLayout {
 		addComponent(layout);
 	}
 
-	private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label nameLabel = new Label(label);
-		CssStyles.style(nameLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "",
-				CssStyles.HSPACE_LEFT_3);
-		layout.addComponent(nameLabel);
-		if (!singleColumn) {
-			layout.setExpandRatio(nameLabel, 1);
-		}
-
-		Label valueLabel = new Label(value);
-		CssStyles.style(valueLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "",
-				singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
-		layout.addComponent(valueLabel);
-		layout.setExpandRatio(valueLabel, singleColumn ? 1f : 0.65f);
-
-		return layout;
-	}
-
 	private Button addDiseaseButton(Disease diseaseName, DashboardDataProvider dashboardDataProvider) {
-
-		Date from =dashboardDataProvider.getFromDate();
-		Date to = dashboardDataProvider.getToDate();
-		NewDateFilterType type = dashboardDataProvider.getDateFilterType();
 
 		Button diseaseDetailButton = ButtonHelper.createIconButton(null, VaadinIcons.ELLIPSIS_DOTS_H, null,
 				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 		diseaseDetailButton.setVisible(true);
-//		diseaseDetailButton.addClickListener(
-//				click -> ControllerProvider.getDashboardController().navigateToDisease(diseaseName, from,to,type));
 
 		diseaseDetailButton.addClickListener(
 				click -> ControllerProvider.getDashboardController().navigateToDisease(diseaseName, dashboardDataProvider));
-
-
-
-//		Button diseaseDetailButton = ButtonHelper
-//			.createIconButton(null, VaadinIcons.ELLIPSIS_DOTS_H, null, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
-//		diseaseDetailButton.setVisible(true);
-//		layout.addComponent(diseaseDetailButton);
-//		diseaseDetailButton.addClickListener(click -> ControllerProvider.getDashboardController().navigateToDisease(disease.getName()));
 
 		return diseaseDetailButton;
 	}
