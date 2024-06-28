@@ -123,54 +123,54 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetOutbreakDistrictNameByDisease() {
 
-		Map<Disease, District> mockMap = new HashMap<>();
 		Disease disease1 = Disease.EVD;
-		District district1 = new District();
-		Disease disease2 = Disease.CHOLERA;
-		District district2 = new District();
+		Disease disease2 = Disease.ADENOVIRUS;
+		Disease disease3 = Disease.C_PNEUMONIAE;
 
-		mockMap.put(disease1, district1);
-		mockMap.put(disease2, district2);
+		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid(), null, null);
+		getOutbreakFacade().startOutbreak(district, disease1);
+		getOutbreakFacade().startOutbreak(district, disease2);
+		getOutbreakFacade().startOutbreak(district, disease3);
 
-		when(getOutbreakService().getOutbreakDistrictNameByDisease(any(OutbreakCriteria.class)))
-				.thenReturn(mockMap);
+		OutbreakCriteria outbreakCriteria = new OutbreakCriteria().district(district);
 
-		Map<Disease, District> result = outbreakFacade.getOutbreakDistrictNameByDisease(new OutbreakCriteria());
+		Map<Disease, District> result =getOutbreakService().getOutbreakDistrictNameByDisease(outbreakCriteria);
 
-		assertEquals(mockMap, result);
+		assertEquals(3, result.size());
+		Set<Disease> resultDiseases = result.keySet();
+		assertTrue(resultDiseases.contains(disease1));
+		assertTrue(resultDiseases.contains(disease2));
 	}
 
 	@Test
 	public void testGetOutbreakDistrictCountByDisease() {
 
-		Map<Disease, Long> mockMap = new HashMap<>();
-		Disease disease1 = Disease.EVD;
-		Long count1 = 10L;
-		Disease disease2 = Disease.CHOLERA;
-		Long count2 = 5L;
+		Disease disease1 = Disease.ADENOVIRUS;
+		Disease disease2 = Disease.ANTHRAX;
 
-		mockMap.put(disease1, count1);
-		mockMap.put(disease2, count2);
+		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid(), null, null);
+		getOutbreakFacade().startOutbreak(district, disease1);
+		getOutbreakFacade().startOutbreak(district, disease2);
 
-		when(getOutbreakService().getOutbreakDistrictCountByDisease(any(OutbreakCriteria.class)))
-				.thenReturn(mockMap);
+		Set<Disease> diseases = new HashSet<>();
+		OutbreakCriteria outbreakCriteria = new OutbreakCriteria().diseases(diseases);
 
-		Map<Disease, Long> result = getOutbreakFacade().getOutbreakDistrictCountByDisease(new OutbreakCriteria());
+		Map<Disease, Long> result = getOutbreakFacade().getOutbreakDistrictCountByDisease(outbreakCriteria);
 
-		assertEquals(mockMap, result);
+		assertEquals(2, result.size());
 	}
 
 	@Test
 	public void testGetOutbreakDistrictCount() {
 
-		Long expectedCount = 15L;
+		Disease disease1 = Disease.ADENOVIRUS;
 
-		when(getOutbreakService().getOutbreakDistrictCount(any(OutbreakCriteria.class)))
-				.thenReturn(expectedCount);
+		DistrictReferenceDto district = new DistrictReferenceDto(rdcf.district.getUuid(), null, null);
+		getOutbreakFacade().startOutbreak(district, disease1);
+		OutbreakCriteria outbreakCriteria= new OutbreakCriteria().district(district);
+		Long result = getOutbreakFacade().getOutbreakDistrictCount(outbreakCriteria);
 
-		Long result = getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria());
-
-		assertEquals(expectedCount, result);
+		assertEquals(1, result);
 	}
 
 }
