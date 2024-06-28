@@ -22,10 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.backend.infrastructure.district.District;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -34,10 +39,21 @@ import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 
 	private RDCF rdcf;
+
+	@InjectMocks
+	private OutbreakFacadeEjb outbreakFacade;
 
 	@Override
 	public void init() {
@@ -103,4 +119,58 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(outbreakDiseases.contains(Disease.AFP));
 		assertTrue(outbreakDiseases.contains(Disease.CHOLERA));
 	}
+
+	@Test
+	public void testGetOutbreakDistrictNameByDisease() {
+
+		Map<Disease, District> mockMap = new HashMap<>();
+		Disease disease1 = Disease.EVD;
+		District district1 = new District();
+		Disease disease2 = Disease.CHOLERA;
+		District district2 = new District();
+
+		mockMap.put(disease1, district1);
+		mockMap.put(disease2, district2);
+
+		when(getOutbreakService().getOutbreakDistrictNameByDisease(any(OutbreakCriteria.class)))
+				.thenReturn(mockMap);
+
+		Map<Disease, District> result = outbreakFacade.getOutbreakDistrictNameByDisease(new OutbreakCriteria());
+
+		assertEquals(mockMap, result);
+	}
+
+	@Test
+	public void testGetOutbreakDistrictCountByDisease() {
+
+		Map<Disease, Long> mockMap = new HashMap<>();
+		Disease disease1 = Disease.EVD;
+		Long count1 = 10L;
+		Disease disease2 = Disease.CHOLERA;
+		Long count2 = 5L;
+
+		mockMap.put(disease1, count1);
+		mockMap.put(disease2, count2);
+
+		when(getOutbreakService().getOutbreakDistrictCountByDisease(any(OutbreakCriteria.class)))
+				.thenReturn(mockMap);
+
+		Map<Disease, Long> result = getOutbreakFacade().getOutbreakDistrictCountByDisease(new OutbreakCriteria());
+
+		assertEquals(mockMap, result);
+	}
+
+	@Test
+	public void testGetOutbreakDistrictCount() {
+
+		Long expectedCount = 15L;
+
+		when(getOutbreakService().getOutbreakDistrictCount(any(OutbreakCriteria.class)))
+				.thenReturn(expectedCount);
+
+		Long result = getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria());
+
+		assertEquals(expectedCount, result);
+	}
+
 }

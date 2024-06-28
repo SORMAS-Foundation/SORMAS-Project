@@ -34,6 +34,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.outbreak.OutbreakService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -656,6 +657,9 @@ public abstract class AbstractBeanTest {
 		return getBean(OutbreakFacadeEjbLocal.class);
 	}
 
+	public OutbreakService getOutbreakService() {
+		return getBean(OutbreakService.class);
+	}
 	public ImportFacade getImportFacade() {
 		return getBean(ImportFacadeEjbLocal.class);
 	}
