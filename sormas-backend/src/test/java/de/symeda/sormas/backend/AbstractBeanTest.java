@@ -34,6 +34,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.backend.disease.DiseaseFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -1091,4 +1093,9 @@ public abstract class AbstractBeanTest {
 	public SelfReportService getSelfReportService() {
 		return getBean(SelfReportService.class);
 	}
+
+	public DiseaseFacade getDiseaseFacade() {
+		return getBean(DiseaseFacadeEjb.DiseaseFacadeEjbLocal.class);
+	}
+
 }
