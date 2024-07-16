@@ -42,4 +42,44 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getRegionFacade().getAllActiveAsReference().size());
 	}
+
+
+	@Test
+	public void testGetAllRegion() {
+		// Arrange
+		creator.createRegion("region1");
+		creator.createRegion("region2");
+		getRegionService().doFlush();
+
+		// Act
+		List<RegionDto> results = getRegionFacade().getAllRegion();
+
+		// Assert
+		assertEquals(2, results.size());
+
+		RegionDto result1 = results.stream().filter(r -> r.getName().equals("region1")).findFirst().orElse(null);
+		RegionDto result2 = results.stream().filter(r -> r.getName().equals("region2")).findFirst().orElse(null);
+
+		assertEquals("region1", result1.getName());
+		assertEquals("region2", result2.getName());
+	}
+
+	@Test
+	public void testGetByName() {
+		// Arrange
+		creator.createRegion("region1");
+		getRegionService().doFlush();
+
+		// Act
+		List<RegionDto> results = getRegionFacade().getByName("region1", true);
+
+		// Assert
+		assertEquals(1, results.size());
+
+		RegionDto result1 = results.stream().filter(r -> r.getName().equals("region1")).findFirst().orElse(null);
+
+		assertEquals("region1", result1.getName());
+	}
+
+
 }
