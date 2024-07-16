@@ -59,6 +59,11 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 		return epiCurveGrouping;
 	}
 
+	public DashboardCriteria setEpiCurveGrouping(EpiCurveGrouping epigrouping) {
+		this.epiCurveGrouping = epigrouping;
+		return self;
+	}
+
 	public boolean isIncludeNotACaseClassification() {
 		return includeNotACaseClassification;
 	}

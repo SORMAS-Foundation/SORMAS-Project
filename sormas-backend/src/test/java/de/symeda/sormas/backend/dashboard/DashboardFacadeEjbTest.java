@@ -1,13 +1,12 @@
 package de.symeda.sormas.backend.dashboard;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.dashboard.*;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -15,10 +14,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.dashboard.DashboardCaseDto;
-import de.symeda.sormas.api.dashboard.DashboardCriteria;
-import de.symeda.sormas.api.dashboard.DashboardEventDto;
-import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -37,6 +32,9 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import org.testcontainers.shaded.org.apache.commons.lang3.time.DateUtils;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
@@ -308,4 +306,220 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 				rdcf);
 		}
 	}
+
+
+	@Test
+	public void testGetCasesCountByClassification() {
+
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Create cases with different classifications
+		creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person1").toReference(),
+				Disease.EVD,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person2").toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person3").toReference(),
+				Disease.EVD,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Get counts by classification
+		Map<CaseClassification, Integer> casesCountByClassification = getDashboardFacade().getCasesCountByClassification(dashboardCriteria);
+
+		// Verify the results
+		assertEquals(1, casesCountByClassification.get(CaseClassification.CONFIRMED));
+		assertEquals(1, casesCountByClassification.get(CaseClassification.PROBABLE));
+		assertEquals(1, casesCountByClassification.get(CaseClassification.SUSPECT));
+	}
+
+
+	@Test
+	public void testGetEpiCurveSeriesElementsPerCaseClassification() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Create cases with different classifications
+		creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person1").toReference(),
+				Disease.EVD,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person2").toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.setEpiCurveGrouping(EpiCurveGrouping.DAY)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		Map<Date, Map<CaseClassification, Integer>> result = getDashboardFacade().getEpiCurveSeriesElementsPerCaseClassification(dashboardCriteria);
+
+		// Assertions
+		assertEquals(3, result.size()); // Ensure three date entries within dateBetween range
+
+		// Validate the inner maps for each date
+		for (Map.Entry<Date, Map<CaseClassification, Integer>> entry : result.entrySet()) {
+			Date date = entry.getKey();
+			Map<CaseClassification, Integer> classifications = entry.getValue();
+
+			// Ensure the inner map is not null
+			assertNotNull(classifications);
+
+			// Validate the expected counts for each classification
+			if (DateHelper.isSameDay(date, currentDate)) {
+				assertEquals(2, classifications.size()); // Expecting two classifications for the current date
+				assertEquals(1, classifications.get(CaseClassification.CONFIRMED).intValue()); // Assuming 1 CONFIRMED case
+				assertEquals(1, classifications.get(CaseClassification.PROBABLE).intValue()); // Assuming 1 PROBABLE case
+			} else {
+				assertEquals(0, classifications.size()); // No cases expected for other dates
+			}
+		}
+	}
+
+
+
+	@Test
+	public void testGetEpiCurveSeriesElementsPerPresentCondition() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Create cases with different present conditions
+		createCasesForPersonWithCondition(PresentCondition.ALIVE, user.toReference(), rdcf, 2);
+		createCasesForPersonWithCondition(PresentCondition.DEAD, user.toReference(), rdcf, 3);
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.CORONAVIRUS)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.setEpiCurveGrouping(EpiCurveGrouping.DAY)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		Map<Date, Map<PresentCondition, Integer>> result = getDashboardFacade().getEpiCurveSeriesElementsPerPresentCondition(dashboardCriteria);
+
+		// Ensure the result map contains the expected currentDate without time comparison
+		boolean currentDateFound = false;
+		for (Date date : result.keySet()) {
+			if (DateUtils.isSameDay(date, currentDate)) {
+				currentDateFound = true;
+				Map<PresentCondition, Integer> conditionMap = result.get(date);
+
+				assertNotNull(conditionMap, "Condition map for currentDate is null in the result");
+
+				// Perform assertions on PresentCondition.ALIVE
+				Integer aliveCount = conditionMap.get(PresentCondition.ALIVE);
+				assertNotNull(aliveCount, "Alive count is null in the condition map");
+				assertEquals(2, aliveCount.intValue(), "Expected count for ALIVE");
+
+				// Perform assertions on PresentCondition.DEAD
+				Integer deadCount = conditionMap.get(PresentCondition.DEAD);
+				assertNotNull(deadCount, "Dead count is null in the condition map");
+				assertEquals(3, deadCount.intValue(), "Expected count for DEAD");
+
+				break;
+			}
+		}
+
+		assertTrue(currentDateFound, "CurrentDate not found in the result map");
+	}
+
+
+
+
+	@Test
+	public void testGetCaseMeasurePerDistrict() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		DashboardCaseMeasureDto result = getDashboardFacade().getCaseMeasurePerDistrict(dashboardCriteria);
+
+		// Assertions
+		assertNotNull(result); // Ensure the result is not null
+	}
+
+	@Test
+	public void testCountCasesConvertedFromContacts() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		long result = getDashboardFacade().countCasesConvertedFromContacts(dashboardCriteria);
+
+		// Assertions
+		assertEquals(0, result); // Assuming no cases converted from contacts
+	}
+
+
+
 }
