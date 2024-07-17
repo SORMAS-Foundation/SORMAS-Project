@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.dashboard;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import org.testcontainers.shaded.org.apache.commons.lang3.time.DateUtils;
 
+import static de.symeda.sormas.api.event.eventimport.EventImportEntities.createEvent;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DashboardFacadeEjbTest extends AbstractBeanTest {
@@ -473,9 +475,6 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(currentDateFound, "CurrentDate not found in the result map");
 	}
 
-
-
-
 	@Test
 	public void testGetCaseMeasurePerDistrict() {
 		// Create necessary data for testing
@@ -520,6 +519,202 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, result); // Assuming no cases converted from contacts
 	}
 
+	@Test
+	public void testGetEpiCurveSeriesElementsPerContactClassification() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
 
+		// Create cases
+		CaseDataDto case1 = creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person1").toReference(),
+				Disease.EVD,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		CaseDataDto case2 = creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person2").toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				currentDate,
+				rdcf);
+
+		// Create contacts with classifications
+		creator.createContact(
+				user.toReference(),
+				creator.createPerson("Contact", "Person1").toReference(),
+				case1,
+				rdcf,
+				ContactClassification.CONFIRMED,new Date());
+
+		creator.createContact(
+				user.toReference(),
+				creator.createPerson("Contact", "Person2").toReference(),
+				case2,
+				rdcf,
+				ContactClassification.UNCONFIRMED,new Date());
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.setEpiCurveGrouping(EpiCurveGrouping.DAY)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		Map<Date, Map<ContactClassification, Long>> result = getDashboardFacade().getEpiCurveSeriesElementsPerContactClassification(dashboardCriteria);
+
+		// Assertions
+		assertEquals(3, result.size()); // Ensure only one date entry for current date
+		assertTrue(result.containsKey(DateHelper.resetTime(currentDate))); // Ensure currentDate is in the map
+
+		// Get the map for currentDate
+		Map<ContactClassification, Long> classificationMap = result.get(DateHelper.resetTime(currentDate));
+		assertNotNull(classificationMap); // Ensure the classificationMap for currentDate is not null
+
+		// Perform assertions on ContactClassification.HIGH_RISK
+		Long confirmedContactCount = classificationMap.get(ContactClassification.CONFIRMED);
+		assertNotNull(confirmedContactCount); // Ensure the count for HIGH_RISK is not null
+		assertEquals(1L, confirmedContactCount.longValue()); // Check the count for HIGH_RISK
+
+		// Perform assertions on ContactClassification.LOW_RISK
+		Long unconfirmedCount = classificationMap.get(ContactClassification.UNCONFIRMED);
+		assertNotNull(unconfirmedCount); // Ensure the count for LOW_RISK is not null
+		assertEquals(1L, unconfirmedCount.longValue()); // Check the count for LOW_RISK
+	}
+
+	@Test
+	public void testGetEpiCurveSeriesElementsPerContactFollowUpUntil() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Create cases
+		CaseDataDto case1 = creator.createCase(
+				user.toReference(),
+				creator.createPerson("Case", "Person1").toReference(),
+				Disease.EVD,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.DONE,
+				currentDate,
+				rdcf);
+
+		// Create contacts with follow-up dates
+		creator.createContact(
+				user.toReference(),
+				creator.createPerson("Contact", "Person1").toReference(),
+				case1,
+				rdcf,
+				ContactClassification.CONFIRMED,
+				DateHelper.subtractDays(currentDate, 5)); // Example follow-up date 5 days before currentDate
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD)
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.setEpiCurveGrouping(EpiCurveGrouping.DAY)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		Map<Date, Integer> result = getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpUntil(dashboardCriteria);
+
+		// Assertions
+		assertEquals(3, result.size()); // Ensure only one date entry for current date
+		assertTrue(result.containsKey(DateHelper.resetTime(currentDate))); // Ensure currentDate is in the map
+	}
+
+
+	@Test
+	public void testGetEventCountByStatus() {
+		// Create necessary data for testing
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createSurveillanceSupervisor(rdcf);
+		Date currentDate = new Date();
+
+		// Create mock events with different statuses
+		creator.createEvent(user.toReference(), Disease.EVD, rdcf);
+		creator.createEvent(user.toReference(), Disease.MALARIA, rdcf);
+		creator.createEvent(user.toReference(), Disease.NEW_INFLUENZA, rdcf);
+
+		// Define dashboard criteria
+		DashboardCriteria dashboardCriteria = new DashboardCriteria()
+				.region(rdcf.region)
+				.district(rdcf.district)
+				.disease(Disease.EVD) // Adjust disease as needed for your test case
+				.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+				.dateBetween(DateHelper.subtractDays(currentDate, 1), DateHelper.addDays(currentDate, 1));
+
+		// Call the method under test
+		Map<EventStatus, Long> result = getDashboardFacade().getEventCountByStatus(dashboardCriteria);
+
+		// Assertions
+		assertNotNull(result); // Ensure result is not null
+
+		// Verify specific status counts (adjust these based on your mock events and expected logic)
+		assertTrue(result.containsKey(EventStatus.SIGNAL));
+		assertEquals(1L, result.getOrDefault(EventStatus.SIGNAL, 0L).longValue()); // Example assertion
+	}
+
+	@Test
+	public void testGetIntervalEndDate() {
+		DashboardFacadeEjb dashboardFacadeEjb = new DashboardFacadeEjb();
+
+		// Test case 1: DAY grouping
+		Date startDate1 = new Date(); // Replace with actual date values
+		Date expectedEndDate1 = DateHelper.getEndOfDay(startDate1);
+		assertEquals(expectedEndDate1, dashboardFacadeEjb.getIntervalEndDate(startDate1, EpiCurveGrouping.DAY));
+
+		// Test case 2: WEEK grouping
+		Date startDate2 = new Date(); // Replace with actual date values
+		Date expectedEndDate2 = DateHelper.getEndOfWeek(startDate2);
+		assertEquals(expectedEndDate2, dashboardFacadeEjb.getIntervalEndDate(startDate2, EpiCurveGrouping.WEEK));
+
+		// Test case 3: MONTH grouping
+		Date startDate3 = new Date(); // Replace with actual date values
+		Date expectedEndDate3 = DateHelper.getEndOfMonth(startDate3);
+		assertEquals(expectedEndDate3, dashboardFacadeEjb.getIntervalEndDate(startDate3, EpiCurveGrouping.MONTH));
+	}
+
+	// Method to test
+
+	@Test
+	public void testSetNewCaseDatesInCaseCriteria() {
+		DashboardFacadeEjb dashboardFacadeEjb = new DashboardFacadeEjb();
+
+		// Test case 1: DAY grouping
+		Date date1 = new Date(); // Replace with actual date values
+		DashboardCriteria dashboardCriteria1 = new DashboardCriteria()
+				.setEpiCurveGrouping(EpiCurveGrouping.DAY);
+		DashboardCriteria result1 = dashboardFacadeEjb.setNewCaseDatesInCaseCriteria(date1, dashboardCriteria1);
+		assertEquals(DateHelper.getStartOfDay(date1), result1.getDateFrom());
+		assertEquals(DateHelper.getEndOfDay(date1), result1.getDateTo());
+
+		// Test case 2: WEEK grouping
+		Date date2 = new Date(); // Replace with actual date values
+		DashboardCriteria dashboardCriteria2 = new DashboardCriteria()
+				.setEpiCurveGrouping(EpiCurveGrouping.WEEK);
+		DashboardCriteria result2 = dashboardFacadeEjb.setNewCaseDatesInCaseCriteria(date2, dashboardCriteria2);
+		assertEquals(DateHelper.getStartOfWeek(date2), result2.getDateFrom());
+		assertEquals(DateHelper.getEndOfWeek(date2), result2.getDateTo());
+
+		// Test case 3: MONTH grouping
+		Date date3 = new Date(); // Replace with actual date values
+		DashboardCriteria dashboardCriteria3 = new DashboardCriteria()
+				.setEpiCurveGrouping(EpiCurveGrouping.MONTH);
+		DashboardCriteria result3 = dashboardFacadeEjb.setNewCaseDatesInCaseCriteria(date3, dashboardCriteria3);
+		assertEquals(DateHelper.getStartOfMonth(date3), result3.getDateFrom());
+		assertEquals(DateHelper.getEndOfMonth(date3), result3.getDateTo());
+	}
 
 }

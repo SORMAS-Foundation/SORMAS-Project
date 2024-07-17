@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import de.symeda.sormas.api.contact.ContactClassification;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -963,6 +964,13 @@ public class TestDataCreator {
 
 		contact = beanTest.getContactFacade().save(contact);
 
+		return contact;
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze, RDCF rdcf, ContactClassification classification,Date contactDate) {
+		ContactDto contact = createContact(reportingUser, null, contactPerson, caze, contactDate, null, null, rdcf);
+		contact.setContactClassification(classification);
+		contact = beanTest.getContactFacade().save(contact);
 		return contact;
 	}
 
