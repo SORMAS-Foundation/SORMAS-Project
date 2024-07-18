@@ -976,7 +976,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return filter;
 	}
 
-	private boolean sampleAssignedToActiveEntity(String sampleUuid) {
+	protected boolean sampleAssignedToActiveEntity(String sampleUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
