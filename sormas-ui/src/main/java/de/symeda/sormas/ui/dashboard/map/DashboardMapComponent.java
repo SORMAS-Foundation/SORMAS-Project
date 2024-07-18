@@ -63,6 +63,7 @@ import de.symeda.sormas.ui.map.*;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.jetbrains.annotations.NotNull;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.math.BigDecimal;
@@ -135,9 +136,9 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		super(
-			dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
-			dashboardDataProvider,
-			null);
+				dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
+				dashboardDataProvider,
+				null);
 		if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 
 			setMargin(false);
@@ -493,52 +494,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				legendLayout.addComponent(facilitiesKeyLabel);
 
-				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
-				{
-					facilitiesKeyLayout.setSpacing(false);
-					facilitiesKeyLayout.setMargin(false);
-					HorizontalLayout legendEntry =
-							buildMarkerLegendEntry(MarkerIcon.FACILITY_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassifiedOnly));
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_SUSPECT, I18nProperties.getCaption(Captions.dashboardGt1SuspectCases));
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_PROBABLE, I18nProperties.getCaption(Captions.dashboardGt1ProbableCases));
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry =
-							buildMarkerLegendEntry(MarkerIcon.FACILITY_CONFIRMED, I18nProperties.getCaption(Captions.dashboardGt1ConfirmedCases));
-					facilitiesKeyLayout.addComponent(legendEntry);
-				}
+				HorizontalLayout facilitiesKeyLayout = createFacilitiesKeyLayout();
 				legendLayout.addComponent(facilitiesKeyLayout);
 			}
 
-			Label casesKeyLabel = new Label(I18nProperties.getString(Strings.entityCases));
-			if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY || mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
-				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
-			} else {
-				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			}
+			Label casesKeyLabel = createCasesKeyLabel();
 			legendLayout.addComponent(casesKeyLabel);
 
-			HorizontalLayout casesKeyLayout = new HorizontalLayout();
-			{
-				casesKeyLayout.setSpacing(false);
-				casesKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry =
-						buildMarkerLegendEntry(MarkerIcon.CASE_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassified));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_SUSPECT, I18nProperties.getCaption(Captions.dashboardSuspect));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_PROBABLE, I18nProperties.getCaption(Captions.dashboardProbable));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, I18nProperties.getCaption(Captions.dashboardConfirmed));
-				casesKeyLayout.addComponent(legendEntry);
-			}
+			HorizontalLayout casesKeyLayout = createCasesKeyLayout();
 			legendLayout.addComponent(casesKeyLayout);
 		}
 
@@ -552,20 +515,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			}
 			legendLayout.addComponent(contactsKeyLabel);
 
-			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
-			{
-				contactsKeyLayout.setSpacing(false);
-				contactsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry =
-						buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardNotAContact));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardUnconfirmedContact));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardConfirmedContact));
-				contactsKeyLayout.addComponent(legendEntry);
-			}
+			HorizontalLayout contactsKeyLayout = contactsKeyLayout();
 			legendLayout.addComponent(contactsKeyLayout);
 		}
 
@@ -579,27 +529,13 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			}
 			legendLayout.addComponent(eventsKeyLabel);
 
-			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
-			{
-				eventsKeyLayout.setSpacing(false);
-				eventsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventStatus.SIGNAL.toString());
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventStatus.EVENT.toString());
-				eventsKeyLayout.addComponent(legendEntry);
-			}
+			HorizontalLayout eventsKeyLayout = createEventsKeyLayout();
 			legendLayout.addComponent(eventsKeyLayout);
 		}
 
 		// Districts
 		if (showRegions && districtValuesLowerQuartile != null && districtValuesMedian != null && districtValuesUpperQuartile != null) {
-			Label districtsKeyLabel = new Label(I18nProperties.getString(Strings.entityDistricts));
-			if (showCases || showContacts || showEvents) {
-				CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
-			} else {
-				CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			}
+			Label districtsKeyLabel = createStyledLabel();
 			legendLayout.addComponent(districtsKeyLabel);
 			legendLayout.addComponent(
 					buildRegionLegend(
@@ -617,6 +553,82 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		}
 
 		return legendLayout;
+	}
+
+	private HorizontalLayout contactsKeyLayout() {
+		HorizontalLayout contactsKeyLayout = new HorizontalLayout();
+		{
+			contactsKeyLayout.setSpacing(false);
+			contactsKeyLayout.setMargin(false);
+			HorizontalLayout legendEntry =
+					buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardNotAContact));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			contactsKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardUnconfirmedContact));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			contactsKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardConfirmedContact));
+			contactsKeyLayout.addComponent(legendEntry);
+		}
+		return contactsKeyLayout;
+	}
+
+	private HorizontalLayout createCasesKeyLayout() {
+		HorizontalLayout casesKeyLayout = new HorizontalLayout();
+		{
+			casesKeyLayout.setSpacing(false);
+			casesKeyLayout.setMargin(false);
+			HorizontalLayout legendEntry =
+					buildMarkerLegendEntry(MarkerIcon.CASE_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassified));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			casesKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_SUSPECT, I18nProperties.getCaption(Captions.dashboardSuspect));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			casesKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_PROBABLE, I18nProperties.getCaption(Captions.dashboardProbable));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			casesKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, I18nProperties.getCaption(Captions.dashboardConfirmed));
+			casesKeyLayout.addComponent(legendEntry);
+		}
+		return casesKeyLayout;
+	}
+
+	private HorizontalLayout createEventsKeyLayout() {
+		HorizontalLayout eventsKeyLayout = new HorizontalLayout();
+		{
+			eventsKeyLayout.setSpacing(false);
+			eventsKeyLayout.setMargin(false);
+			HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventStatus.SIGNAL.toString());
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			eventsKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventStatus.EVENT.toString());
+			eventsKeyLayout.addComponent(legendEntry);
+		}
+		return eventsKeyLayout;
+	}
+
+	private HorizontalLayout createFacilitiesKeyLayout() {
+		HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
+		{
+			facilitiesKeyLayout.setSpacing(false);
+			facilitiesKeyLayout.setMargin(false);
+			HorizontalLayout legendEntry =
+					buildMarkerLegendEntry(MarkerIcon.FACILITY_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassifiedOnly));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			facilitiesKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_SUSPECT, I18nProperties.getCaption(Captions.dashboardGt1SuspectCases));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			facilitiesKeyLayout.addComponent(legendEntry);
+			legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_PROBABLE, I18nProperties.getCaption(Captions.dashboardGt1ProbableCases));
+			CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
+			facilitiesKeyLayout.addComponent(legendEntry);
+			legendEntry =
+					buildMarkerLegendEntry(MarkerIcon.FACILITY_CONFIRMED, I18nProperties.getCaption(Captions.dashboardGt1ConfirmedCases));
+			facilitiesKeyLayout.addComponent(legendEntry);
+		}
+		return facilitiesKeyLayout;
+
 	}
 
 	private void createPeriodFilters(VerticalLayout layersLayout) {
@@ -846,13 +858,13 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		if (showCases) {
 			count += FacadeProvider.getCaseFacade()
-				.countCasesForMap(
-					region,
-					district,
-					disease,
-					fromDate,
-					toDate,
-					showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType());
+					.countCasesForMap(
+							region,
+							district,
+							disease,
+							fromDate,
+							toDate,
+							showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType());
 		}
 
 		if (count < maxCount && showContacts) {
@@ -874,14 +886,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		if (showCases) {
 			showCaseMarkers(
-				FacadeProvider.getCaseFacade()
-					.getCasesForMap(
-						region,
-						district,
-						disease,
-						fromDate,
-						toDate,
-						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
+					FacadeProvider.getCaseFacade()
+							.getCasesForMap(
+									region,
+									district,
+									disease,
+									fromDate,
+									toDate,
+									showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
 		}
 		if (showContacts) {
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate, toDate));
@@ -1097,9 +1109,9 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		// "Expand" and "Collapse" buttons
 		Button expandMapButton =
-			ButtonHelper.createIconButtonWithCaption("expandMap", "", VaadinIcons.EXPAND, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+				ButtonHelper.createIconButtonWithCaption("expandMap", "", VaadinIcons.EXPAND, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 		Button collapseMapButton =
-			ButtonHelper.createIconButtonWithCaption("collapseMap", "", VaadinIcons.COMPRESS, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+				ButtonHelper.createIconButtonWithCaption("collapseMap", "", VaadinIcons.COMPRESS, null, CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 
 		expandMapButton.addClickListener(e -> {
 			externalExpandListener.accept(true);
@@ -1109,8 +1121,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		});
 
 
-        return mapHeaderLayout;
-    }
+		return mapHeaderLayout;
+	}
 
 	@Override
 	protected List<Component> getLegendComponents() {
@@ -1122,52 +1134,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				legendComponents.add(facilitiesKeyLabel);
 
-				HorizontalLayout facilitiesKeyLayout = new HorizontalLayout();
-				{
-					facilitiesKeyLayout.setSpacing(false);
-					facilitiesKeyLayout.setMargin(false);
-					HorizontalLayout legendEntry =
-						buildMarkerLegendEntry(MarkerIcon.FACILITY_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassifiedOnly));
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_SUSPECT, I18nProperties.getCaption(Captions.dashboardGt1SuspectCases));
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry = buildMarkerLegendEntry(MarkerIcon.FACILITY_PROBABLE, I18nProperties.getCaption(Captions.dashboardGt1ProbableCases));
-					CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-					facilitiesKeyLayout.addComponent(legendEntry);
-					legendEntry =
-						buildMarkerLegendEntry(MarkerIcon.FACILITY_CONFIRMED, I18nProperties.getCaption(Captions.dashboardGt1ConfirmedCases));
-					facilitiesKeyLayout.addComponent(legendEntry);
-				}
+				HorizontalLayout facilitiesKeyLayout = createFacilitiesKeyLayout();
 				legendComponents.add(facilitiesKeyLayout);
 			}
 
-			Label casesKeyLabel = new Label(I18nProperties.getString(Strings.entityCases));
-			if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY || mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
-				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
-			} else {
-				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			}
+			Label casesKeyLabel = createCasesKeyLabel();
 			legendComponents.add(casesKeyLabel);
 
-			HorizontalLayout casesKeyLayout = new HorizontalLayout();
-			{
-				casesKeyLayout.setSpacing(false);
-				casesKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry =
-					buildMarkerLegendEntry(MarkerIcon.CASE_UNCLASSIFIED, I18nProperties.getCaption(Captions.dashboardNotYetClassified));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_SUSPECT, I18nProperties.getCaption(Captions.dashboardSuspect));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_PROBABLE, I18nProperties.getCaption(Captions.dashboardProbable));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, I18nProperties.getCaption(Captions.dashboardConfirmed));
-				casesKeyLayout.addComponent(legendEntry);
-			}
+			HorizontalLayout casesKeyLayout = createCasesKeyLayout();
 			legendComponents.add(casesKeyLayout);
 		}
 
@@ -1181,20 +1155,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			}
 			legendComponents.add(contactsKeyLabel);
 
-			HorizontalLayout contactsKeyLayout = new HorizontalLayout();
-			{
-				contactsKeyLayout.setSpacing(false);
-				contactsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry =
-					buildMarkerLegendEntry(MarkerIcon.CONTACT_OK, I18nProperties.getCaption(Captions.dashboardNotAContact));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_OVERDUE, I18nProperties.getCaption(Captions.dashboardUnconfirmedContact));
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				contactsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CONTACT_LONG_OVERDUE, I18nProperties.getCaption(Captions.dashboardConfirmedContact));
-				contactsKeyLayout.addComponent(legendEntry);
-			}
+			HorizontalLayout contactsKeyLayout = contactsKeyLayout();
 			legendComponents.add(contactsKeyLayout);
 		}
 
@@ -1208,37 +1169,23 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			}
 			legendComponents.add(eventsKeyLabel);
 
-			HorizontalLayout eventsKeyLayout = new HorizontalLayout();
-			{
-				eventsKeyLayout.setSpacing(false);
-				eventsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventStatus.SIGNAL.toString());
-				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
-				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventStatus.EVENT.toString());
-				eventsKeyLayout.addComponent(legendEntry);
-			}
+			HorizontalLayout eventsKeyLayout =createEventsKeyLayout();
 			legendComponents.add(eventsKeyLayout);
 		}
 
 		// Districts
 		if (showRegions && districtValuesLowerQuartile != null && districtValuesMedian != null && districtValuesUpperQuartile != null) {
-			Label districtsKeyLabel = new Label(I18nProperties.getString(Strings.entityDistricts));
-			if (showCases || showContacts || showEvents) {
-				CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
-			} else {
-				CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-			}
+			Label districtsKeyLabel= createStyledLabel();
 			legendComponents.add(districtsKeyLabel);
 			legendComponents.add(
-				buildRegionLegend(
-					false,
-					caseMeasure,
-					emptyPopulationDistrictPresent,
-					districtValuesLowerQuartile,
-					districtValuesMedian,
-					districtValuesUpperQuartile,
-					InfrastructureHelper.CASE_INCIDENCE_DIVISOR));
+					buildRegionLegend(
+							false,
+							caseMeasure,
+							emptyPopulationDistrictPresent,
+							districtValuesLowerQuartile,
+							districtValuesMedian,
+							districtValuesUpperQuartile,
+							InfrastructureHelper.CASE_INCIDENCE_DIVISOR));
 
 			Label descLabel = new Label(I18nProperties.getString(Strings.infoDashboardIncidence));
 			CssStyles.style(descLabel, CssStyles.LABEL_SMALL);
@@ -1246,6 +1193,26 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		}
 
 		return legendComponents;
+	}
+
+	private Label createCasesKeyLabel() {
+		Label casesKeyLabel = new Label(I18nProperties.getString(Strings.entityCases));
+		if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY || mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
+			CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
+		} else {
+			CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		}
+		return casesKeyLabel;
+	}
+
+	private Label createStyledLabel() {
+		Label districtsKeyLabel = new Label(I18nProperties.getString(Strings.entityDistricts));
+		if (showCases || showContacts || showEvents) {
+			CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
+		} else {
+			CssStyles.style(districtsKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		}
+		return  districtsKeyLabel;
 	}
 
 	public static HorizontalLayout buildMapIconLegendEntry(String iconName, String labelCaption) {
@@ -1256,13 +1223,13 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	}
 
 	public static AbstractOrderedLayout buildRegionLegend(
-		boolean vertical,
-		CaseMeasure caseMeasure,
-		boolean emptyPopulationDistrictPresent,
-		BigDecimal districtShapesLowerQuartile,
-		BigDecimal districtShapesMedian,
-		BigDecimal districtShapesUpperQuartile,
-		int caseIncidenceDivisor) {
+			boolean vertical,
+			CaseMeasure caseMeasure,
+			boolean emptyPopulationDistrictPresent,
+			BigDecimal districtShapesLowerQuartile,
+			BigDecimal districtShapesMedian,
+			BigDecimal districtShapesUpperQuartile,
+			int caseIncidenceDivisor) {
 		AbstractOrderedLayout regionLegendLayout = vertical ? new VerticalLayout() : new HorizontalLayout();
 		regionLegendLayout.setSpacing(true);
 		CssStyles.style(regionLegendLayout, CssStyles.LAYOUT_MINIMAL);
@@ -1270,43 +1237,43 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		HorizontalLayout legendEntry;
 		switch (caseMeasure) {
-		case CASE_COUNT:
-			legendEntry = buildMapIconLegendEntry(
-				"lowest-region-small",
-				districtShapesLowerQuartile.compareTo(BigDecimal.ONE) > 0
-					? "1 - " + districtShapesLowerQuartile + " " + I18nProperties.getString(Strings.entityCases)
-					: "1 " + I18nProperties.getString(Strings.entityCase));
-			break;
-		case CASE_INCIDENCE:
-			legendEntry = buildMapIconLegendEntry(
-				"lowest-region-small",
-				"<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-					+ caseIncidenceDivisor);
-			break;
-		default:
-			throw new IllegalArgumentException(caseMeasure.toString());
+			case CASE_COUNT:
+				legendEntry = buildMapIconLegendEntry(
+						"lowest-region-small",
+						districtShapesLowerQuartile.compareTo(BigDecimal.ONE) > 0
+								? "1 - " + districtShapesLowerQuartile + " " + I18nProperties.getString(Strings.entityCases)
+								: "1 " + I18nProperties.getString(Strings.entityCase));
+				break;
+			case CASE_INCIDENCE:
+				legendEntry = buildMapIconLegendEntry(
+						"lowest-region-small",
+						"<= " + DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
+								+ caseIncidenceDivisor);
+				break;
+			default:
+				throw new IllegalArgumentException(caseMeasure.toString());
 		}
 		regionLegendLayout.addComponent(legendEntry);
 
 		if (districtShapesLowerQuartile.compareTo(districtShapesMedian) < 0) {
 			switch (caseMeasure) {
-			case CASE_COUNT:
-				legendEntry = buildMapIconLegendEntry(
-					"low-region-small",
-					districtShapesMedian.compareTo(districtShapesLowerQuartile.add(BigDecimal.ONE)) > 0
-						? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian + " "
-							+ I18nProperties.getString(Strings.entityCases)
-						: districtShapesMedian + " " + I18nProperties.getString(Strings.entityCases));
-				break;
-			case CASE_INCIDENCE:
-				legendEntry = buildMapIconLegendEntry(
-					"low-region-small",
-					DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
-						+ DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-						+ caseIncidenceDivisor);
-				break;
-			default:
-				throw new IllegalArgumentException(caseMeasure.toString());
+				case CASE_COUNT:
+					legendEntry = buildMapIconLegendEntry(
+							"low-region-small",
+							districtShapesMedian.compareTo(districtShapesLowerQuartile.add(BigDecimal.ONE)) > 0
+									? districtShapesLowerQuartile.add(BigDecimal.ONE) + " - " + districtShapesMedian + " "
+									+ I18nProperties.getString(Strings.entityCases)
+									: districtShapesMedian + " " + I18nProperties.getString(Strings.entityCases));
+					break;
+				case CASE_INCIDENCE:
+					legendEntry = buildMapIconLegendEntry(
+							"low-region-small",
+							DataHelper.getTruncatedBigDecimal(districtShapesLowerQuartile.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
+									+ DataHelper.getTruncatedBigDecimal(districtShapesMedian) + " " + I18nProperties.getString(Strings.entityCases) + " / "
+									+ caseIncidenceDivisor);
+					break;
+				default:
+					throw new IllegalArgumentException(caseMeasure.toString());
 			}
 
 			regionLegendLayout.addComponent(legendEntry);
@@ -1314,42 +1281,42 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 		if (districtShapesMedian.compareTo(districtShapesUpperQuartile) < 0) {
 			switch (caseMeasure) {
-			case CASE_COUNT:
-				legendEntry = buildMapIconLegendEntry(
-					"high-region-small",
-					districtShapesUpperQuartile.compareTo(districtShapesMedian.add(BigDecimal.ONE)) > 0
-						? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile + " "
-							+ I18nProperties.getString(Strings.entityCases)
-						: districtShapesUpperQuartile + " " + I18nProperties.getString(Strings.entityCases));
-				break;
-			case CASE_INCIDENCE:
-				legendEntry = buildMapIconLegendEntry(
-					"high-region-small",
-					DataHelper.getTruncatedBigDecimal(districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
-						+ DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-						+ caseIncidenceDivisor);
-				break;
-			default:
-				throw new IllegalArgumentException(caseMeasure.toString());
+				case CASE_COUNT:
+					legendEntry = buildMapIconLegendEntry(
+							"high-region-small",
+							districtShapesUpperQuartile.compareTo(districtShapesMedian.add(BigDecimal.ONE)) > 0
+									? districtShapesMedian.add(BigDecimal.ONE) + " - " + districtShapesUpperQuartile + " "
+									+ I18nProperties.getString(Strings.entityCases)
+									: districtShapesUpperQuartile + " " + I18nProperties.getString(Strings.entityCases));
+					break;
+				case CASE_INCIDENCE:
+					legendEntry = buildMapIconLegendEntry(
+							"high-region-small",
+							DataHelper.getTruncatedBigDecimal(districtShapesMedian.add(new BigDecimal(0.1)).setScale(1, RoundingMode.HALF_UP)) + " - "
+									+ DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
+									+ caseIncidenceDivisor);
+					break;
+				default:
+					throw new IllegalArgumentException(caseMeasure.toString());
 			}
 
 			regionLegendLayout.addComponent(legendEntry);
 		}
 
 		switch (caseMeasure) {
-		case CASE_COUNT:
-			legendEntry = buildMapIconLegendEntry(
-				"highest-region-small",
-				"> " + districtShapesUpperQuartile + " " + I18nProperties.getString(Strings.entityCases));
-			break;
-		case CASE_INCIDENCE:
-			legendEntry = buildMapIconLegendEntry(
-				"highest-region-small",
-				"> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
-					+ caseIncidenceDivisor);
-			break;
-		default:
-			throw new IllegalArgumentException(caseMeasure.toString());
+			case CASE_COUNT:
+				legendEntry = buildMapIconLegendEntry(
+						"highest-region-small",
+						"> " + districtShapesUpperQuartile + " " + I18nProperties.getString(Strings.entityCases));
+				break;
+			case CASE_INCIDENCE:
+				legendEntry = buildMapIconLegendEntry(
+						"highest-region-small",
+						"> " + DataHelper.getTruncatedBigDecimal(districtShapesUpperQuartile) + " " + I18nProperties.getString(Strings.entityCases) + " / "
+								+ caseIncidenceDivisor);
+				break;
+			default:
+				throw new IllegalArgumentException(caseMeasure.toString());
 		}
 		regionLegendLayout.addComponent(legendEntry);
 
@@ -1400,14 +1367,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		map.addPolygonGroup(REGIONS_GROUP_ID, regionPolygons);
 
 		List<Pair<DistrictDto, BigDecimal>> measurePerDistrict =
-			FacadeProvider.getCaseFacade().getCaseMeasurePerDistrict(fromDate, toDate, disease, caseMeasure);
+				FacadeProvider.getCaseFacade().getCaseMeasurePerDistrict(fromDate, toDate, disease, caseMeasure);
 		if (caseMeasure == CaseMeasure.CASE_COUNT) {
 			districtValuesLowerQuartile =
-				measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.25)).getElement1() : null;
+					measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.25)).getElement1() : null;
 			districtValuesMedian =
-				measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
+					measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.5)).getElement1() : null;
 			districtValuesUpperQuartile =
-				measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
+					measurePerDistrict.size() > 0 ? measurePerDistrict.get((int) (measurePerDistrict.size() * 0.75)).getElement1() : null;
 		} else {
 			// For case incidence, districts without or with a population <= 0 should not be
 			// used for the calculation of the quartiles because they will falsify the
@@ -1416,14 +1383,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			measurePerDistrictWithoutMissingPopulations.addAll(measurePerDistrict);
 			measurePerDistrictWithoutMissingPopulations.removeIf(d -> d.getElement1() == null || d.getElement1().intValue() <= 0);
 			districtValuesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
-				? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.25)).getElement1()
-				: null;
+					? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.25)).getElement1()
+					: null;
 			districtValuesMedian = measurePerDistrictWithoutMissingPopulations.size() > 0
-				? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1()
-				: null;
+					? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1()
+					: null;
 			districtValuesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
-				? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1()
-				: null;
+					? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1()
+					: null;
 		}
 
 		List<LeafletPolygon> districtPolygons = new ArrayList<LeafletPolygon>();
@@ -1525,30 +1492,36 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		}
 
 		for (MapCaseDto caze : mapCaseDtos) {
-			LeafletMarker marker = new LeafletMarker();
-			CaseClassification caseClassification = caze.getCaseClassification();
-			if (caseClassification == CaseClassification.CONFIRMED
-				|| caseClassification == CaseClassification.CONFIRMED_NO_SYMPTOMS
-				|| caseClassification == CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS) {
-				marker.setIcon(MarkerIcon.CASE_CONFIRMED);
-			} else if (caseClassification == CaseClassification.PROBABLE) {
-				marker.setIcon(MarkerIcon.CASE_PROBABLE);
-			} else if (caseClassification == CaseClassification.SUSPECT) {
-				marker.setIcon(MarkerIcon.CASE_SUSPECT);
-			} else {
-				marker.setIcon(MarkerIcon.CASE_UNCLASSIFIED);
-			}
-
-			if (caze.getAddressLat() != null && caze.getAddressLon() != null) {
-				marker.setLatLon(caze.getAddressLat(), caze.getAddressLon());
-			} else {
-				marker.setLatLon(caze.getReportLat(), caze.getReportLon());
-			}
+			LeafletMarker marker = getLeafletMarker(caze);
 
 			caseMarkers.add(marker);
 		}
 
 		map.addMarkerGroup("cases", caseMarkers);
+	}
+
+	@NotNull
+	private static LeafletMarker getLeafletMarker(MapCaseDto caze) {
+		LeafletMarker marker = new LeafletMarker();
+		CaseClassification caseClassification = caze.getCaseClassification();
+		if (caseClassification == CaseClassification.CONFIRMED
+				|| caseClassification == CaseClassification.CONFIRMED_NO_SYMPTOMS
+				|| caseClassification == CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS) {
+			marker.setIcon(MarkerIcon.CASE_CONFIRMED);
+		} else if (caseClassification == CaseClassification.PROBABLE) {
+			marker.setIcon(MarkerIcon.CASE_PROBABLE);
+		} else if (caseClassification == CaseClassification.SUSPECT) {
+			marker.setIcon(MarkerIcon.CASE_SUSPECT);
+		} else {
+			marker.setIcon(MarkerIcon.CASE_UNCLASSIFIED);
+		}
+
+		if (caze.getAddressLat() != null && caze.getAddressLon() != null) {
+			marker.setLatLon(caze.getAddressLat(), caze.getAddressLon());
+		} else {
+			marker.setLatLon(caze.getReportLat(), caze.getReportLon());
+		}
+		return marker;
 	}
 
 	private void fillCaseLists(List<MapCaseDto> cases) {
@@ -1558,7 +1531,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			if (caseClassificationOption == MapCaseClassificationOption.CONFIRMED_CASES_ONLY && classification != CaseClassification.CONFIRMED)
 				continue;
 			boolean hasCaseGps =
-				(caze.getAddressLat() != null && caze.getAddressLon() != null) || (caze.getReportLat() != null && caze.getReportLon() != null);
+					(caze.getAddressLat() != null && caze.getAddressLon() != null) || (caze.getReportLat() != null && caze.getReportLon() != null);
 			boolean hasFacilityGps = caze.getHealthFacilityLat() != null && caze.getHealthFacilityLon() != null;
 
 			if (mapCaseDisplayMode == MapCaseDisplayMode.CASE_ADDRESS) {
@@ -1568,8 +1541,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 				mapCaseDtos.add(caze);
 			} else {
 				if (FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
-					|| FacilityDto.OTHER_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
-					|| !hasFacilityGps) {
+						|| FacilityDto.OTHER_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
+						|| !hasFacilityGps) {
 					if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;
@@ -1638,18 +1611,18 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			//				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
 			//			}
 			switch (contact.getContactClassification()) {
-			case CONFIRMED:
-				icon = MarkerIcon.CONTACT_LONG_OVERDUE;
-				break;
-			case UNCONFIRMED:
-				icon = MarkerIcon.CONTACT_OVERDUE;
-				break;
-			case NO_CONTACT:
-				icon = MarkerIcon.CONTACT_OK;
-				break;
-			default:
-				icon = MarkerIcon.CONTACT_OK;
-				break;
+				case CONFIRMED:
+					icon = MarkerIcon.CONTACT_LONG_OVERDUE;
+					break;
+				case UNCONFIRMED:
+					icon = MarkerIcon.CONTACT_OVERDUE;
+					break;
+				case NO_CONTACT:
+					icon = MarkerIcon.CONTACT_OK;
+					break;
+				default:
+					icon = MarkerIcon.CONTACT_OK;
+					break;
 			}
 
 			LeafletMarker marker = new LeafletMarker();
@@ -1678,14 +1651,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
 			switch (event.getEventStatus()) {
-			case EVENT:
-				icon = MarkerIcon.EVENT_OUTBREAK;
-				break;
-			case SIGNAL:
-				icon = MarkerIcon.EVENT_RUMOR;
-				break;
-			default:
-				continue;
+				case EVENT:
+					icon = MarkerIcon.EVENT_OUTBREAK;
+					break;
+				case SIGNAL:
+					icon = MarkerIcon.EVENT_RUMOR;
+					break;
+				default:
+					continue;
 			}
 
 			// Because events are pulled from the dashboardDataProvider, we do not need to add additional filters for event dates here
@@ -1719,31 +1692,31 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	protected void onMarkerClicked(String groupId, int markerIndex) {
 
 		switch (groupId) {
-		case CASES_GROUP_ID:
-			if (markerIndex < markerCaseFacilities.size()) {
-				FacilityReferenceDto facility = markerCaseFacilities.get(markerIndex);
-				VerticalLayout layout = new VerticalLayout();
-				Window window = VaadinUiUtil.showPopupWindow(layout);
-				CasePopupGrid caseGrid = new CasePopupGrid(window, facility, DashboardMapComponent.this);
-				caseGrid.setHeightMode(HeightMode.ROW);
-				layout.addComponent(caseGrid);
-				layout.setMargin(true);
-				FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facility.getUuid());
-				window.setCaption(I18nProperties.getCaption(Captions.dashboardCasesIn) + " " + facilityDto.buildCaption());
-			} else {
-				markerIndex -= markerCaseFacilities.size();
-				MapCaseDto caze = mapCaseDtos.get(markerIndex);
-				ControllerProvider.getCaseController().navigateToCase(caze.getUuid(), true);
-			}
-			break;
-		case CONTACTS_GROUP_ID:
-			MapContactDto contact = markerContacts.get(markerIndex);
-			ControllerProvider.getContactController().navigateToData(contact.getUuid(), true);
-			break;
-		case EVENTS_GROUP_ID:
-			DashboardEventDto event = markerEvents.get(markerIndex);
-			ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
-			break;
+			case CASES_GROUP_ID:
+				if (markerIndex < markerCaseFacilities.size()) {
+					FacilityReferenceDto facility = markerCaseFacilities.get(markerIndex);
+					VerticalLayout layout = new VerticalLayout();
+					Window window = VaadinUiUtil.showPopupWindow(layout);
+					CasePopupGrid caseGrid = new CasePopupGrid(window, facility, DashboardMapComponent.this);
+					caseGrid.setHeightMode(HeightMode.ROW);
+					layout.addComponent(caseGrid);
+					layout.setMargin(true);
+					FacilityDto facilityDto = FacadeProvider.getFacilityFacade().getByUuid(facility.getUuid());
+					window.setCaption(I18nProperties.getCaption(Captions.dashboardCasesIn) + " " + facilityDto.buildCaption());
+				} else {
+					markerIndex -= markerCaseFacilities.size();
+					MapCaseDto caze = mapCaseDtos.get(markerIndex);
+					ControllerProvider.getCaseController().navigateToCase(caze.getUuid(), true);
+				}
+				break;
+			case CONTACTS_GROUP_ID:
+				MapContactDto contact = markerContacts.get(markerIndex);
+				ControllerProvider.getContactController().navigateToData(contact.getUuid(), true);
+				break;
+			case EVENTS_GROUP_ID:
+				DashboardEventDto event = markerEvents.get(markerIndex);
+				ControllerProvider.getEventController().navigateToData(event.getUuid(), true);
+				break;
 		}
 	}
 
@@ -1772,15 +1745,15 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		if (!forced && maxDisplayCount >= 0) {
 			count = getMarkerCount(fromDate, toDate, maxDisplayCount);
 		}
-if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
-	if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
-		makeMapOverlayVisible(maxDisplayCount);
-	} else {
-		makeMapOverlayInvisible();
+		if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
+			if (!forced && maxDisplayCount >= 0 && count > maxDisplayCount) {
+				makeMapOverlayVisible(maxDisplayCount);
+			} else {
+				makeMapOverlayInvisible();
 
-		loadMapData(fromDate, toDate);
-	}
-}
+				loadMapData(fromDate, toDate);
+			}
+		}
 	}
 
 	public void refreshMapDashboard() {
@@ -1799,3 +1772,7 @@ if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 	}
 
 }
+
+
+
+
