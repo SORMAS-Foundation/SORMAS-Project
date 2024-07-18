@@ -26,7 +26,6 @@ import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.*;

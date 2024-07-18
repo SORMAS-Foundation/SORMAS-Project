@@ -1,20 +1,12 @@
 package de.symeda.sormas.backend.dashboard;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.dashboard.*;
-import org.junit.jupiter.api.Test;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.dashboard.*;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -33,9 +25,14 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.org.apache.commons.lang3.time.DateUtils;
 
-import static de.symeda.sormas.api.event.eventimport.EventImportEntities.createEvent;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DashboardFacadeEjbTest extends AbstractBeanTest {
@@ -479,7 +476,6 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	public void testGetCaseMeasurePerDistrict() {
 		// Create necessary data for testing
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		Date currentDate = new Date();
 
 		// Define dashboard criteria
@@ -501,7 +497,6 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	public void testCountCasesConvertedFromContacts() {
 		// Create necessary data for testing
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createSurveillanceSupervisor(rdcf);
 		Date currentDate = new Date();
 
 		// Define dashboard criteria

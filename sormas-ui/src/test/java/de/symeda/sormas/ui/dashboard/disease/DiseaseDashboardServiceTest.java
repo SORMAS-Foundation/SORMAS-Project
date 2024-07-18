@@ -1,30 +1,11 @@
 package de.symeda.sormas.ui.dashboard.disease;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseFacadeEjb;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -32,26 +13,36 @@ import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.dashboard.DashboardService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class DiseaseDashboardServiceTest {
-
-    @Mock
-    private CaseFacadeEjbLocal caseFacade;
 
     @Mock
     private EventFacadeEjbLocal eventFacade;
 
     @Mock
     private OutbreakFacadeEjbLocal outbreakFacade;
-
-    @Mock
-    private PersonFacadeEjbLocal personFacade;
 
     @Mock
     private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;

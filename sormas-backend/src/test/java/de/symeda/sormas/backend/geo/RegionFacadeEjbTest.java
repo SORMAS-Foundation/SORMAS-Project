@@ -1,27 +1,19 @@
 package de.symeda.sormas.backend.geo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
-import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.util.QueryHelper;
-import org.junit.jupiter.api.Test;
-
-import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import org.mockito.Mockito;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RegionFacadeEjbTest extends AbstractBeanTest {
 

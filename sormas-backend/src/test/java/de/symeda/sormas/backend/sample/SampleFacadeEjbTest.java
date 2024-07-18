@@ -17,39 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import de.symeda.sormas.backend.contact.Contact;
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Test;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.*;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -58,13 +28,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.dashboard.sample.MapSampleDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventInvestigationStatus;
-import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.event.*;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -76,18 +40,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.sample.AdditionalTestingStatus;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleAssociationType;
-import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.sample.*;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -96,6 +49,16 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 

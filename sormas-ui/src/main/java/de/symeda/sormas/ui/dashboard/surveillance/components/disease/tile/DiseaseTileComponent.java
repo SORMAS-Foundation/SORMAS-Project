@@ -30,6 +30,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import org.jetbrains.annotations.NotNull;
 
 public class DiseaseTileComponent extends VerticalLayout {
 
@@ -108,20 +109,8 @@ public class DiseaseTileComponent extends VerticalLayout {
 			comparisonLayout.setMargin(false);
 			comparisonLayout.setSpacing(false);
 
-			Label growthLabel = new Label("", ContentMode.HTML);
-			String chevronType;
-			if (previousCasesCount < casesCount) {
-				chevronType = VaadinIcons.CHEVRON_UP.getHtml();
-			} else if (previousCasesCount > casesCount) {
-				chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
-			} else {
-				chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
-			}
-			growthLabel.setValue("<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-"
-					+ CssStyles.LABEL_WHITE + " align-center v-label-align-center bold v-label-bold v-has-width\" "
-					+ "	  style=\"margin-top: 3px;\">"
-					+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
-					+ "</div>");
+
+			Label growthLabel = getLabel(casesCount, previousCasesCount);
 
 			comparisonLayout.addComponent(growthLabel);
 
@@ -144,6 +133,25 @@ public class DiseaseTileComponent extends VerticalLayout {
 		addComponent(layout);
 	}
 
+	@NotNull
+	private static Label getLabel(Long casesCount, Long previousCasesCount) {
+		Label growthLabel = new Label("", ContentMode.HTML);
+		String chevronType;
+		if (previousCasesCount < casesCount) {
+			chevronType = VaadinIcons.CHEVRON_UP.getHtml();
+		} else if (previousCasesCount > casesCount) {
+			chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
+		} else {
+			chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
+		}
+		growthLabel.setValue("<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-"
+				+ CssStyles.LABEL_WHITE + " align-center v-label-align-center bold v-label-bold v-has-width\" "
+				+ "	  style=\"margin-top: 3px;\">"
+				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
+				+ "</div>");
+		return growthLabel;
+	}
+
 	private void addStatsLayout(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
 
 		Long fatalities = diseaseBurden.getCaseDeathCount();
@@ -158,7 +166,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
 
 		StatsItem lastReportItem = new StatsItem.Builder(Captions.dashboardLastReport,
-				district.length() == 0 ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
+                district.isEmpty() ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
 		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
 		layout.addComponent(lastReportItem);
 

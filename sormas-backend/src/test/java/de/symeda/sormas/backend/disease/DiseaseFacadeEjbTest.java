@@ -3,36 +3,18 @@ package de.symeda.sormas.backend.disease;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.outbreak.OutbreakFacade;
-import de.symeda.sormas.api.user.DefaultUserRole;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.dashboard.DashboardService;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
 
@@ -115,7 +97,7 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
         );
 
         assertNotNull(result);
-        assertEquals(region, result.getRegion());
+        assertEquals(region.getUuid(), result.getRegion().getUuid());
         assertEquals("0", result.getTotal());
         assertEquals("0", result.getActiveCases());
         assertEquals("0", result.getRecovered());
