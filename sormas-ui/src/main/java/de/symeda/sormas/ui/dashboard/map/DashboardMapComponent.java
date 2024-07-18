@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.dashboard.map;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -401,63 +402,10 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 				});
 				layersLayout.addComponent(showEventsCheckBox);
 				if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasNationJurisdictionLevel()) {
-					OptionGroup regionMapVisualizationSelect = new OptionGroup();
-					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
-					regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());
-					regionMapVisualizationSelect.setValue(caseMeasure);
-					regionMapVisualizationSelect.addValueChangeListener(event -> {
-						caseMeasure = (CaseMeasure) event.getProperty().getValue();
-						refreshMapDashboard(true);
-					});
-
-					HorizontalLayout showRegionsLayout = new HorizontalLayout();
-					{
-						showRegionsLayout.setMargin(false);
-						showRegionsLayout.setSpacing(false);
-						CheckBox showRegionsCheckBox = new CheckBox();
-						showRegionsCheckBox.setId(Captions.dashboardShowRegions);
-						showRegionsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowRegions));
-						showRegionsCheckBox.setValue(showRegions);
-						showRegionsCheckBox.addValueChangeListener(e -> {
-							showRegions = (boolean) e.getProperty().getValue();
-							regionMapVisualizationSelect.setEnabled(showRegions);
-							regionMapVisualizationSelect.setValue(caseMeasure);
-							refreshMapDashboard(true);
-						});
-						showRegionsLayout.addComponent(showRegionsCheckBox);
-
-						Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-						infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseIncidence));
-						CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY, CssStyles.HSPACE_LEFT_3);
-						infoLabel.setHeightUndefined();
-						showRegionsLayout.addComponent(infoLabel);
-						showRegionsLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
-					}
-					layersLayout.addComponent(showRegionsLayout);
-					layersLayout.addComponent(regionMapVisualizationSelect);
-					regionMapVisualizationSelect.setEnabled(showRegions);
+					regionalOptionGroupHorizontalLayoutConfigMap(layersLayout);
 				}
 
-				CheckBox hideOtherCountriesCheckBox = new CheckBox();
-				hideOtherCountriesCheckBox.setId(Captions.dashboardHideOtherCountries);
-				hideOtherCountriesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
-				hideOtherCountriesCheckBox.setValue(hideOtherCountries);
-				hideOtherCountriesCheckBox.addValueChangeListener(e -> {
-					hideOtherCountries = (boolean) e.getProperty().getValue();
-					refreshMapDashboard(true);
-				});
-				CssStyles.style(hideOtherCountriesCheckBox, CssStyles.VSPACE_3);
-				layersLayout.addComponent(hideOtherCountriesCheckBox);
-
-				CheckBox showCurrentEpiSituationCB = new CheckBox();
-				showCurrentEpiSituationCB.setId(Captions.dashboardMapShowEpiSituation);
-				showCurrentEpiSituationCB.setCaption(I18nProperties.getCaption(Captions.dashboardMapShowEpiSituation));
-				showCurrentEpiSituationCB.setValue(false);
-				showCurrentEpiSituationCB.addValueChangeListener(e -> {
-					showCurrentEpiSituation = (boolean) e.getProperty().getValue();
-					refreshMapDashboard(true);
-				});
-				layersLayout.addComponent(showCurrentEpiSituationCB);
+				checkBoxesHideOtherCountriesAndShowCurrentEpiSituationCBConfig(layersLayout);
 
 				createPeriodFilters(layersLayout);
 			}
@@ -469,6 +417,44 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		mapFooterLayout.setComponentAlignment(layersDropdown, Alignment.MIDDLE_RIGHT);
 
 		return mapFooterLayout;
+	}
+
+	private void regionalOptionGroupHorizontalLayoutConfigMap(VerticalLayout layersLayout) {
+		OptionGroup regionMapVisualizationSelect = new OptionGroup();
+		regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
+		regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());
+		regionMapVisualizationSelect.setValue(caseMeasure);
+		regionMapVisualizationSelect.addValueChangeListener(event -> {
+			caseMeasure = (CaseMeasure) event.getProperty().getValue();
+			refreshMapDashboard(true);
+		});
+
+		HorizontalLayout showRegionsLayout = new HorizontalLayout();
+		{
+			showRegionsLayout.setMargin(false);
+			showRegionsLayout.setSpacing(false);
+			CheckBox showRegionsCheckBox = new CheckBox();
+			showRegionsCheckBox.setId(Captions.dashboardShowRegions);
+			showRegionsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowRegions));
+			showRegionsCheckBox.setValue(showRegions);
+			showRegionsCheckBox.addValueChangeListener(e -> {
+				showRegions = (boolean) e.getProperty().getValue();
+				regionMapVisualizationSelect.setEnabled(showRegions);
+				regionMapVisualizationSelect.setValue(caseMeasure);
+				refreshMapDashboard(true);
+			});
+			showRegionsLayout.addComponent(showRegionsCheckBox);
+
+			Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+			infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseIncidence));
+			CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY, CssStyles.HSPACE_LEFT_3);
+			infoLabel.setHeightUndefined();
+			showRegionsLayout.addComponent(infoLabel);
+			showRegionsLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
+		}
+		layersLayout.addComponent(showRegionsLayout);
+		layersLayout.addComponent(regionMapVisualizationSelect);
+		regionMapVisualizationSelect.setEnabled(showRegions);
 	}
 
 	private VerticalLayout createMapLegend() {
@@ -1023,43 +1009,13 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		}
 
 		if (UiUtil.hasNationJurisdictionLevel() && UiUtil.permitted(UserRight.CASE_VIEW)) {
-			OptionGroup regionMapVisualizationSelect = new OptionGroup();
-			regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
-			regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());
-			regionMapVisualizationSelect.setValue(caseMeasure);
-			regionMapVisualizationSelect.addValueChangeListener(event -> {
-				caseMeasure = (CaseMeasure) event.getProperty().getValue();
-				refreshMapDashboard(true);
-			});
-
-			HorizontalLayout showRegionsLayout = new HorizontalLayout();
-			{
-				showRegionsLayout.setMargin(false);
-				showRegionsLayout.setSpacing(false);
-				CheckBox showRegionsCheckBox = new CheckBox();
-				showRegionsCheckBox.setId(Captions.dashboardShowRegions);
-				showRegionsCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardShowRegions));
-				showRegionsCheckBox.setValue(showRegions);
-				showRegionsCheckBox.addValueChangeListener(e -> {
-					showRegions = (boolean) e.getProperty().getValue();
-					regionMapVisualizationSelect.setEnabled(showRegions);
-					regionMapVisualizationSelect.setValue(caseMeasure);
-					refreshMapDashboard(true);
-				});
-				showRegionsLayout.addComponent(showRegionsCheckBox);
-
-				Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-				infoLabel.setDescription(I18nProperties.getString(Strings.infoCaseIncidence));
-				CssStyles.style(infoLabel, CssStyles.LABEL_MEDIUM, CssStyles.LABEL_SECONDARY, CssStyles.HSPACE_LEFT_3);
-				infoLabel.setHeightUndefined();
-				showRegionsLayout.addComponent(infoLabel);
-				showRegionsLayout.setComponentAlignment(infoLabel, Alignment.TOP_CENTER);
-			}
-			layersLayout.addComponent(showRegionsLayout);
-			layersLayout.addComponent(regionMapVisualizationSelect);
-			regionMapVisualizationSelect.setEnabled(showRegions);
+			regionalOptionGroupHorizontalLayoutConfigMap(layersLayout);
 		}
 
+		checkBoxesHideOtherCountriesAndShowCurrentEpiSituationCBConfig(layersLayout);
+	}
+
+	private void checkBoxesHideOtherCountriesAndShowCurrentEpiSituationCBConfig(VerticalLayout layersLayout) {
 		CheckBox hideOtherCountriesCheckBox = new CheckBox();
 		hideOtherCountriesCheckBox.setId(Captions.dashboardHideOtherCountries);
 		hideOtherCountriesCheckBox.setCaption(I18nProperties.getCaption(Captions.dashboardHideOtherCountries));
