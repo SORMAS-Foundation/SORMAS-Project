@@ -28,16 +28,14 @@ import de.symeda.sormas.backend.user.User;
  */
 public class PasswordResetEvent {
 
-	private final User user;
+    private final User user;
 
-	public PasswordResetEvent(User user) {
-		this.user = user;
-	}
+    public PasswordResetEvent(User user) {
+        this.user = user;
+    }
 
-
-
-	public User getUser() {
-		return user;
-	}
+    public User getUser() {
+        return user;
+    }
 
 }

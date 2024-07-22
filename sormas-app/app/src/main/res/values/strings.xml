@@ -288,7 +288,7 @@
     <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
     <string name="caption_sync_deleted">%1$s deleted</string>
     <string name="caption_event_search_field">ID, title, description</string>
-`
+    `
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
     <string name="confirmation_pick_gps">Are you in this place right now?</string>
@@ -562,8 +562,9 @@
     <string name="message_case_infrastructure_data_changed">You have changed the infrastructure data of this case. Do you want to transfer the case to the new health facility (the hospitalization data will be updated) or do you only want to edit the data to correct a mistake?</string>
     <string name="message_download_app_failed">The download of the new SORMAS version failed. Please make sure you have the best internet connection possible and try again or inform a supervisor if you keep getting this error despite a good internet connection.</string>
     <string name="message_empty_password">Please enter a password.</string>
-    <string name="message_incorrect_password">Please your password is incorrect.</string>
-    <string name="message_not_match_password">Password does not match.</string>
+    <string name="message_incorrect_current_password">Please your Current Password is incorrect.</string>
+    <string name="message_incorrect_new_password">Please your New Password is incorrect.</string>
+    <string name="message_not_match_password">Passwords does not match.</string>
     <string name="message_empty_username">Please enter a username.</string>
     <string name="message_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
     <string name="message_enter_person_name">Please enter a first and last name for the new person.</string>
@@ -746,11 +747,11 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="hint_enter_current_password" >"Enter Current Password"</string>
-    <string name="hint_enter_new_password" >"Enter New Password"</string>
-    <string name="hint_enter_confirm_new_password" >"Enter Confirm Password"</string>
-    <string name="caption_enter_current_password" >"Enter Current Password"</string>
-    <string name="caption_enter_new_password" >"Enter new Password"</string>
-    <string name="caption_confirm_new_password" >"Confirm Password"</string>
+    <string name="hint_enter_current_password">"Enter Current Password"</string>
+    <string name="hint_enter_new_password">"Enter New Password"</string>
+    <string name="hint_enter_confirm_new_password">"Enter Confirm Password"</string>
+    <string name="caption_enter_current_password">"Enter Current Password"</string>
+    <string name="caption_enter_new_password">"Enter new Password"</string>
+    <string name="caption_confirm_new_password">"Confirm Password"</string>
 
 </resources>

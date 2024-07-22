@@ -16,7 +16,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools" >
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Default screen margins, per the Android Design guidelines. -->
     <!-- Martin -->
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -58,7 +58,6 @@
     <dimen name="fragment_padding">24dp</dimen>
     <dimen name="fragment_padding_negative">-24dp</dimen>
     <dimen name="simple_dialog_button_margin">12dp</dimen>
-
 
 
     <dimen name="defaultControlVerticalPadding">16dp</dimen>
@@ -192,9 +191,6 @@
     <dimen name="drawerNotificationCounterRadius">10dp</dimen>
 
 
-
-
-
     <dimen name="activitySubHeadingHeight">48dp</dimen>
     <dimen name="activitySubHeadingHorizontalPadding">24dp</dimen>
     <dimen name="activitySubHeadingVerticalPadding">0dp</dimen>
@@ -219,7 +215,6 @@
 
     <dimen name="overflowMenuVerticalOffset">2.0dp</dimen>
     <dimen name="overflowMenuElevation">4dp</dimen>
-
 
 
     <!-- List Layoutrs -->
@@ -262,7 +257,6 @@
     <dimen name="navigationNumberTextSize">34sp</dimen>
 
 
-
     <!-- Landing Page Menu -->
     <dimen name="subMenuPadding">1dp</dimen>
     <dimen name="subMenuHeaderHeight">48dp</dimen>
@@ -284,10 +278,6 @@
     <dimen name="subMenuCounterPadding">8dp</dimen>
 
 
-
-
-
-
     <!-- Landing Summary -->
     <dimen name="summaryCellHeight">146dp</dimen>
     <dimen name="summaryCellTitleTextSize">12sp</dimen>
@@ -299,14 +289,10 @@
     <dimen name="summaryVisualizationMarginBottom">16dp</dimen>
 
 
-
-
-
     <dimen name="navigationNumberMarginTop">8dp</dimen>
     <dimen name="navigationNumberMarginBottom">8dp</dimen>
     <dimen name="navigationNumberMarginRight">16dp</dimen>
     <dimen name="navigationTitlePadding">16dp</dimen>
-
 
 
     <!-- Landing Summary: Donut Progress -->
@@ -333,9 +319,6 @@
     <dimen name="legendDefaultShapeHeight">5dp</dimen>
 
 
-
-
-
     <dimen name="listActivityRowPrimaryTextSize">16sp</dimen>
     <dimen name="row_entry_secondary_text_size">14sp</dimen>
     <dimen name="listActivityRowSecondaryTextVerticalMargin">8dp</dimen>
@@ -350,7 +333,6 @@
     <dimen name="sectionListRowSelectedStrokeSize">1.5dp</dimen>
 
 
-
     <dimen name="verySmallTextSize">10sp</dimen>
     <dimen name="textSizeNormal">14sp</dimen>
     <dimen name="textSizeLarge">16sp</dimen>
@@ -359,11 +341,6 @@
 
     <dimen name="readActivitySubHeadingTextSize">18sp</dimen>
     <dimen name="readActivitySubListHeadingTextSize">@dimen/h4</dimen>
-
-
-
-
-
 
 
     <dimen name="listGoToIconWidth">36dp</dimen>
@@ -424,7 +401,5 @@
 
     <dimen name="dashboardPreloaderWidth">50dp</dimen>
     <dimen name="dashboardPreloaderHeight">50dp</dimen>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
 
 </resources>

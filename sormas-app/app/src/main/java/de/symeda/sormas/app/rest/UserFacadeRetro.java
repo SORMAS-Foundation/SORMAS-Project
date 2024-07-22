@@ -23,26 +23,24 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 /**
  * Created by Martin Wahnschaffe on 07.06.2016.
  */
 public interface UserFacadeRetro {
 
-	@GET("users/all/{since}")
-	Call<List<UserDto>> pullAllSince(@Path("since") long since);
+    @GET("users/all/{since}")
+    Call<List<UserDto>> pullAllSince(@Path("since") long since);
 
-	@POST("users/query")
-	Call<List<UserDto>> pullByUuids(@Body List<String> uuids);
+    @POST("users/query")
+    Call<List<UserDto>> pullByUuids(@Body List<String> uuids);
 
-	@GET("users/uuids")
-	Call<List<String>> pullUuids();
+    @GET("users/uuids")
+    Call<List<String>> pullUuids();
 
+    @POST("users/saveNewPassword/{uuid}/{newPassword}/{currentPassword}")
+    Call<String> saveNewPassword(@Path("uuid") String uuid, @Path("newPassword") String newPassword, @Path("currentPassword") String currentPassword);
 
-	@POST("users/passwordStrength")
-	Call<String> saveNewPassword(@Query("uuid") String uuid,@Query("newPassword") String newPassword, @Query("currentPassword") String currentPassword);
-
-	@GET("users/generatePassword")
-	Call<String> generatePassword();
+    @GET("users/generatePassword")
+    Call<String> generatePassword();
 }
