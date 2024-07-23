@@ -4,13 +4,22 @@ package de.symeda.sormas.app.login;
 import static de.symeda.sormas.app.backend.config.ConfigProvider.setNewPassword;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,6 +55,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
     private ActivityChangePasswordLayoutBinding binding;
     private ProgressBar preloader;
     private View fragmentFrame;
+    private boolean isPasswordGenerated = false;
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
@@ -158,6 +168,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
                     var generatedPassword = response.body();
                     binding.changePasswordNewPassword.setValue(generatedPassword);
                     binding.changePasswordConfirmPassword.setValue(generatedPassword);
+                    isPasswordGenerated = true;
                     Toast.makeText(getApplicationContext(), "Password Generated", Toast.LENGTH_SHORT).show();
                 }
 
@@ -171,29 +182,46 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         }
     }
 
-    private void executeSaveNewPasswordCall(Call<String> call) {
+
+    private void executeSaveNewPasswordCall(Call<String> call, Activity activity) {
         try {
             showPreloader();
 
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
+                    hidePreloader();
+
                     if (response.code() != 200) {
                         NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_could_not_save_password);
-                        hidePreloader();
 
                     } else {
-                        Toast.makeText(getApplicationContext(), "Password Saved", Toast.LENGTH_LONG).show();
-                        NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_password_changed);
-                        finish();
-                        hidePreloader();
+                        String message;
+                        if (isPasswordGenerated) {
+                            String generatedPassword = binding.changePasswordNewPassword.getValue();
+                            message = "Password Saved: " + generatedPassword;
+                            alertDialog(activity, message);
+                            //Toast.makeText(getApplicationContext(), "Password Saved: " + generatedPassword, Toast.LENGTH_LONG).show();
+                        } else {
+                            message = "Password changed successfully";
+                            alertDialog(activity, message);
+
+                            //Toast.makeText(getApplicationContext(), "Password changed successfully", Toast.LENGTH_LONG).show();
+                        }
+
+
+                        //NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_password_changed);
+
                     }
 
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Could not connect to server", Toast.LENGTH_SHORT).show();
+                    String message = "Could not connect to server";
+                    //Toast.makeText(getApplicationContext(), "Could not connect to server", Toast.LENGTH_SHORT).show();
+                    alertDialog(activity, message);
+
                 }
             });
         } catch (Exception e) {
@@ -202,6 +230,43 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
     }
 
+
+    public void alertDialog(Activity activity, String password) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_change_password, null);
+
+        TextView passwordTextView = dialogView.findViewById(R.id.passwordTextView);
+
+        Button copyButton = dialogView.findViewById(R.id.copyButton);
+        if (isPasswordGenerated) {
+            copyButton.setVisibility(View.VISIBLE);
+        }
+
+        passwordTextView.setText(password);
+
+        copyButton.setOnClickListener(v -> {
+            // Copy password to clipboard
+            ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Password", password);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(activity, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setView(dialogView);
+        builder.setCancelable(true);
+        builder.setPositiveButton(activity.getString(R.string.action_ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    
     /**
      * When clicked on submit
      **/
@@ -236,10 +301,12 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         }
         if (!configPassword.equals(currentPassword)) {
             binding.changePasswordCurrentPassword.enableErrorState(R.string.error_current_password_incorrect);
+            Toast.makeText(getApplicationContext(), R.string.error_current_password_incorrect, Toast.LENGTH_SHORT).show();
             isValid = false;
         }
         if (!newPassword.equals(confirmPassword)) {
             binding.changePasswordConfirmPassword.enableErrorState(R.string.error_passwords_do_not_match);
+            Toast.makeText(getApplicationContext(), R.string.error_passwords_do_not_match, Toast.LENGTH_SHORT).show();
             isValid = false;
         }
 
@@ -251,7 +318,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
             RetroProvider.connectAsyncHandled(this, true, true, result -> {
                 if (Boolean.TRUE.equals(result)) {
                     try {
-                        executeSaveNewPasswordCall(UserDtoHelper.saveNewPassword(ConfigProvider.getUser().getUuid(), newPassword, currentPassword));
+                        executeSaveNewPasswordCall(UserDtoHelper.saveNewPassword(ConfigProvider.getUser().getUuid(), newPassword, currentPassword), this);
                         setNewPassword(newPassword);
                     } catch (Exception e) {
                         binding.actionPasswordStrength.setVisibility(View.VISIBLE);

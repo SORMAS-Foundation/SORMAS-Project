@@ -755,5 +755,7 @@
     <string name="error_confirm_password_empty">Confirm Password Cannot be Empty</string>
     <string name="error_current_password_incorrect">Current Password is Incorrect</string>
     <string name="error_passwords_do_not_match">Passwords do not match</string>
+    <string name="error_title">Error</string>
+    <string name="success_title">Success</string>
 
 </resources>
