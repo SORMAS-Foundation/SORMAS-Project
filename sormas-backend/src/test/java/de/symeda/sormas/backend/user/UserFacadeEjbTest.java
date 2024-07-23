@@ -531,13 +531,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
     @Test
     void testCheckPasswordStrengthStrong() {
         String result = getUserFacade().checkPasswordStrength("Verystrongassword134$");
-        assertEquals("Password Strength is Strong", result);
+        assertEquals("Password is Strong", result);
     }
 
     @Test
     void testCheckPasswordStrengthWeak() {
         String result = getUserFacade().checkPasswordStrength("weak");
-        assertEquals("Password Strength is Weak", result);
+        assertEquals("Password is Weak", result);
     }
 
 }

@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +49,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
     public static final String TAG = ChangePasswordActivity.class.getSimpleName();
 
-    private boolean isAtLeast8 = false, hasUppercase = false, hasNumber = false, hasSymbol = false, isGood = false;
+    private boolean isAtLeast8 = false, hasUppercase = false, hasNumber = false, hasSpecialCharacter = false, isGood = false;
 
     private ActivityChangePasswordLayoutBinding binding;
     private ProgressBar preloader;
@@ -109,8 +108,8 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         isAtLeast8 = newPassword.length() >= 8;
         hasUppercase = newPassword.matches("(.*[A-Z].*)");
         hasNumber = newPassword.matches("(.*[0-9].*)");
-        hasSymbol = newPassword.matches("^(?=.*[_@#%&?;,.()]).*$");
-        if (isAtLeast8 && hasNumber && hasUppercase && hasSymbol) {
+        hasSpecialCharacter = newPassword.matches(".*[^a-zA-Z0-9\\s].*");
+        if (isAtLeast8 && hasNumber && hasUppercase && hasSpecialCharacter) {
             isGood = true;
             binding.actionPasswordStrength.setVisibility(view.getVisibility());
             binding.actionPasswordStrength.setText(R.string.message_password_strong);
@@ -182,7 +181,6 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         }
     }
 
-
     private void executeSaveNewPasswordCall(Call<String> call, Activity activity) {
         try {
             showPreloader();
@@ -194,24 +192,20 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
                     if (response.code() != 200) {
                         NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.message_could_not_save_password);
-
                     } else {
                         String message;
+                        String title;
+                        title = "Change Passworrd";
+
                         if (isPasswordGenerated) {
                             String generatedPassword = binding.changePasswordNewPassword.getValue();
-                            message = "Password Saved: " + generatedPassword;
-                            alertDialog(activity, message);
-                            //Toast.makeText(getApplicationContext(), "Password Saved: " + generatedPassword, Toast.LENGTH_LONG).show();
+                            message = generatedPassword;
+                            alertDialog(activity, message, title);
                         } else {
                             message = "Password changed successfully";
-                            alertDialog(activity, message);
-
-                            //Toast.makeText(getApplicationContext(), "Password changed successfully", Toast.LENGTH_LONG).show();
+                            alertDialog(activity, message, title);
                         }
-
-
-                        //NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_password_changed);
-
+                        NotificationHelper.showNotification(binding, NotificationType.SUCCESS, R.string.message_password_changed);
                     }
 
                 }
@@ -219,9 +213,9 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
                     String message = "Could not connect to server";
-                    //Toast.makeText(getApplicationContext(), "Could not connect to server", Toast.LENGTH_SHORT).show();
-                    alertDialog(activity, message);
+                    String title = "Change Passworrd";
 
+                    alertDialog(activity, message, title);
                 }
             });
         } catch (Exception e) {
@@ -230,25 +224,23 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
     }
 
-
-    public void alertDialog(Activity activity, String password) {
+    public void alertDialog(Activity activity, String message, String title) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_change_password, null);
 
         TextView passwordTextView = dialogView.findViewById(R.id.passwordTextView);
 
-        Button copyButton = dialogView.findViewById(R.id.copyButton);
         if (isPasswordGenerated) {
-            copyButton.setVisibility(View.VISIBLE);
+            passwordTextView.setText(message);
         }
 
-        passwordTextView.setText(password);
+        builder.setTitle(title);
 
-        copyButton.setOnClickListener(v -> {
+        passwordTextView.setOnClickListener(v -> {
             // Copy password to clipboard
             ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("Password", password);
+            ClipData clip = ClipData.newPlainText("Password", message);
             clipboard.setPrimaryClip(clip);
             Toast.makeText(activity, "Password copied to clipboard", Toast.LENGTH_SHORT).show();
         });
@@ -266,7 +258,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-    
+
     /**
      * When clicked on submit
      **/
@@ -290,23 +282,19 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         if (currentPassword == null || currentPassword.trim().isEmpty()) {
             binding.changePasswordCurrentPassword.enableErrorState(R.string.error_current_password_empty);
             isValid = false;
-        }
-        if (newPassword == null || newPassword.trim().isEmpty()) {
+        } else if (newPassword == null || newPassword.trim().isEmpty()) {
             binding.changePasswordNewPassword.enableErrorState(R.string.error_new_password_empty);
             isValid = false;
-        }
-        if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+        } else if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
             binding.changePasswordConfirmPassword.enableErrorState(R.string.error_confirm_password_empty);
             isValid = false;
-        }
-        if (!configPassword.equals(currentPassword)) {
+        } else if (!configPassword.equals(currentPassword)) {
             binding.changePasswordCurrentPassword.enableErrorState(R.string.error_current_password_incorrect);
-            Toast.makeText(getApplicationContext(), R.string.error_current_password_incorrect, Toast.LENGTH_SHORT).show();
+            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.error_current_password_incorrect);
             isValid = false;
-        }
-        if (!newPassword.equals(confirmPassword)) {
+        } else if (!newPassword.equals(confirmPassword)) {
             binding.changePasswordConfirmPassword.enableErrorState(R.string.error_passwords_do_not_match);
-            Toast.makeText(getApplicationContext(), R.string.error_passwords_do_not_match, Toast.LENGTH_SHORT).show();
+            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.error_passwords_do_not_match);
             isValid = false;
         }
 
