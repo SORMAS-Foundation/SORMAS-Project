@@ -944,6 +944,7 @@ public class UserFacadeEjb implements UserFacade {
         return PasswordValidator.checkPasswordStrength(password);
     }
 
+    @PermitAll
     @Override
     public boolean isPasswordStrong(String password) {
         return PasswordValidator.isStrongPassword(password);
