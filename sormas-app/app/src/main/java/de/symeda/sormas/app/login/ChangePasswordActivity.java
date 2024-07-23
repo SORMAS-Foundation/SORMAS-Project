@@ -206,69 +206,52 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
      * When clicked on submit
      **/
     public void savePassword(View view) {
-        // Disable error states
         binding.changePasswordNewPassword.disableErrorState();
         binding.changePasswordCurrentPassword.disableErrorState();
         binding.changePasswordConfirmPassword.disableErrorState();
 
-        // Check if server URL is configured
         if (DataHelper.isNullOrEmpty(ConfigProvider.getServerRestUrl())) {
             NavigationHelper.goToSettings(this);
             return;
         }
 
-        // Retrieve password values
         String currentPassword = binding.changePasswordCurrentPassword.getValue();
         String newPassword = binding.changePasswordNewPassword.getValue();
         String confirmPassword = binding.changePasswordConfirmPassword.getValue();
         String configPassword = ConfigProvider.getPassword();
 
-        // Validate input fields
         boolean isValid = true;
+
         if (currentPassword == null || currentPassword.trim().isEmpty()) {
-            binding.incorrectCurrentPassword.setVisibility(View.VISIBLE);
-            binding.incorrectCurrentPassword.setText("Current password cannot be empty.");
+            binding.changePasswordCurrentPassword.enableErrorState(R.string.error_current_password_empty);
             isValid = false;
         }
         if (newPassword == null || newPassword.trim().isEmpty()) {
-            binding.incorrectNewPassword.setVisibility(View.VISIBLE);
-            binding.incorrectNewPassword.setText("New password cannot be empty.");
+            binding.changePasswordNewPassword.enableErrorState(R.string.error_new_password_empty);
             isValid = false;
         }
         if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
-            binding.incorrectConfirmPassword.setVisibility(View.VISIBLE);
-            binding.incorrectConfirmPassword.setText("Confirm password cannot be empty.");
+            binding.changePasswordConfirmPassword.enableErrorState(R.string.error_confirm_password_empty);
             isValid = false;
         }
         if (!configPassword.equals(currentPassword)) {
-            binding.incorrectCurrentPassword.setVisibility(View.VISIBLE);
-            binding.incorrectCurrentPassword.setText("Current password is incorrect.");
+            binding.changePasswordCurrentPassword.enableErrorState(R.string.error_current_password_incorrect);
             isValid = false;
         }
         if (!newPassword.equals(confirmPassword)) {
-            binding.incorrectConfirmPassword.setVisibility(View.VISIBLE);
-            binding.incorrectConfirmPassword.setText("Passwords do not match.");
+            binding.changePasswordConfirmPassword.enableErrorState(R.string.error_passwords_do_not_match);
             isValid = false;
         }
 
-        // If all validations pass, proceed with the password change
-        System.out.println("isValid: " + isValid);
-        System.out.println("isGood: " + isGood);
-        System.out.println("currentPassword: " + currentPassword);
-        System.out.println("newPassword: " + newPassword);
-        System.out.println("confirmPassword: " + confirmPassword);
-        System.out.println("configPassword: " + configPassword);
-        // Call registrationDataCheck if necessary
         if (isValid) {
             registrationDataCheck(view);
         }
-        
+
         if (isValid && isGood) {
             RetroProvider.connectAsyncHandled(this, true, true, result -> {
                 if (Boolean.TRUE.equals(result)) {
                     try {
                         executeSaveNewPasswordCall(UserDtoHelper.saveNewPassword(ConfigProvider.getUser().getUuid(), newPassword, currentPassword));
-                        // Cache the new password
                         setNewPassword(newPassword);
                     } catch (Exception e) {
                         binding.actionPasswordStrength.setVisibility(View.VISIBLE);

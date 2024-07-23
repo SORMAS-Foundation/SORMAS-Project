@@ -562,9 +562,6 @@
     <string name="message_case_infrastructure_data_changed">You have changed the infrastructure data of this case. Do you want to transfer the case to the new health facility (the hospitalization data will be updated) or do you only want to edit the data to correct a mistake?</string>
     <string name="message_download_app_failed">The download of the new SORMAS version failed. Please make sure you have the best internet connection possible and try again or inform a supervisor if you keep getting this error despite a good internet connection.</string>
     <string name="message_empty_password">Please enter a password.</string>
-    <string name="message_incorrect_current_password">Please your Current Password is incorrect.</string>
-    <string name="message_incorrect_new_password">Please your New Password is incorrect.</string>
-    <string name="message_not_match_password">Passwords does not match.</string>
     <string name="message_empty_username">Please enter a username.</string>
     <string name="message_encryption">SORMAS requires device encryption to be activated on your device to ensure data security.\n\nPlease note that you cannot use the application as long as device encryption is disabled.</string>
     <string name="message_enter_person_name">Please enter a first and last name for the new person.</string>
@@ -752,6 +749,11 @@
     <string name="hint_enter_confirm_new_password">"Enter Confirm Password"</string>
     <string name="caption_enter_current_password">"Enter Current Password"</string>
     <string name="caption_enter_new_password">"Enter new Password"</string>
-    <string name="caption_confirm_new_password">"Confirm Password"</string>
+    <string name="caption_confirm_new_password">"Enter Confirm Password"</string>
+    <string name="error_current_password_empty">Current Password Cannot be Empty</string>
+    <string name="error_new_password_empty">New Password Cannot be Empty</string>
+    <string name="error_confirm_password_empty">Confirm Password Cannot be Empty</string>
+    <string name="error_current_password_incorrect">Current Password is Incorrect</string>
+    <string name="error_passwords_do_not_match">Passwords do not match</string>
 
 </resources>

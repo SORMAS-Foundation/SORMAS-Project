@@ -940,6 +940,7 @@ public class UserFacadeEjb implements UserFacade {
         return false;
     }
 
+    @PermitAll
     public String checkPasswordStrength(String password) {
         return PasswordValidator.checkPasswordStrength(password);
     }
