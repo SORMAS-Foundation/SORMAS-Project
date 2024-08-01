@@ -369,10 +369,14 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 	}
 
 	private Date getEarliestPathogenTestDate() {
-		List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllByEnvironmentSample(getValue().toReference());
-		if (pathogenTests.isEmpty()) {
+		if (!isCreate) {
+			List<PathogenTestDto> pathogenTests = FacadeProvider.getPathogenTestFacade().getAllByEnvironmentSample(getValue().toReference());
+			if (pathogenTests.isEmpty()) {
+				return null;
+			}
+			return pathogenTests.stream().map(PathogenTestDto::getTestDateTime).filter(Objects::nonNull).min(Date::compareTo).orElseGet(() -> null);
+		} else {
 			return null;
 		}
-		return pathogenTests.stream().map(PathogenTestDto::getTestDateTime).filter(Objects::nonNull).min(Date::compareTo).orElseGet(() -> null);
 	}
 }
