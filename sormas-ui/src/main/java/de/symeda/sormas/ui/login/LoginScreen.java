@@ -61,7 +61,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class LoginScreen extends CssLayout {
 
 	private static final String UTF_8 = "UTF-8";
-	private static final int LOGO_WIDTH = 250;
+	private static final int LOGO_WIDTH = 220;
 	private static final int CUSTOM_BRANDING_LOGO_WIDTH = 150;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -267,7 +267,7 @@ public class LoginScreen extends CssLayout {
 			sidebarHeaderLayout.addComponent(customSidebarHeaderLabel);
 		} else {
 			Image img = new Image(null, new ThemeResource("img/sormas-logo-big-text.png"));
-			img.setWidth(320, Unit.PIXELS);
+			img.setWidth(200, Unit.PIXELS);
 			sidebarHeaderLayout.addComponent(img);
 			sidebarHeaderLayout.setComponentAlignment(img, Alignment.TOP_CENTER);
 
@@ -283,7 +283,7 @@ public class LoginScreen extends CssLayout {
 					+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse),
 				ContentMode.HTML);
 			missionText.setWidth(320, Unit.PIXELS);
-			CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+			CssStyles.style(missionText, CssStyles.H3, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
 			sidebarHeaderLayout.addComponent(missionText);
 			sidebarHeaderLayout.setComponentAlignment(missionText, Alignment.TOP_CENTER);
 		}
@@ -311,13 +311,9 @@ public class LoginScreen extends CssLayout {
 			CssStyles.style(poweredByLayout, CssStyles.VSPACE_TOP_1);
 		}
 
-		Image imgHzi = new Image(null, new ThemeResource("img/hzi-logo.png"));
-		imgHzi.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
-		poweredByLayout.addComponent(imgHzi);
-
-		Image imgSymeda = new Image(null, new ThemeResource("img/vitagroup-logo.png"));
-		imgSymeda.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
-		poweredByLayout.addComponent(imgSymeda);
+		Image imgSormasFoundation = new Image(null, new ThemeResource("img/sormas-foundation-logo.png"));
+		imgSormasFoundation.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
+		poweredByLayout.addComponent(imgSormasFoundation);
 
 		if (!isCustomBranding) {
 			Image imgGiz = new Image(null, new ThemeResource("img/giz-logo.png"));
