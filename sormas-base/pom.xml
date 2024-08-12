@@ -15,7 +15,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<developmentBranch>development</developmentBranch>
 		<productionBranch>master</productionBranch>
-		<pushHotfixes>true</pushHotfixes>
 		<dependency-check.suppressionFile>check-suppressions.xml</dependency-check.suppressionFile>
 
 		<!-- *** Payara module versions *** -->
@@ -1641,8 +1640,6 @@
 						<!--suppress MavenModelInspection -->
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
-						<pushReleases>true</pushReleases>
-						<pushHotfixes>${pushHotfixes}</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
 						<noHotfixBuild>true</noHotfixBuild>
