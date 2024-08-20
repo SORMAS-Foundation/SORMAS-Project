@@ -17,7 +17,16 @@ public class PasswordValidator {
     }
 
     public static boolean isStrongPassword(String password) {
-        return password.length() >= 8 && hasDigits(password) && hasCapitalLetter(password);
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+
+        boolean isLengthValid = password.length() >= 8;
+        boolean hasDigit = hasDigits(password);
+        boolean hasCapitalLetter = hasCapitalLetter(password);
+        boolean hasLowercaseLetter = hasLowercaseLetter(password);
+
+        return isLengthValid && hasDigit && hasCapitalLetter && hasLowercaseLetter;
     }
 
     private static boolean hasDigits(String password) {
@@ -26,6 +35,10 @@ public class PasswordValidator {
 
     private static boolean hasCapitalLetter(String password) {
         return password.chars().anyMatch(Character::isUpperCase);
+    }
+
+    private static boolean hasLowercaseLetter(String password) {
+        return password.chars().anyMatch(Character::isLowerCase);
     }
 
 }

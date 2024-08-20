@@ -52,8 +52,8 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
     private boolean isAtLeast8 = false;
     private boolean hasUppercase = false;
     private boolean hasNumber = false;
-    private boolean hasSpecialCharacter = false;
-    private boolean isGood = false;    
+    private boolean hasLowerCaseCharacter = false;
+    private boolean isGood = false;
     private ActivityChangePasswordLayoutBinding binding;
     private ProgressBar preloader;
     private View fragmentFrame;
@@ -105,14 +105,14 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
     }
 
     @SuppressLint("ResourceType")
-    public void registrationDataCheck(View view) {
+    public void passwordValidationCheck(View view) {
         String newPassword = binding.changePasswordNewPassword.getValue();
 
         isAtLeast8 = newPassword.length() >= 8;
         hasUppercase = newPassword.matches("(.*[A-Z].*)");
         hasNumber = newPassword.matches("(.*[0-9].*)");
-        hasSpecialCharacter = newPassword.matches(".*[^a-zA-Z0-9\\s].*");
-        if (isAtLeast8 && hasNumber && hasUppercase && hasSpecialCharacter) {
+        hasLowerCaseCharacter = newPassword.matches(".*[a-z].*");
+        if (isAtLeast8 && hasNumber && hasUppercase && hasLowerCaseCharacter) {
             isGood = true;
             binding.actionPasswordStrength.setVisibility(view.getVisibility());
             binding.actionPasswordStrength.setText(R.string.message_password_strong);
@@ -120,6 +120,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         } else {
             binding.actionPasswordStrength.setVisibility(view.getVisibility());
             binding.actionPasswordStrength.setText(R.string.message_password_weak);
+            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.additional_message_passord_weakk);
             binding.actionPasswordStrength.setTextColor(Color.parseColor(getString(R.color.errorBackground)));
         }
     }
@@ -302,7 +303,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         }
 
         if (isValid) {
-            registrationDataCheck(view);
+            passwordValidationCheck(view);
         }
 
         if (isValid && isGood) {

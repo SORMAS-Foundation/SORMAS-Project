@@ -417,32 +417,49 @@ public class UserController {
     public CommitDiscardWrapperComponent<UpdatePasswordForm> getUpdatePasswordComponent() {
         Label passwordStrengthDesc = new Label();
         UpdatePasswordForm form = new UpdatePasswordForm();
-        UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
+        UserDto user = FacadeProvider.getUserFacade().getByUuid(Objects.requireNonNull(UserProvider.getCurrent()).getUuid());
         form.setValue(user);
+
         final CommitDiscardWrapperComponent<UpdatePasswordForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
-        form.newPassword.addTextChangeListener(event -> {
-            passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(event.getText()));
-            if (FacadeProvider.getUserFacade().isPasswordStrong(event.getText())) {
-                passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
-            } else {
-                passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
+
+        form.newPassword.setValidationVisible(false);
+        form.confirmPassword.setValidationVisible(false);
+        form.currentPassword.setValidationVisible(false);
+
+        form.newPassword.addBlurListener(event -> {
+            String newPassword = form.newPassword.getValue();
+            if(Objects.nonNull(newPassword)) {
+                if (!FacadeProvider.getUserFacade().isPasswordStrong(newPassword)) {
+                    passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
+                } else {
+                    passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
+                }
+                passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(newPassword));
             }
+            form.newPassword.setValidationVisible(true);
         });
+
+        form.confirmPassword.addBlurListener(event -> {
+            form.confirmPassword.setValidationVisible(true);
+        });
+
+        form.currentPassword.addBlurListener(event -> {
+            form.currentPassword.setValidationVisible(true);
+        });
+
         component.addDiscardListener(() -> popUpWindow.close());
 
         component.addCommitListener(() -> {
             if (!form.getFieldGroup().isModified()) {
                 UserDto changedUser = form.getValue();
                 if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getNewPassword())) {
-
                     Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
                 } else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
                     Notification.show(I18nProperties.getString(Strings.messageWrongCurrentPassword), Notification.Type.ERROR_MESSAGE);
-                } else if (passwordStrengthDesc.getValue().contains("Weak")) {
+                } else if (!FacadeProvider.getUserFacade().isPasswordStrong(changedUser.getNewPassword())) {
                     Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
                 } else {
                     showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getNewPassword(), changedUser.getCurrentPassword());
-
                 }
             }
         });
@@ -452,12 +469,17 @@ public class UserController {
             String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
             form.newPassword.setValue(generatedPassword);
             form.confirmPassword.setValue(generatedPassword);
-        });
-        component.getButtonsPanel().addComponent(generatePasswordButton, 0);
 
+            form.newPassword.setValidationVisible(true);
+            form.confirmPassword.setValidationVisible(true);
+        });
+
+        component.getButtonsPanel().addComponent(generatePasswordButton, 0);
         component.addComponent(passwordStrengthDesc, 1);
+
         return component;
     }
+
 
     public void setFlagIcons(ComboBox cbLanguage) {
         for (Language language : Language.values()) {
