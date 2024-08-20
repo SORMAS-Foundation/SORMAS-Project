@@ -152,10 +152,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.util.PasswordValidator;
-import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.RightsAllowed;
-import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -948,19 +944,6 @@ public class UserFacadeEjb implements UserFacade {
             return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
         }
         return null;
-    }
-
-    @PermitAll
-    @Override
-    public Set<UserRoleDto> getValidLoginRoles(String userName, String password) {
-        User user = userService.getByUserName(userName);
-
-        if (user != null && user.isActive()
-                && (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed())))) {
-            return getUserRoles(toDto(user));
-        }
-
-        return Collections.emptySet();
     }
 
     @Override

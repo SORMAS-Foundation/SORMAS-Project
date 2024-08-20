@@ -17,32 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -55,20 +39,25 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.utils.BulkOperationHandler;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.ConfirmationComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.*;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
-import java.util.Objects;
 
 public class UserController {
 
@@ -433,7 +422,7 @@ public class UserController {
         component.addCommitListener(() -> {
             if (!form.getFieldGroup().isModified()) {
                 UserDto changedUser = form.getValue();
-                if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getUpdatePassword())) {
+                if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getNewPassword())) {
 
                     Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
                 } else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
@@ -441,7 +430,7 @@ public class UserController {
                 } else if (passwordStrengthDesc.getValue().contains("Weak")) {
                     Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
                 } else {
-                    showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
+                    showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getNewPassword(), changedUser.getCurrentPassword());
 
                 }
             }

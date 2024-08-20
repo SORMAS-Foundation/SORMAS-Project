@@ -37,7 +37,7 @@
  import de.symeda.sormas.api.utils.DataHelper;
  import de.symeda.sormas.api.utils.FeatureIndependent;
  import de.symeda.sormas.api.utils.FieldConstraints;
-
+ 
 @FeatureIndependent
 public class UserDto extends EntityDto {
 
@@ -110,7 +110,7 @@ public class UserDto extends EntityDto {
 
     private boolean hasConsentedToGdpr;
     private String currentPassword;
-    private String updatePassword;
+    private String newPassword;
     private String confirmPassword;
     private String passwordStrength;
 
@@ -175,12 +175,12 @@ public class UserDto extends EntityDto {
         return currentPassword;
     }
 
-    public void setUpdatePassword(String updatePassword) {
-        this.updatePassword = updatePassword;
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 
-    public String getUpdatePassword() {
-        return updatePassword;
+    public String getNewPassword() {
+        return newPassword;
     }
 
     public void setConfirmPassword(String confirmPassword) {
