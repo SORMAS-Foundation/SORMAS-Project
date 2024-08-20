@@ -37,8 +37,6 @@
     <string name="action_allow_gps_access">Allow GPS Access</string>
     <string name="action_apply_filters">Apply filters</string>
     <string name="action_back_to_settings">Back to settings</string>
-    <string name="action_generate_password">Generate Password</string>
-    <string name="action_strength_password">Password Strength</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_change_PIN">Change PIN</string>
     <string name="action_change_settings"><u>Change Settings</u></string>
@@ -70,7 +68,6 @@
     <string name="action_install_later">Install later</string>
     <string name="action_loadMore">Load more</string>
     <string name="action_login">Sign in</string>
-    <string name="action_change_password">Change Password</string>
     <string name="action_login_default_user">Sign in as demo user</string>
     <string name="action_logout">Logout</string>
     <string name="action_logout_anyway">Logout anyway</string>
@@ -306,8 +303,6 @@
     <string name="description_report_message">Your Message</string>
     <string name="description_sormas_logo">SORMAS Logo</string>
     <string name="description_username">Username</string>
-    <string name="description_new_password">New Password</string>
-    <string name="description_confirm_password">Confirm Password</string>
     <string name="description_year">Year</string>
     <string name="description_report">Report</string>
 
@@ -429,7 +424,6 @@
     <string name="heading_pathogen_test_summary">Pathogen Test Summary</string>
     <string name="heading_pathogen_tests_list">Pathogen Test Listing</string>
     <string name="heading_sign_in">Sign In</string>
-    <string name="heading_change_password">Change Password</string>
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>
     <string name="heading_source_of_information">Source of Information</string>
@@ -531,7 +525,6 @@
     <string name="info_resync_duration">Re-sync will probably take several minutes.</string>
     <string name="info_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="info_sign_in">Sign into SORMAS to continue the journey of saving lives.</string>
-    <string name="info_change_password">To change your Password you will <b>need to enter your SORMAS user password.</b></string>
     <string name="info_similar_persons_found">SORMAS already contains at least one person that seems to be very similar to the personal details you have entered.</string>
     <string name="info_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
     <string name="info_synchronizing">Synchronizing with SORMAS server...</string>
@@ -583,17 +576,11 @@
     <string name="message_no_user_selected">No user has been selected</string>
     <string name="message_not_specified">Not specified</string>
     <string name="message_pin_changed">PIN has been successfully changed.</string>
-    <string name="message_password_changed">Password has been successfully changed.</string>
     <string name="message_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
     <string name="message_pin_no_consecutive">PIN must not be made of consecutive numbers.</string>
     <string name="message_pin_no_same">PIN must not have more than 2 equal numbers.</string>
-    <string name="message_password_weak">Password Strength is Weak</string>
-    <string name="message_password_moderate">Password Strength is Moderate</string>
-    <string name="message_password_strong">Password Strength is strong</string>
     <string name="message_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
     <string name="message_pin_too_short">PIN has to be four digits long.</string>
-    <string name="message_could_not_generate_password">Could not generate password</string>
-    <string name="message_could_not_save_password">Could not save password</string>
     <string name="message_pin_wrong">You\'ve entered an incorrect PIN.</string>
     <string name="message_report_not_sent">Unable to send report at this time.</string>
     <string name="message_report_sent">Problem report successfully sent.</string>
@@ -758,4 +745,18 @@
     <string name="error_title">Error</string>
     <string name="success_title">Success</string>
     <string name="password_change_success">User\'s password was changed successfully</string>
+    <string name="action_change_password">Change Password</string>
+    <string name="action_generate_password">Generate Password</string>
+    <string name="action_strength_password">Password Strength</string>
+    <string name="description_new_password">New Password</string>
+    <string name="description_confirm_password">Confirm Password</string>
+    <string name="heading_change_password">Change Password</string>
+    <string name="info_change_password">To change your Password you will <b>need to enter your SORMAS user password.</b></string>
+    <string name="message_password_changed">Password has been successfully changed.</string>
+    <string name="message_password_weak">Password Strength is Weak</string>
+    <string name="message_password_moderate">Password Strength is Moderate</string>
+    <string name="message_password_strong">Password Strength is strong</string>
+    <string name="message_could_not_generate_password">Could not generate password</string>
+    <string name="message_could_not_save_password">Could not save password</string>
+
 </resources>

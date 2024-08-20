@@ -1,10 +1,61 @@
 package de.symeda.sormas.backend.user;
 
+import static de.symeda.sormas.api.user.DefaultUserRole.ADMIN_SUPERVISOR;
+import static de.symeda.sormas.api.user.DefaultUserRole.CASE_OFFICER;
+import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_OFFICER;
+import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_SUPERVISOR;
+import static de.symeda.sormas.api.user.DefaultUserRole.DISTRICT_OBSERVER;
+import static de.symeda.sormas.api.user.DefaultUserRole.NATIONAL_USER;
+import static de.symeda.sormas.api.user.DefaultUserRole.POE_INFORMANT;
+import static de.symeda.sormas.api.user.DefaultUserRole.REST_EXTERNAL_VISITS_USER;
+import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_OFFICER;
+import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_SUPERVISOR;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ValidationException;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.*;
+import de.symeda.sormas.api.user.UserCriteria;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -12,24 +63,22 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ValidationException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static de.symeda.sormas.api.user.DefaultUserRole.*;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
 

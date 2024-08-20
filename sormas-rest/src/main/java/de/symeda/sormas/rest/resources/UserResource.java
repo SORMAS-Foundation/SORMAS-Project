@@ -15,6 +15,18 @@
 
 package de.symeda.sormas.rest.resources;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
@@ -24,11 +36,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>

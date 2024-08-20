@@ -57,13 +57,13 @@ import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.lbds.LbdsIntentSender;
-import de.symeda.sormas.app.login.ChangePasswordActivity;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+import de.symeda.sormas.app.login.ChangePasswordActivity;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment

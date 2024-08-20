@@ -17,20 +17,26 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.beans.Transient;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationException;
-
-import javax.validation.constraints.Size;
-import java.beans.Transient;
-import java.util.*;
-import java.util.stream.Collectors;
+import de.symeda.sormas.api.audit.AuditedClass;
 
 @AuditedClass
 public class UserRoleDto extends EntityDto {

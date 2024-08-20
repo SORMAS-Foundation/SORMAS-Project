@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.app.component.controls;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import android.content.Context;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-
-import com.google.android.material.textfield.TextInputLayout;
 
 import de.symeda.sormas.app.R;
 

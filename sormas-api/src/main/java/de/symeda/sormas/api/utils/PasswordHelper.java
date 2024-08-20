@@ -17,13 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import org.apache.commons.codec.binary.Hex;
-
-import javax.validation.ValidationException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
+import javax.validation.ValidationException;
+
+import org.apache.commons.codec.binary.Hex;
 import java.util.Arrays;
 
 public final class PasswordHelper {

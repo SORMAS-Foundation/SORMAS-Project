@@ -15,6 +15,13 @@
 
 package de.symeda.sormas.backend.environment.environmentsample;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import org.apache.commons.lang3.NotImplementedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.environment.environmentsample.EnvironmentSampleDto;
@@ -24,12 +31,6 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.apache.commons.lang3.NotImplementedException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 

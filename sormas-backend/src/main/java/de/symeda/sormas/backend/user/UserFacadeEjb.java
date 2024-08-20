@@ -14,6 +14,52 @@
  */
 package de.symeda.sormas.backend.user;
 
+import static de.symeda.sormas.api.AuthProvider.KEYCLOAK;
+import static java.util.Objects.isNull;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.security.PermitAll;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.validation.Valid;
+import javax.validation.ValidationException;
+import javax.ws.rs.ForbiddenException;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -37,8 +83,21 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskContextIndexCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
-import de.symeda.sormas.api.user.*;
-import de.symeda.sormas.api.utils.*;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserCriteria;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.user.UserSyncResult;
+import de.symeda.sormas.api.utils.AccessDeniedException;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
+import de.symeda.sormas.api.utils.PasswordHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -48,7 +107,11 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.contact.*;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
+import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.EnvironmentJoins;
 import de.symeda.sormas.backend.environment.EnvironmentJurisdictionPredicateValidator;
@@ -84,34 +147,15 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
-import de.symeda.sormas.backend.util.*;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.security.PermitAll;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.*;
-import javax.validation.Valid;
-import javax.validation.ValidationException;
-import javax.ws.rs.ForbiddenException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static de.symeda.sormas.api.AuthProvider.KEYCLOAK;
-import static java.util.Objects.isNull;
-
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.util.PasswordValidator;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -876,18 +920,9 @@ public class UserFacadeEjb implements UserFacade {
     }
 
     @PermitAll
-    @AuditIgnore
-    public String updatePassword(String uuid, String password) {
-        String updatePassword = userService.updatePassword(uuid, password);
-        passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
-
-        return updatePassword;
-    }
-
-    @PermitAll
     @Override
     public String updateUserPassword(String uuid, String password, String currentPassword) {
-        String updatePassword = updatePassword(uuid, password);
+        String updatePassword = userService.updatePassword(uuid, password);
         passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
         return updatePassword;
     }

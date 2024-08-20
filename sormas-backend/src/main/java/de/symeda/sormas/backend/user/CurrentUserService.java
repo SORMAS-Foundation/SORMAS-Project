@@ -1,10 +1,8 @@
 package de.symeda.sormas.backend.user;
 
-import de.symeda.sormas.api.audit.AuditIgnore;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.backend.util.ModelConstants;
-import org.hibernate.Hibernate;
-import org.hibernate.proxy.HibernateProxy;
+import static de.symeda.sormas.backend.user.UserHelper.isRestrictedToAssignEntities;
+
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -14,11 +12,21 @@ import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.Set;
 
-import static de.symeda.sormas.backend.user.UserHelper.isRestrictedToAssignEntities;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
+
+import de.symeda.sormas.api.audit.AuditIgnore;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
 @LocalBean

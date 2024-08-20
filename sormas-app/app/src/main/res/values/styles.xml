@@ -413,6 +413,7 @@
         <item name="android:background">@drawable/selector_button_primary</item>
         <item name="android:elevation">@dimen/primaryButtonElevation</item>
     </style>
+    
     <style name="GenerateButtonStyle">
         <item name="android:layout_height">@dimen/primaryButtonHeight</item>
         <item name="android:gravity">center</item>

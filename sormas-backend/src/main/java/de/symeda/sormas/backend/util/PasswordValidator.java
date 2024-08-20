@@ -20,7 +20,6 @@ public class PasswordValidator {
         return password.length() >= 8 && hasDigits(password) && hasSpecialCharacters(password) && hasCapitalLetter(password);
     }
 
-
     private static boolean hasDigits(String password) {
         return password.chars().anyMatch(Character::isDigit);
     }
@@ -29,10 +28,8 @@ public class PasswordValidator {
         return password.chars().anyMatch(ch -> !Character.isLetterOrDigit(ch) && !Character.isWhitespace(ch));
     }
 
-
     private static boolean hasCapitalLetter(String password) {
         return password.chars().anyMatch(Character::isUpperCase);
     }
-
 
 }

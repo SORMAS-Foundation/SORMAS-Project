@@ -289,10 +289,14 @@
     <dimen name="summaryVisualizationMarginBottom">16dp</dimen>
 
 
+
+
+
     <dimen name="navigationNumberMarginTop">8dp</dimen>
     <dimen name="navigationNumberMarginBottom">8dp</dimen>
     <dimen name="navigationNumberMarginRight">16dp</dimen>
     <dimen name="navigationTitlePadding">16dp</dimen>
+
 
 
     <!-- Landing Summary: Donut Progress -->
@@ -319,6 +323,9 @@
     <dimen name="legendDefaultShapeHeight">5dp</dimen>
 
 
+
+
+
     <dimen name="listActivityRowPrimaryTextSize">16sp</dimen>
     <dimen name="row_entry_secondary_text_size">14sp</dimen>
     <dimen name="listActivityRowSecondaryTextVerticalMargin">8dp</dimen>
@@ -341,6 +348,11 @@
 
     <dimen name="readActivitySubHeadingTextSize">18sp</dimen>
     <dimen name="readActivitySubListHeadingTextSize">@dimen/h4</dimen>
+
+
+
+
+
 
 
     <dimen name="listGoToIconWidth">36dp</dimen>
