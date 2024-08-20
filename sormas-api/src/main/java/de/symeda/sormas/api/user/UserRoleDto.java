@@ -38,7 +38,6 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.audit.AuditedClass;
 
-@AuditedClass
 public class UserRoleDto extends EntityDto {
 
     private static final long serialVersionUID = -547459523041494446L;
