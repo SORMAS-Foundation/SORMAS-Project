@@ -25,7 +25,6 @@ import java.security.SecureRandom;
 import javax.validation.ValidationException;
 
 import org.apache.commons.codec.binary.Hex;
-import java.util.Arrays;
 
 public final class PasswordHelper {
 
@@ -67,58 +66,6 @@ public final class PasswordHelper {
             throw new ValidationException("Size of password char array does not match defined values.");
         }
     }
-
-    public static String generatePasswordWithSpecialChars(int length) {
-        // Combine the existing character set with special characters
-        char[] combinedChars = Arrays.copyOf(PASSWORD_CHARS, PASSWORD_CHARS.length + 10);
-        combinedChars[PASSWORD_CHARS.length] = '!';
-        combinedChars[PASSWORD_CHARS.length + 1] = '@';
-        combinedChars[PASSWORD_CHARS.length + 2] = '#';
-        combinedChars[PASSWORD_CHARS.length + 3] = '$';
-        combinedChars[PASSWORD_CHARS.length + 4] = '%';
-        combinedChars[PASSWORD_CHARS.length + 5] = '^';
-        combinedChars[PASSWORD_CHARS.length + 6] = '&';
-        combinedChars[PASSWORD_CHARS.length + 7] = '*';
-        combinedChars[PASSWORD_CHARS.length + 8] = '(';
-        combinedChars[PASSWORD_CHARS.length + 9] = ')';
-
-        SecureRandom rnd = new SecureRandom();
-        char[] chs = new char[length];
-
-        // Ensure at least one digit
-        chs[0] = (char) ('2' + rnd.nextInt(8)); // 2-9
-
-        // Ensure at least one special character
-        chs[1] = combinedChars[PASSWORD_CHARS.length + rnd.nextInt(10)];
-
-        // Ensure at least one uppercase letter
-        chs[2] = (char) ('A' + rnd.nextInt(26));
-        while (chs[2] == 'I' || chs[2] == 'O' || chs[2] == 'V') {
-            chs[2] = (char) ('A' + rnd.nextInt(26));
-        }
-
-        // Ensure at least one lowercase letter
-        chs[3] = (char) ('a' + rnd.nextInt(26));
-        while (chs[3] == 'l' || chs[3] == 'v') {
-            chs[3] = (char) ('a' + rnd.nextInt(26));
-        }
-
-        // Fill the rest of the password
-        for (int i = 4; i < length; i++) {
-            chs[i] = combinedChars[rnd.nextInt(combinedChars.length)];
-        }
-
-        // Shuffle the password array to avoid predictable patterns
-        for (int i = 0; i < chs.length; i++) {
-            int randomIndex = rnd.nextInt(chs.length);
-            char temp = chs[i];
-            chs[i] = chs[randomIndex];
-            chs[randomIndex] = temp;
-        }
-
-        return new String(chs);
-    }
-
 
     public static String createPass(final int length) {
 

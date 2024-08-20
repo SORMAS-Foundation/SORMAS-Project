@@ -183,18 +183,18 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
         return em.createQuery(cq).getResultList();
     }
 
-	/**
-	 * Loads users filtered by combinable filter conditions.<br />
-	 * Condition combination if parameter is set:<br />
-	 * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
-	 * 
-	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
-	 * @param regionUuids
-	 * @param districtUuids
-	 * @param filterByCurrentUserJurisdiction
-	 * @param activeOnly
-	 * @param userRights
-	 */
+    /**
+     * Loads users filtered by combinable filter conditions.<br />
+     * Condition combination if parameter is set:<br />
+     * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
+     *
+     * @param regionUuids
+     * @param districtUuids
+     * @param filterByCurrentUserJurisdiction
+     * @param activeOnly
+     * @param userRights
+     * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
+     */
     public List<UserReference> getUserReferences(List<String> regionUuids, List<String> districtUuids, boolean activeOnly, UserRight... userRights) {
 
         return getUserReferences(regionUuids, districtUuids, null, activeOnly, userRights);
@@ -219,19 +219,19 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
         return getUserReferences(regionUuids, districtUuids, communityUuids, activeOnly, limitedDisease, false, Arrays.asList(userRights));
     }
 
-	/**
-	 * Loads users filtered by combinable filter conditions.<br />
-	 * Condition combination if parameter is set:<br />
-	 * {@code ((regionUuids & districtUuids & communityUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
-	 *
-	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
-	 * @param regionUuids
-	 * @param districtUuids
-	 * @param communityUuids
-	 * @param filterByJurisdiction
-	 * @param activeOnly
-	 * @param userRights
-	 */
+    /**
+     * Loads users filtered by combinable filter conditions.<br />
+     * Condition combination if parameter is set:<br />
+     * {@code ((regionUuids & districtUuids & communityUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
+     *
+     * @param regionUuids
+     * @param districtUuids
+     * @param communityUuids
+     * @param filterByJurisdiction
+     * @param activeOnly
+     * @param userRights
+     * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
+     */
     public List<UserReference> getUserReferences(
             List<String> regionUuids,
             List<String> districtUuids,
@@ -654,7 +654,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     public String generatePassword() {
-        return PasswordHelper.generatePasswordWithSpecialChars(12);
+        return PasswordHelper.createPass(12);
     }
 
     public String updatePassword(String userUuid, String password) {
@@ -763,7 +763,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
-     *
      * @param districts
      * @param userRight
      * @return Number of users with specified UserRight on district level
@@ -782,7 +781,6 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
-     *
      * @param districts
      * @return Number of users with specified UserRight on community level
      */
@@ -799,11 +797,10 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
         return em.createQuery(cq).getSingleResult();
     }
 
-	/**
-	 *
-	 * @param districts
-	 * @return Number of users with specified UserRight on health facility level
-	 */
+    /**
+     * @param districts
+     * @return Number of users with specified UserRight on health facility level
+     */
     public Long countByHealthFacilities(List<District> districts, UserRight userRight) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -817,11 +814,10 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
         return em.createQuery(cq).getSingleResult();
     }
 
-	/**
-	 *
-	 * @param districts
-	 * @return Number of users with specified UserRight on pointOfEntry level
-	 */
+    /**
+     * @param districts
+     * @return Number of users with specified UserRight on pointOfEntry level
+     */
     public Long countByPointOfEntries(List<District> districts, UserRight userRight) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -847,10 +843,9 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
         return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
     }
 
-	/**
-	 * @param root
-	 *            root to {@link User} or {@link UserReference}.
-	 */
+    /**
+     * @param root root to {@link User} or {@link UserReference}.
+     */
     private Predicate createDefaultFilter(CriteriaBuilder cb, From<?, ?> root) {
         return cb.isTrue(root.get(User.ACTIVE));
     }
