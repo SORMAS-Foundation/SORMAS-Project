@@ -42,132 +42,129 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface UserFacade {
 
-	UserDto getByUuid(String uuid);
+    UserDto getByUuid(String uuid);
 
-	UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate);
+    UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate);
 
-	UserDto saveUserRolesAndRestrictions(UserDto user, Set<UserRoleReferenceDto> userRoles);
+    UserDto saveUserRolesAndRestrictions(UserDto user, Set<UserRoleReferenceDto> userRoles);
 
-	boolean isLoginUnique(String uuid, String userName);
+    boolean isLoginUnique(String uuid, String userName);
 
-	String resetPassword(String uuid);
+    String resetPassword(String uuid);
 
-	List<UserDto> getAllAfter(Date date);
+    String updateUserPassword(String uuid, String newPassword, String currentPassword);
 
-	UserDto getByUserName(String userName);
+    boolean validatePassword(String uuid, String password);
 
-	/**
-	 * 
-	 * @param regionRef
-	 *            reference of the region to be filtered for. When this region is null, it is not filtered in this regard.
-	 *            NOTE: some users don't have a region (often users with NATIONAL_USER role, for example). They will
-	 *            not be included when a region is specified, but otherwise they will.
-	 * @param limitedDisease
-	 *            can be used to remove users from the return value that are limited to diseases other that limitedDisease.
-	 * @param userRights
-	 *            user rights to be filtered for.
-	 * @return
-	 */
-	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights);
+    String checkPasswordStrength(String password);
 
-	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
+    boolean isPasswordStrong(String password);
 
-	List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+    String generatePassword();
 
-	Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties);
+    List<UserDto> getAllAfter(Date date);
 
-	long count(UserCriteria userCriteria);
+    UserDto getByUserName(String userName);
 
-	/**
-	 * 
-	 * @param district
-	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
-	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
-	 *            not be included when a district is specified, but otherwise they will.
-	 * @param limitedDisease
-	 *            can be used to remove users from the return value that are limited to diseases other that limitedDisease.
-	 * @param userRights
-	 *            user rights to be filtered for.
-	 * @return
-	 */
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, Disease limitedDisease, UserRight... userRights);
+    /**
+     * @param regionRef      reference of the region to be filtered for. When this region is null, it is not filtered in this regard.
+     *                       NOTE: some users don't have a region (often users with NATIONAL_USER role, for example). They will
+     *                       not be included when a region is specified, but otherwise they will.
+     * @param limitedDisease can be used to remove users from the return value that are limited to diseases other that limitedDisease.
+     * @param userRights     user rights to be filtered for.
+     * @return
+     */
+    List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights);
 
-	/**
-	 * 
-	 * @param district
-	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
-	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
-	 *            * not be included when a district is specified, but otherwise they will.
-	 * @param excludeLimitedDiseaseUsers
-	 *            if true, all users limited to diseases are excluded from the return value.
-	 * @param userRights
-	 *            user rights to be filtered for.
-	 * @return
-	 */
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean excludeLimitedDiseaseUsers, UserRight... userRights);
+    List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
-	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, Disease limitedDisease, UserRight... userRights);
+    List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<UserReferenceDto> getUserRefsByInfrastructure(
-		InfrastructureDataReferenceDto infrastructure,
-		JurisdictionLevel jurisdictionLevel,
-		JurisdictionLevel allowedJurisdictionLevel,
-		Disease limitedDisease,
-		UserRight... userRights);
+    Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties);
 
-	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
+    long count(UserCriteria userCriteria);
 
-	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRight... userRights);
+    /**
+     * @param district       reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
+     *                       NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
+     *                       not be included when a district is specified, but otherwise they will.
+     * @param limitedDisease can be used to remove users from the return value that are limited to diseases other that limitedDisease.
+     * @param userRights     user rights to be filtered for.
+     * @return
+     */
+    List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, Disease limitedDisease, UserRight... userRights);
 
-	List<String> getAllUuids();
+    /**
+     * @param district                   reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
+     *                                   NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
+     *                                   * not be included when a district is specified, but otherwise they will.
+     * @param excludeLimitedDiseaseUsers if true, all users limited to diseases are excluded from the return value.
+     * @param userRights                 user rights to be filtered for.
+     * @return
+     */
+    List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean excludeLimitedDiseaseUsers, UserRight... userRights);
 
-	List<UserDto> getByUuids(List<String> uuids);
+    List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, Disease limitedDisease, UserRight... userRights);
 
-	UserDto getCurrentUser();
+    List<UserReferenceDto> getUserRefsByInfrastructure(
+            InfrastructureDataReferenceDto infrastructure,
+            JurisdictionLevel jurisdictionLevel,
+            JurisdictionLevel allowedJurisdictionLevel,
+            Disease limitedDisease,
+            UserRight... userRights);
 
-	UserReferenceDto getCurrentUserAsReference();
+    List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
-	Set<UserRight> getValidLoginRights(String userName, String password);
+    List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRight... userRights);
 
-	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
+    List<String> getAllUuids();
 
-	UserSyncResult syncUser(String userUuid);
+    List<UserDto> getByUuids(List<String> uuids);
 
-	List<UserDto> getUsersWithDefaultPassword();
+    UserDto getCurrentUser();
 
-	List<ProcessedEntity> enableUsers(List<String> userUuids);
+    UserReferenceDto getCurrentUserAsReference();
 
-	List<ProcessedEntity> disableUsers(List<String> userUuids);
+    Set<UserRight> getValidLoginRights(String userName, String password);
 
-	List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto);
+    void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
-	List<UserReferenceDto> getUsersHavingContactInJurisdiction(ContactReferenceDto contactReferenceDto);
+    UserSyncResult syncUser(String userUuid);
 
-	List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto event);
+    List<UserDto> getUsersWithDefaultPassword();
 
-	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
+    List<ProcessedEntity> enableUsers(List<String> userUuids);
 
-	List<UserReferenceDto> getUsersHavingEnvironmentInJurisdiction(EnvironmentReferenceDto environmentReferenceDto);
+    List<ProcessedEntity> disableUsers(List<String> userUuids);
 
-	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndexCriteria taskContextIndexCriteria);
+    List<UserReferenceDto> getUsersHavingCaseInJurisdiction(CaseReferenceDto caseReferenceDto);
 
-	Set<UserRoleDto> getUserRoles(UserDto user);
+    List<UserReferenceDto> getUsersHavingContactInJurisdiction(ContactReferenceDto contactReferenceDto);
 
-	long getUserCountHavingRole(UserRoleReferenceDto userRoleRef);
+    List<UserReferenceDto> getUsersHavingEventInJurisdiction(EventReferenceDto event);
 
-	List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef);
+    List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
 
-	/**
-	 * Retrieves the user rights of the user specified by the passed UUID, or those of the current user if no UUID is specified.
-	 * Requesting the user rights of another user without the rights to view users and user roles results in an AccessDeniedException.
-	 * 
-	 * @param userUuid
-	 *            The UUID of the user to request the user rights for
-	 * @return A set containing the user rights associated to all user roles assigned to the user
-	 */
-	List<UserRight> getUserRights(String userUuid);
+    List<UserReferenceDto> getUsersHavingEnvironmentInJurisdiction(EnvironmentReferenceDto environmentReferenceDto);
 
-	void syncUsersFromAuthenticationProvider();
+    List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndexCriteria taskContextIndexCriteria);
 
-	boolean isSyncEnabled();
+    Set<UserRoleDto> getUserRoles(UserDto user);
+
+    long getUserCountHavingRole(UserRoleReferenceDto userRoleRef);
+
+    List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef);
+
+    /**
+     * Retrieves the user rights of the user specified by the passed UUID, or those of the current user if no UUID is specified.
+     * Requesting the user rights of another user without the rights to view users and user roles results in an AccessDeniedException.
+     *
+     * @param userUuid The UUID of the user to request the user rights for
+     * @return A set containing the user rights associated to all user roles assigned to the user
+     */
+    List<UserRight> getUserRights(String userUuid);
+
+    void syncUsersFromAuthenticationProvider();
+
+    boolean isSyncEnabled();
 }
