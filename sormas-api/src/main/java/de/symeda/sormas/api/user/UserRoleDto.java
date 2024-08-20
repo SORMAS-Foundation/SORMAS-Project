@@ -36,7 +36,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.api.audit.AuditedClass;
 
 public class UserRoleDto extends EntityDto {
 

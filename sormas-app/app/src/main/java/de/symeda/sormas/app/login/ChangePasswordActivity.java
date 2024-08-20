@@ -120,7 +120,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
         } else {
             binding.actionPasswordStrength.setVisibility(view.getVisibility());
             binding.actionPasswordStrength.setText(R.string.message_password_weak);
-            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.additional_message_passord_weakk);
+            NotificationHelper.showNotification(binding, NotificationType.ERROR, R.string.additional_message_passord_weak);
             binding.actionPasswordStrength.setTextColor(Color.parseColor(getString(R.color.errorBackground)));
         }
     }
