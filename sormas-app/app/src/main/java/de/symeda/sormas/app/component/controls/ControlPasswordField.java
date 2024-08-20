@@ -70,5 +70,4 @@ public class ControlPasswordField extends ControlTextEditField {
         TextInputLayout inputLayout = (TextInputLayout) this.findViewById(R.id.text_input_layout);
         inputLayout.setPasswordVisibilityToggleEnabled(true);
     }
-
 }

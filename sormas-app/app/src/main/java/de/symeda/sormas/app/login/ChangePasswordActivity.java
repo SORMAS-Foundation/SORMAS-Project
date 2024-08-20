@@ -49,8 +49,11 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
     public static final String TAG = ChangePasswordActivity.class.getSimpleName();
 
-    private boolean isAtLeast8 = false, hasUppercase = false, hasNumber = false, hasSpecialCharacter = false, isGood = false;
-
+    private boolean isAtLeast8 = false;
+    private boolean hasUppercase = false;
+    private boolean hasNumber = false;
+    private boolean hasSpecialCharacter = false;
+    private boolean isGood = false;    
     private ActivityChangePasswordLayoutBinding binding;
     private ProgressBar preloader;
     private View fragmentFrame;

@@ -318,12 +318,6 @@
 
 		<!-- *** Test dependencies END *** -->
 
-		<dependency>
-			<groupId>edu.vt.middleware</groupId>
-			<artifactId>vt-password</artifactId>
-			<version>3.1.2</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>

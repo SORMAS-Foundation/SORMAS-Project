@@ -314,8 +314,7 @@ public final class ConfigProvider {
     }
 
     public static void setNewPassword(String password) {
-        System.out.println("Entered setNewPassword");
-        System.out.println("setNewPassword: newPassword: " + password);
+        
         if (password == null)
             throw new NullPointerException("password");
         password = instance.encodeCredential(password, "Password");

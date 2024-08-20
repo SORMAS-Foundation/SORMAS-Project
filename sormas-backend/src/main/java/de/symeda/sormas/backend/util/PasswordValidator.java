@@ -17,15 +17,11 @@ public class PasswordValidator {
     }
 
     public static boolean isStrongPassword(String password) {
-        return password.length() >= 8 && hasDigits(password) && hasSpecialCharacters(password) && hasCapitalLetter(password);
+        return password.length() >= 8 && hasDigits(password) && hasCapitalLetter(password);
     }
 
     private static boolean hasDigits(String password) {
         return password.chars().anyMatch(Character::isDigit);
-    }
-
-    private static boolean hasSpecialCharacters(String password) {
-        return password.chars().anyMatch(ch -> !Character.isLetterOrDigit(ch) && !Character.isWhitespace(ch));
     }
 
     private static boolean hasCapitalLetter(String password) {

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -658,14 +658,17 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     public String updatePassword(String userUuid, String password) {
+        
         User user = getByUuid(userUuid);
-
         if (user == null && password == null) {
             return null;
         }
-        assert user != null;
+        if (user == null) {
+            throw new IllegalArgumentException("User not found for UUID: " + userUuid);
+        }
         user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
         ensurePersisted(user);
+
         return password;
     }
 
