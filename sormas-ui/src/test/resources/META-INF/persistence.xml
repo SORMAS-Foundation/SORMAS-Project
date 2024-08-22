@@ -89,7 +89,8 @@
 		<class>de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample</class>
 		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
 		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>
-
+        <class>de.symeda.sormas.backend.news.News</class>
+        <class>de.symeda.sormas.backend.news.EiosBoardConfig</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>

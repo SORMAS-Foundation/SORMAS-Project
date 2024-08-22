@@ -19,6 +19,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.news.eios.EiosConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 
 @Remote
@@ -159,4 +160,8 @@ public interface ConfigFacade {
 	void resetRequestContext();
 
 	String[] getAllowedFileExtensions();
+
+	EiosConfig getEIOSConfig();
+
+	String getEiosBoardIds();
 }

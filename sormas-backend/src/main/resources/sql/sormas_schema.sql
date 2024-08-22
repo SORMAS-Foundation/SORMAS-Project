@@ -13242,4 +13242,64 @@ ALTER TABLE selfreports_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
 
+create table eiosboardconfig
+(
+    id             bigint       not null
+        primary key,
+    changedate     timestamp(3) not null,
+    creationdate   timestamp(3) not null,
+    uuid           varchar(36)  not null,
+    boardid        bigint,
+    enabled        boolean,
+    starttimestamp bigint,
+    change_user_id bigint
+);
+
+ALTER TABLE eiosboardconfig OWNER TO sormas_user;
+CREATE TABLE eiosboardconfig_history
+(
+    LIKE eiosboardconfig
+);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR
+UPDATE ON eiosboardconfig
+    FOR EACH ROW EXECUTE PROCEDURE versioning ('sys_period', 'eiosboardconfig_history', true);
+create table news
+(
+    id                bigint       not null,
+    changedate        timestamp(3) not null,
+    creationdate      timestamp(3) not null,
+    uuid              varchar(36)  not null unique,
+    comments          varchar(4096),
+    contentrestricted boolean,
+    description       varchar(1000000),
+    eiosurl           varchar(4096),
+    newsdate          timestamp,
+    risklevel         varchar(4096),
+    status            varchar(4096),
+    title             varchar(4096),
+    url               varchar(4096),
+    change_user_id    bigint,
+    community_id      bigint,
+    district_id       bigint,
+    region_id         bigint,
+    source_id         bigint,
+    eiosid            bigint unique,
+    disease           varchar(255),
+    primary key (id)
+);
+ALTER TABLE news OWNER TO sormas_user;
+ALTER TABLE news
+    ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE TABLE news_history
+(
+    LIKE news
+);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR
+UPDATE ON news
+    FOR EACH ROW EXECUTE PROCEDURE versioning ('sys_period', 'news_history', true);
+INSERT INTO schema_version (version_number, comment)
+VALUES (550, '#13131 Setup EIOS Board Configuration and News');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

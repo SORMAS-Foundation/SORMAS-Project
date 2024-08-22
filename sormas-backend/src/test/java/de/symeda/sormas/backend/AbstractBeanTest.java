@@ -95,6 +95,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
+import de.symeda.sormas.api.news.NewsFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
@@ -209,6 +210,10 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEj
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogFacadeEjb.ManualMessageLogFacadeEjbLocal;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
+import de.symeda.sormas.backend.news.EiosBoardConfigService;
+import de.symeda.sormas.backend.news.EiosFacadeEjb;
+import de.symeda.sormas.backend.news.NewsFacadeEjb;
+import de.symeda.sormas.backend.news.NewsService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
@@ -1086,5 +1091,21 @@ public abstract class AbstractBeanTest {
 
 	public SelfReportService getSelfReportService() {
 		return getBean(SelfReportService.class);
+	}
+
+	public NewsFacade getNewsFacade() {
+		return getBean(NewsFacadeEjb.NewsFacadeEjbLocal.class);
+	}
+
+	public NewsService getNewsService() {
+		return getBean(NewsService.class);
+	}
+
+	public EiosFacadeEjb.EiosFacadeEjbLocal getEiosFacade() {
+		return getBean(EiosFacadeEjb.EiosFacadeEjbLocal.class);
+	}
+
+	public EiosBoardConfigService getEiosBoardConfigService() {
+		return getBean(EiosBoardConfigService.class);
 	}
 }

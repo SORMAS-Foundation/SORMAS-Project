@@ -315,6 +315,7 @@ public interface Strings {
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
+	String errorEiosRequestToken = "errorEiosRequestToken";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEnvironmentSampleNoDispatchRight = "errorEnvironmentSampleNoDispatchRight";
@@ -1543,6 +1544,10 @@ public interface Strings {
 	String mmhg = "mmhg";
 	String month = "month";
 	String nameOf = "nameOf";
+	String newsData = "newsData";
+	String newsEndDate = "newsEndDate";
+	String newsFilterText = "newsFilterText";
+	String newsStartDate = "newsStartDate";
 	String no = "no";
 	String none = "none";
 	String notAnswered = "notAnswered";

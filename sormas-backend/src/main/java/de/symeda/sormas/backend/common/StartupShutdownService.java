@@ -68,6 +68,7 @@ import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
@@ -106,6 +107,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.news.EiosBoardConfigService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
@@ -186,6 +188,8 @@ public class StartupShutdownService {
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private CustomizableEnumValueService customizableEnumValueService;
+	@EJB
+	private EiosBoardConfigService boardConfigService;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
@@ -249,6 +253,7 @@ public class StartupShutdownService {
 		configFacade.validateConfigUrls();
 
 		centralInfraSync.syncAll();
+		manageEiosConfig();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -1017,6 +1022,13 @@ public class StartupShutdownService {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);
 		});
+	}
+
+	private void manageEiosConfig() {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.NEWS_FEATURE)) {
+			String boardIds = configFacade.getEiosBoardIds();
+			boardConfigService.manageEiosConfigAtStartUp(boardIds);
+		}
 	}
 
 	@PreDestroy

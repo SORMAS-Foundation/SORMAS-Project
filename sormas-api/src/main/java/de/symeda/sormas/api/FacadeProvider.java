@@ -80,6 +80,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
+import de.symeda.sormas.api.news.NewsFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
@@ -537,6 +538,10 @@ public class FacadeProvider {
 
 	public static SelfReportImportFacade getSelfReportImportFacade() {
 		return get().lookupEjbRemote(SelfReportImportFacade.class);
+	}
+
+	public static NewsFacade getNewsFacade() {
+		return get().lookupEjbRemote(NewsFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

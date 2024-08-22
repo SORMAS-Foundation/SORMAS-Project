@@ -292,7 +292,9 @@ public enum UserRight {
 	EMAIL_TEMPLATE_MANAGEMENT(UserRightGroup.EXTERNAL_EMAILS),
 	EXTERNAL_EMAIL_SEND(UserRightGroup.EXTERNAL_EMAILS),
 	EXTERNAL_EMAIL_ATTACH_DOCUMENTS(UserRightGroup.EXTERNAL_EMAILS, UserRight._EXTERNAL_EMAIL_SEND),
-	CUSTOMIZABLE_ENUM_MANAGEMENT(UserRightGroup.CONFIGURATION);
+	CUSTOMIZABLE_ENUM_MANAGEMENT(UserRightGroup.CONFIGURATION),
+	VIEW_NEWS(UserRightGroup.NEWS),
+	EDIT_NEWS(UserRightGroup.NEWS, UserRight._VIEW_NEWS);
 
 	//@formatter:on
 
@@ -516,7 +518,8 @@ public enum UserRight {
 	public static final String _EXTERNAL_EMAIL_SEND = "EXTERNAL_EMAIL_SEND";
 	public static final String _EXTERNAL_EMAIL_ATTACH_DOCUMENTS = "EXTERNAL_EMAIL_ATTACH_DOCUMENTS";
 	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
-
+	public static final String _VIEW_NEWS = "VIEW_NEWS";
+	public static final String _EDIT_NEWS = "EDIT_NEWS";
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 
 	private final UserRightGroup userRightGroup;
