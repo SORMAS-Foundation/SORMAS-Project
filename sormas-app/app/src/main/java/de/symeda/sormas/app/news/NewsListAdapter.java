@@ -7,8 +7,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.core.adapter.databinding.BindingPagedListAdapter;
 import de.symeda.sormas.app.core.adapter.databinding.BindingViewHolder;
@@ -33,7 +35,9 @@ public class NewsListAdapter extends BindingPagedListAdapter<News, RowNewsListIt
 			pageHolder.setOnListItemClickListener(this.mOnListItemClickListener);
 			News data = pageHolder.getData();
 			setColorInPriorityButton(pageHolder.binding.newsDataActionPriority, data.getRiskLevel());
-			pageHolder.binding.newsDataPriorityContainer.setOnClickListener(l -> createNewEvent(data));
+			if (ConfigProvider.hasUserRight(UserRight.EVENT_CREATE)) {
+				pageHolder.binding.newsDataPriorityContainer.setOnClickListener(l -> createNewEvent(data));
+			}
 		}
 	}
 
