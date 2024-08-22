@@ -13252,7 +13252,8 @@ create table eiosboardconfig
     boardid        bigint,
     enabled        boolean,
     starttimestamp bigint,
-    change_user_id bigint
+    change_user_id bigint,
+    sys_period    tstzrange
 );
 
 ALTER TABLE eiosboardconfig OWNER TO sormas_user;
@@ -13286,6 +13287,7 @@ create table news
     source_id         bigint,
     eiosid            bigint unique,
     disease           varchar(255),
+    sys_period         tstzrange,
     primary key (id)
 );
 ALTER TABLE news OWNER TO sormas_user;
@@ -13299,7 +13301,6 @@ CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR
 UPDATE ON news
     FOR EACH ROW EXECUTE PROCEDURE versioning ('sys_period', 'news_history', true);
-INSERT INTO schema_version (version_number, comment)
-VALUES (550, '#13131 Setup EIOS Board Configuration and News');
+INSERT INTO schema_version (version_number, comment) VALUES (550, '#13131 Setup EIOS Board Configuration and News');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
