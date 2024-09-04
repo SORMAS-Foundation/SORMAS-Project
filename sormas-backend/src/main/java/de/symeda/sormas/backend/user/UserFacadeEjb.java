@@ -1096,10 +1096,7 @@ public class UserFacadeEjb implements UserFacade {
 		UserRight._SYSTEM })
 	public boolean isSyncEnabled() {
 		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
-		return KEYCLOAK.equalsIgnoreCase(authProvider.getName())
-			&& (featureConfigurationFacade.isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)
-				|| StringUtils.isNotBlank(configFacade.getAuthenticationProviderSyncedNewUserRole()));
-
+		return KEYCLOAK.equalsIgnoreCase(authProvider.getName());
 	}
 
 	@Override

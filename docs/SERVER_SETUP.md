@@ -190,9 +190,25 @@ In case Keycloak is set up alongside an already running instance of SORMAS, thes
 3. Login to SORMAS and trigger the **Sync Users** button from the **Users** page
 4. This will sync users to Keycloak keeping their original password - see [SORMAS Keycloak Service Provider](sormas-keycloak-service-provider/README.md) for more information about this
 
+### Synchronization between SORMAS and Keycloak
+
+The synchronization of users between SORMAS and Keycloak is can be done in two ways:
+from SORMAS to Keycloak or from Keycloak to SORMAS depending on how the `AUTH_PROVIDER_TO_SORMAS_USER_SYNC` feature is configured.
+
+By default, the `AUTH_PROVIDER_TO_SORMAS_USER_SYNC` feature is disabled so the synchronization happens from SORMAS to Keycloak.
+An automatic synchronization happens when a user is created/changed/deleted in SORMAS, 
+and there is another way to trigger this manually by an admin on the users page meaning the users are managed in SORMAS.
+
+If the feature is enabled, the synchronization is done from Keycloak to SORMAS.
+In order to make this feature work you also need to configure the `authentication.provider.syncedNewUserRole`configuration property in the `sormas.properties` file 
+to the name of the role that you want to be assigned to the new users coming from Keycloak.
+
+This feature doesn't allow changing the users in SORMAS, except their roles and language, so users will be managed in keycloak.
+The synchronization is done automatically each day at night, or manually by an admin on the users page when needed.
+
 ### Keycloak configuration
 
-More about the default configuration and how to customize can be found here [Keycloak](sormas-base/doc/keycloak.md)
+More about the default configuration and how to customize can be found here [Keycloak](../sormas-base/doc/keycloak.md)
 
 ## Web Server Setup
 
