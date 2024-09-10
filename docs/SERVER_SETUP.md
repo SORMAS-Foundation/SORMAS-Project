@@ -138,7 +138,7 @@ Keycloak can be set up in two ways:
 **Setup**
 * Run `sormas-base/setup/keycloak/keycloak-setup.sh`
 * Update `sormas.properties` file in the SORMAS domain with the property `authentication.provider=KEYCLOAK`
-
+* Change in keycloak administration console the client ID for `sormas-stats` and `sormas-ui` from `https` to `http`
 
 ### Keycloak as a standalone installation
 
