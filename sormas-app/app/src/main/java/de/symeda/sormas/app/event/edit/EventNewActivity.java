@@ -22,9 +22,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-
 import androidx.annotation.NonNull;
-
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -64,6 +62,10 @@ public class EventNewActivity extends BaseEditActivity<Event> {
 
 	public static Bundler buildBundleWithCase(String caseUuid) {
 		return BaseEditActivity.buildBundle(null).setCaseUuid(caseUuid);
+	}
+
+	public static void startActivity(Context fromActivity, Bundler bundler) {
+		BaseEditActivity.startActivity(fromActivity, EventNewActivity.class, bundler);
 	}
 
 	@Override

@@ -81,6 +81,8 @@ public abstract class BaseCriteria implements Serializable {
 						stringValue = (String) value;
 					} else if (Integer.class.isAssignableFrom(type)) {
 						stringValue = String.valueOf(value);
+					} else if (Long.class.isAssignableFrom(type)) {
+						stringValue = String.valueOf(value);
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
 						stringValue = ((EpiWeek) value).toUrlString();
 					} else if (CriteriaDateType.class.isAssignableFrom(type)) {

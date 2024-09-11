@@ -179,4 +179,16 @@ $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !defa
   .sormas-content {
     overflow: auto;
   }
+  #news-popup-iframe {
+    width: 100%;
+    height: 50vh;
+  }
+  .top-row-news-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .top-row-new-select > [location="openLinkButton"] {
+    float: none !important;
+  }
 }

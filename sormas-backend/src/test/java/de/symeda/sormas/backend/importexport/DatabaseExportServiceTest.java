@@ -27,6 +27,8 @@ import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
+import de.symeda.sormas.backend.news.EiosBoardConfig;
+import de.symeda.sormas.backend.news.News;
 import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
@@ -64,7 +66,9 @@ public class DatabaseExportServiceTest {
 		FirstVaccinationDate.class,
 		Environment.class,
 		EnvironmentSample.class,
-		SelfReport.class);
+		SelfReport.class,
+		News.class,
+		EiosBoardConfig.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

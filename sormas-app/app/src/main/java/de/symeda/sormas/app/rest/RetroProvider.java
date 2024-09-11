@@ -20,38 +20,15 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.util.Log;
-
 import androidx.fragment.app.FragmentActivity;
-
-import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationAnyOfSymptomsCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestNegativeResultCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestOtherPositiveResultCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPathogenTestPositiveResultCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationPersonAgeBetweenYearsCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationSymptomsCriteriaDto;
-import de.symeda.sormas.api.caze.classification.ClassificationVaccinationDateNotInStartDateRangeDto;
-import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.*;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.api.environment.environmentsample.WeatherCondition;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -70,11 +47,7 @@ import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.EnumMapKeySerializer;
-import okhttp3.Credentials;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -132,7 +105,7 @@ public final class RetroProvider {
 	private AggregateReportFacadeRetro aggregateReportFacadeRetro;
 	private EnvironmentFacadeRetro environmentFacadeRetro;
 	private EnvironmentSampleFacadeRetro environmentSampleFacadeRetro;
-
+	private NewsFacadeRetro newsFacadeRetro;
 	private RetroProvider(Context context) throws ServerConnectionException, ServerCommunicationException, ApiVersionException {
 
 		lastConnectionId = this.hashCode();
@@ -1011,6 +984,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.environmentSampleFacadeRetro;
+	}
+
+	public static NewsFacadeRetro getNewsFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.newsFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.newsFacadeRetro == null) {
+					instance.newsFacadeRetro = instance.retrofit.create(NewsFacadeRetro.class);
+				}
+			}
+		}
+		return instance.newsFacadeRetro;
 	}
 
 	public static void throwException(Response<?> response) throws ServerConnectionException, ServerCommunicationException {

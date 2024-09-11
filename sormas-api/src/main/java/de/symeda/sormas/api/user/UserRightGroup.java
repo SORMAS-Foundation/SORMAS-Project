@@ -47,7 +47,8 @@ public enum UserRightGroup {
 
 	EXPORT,
 	CONFIGURATION,
-	EXTERNAL;
+	EXTERNAL,
+	NEWS;
 
 	@Override
 	public String toString() {
