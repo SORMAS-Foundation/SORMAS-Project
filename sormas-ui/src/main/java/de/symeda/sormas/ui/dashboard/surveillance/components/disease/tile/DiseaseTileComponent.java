@@ -19,29 +19,34 @@ package de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.CssStyles;
+import javax.validation.constraints.NotNull;
+import com.vaadin.ui.Button;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import org.jetbrains.annotations.NotNull;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class DiseaseTileComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
+	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden, DashboardDataProvider dashboardDataProvider) {
 		setMargin(false);
 		setSpacing(false);
 
 		addTopLayout(diseaseBurden.getDisease(), diseaseBurden.getCaseCount(), diseaseBurden.getPreviousCaseCount(),
-				diseaseBurden.getOutbreakDistrictCount() > 0);
+			diseaseBurden.getOutbreakDistrictCount() > 0);
 		addStatsLayout(diseaseBurden, dashboardDataProvider);
 
 	}
@@ -67,8 +72,8 @@ public class DiseaseTileComponent extends VerticalLayout {
 		nameLayout.setHeight(100, Unit.PERCENTAGE);
 		Label nameLabel = new Label(disease.toShortString());
 		nameLabel.addStyleNames(CssStyles.LABEL_WHITE,
-				nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
-				CssStyles.LABEL_BOLD, CssStyles.ALIGN_CENTER, CssStyles.LABEL_UPPERCASE);
+		nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
+		CssStyles.LABEL_BOLD, CssStyles.ALIGN_CENTER, CssStyles.LABEL_UPPERCASE);
 		nameLayout.addComponent(nameLabel);
 		nameLayout.setComponentAlignment(nameLabel, Alignment.MIDDLE_CENTER);
 		nameAndOutbreakLayout.addComponent(nameLayout);
@@ -108,7 +113,6 @@ public class DiseaseTileComponent extends VerticalLayout {
 		{
 			comparisonLayout.setMargin(false);
 			comparisonLayout.setSpacing(false);
-
 
 			Label growthLabel = getLabel(casesCount, previousCasesCount);
 
@@ -153,8 +157,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 	}
 
 	private void addStatsLayout(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
-
-		Long fatalities = diseaseBurden.getCaseDeathCount();
+        Long fatalities = diseaseBurden.getCaseDeathCount();
 		Long events = diseaseBurden.getEventCount();
 		String district = diseaseBurden.getLastReportedDistrictName();
 		Disease disease = diseaseBurden.getDisease();
@@ -166,22 +169,19 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
 
 		StatsItem lastReportItem = new StatsItem.Builder(Captions.dashboardLastReport,
-                district.isEmpty() ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
+		district.isEmpty() ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
 		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
 		layout.addComponent(lastReportItem);
 
 		StatsItem fatality = new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build();
 		fatality.addStyleName(CssStyles.HSPACE_LEFT_5);
 		layout.addComponent(fatality);
-
 		StatsItem noOfEventsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
 		noOfEventsItem.addStyleName(CssStyles.VSPACE_4);
 		layout.addComponent(noOfEventsItem);
 
 		Button component = addDiseaseButton(disease, dashboardDataProvider);
-
 		layout.addComponent(component);
-
 		addComponent(layout);
 	}
 

@@ -19,11 +19,11 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditExcludeProperty;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 
 public class BaseDashboardCriteria<SELF extends BaseDashboardCriteria<?>> extends BaseCriteria {
 
@@ -36,8 +36,6 @@ public class BaseDashboardCriteria<SELF extends BaseDashboardCriteria<?>> extend
 	private Date dateTo;
 	private Date previousDateFrom;
 	private Date previousDateTo;
-
-	protected Class<? extends CriteriaDateType> criteriaDateType;
 	protected NewCaseDateType dateTypeClass;
 
 	protected BaseDashboardCriteria(final Class<SELF> selfClass) {

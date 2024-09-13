@@ -17,15 +17,31 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.map;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -39,7 +55,6 @@ import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.geo.GeoLatLon;
-import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -49,31 +64,36 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.map.*;
-import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.map.LeafletMapUtil;
+import de.symeda.sormas.ui.map.LeafletMarker;
+import de.symeda.sormas.ui.map.LeafletPolygon;
+import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.jetbrains.annotations.NotNull;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
+import javax.validation.constraints.NotNull;
+import org.vaadin.hene.popupbutton.PopupButton;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.api.geo.GeoShapeProvider;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
+import de.symeda.sormas.ui.map.LeafletMap;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import java.util.Collections;
+import java.util.Optional;
+import java.text.SimpleDateFormat;
 import static java.util.Objects.nonNull;
 
 @SuppressWarnings("serial")
@@ -96,8 +116,6 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	private boolean hideOtherCountries;
 	private boolean showCurrentEpiSituation;
 
-
-
 	// Entities
 	private final HashMap<FacilityReferenceDto, List<MapCaseDto>> casesByFacility = new HashMap<>();
 	private List<MapCaseDto> mapCaseDtos = new ArrayList<>();
@@ -115,7 +133,6 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	private CaseMeasure caseMeasure = CaseMeasure.CASE_COUNT;
 	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS;
 	private  PeriodFilterReloadFlag reloadPeriodFiltersFlag = PeriodFilterReloadFlag.RELOAD_AND_KEEP_VALUE;
-
 	private BigDecimal districtValuesLowerQuartile;
 	private BigDecimal districtValuesMedian;
 	private BigDecimal districtValuesUpperQuartile;
@@ -137,9 +154,9 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 
 	public DashboardMapComponent(DashboardDataProvider dashboardDataProvider) {
 		super(
-				dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
-				dashboardDataProvider,
-				null);
+			dashboardDataProvider.getDashboardType() == DashboardType.SURVEILLANCE ? Strings.headingCaseStatusMap : Strings.headingContactMap,
+			dashboardDataProvider,
+			null);
 		if(dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
 
 			setMargin(false);
@@ -152,7 +169,6 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			map.addMarkerClickListener(event -> onMarkerClicked(event.getGroupId(), event.getMarkerIndex()));
 
 			{
-
 				GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
 
 				final GeoLatLon mapCenter;
@@ -1076,7 +1092,6 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 			mapHeaderLayout.setComponentAlignment(collapseMapButton, Alignment.MIDDLE_RIGHT);
 		});
 
-
 		return mapHeaderLayout;
 	}
 
@@ -1607,14 +1622,14 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
 			switch (event.getEventStatus()) {
-				case EVENT:
-					icon = MarkerIcon.EVENT_OUTBREAK;
-					break;
-				case SIGNAL:
-					icon = MarkerIcon.EVENT_RUMOR;
-					break;
-				default:
-					continue;
+			case EVENT:
+				icon = MarkerIcon.EVENT_OUTBREAK;
+				break;
+			case SIGNAL:
+				icon = MarkerIcon.EVENT_RUMOR;
+				break;
+			default:
+				continue;
 			}
 
 			// Because events are pulled from the dashboardDataProvider, we do not need to add additional filters for event dates here
@@ -1726,7 +1741,6 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 		overlayBackground.setVisible(false);
 		overlayLayout.setVisible(false);
 	}
-
 }
 
 

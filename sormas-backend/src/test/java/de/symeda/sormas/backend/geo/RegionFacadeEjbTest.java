@@ -1,19 +1,20 @@
 package de.symeda.sormas.backend.geo;
 
-import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
-import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
+import de.symeda.sormas.api.utils.SortProperty;
+import java.util.ArrayList;
 
 public class RegionFacadeEjbTest extends AbstractBeanTest {
 
@@ -56,7 +57,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 		getRegionService().doFlush();
 
 		// Act
-		List<RegionDto> results = getRegionFacade().getAllRegion();
+		List<RegionDto> results = getRegionFacade().getAllActiveRegions();
 
 		// Assert
 		assertEquals(2, results.size());

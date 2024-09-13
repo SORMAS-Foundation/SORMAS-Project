@@ -18,15 +18,15 @@ package de.symeda.sormas.ui.dashboard;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.BaseDashboardCriteria;
-import de.symeda.sormas.api.dashboard.DashboardCriteria;
-import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 
 public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCriteria<C>> {
 
@@ -128,7 +128,6 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 		return newCaseDateType;
 	}
 
-
 	public DashboardCriteria getCriteria() {
 		return new DashboardCriteria().region(region)
 				.district(district)
@@ -179,5 +178,4 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 	public void setDateFilterType(NewDateFilterType dateFilterType) {
 		this.dateFilterType = dateFilterType;
 	}
-
 }

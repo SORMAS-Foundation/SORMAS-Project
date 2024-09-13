@@ -170,8 +170,6 @@ public enum UserRight {
 	DASHBOARD_CAMPAIGNS_VIEW(UserRightGroup.DASHBOARD, UserRight._CAMPAIGN_VIEW),
 	DASHBOARD_SAMPLES_VIEW(UserRightGroup.DASHBOARD, UserRight._SAMPLE_VIEW),
 
-
-
 	CASE_CLINICIAN_VIEW(UserRightGroup.CASE_MANAGEMENT, UserRight._CASE_VIEW),
 
 	THERAPY_VIEW(UserRightGroup.CASE_MANAGEMENT, UserRight._CASE_VIEW),
@@ -298,7 +296,6 @@ public enum UserRight {
 
 	//@formatter:on
 
-	//private static final String _DISEASE_DETAILS_ACCESS ="DISEASE_DETAILS_ACCESS" ;
 	/*
 	 * Hint for SonarQube issues:
 	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
@@ -519,6 +516,7 @@ public enum UserRight {
 	public static final String _EXTERNAL_EMAIL_SEND = "EXTERNAL_EMAIL_SEND";
 	public static final String _EXTERNAL_EMAIL_ATTACH_DOCUMENTS = "EXTERNAL_EMAIL_ATTACH_DOCUMENTS";
 	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
+	//private static final String _DISEASE_DETAILS_ACCESS ="DISEASE_DETAILS_ACCESS" ;
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 

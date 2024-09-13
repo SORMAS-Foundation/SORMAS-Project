@@ -1,3 +1,17 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.ui.dashboard.diseasedetails;
 
 import com.vaadin.shared.ui.ContentMode;
@@ -11,14 +25,10 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class DiseaseDetailsComponent extends CssLayout {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private DashboardDataProvider dashboardDataProvider;
     private static final String HTML_DIV_END = "</div>";
-
 
     public DiseaseDetailsComponent(DashboardDataProvider dashboardDataProvider) {
         this.dashboardDataProvider = dashboardDataProvider;
@@ -122,12 +132,10 @@ public class DiseaseDetailsComponent extends CssLayout {
         CssStyles.style(layout, CssStyles.getDiseaseColor(disease), CssStyles.BACKGROUND_DARKER);
         float cfrPercent = calculateCfr(fatalities, totalCase);
 
-
         layout.addComponent(createDeathCfrItem(I18nProperties.getCaption(Captions.dashboardFatalities)+": ",
                 fatalities.toString()+"", fatalities > 0,
                 I18nProperties.getCaption(Captions.DiseaseBurden_caseFatalityRate)+": ",
                 String.valueOf(cfrPercent)));
-
 
         HorizontalLayout statsItem = createStatsItem(
                 I18nProperties.getCaption(Captions.dashboardLastReportedDistrict) + ": ",
@@ -163,7 +171,6 @@ public class DiseaseDetailsComponent extends CssLayout {
         fatalityNameLabel.setValue("<div style='float: left; width: 60px; margin-top: 10px;'>" + fatalityLabel + HTML_DIV_END +
                 "<div style='float: left; margin-top: 10px; margin-right: 60px;'>" + fatalityValue+ HTML_DIV_END);
 
-
         layout.addComponent(fatalityNameLabel);
         layout.setExpandRatio(fatalityNameLabel, 1);
 
@@ -181,7 +188,6 @@ public class DiseaseDetailsComponent extends CssLayout {
         layout.addComponent(cfrNameLabel);
 
         return layout;
-
     }
 
     private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {

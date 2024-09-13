@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -30,5 +29,4 @@ public enum MapPeriodType {
     public String toString() {
         return I18nProperties.getEnumCaption(this);
     }
-
 }

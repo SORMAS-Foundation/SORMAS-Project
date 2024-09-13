@@ -53,7 +53,6 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.event.EventParticipantService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -146,8 +145,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
-
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
+import de.symeda.sormas.backend.event.EventParticipantService;
 
 @Stateless
 @LocalBean
@@ -188,9 +187,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private ContactListCriteriaBuilder listCriteriaBuilder;
-
-	@EJB
-	private EventParticipantService eventParticipantService;
 
 	public ContactService() {
 		super(Contact.class, DeletableEntityType.CONTACT);
@@ -1074,7 +1070,6 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc) {
 		return createUserFilterWithoutCase(qc, null);
 	}
-
 
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
 

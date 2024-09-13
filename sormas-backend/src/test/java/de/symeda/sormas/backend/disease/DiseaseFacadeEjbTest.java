@@ -43,7 +43,7 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
         CriteriaDateType newCaseDateType = NewCaseDateType.MOST_RELEVANT;
         CaseClassification caseClassification = CaseClassification.CONFIRMED;
 
-        DiseaseBurdenDto result = getDiseaseFacade().getDiseaseForDashboard(
+        DiseaseBurdenDto result = getDashboardFacade().getDiseaseForDashboard(
                 region,
                 district,
                 disease,
@@ -84,7 +84,7 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
         CriteriaDateType newCaseDateType = NewCaseDateType.MOST_RELEVANT;
         CaseClassification caseClassification = CaseClassification.CONFIRMED;
 
-        DiseaseBurdenDto result = getDiseaseFacade().getDiseaseGridForDashboard(
+        DiseaseBurdenDto result = getDashboardFacade().getDiseaseGridForDashboard(
                 region,
                 district,
                 disease,
@@ -104,6 +104,4 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
         assertEquals("0", result.getDeaths());
         assertEquals("0", result.getOther());
     }
-
-
 }

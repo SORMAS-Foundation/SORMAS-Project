@@ -20,7 +20,6 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -31,7 +30,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
-@AuditedClass
+
 @FeatureIndependent
 public class RegionDto extends InfrastructureDtoWithDefault {
 
@@ -157,6 +156,7 @@ public class RegionDto extends InfrastructureDtoWithDefault {
 	public String i18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 	@Override
 	public String toString() {
 		return getName();

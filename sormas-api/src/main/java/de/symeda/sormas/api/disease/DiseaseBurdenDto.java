@@ -18,14 +18,12 @@
 package de.symeda.sormas.api.disease;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import java.util.Date;
 
-@AuditedClass
 public class DiseaseBurdenDto implements Serializable {
 
 	private static final long serialVersionUID = 2430932452606853497L;

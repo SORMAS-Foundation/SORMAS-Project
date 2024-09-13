@@ -17,20 +17,30 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.time.DateUtils;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.dashboard.*;
+import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardEventDto;
+import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import org.apache.commons.lang3.time.DateUtils;
-
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 
 // FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
 public class DashboardDataProvider extends AbstractDashboardDataProvider<DashboardCriteria> {
@@ -55,6 +65,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private List<DashboardEventDto> events = new ArrayList<>();
 	private Map<PathogenTestResultType, Long> newCasesFinalLabResultCountByResultType;
 	private Map<EventStatus, Long> eventCountByStatus;
+
 	private Long contactsInQuarantineCount = 0L;
 	private Long contactsPlacedInQuarantineCount = 0L;
 	private Long casesInQuarantineCount = 0L;
@@ -76,16 +87,13 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		this.refreshDataForSelectedDisease();
 	}
 
-
-
 	@Override
 	protected DashboardCriteria newCriteria() {
-		return new DashboardCriteria(newCaseDateType);
+		return new DashboardCriteria().setDateTypeClass(newCaseDateType);
 	}
 
-
 	public void refreshDiseaseData() {
-		DiseaseBurdenDto dbd= FacadeProvider.getDiseaseFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate
+		DiseaseBurdenDto dbd= FacadeProvider.getDashboardFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate
 				,newCaseDateType
 				,caseClassification);
 
@@ -129,37 +137,33 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private Predicate<DashboardQuarantineDataDto> quarantineData(Date fromDate, Date toDate) {
 
 		return p -> {
-			if (p != null) {
-				Date quarantineFrom = p.getQuarantineFrom();
-				Date quarantineTo = p.getQuarantineTo();
+			Date quarantineFrom = p.getQuarantineFrom();
+			Date quarantineTo = p.getQuarantineTo();
 
-				if (fromDate != null && toDate != null) {
-					if (quarantineFrom != null && quarantineTo != null) {
-						return quarantineTo.after(fromDate) && quarantineFrom.before(toDate);
-					} else if (quarantineFrom != null) {
-						return quarantineFrom.after(fromDate) && quarantineFrom.before(toDate);
-					} else if (quarantineTo != null) {
-						return quarantineTo.after(fromDate) && quarantineTo.before(toDate);
-					}
-				} else if (fromDate != null) {
-					if (quarantineFrom != null) {
-						return quarantineFrom.after(fromDate);
-					} else if (quarantineTo != null) {
-						return quarantineTo.after(fromDate);
-					}
-				} else if (toDate != null) {
-					if (quarantineFrom != null) {
-						return quarantineFrom.before(toDate);
-					} else if (quarantineTo != null) {
-						return quarantineTo.before(toDate);
-					}
+			if (fromDate != null && toDate != null) {
+				if (quarantineFrom != null && quarantineTo != null) {
+					return quarantineTo.after(fromDate) && quarantineFrom.before(toDate);
+				} else if (quarantineFrom != null) {
+					return quarantineFrom.after(fromDate) && quarantineFrom.before(toDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.after(fromDate) && quarantineTo.before(toDate);
 				}
-
-				return false;
+			} else if (fromDate != null) {
+				if (quarantineFrom != null) {
+					return quarantineFrom.after(fromDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.after(fromDate);
+				}
+			} else if (toDate != null) {
+				if (quarantineFrom != null) {
+					return quarantineFrom.before(toDate);
+				} else if (quarantineTo != null) {
+					return quarantineTo.before(toDate);
+				}
 			}
+
 			return false;
 		};
-
 	}
 
 	private Long getPlacedInQuarantine(List<DashboardQuarantineDataDto> contactsInQuarantineDtos) {
@@ -190,7 +194,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 			// Contacts
 			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate));
 			setPreviousContacts(
-					FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate));
+				FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate));
 
 			this.refreshDataForQuarantinedContacts();
 		}
@@ -202,15 +206,15 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 			setCases(FacadeProvider.getDashboardFacade().getCases(caseDashboardCriteria));
 			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(caseDashboardCriteria));
 			setCasesCountByClassification(
-					FacadeProvider.getDashboardFacade()
-							.getCasesCountByClassification(buildDashboardCriteria(fromDate, toDate).includeNotACaseClassification(true)));
+				FacadeProvider.getDashboardFacade()
+					.getCasesCountByClassification(buildDashboardCriteria(fromDate, toDate).includeNotACaseClassification(true)));
 
 			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(buildDashboardCriteria(previousFromDate, previousToDate)));
 
 			// test results
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				setNewCasesFinalLabResultCountByResultType(
-						FacadeProvider.getDashboardFacade().getNewCasesFinalLabResultCountByResultType(caseDashboardCriteria));
+					FacadeProvider.getDashboardFacade().getNewCasesFinalLabResultCountByResultType(caseDashboardCriteria));
 			}
 		}
 
@@ -225,8 +229,8 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 		Long districtOutbreakCount = FacadeProvider.getOutbreakFacade()
 				.getOutbreakDistrictCount(
-						new OutbreakCriteria().region(region).district(district).disease(disease)
-								.reportedBetween(fromDate, toDate));
+		new OutbreakCriteria().region(region).district(district).disease(disease)
+         .reportedBetween(fromDate, toDate));
 
 		setOutbreakDistrictCount(districtOutbreakCount);
 
@@ -334,23 +338,22 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	public void setLastReportedDistrict(String district) {
 		this.lastReportedDistrict = district;
 	}
-	@Override
+
 	public NewCaseDateType getNewCaseDateType() {
 		if (newCaseDateType == null) {
 			return NewCaseDateType.MOST_RELEVANT;
 		}
 		return newCaseDateType;
 	}
-	@Override
+
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
 		this.newCaseDateType = newCaseDateType;
 	}
 
-	@Override
 	public DashboardType getDashboardType() {
 		return dashboardType;
 	}
-	@Override
+
 	public void setDashboardType(DashboardType dashboardType) {
 		this.dashboardType = dashboardType;
 	}
@@ -402,19 +405,16 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
 	}
-	@Override
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
-	@Override
+
 	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
 	}
 
-	@Override
 	public void setDateFilterType(NewDateFilterType dateFilterType) {
 		this.dateFilterType = dateFilterType;
 	}
-
-
 }

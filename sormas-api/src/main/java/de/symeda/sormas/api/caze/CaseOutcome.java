@@ -27,7 +27,7 @@ public enum CaseOutcome
 	NO_OUTCOME,
 	DECEASED,
 	RECOVERED,
-	UNKNOWN, OTHER;
+	UNKNOWN;
 
 	public String getName() {
 		return this.name();

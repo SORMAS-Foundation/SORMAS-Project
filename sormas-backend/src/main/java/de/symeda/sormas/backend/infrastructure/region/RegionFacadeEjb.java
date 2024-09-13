@@ -35,7 +35,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -69,6 +68,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.infrastructure.InfrastructureAdo;
 
 @Stateless(name = "RegionFacade")
 @RightsAllowed(UserRight._INFRASTRUCTURE_VIEW)
@@ -340,36 +340,31 @@ public class RegionFacadeEjb
 	}
 
 	@Override
-	public List<RegionDto> getAllRegion() {
+	public List<RegionDto> getAllActiveRegions() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<RegionDto> cq = cb.createQuery(RegionDto.class);
 		Root<Region> region = cq.from(Region.class);
 
-		selectDtoFields(cq, region);
+		Join<Region, Country> country = region.join(Region.COUNTRY, JoinType.LEFT);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
 
-		return em.createQuery(cq).getResultList();
-	}
-
-	protected void selectDtoFields(CriteriaQuery<RegionDto> cq, Root<Region> root) {
-
-		Join<Region, Country> country = root.join(Region.COUNTRY, JoinType.LEFT);
-		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
-		// Needs to be in the same order as in the constructor
 		cq.multiselect(
-				root.get(AbstractDomainObject.CREATION_DATE),
-				root.get(AbstractDomainObject.CHANGE_DATE),
-				root.get(AbstractDomainObject.UUID),
-				root.get(InfrastructureAdo.ARCHIVED),
-				root.get(Region.NAME),
-				root.get(Region.EPID_CODE),
-				root.get(Region.GROWTH_RATE),
-				root.get(Region.EXTERNAL_ID),
-				//root.get(Region.ID),
+				region.get(AbstractDomainObject.CREATION_DATE),
+				region.get(AbstractDomainObject.CHANGE_DATE),
+				region.get(AbstractDomainObject.UUID),
+				region.get(InfrastructureAdo.ARCHIVED),
+				region.get(Region.NAME),
+				region.get(Region.EPID_CODE),
+				region.get(Region.GROWTH_RATE),
+				region.get(Region.EXTERNAL_ID),
 				country.get(AbstractDomainObject.UUID),
 				country.get(Country.DEFAULT_NAME),
 				country.get(Country.ISO_CODE),
-				area.get(AbstractDomainObject.UUID));
+				area.get(AbstractDomainObject.UUID)
+		);
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@LocalBean

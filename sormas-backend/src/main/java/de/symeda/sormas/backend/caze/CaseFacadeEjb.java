@@ -4464,8 +4464,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return toPseudonymizedDtos(service.getByExternalId(externalId));
 	}
 
-
-
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {

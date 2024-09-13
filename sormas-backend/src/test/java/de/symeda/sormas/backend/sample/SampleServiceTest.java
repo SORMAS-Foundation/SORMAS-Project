@@ -1,33 +1,46 @@
 package de.symeda.sormas.backend.sample;
 
-import de.symeda.sormas.api.Disease;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.*;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.SampleAssociationType;
-import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.junit.jupiter.api.Test;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * @see SampleService
@@ -75,6 +88,7 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
 		assertNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
 	}
+
 	@Test
 	public void testBuildSampleListCriteriaFilterForCase() throws Exception {
 		// Prepare data
@@ -100,7 +114,6 @@ public class SampleServiceTest extends AbstractBeanTest {
 
 		assertNotNull(predicate);
 	}
-
 
 	@Test
 	public void testBuildSampleListCriteriaFilterForContact() throws Exception {
@@ -176,7 +189,6 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertNotNull(predicate);
 	}
 
-
 	@Test
 	public void testIsEditAllowed() throws InvocationTargetException, IllegalAccessException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
@@ -200,9 +212,5 @@ public class SampleServiceTest extends AbstractBeanTest {
 
 		boolean notOwnerShipAndJurisdictionFlagStatus = getSampleService().getJurisdictionFlags(sampleEntity).getInJurisdiction() && !getSormasToSormasShareInfoService().isSamlpeOwnershipHandedOver(sampleEntity);
 		assertTrue(notOwnerShipAndJurisdictionFlagStatus);
-
 	}
-
-
-
 }

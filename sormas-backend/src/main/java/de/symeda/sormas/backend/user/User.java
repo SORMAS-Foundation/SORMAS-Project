@@ -136,7 +136,6 @@ public class User extends AbstractDomainObject {
 
 	private boolean hasConsentedToGdpr;
 
-
 	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getUserName() {
 		return userName;
@@ -386,8 +385,6 @@ public class User extends AbstractDomainObject {
 		}
 		return caption;
 	}
-
-
 
     static class UserListener {
 

@@ -186,7 +186,6 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 
@@ -2354,7 +2353,4 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 		return caseUuids.size() == 1 ? caseUuids.get(0) : null;
 	}
-
-
-
 }

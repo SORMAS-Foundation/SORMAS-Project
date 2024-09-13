@@ -36,7 +36,7 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 	protected SurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
 
 	public SurveillanceDashboardView() {
-		super(VIEW_NAME, DashboardType.SURVEILLANCE);
+		super(VIEW_NAME);
 
 		dashboardDataProvider = new DashboardDataProvider();
 		if (dashboardDataProvider.getDashboardType() == null) {
@@ -49,8 +49,6 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		filterLayout.addDateTypeValueChangeListener(e -> {
 			dashboardDataProvider.setNewCaseDateType((NewCaseDateType) e.getProperty().getValue());
 		});
-
-
 		dashboardLayout.addComponent(filterLayout);
 
 		dashboardSwitcher.setValue(DashboardType.SURVEILLANCE);

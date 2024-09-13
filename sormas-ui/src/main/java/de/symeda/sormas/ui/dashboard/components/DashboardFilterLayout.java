@@ -17,23 +17,33 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.components;
 
+import static de.symeda.sormas.ui.utils.AbstractFilterForm.FILTER_ITEM_STYLE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
-import de.symeda.sormas.api.Disease;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.dashboard.DashboardCriteria;
-import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -47,18 +57,20 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
+import com.vaadin.navigator.ViewChangeListener;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.ui.dashboard.DashboardType;
-import de.symeda.sormas.ui.utils.*;
-import org.apache.commons.lang3.ArrayUtils;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
-
-import static de.symeda.sormas.ui.utils.AbstractFilterForm.FILTER_ITEM_STYLE;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 
 @SuppressWarnings("serial")
 public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> extends HorizontalLayout {
@@ -94,15 +106,14 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 	private Button resetButton;
 	private Button applyButton;
 
-	DateFilterType currentDateFilterType;
+	private DateFilterType currentDateFilterType;
 
 	private HorizontalLayout customDateFilterLayout;
-	private ComboBox diseaseFilter;
 
 	private Runnable dateFilterChangeCallback;
 	private Consumer<Boolean> diseaseFilterChangeCallback;
 	private Label infoLabel;
-
+	private ComboBox diseaseFilter;
 	private ComboBox caseClassificationFilter;
 
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, P dashboardDataProvider, String[] templateContent) {
@@ -128,6 +139,7 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 
 		addComponent(customLayout);
 		populateLayout();
+
 		if(currentDateFilterType!=null) {
 			String dateFilterType = currentDateFilterType.name();
 			dashboardDataProvider.setDateFilterType(NewDateFilterType.valueOf(dateFilterType));
@@ -146,7 +158,6 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		createDateFilters();
 		createResetAndApplyButtons();
 	};
-
 
 	private void createDiseaseFilter() {
 		diseaseFilter.setWidth(200, Unit.PIXELS);
@@ -237,22 +248,22 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		addCustomComponent(dateFilterLayout, DATE_FILTER);
 
 		btnCurrentPeriod = ButtonHelper.createIconPopupButton(
-				"currentPeriod",
-				null,
-				new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
-				CssStyles.BUTTON_FILTER,
-				CssStyles.BUTTON_FILTER_LIGHT);
+			"currentPeriod",
+			null,
+			new VerticalLayout(createDateFilterButtonsLayout(), createCustomDateFilterLayout()),
+			CssStyles.BUTTON_FILTER,
+			CssStyles.BUTTON_FILTER_LIGHT);
 
 		Label lblComparedTo = new Label(I18nProperties.getCaption(Captions.dashboardComparedTo));
 		CssStyles.style(lblComparedTo, CssStyles.VSPACE_TOP_4, CssStyles.LABEL_BOLD);
 
 		btnComparisonPeriod = ButtonHelper.createIconPopupButton(
-				"comparisonPeriod",
-				null,
-				createDateComparisonButtonsLayout(),
-				ValoTheme.BUTTON_BORDERLESS,
-				CssStyles.BUTTON_FILTER,
-				CssStyles.BUTTON_FILTER_LIGHT);
+			"comparisonPeriod",
+			null,
+			createDateComparisonButtonsLayout(),
+			ValoTheme.BUTTON_BORDERLESS,
+			CssStyles.BUTTON_FILTER,
+			CssStyles.BUTTON_FILTER_LIGHT);
 
 		dateFilterLayout.addComponents(btnCurrentPeriod, lblComparedTo, btnComparisonPeriod);
 
@@ -649,8 +660,6 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 
 	}
 
-
-
 	private enum DateFilterType {
 		TODAY,
 		YESTERDAY,
@@ -673,7 +682,6 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		component.addStyleName(FILTER_ITEM_STYLE);
 	}
 
-
 	public void reload(ViewChangeListener.ViewChangeEvent event) {
 		DashboardCriteria criteria = dashboardDataProvider.getCriteria();
 		String params = event.getParameters().trim();
@@ -683,7 +691,5 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 			criteria.fromUrlParams(params);
 		}
 		setCriteria(criteria);
-
 	}
-
 }

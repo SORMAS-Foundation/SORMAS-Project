@@ -11,16 +11,14 @@ import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -57,7 +55,7 @@ public class DiseaseDashboardServiceTest {
     private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
     @InjectMocks
-    private DiseaseFacadeEjb diseaseFacade;
+    private DashboardFacadeEjb dashboardfacadeEjb;
 
     @BeforeEach
     public void setUp() {
@@ -102,7 +100,7 @@ public class DiseaseDashboardServiceTest {
         when(dashboardService.getCaseCountByDisease(any(DashboardCriteria.class))).thenReturn(previousCases);
 
         // Invoke the method under test
-        DiseaseBurdenDto result = diseaseFacade.getDiseaseForDashboard(
+        DiseaseBurdenDto result = dashboardfacadeEjb.getDiseaseForDashboard(
                 region, district, disease, fromDate, toDate, previousFrom, previousTo, newCaseDateType, caseClassification);
 
         // Assert expected results
@@ -112,8 +110,8 @@ public class DiseaseDashboardServiceTest {
         assertNull(result.getOutbreakDistrict());
         assertEquals(1L, result.getCaseDeathCount());
         assertEquals(Disease.CORONAVIRUS, result.getDisease());
-
     }
+
     @Test
     public void testGetDiseaseGridForDashboard() {
         RegionReferenceDto region = new RegionReferenceDto();
@@ -138,7 +136,7 @@ public class DiseaseDashboardServiceTest {
         when(dashboardService.getDeathCountByDisease(any(DashboardCriteria.class)))
                 .thenReturn(caseFatalities);
 
-        DiseaseBurdenDto result = diseaseFacade.getDiseaseGridForDashboard(
+        DiseaseBurdenDto result = dashboardfacadeEjb.getDiseaseGridForDashboard(
                 region, district, disease, fromDate, toDate, previousFrom, previousTo, newCaseDateType, caseClassification);
 
         assertEquals("15", result.getTotal());

@@ -45,7 +45,7 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 	public RegionalDiseaseBurdenGrid(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-		regionDtoList = FacadeProvider.getRegionFacade().getAllRegion();
+		regionDtoList = FacadeProvider.getRegionFacade().getAllActiveRegions();
 
 
 		setCaption(I18nProperties.getCaption(Captions.dashboardRegionalDiseaseBurden));
@@ -153,7 +153,7 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 			for (DistrictReferenceDto districtDto : districtDtoList){
 
-				DiseaseBurdenDto diseaseBurdenDto = FacadeProvider.getDiseaseFacade().getDiseaseGridForDashboard(
+				DiseaseBurdenDto diseaseBurdenDto = FacadeProvider.getDashboardFacade().getDiseaseGridForDashboard(
 						null,
 						districtDto,
 						dashboardDataProvider.getDisease(),
@@ -182,12 +182,32 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 				diseaseBurdenDto.setRegion(regionDto);
 
-				diseaseBurdenDtoConfig(diseaseBurdenDtoList, casePercental, diseaseBurdenDto, total, activeCases, recovered, deaths, other);
+				diseaseBurdenDto.setTotal(makeDIvs(Long.parseLong(total), casePercental, "#5a95f4bf","#2f7df9"));
+
+				diseaseBurdenDto.setTotalCount(makeDIvsCount(total));
+
+				diseaseBurdenDto.setActiveCases(makeDIvs(Long.parseLong(activeCases), casePercental,  "#feba0199", "#dfa507"));
+
+				diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases));
+
+				diseaseBurdenDto.setRecovered(makeDIvs(Long.parseLong(recovered), casePercental, "#00e0a19c", "#038d66"));
+
+				diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered));
+
+				diseaseBurdenDto.setDeaths(makeDIvs(Long.parseLong(deaths), casePercental,"#FFAEAE", "#FF4040"));
+
+				diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths));
+
+				diseaseBurdenDto.setOther(makeDIvs(Long.parseLong(other), casePercental,"#bf8678ba", "#91675d"));
+
+				diseaseBurdenDto.setOtherCount(makeDIvsCount(other));
+
+				diseaseBurdenDtoList.add(diseaseBurdenDto);
 			}
 		}else {
 
 			for (RegionDto regionDto : regionDtoList){
-				DiseaseBurdenDto diseaseBurdenDto = FacadeProvider.getDiseaseFacade().getDiseaseGridForDashboard(
+				DiseaseBurdenDto diseaseBurdenDto = FacadeProvider.getDashboardFacade().getDiseaseGridForDashboard(
 						regionDto.toReference(),
 						null,
 						dashboardDataProvider.getDisease(),
@@ -209,37 +229,33 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 
 				String other = diseaseBurdenDto.getOther();
 
-				diseaseBurdenDtoConfig(diseaseBurdenDtoList, casePercental, diseaseBurdenDto, total, activeCases, recovered, deaths, other);
+				diseaseBurdenDto.setTotal(makeDIvs(Long.parseLong(total), casePercental, "#5a95f4bf","#2f7df9"));
+
+				diseaseBurdenDto.setTotalCount(makeDIvsCount(total));
+
+				diseaseBurdenDto.setActiveCases(makeDIvs(Long.parseLong(activeCases), casePercental,  "#feba0199", "#dfa507"));
+
+				diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases));
+
+				diseaseBurdenDto.setRecovered(makeDIvs(Long.parseLong(recovered), casePercental, "#00e0a19c", "#038d66"));
+
+				diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered));
+
+				diseaseBurdenDto.setDeaths(makeDIvs(Long.parseLong(deaths), casePercental,"#FFAEAE", "#FF4040"));
+
+				diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths));
+
+				diseaseBurdenDto.setOther(makeDIvs(Long.parseLong(other), casePercental,"#bf8678ba", "#91675d"));
+
+				diseaseBurdenDto.setOtherCount(makeDIvsCount(other));
+
+				diseaseBurdenDtoList.add(diseaseBurdenDto);
 			}
 		}
 
 		BeanItemContainer<DiseaseBurdenDto> container = new BeanItemContainer<>(DiseaseBurdenDto.class, diseaseBurdenDtoList);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
-	}
-
-	private void diseaseBurdenDtoConfig(List<DiseaseBurdenDto> diseaseBurdenDtoList, Long casePercental, DiseaseBurdenDto diseaseBurdenDto, String total, String activeCases, String recovered, String deaths, String other) {
-		diseaseBurdenDto.setTotal(makeDIvs(Long.parseLong(total), casePercental, "#5a95f4bf","#2f7df9"));
-
-		diseaseBurdenDto.setTotalCount(makeDIvsCount(total));
-
-		diseaseBurdenDto.setActiveCases(makeDIvs(Long.parseLong(activeCases), casePercental,  "#feba0199", "#dfa507"));
-
-		diseaseBurdenDto.setActiveCount(makeDIvsCount(activeCases));
-
-		diseaseBurdenDto.setRecovered(makeDIvs(Long.parseLong(recovered), casePercental, "#00e0a19c", "#038d66"));
-
-		diseaseBurdenDto.setRecoveredCount(makeDIvsCount(recovered));
-
-		diseaseBurdenDto.setDeaths(makeDIvs(Long.parseLong(deaths), casePercental,"#FFAEAE", "#FF4040"));
-
-		diseaseBurdenDto.setDeathsCount(makeDIvsCount(deaths));
-
-		diseaseBurdenDto.setOther(makeDIvs(Long.parseLong(other), casePercental,"#bf8678ba", "#91675d"));
-
-		diseaseBurdenDto.setOtherCount(makeDIvsCount(other));
-
-		diseaseBurdenDtoList.add(diseaseBurdenDto);
 	}
 
 	public String makeDIvs(long number, long total, String lightColor, String deepColor) {

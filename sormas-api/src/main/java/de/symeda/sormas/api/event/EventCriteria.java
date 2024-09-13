@@ -110,8 +110,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
-	private Date reportedDateFrom;
-	private Date reportedDateTo;
+
 	public EventCriteria() {
 		super(EventCriteriaDateType.class);
 	}
@@ -568,13 +567,6 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		return actionDateFilterOption;
 	}
 
-	public EventCriteria reportedBetween(Date reportedDateFrom, Date reportedDateTo) {
-
-		this.reportedDateFrom = reportedDateFrom;
-		this.reportedDateTo = reportedDateTo;
-		return this;
-	}
-
     public enum DateType {
 		EVENT,
 		EVENT_SIGNAL_EVOLUTION,
@@ -714,13 +706,5 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public void setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool) {
 		this.onlyEntitiesChangedSinceLastSharedWithExternalSurvTool = onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
-	}
-
-	public Date getReportedDateFrom() {
-		return reportedDateFrom;
-	}
-
-	public Date getReportedDateTo() {
-		return reportedDateTo;
 	}
 }

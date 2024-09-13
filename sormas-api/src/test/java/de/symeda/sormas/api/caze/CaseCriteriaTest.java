@@ -26,6 +26,4 @@ public class CaseCriteriaTest {
 		assertEquals(criteria.getDisease(), generatedCriteria.getDisease());
 		assertEquals(criteria.getEventLike(), generatedCriteria.getEventLike());
 	}
-
-
 }

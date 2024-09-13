@@ -3,14 +3,13 @@ package de.symeda.sormas.ui.dashboard.surveillance.components;
 import com.vaadin.v7.data.Property;
 
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.components.datetypeselector.DateTypeSelectorComponent;
-
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 
 public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDataProvider> {
 
@@ -18,8 +17,8 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 	private final static String[] SURVEILLANCE_FILTERS = new String[] {
 		DATE_TYPE_SELECTOR_FILTER,
 		REGION_FILTER,
-		DISTRICT_FILTER ,CASE_CLASSIFICATION_FILTER
-	};
+		DISTRICT_FILTER ,
+		CASE_CLASSIFICATION_FILTER};
 	private DateTypeSelectorComponent dateTypeSelectorComponent;
 
 	public SurveillanceFilterLayout(SurveillanceDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
@@ -32,7 +31,6 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 		createDateTypeSelectorFilter();
 		createRegionAndDistrictFilter();
 		createCaseClassificationFilter();
-
 	}
 
 	public void addDateTypeValueChangeListener(Property.ValueChangeListener listener) {
@@ -41,8 +39,8 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 
 	private void createDateTypeSelectorFilter() {
 		dateTypeSelectorComponent =
-				new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))
-						.build();
+			new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))
+				.build();
 		dateTypeSelectorComponent.setValue(dashboardDataProvider.getNewCaseDateType());
 		addCustomComponent(dateTypeSelectorComponent, DATE_TYPE_SELECTOR_FILTER);
 	}

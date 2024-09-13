@@ -65,7 +65,7 @@ public class SampleDashboardView extends AbstractDashboardView {
 	private final SampleDashboardMapComponent mapComponent;
 
 	public SampleDashboardView() {
-		super(VIEW_NAME, DashboardType.SAMPLES);
+		super(VIEW_NAME);
 
 		dashboardSwitcher.setValue(DashboardType.SAMPLES);
 		dashboardSwitcher.addValueChangeListener(this::navigateToDashboardView);

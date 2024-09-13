@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -16,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-
 package de.symeda.sormas.api.dashboard;
 
 public enum NewDateFilterType {
@@ -26,6 +24,4 @@ public enum NewDateFilterType {
     LAST_WEEK,
     THIS_YEAR,
     CUSTOM;
-
-
 }

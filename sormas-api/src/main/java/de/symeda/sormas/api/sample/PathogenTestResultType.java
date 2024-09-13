@@ -17,9 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.audit.AuditedClass;
 import de.symeda.sormas.api.i18n.I18nProperties;
-@AuditedClass
+
 public enum PathogenTestResultType {
 
 	INDETERMINATE,

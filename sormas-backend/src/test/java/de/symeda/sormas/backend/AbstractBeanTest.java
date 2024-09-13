@@ -34,9 +34,6 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.disease.DiseaseFacade;
-import de.symeda.sormas.backend.disease.DiseaseFacadeEjb;
-import de.symeda.sormas.backend.outbreak.OutbreakService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -277,6 +274,7 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.backend.outbreak.OutbreakService;
 
 @ExtendWith(CdiTestJunitExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -1092,10 +1090,6 @@ public abstract class AbstractBeanTest {
 
 	public SelfReportService getSelfReportService() {
 		return getBean(SelfReportService.class);
-	}
-
-	public DiseaseFacade getDiseaseFacade() {
-		return getBean(DiseaseFacadeEjb.DiseaseFacadeEjbLocal.class);
 	}
 
 }

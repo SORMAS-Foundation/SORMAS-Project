@@ -18,7 +18,10 @@
 package de.symeda.sormas.api.caze;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;

@@ -668,5 +668,4 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				cb.exists(sharesQuery));
 		}
 	}
-
 }

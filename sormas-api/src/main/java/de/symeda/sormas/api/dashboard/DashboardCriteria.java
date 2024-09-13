@@ -1,41 +1,25 @@
 package de.symeda.sormas.api.dashboard;
 
 import de.symeda.sormas.api.CaseMeasure;
-import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 
-@AuditedClass
 public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> {
-
 
 	private CriteriaDateType newCaseDateType;
 	private EpiCurveGrouping epiCurveGrouping;
 	private boolean showMinimumEntries;
 	private CaseMeasure caseMeasure;
 	private boolean includeNotACaseClassification;
-
 	private CaseClassification caseClassification;
 	private NewDateFilterType dateFilterType;
-
 	private CaseOutcome outcome;
-	public DashboardCriteria(NewCaseDateType dateTypeClass) {
-		super(DashboardCriteria.class);
-		this.dateTypeClass=dateTypeClass;
-	}
 
 	public DashboardCriteria() {
 		super(DashboardCriteria.class);
 	}
-
-	public DashboardCriteria(Class<? extends CriteriaDateType> dateTypeClass) {
-		super(DashboardCriteria.class);
-		this.criteriaDateType=dateTypeClass;
-
-	}
-
 
 	public CriteriaDateType getNewCaseDateType() {
 		return newCaseDateType;
@@ -59,11 +43,6 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 		return epiCurveGrouping;
 	}
 
-	public DashboardCriteria setEpiCurveGrouping(EpiCurveGrouping epigrouping) {
-		this.epiCurveGrouping = epigrouping;
-		return self;
-	}
-
 	public boolean isIncludeNotACaseClassification() {
 		return includeNotACaseClassification;
 	}
@@ -75,8 +54,6 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 	public CaseMeasure getCaseMeasure() {
 		return caseMeasure;
 	}
-
-
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -104,4 +81,8 @@ public class DashboardCriteria extends BaseDashboardCriteria<DashboardCriteria> 
 		return outcome;
 	}
 
+	public DashboardCriteria setDateTypeClass(NewCaseDateType dateTypeClass) {
+		this.dateTypeClass = dateTypeClass;
+		return this;
+	}
 }
