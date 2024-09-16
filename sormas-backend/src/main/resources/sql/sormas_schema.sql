@@ -8786,7 +8786,7 @@ ALTER TABLE cases_history RENAME COLUMN vaccination TO vaccinationstatus;
 -- last vaccination date has been moved to the vaccination entity, but still has to be used for Mpox
 ALTER TABLE cases RENAME COLUMN lastvaccinationdate TO smallpoxlastvaccinationdate;
 ALTER TABLE cases_history RENAME COLUMN lastvaccinationdate TO smallpoxlastvaccinationdate;
-UPDATE cases SET smallpoxlastvaccinationdate = null WHERE disease != 'Mpox';
+UPDATE cases SET smallpoxlastvaccinationdate = null WHERE disease != 'MONKEYPOX';
 
 ALTER TABLE cases DROP COLUMN vaccinationdoses;
 ALTER TABLE cases DROP COLUMN vaccinationinfosource;

@@ -654,11 +654,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			&& criteria.getSampleAssociationType() != SampleAssociationType.PERSON) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
-				filter = or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
+				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
 			} else if (sampleAssociationType == SampleAssociationType.CONTACT && !RequestContextHolder.isMobileSync()) {
-				filter = or(cb, filter, contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null));
+				filter = CriteriaBuilderHelper
+					.or(cb, filter, contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null));
 			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT && !RequestContextHolder.isMobileSync()) {
-				filter = or(
+				filter = CriteriaBuilderHelper.or(
 					cb,
 					filter,
 					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
@@ -667,7 +668,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				or(
+				CriteriaBuilderHelper.or(
 					cb,
 					caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
 					RequestContextHolder.isMobileSync()
@@ -677,7 +678,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 						? null
 						: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
 		} else {
-			filter = or(
+			filter = CriteriaBuilderHelper.or(
 				cb,
 				filter,
 				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
@@ -703,8 +704,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		// Lab users can see samples assigned to their laboratory
-		if ((jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) && currentUser.getLaboratory() != null) {
-			filter = or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
+		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
+			if (currentUser.getLaboratory() != null) {
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
+			}
 		}
 
 		// Only show samples of a specific disease if a limited disease is set
@@ -808,7 +811,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				or(
+				CriteriaBuilderHelper.or(
 					cb,
 					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
@@ -823,7 +826,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				or(
+				CriteriaBuilderHelper.or(
 					cb,
 					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
@@ -835,7 +838,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 		if (criteria.getLaboratory() != null) {
 			filter =
-				and(cb, filter, cb.equal(joins.getLab().get(AbstractDomainObject.UUID), criteria.getLaboratory().getUuid()));
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLab().get(AbstractDomainObject.UUID), criteria.getLaboratory().getUuid()));
 		}
 		if (criteria.getShipped() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SHIPPED), criteria.getShipped()));
@@ -872,7 +875,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 		if (criteria.getEventParticipant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -880,10 +884,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 				filter,
 				cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(), criteria.getSampleReportDateTo()));
 		} else if (criteria.getSampleReportDateFrom() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
 		} else if (criteria.getSampleReportDateTo() != null) {
 			filter =
-				and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
+				CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
 		}
 		if (criteria.getSpecimenCondition() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
@@ -958,7 +963,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filterEvPartUuids = sample.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.UUID).in(criteria.getEventParticipantUuids());
 		}
 
-		filter = CriteriaBuilderHelper.and(cb, filter, or(cb, filterCaseUuids, filterContactUuids, filterEvPartUuids));
+		filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.or(cb, filterCaseUuids, filterContactUuids, filterEvPartUuids));
 		return filter;
 	}
 
@@ -980,7 +985,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 		if (criteria.getEventParticipant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
 
 		filter = addCaseContactEventParticipantSamplePredicate(criteria, cb, sample, filter);

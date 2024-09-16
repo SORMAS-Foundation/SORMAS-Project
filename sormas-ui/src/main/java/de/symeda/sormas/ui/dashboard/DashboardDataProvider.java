@@ -80,9 +80,9 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 		// Update the entities lists according to the filters
 		// Disease burden
-		List<DiseaseBurdenDto> diseaseBurden = FacadeProvider.getDashboardFacade()
-				.getDiseaseBurden(region, district, fromDate, toDate, previousFromDate, previousToDate, newCaseDateType);
-		setDiseasesBurden(diseaseBurden);
+		setDiseasesBurden(
+			FacadeProvider.getDashboardFacade()
+				.getDiseaseBurden(region, district, fromDate, toDate, previousFromDate, previousToDate, newCaseDateType));
 
 		this.refreshDataForSelectedDisease();
 	}
@@ -227,12 +227,10 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria));
 		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventDashboardCriteria));
 
-		Long districtOutbreakCount = FacadeProvider.getOutbreakFacade()
+	setOutbreakDistrictCount(
+			FacadeProvider.getOutbreakFacade()
 				.getOutbreakDistrictCount(
-		new OutbreakCriteria().region(region).district(district).disease(disease)
-         .reportedBetween(fromDate, toDate));
-
-		setOutbreakDistrictCount(districtOutbreakCount);
+					new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
 
 		refreshDataForQuarantinedCases();
 		refreshDataForConvertedContactsToCase();

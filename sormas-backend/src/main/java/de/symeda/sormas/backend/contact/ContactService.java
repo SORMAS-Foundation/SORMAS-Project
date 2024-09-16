@@ -414,7 +414,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
-			or(
+			CriteriaBuilderHelper.or(
 				cb,
 				CriteriaBuilderHelper.and(
 					cb,
@@ -427,14 +427,14 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		filter = CriteriaBuilderHelper.and(
 			cb,
 			filter,
-			or(
+			CriteriaBuilderHelper.or(
 				cb,
 				// If the contact does not have a follow-up until date, use the last
 				// contact/contact report date as a fallback
 				CriteriaBuilderHelper.and(
 					cb,
 					cb.isNull(from.get(Contact.FOLLOW_UP_UNTIL)),
-					or(
+					CriteriaBuilderHelper.or(
 						cb,
 						CriteriaBuilderHelper.and(
 							cb,
@@ -632,7 +632,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			cb.isNotNull(joins.getPersonJoins().getAddress().get(Location.LATITUDE)));
 		Predicate reportLatLonNotNull =
 			CriteriaBuilderHelper.and(cb, cb.isNotNull(contactRoot.get(Contact.REPORT_LON)), cb.isNotNull(contactRoot.get(Contact.REPORT_LAT)));
-		Predicate latLonProvided = or(cb, personLatLonNotNull, reportLatLonNotNull);
+		Predicate latLonProvided = CriteriaBuilderHelper.or(cb, personLatLonNotNull, reportLatLonNotNull);
 		filter = CriteriaBuilderHelper.and(cb, filter, latLonProvided);
 
 		return filter;
@@ -1051,7 +1051,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 		Predicate filter;
 		if (userFilter != null) {
-			filter = or(cb, createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
+			filter = CriteriaBuilderHelper.or(cb, createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
 		} else {
 			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
 		}
@@ -1105,19 +1105,19 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = or(cb, filter, cb.equal(contactRoot.get(Contact.REGION), currentUser.getRegion()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.REGION), currentUser.getRegion()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.DISTRICT), currentUser.getDistrict()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = or(cb, filter, cb.equal(contactRoot.get(Contact.COMMUNITY), currentUser.getCommunity()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactRoot.get(Contact.COMMUNITY), currentUser.getCommunity()));
 				}
 				break;
 			case LABORATORY:
@@ -1128,7 +1128,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 
 				sampleSubQuery.where(cb.and(cb.equal(contactJoin, contactRoot), sampleService.createUserFilterWithoutAssociations(cb, joins)));
 				sampleSubQuery.select(sampleRoot.get(Sample.ID));
-				filter = or(cb, filter, cb.exists(sampleSubQuery));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 				break;
 			default:
 			}
@@ -1186,7 +1186,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				or(
+				CriteriaBuilderHelper.or(
 					cb,
 					cb.equal(joins.getRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
@@ -1199,7 +1199,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				or(
+				CriteriaBuilderHelper.or(
 					cb,
 					cb.equal(joins.getDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
@@ -1210,7 +1210,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				or(
+				CriteriaBuilderHelper.or(
 					cb,
 					cb.equal(joins.getCommunity().get(Community.UUID), communityUuid),
 					cb.equal(joins.getCaseCommunity().get(Community.UUID), communityUuid),

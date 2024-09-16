@@ -311,5 +311,4 @@ public class RegionalDiseaseBurdenGrid extends Grid {
 		return sb.toString();
 
 	}
-
 }

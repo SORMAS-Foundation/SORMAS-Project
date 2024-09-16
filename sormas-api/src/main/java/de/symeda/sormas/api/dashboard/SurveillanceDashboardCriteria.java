@@ -6,7 +6,7 @@ public class SurveillanceDashboardCriteria extends DashboardCriteria {
 
 	private NewCaseDateType newCaseDateType;
 
-    @Override
+	@Override
 	public NewCaseDateType getNewCaseDateType() {
 		return newCaseDateType;
 	}

@@ -123,7 +123,6 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 		this.districtFilter = ComboBoxHelper.createComboBoxV7();
 		dateFilterButtons = new HashSet<>();
 		dateComparisonButtons = new HashSet<>();
-		this.caseClassificationFilter = ComboBoxHelper.createComboBoxV7();
 
 		setSpacing(true);
 		setSizeUndefined();

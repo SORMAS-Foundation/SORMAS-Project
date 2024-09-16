@@ -469,7 +469,7 @@ public class DashboardService {
 		}
 		if (dashboardCriteria.getDistrict() != null) {
 			filter =
-				and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
 		}
 		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(

@@ -313,7 +313,6 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		}
 	}
 
-
 	@Test
 	public void testGetCasesCountByClassification() {
 
