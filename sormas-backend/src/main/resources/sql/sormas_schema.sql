@@ -1769,7 +1769,7 @@ ALTER TABLE samples_history ADD COLUMN reportLatLonAccuracy real;
 
 INSERT INTO schema_version (version_number, comment) VALUES (71, 'Add accuracy to lat lon data #371');
 
--- 2017-10-24 Mpox disease fields #366
+-- 2017-10-24 Monkeypox disease fields #366
 ALTER TABLE symptoms ADD COLUMN cutaneouseruption varchar(255);
 ALTER TABLE symptoms ADD COLUMN lesions varchar(255);
 ALTER TABLE symptoms ADD COLUMN lesionssamestate varchar(255);
@@ -1800,9 +1800,9 @@ ALTER TABLE epidata ADD COLUMN dateoflastexposure timestamp;
 ALTER TABLE epidata ADD COLUMN placeoflastexposure varchar(512);
 ALTER TABLE epidata ADD COLUMN animalcondition varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (72, 'Mpox disease fields #366');
+INSERT INTO schema_version (version_number, comment) VALUES (72, 'Monkeypox disease fields #366');
 
--- 2017-10-27 Mpox disease fields for history table #366
+-- 2017-10-27 Monkeypox disease fields for history table #366
 ALTER TABLE symptoms_history ADD COLUMN cutaneouseruption varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN lesions varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN lesionssamestate varchar(255);
@@ -1833,7 +1833,7 @@ ALTER TABLE epidata_history ADD COLUMN dateoflastexposure timestamp;
 ALTER TABLE epidata_history ADD COLUMN placeoflastexposure varchar(512);
 ALTER TABLE epidata_history ADD COLUMN animalcondition varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (73, 'Mpox disease fields for history table #366');
+INSERT INTO schema_version (version_number, comment) VALUES (73, 'Monkeypox disease fields for history table #366');
 
 -- 2017-11-01 Plague disease fields #373
 ALTER TABLE symptoms ADD COLUMN painfullymphadenitis varchar(255);
@@ -1852,14 +1852,14 @@ ALTER TABLE sampletest_history ADD COLUMN fourfoldincreaseantibodytiter boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (74, 'Plague disease fields #373');
 
--- 2017-11-02 Additional Mpox fields #375
+-- 2017-11-02 Additional Monkeypox fields #375
 ALTER TABLE cases ADD COLUMN smallpoxvaccinationreceived varchar(255);
 ALTER TABLE cases ADD COLUMN smallpoxvaccinationdate timestamp;
 
 ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationreceived varchar(255);
 ALTER TABLE cases_history ADD COLUMN smallpoxvaccinationdate timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (75, 'Additional Mpox fields #375');
+INSERT INTO schema_version (version_number, comment) VALUES (75, 'Additional Monkeypox fields #375');
 
 -- 2017-11-22 Population for districts #342
 ALTER TABLE district ADD COLUMN population integer;
@@ -1998,14 +1998,14 @@ ALTER TABLE cases RENAME COLUMN smallpoxvaccinationdate TO vaccinationdate;
 
 INSERT INTO schema_version (version_number, comment) VALUES (89, 'Date of vaccination for all diseases #486');
 
--- 2018-02-09 Mpox field changes #401
+-- 2018-02-09 Monkeypox field changes #401
 
 ALTER TABLE symptoms DROP COLUMN cutaneouseruption;
 ALTER TABLE symptoms ADD COLUMN lesionsonsetdate timestamp;
 ALTER TABLE symptoms_history DROP COLUMN cutaneouseruption;
 ALTER TABLE symptoms_history ADD COLUMN lesionsonsetdate timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (90, 'Mpox field changes #401');
+INSERT INTO schema_version (version_number, comment) VALUES (90, 'Monkeypox field changes #401');
 
 -- 2018-02-09 History table updates
 
@@ -8783,7 +8783,7 @@ DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, ti
 /* Step 4: Clean up cases, contacts and event participants */
 ALTER TABLE cases RENAME COLUMN vaccination TO vaccinationstatus;
 ALTER TABLE cases_history RENAME COLUMN vaccination TO vaccinationstatus;
--- last vaccination date has been moved to the vaccination entity, but still has to be used for Mpox
+-- last vaccination date has been moved to the vaccination entity, but still has to be used for Monkeypox
 ALTER TABLE cases RENAME COLUMN lastvaccinationdate TO smallpoxlastvaccinationdate;
 ALTER TABLE cases_history RENAME COLUMN lastvaccinationdate TO smallpoxlastvaccinationdate;
 UPDATE cases SET smallpoxlastvaccinationdate = null WHERE disease != 'MONKEYPOX';

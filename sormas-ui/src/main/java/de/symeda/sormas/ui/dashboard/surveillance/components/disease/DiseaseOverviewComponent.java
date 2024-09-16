@@ -29,6 +29,7 @@ public class DiseaseOverviewComponent extends HorizontalLayout {
     public DiseaseOverviewComponent(DashboardDataProvider dashboardDataProvider) {
         setWidth(100, Sizeable.Unit.PERCENTAGE);
         setMargin(false);
+
         diseaseBurdenComponent = new DiseaseBurdenComponent();
         diseaseTileViewLayout = new DiseaseTileViewLayout(dashboardDataProvider);
 

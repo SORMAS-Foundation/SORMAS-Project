@@ -52,7 +52,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	private static final int ROW_HEIGHT = 555;
 
-	protected ContactsFilterLayout contactsFilterLayout;
+	protected ContactsFilterLayout filterLayout;
 
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
 	protected ContactsEpiCurveComponent epiCurveComponent;
@@ -90,8 +90,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 		}
 
-		contactsFilterLayout = new ContactsFilterLayout(this, dashboardDataProvider);
-		dashboardLayout.addComponent(contactsFilterLayout);
+		filterLayout = new ContactsFilterLayout(this, dashboardDataProvider);
+		dashboardLayout.addComponent(filterLayout);
 
 		dashboardSwitcher.setValue(DashboardType.CONTACTS);
 		dashboardSwitcher.addValueChangeListener(e -> {
@@ -327,8 +327,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		noNetworkDiagramLayout.setVisible(false);
 
 		networkDiagramLayout.ifPresent(l -> {
-			l.setVisible(contactsFilterLayout.hasDiseaseSelected());
-			noNetworkDiagramLayout.setVisible(!contactsFilterLayout.hasDiseaseSelected());
+			l.setVisible(filterLayout.hasDiseaseSelected());
+			noNetworkDiagramLayout.setVisible(!filterLayout.hasDiseaseSelected());
 		});
 
 		return layout;

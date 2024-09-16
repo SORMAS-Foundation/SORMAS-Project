@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 public class DashboardController {
 
 	public DashboardController() {
+
 	}
 
 	public void registerViews(Navigator navigator) {

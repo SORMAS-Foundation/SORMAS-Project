@@ -22,7 +22,6 @@ import de.symeda.sormas.api.audit.AuditExcludeProperty;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 
 public class BaseDashboardCriteria<SELF extends BaseDashboardCriteria<?>> extends BaseCriteria {

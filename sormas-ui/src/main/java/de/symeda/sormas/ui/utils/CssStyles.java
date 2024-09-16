@@ -67,7 +67,6 @@ public final class CssStyles {
 	public static final String HSPACE_LEFT_4 = "hspace-left-4";
 	public static final String HSPACE_LEFT_5 = "hspace-left-5";
 	public static final String HSPACE_LEFT_6 = "hspace-left-6";
-	public static final String HSPACE_LEFT_7 = "hspace-left-7";
 	public static final String HSPACE_LEFT_NONE = "hspace-left-none";
 
 	public static final String HSPACE_RIGHT_0 = "hspace-right-0";

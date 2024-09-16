@@ -58,8 +58,8 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	protected final P dashboardDataProvider;
 	protected LeafletMap map;
 	// Layouts and components
-	private  String headingStringTag;
-	private  String headingInfoTag;
+	private final String headingStringTag;
+	private final String headingInfoTag;
 	protected CssLayout overlayBackground;
 	protected VerticalLayout overlayLayout;
 	private Label overlayMessageLabel;

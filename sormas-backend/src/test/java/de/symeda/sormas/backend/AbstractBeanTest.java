@@ -1091,5 +1091,4 @@ public abstract class AbstractBeanTest {
 	public SelfReportService getSelfReportService() {
 		return getBean(SelfReportService.class);
 	}
-
 }
