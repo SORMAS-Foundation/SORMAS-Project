@@ -466,5 +466,4 @@ public class DiseaseBurdenDto implements Serializable {
 				+ ", deaths=" + deaths + ", region=" + region + ", recovered=" + recovered + ", activeCases="
 				+ activeCases + ", to=" + to + ", from=" + from + "]";
 	}
-
 }

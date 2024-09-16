@@ -58,6 +58,4 @@ public class CaseUserFilterCriteria {
 		this.excludeSharedCases = excludeSharedCases;
 		return this;
 	}
-
-
 }

@@ -516,7 +516,6 @@ public enum UserRight {
 	public static final String _EXTERNAL_EMAIL_SEND = "EXTERNAL_EMAIL_SEND";
 	public static final String _EXTERNAL_EMAIL_ATTACH_DOCUMENTS = "EXTERNAL_EMAIL_ATTACH_DOCUMENTS";
 	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
-	//private static final String _DISEASE_DETAILS_ACCESS ="DISEASE_DETAILS_ACCESS" ;
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();
 
