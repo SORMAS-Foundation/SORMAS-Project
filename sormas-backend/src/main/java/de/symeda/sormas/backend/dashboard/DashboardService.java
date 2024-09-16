@@ -73,7 +73,8 @@ public class DashboardService {
 	private CaseService caseService;
 	@EJB
 	private EventService eventService;
-
+	@EJB
+	private SampleService sampleService;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
@@ -89,7 +90,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		List<DashboardCaseDto> result;
 		if (filter != null) {
@@ -132,7 +133,7 @@ public class DashboardService {
 		final Predicate sampleFilter = cb.and(
 			cb.isFalse(sample.get(Sample.DELETED)),
 			cb.or(cb.isNull(sample.get(Sample.SPECIMEN_CONDITION)), cb.equal(sample.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE)));
-		cq.where(and(cb, userFilter, criteriaFilter, sampleFilter));
+		cq.where(CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, sampleFilter));
 
 		final List<PathogenTestResultDto> queryResult = QueryHelper.getResultList(em, cq, null, null);
 
@@ -168,7 +169,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		Map<CaseClassification, Integer> result;
 		if (filter != null) {
@@ -219,7 +220,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -245,7 +246,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -271,7 +272,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
-		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -312,8 +313,8 @@ public class DashboardService {
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		filter = and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
-		filter = and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -338,7 +339,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.INNER);
 
@@ -362,7 +363,7 @@ public class DashboardService {
 
 		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
-		filter = and(cb, filter, criteriaFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -392,8 +393,8 @@ public class DashboardService {
 		Join<Location, District> eventDistrict = eventJoins.getDistrict();
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = and(cb, filter, eventService.createUserFilter(eventQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		List<DashboardEventDto> result;
 
@@ -437,8 +438,8 @@ public class DashboardService {
 		cq.groupBy(event.get(Event.EVENT_STATUS));
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = and(cb, filter, eventService.createUserFilter(eventQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		if (filter != null)
 			cq.where(filter);
@@ -461,17 +462,17 @@ public class DashboardService {
 
 		Predicate filter = null;
 		if (dashboardCriteria.getDisease() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.DISEASE), dashboardCriteria.getDisease()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), dashboardCriteria.getDisease()));
 		}
 		if (dashboardCriteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(responsibleRegion.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(responsibleRegion.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
 		}
 		if (dashboardCriteria.getDistrict() != null) {
 			filter =
 				and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
 		}
 		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				caseService.createNewCaseFilter(
@@ -481,16 +482,16 @@ public class DashboardService {
 					dashboardCriteria.getNewCaseDateType()));
 		}
 		if (!dashboardCriteria.shouldIncludeNotACaseClassification()) {
-			filter = and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 		}
 
 		if (dashboardCriteria.getOutcome() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Case.OUTCOME), dashboardCriteria.getOutcome()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), dashboardCriteria.getOutcome()));
 		}
 
-
 		// Exclude deleted cases. Archived cases should stay included
-		filter = and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
 
 		return filter;
 	}
@@ -502,10 +503,10 @@ public class DashboardService {
 
 		Predicate filter = null;
 		if (dashboardCriteria.getDisease() != null) {
-			filter = and(cb, filter, cb.equal(from.get(Event.DISEASE), dashboardCriteria.getDisease()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), dashboardCriteria.getDisease()));
 		}
 		if (dashboardCriteria.getRegion() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(
@@ -513,7 +514,7 @@ public class DashboardService {
 					dashboardCriteria.getRegion().getUuid()));
 		}
 		if (dashboardCriteria.getDistrict() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(
@@ -521,10 +522,10 @@ public class DashboardService {
 					dashboardCriteria.getDistrict().getUuid()));
 		}
 
-		filter = and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
+		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
 
 		// Exclude deleted events. Archived events should stay included
-		filter = and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
 
 		return filter;
 	}
@@ -559,7 +560,7 @@ public class DashboardService {
 				cb.isNull(from.get(Event.START_DATE)),
 				cb.isNull(from.get(Event.END_DATE)),
 				cb.between(from.get(Event.REPORT_DATE_TIME), eventDateFrom, eventDateTo));
-			filter = and(cb, filter, cb.or(eventDateFilter, reportFilter));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(eventDateFilter, reportFilter));
 		}
 
 		return filter;

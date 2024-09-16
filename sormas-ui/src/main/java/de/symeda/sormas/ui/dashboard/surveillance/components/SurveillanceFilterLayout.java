@@ -9,7 +9,6 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.components.datetypeselector.DateTypeSelectorComponent;
-import de.symeda.sormas.api.dashboard.DashboardCriteria;
 
 public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDataProvider> {
 
@@ -17,8 +16,7 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 	private final static String[] SURVEILLANCE_FILTERS = new String[] {
 		DATE_TYPE_SELECTOR_FILTER,
 		REGION_FILTER,
-		DISTRICT_FILTER ,
-		CASE_CLASSIFICATION_FILTER};
+		DISTRICT_FILTER };
 	private DateTypeSelectorComponent dateTypeSelectorComponent;
 
 	public SurveillanceFilterLayout(SurveillanceDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
@@ -30,7 +28,6 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 		super.populateLayout();
 		createDateTypeSelectorFilter();
 		createRegionAndDistrictFilter();
-		createCaseClassificationFilter();
 	}
 
 	public void addDateTypeValueChangeListener(Property.ValueChangeListener listener) {
@@ -41,12 +38,7 @@ public class SurveillanceFilterLayout extends DashboardFilterLayout<DashboardDat
 		dateTypeSelectorComponent =
 			new DateTypeSelectorComponent.Builder<>(NewCaseDateType.class).dateTypePrompt(I18nProperties.getString(Strings.promptNewCaseDateType))
 				.build();
-		dateTypeSelectorComponent.setValue(dashboardDataProvider.getNewCaseDateType());
+		dateTypeSelectorComponent.setValue(NewCaseDateType.MOST_RELEVANT);
 		addCustomComponent(dateTypeSelectorComponent, DATE_TYPE_SELECTOR_FILTER);
-	}
-
-	public void setCriteria(DashboardCriteria criteria) {
-		super.setCriteria(criteria);
-		dateTypeSelectorComponent.setValue(criteria.getNewCaseDateType());
 	}
 }

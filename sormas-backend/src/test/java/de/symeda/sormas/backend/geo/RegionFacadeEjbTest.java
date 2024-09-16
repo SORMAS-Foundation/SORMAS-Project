@@ -48,7 +48,6 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getRegionFacade().getAllActiveAsReference().size());
 	}
 
-
 	@Test
 	public void testGetAllRegion() {
 		// Arrange
@@ -86,7 +85,6 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("region1", result1.getName());
 	}
 
-
 	@Test
 	public void testGetIndexList_noCriteria() {
 		// Arrange
@@ -100,7 +98,6 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 		// Assert
 		assertEquals(2, results.size());
 	}
-
 
 	@Test
 	public void testGetIndexList_withCriteriaAndSortProperties() {
@@ -129,7 +126,6 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("region3", result3.getName());
 	}
 
-
 	@Test
 	public void testGetIndexList_withInvalidSortProperty() {
 		// Arrange
@@ -141,5 +137,4 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 			getRegionFacade().getIndexList(null, 0, 10, sortProperties);
 		});
 	}
-
 }

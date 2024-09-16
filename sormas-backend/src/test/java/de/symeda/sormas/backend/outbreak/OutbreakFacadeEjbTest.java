@@ -34,7 +34,6 @@ import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import org.mockito.InjectMocks;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,9 +42,6 @@ import java.util.Set;
 public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 
 	private RDCF rdcf;
-
-	@InjectMocks
-	private OutbreakFacadeEjb outbreakFacade;
 
 	@Override
 	public void init() {
@@ -164,5 +160,4 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, result);
 	}
-
 }

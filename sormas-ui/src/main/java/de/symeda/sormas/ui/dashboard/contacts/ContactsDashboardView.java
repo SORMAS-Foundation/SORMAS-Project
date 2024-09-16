@@ -52,6 +52,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	private static final int ROW_HEIGHT = 555;
 
+	protected DashboardDataProvider dashboardDataProvider;
 	protected ContactsFilterLayout filterLayout;
 
 	protected AbstractDashboardStatisticsComponent statisticsComponent;

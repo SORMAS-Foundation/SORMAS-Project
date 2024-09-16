@@ -146,7 +146,6 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
-import de.symeda.sormas.backend.event.EventParticipantService;
 
 @Stateless
 @LocalBean

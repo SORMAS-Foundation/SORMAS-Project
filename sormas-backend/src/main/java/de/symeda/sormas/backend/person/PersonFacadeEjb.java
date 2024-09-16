@@ -695,11 +695,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		Predicate filter = contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)));
 
 		if (since != null) {
-			filter = and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
+			filter = CriteriaBuilderHelper.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
 		}
 
 		if (forSymptomJournal) {
-			filter = and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
 		}
 
 		if (filter != null) {
@@ -724,11 +724,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		Predicate filter = caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot)));
 		if (since != null) {
-			filter = and(cb, filter, caseService.createChangeDateFilter(cb, caseRoot, since));
+			filter = CriteriaBuilderHelper.and(cb, filter, caseService.createChangeDateFilter(cb, caseRoot, since));
 		}
 
 		if (forSymptomJournal) {
-			filter = and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
 		}
 
 		if (filter != null) {
@@ -765,13 +765,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
 		Predicate filter = contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)));
-		filter = and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
-		filter = and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
-		filter = and(cb, filter, cb.equal(contactRoot.get(Contact.DELETED), false));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(contactRoot.get(Contact.DELETED), false));
 
 		if (uuid != null) {
-			filter = and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
 		}
 
 		if (filter != null) {
@@ -797,10 +797,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		Predicate filter = caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot)));
 
-		filter = and(cb, filter, cb.equal(caseRoot.get(Case.DELETED), false));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caseRoot.get(Case.DELETED), false));
 
 		if (uuid != null) {
-			filter = and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(Person.UUID), uuid));
 		}
 
 		if (filter != null) {
@@ -827,10 +827,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		Join<Contact, Person> personContactJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)));
 
-		contactFilter = and(cb, contactFilter, cb.equal(contactRoot.get(Contact.DELETED), false));
+		contactFilter = CriteriaBuilderHelper.and(cb, contactFilter, cb.equal(contactRoot.get(Contact.DELETED), false));
 
 		if (uuid != null) {
-			contactFilter = and(cb, contactFilter, cb.equal(personContactJoin.get(Person.UUID), uuid));
+			contactFilter = CriteriaBuilderHelper.and(cb, contactFilter, cb.equal(personContactJoin.get(Person.UUID), uuid));
 		}
 		if (contactFilter != null) {
 			cq.where(contactFilter);
@@ -843,10 +843,10 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		Join<Case, Person> personCaseJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot)));
 
-		caseFilter = and(cb, caseFilter, cb.equal(caseRoot.get(Case.DELETED), false));
+		caseFilter = CriteriaBuilderHelper.and(cb, caseFilter, cb.equal(caseRoot.get(Case.DELETED), false));
 
 		if (uuid != null) {
-			caseFilter = and(cb, caseFilter, cb.equal(personCaseJoin.get(Person.UUID), uuid));
+			caseFilter = CriteriaBuilderHelper.and(cb, caseFilter, cb.equal(personCaseJoin.get(Person.UUID), uuid));
 
 		}
 		if (caseFilter != null) {
@@ -1589,7 +1589,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		filter = service.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
 			final Predicate criteriaFilter = service.buildCriteriaFilter(criteria, personQueryContext);
-			filter = and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
 		return filter;

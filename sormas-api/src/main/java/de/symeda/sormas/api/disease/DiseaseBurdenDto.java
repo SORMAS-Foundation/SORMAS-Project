@@ -37,8 +37,7 @@ public class DiseaseBurdenDto implements Serializable {
 	public static final String CASES_DIFFERENCE_PERCENTAGE = "casesDifferencePercentage";
 	public static final String EVENT_COUNT = "eventCount";
 	public static final String OUTBREAK_DISTRICT_COUNT = "outbreakDistrictCount";
-	public static final String
-			CASE_DEATH_COUNT = "caseDeathCount";
+	public static final String CASE_DEATH_COUNT = "caseDeathCount";
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
 	public static final String LAST_REPORTED_DISTRICT_NAME = "lastReportedDistrictName";
 
@@ -61,7 +60,6 @@ public class DiseaseBurdenDto implements Serializable {
 
 	public static final String OTHER = "other";
 	public static final String OTHER_COUNT = "otherCount";
-
 
 	private Disease disease;
 	private String total;
@@ -179,13 +177,13 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public DiseaseBurdenDto(
-			Disease disease,
-			Long caseCount,
-			Long previousCaseCount,
-			Long eventCount,
-			Long outbreakDistrictCount,
-			Long caseDeathCount,
-			String lastReportedDistrictName) {
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName) {
 
 		this.disease = disease;
 		this.caseCount = caseCount;

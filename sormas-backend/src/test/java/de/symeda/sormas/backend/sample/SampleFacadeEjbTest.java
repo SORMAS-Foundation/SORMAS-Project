@@ -1263,6 +1263,5 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// Test - earliest positive sample date
 		Date earliestPositiveSampleDate = getSampleFacade().getEarliestPositiveSampleDate(contact.getUuid());
 		assertEquals(new Date(2023 - 1900, 5, 15), earliestPositiveSampleDate);
-
 	}
 }

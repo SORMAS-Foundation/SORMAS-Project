@@ -27,7 +27,6 @@ import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -108,8 +108,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 		}
 		else if (DashboardType.DISEASE.equals(e.getProperty().getValue())) {
 			SormasUI.get().getNavigator().navigateTo(DiseaseDetailsView.VIEW_NAME);
-        }
-		else if (DashboardType.CAMPAIGNS.equals(e.getProperty().getValue()))  {
+		}
+		else {
 			SormasUI.get().getNavigator().navigateTo(CampaignDashboardView.VIEW_NAME);
 		}
 	}

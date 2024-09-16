@@ -197,12 +197,10 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
-	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
-		return outbreakService.getOutbreakDistrictNameByDisease(criteria);
-	}
-
 	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria) {
-		return outbreakService.getOutbreakDistrictCountByDisease(criteria);
+		User user = userService.getCurrentUser();
+
+		return outbreakService.getOutbreakDistrictCountByDisease(criteria, user);
 	}
 
 	@Override
@@ -210,7 +208,16 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Long getOutbreakDistrictCount(OutbreakCriteria criteria) {
-		return outbreakService.getOutbreakDistrictCount(criteria);
+		User user = userService.getCurrentUser();
+
+		return outbreakService.getOutbreakDistrictCount(criteria, user);
+	}
+
+	@RightsAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
+	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
+		return outbreakService.getOutbreakDistrictNameByDisease(criteria);
 	}
 
 	@LocalBean

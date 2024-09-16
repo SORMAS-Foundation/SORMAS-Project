@@ -202,7 +202,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson);
 
-    List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid PersonReferenceDto personReferenceDto, PathogenTestDto pathogenTestDto);
+	List<CaseDataDto> getDuplicatesWithPathogenTest(@Valid PersonReferenceDto personReferenceDto, PathogenTestDto pathogenTestDto);
 
 	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 

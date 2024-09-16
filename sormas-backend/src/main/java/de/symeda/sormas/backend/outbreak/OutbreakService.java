@@ -47,7 +47,6 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.QueryHelper;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import java.util.HashMap;
 import de.symeda.sormas.backend.caze.Case;
 
@@ -74,7 +73,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 
 		Predicate filter = createUserFilter(cb, cq, from);
 		Predicate activeDiseasePredicate = cb.exists(diseaseConfigurationService.existActiveDisease(cq, cb, from, Outbreak.DISEASE));
-		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, from), activeDiseasePredicate);
+		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, from), activeDiseasePredicate);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -110,7 +109,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		}
 
 		Predicate filter = createUserFilter(cb, cq, outbreak);
-		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, outbreak));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, outbreak));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -132,7 +131,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		}
 
 		Predicate filter = createUserFilter(cb, cq, from);
-		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, from));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, from));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -148,7 +147,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		Root<Outbreak> from = cq.from(getElementClass());
 
 		Predicate filter = createUserFilter(cb, cq, from);
-		filter = and(cb, filter, buildCriteriaFilter(criteria, cb, from));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(criteria, cb, from));
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -169,16 +168,16 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 
 		Predicate filter = null;
 		if (criteria.getChangeDateAfter() != null) {
-			filter = and(cb, filter, createChangeDateFilter(cb, from, criteria.getChangeDateAfter()));
+			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, from, criteria.getChangeDateAfter()));
 		}
 		if (CollectionUtils.isNotEmpty(criteria.getDiseases())) {
-			filter = and(cb, filter, from.get(Outbreak.DISEASE).in(criteria.getDiseases()));
+			filter = CriteriaBuilderHelper.and(cb, filter, from.get(Outbreak.DISEASE).in(criteria.getDiseases()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
-			filter = and(
+			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(
@@ -192,13 +191,52 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 			if (Boolean.FALSE.equals(criteria.getActive())) {
 				activeFilter = cb.not(activeFilter);
 			}
-			filter = and(cb, filter, activeFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, activeFilter);
 		}
 		if (criteria.getReportedDateFrom() != null || criteria.getReportedDateTo() != null) {
-			filter = and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
 		}
 
 		return filter;
+	}
+
+	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Outbreak> outbreak = cq.from(Outbreak.class);
+		cq.multiselect(outbreak.get(Outbreak.DISEASE), cb.countDistinct(outbreak.get(Outbreak.DISTRICT)));
+		cq.groupBy(outbreak.get(Outbreak.DISEASE));
+
+		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, outbreak));
+
+		if (filter != null)
+			cq.where(filter);
+
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+	}
+
+	public Long getOutbreakDistrictCount(OutbreakCriteria criteria, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Outbreak> outbreak = cq.from(getElementClass());
+
+		Join<Outbreak, District> regionJoin = outbreak.join(Outbreak.DISTRICT, JoinType.LEFT);
+		cq.groupBy(regionJoin);
+
+		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, outbreak));
+
+		if (filter != null)
+			cq.where(filter);
+
+		cq.select(cb.count(outbreak));
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(0L);
 	}
 
 	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
@@ -209,7 +247,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		Join<Outbreak, District> districtJoin = outbreak.join(Case.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
-		filter = and(cb, filter, createUserFilter(cb, cq, outbreak));
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, outbreak));
 
 		if (filter != null)
 			cq.where(filter);
@@ -240,7 +278,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		cq.groupBy(outbreak.get(Outbreak.DISEASE));
 
 		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
-		filter = and(cb, filter, createUserFilter(cb, cq, outbreak));
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, outbreak));
 
 		if (filter != null)
 			cq.where(filter);
@@ -260,7 +298,7 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 		cq.groupBy(regionJoin);
 
 		Predicate filter = this.buildCriteriaFilter(criteria, cb, outbreak);
-		filter = and(cb, filter, createUserFilter(cb, cq, outbreak));
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, outbreak));
 
 		if (filter != null)
 			cq.where(filter);
