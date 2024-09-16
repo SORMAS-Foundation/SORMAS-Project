@@ -64,8 +64,8 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
         assertEquals(0L, result.getCaseDeathCount());
         assertEquals("", result.getLastReportedDistrictName());
         assertEquals("", result.getOutbreakDistrict());
-        assertEquals(fromDate, result.getFrom());
-        assertEquals(toDate, result.getTo());
+        assertEquals(fromDate, result.getFromDate());
+        assertEquals(toDate, result.getToDate());
     }
 
     @Test

@@ -93,8 +93,8 @@ public class DiseaseBurdenDto implements Serializable {
 	private String otherCount;
 
 
-	private Date to;
-	private Date from;
+	private Date toDate;
+	private Date fromDate;
 
 	public DiseaseBurdenDto(
 			RegionDto regionDto,
@@ -152,8 +152,8 @@ public class DiseaseBurdenDto implements Serializable {
 		this.caseDeathCount = caseDeathCount;
 		this.lastReportedDistrictName = lastReportedDistrictName;
 		this.outbreakDistrict = outbreakDistrict;
-		this.from= from;
-		this.to=to;
+		this.fromDate = from;
+		this.toDate =to;
 	}
 
 	public DiseaseBurdenDto(
@@ -366,93 +366,69 @@ public class DiseaseBurdenDto implements Serializable {
 		this.total = total;
 	}
 
-
-	public Date getTo() {
-		return to;
+	public Date getToDate() {
+		return toDate;
 	}
 
-
-	public void setTo(Date to) {
-		this.to = to;
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
-
-	public Date getFrom() {
-		return from;
+	public Date getFromDate() {
+		return fromDate;
 	}
 
-
-	public void setFrom(Date from) {
-		this.from = from;
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
-
-
 
 	public String getTotalCount() {
 		return totalCount;
 	}
 
-
 	public void setTotalCount(String totalCount) {
 		this.totalCount = totalCount;
 	}
-
 
 	public String getDeathsCount() {
 		return deathsCount;
 	}
 
-
 	public void setDeathsCount(String deathsCount) {
 		this.deathsCount = deathsCount;
 	}
-
 
 	public String getRecoveredCount() {
 		return recoveredCount;
 	}
 
-
 	public void setRecoveredCount(String recoveredCount) {
 		this.recoveredCount = recoveredCount;
 	}
-
-
-
-
 
 	public String getActiveCount() {
 		return activeCount;
 	}
 
-
 	public void setActiveCount(String activeCount) {
 		this.activeCount = activeCount;
 	}
-
 
 	public String getOther() {
 		return other;
 	}
 
-
 	public void setOther(String other) {
 		this.other = other;
 	}
-
-
-
-
 
 	public String getOtherCount() {
 		return otherCount;
 	}
 
-
 	public void setOtherCount(String otherCount) {
 		this.otherCount = otherCount;
 	}
-
 
 	@Override
 	public String toString() {
@@ -462,6 +438,6 @@ public class DiseaseBurdenDto implements Serializable {
 				+ lastReportedDistrictName + ", caseClassification=" + caseClassification + ", cfr=" + cfr
 				+ ", lastReportedDistrict=" + lastReportedDistrict + ", outbreakDistrict=" + outbreakDistrict
 				+ ", deaths=" + deaths + ", region=" + region + ", recovered=" + recovered + ", activeCases="
-				+ activeCases + ", to=" + to + ", from=" + from + "]";
+				+ activeCases + ", toDate=" + toDate + ", fromDate=" + fromDate + "]";
 	}
 }
