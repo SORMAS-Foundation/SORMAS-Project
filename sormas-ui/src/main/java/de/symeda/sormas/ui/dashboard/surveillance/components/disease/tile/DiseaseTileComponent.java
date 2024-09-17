@@ -71,9 +71,12 @@ public class DiseaseTileComponent extends VerticalLayout {
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		nameLayout.setHeight(100, Unit.PERCENTAGE);
 		Label nameLabel = new Label(disease.toShortString());
-		nameLabel.addStyleNames(CssStyles.LABEL_WHITE,
-		nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
-		CssStyles.LABEL_BOLD, CssStyles.ALIGN_CENTER, CssStyles.LABEL_UPPERCASE);
+		nameLabel.addStyleNames(
+			CssStyles.LABEL_WHITE,
+			nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.ALIGN_CENTER,
+			CssStyles.LABEL_UPPERCASE);
 		nameLayout.addComponent(nameLabel);
 		nameLayout.setComponentAlignment(nameLabel, Alignment.MIDDLE_CENTER);
 		nameAndOutbreakLayout.addComponent(nameLayout);
@@ -104,8 +107,8 @@ public class DiseaseTileComponent extends VerticalLayout {
 		countLayout.setWidth(100, Unit.PERCENTAGE);
 
 		Label countLabel = new Label(casesCount.toString());
-		countLabel.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XXXLARGE,
-				CssStyles.ALIGN_CENTER, CssStyles.VSPACE_TOP_4);
+		countLabel
+			.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XXXLARGE, CssStyles.ALIGN_CENTER, CssStyles.VSPACE_TOP_4);
 		countLayout.addComponent(countLabel);
 		countLayout.setComponentAlignment(countLabel, Alignment.BOTTOM_CENTER);
 

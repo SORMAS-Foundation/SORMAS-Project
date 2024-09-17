@@ -567,7 +567,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		return actionDateFilterOption;
 	}
 
-    public enum DateType {
+	public enum DateType {
 		EVENT,
 		EVENT_SIGNAL_EVOLUTION,
 		ACTION_CHANGE,

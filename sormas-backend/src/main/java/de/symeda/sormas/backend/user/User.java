@@ -386,7 +386,7 @@ public class User extends AbstractDomainObject {
 		return caption;
 	}
 
-    static class UserListener {
+	static class UserListener {
 
 		@PostPersist
 		@PostUpdate

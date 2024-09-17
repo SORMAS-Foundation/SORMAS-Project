@@ -1072,7 +1072,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String personUuid) {
 		return service.exists(
-			(cb, personRoot, cq) -> and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
+			(cb, personRoot, cq) -> CriteriaBuilderHelper
+				.and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
 	}
 
 	@Override
