@@ -868,6 +868,7 @@ public interface Captions {
 	String dashboardDiseaseCarouselSlideShow = "dashboardDiseaseCarouselSlideShow";
 	String dashboardDiseaseDifference = "dashboardDiseaseDifference";
 	String dashboardDiseaseDifferenceYAxisLabel = "dashboardDiseaseDifferenceYAxisLabel";
+	String dashboardDistrictDiseaseBurden = "dashboardDistrictDiseaseBurden";
 	String dashboardDone = "dashboardDone";
 	String dashboardFacilities = "dashboardFacilities";
 	String dashboardFatalities = "dashboardFatalities";
@@ -886,6 +887,7 @@ public interface Captions {
 	String dashboardIndeterminate = "dashboardIndeterminate";
 	String dashboardInvestigated = "dashboardInvestigated";
 	String dashboardLastReport = "dashboardLastReport";
+	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	String dashboardLastVisitLt48 = "dashboardLastVisitLt48";
@@ -926,6 +928,7 @@ public interface Captions {
 	String dashboardProbable = "dashboardProbable";
 	String dashboardProportion = "dashboardProportion";
 	String dashboardReceived = "dashboardReceived";
+	String dashboardRegionalDiseaseBurden = "dashboardRegionalDiseaseBurden";
 	String dashboardRemoved = "dashboardRemoved";
 	String dashboardRumor = "dashboardRumor";
 	String dashboardSameDayLastYear = "dashboardSameDayLastYear";
@@ -1033,6 +1036,7 @@ public interface Captions {
 	String DiseaseBurden_eventCount = "DiseaseBurden.eventCount";
 	String DiseaseBurden_outbreakDistrictCount = "DiseaseBurden.outbreakDistrictCount";
 	String DiseaseBurden_previousCaseCount = "DiseaseBurden.previousCaseCount";
+	String diseaseDetailMap = "diseaseDetailMap";
 	String diseaseVariantDetails = "diseaseVariantDetails";
 	String District = "District";
 	String District_archived = "District.archived";
@@ -2822,6 +2826,7 @@ public interface Captions {
 	String View_contacts_visits = "View.contacts.visits";
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
+	String View_dashboard_disease = "View.dashboard.disease";
 	String View_dashboard_samples = "View.dashboard.samples";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_environments = "View.environments";
@@ -2855,6 +2860,7 @@ public interface Captions {
 	String View_user_users = "View.user.users";
 	String View_users_sub = "View.users.sub";
 	String viewMessage = "viewMessage";
+	String viewMore = "viewMore";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
 	String Visit_origin = "Visit.origin";

@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.dashboard.DashboardType;
 
 public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<C>, P extends AbstractDashboardDataProvider<C>>
 	extends VerticalLayout {
@@ -59,10 +60,10 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	// Layouts and components
 	private final String headingStringTag;
 	private final String headingInfoTag;
-	private CssLayout overlayBackground;
-	private VerticalLayout overlayLayout;
+	protected CssLayout overlayBackground;
+	protected VerticalLayout overlayLayout;
 	private Label overlayMessageLabel;
-	private PopupButton legendDropdown;
+	protected PopupButton legendDropdown;
 
 	private Label headingInfoIcon;
 
@@ -78,8 +79,9 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		setSizeFull();
 
 		this.setMargin(true);
-
-		addComponents();
+		if(!dashboardDataProvider.getDashboardType().equals(DashboardType.DISEASE)) {
+			addComponents();
+		}
 	}
 
 	protected static HorizontalLayout buildMarkerLegendEntry(MarkerIcon icon, String labelCaption) {

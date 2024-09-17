@@ -15,34 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.geo;
+package de.symeda.sormas.api.dashboard;
 
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-
-import javax.ejb.Remote;
-
-@Remote
-public interface GeoShapeProvider {
-
-    /**
-     * @return array of polygons, which are arrays of geo-points
-     */
-    GeoLatLon[][] getRegionShape(RegionReferenceDto region);
-
-    RegionReferenceDto getRegionByCoord(GeoLatLon latLon);
-
-    GeoLatLon getCenterOfAllRegions();
-
-    GeoLatLon getCenterOfRegion(RegionReferenceDto region);
-
-    GeoLatLon[][] getDistrictShape(DistrictReferenceDto district);
-
-    DistrictReferenceDto getDistrictByCoord(GeoLatLon latLon);
-
-    GeoLatLon getCenterOfDistrict(DistrictReferenceDto district);
-
-    GeoLatLon[][] getCountryShape();
-
-    String loadShapefileAttributions();
+public enum NewDateFilterType {
+    TODAY,
+    YESTERDAY,
+    THIS_WEEK,
+    LAST_WEEK,
+    THIS_YEAR,
+    CUSTOM;
 }

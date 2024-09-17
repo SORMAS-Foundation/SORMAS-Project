@@ -60,6 +60,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 
 @Stateless
 @LocalBean
@@ -483,6 +484,10 @@ public class DashboardService {
 		if (!dashboardCriteria.shouldIncludeNotACaseClassification()) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
+		}
+
+		if (dashboardCriteria.getOutcome() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), dashboardCriteria.getOutcome()));
 		}
 
 		// Exclude deleted cases. Archived cases should stay included

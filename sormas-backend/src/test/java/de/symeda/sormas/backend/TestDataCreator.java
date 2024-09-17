@@ -162,6 +162,7 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.api.contact.ContactClassification;
 
 public class TestDataCreator {
 
@@ -963,6 +964,13 @@ public class TestDataCreator {
 
 		contact = beanTest.getContactFacade().save(contact);
 
+		return contact;
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze, RDCF rdcf, ContactClassification classification,Date contactDate) {
+		ContactDto contact = createContact(reportingUser, null, contactPerson, caze, contactDate, null, null, rdcf);
+		contact.setContactClassification(classification);
+		contact = beanTest.getContactFacade().save(contact);
 		return contact;
 	}
 
