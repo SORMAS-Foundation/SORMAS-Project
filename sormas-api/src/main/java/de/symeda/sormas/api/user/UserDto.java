@@ -13,30 +13,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
- package de.symeda.sormas.api.user;
+package de.symeda.sormas.api.user;
 
- import java.util.Collections;
- import java.util.Set;
- 
- import javax.validation.Valid;
- import javax.validation.constraints.Size;
- 
- import com.fasterxml.jackson.annotation.JsonIgnore;
- 
- import de.symeda.sormas.api.Disease;
- import de.symeda.sormas.api.EntityDto;
- import de.symeda.sormas.api.Language;
- import de.symeda.sormas.api.audit.AuditIncludeProperty;
- import de.symeda.sormas.api.i18n.Validations;
- import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
- import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
- import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
- import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
- import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
- import de.symeda.sormas.api.location.LocationDto;
- import de.symeda.sormas.api.utils.DataHelper;
- import de.symeda.sormas.api.utils.FeatureIndependent;
- import de.symeda.sormas.api.utils.FieldConstraints;
+import java.util.Collections;
+import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.audit.AuditIncludeProperty;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FeatureIndependent;
+import de.symeda.sormas.api.utils.FieldConstraints;
  
 @FeatureIndependent
 public class UserDto extends EntityDto {
