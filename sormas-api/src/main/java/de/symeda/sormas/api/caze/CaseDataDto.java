@@ -124,6 +124,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
+	public static final String DATE_OF_DIAGNOSTIC = "dateOfDiagnostic";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
 	public static final String REGION_LEVEL_DATE = "regionLevelDate";
@@ -264,6 +265,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Outbreaks
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
+	private Date dateOfDiagnostic;
 	@Outbreaks
 	private UserReferenceDto reportingUser;
 	@HideForCountries(countries = {
@@ -747,6 +749,14 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	public Date getDateOfDiagnostic() {
+		return dateOfDiagnostic;
+	}
+
+	public void setDateOfDiagnostic(Date dateOfDiagnostic) {
+		this.dateOfDiagnostic = dateOfDiagnostic;
 	}
 
 	public PersonReferenceDto getPerson() {

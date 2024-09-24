@@ -150,6 +150,7 @@ public abstract class AbstractProcessingFlow {
 		caseDto.setReportingUser(user.toReference());
 		caseDto.setReportDate(
 			externalMessageDto.getCaseReportDate() != null ? externalMessageDto.getCaseReportDate() : externalMessageDto.getMessageDateTime());
+		caseDto.setDateOfDiagnostic(externalMessageDto.getDateOfDiagnostic());
 
 		if (processingFacade.isFeatureEnabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			caseDto.setResponsibleRegion(processingFacade.getDefaultRegionReference());

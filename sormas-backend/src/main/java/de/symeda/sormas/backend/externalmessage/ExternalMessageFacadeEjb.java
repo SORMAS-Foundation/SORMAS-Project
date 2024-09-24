@@ -150,6 +150,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setCaseReportDate(source.getCaseReportDate());
+		target.setDateOfDiagnostic(source.getDateOfDiagnostic());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
@@ -330,6 +331,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setMessageDateTime(source.getMessageDateTime());
 		target.setCaseReportDate(source.getCaseReportDate());
+		target.setDateOfDiagnostic(source.getDateOfDiagnostic());
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());

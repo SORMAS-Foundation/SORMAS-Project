@@ -42,7 +42,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.selfreport.SelfReport;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
@@ -92,6 +91,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -290,6 +290,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	private User reportingUser;
 	private Date reportDate;
+	private Date dateOfDiagnostic;
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
@@ -634,6 +635,15 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfDiagnostic() {
+		return dateOfDiagnostic;
+	}
+
+	public void setDateOfDiagnostic(Date dateOfDiagnostic) {
+		this.dateOfDiagnostic = dateOfDiagnostic;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

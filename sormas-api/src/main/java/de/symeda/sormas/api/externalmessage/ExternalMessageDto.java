@@ -93,6 +93,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@AuditIncludeProperty
 	private Date messageDateTime;
 	private Date caseReportDate;
+	private Date dateOfDiagnostic;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
@@ -204,6 +205,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setCaseReportDate(Date caseReportDate) {
 		this.caseReportDate = caseReportDate;
+	}
+
+	public Date getDateOfDiagnostic() {
+		return dateOfDiagnostic;
+	}
+
+	public void setDateOfDiagnostic(Date dateOfDiagnostic) {
+		this.dateOfDiagnostic = dateOfDiagnostic;
 	}
 
 	public String getReporterName() {

@@ -3069,6 +3069,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setReportDate(source.getReportDate());
+		target.setDateOfDiagnostic(source.getDateOfDiagnostic());
 		target.setInvestigatedDate(source.getInvestigatedDate());
 		target.setRegionLevelDate(source.getRegionLevelDate());
 		target.setNationalLevelDate(source.getNationalLevelDate());
@@ -3216,6 +3217,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// make sure we do have a report date
 			target.setReportDate(new Date());
 		}
+		target.setDateOfDiagnostic(source.getDateOfDiagnostic());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setInvestigatedDate(source.getInvestigatedDate());
 		target.setRegionLevelDate(source.getRegionLevelDate());

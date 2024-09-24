@@ -89,6 +89,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private Date messageDateTime;
 
 	private Date caseReportDate;
+	private Date dateOfDiagnostic;
 	private String reporterName;
 	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
@@ -177,6 +178,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setCaseReportDate(Date caseReportDate) {
 		this.caseReportDate = caseReportDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfDiagnostic() {
+		return dateOfDiagnostic;
+	}
+
+	public void setDateOfDiagnostic(Date dateOfDiagnostic) {
+		this.dateOfDiagnostic = dateOfDiagnostic;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

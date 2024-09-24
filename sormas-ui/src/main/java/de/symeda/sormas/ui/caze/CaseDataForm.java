@@ -181,6 +181,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 3, CaseDataDto.REPORTING_USER, 2, "") +
+					fluidRowLocs(4, CaseDataDto.DATE_OF_DIAGNOSTIC, 6, "") +
 					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS, CASE_CLASSIFICATION_CALCULATE_BTN_LOC) +
 					fluidRow(fluidColumnLoc(3, 0, CaseDataDto.CASE_REFERENCE_DEFINITION)) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
@@ -385,6 +386,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DateField reportDate = addField(CaseDataDto.REPORT_DATE, DateField.class);
 		addFields(
 			CaseDataDto.UUID,
+			CaseDataDto.DATE_OF_DIAGNOSTIC,
 			CaseDataDto.DISTRICT_LEVEL_DATE,
 			CaseDataDto.REGION_LEVEL_DATE,
 			CaseDataDto.NATIONAL_LEVEL_DATE,

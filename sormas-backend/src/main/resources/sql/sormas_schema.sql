@@ -13242,4 +13242,12 @@ ALTER TABLE selfreports_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
 
+-- 2024-09-18 #13143 Add case diagnostic date
+ALTER TABLE cases ADD COLUMN dateofdiagnostic timestamp;
+ALTER TABLE cases_history ADD COLUMN dateofdiagnostic timestamp;
+ALTER TABLE externalmessage ADD COLUMN dateofdiagnostic timestamp;
+ALTER TABLE externalmessage_history ADD COLUMN dateofdiagnostic timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (550, '#13143 Add case diagnostic date');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
