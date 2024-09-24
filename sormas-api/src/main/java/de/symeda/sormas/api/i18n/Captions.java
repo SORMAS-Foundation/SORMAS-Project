@@ -330,6 +330,7 @@ public interface Captions {
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
 	String CaseData_creationDate = "CaseData.creationDate";
+	String CaseData_dateOfDiagnostic = "CaseData.dateOfDiagnostic";
 	String CaseData_deletionReason = "CaseData.deletionReason";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
