@@ -67,6 +67,7 @@ public class UserDto extends EntityDto {
     public static final String LIMITED_DISEASES = "limitedDiseases";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	private boolean active = true;
@@ -106,6 +107,8 @@ public class UserDto extends EntityDto {
 	private Language language;
 
 	private boolean hasConsentedToGdpr;
+
+	private String externalId;
 
 	private JurisdictionLevel jurisdictionLevel;
 
@@ -276,6 +279,14 @@ public class UserDto extends EntityDto {
 
 	public void setHasConsentedToGdpr(boolean hasConsentedToGdpr) {
 		this.hasConsentedToGdpr = hasConsentedToGdpr;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public JurisdictionLevel getJurisdictionLevel() {
