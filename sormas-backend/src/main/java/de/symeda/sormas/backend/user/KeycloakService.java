@@ -76,7 +76,6 @@ public class KeycloakService {
 
 	private static final String CLIENT_ID_SORMAS_STATS = "sormas-stats";
 	private static final String KEYCLOAK_ROLE_SORMAS_STATS_ACCESS = "sormas-stats-access";
-	private final static String USER_NAME_ID_SEPARATOR = "::";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
