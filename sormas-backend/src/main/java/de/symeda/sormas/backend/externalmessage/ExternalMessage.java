@@ -123,6 +123,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private List<SampleReport> sampleReports;
 	private SurveillanceReport surveillanceReport;
 	private String tsv;
+	private String additionalDetails;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -448,5 +449,14 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setTsv(String tsv) {
 		this.tsv = tsv;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
 	}
 }

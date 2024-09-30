@@ -1342,6 +1342,7 @@ public interface Strings {
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
 	String messageExternalMessagesDeleted = "messageExternalMessagesDeleted";
+	String messageExternalMessagePhoneDataParseBackupPrefixMessage = "messageExternalMessagePhoneDataParseBackupPrefixMessage";
 	String messageExternalMessagesEligibleForDeletion = "messageExternalMessagesEligibleForDeletion";
 	String messageFacilitiesArchived = "messageFacilitiesArchived";
 	String messageFacilitiesDearchived = "messageFacilitiesDearchived";
