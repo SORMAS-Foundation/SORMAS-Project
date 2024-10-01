@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class I18nConstantGenerator {
 
-	private static final String FILE_PATH_PATTERN = "sormas-api/src/main/java/de/symeda/sormas/api/i18n/%s.java";
+	private static final String FILE_PATH_PATTERN = "src/main/java/de/symeda/sormas/api/i18n/%s.java";
 
 	private final String propertiesFileName;
 	private final String outputClassName;
