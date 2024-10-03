@@ -126,7 +126,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return doInitialChecks(externalMessage, new ExternalMessageProcessingResult())
 			.then(initialCheckResult -> handleRelatedLabMessages(relatedLabMessageHandler, initialCheckResult))
 			// if no handling happened, or opted to continue regular processing, ignore results
-			.then(ignored -> pickOrCreatePerson(new ExternalMessageProcessingResult()))
+			.then(ignored -> pickOrCreatePerson(new ExternalMessageProcessingResult(), externalMessage))
 			.thenSwitch(p -> pickOrCreateEntry(p.getData(), externalMessage))
 				.when(PickOrCreateEntryResult::isNewCase, (f, p, r) -> doCreateCaseFlow(f))
 				.when(PickOrCreateEntryResult::isNewContact, (f, p, r) -> doCreateContactFlow(f))
@@ -480,10 +480,6 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		ExternalMessageDto externalMessage) {
 
 		PersonReferenceDto personRef = previousResult.getPerson().toReference();
-		PersonDto personDto = previousResult.getPerson();
-		personDto.setAdditionalDetails(externalMessage.getAdditionalDetails());
-		FacadeProvider.getPersonFacade().save(personDto);
-
 		List<CaseSelectionDto> similarCases = processingFacade.getSimilarCases(personRef, externalMessage.getDisease());
 		List<SimilarContactDto> similarContacts = processingFacade.getSimilarContacts(personRef, externalMessage.getDisease());
 		List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(personRef, externalMessage);

@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -35,6 +29,11 @@ import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
 import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 public abstract class AbstractProcessingFlow {
 
@@ -103,9 +102,10 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult) {
+	protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult, ExternalMessageDto externalMessageDto) {
 
 		final PersonDto person = buildPerson();
+		person.setAdditionalDetails(externalMessageDto.getAdditionalDetails());
 
 		HandlerCallback<EntitySelection<PersonDto>> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
