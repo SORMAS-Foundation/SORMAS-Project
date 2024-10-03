@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
 import java.util.List;
@@ -451,7 +452,7 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.tsv = tsv;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}

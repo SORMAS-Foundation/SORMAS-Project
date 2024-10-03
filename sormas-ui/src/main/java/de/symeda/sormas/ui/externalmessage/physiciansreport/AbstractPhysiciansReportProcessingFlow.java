@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -35,6 +31,10 @@ import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
@@ -64,6 +64,8 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 		ExternalMessageDto externalMessage) {
 
 		PersonDto person = previousResult.getPerson();
+		person.setAdditionalDetails(externalMessage.getAdditionalDetails());
+		FacadeProvider.getPersonFacade().save(person);
 		PersonReferenceDto personRef = person.toReference();
 		List<CaseSelectionDto> similarCases = processingFacade.getSimilarCases(personRef, externalMessage.getDisease());
 

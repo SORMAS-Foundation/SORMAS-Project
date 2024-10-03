@@ -1340,7 +1340,6 @@ public interface Strings {
 	String messageExternalEmailNoAttachments = "messageExternalEmailNoAttachments";
 	String messageExternalJournalDidNotProvideMessage = "messageExternalJournalDidNotProvideMessage";
 	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
-	String messageExternalMessagePhoneDataParseBackupPrefixMessage = "messageExternalMessagePhoneDataParseBackupPrefixMessage";
 	String messageExternalMessagesAssigned = "messageExternalMessagesAssigned";
 	String messageExternalMessagesDeleted = "messageExternalMessagesDeleted";
 	String messageExternalMessagesEligibleForDeletion = "messageExternalMessagesEligibleForDeletion";
