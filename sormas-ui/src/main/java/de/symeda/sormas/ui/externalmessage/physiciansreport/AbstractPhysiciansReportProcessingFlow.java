@@ -64,8 +64,6 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 		ExternalMessageDto externalMessage) {
 
 		PersonDto person = previousResult.getPerson();
-		person.setAdditionalDetails(externalMessage.getAdditionalDetails());
-		FacadeProvider.getPersonFacade().save(person);
 		PersonReferenceDto personRef = person.toReference();
 		List<CaseSelectionDto> similarCases = processingFacade.getSimilarCases(personRef, externalMessage.getDisease());
 
