@@ -94,7 +94,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
-            loc(UserDto.UUID) +
+                    fluidRowLocs(UserDto.UUID, UserDto.EXTERNAL_ID) +
                     loc(PERSON_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
                     fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
@@ -135,7 +135,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         TextField uuid = addField(UserDto.UUID, TextField.class);
         uuid.setReadOnly(true);
-        
+
+        TextField externalId = addField(UserDto.EXTERNAL_ID, TextField.class);
+        externalId.setReadOnly(true);
+
         Label personDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonData));
         personDataHeadingLabel.addStyleName(H3);
         getContent().addComponent(personDataHeadingLabel, PERSON_DATA_HEADING_LOC);

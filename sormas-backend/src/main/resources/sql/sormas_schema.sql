@@ -13242,6 +13242,13 @@ ALTER TABLE selfreports_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
 
+-- 2024-09-24 #13080 Keycloak username modification is not synced by sormas
+
+ALTER TABLE users ADD COLUMN externalid text;
+ALTER TABLE users_history ADD COLUMN externalid text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (550, '#13080 Keycloak username modification is not synced by sormas');
+
 -- 2024-09-23 #13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text
 ALTER TABLE externalmessage
     ADD COLUMN personAdditionaldetails text;
@@ -13249,5 +13256,5 @@ ALTER TABLE externalmessage
 ALTER TABLE externalmessage_history
     ADD COLUMN personAdditionaldetails text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (550, '#13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text');
+INSERT INTO schema_version (version_number, comment) VALUES (551, '#13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

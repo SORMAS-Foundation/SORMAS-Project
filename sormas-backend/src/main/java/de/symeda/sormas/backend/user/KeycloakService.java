@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -60,6 +59,7 @@ import com.jayway.jsonpath.JsonPath;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
@@ -241,21 +241,32 @@ public class KeycloakService {
 		}
 
 		List<User> existingUsers = syncUsersFromProviderEvent.getExistingUsers();
-		Map<String, User> existingUsersByUsername =
-			existingUsers.stream().collect(Collectors.toMap(user1 -> user1.getUserName().toLowerCase(), Functions.identity()));
+		Map<String, User> existingUsersByExternalId =
+			existingUsers.stream().collect(Collectors.toMap(User::getExternalId, Functions.identity(), (u1, u2) -> u1));
 		List<UserRepresentation> providerUsers = keycloak.get().realm(REALM_NAME).users().list();
-		List<User> syncedUsers = providerUsers.stream().map(user -> {
-			User sormasUser = existingUsersByUsername.get(user.getUsername().toLowerCase());
+		List<User> syncedUsers = providerUsers.stream().map(userRepresentation -> {
+			String userNameId = userRepresentation.getId();
+
+			User sormasUser = existingUsersByExternalId.get(userNameId);
 			if (sormasUser == null) {
-				sormasUser = new User();
+				sormasUser =
+					existingUsers.stream().filter(u -> u.getUserName().equals(userRepresentation.getUsername())).findFirst().orElse(new User());
 			}
-			updateUser(sormasUser, user);
+			updateUser(sormasUser, userRepresentation);
 
 			return sormasUser;
 		}).collect(Collectors.toList());
 
-		Set<String> providerUserNames = providerUsers.stream().map(UserRepresentation::getUsername).collect(Collectors.toSet());
-		List<User> deletedUsers = existingUsers.stream().filter(user -> !providerUserNames.contains(user.getUserName())).collect(Collectors.toList());
+		List<Pair<String, String>> providerUserIdentifiers =
+			providerUsers.stream().map(ur -> Pair.createPair(ur.getId(), ur.getUsername())).collect(Collectors.toList());
+		List<User> deletedUsers = existingUsers.stream()
+			.filter(
+				u -> providerUserIdentifiers.stream()
+					.noneMatch(
+						ui -> StringUtils.isNotBlank(u.getExternalId())
+							? ui.getElement0().equals(u.getExternalId())
+							: ui.getElement1().equals(u.getUserName())))
+			.collect(Collectors.toList());
 
 		syncUsersFromProviderEvent.getCallback().accept(syncedUsers, deletedUsers);
 
@@ -307,6 +318,8 @@ public class KeycloakService {
 	}
 
 	private void updateUser(User user, UserRepresentation userRepresentation) {
+		user.setUserName(userRepresentation.getUsername());
+		user.setExternalId(userRepresentation.getId());
 		user.setActive(userRepresentation.isEnabled());
 		user.setUserName(userRepresentation.getUsername());
 		user.setFirstName(userRepresentation.getFirstName());
