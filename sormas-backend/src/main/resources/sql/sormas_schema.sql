@@ -13242,4 +13242,11 @@ ALTER TABLE selfreports_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a manual processing for self Reporting');
 
+-- 2024-09-24 #13080 Keycloak username modification is not synced by sormas
+
+ALTER TABLE users ADD COLUMN externalid text;
+ALTER TABLE users_history ADD COLUMN externalid text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (550, '#13080 Keycloak username modification is not synced by sormas');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

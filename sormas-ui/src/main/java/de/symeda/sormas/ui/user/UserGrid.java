@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +28,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.renderers.TextRenderer;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -60,7 +64,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 
 		addEditColumn(e -> ControllerProvider.getUserController().edit(e));
 
-		setColumns(
+		List<String> columns = new ArrayList(
+			Arrays.asList(
 			ACTION_BTN_ID,
 			UserDto.UUID,
 			UserDto.ACTIVE,
@@ -70,7 +75,13 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.USER_EMAIL,
 			UserDto.ADDRESS,
 			UserDto.DISTRICT,
-			UserDto.HEALTH_FACILITY);
+			UserDto.HEALTH_FACILITY));
+
+		if (!AuthProvider.SORMAS.equalsIgnoreCase(FacadeProvider.getConfigFacade().getAuthenticationProvider())) {
+			columns.add(UserDto.EXTERNAL_ID);
+		}
+
+		setColumns(columns);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
 		Column<UserDto, Set<UserRoleDto>> userRolesColumn = ((Column<UserDto, Set<UserRoleDto>>) getColumn(UserDto.USER_ROLES));
