@@ -124,7 +124,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private List<SampleReport> sampleReports;
 	private SurveillanceReport surveillanceReport;
 	private String tsv;
-	private String additionalDetails;
+	private String personAdditionalDetails;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -453,11 +453,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Column(length = CHARACTER_LIMIT_TEXT)
-	public String getAdditionalDetails() {
-		return additionalDetails;
+	public String getPersonAdditionalDetails() {
+		return personAdditionalDetails;
 	}
 
-	public void setAdditionalDetails(String additionalDetails) {
-		this.additionalDetails = additionalDetails;
+	public void setPersonAdditionalDetails(String personAdditionalDetails) {
+		this.personAdditionalDetails = personAdditionalDetails;
 	}
 }

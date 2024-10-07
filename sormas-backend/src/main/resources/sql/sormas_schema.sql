@@ -13244,10 +13244,10 @@ INSERT INTO schema_version (version_number, comment) VALUES (549, '#13083 Add a 
 
 -- 2024-09-23 #13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text
 ALTER TABLE externalmessage
-    ADD COLUMN additionaldetails text;
+    ADD COLUMN personAdditionaldetails text;
 
 ALTER TABLE externalmessage_history
-    ADD COLUMN additionaldetails text;
+    ADD COLUMN personAdditionaldetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (550, '#13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -105,7 +105,7 @@ public abstract class AbstractProcessingFlow {
 	protected CompletionStage<ProcessingResult<ExternalMessageProcessingResult>> pickOrCreatePerson(ExternalMessageProcessingResult previousResult, ExternalMessageDto externalMessageDto) {
 
 		final PersonDto person = buildPerson();
-		person.setAdditionalDetails(externalMessageDto.getAdditionalDetails());
+		person.setAdditionalDetails(externalMessageDto.getPersonAdditionalDetails());
 
 		HandlerCallback<EntitySelection<PersonDto>> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);

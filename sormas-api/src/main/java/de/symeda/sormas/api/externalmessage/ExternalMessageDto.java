@@ -159,7 +159,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private boolean automaticProcessingPossible;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	private String additionalDetails;
+	private String personAdditionalDetails;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -511,11 +511,11 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.automaticProcessingPossible = automaticProcessingPossible;
 	}
 
-	public String getAdditionalDetails() {
-		return additionalDetails;
+	public String getPersonAdditionalDetails() {
+		return personAdditionalDetails;
 	}
 
-	public void setAdditionalDetails(String additionalDetails) {
-		this.additionalDetails = additionalDetails;
+	public void setPersonAdditionalDetails(String personAdditionalDetails) {
+		this.personAdditionalDetails = personAdditionalDetails;
 	}
 }
