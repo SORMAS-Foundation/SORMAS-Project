@@ -13249,4 +13249,12 @@ ALTER TABLE users_history ADD COLUMN externalid text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (550, '#13080 Keycloak username modification is not synced by sormas');
 
+-- 2024-09-23 #13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text
+ALTER TABLE externalmessage
+    ADD COLUMN personadditionaldetails text;
+
+ALTER TABLE externalmessage_history
+    ADD COLUMN personadditionaldetails text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (551, '#13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -15,17 +15,6 @@
 
 package de.symeda.sormas.api.externalmessage.processing;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -45,6 +34,16 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ExternalMessageMapper {
 
@@ -83,7 +82,12 @@ public final class ExternalMessageMapper {
 					person::setNationalHealthId,
 					person.getNationalHealthId(),
 					externalMessage.getPersonNationalHealthId(),
-					PersonDto.NATIONAL_HEALTH_ID)));
+					PersonDto.NATIONAL_HEALTH_ID),
+				Mapping.of(
+					person::setAdditionalDetails,
+					person.getAdditionalDetails(),
+					externalMessage.getPersonAdditionalDetails(),
+					PersonDto.ADDITIONAL_DETAILS)));
 
 		if (person.getBirthdateYYYY() != null) {
 			DataHelper.Pair<Integer, ApproximateAgeType> ageAndAgeType = ApproximateAgeType.ApproximateAgeHelper
