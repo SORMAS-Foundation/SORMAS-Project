@@ -126,7 +126,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return doInitialChecks(externalMessage, new ExternalMessageProcessingResult())
 			.then(initialCheckResult -> handleRelatedLabMessages(relatedLabMessageHandler, initialCheckResult))
 			// if no handling happened, or opted to continue regular processing, ignore results
-			.then(ignored -> pickOrCreatePerson(new ExternalMessageProcessingResult(), externalMessage))
+			.then(ignored -> pickOrCreatePerson(new ExternalMessageProcessingResult()))
 			.thenSwitch(p -> pickOrCreateEntry(p.getData(), externalMessage))
 				.when(PickOrCreateEntryResult::isNewCase, (f, p, r) -> doCreateCaseFlow(f))
 				.when(PickOrCreateEntryResult::isNewContact, (f, p, r) -> doCreateContactFlow(f))

@@ -46,7 +46,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 
 		//@formatter:off
 		return doInitialChecks(externalMessage, new ExternalMessageProcessingResult())
-			.then(initialResult -> pickOrCreatePerson(initialResult.getData(), externalMessage))
+			.then(initialResult -> pickOrCreatePerson(initialResult.getData()))
 			.thenSwitch(p -> pickOrCreateEntry(p.getData(), externalMessage))
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e, p) -> f
 						.then(ignored -> createCase(e.getPerson(), externalMessage)).then(c ->

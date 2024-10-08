@@ -82,7 +82,12 @@ public final class ExternalMessageMapper {
 					person::setNationalHealthId,
 					person.getNationalHealthId(),
 					externalMessage.getPersonNationalHealthId(),
-					PersonDto.NATIONAL_HEALTH_ID)));
+					PersonDto.NATIONAL_HEALTH_ID),
+				Mapping.of(
+					person::setAdditionalDetails,
+					person.getAdditionalDetails(),
+					externalMessage.getPersonAdditionalDetails(),
+					PersonDto.ADDITIONAL_DETAILS)));
 
 		if (person.getBirthdateYYYY() != null) {
 			DataHelper.Pair<Integer, ApproximateAgeType> ageAndAgeType = ApproximateAgeType.ApproximateAgeHelper
@@ -99,8 +104,6 @@ public final class ExternalMessageMapper {
 							PersonDto.APPROXIMATE_AGE_TYPE))));
 		}
 
-		Mapping.of(person::setAdditionalDetails, person.getAdditionalDetails(),
-				externalMessage.getPersonAdditionalDetails(), PersonDto.ADDITIONAL_DETAILS);
 		return changedFields;
 	}
 
