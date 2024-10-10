@@ -186,9 +186,13 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		getCaseFacade().save(caze);
 
 		result = runFlow(externalMessage);
-		assertThat(result.getStatus(), is(CANCELED));
-		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
-		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+		List<CaseDataDto> cases = getCaseFacade().getAllAfter(new Date(0));
+		assertThat(cases, hasSize(2));
+		CaseDataDto newCase = cases.stream().filter(c -> !DataHelper.isSame(c, caze)).findFirst().get();
+		assertThat(newCase.getPerson(), is(caze.getPerson()));
 
 		// set the case report after the threshold
 		caze.setReportDate(DateHelper.subtractDays(new Date(), 5));
@@ -201,17 +205,15 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
 		assertThat(persons, hasSize(1));
 		assertThat(persons.get(0).getUuid(), is(person.getUuid()));
-		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
-		assertThat(cases, hasSize(1));
-		assertThat(cases.get(0).getUuid(), is(caze.getUuid()));
-		List<SampleDto> samples = getSampleFacade().getByCaseUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList()));
-		assertThat(samples, hasSize(1));
-		List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(samples.get(0).toReference());
-		assertThat(pathogenTests, hasSize(1));
+		cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
+		assertThat(cases, hasSize(2));
+		// the sample should be added on the new case
+		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Collections.singletonList(newCase.getUuid()));
+		assertThat(samples, hasSize(2));
 	}
 
 	@Test
-	public void testProcessWithExistingPersonAndCaseWithSample() throws ExecutionException, InterruptedException {
+	public void testProcessWithExistingPersonAndCaseWithBySampleDate() throws ExecutionException, InterruptedException {
 		ExternalMessageDto externalMessage = createExternalMessage(null);
 
 		PersonDto person =
@@ -220,6 +222,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 			});
 
 		CaseDataDto caze = creator.createCase(reportingUser.toReference(), person.toReference(), rdcf, c -> {
+			c.setReportDate(DateHelper.subtractDays(new Date(), 1));
 			c.setDisease(externalMessage.getDisease());
 		});
 
@@ -240,8 +243,13 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		getSampleFacade().saveSample(sample);
 
 		result = runFlow(externalMessage);
-		assertThat(result.getStatus(), is(CANCELED));
-		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+
+		List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
+		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
+		assertThat(cases, hasSize(2));
+		CaseDataDto newCase = cases.stream().filter(c -> !DataHelper.isSame(c, caze)).findFirst().get();
 
 		// set the sample date time after the threshold
 		sample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
@@ -251,13 +259,12 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(result.getStatus(), is(DONE));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
 
-		List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
+		persons = getPersonFacade().getAllAfter(new Date(0));
 		assertThat(persons, hasSize(1));
 		assertThat(persons.get(0).getUuid(), is(person.getUuid()));
-		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
-		assertThat(cases, hasSize(1));
-		assertThat(cases.get(0).getUuid(), is(caze.getUuid()));
-		List<SampleDto> samples = getSampleFacade().getByCaseUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList()));
+		cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
+		assertThat(cases, hasSize(2));
+		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Collections.singletonList(newCase.getUuid()));
 		assertThat(samples, hasSize(2));
 		SampleDto processedSample = samples.stream().filter(s -> !DataHelper.isSame(s, sample)).findFirst().get();
 		List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(processedSample.toReference());
