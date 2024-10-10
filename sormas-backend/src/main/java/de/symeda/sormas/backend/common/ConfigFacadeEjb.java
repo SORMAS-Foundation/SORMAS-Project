@@ -35,7 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
@@ -86,7 +88,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
 
-	public static final String FEATURE_AUTOMATIC_CASE_CLASSIFICATION = "feature.automaticcaseclassification";
+	public static final String CASE_CLASSIFICATION_CALCULATION_PREFIX = "caseClassification.";
+	public static final String CASE_CLASSIFICATION_CALCULATION_ALL = CASE_CLASSIFICATION_CALCULATION_PREFIX + "ALL";
 
 	public static final String DOCUMENT_FILES_PATH = "documents.path";
 	public static final String TEMP_FILES_PATH = "temp.path";
@@ -233,6 +236,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	protected long getLong(String name, long defaultValue) {
 		return parseProperty(name, defaultValue, Long::parseLong);
+	}
+
+	protected <T extends Enum<T>> T getEnumValue(String name, Class<T> enumType, T defaultValue) {
+		return parseProperty(name, defaultValue, value -> Enum.valueOf(enumType, value));
 	}
 
 	@Override
@@ -404,8 +411,37 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public boolean isFeatureAutomaticCaseClassification() {
-		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, true);
+	public CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease) {
+		CaseClassificationCalculationMode diseaseConfig =
+			getEnumValue(CASE_CLASSIFICATION_CALCULATION_PREFIX + disease.name(), CaseClassificationCalculationMode.class, null);
+		if (diseaseConfig == null) {
+			diseaseConfig = getCaseClassificationCalculationModeForAllDiseases();
+		}
+
+		return diseaseConfig;
+	}
+
+	private CaseClassificationCalculationMode getCaseClassificationCalculationModeForAllDiseases() {
+		return getEnumValue(
+			CASE_CLASSIFICATION_CALCULATION_ALL,
+			CaseClassificationCalculationMode.class,
+			CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC);
+	}
+
+	@Override
+	public boolean isAnyCaseClassificationCalculationEnabled() {
+		if (getCaseClassificationCalculationModeForAllDiseases() != CaseClassificationCalculationMode.DISABLED) {
+			return true;
+		}
+
+		List<String> classificationCalculationProps =
+			props.stringPropertyNames().stream().filter(p -> p.startsWith(CASE_CLASSIFICATION_CALCULATION_PREFIX)).collect(Collectors.toList());
+
+		if (classificationCalculationProps.isEmpty()) {
+			return true;
+		}
+
+		return classificationCalculationProps.stream().anyMatch(p -> !CaseClassificationCalculationMode.DISABLED.name().equals(props.getProperty(p)));
 	}
 
 	@Override

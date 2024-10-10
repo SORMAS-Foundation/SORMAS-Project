@@ -25,9 +25,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.jboss.weld.exceptions.UnsupportedOperationException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -61,11 +61,6 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class CaseClassificationLogicTest extends AbstractBeanTest {
-
-	@BeforeEach
-	public void enableAutomaticCaseClassification() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.FEATURE_AUTOMATIC_CASE_CLASSIFICATION, "true");
-	}
 
 	@Test
 	public void testAutomaticClassificationForEVD() {
@@ -1178,6 +1173,46 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		assertEquals(null, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testCalculationByDisease() {
+		MockProducer.getProperties()
+			.setProperty(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.DISABLED.name());
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze = getCaseFacade().save(caze);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				CaseClassificationCalculationMode.AUTOMATIC.name());
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC.name());
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				CaseClassificationCalculationMode.DISABLED.name());
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+
+		MockProducer.getProperties()
+			.setProperty(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.AUTOMATIC.name());
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS.getName(),
+				CaseClassificationCalculationMode.DISABLED.name());
+		caze = getCaseFacade().save(buildSuspectCase(Disease.CORONAVIRUS));
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 	}
 
 	/**

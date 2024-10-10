@@ -30,7 +30,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -184,5 +186,52 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		// property specifies value > 0
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "666");
 		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(666L)));
+	}
+
+	@Test
+	public void testHasAnyCaseClassificationCalculationEnabled() {
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL, CaseClassificationCalculationMode.DISABLED.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				CaseClassificationCalculationMode.MANUAL.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				CaseClassificationCalculationMode.AUTOMATIC.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				CaseClassificationCalculationMode.DISABLED.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(false));
+
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA,
+				CaseClassificationCalculationMode.AUTOMATIC.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
+
+		MockProducer.getProperties().remove(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_ALL);
+		MockProducer.getProperties().remove(ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CHOLERA);
+		MockProducer.getProperties()
+			.setProperty(
+				ConfigFacadeEjb.CASE_CLASSIFICATION_CALCULATION_PREFIX + Disease.CORONAVIRUS,
+				CaseClassificationCalculationMode.DISABLED.name());
+		assertThat(getConfigFacade().isAnyCaseClassificationCalculationEnabled(), is(true));
 	}
 }
