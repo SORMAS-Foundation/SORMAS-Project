@@ -1,10 +1,13 @@
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -13,10 +16,16 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -63,5 +72,28 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertEquals(1, getTestReportService().count());
 		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
 		assertNull(getSampleReportService().getByUuid(labMessage.getSampleReports().get(0).getUuid()).getSample());
+	}
+
+	@Test
+	public void testDeleteOldNegativeSamples() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		CaseDataDto caze = creator.createCase(user, creator.createPerson().toReference(), rdcf);
+		SampleDto newSample = creator.createSample(caze.toReference(), user, rdcf.facility, s -> {
+			s.setSampleDateTime(new Date());
+			s.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+		});
+		SampleDto oldSample = creator.createSample(caze.toReference(), user, rdcf.facility, s -> {
+			s.setSampleDateTime(DateHelper.subtractDays(new Date(), 14));
+			s.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+		});
+
+		getSampleService().deleteOldNegativeSamples();
+
+		assertThat(getSampleFacade().count(new SampleCriteria()), is(1L));
+		SampleDto deletedSample = getSampleFacade().getSampleByUuid(newSample.getUuid());
+		assertThat(deletedSample.isDeleted(), is(true));
+		assertThat(deletedSample.getDeletionReason(), is(DeletionReason.OTHER_REASON));
+		assertThat(deletedSample.getOtherDeletionReason(), is(I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));
 	}
 }

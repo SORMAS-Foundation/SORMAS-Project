@@ -161,4 +161,6 @@ public interface ConfigFacade {
 	CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
 
 	boolean isAnyCaseClassificationCalculationEnabled();
+
+	Integer getNegaiveCovidSamplesMaxAgeDays();
 }
