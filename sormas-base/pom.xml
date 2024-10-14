@@ -41,7 +41,7 @@
 		<kotlin-stdlib.version>1.9.0</kotlin-stdlib.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
 		<docx4j.version>8.3.9</docx4j.version>
-		<archunit.version>1.0.1</archunit.version>
+		<archunit.version>1.1.0</archunit.version>
 		<junit.version>5.9.3</junit.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<mockito.version>5.2.0</mockito.version>
