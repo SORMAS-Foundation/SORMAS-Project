@@ -303,6 +303,6 @@ public class CronService {
 
 	@Schedule(hour = "2", minute = "40", persistent = false)
 	public void sofDeleteOldNegativeSamples() {
-		sampleService.deleteOldNegativeSamples();
+		sampleService.cleanupOldCovidSamples();
 	}
 }

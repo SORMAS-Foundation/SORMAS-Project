@@ -72,6 +72,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.IsSample;
+import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -1284,34 +1285,36 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return em.createQuery(cq).getResultList();
 	}
 
-	public void deleteOldNegativeSamples() {
+	public void cleanupOldCovidSamples() {
 		final Integer maxAgeDays = configFacade.getNegaiveCovidSamplesMaxAgeDays();
 		if (maxAgeDays == null) {
 			return;
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
-		Root<Sample> from = cq.from(Sample.class);
-		SampleJoins sampleJoins = new SampleJoins(from);
-
-		Subquery<PathogenTest> covidTestQuery = cq.subquery(PathogenTest.class);
-		Root<PathogenTest> covidTestRoot = covidTestQuery.from(PathogenTest.class);
-		covidTestQuery.where(
-			cb.equal(covidTestRoot.get(PathogenTest.SAMPLE), from),
-			cb.equal(covidTestRoot.get(PathogenTest.TESTED_DISEASE), Disease.CORONAVIRUS));
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
+		Root<PathogenTest> from = cq.from(PathogenTest.class);
 
 		cq.where(
-			cb.or(
-				cb.equal(sampleJoins.getCaze().get(Case.DISEASE), Disease.CORONAVIRUS),
-				cb.equal(sampleJoins.getContact().get(Contact.DISEASE), Disease.CORONAVIRUS),
-				cb.equal(sampleJoins.getContactCase().get(Case.DISEASE), Disease.CORONAVIRUS),
-				cb.equal(sampleJoins.getEventParticipantJoins().getEvent().get(Event.DISEASE), Disease.CORONAVIRUS)),
-			cb.exists(covidTestQuery),
-			cb.equal(from.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.NEGATIVE),
-			cb.greaterThan(from.get(Sample.SAMPLE_DATE_TIME), DateHelper.subtractDays(new Date(), maxAgeDays)));
-		em.createQuery(cq)
-			.getResultList()
-			.forEach(s -> delete(s, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion))));
+			cb.equal(from.get(PathogenTest.TESTED_DISEASE), Disease.CORONAVIRUS),
+			cb.equal(from.get(PathogenTest.TEST_RESULT), PathogenTestResultType.NEGATIVE),
+			cb.notEqual(from.get(PathogenTest.DELETED), true),
+			cb.lessThan(
+				CriteriaBuilderHelper.coalesce(
+					cb,
+					Date.class,
+					from.get(PathogenTest.TEST_DATE_TIME),
+					from.get(PathogenTest.REPORT_DATE),
+					from.get(PathogenTest.CREATION_DATE)),
+				DateHelper.subtractDays(new Date(), maxAgeDays)));
+		em.createQuery(cq).getResultList().stream().collect(Collectors.groupingBy(PathogenTest::getSample)).forEach((sample, tests) -> {
+			if (pathogenTestService.count(new PathogenTestCriteria().sample(sample.toReference())) == tests.size()) {
+				delete(sample, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));
+			} else {
+				tests.forEach(
+					p -> pathogenTestService
+						.delete(p, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion))));
+			}
+		});
 	}
 }
