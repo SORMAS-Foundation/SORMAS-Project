@@ -32,7 +32,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -53,8 +52,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 
-@Entity
-@Table(name = "adverseeventsfollowingimmunization")
+@Entity(name = "adverseeventsfollowingimmunization")
 public class Aefi extends CoreAdo {
 
 	private static final long serialVersionUID = -7845660472641846292L;

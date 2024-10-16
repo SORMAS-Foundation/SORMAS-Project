@@ -24,6 +24,8 @@ import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 public class AbstractAefiView extends AbstractSubNavigationView<Component> {
 
+	public static final String ROOT_VIEW_NAME = "adverseevents";
+
 	protected AbstractAefiView(String viewName) {
 		super(viewName);
 	}

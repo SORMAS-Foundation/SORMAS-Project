@@ -18,8 +18,6 @@ package de.symeda.sormas.ui.adverseeventsfollowingimmunization.aefiinvestigation
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 
@@ -59,7 +57,7 @@ public class AefiInvestigationList extends PaginationList<AefiInvestigationListE
 			FacadeProvider.getAefiInvestigationFacade().getEntriesList(listCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(listEntries);
-		if (CollectionUtils.isNotEmpty(listEntries)) {
+		if (!listEntries.isEmpty()) {
 			showPage(1);
 		} else {
 			listLayout.removeAllComponents();
