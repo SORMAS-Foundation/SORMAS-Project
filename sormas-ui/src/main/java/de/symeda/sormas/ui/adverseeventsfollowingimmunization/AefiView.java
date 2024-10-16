@@ -61,7 +61,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class AefiView extends AbstractAefiView {
 
-	public static final String VIEW_NAME = "adverseevents";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME;
 
 	private final AefiCriteria criteria;
 
@@ -125,7 +125,7 @@ public class AefiView extends AbstractAefiView {
 		gridLayout.setMargin(false);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
-		CssStyles.style(gridLayout, CssStyles.VIEW_SECTION, CssStyles.VSPACE_TOP_3);
+		//CssStyles.style(gridLayout, CssStyles.VIEW_SECTION, CssStyles.VSPACE_TOP_3);
 
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(dataLayout);

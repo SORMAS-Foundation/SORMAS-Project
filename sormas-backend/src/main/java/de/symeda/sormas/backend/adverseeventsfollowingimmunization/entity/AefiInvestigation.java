@@ -32,7 +32,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -66,8 +65,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 
-@Entity
-@Table(name = "adverseeventsfollowingimmunizationinvestigation")
+@Entity(name = "adverseeventsfollowingimmunizationinvestigation")
 public class AefiInvestigation extends CoreAdo {
 
 	private static final long serialVersionUID = 6128204752074963848L;
