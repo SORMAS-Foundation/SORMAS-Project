@@ -171,20 +171,31 @@ public class AutomaticLabMessageProcessor {
 				result.setNewCase(true);
 				callback.done(result);
 			} else {
-				Set<String> similarCaseUuids = similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet());
-				String caseUuid = caseService.getCaseUuidForAutomaticSampleAssignment(similarCaseUuids, similarCases.get(0).getDisease());
+				Disease disease = externalMessageDto.getDisease();
+				Integer automaticSampleAssignmentThreshold = diseaseConfigurationFacade.getAutomaticSampleAssignmentThreshold(disease);
+				if (automaticSampleAssignmentThreshold == null) {
+					logger.debug(
+						"[MESSAGE PROCESSING] No automatic sample assignment threshold configured for disease {}. Canceling processing.",
+						disease);
+					callback.cancel();
+					return;
+				}
 
-				if (caseUuid != null) {
+				Set<String> similarCaseUuids = similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet());
+				String caseUuid = caseService.getCaseUuidForAutomaticSampleAssignment(similarCaseUuids, disease, automaticSampleAssignmentThreshold);
+
+				if (caseUuid == null) {
+					logger.debug(
+						"[MESSAGE PROCESSING] None of the similar cases {} is usable for automatic sample assignment. Continue with case creation.",
+						similarCaseUuids);
+					result.setNewCase(true);
+				} else {
 					CaseSelectionDto caseToAssignTo =
 						similarCases.stream().filter(c -> c.getUuid().equals(caseUuid)).findFirst().orElseThrow(IllegalStateException::new);
 					result.setCaze(caseToAssignTo);
-					callback.done(result);
-				} else {
-					logger.debug(
-						"[MESSAGE PROCESSING] None of the similar cases {} is usable for automatic sample assignment. Canceling processing.",
-						similarCaseUuids);
-					callback.cancel();
 				}
+
+				callback.done(result);
 			}
 		}
 

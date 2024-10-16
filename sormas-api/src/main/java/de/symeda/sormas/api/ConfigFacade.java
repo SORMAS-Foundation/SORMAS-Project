@@ -40,8 +40,6 @@ public interface ConfigFacade {
 
 	String getSormasStatsUrl();
 
-	boolean isFeatureAutomaticCaseClassification();
-
 	String getEmailSenderAddress();
 
 	String getEmailSenderName();
@@ -159,4 +157,8 @@ public interface ConfigFacade {
 	void resetRequestContext();
 
 	String[] getAllowedFileExtensions();
+
+	CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease);
+
+	boolean isAnyCaseClassificationCalculationEnabled();
 }
