@@ -57,7 +57,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class AefiInvestigationView extends AbstractAefiView {
 
-	public static final String VIEW_NAME = "adverseeventinvestigations";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/investigations";
 
 	private final AefiInvestigationCriteria criteria;
 
@@ -111,7 +111,7 @@ public class AefiInvestigationView extends AbstractAefiView {
 		gridLayout.setMargin(false);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
-		CssStyles.style(gridLayout, CssStyles.VIEW_SECTION, CssStyles.VSPACE_TOP_3);
+		//CssStyles.style(gridLayout, CssStyles.VIEW_SECTION, CssStyles.VSPACE_TOP_3);
 
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(dataLayout);
