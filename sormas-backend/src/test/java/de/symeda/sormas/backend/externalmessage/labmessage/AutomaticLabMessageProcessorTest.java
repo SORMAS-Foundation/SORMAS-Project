@@ -311,6 +311,26 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testProcessWithExistingPersonWithSameNationalHealthIdAndPersonDetailsNormalizedCheck()
+		throws ExecutionException, InterruptedException {
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonCity("person city");
+			m.setPersonStreet("PERSON STREET, 12a");
+		});
+
+		creator.createPerson("john", "DOÉ", Sex.MALE, p -> {
+			p.setNationalHealthId(externalMessage.getPersonNationalHealthId());
+			p.getAddress().setCity("	PERSON  	 city  \n");
+			p.getAddress().setStreet(" person   STREET   12A");
+		});
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+	}
+
+	@Test
 	public void testProcessWithExistingSimilarPerson() throws ExecutionException, InterruptedException {
 		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(null));
 
