@@ -23,6 +23,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -48,7 +49,7 @@ public class ExternalEmailOptionsDto implements Serializable {
 	private ReferenceDto rootEntityReference;
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
-	private String templateName;
+	private DocumentTemplateReferenceDto template;
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
 	private String recipientEmail;
@@ -78,12 +79,12 @@ public class ExternalEmailOptionsDto implements Serializable {
 		this.rootEntityReference = rootEntityReference;
 	}
 
-	public String getTemplateName() {
-		return templateName;
+	public DocumentTemplateReferenceDto getTemplate() {
+		return template;
 	}
 
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
+	public void setTemplate(DocumentTemplateReferenceDto template) {
+		this.template = template;
 	}
 
 	public String getRecipientEmail() {

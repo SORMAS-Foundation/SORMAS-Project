@@ -28,6 +28,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
@@ -53,7 +54,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected List<String> getAvailableTemplates() {
+	protected List<DocumentTemplateDto> getAvailableTemplates() {
 		return FacadeProvider.getEventDocumentFacade().getAvailableTemplates();
 	}
 
@@ -63,7 +64,7 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected StreamResource createStreamResource(String templateFile, String filename) {
+	protected StreamResource createStreamResource(DocumentTemplateDto template, String filename) {
 		return new StreamResource((StreamResource.StreamSource) () -> {
 			try {
 				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables(), shouldUploadGeneratedDocument());
@@ -86,6 +87,6 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	interface DocumentInputStreamSupplier {
 
-		InputStream get(String templateFile, Properties properties, Boolean shouldUploadGeneratedDoc) throws DocumentTemplateException;
+		InputStream get(DocumentTemplateDto template, Properties properties, Boolean shouldUploadGeneratedDoc) throws DocumentTemplateException;
 	}
 }

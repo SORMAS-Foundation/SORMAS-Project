@@ -32,8 +32,7 @@ import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 public interface QuarantineOrderFacade {
 
 	byte[] getGeneratedDocument(
-		String templateName,
-		DocumentWorkflow workflow,
+		DocumentTemplateReferenceDto templateReference,
 		RootEntityType rootEntityType,
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
@@ -44,22 +43,21 @@ public interface QuarantineOrderFacade {
 		throws DocumentTemplateException;
 
 	Map<ReferenceDto, byte[]> getGeneratedDocuments(
-		String templateName,
-		DocumentWorkflow workflow,
+		DocumentTemplateReferenceDto templateReference,
 		List<ReferenceDto> rootEntityReferences,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
 	Map<ReferenceDto, byte[]> getGeneratedDocumentsForEventParticipants(
-			String templateName,
-			List<EventParticipantReferenceDto> rootEntityReferences,
-			Disease eventDisease,
-			Properties extraProperties,
-			Boolean shouldUploadGeneratedDoc)
-			throws DocumentTemplateException;
+		DocumentTemplateReferenceDto templateReference,
+		List<EventParticipantReferenceDto> rootEntityReferences,
+		Disease eventDisease,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
+		throws DocumentTemplateException;
 
-	List<String> getAvailableTemplates(DocumentWorkflow workflow);
+	List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow workflow);
 
 	DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException;
 }

@@ -15,8 +15,10 @@ import org.apache.commons.io.IOUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
@@ -50,7 +52,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 
 	@Override
 	public String getGeneratedDocument(
-		String templateName,
+		DocumentTemplateReferenceDto templateReference,
 		EventReferenceDto eventReference,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
@@ -64,13 +66,13 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 		entities
 			.addEntity(RootEntityType.ROOT_EVENT_PARTICIPANTS, eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventReference.getUuid()));
 
-		String body = documentTemplateFacade.generateDocumentTxtFromEntities(DOCUMENT_WORKFLOW, templateName, entities, extraProperties);
-		String styledHtml = createStyledHtml(templateName, body);
+		String body = documentTemplateFacade.generateDocumentTxtFromEntities(templateReference, entities, extraProperties);
+		String styledHtml = createStyledHtml(templateReference.getCaption(), body);
 		if (shouldUploadGeneratedDoc) {
 			byte[] documentToSave = styledHtml.getBytes(StandardCharsets.UTF_8);//mandatory UTF_8
 			try {
 				helper.saveDocument(
-					helper.getDocumentFileName(eventReference, templateName),
+					helper.getDocumentFileName(eventReference, templateReference.getCaption()),
 					DocumentDto.MIME_TYPE_DEFAULT,
 					documentToSave.length,
 					helper.getDocumentRelatedEntityType(eventReference),
@@ -85,7 +87,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 
 	@Override
 	public Map<ReferenceDto, byte[]> getGeneratedDocuments(
-		String templateName,
+		DocumentTemplateReferenceDto templateReference,
 		List<EventReferenceDto> eventReferences,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
@@ -93,7 +95,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 		Map<ReferenceDto, byte[]> documents = new HashMap<>(eventReferences.size());
 
 		for (EventReferenceDto referenceDto : eventReferences) {
-			String documentContent = getGeneratedDocument(templateName, referenceDto, extraProperties, shouldUploadGeneratedDoc);
+			String documentContent = getGeneratedDocument(templateReference, referenceDto, extraProperties, shouldUploadGeneratedDoc);
 			documents.put(referenceDto, documentContent.getBytes(StandardCharsets.UTF_8));
 		}
 
@@ -101,8 +103,8 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	}
 
 	@Override
-	public List<String> getAvailableTemplates() {
-		return documentTemplateFacade.getAvailableTemplates(DOCUMENT_WORKFLOW);
+	public List<DocumentTemplateDto> getAvailableTemplates() {
+		return documentTemplateFacade.getAvailableTemplates(DOCUMENT_WORKFLOW, null);
 	}
 
 	@Override

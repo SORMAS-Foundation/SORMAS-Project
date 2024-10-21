@@ -51,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -157,8 +158,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private DocGenerationHelper docGenerationHelper;
 
 	@Override
-	public List<String> getTemplateNames(DocumentWorkflow documentWorkflow) {
-		return documentTemplateFacade.getAvailableTemplates(documentWorkflow);
+	public List<DocumentTemplateDto> getTemplateNames(DocumentWorkflow documentWorkflow) {
+		return documentTemplateFacade.getAvailableTemplates(documentWorkflow, null);
 	}
 
 	@Override
@@ -200,7 +201,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		String personalizedFileName = null;
 		Map<File, String> filesToBeEncryped = new HashMap<>();
 
-		if (options.getQuarantineOrderDocumentOptions() != null && options.getQuarantineOrderDocumentOptions().getTemplateFile() != null) {
+		if (options.getQuarantineOrderDocumentOptions() != null && options.getQuarantineOrderDocumentOptions().getTemplate() != null) {
 			Map.Entry<File, String> fileFromTemplate = createFileFromTemplate(options);
 			personalizedFile = fileFromTemplate.getKey();
 			personalizedFileName = fileFromTemplate.getValue();
@@ -232,8 +233,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			emailAttachments = attachmentService.createEncryptedPdfs(filesToBeEncryped, password);
 		}
 
-		String generatedText =
-			documentTemplateFacade.generateDocumentTxtFromEntities(options.getDocumentWorkflow(), options.getTemplateName(), documentEntities, null);
+		String generatedText = documentTemplateFacade.generateDocumentTxtFromEntities(options.getTemplate(), documentEntities, null);
 		EmailTemplateTexts emailTexts = splitTemplateContent(generatedText);
 
 		try {
@@ -281,8 +281,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private Map.Entry<File, String> createFileFromTemplate(ExternalEmailOptionsDto emailOptions) throws DocumentTemplateException, IOException {
 		QuarantineOrderDocumentOptionsDto documentOptions = emailOptions.getQuarantineOrderDocumentOptions();
 		byte[] generatedDocument = quarantineOrderFacade.getGeneratedDocument(
-			documentOptions.getTemplateFile(),
-			documentOptions.getDocumentWorkflow(),
+			documentOptions.getTemplate(),
 			emailOptions.getRootEntityType(),
 			emailOptions.getRootEntityReference(),
 			null,
@@ -291,7 +290,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			documentOptions.getExtraProperties(),
 			// document uploading will be handled in another place 
 			false);
-		String fileName = docGenerationHelper.getDocumentFileName(emailOptions.getRootEntityReference(), documentOptions.getTemplateFile());
+		String fileName = docGenerationHelper.getDocumentFileName(emailOptions.getRootEntityReference(), documentOptions.getTemplate());
 		File tempTemplateFile = Paths.get(configFacade.getTempFilesPath()).resolve(fileName).toFile();
 		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(Files.newOutputStream(tempTemplateFile.toPath()));
 		bufferedOutputStream.write(generatedDocument);
@@ -341,7 +340,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			try {
 				ExternalEmailOptionsDto emailOptions =
 					new ExternalEmailOptionsDto(options.getDocumentWorkflow(), options.getRootEntityType(), entityRef);
-				emailOptions.setTemplateName(options.getTemplateName());
+				emailOptions.setTemplate(options.getTemplateName());
 
 				emailOptions.setAttachedDocuments(attachedDocuments);
 				emailOptions.setRootEntityReference(entityRef);
@@ -481,7 +480,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		log.setRecipientPerson(personService.getByReferenceDto(personRef));
 		log.setSentDate(new Date());
 		log.setEmailAddress(options.getRecipientEmail());
-		log.setUsedTemplate(options.getTemplateName());
+		log.setUsedTemplate(options.getTemplate().getCaption());
 		log.setAttachedDocuments(attachedDocumentsName);
 
 		// `*Service::getByReferenceDto` does a null check, so we don't need to do it here

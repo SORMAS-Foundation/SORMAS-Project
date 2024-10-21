@@ -254,7 +254,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_CASE;
 		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb
-			.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
+			.getGeneratedDocuments(, "Quarantine.docx", Collections.singletonList(rootEntityReference), properties, false);
 
 		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineCase.cmp", documentContents.get(rootEntityReference));
 	}
@@ -268,7 +268,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 
 		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_CONTACT;
 		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb
-			.getGeneratedDocuments("Quarantine.docx", workflow, Collections.singletonList(rootEntityReference), properties, false);
+			.getGeneratedDocuments(, "Quarantine.docx", Collections.singletonList(rootEntityReference), properties, false);
 
 		verifyGeneratedDocument(rootEntityReference, workflow, "QuarantineContact.cmp", documentContents.get(rootEntityReference));
 	}
@@ -282,8 +282,8 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		properties.setProperty("extra.remark.no3", "the third remark");
 
 		DocumentWorkflow workflow = DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT;
-		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb.getGeneratedDocumentsForEventParticipants(
-			"Quarantine.docx",
+		Map<ReferenceDto, byte[]> documentContents = quarantineOrderFacadeEjb.getGeneratedDocumentsForEventParticipants(,
+				"Quarantine.docx",
 			Collections.singletonList(rootEntityReference),
 			eventDto.getDisease(),
 			properties,
@@ -310,10 +310,9 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 			rootEntityReference,
 			documentWorkflow,
 			comparisonFile,
-			quarantineOrderFacadeEjb.getGeneratedDocument(
-				"Quarantine.docx",
-				documentWorkflow,
-				rootEntityType,
+			quarantineOrderFacadeEjb.getGeneratedDocument(,
+					"Quarantine.docx",
+					rootEntityType,
 				rootEntityReference,
 				sampleReference,
 				pathogenTest,

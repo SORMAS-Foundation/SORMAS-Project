@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -53,7 +52,6 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonAssociation;
-import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -70,7 +68,6 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
@@ -87,7 +84,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.Vaccination;
-import org.hibernate.query.Query;
 
 @Stateless
 @LocalBean
@@ -109,7 +105,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 	}
 
 	@Override
-	public void deletePermanent(Immunization immunization) {
+	public boolean deletePermanent(Immunization immunization) {
 
 		// Remove the immunization from any S2S share info referencing it
 		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.IMMUNIZATION, immunization.getUuid()).forEach(s -> {
@@ -131,6 +127,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization, Im
 		}
 
 		super.deletePermanent(immunization);
+		return false;
 	}
 
 	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Disease disease, Integer first, Integer max) {

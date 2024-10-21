@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
@@ -41,6 +40,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
@@ -56,7 +56,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 
 	protected final Button createButton;
 	protected final Button cancelButton;
-	public ComboBox<String> templateSelector;
+	public ComboBox<DocumentTemplateDto> templateSelector;
 	public final VerticalLayout additionalVariablesComponent;
 	public final VerticalLayout additionalParametersComponent;
 	public FileDownloader fileDownloader;
@@ -129,15 +129,15 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		templateSelector = new ComboBox<>(captionTemplateSelector);
 		templateSelector.setWidth(100F, Unit.PERCENTAGE);
 		templateSelector.addValueChangeListener(e -> {
-			String templateFile = e.getValue();
-			boolean isValidTemplateFile = StringUtils.isNotBlank(templateFile);
+			DocumentTemplateDto templateFile = e.getValue();
+			boolean isValidTemplateFile = templateFile != null;
 			createButton.setEnabled(isValidTemplateFile);
 			additionalVariablesComponent.removeAllComponents();
 			hideTextfields();
 			documentVariables = null;
 			if (isValidTemplateFile) {
 				try {
-					documentVariables = getDocumentVariables(templateFile);
+					documentVariables = getDocumentVariables(templateFile.getUuid());
 					List<String> additionalVariables = documentVariables.getAdditionalVariables();
 					if (additionalVariables != null && !additionalVariables.isEmpty()) {
 						for (String variable : additionalVariables) {
@@ -149,7 +149,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 					}
 					performTemplateUpdates();
 					if (fileNameFunction != null) {
-						setStreamResource(templateFile, fileNameFunction.apply(templateFile));
+						setStreamResource(templateFile, fileNameFunction.apply(templateFile.getFileName()));
 					}
 				} catch (IOException | DocumentTemplateException ex) {
 					LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
@@ -217,8 +217,8 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		}
 	}
 
-	private void setStreamResource(String templateFile, String fileName) {
-		StreamResource streamResource = createStreamResource(templateFile, fileName);
+	private void setStreamResource(DocumentTemplateDto template, String fileName) {
+		StreamResource streamResource = createStreamResource(template, fileName);
 		if (fileDownloader == null) {
 			fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(createButton);
@@ -235,11 +235,11 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		return checkBoxUploadGeneratedDoc != null && Boolean.TRUE.equals(checkBoxUploadGeneratedDoc.getValue());
 	}
 
-	protected abstract List<String> getAvailableTemplates();
+	protected abstract List<DocumentTemplateDto> getAvailableTemplates();
 
 	protected abstract DocumentVariables getDocumentVariables(String templateFile) throws IOException, DocumentTemplateException;
 
-	protected abstract StreamResource createStreamResource(String templateFile, String filename);
+	protected abstract StreamResource createStreamResource(DocumentTemplateDto template, String filename);
 
 	protected abstract String getWindowCaption();
 

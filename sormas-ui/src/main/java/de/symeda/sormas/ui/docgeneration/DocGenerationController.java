@@ -39,6 +39,7 @@ import com.vaadin.ui.Window;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -74,13 +75,12 @@ public class DocGenerationController {
 				sampleCriteria,
 				vaccinationCriteria,
 				documentListComponent,
-				(templateFile, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
+				(templateReference, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
 					QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
 					return new ByteArrayInputStream(
-						quarantineOrderFacade.getGeneratedDocument(
-							templateFile,
-							workflow,
+						quarantineOrderFacade.getGeneratedDocument(,
+								templateReference,
 							rootEntityType,
 							referenceDto,
 							sample,
@@ -89,7 +89,7 @@ public class DocGenerationController {
 							extraProperties,
 							shouldUploadGeneratedDoc));
 				},
-				(templateFile) -> getDocumentFileName(referenceDto, templateFile)));
+				(templateFile) -> getDocumentFileName(referenceDto, templateReference)));
 	}
 
 	public void showBulkQuarantineOrderDocumentDialog(List<ReferenceDto> referenceDtos, DocumentWorkflow workflow) {
@@ -100,13 +100,13 @@ public class DocGenerationController {
 				null,
 				null,
 				null,
-				(templateFile, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
+				(templateReference, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
 					QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
 					Map<ReferenceDto, byte[]> generatedDocumentContents =
-						quarantineOrderFacade.getGeneratedDocuments(templateFile, workflow, referenceDtos, extraProperties, shouldUploadGeneratedDoc);
+						quarantineOrderFacade.getGeneratedDocuments(templateReference, referenceDtos, extraProperties, shouldUploadGeneratedDoc);
 
-					return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
+					return generateZip(templateReference, shouldUploadGeneratedDoc, generatedDocumentContents);
 
 				},
 				(templateFile) -> filename));
@@ -120,24 +120,24 @@ public class DocGenerationController {
 				null,
 				null,
 				null,
-				(templateFile, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
+				(templateReference, sample, pathogenTest, vaccination, extraProperties, shouldUploadGeneratedDoc) -> {
 					QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 
 					Map<ReferenceDto, byte[]> generatedDocumentContents = quarantineOrderFacade.getGeneratedDocumentsForEventParticipants(
-						templateFile,
+						templateReference,
 						referenceDtos,
 						eventDisease,
 						extraProperties,
 						shouldUploadGeneratedDoc);
 
-					return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
+					return generateZip(templateReference, shouldUploadGeneratedDoc, generatedDocumentContents);
 
 				},
 				(templateFile) -> filename));
 	}
 
 	private ByteArrayInputStream generateZip(
-		String templateFile,
+		DocumentTemplateReferenceDto templateReference,
 		Boolean shouldUploadGeneratedDoc,
 		Map<ReferenceDto, byte[]> generatedDocumentContents) {
 		long fileSizeLimitMB = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
@@ -149,7 +149,7 @@ public class DocGenerationController {
 
 			for (Map.Entry<ReferenceDto, byte[]> referenceDocumentContent : generatedDocumentContents.entrySet()) {
 				ReferenceDto referenceDto = referenceDocumentContent.getKey();
-				ZipEntry entry = new ZipEntry(getDocumentFileName(referenceDto, templateFile));
+				ZipEntry entry = new ZipEntry(getDocumentFileName(referenceDto, templateReference));
 				zos.putNextEntry(entry);
 
 				byte[] document = referenceDocumentContent.getValue();
@@ -211,11 +211,11 @@ public class DocGenerationController {
 			new EventDocumentLayout(
 				documentListComponent,
 				(templateFileName) -> getDocumentFileName(eventReferenceDto, templateFileName),
-				(templateFile, properties, shouldUploadGeneratedDoc) -> {
+				(template, properties, shouldUploadGeneratedDoc) -> {
 					EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 
 					return new ByteArrayInputStream(
-						eventDocumentFacade.getGeneratedDocument(templateFile, eventReferenceDto, properties, shouldUploadGeneratedDoc)
+						eventDocumentFacade.getGeneratedDocument(, template.getUuid(), eventReferenceDto, properties, shouldUploadGeneratedDoc)
 							.getBytes(StandardCharsets.UTF_8));
 				}));
 	}
@@ -223,13 +223,13 @@ public class DocGenerationController {
 	public void showEventDocumentDialog(List<EventReferenceDto> referenceDtos) {
 		String filename = DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.EVENTS, ".zip");
 
-		showDialog(new EventDocumentLayout(null, (templateFile) -> filename, (templateFile, properties, shouldUploadGeneratedDoc) -> {
+		showDialog(new EventDocumentLayout(null, (templateFile) -> filename, (template, properties, shouldUploadGeneratedDoc) -> {
 			EventDocumentFacade eventDocumentFacade = FacadeProvider.getEventDocumentFacade();
 
 			Map<ReferenceDto, byte[]> generatedDocumentContents =
-				eventDocumentFacade.getGeneratedDocuments(templateFile, referenceDtos, properties, shouldUploadGeneratedDoc);
+				eventDocumentFacade.getGeneratedDocuments(, template, referenceDtos, properties, shouldUploadGeneratedDoc);
 
-			return generateZip(templateFile, shouldUploadGeneratedDoc, generatedDocumentContents);
+			return generateZip(template, shouldUploadGeneratedDoc, generatedDocumentContents);
 
 		}));
 	}
@@ -240,7 +240,7 @@ public class DocGenerationController {
 		window.setCaption(I18nProperties.getCaption(docgenerationLayout.getWindowCaption()));
 	}
 
-	private String getDocumentFileName(ReferenceDto eventReferenceDto, String templateFileName) {
-		return DataHelper.getShortUuid(eventReferenceDto) + '-' + templateFileName;
+	private String getDocumentFileName(ReferenceDto eventReferenceDto, DocumentTemplateReferenceDto templateReference) {
+		return DataHelper.getShortUuid(eventReferenceDto) + '-' + templateReference.getCaption();
 	}
 }

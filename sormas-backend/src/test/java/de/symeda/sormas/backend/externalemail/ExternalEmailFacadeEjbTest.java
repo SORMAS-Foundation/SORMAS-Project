@@ -297,7 +297,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		}).when(emailService).sendEmail(any(), any(), any(), any());
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("CaseEmail.txt");
+		options.setTemplate("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		getExternalEmailFacade().sendEmail(options);
 
@@ -336,7 +336,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 
 		ExternalEmailOptionsDto options =
 			new ExternalEmailOptionsDto(DocumentWorkflow.CONTACT_EMAIL, RootEntityType.ROOT_CONTACT, contact.toReference());
-		options.setTemplateName("ContactEmail.txt");
+		options.setTemplate("ContactEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		getExternalEmailFacade().sendEmail(options);
 
@@ -397,7 +397,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		}).when(emailService).sendEmail(any(), any(), any(), any());
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("CaseEmail.txt");
+		options.setTemplate("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		options.setAttachedDocuments(documents.stream().map(DocumentDto::toReference).collect(Collectors.toSet()));
 
@@ -476,7 +476,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		}).when(smsService).sendSms(any(), any());
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("CaseEmail.txt");
+		options.setTemplate("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		options.setAttachedDocuments(documents.stream().map(DocumentDto::toReference).collect(Collectors.toSet()));
 
@@ -497,7 +497,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some content".getBytes(StandardCharsets.UTF_8));
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("CaseEmail.txt");
+		options.setTemplate("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		options.setAttachedDocuments(Collections.singleton(document.toReference()));
 
@@ -518,7 +518,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CASE, caze.getUuid(), "Some content".getBytes(StandardCharsets.UTF_8));
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("CaseEmail.txt");
+		options.setTemplate("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		options.setAttachedDocuments(Collections.singleton(document.toReference()));
 
@@ -541,7 +541,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			createDocument("SomeDocument.txt", DocumentRelatedEntityType.CONTACT, "mock-uuid", "Some content".getBytes(StandardCharsets.UTF_8));
 
 		ExternalEmailOptionsDto options = new ExternalEmailOptionsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE, caze.toReference());
-		options.setTemplateName("CaseEmail.txt");
+		options.setTemplate("CaseEmail.txt");
 		options.setRecipientEmail("test@mail.com");
 		options.setAttachedDocuments(Collections.singleton(document.toReference()));
 
@@ -705,7 +705,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 		options.setTemplateName("CaseEmail.txt");
 		QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptions = new QuarantineOrderDocumentOptionsDto();
 
-		quarantineOrderDocumentOptions.setTemplateFile("Quarantine.docx");
+		quarantineOrderDocumentOptions.setTemplate("Quarantine.docx");
 		quarantineOrderDocumentOptions.setExtraProperties(new Properties());
 		quarantineOrderDocumentOptions.setShouldUploadGeneratedDoc(false);
 		quarantineOrderDocumentOptions.setDocumentWorkflow(DocumentWorkflow.QUARANTINE_ORDER_CASE);
@@ -801,7 +801,7 @@ public class ExternalEmailFacadeEjbTest extends AbstractDocGenerationTest {
 			new ExternalEmailOptionsWithAttachmentsDto(DocumentWorkflow.CASE_EMAIL, RootEntityType.ROOT_CASE);
 		options.setTemplateName("CaseEmail.txt");
 		QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptions = new QuarantineOrderDocumentOptionsDto();
-		quarantineOrderDocumentOptions.setTemplateFile("Quarantine.docx");
+		quarantineOrderDocumentOptions.setTemplate("Quarantine.docx");
 		quarantineOrderDocumentOptions.setExtraProperties(new Properties());
 		quarantineOrderDocumentOptions.setShouldUploadGeneratedDoc(true);
 		quarantineOrderDocumentOptions.setDocumentWorkflow(DocumentWorkflow.QUARANTINE_ORDER_CASE);

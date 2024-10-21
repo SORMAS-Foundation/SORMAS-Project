@@ -50,9 +50,10 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 	}
 
 	@Override
-	public void deletePermanent(ExternalMessage externalMessage) {
+	public boolean deletePermanent(ExternalMessage externalMessage) {
 
 		super.deletePermanent(externalMessage);
+		return false;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

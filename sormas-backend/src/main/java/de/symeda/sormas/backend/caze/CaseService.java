@@ -1033,7 +1033,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	@Override
-	public void deletePermanent(Case caze) {
+	public boolean deletePermanent(Case caze) {
 
 		// Delete all tasks associated with this case
 		Optional.ofNullable(caze.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
@@ -1111,6 +1111,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+		return false;
 	}
 
 	private void initVisitSubqueryForDeletion(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {

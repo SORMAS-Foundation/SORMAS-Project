@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
@@ -36,7 +35,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
@@ -56,6 +57,7 @@ import de.symeda.sormas.api.vaccination.VaccinationCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
@@ -164,7 +166,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected List<String> getAvailableTemplates() {
+	protected List<DocumentTemplateDto> getAvailableTemplates() {
 		try {
 			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(workflow);
 		} catch (Exception e) {
@@ -180,7 +182,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected StreamResource createStreamResource(String templateFile, String filename) {
+	protected StreamResource createStreamResource(DocumentTemplateDto template, String filename) {
 		return new StreamResource((StreamSource) () -> {
 			SampleReferenceDto sampleReference =
 				sampleSelector != null && sampleSelector.getValue() != null ? sampleSelector.getValue().toReference() : null;
@@ -192,7 +194,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 			try {
 				InputStream stream = documentStreamSupplier.getStream(
-					templateFile,
+					template.toReference(),
 					sampleReference,
 					pathogenTestReference,
 					vaccinationReference,
@@ -260,7 +262,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			options.setPathogenTest(new PathogenTestReferenceDto(pathogenTestSelector.getValue().getUuid()));
 		}
 		if (templateSelector != null) {
-			options.setTemplateFile(templateSelector.getValue());
+			options.setTemplate(templateSelector.getValue().toReference());
 		}
 		options.setShouldUploadGeneratedDoc(shouldUploadGeneratedDocument());
 
@@ -275,7 +277,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	public interface DocumentStreamSupplier {
 
 		InputStream getStream(
-			String templateFile,
+			DocumentTemplateReferenceDto templateReference,
 			SampleReferenceDto sample,
 			PathogenTestReferenceDto pathogenTest,
 			VaccinationReferenceDto vaccinationReference,
