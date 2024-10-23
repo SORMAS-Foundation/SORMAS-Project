@@ -37,114 +37,114 @@ import retrofit2.Call;
  */
 public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
-    private LocationDtoHelper locationHelper = new LocationDtoHelper();
-    private UserRoleDtoHelper userRoleDtoHelper = new UserRoleDtoHelper();
+	private LocationDtoHelper locationHelper = new LocationDtoHelper();
+	private UserRoleDtoHelper userRoleDtoHelper = new UserRoleDtoHelper();
 
-    @Override
-    protected Class<User> getAdoClass() {
-        return User.class;
-    }
+	@Override
+	protected Class<User> getAdoClass() {
+		return User.class;
+	}
 
-    @Override
-    protected Class<UserDto> getDtoClass() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	protected Class<UserDto> getDtoClass() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    protected Call<List<UserDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
-        return RetroProvider.getUserFacade().pullAllSince(since);
-    }
+	@Override
+	protected Call<List<UserDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
+		return RetroProvider.getUserFacade().pullAllSince(since);
+	}
 
-    @Override
-    protected Call<List<UserDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-        return RetroProvider.getUserFacade().pullByUuids(uuids);
-    }
+	@Override
+	protected Call<List<UserDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+		return RetroProvider.getUserFacade().pullByUuids(uuids);
+	}
 
-    @Override
-    protected Call<List<PostResponse>> pushAll(List<UserDto> userDtos) throws NoConnectionException {
-        throw new UnsupportedOperationException("Can't change users in app");
-    }
+	@Override
+	protected Call<List<PostResponse>> pushAll(List<UserDto> userDtos) throws NoConnectionException {
+		throw new UnsupportedOperationException("Can't change users in app");
+	}
 
-    protected void preparePulledResult(List<UserDto> result) {
-        Collections.sort(result, new Comparator<UserDto>() {
+	protected void preparePulledResult(List<UserDto> result) {
+		Collections.sort(result, new Comparator<UserDto>() {
 
-            @Override
-            public int compare(UserDto lhs, UserDto rhs) {
-                if (lhs.getAssociatedOfficer() == null && rhs.getAssociatedOfficer() != null) {
-                    return -1;
-                } else if (lhs.getAssociatedOfficer() != null && rhs.getAssociatedOfficer() == null) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-    }
+			@Override
+			public int compare(UserDto lhs, UserDto rhs) {
+				if (lhs.getAssociatedOfficer() == null && rhs.getAssociatedOfficer() != null) {
+					return -1;
+				} else if (lhs.getAssociatedOfficer() != null && rhs.getAssociatedOfficer() == null) {
+					return 1;
+				}
+				return 0;
+			}
+		});
+	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 
-    @Override
-    protected void fillInnerFromDto(User target, UserDto source) {
-        target.setActive(source.isActive());
-        target.setUserName(source.getUserName());
-        target.setFirstName(source.getFirstName());
-        target.setLastName(source.getLastName());
-        target.setUserEmail(source.getUserEmail());
+	@Override
+	protected void fillInnerFromDto(User target, UserDto source) {
+		target.setActive(source.isActive());
+		target.setUserName(source.getUserName());
+		target.setFirstName(source.getFirstName());
+		target.setLastName(source.getLastName());
+		target.setUserEmail(source.getUserEmail());
 
-        if (source.getUserRoles() != null && source.getUserRoles().size() > 0) {
-            Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
-            target.setUserRoles(userRoles);
-            userRoles.clear();
-            source.getUserRoles()
-                    .stream()
-                    .map(userRoleReferenceDto -> DatabaseHelper.getUserRoleDao().getByReferenceDto(userRoleReferenceDto))
-                    .forEach(userRoles::add);
-        }
+		if (source.getUserRoles() != null && source.getUserRoles().size() > 0) {
+			Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
+			target.setUserRoles(userRoles);
+			userRoles.clear();
+			source.getUserRoles()
+				.stream()
+				.map(userRoleReferenceDto -> DatabaseHelper.getUserRoleDao().getByReferenceDto(userRoleReferenceDto))
+				.forEach(userRoles::add);
+		}
 
-        target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
-        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
-        target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
-        target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
-        target.setPointOfEntry(DatabaseHelper.getPointOfEntryDao().getByReferenceDto(source.getPointOfEntry()));
+		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
+		target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(DatabaseHelper.getPointOfEntryDao().getByReferenceDto(source.getPointOfEntry()));
 
-        target.setAssociatedOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssociatedOfficer()));
-        target.setLimitedDiseases(source.getLimitedDiseases());
+		target.setAssociatedOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getAssociatedOfficer()));
+		target.setLimitedDiseases(source.getLimitedDiseases());
 
-        target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
-        target.setPhone(source.getPhone());
-        target.setLanguage(source.getLanguage());
+		target.setAddress(locationHelper.fillOrCreateFromDto(target.getAddress(), source.getAddress()));
+		target.setPhone(source.getPhone());
+		target.setLanguage(source.getLanguage());
 
-        target.setJurisdictionLevel(source.getJurisdictionLevel());
-    }
+		target.setJurisdictionLevel(source.getJurisdictionLevel());
+	}
 
-    @Override
-    protected void fillInnerFromAdo(UserDto userDto, User user) {
-        // TODO
-        throw new UnsupportedOperationException("Can't change users in app");
-    }
+	@Override
+	protected void fillInnerFromAdo(UserDto userDto, User user) {
+		// TODO
+		throw new UnsupportedOperationException("Can't change users in app");
+	}
 
-    public static UserReferenceDto toReferenceDto(User ado) {
-        if (ado == null) {
-            return null;
-        }
-        UserReferenceDto dto = new UserReferenceDto(ado.getUuid());
-        return dto;
-    }
+	public static UserReferenceDto toReferenceDto(User ado) {
+		if (ado == null) {
+			return null;
+		}
+		UserReferenceDto dto = new UserReferenceDto(ado.getUuid());
+		return dto;
+	}
 
-    public static Call<String> saveNewPassword(String uuid, String newPassword, String currentPassword) throws NoConnectionException {
-        return RetroProvider.getUserFacade().saveNewPassword(uuid, newPassword, currentPassword);
-    }
+	public static Call<String> saveNewPassword(String uuid, String newPassword, String currentPassword) throws NoConnectionException {
+		return RetroProvider.getUserFacade().saveNewPassword(uuid, newPassword, currentPassword);
+	}
 
-    public static Call<String> generatePassword() throws NoConnectionException {
-        return RetroProvider.getUserFacade().generatePassword();
-    }
+	public static Call<String> generatePassword() throws NoConnectionException {
+		return RetroProvider.getUserFacade().generatePassword();
+	}
 
-    public static boolean isRestrictedToAssignEntities(User user) {
-        if (user != null && !user.getUserRoles().isEmpty()) {
-            return user.getUserRoles().stream().allMatch(UserRole::isRestrictAccessToAssignedEntities);
-        }
-        return false;
-    }
+	public static boolean isRestrictedToAssignEntities(User user) {
+		if (user != null && !user.getUserRoles().isEmpty()) {
+			return user.getUserRoles().stream().allMatch(UserRole::isRestrictAccessToAssignedEntities);
+		}
+		return false;
+	}
 }
