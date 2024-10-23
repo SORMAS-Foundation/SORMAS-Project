@@ -112,7 +112,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
-		return convertToDto(documentService.getByUuid(uuid), Pseudonymizer.getDefault(userService));
+		return convertToDto(documentService.getByUuid(uuid), Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 			document.setRelatedEntities(documentRelatedEntitySet);
 			documentService.ensurePersisted(document);
-			return convertToDto(document, Pseudonymizer.getDefault(userService));
+			return convertToDto(document, Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 		} catch (Throwable t) {
 			try {
 				documentStorageService.delete(storageReference);
@@ -209,9 +209,10 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			documentService.markAsDeleted(document);
 		}
 	}
+
 	@Override
 	public List<DocumentDto> getDocumentsRelatedToEntity(DocumentRelatedEntityType type, String uuid) {
-		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 		return documentService.getRelatedToEntity(type, uuid).stream().map(d -> convertToDto(d, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -222,7 +223,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 
 	@Override
 	public Map<String, List<DocumentDto>> getDocumentsRelatedToEntities(DocumentCriteria criteria, List<SortProperty> sortProperties) {
-		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+		Pseudonymizer<DocumentDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 		List<Document> allDocuments =
 			documentService.getRelatedToEntities(criteria.getDocumentRelatedEntityType(), criteria.getEntityUuids(), sortProperties);
 

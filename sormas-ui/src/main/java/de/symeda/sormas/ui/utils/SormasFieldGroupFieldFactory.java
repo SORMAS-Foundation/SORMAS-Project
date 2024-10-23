@@ -179,6 +179,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new UserField();
 		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckBoxTree<>();
+		} else if (RichTextAreaCustom.class.isAssignableFrom(fieldType)) {
+			return (T) new RichTextAreaCustom();
 		}
 		return super.createField(type, fieldType);
 	}

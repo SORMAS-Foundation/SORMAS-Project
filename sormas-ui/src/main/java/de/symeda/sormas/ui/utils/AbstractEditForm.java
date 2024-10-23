@@ -564,6 +564,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				if (field instanceof ComboBoxWithPlaceholder) {
 					FieldHelper.setComboInaccessible((ComboBoxWithPlaceholder) field);
 				}
+
+				if (field instanceof NullableOptionGroup) {
+					((NullableOptionGroup) field).setInaccessible();
+				}
 			}
 		}
 

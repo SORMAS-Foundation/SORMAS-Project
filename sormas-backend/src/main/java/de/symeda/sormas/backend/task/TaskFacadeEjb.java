@@ -358,10 +358,10 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		return new TaskPseudonymizer<>(
 			withPlaceHolder
-				? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessCheck)
-				: Pseudonymizer.getDefault(userService, specialAccessCheck),
+				? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessCheck, configFacade.getCountryCode())
+				: Pseudonymizer.getDefault(userService, specialAccessCheck, configFacade.getCountryCode()),
 			caseFacade.createSimplePseudonymizer(associatedCases),
-			Pseudonymizer.getDefault(userService));
+			Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	@Override

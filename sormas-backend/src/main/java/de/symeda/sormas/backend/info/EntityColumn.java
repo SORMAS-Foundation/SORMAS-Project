@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.info;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -171,7 +172,29 @@ public enum EntityColumn {
 	}
 
 	private static String getDescription(FieldData fieldData) {
-		return I18nProperties.getPrefixDescription(fieldData.getI18NPrefix(), fieldData.getField().getName(), "");
+		String prefixDescription = I18nProperties.getPrefixDescription(fieldData.getI18NPrefix(), fieldData.getField().getName(), "");
+
+		String[] excludedForCountries = null;
+
+		Field field = fieldData.getField();
+		if (field.getAnnotation(PersonalData.class) != null) {
+			excludedForCountries = field.getAnnotation(PersonalData.class).excludeForCountries();
+
+		} else {
+			if (field.getAnnotation(SensitiveData.class) != null) {
+				excludedForCountries = field.getAnnotation(SensitiveData.class).excludeForCountries();
+			}
+		}
+
+		String description;
+		if (excludedForCountries != null && excludedForCountries.length > 0) {
+			description = prefixDescription + I18nProperties.getString(Strings.messageCountriesExcludedFromDataProtection) + " "
+				+ Arrays.toString(excludedForCountries);
+		} else {
+			description = prefixDescription;
+		}
+
+		return description;
 	}
 
 	private static String getNotNull(FieldData fieldData) {

@@ -87,6 +87,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
@@ -145,6 +146,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public SampleService() {
 		super(Sample.class, DeletableEntityType.SAMPLE);
@@ -324,12 +327,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> specialAccessChecker = createSpecialAccessChecker(samples);
 		Pseudonymizer<T> rootPseudonymizer = withPlaceHolder
-			? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessChecker)
-			: Pseudonymizer.getDefault(userService, specialAccessChecker);
+			? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessChecker, configFacade.getCountryCode())
+			: Pseudonymizer.getDefault(userService, specialAccessChecker, configFacade.getCountryCode());
 
 		Collection<IsCase> cases = samples.stream().map(IsSample::getAssociatedCase).filter(Objects::nonNull).collect(Collectors.toList());
 
-		return new SamplePseudonymizer<>(rootPseudonymizer, caseFacade.createSimplePseudonymizer(cases), Pseudonymizer.getDefault(userService));
+		return new SamplePseudonymizer<>(
+			rootPseudonymizer,
+			caseFacade.createSimplePseudonymizer(cases),
+			Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	private <T extends IsSample> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(
