@@ -137,145 +137,145 @@ public class UserRoleDto extends EntityDto {
 		this.portHealthUser = portHealthUser;
 	}
 
-    public JurisdictionLevel getJurisdictionLevel() {
-        return jurisdictionLevel;
-    }
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
 
-    public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
-        this.jurisdictionLevel = jurisdictionLevel;
-    }
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
+	}
 
-    public Set<NotificationType> getEmailNotificationTypes() {
-        return emailNotificationTypes;
-    }
+	public Set<NotificationType> getEmailNotificationTypes() {
+		return emailNotificationTypes;
+	}
 
-    public void setEmailNotificationTypes(Set<NotificationType> emailNotificationTypes) {
-        this.emailNotificationTypes = emailNotificationTypes;
-    }
+	public void setEmailNotificationTypes(Set<NotificationType> emailNotificationTypes) {
+		this.emailNotificationTypes = emailNotificationTypes;
+	}
 
-    public Set<NotificationType> getSmsNotificationTypes() {
-        return smsNotificationTypes;
-    }
+	public Set<NotificationType> getSmsNotificationTypes() {
+		return smsNotificationTypes;
+	}
 
-    public void setSmsNotificationTypes(Set<NotificationType> smsNotificationTypes) {
-        this.smsNotificationTypes = smsNotificationTypes;
-    }
+	public void setSmsNotificationTypes(Set<NotificationType> smsNotificationTypes) {
+		this.smsNotificationTypes = smsNotificationTypes;
+	}
 
-    public UserRoleReferenceDto toReference() {
-        return new UserRoleReferenceDto(getUuid(), getCaption());
-    }
+	public UserRoleReferenceDto toReference() {
+		return new UserRoleReferenceDto(getUuid(), getCaption());
+	}
 
-    public static Set<UserRight> getUserRights(Collection<UserRoleDto> userRoles) {
+	public static Set<UserRight> getUserRights(Collection<UserRoleDto> userRoles) {
 
-        return userRoles != null ? userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()) : null;
-    }
+		return userRoles != null ? userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()) : null;
+	}
 
-    public DefaultUserRole getLinkedDefaultUserRole() {
-        return linkedDefaultUserRole;
-    }
+	public DefaultUserRole getLinkedDefaultUserRole() {
+		return linkedDefaultUserRole;
+	}
 
-    public void setLinkedDefaultUserRole(DefaultUserRole linkedDefaultUserRole) {
-        this.linkedDefaultUserRole = linkedDefaultUserRole;
-    }
+	public void setLinkedDefaultUserRole(DefaultUserRole linkedDefaultUserRole) {
+		this.linkedDefaultUserRole = linkedDefaultUserRole;
+	}
 
-    public static JurisdictionLevel getJurisdictionLevel(Collection<UserRoleDto> roles) {
+	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRoleDto> roles) {
 
-        boolean laboratoryJurisdictionPresent = false;
-        for (UserRoleDto role : roles) {
-            final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
-            if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
-                return jurisdictionLevel;
-            } else if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
-                laboratoryJurisdictionPresent = true;
-            }
-        }
+		boolean laboratoryJurisdictionPresent = false;
+		for (UserRoleDto role : roles) {
+			final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
+			if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
+				return jurisdictionLevel;
+			} else if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
+				laboratoryJurisdictionPresent = true;
+			}
+		}
 
-        return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
-    }
+		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
+	}
 
-    @JsonIgnore
-    public String i18nPrefix() {
-        return I18N_PREFIX;
-    }
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
+	}
 
-    @Transient
-    public NotificationTypes getNotificationTypes() {
-        return NotificationTypes.of(smsNotificationTypes, emailNotificationTypes);
-    }
+	@Transient
+	public NotificationTypes getNotificationTypes() {
+		return NotificationTypes.of(smsNotificationTypes, emailNotificationTypes);
+	}
 
-    @Transient
-    public void setNotificationTypes(NotificationTypes notificationTypes) {
-        this.smsNotificationTypes = notificationTypes.sms;
-        this.emailNotificationTypes = notificationTypes.email;
-    }
+	@Transient
+	public void setNotificationTypes(NotificationTypes notificationTypes) {
+		this.smsNotificationTypes = notificationTypes.sms;
+		this.emailNotificationTypes = notificationTypes.email;
+	}
 
-    public boolean isRestrictAccessToAssignedEntities() {
-        return restrictAccessToAssignedEntities;
-    }
+	public boolean isRestrictAccessToAssignedEntities() {
+		return restrictAccessToAssignedEntities;
+	}
 
-    public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
-        this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
-    }
+	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
+		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
+	}
 
-    @Override
-    public String buildCaption() {
-        return caption;
-    }
+	@Override
+	public String buildCaption() {
+		return caption;
+	}
 
-    @SuppressWarnings("serial")
-    public static class UserRoleValidationException extends ValidationException {
+	@SuppressWarnings("serial")
+	public static class UserRoleValidationException extends ValidationException {
 
-        private final UserRoleDto checkedUserRole;
-        private final UserRoleDto forbiddenUserRole;
+		private final UserRoleDto checkedUserRole;
+		private final UserRoleDto forbiddenUserRole;
 
-        public UserRoleValidationException(UserRoleDto checkedUserRole, UserRoleDto forbiddenUserRole) {
-            super(
-                    checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " "
-                            + forbiddenUserRole.getCaption());
-            this.checkedUserRole = checkedUserRole;
-            this.forbiddenUserRole = forbiddenUserRole;
-        }
+		public UserRoleValidationException(UserRoleDto checkedUserRole, UserRoleDto forbiddenUserRole) {
+			super(
+				checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " "
+					+ forbiddenUserRole.getCaption());
+			this.checkedUserRole = checkedUserRole;
+			this.forbiddenUserRole = forbiddenUserRole;
+		}
 
-        public UserRoleDto getCheckedUserRole() {
-            return checkedUserRole;
-        }
+		public UserRoleDto getCheckedUserRole() {
+			return checkedUserRole;
+		}
 
-        public UserRoleDto getForbiddenUserRole() {
-            return forbiddenUserRole;
-        }
-    }
+		public UserRoleDto getForbiddenUserRole() {
+			return forbiddenUserRole;
+		}
+	}
 
-    public static class NotificationTypes {
+	public static class NotificationTypes {
 
-        private final Set<NotificationType> sms;
-        private final Set<NotificationType> email;
+		private final Set<NotificationType> sms;
+		private final Set<NotificationType> email;
 
-        private NotificationTypes(Set<NotificationType> sms, Set<NotificationType> email) {
-            this.sms = sms;
-            this.email = email;
-        }
+		private NotificationTypes(Set<NotificationType> sms, Set<NotificationType> email) {
+			this.sms = sms;
+			this.email = email;
+		}
 
-        public static NotificationTypes of(Set<NotificationType> sms, Set<NotificationType> email) {
-            return new NotificationTypes(sms, email);
-        }
+		public static NotificationTypes of(Set<NotificationType> sms, Set<NotificationType> email) {
+			return new NotificationTypes(sms, email);
+		}
 
-        public Set<NotificationType> getSms() {
-            return sms;
-        }
+		public Set<NotificationType> getSms() {
+			return sms;
+		}
 
-        public Set<NotificationType> getEmail() {
-            return email;
-        }
+		public Set<NotificationType> getEmail() {
+			return email;
+		}
 
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof NotificationTypes)) {
-                return false;
-            }
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof NotificationTypes)) {
+				return false;
+			}
 
-            NotificationTypes notificationTypes = (NotificationTypes) obj;
+			NotificationTypes notificationTypes = (NotificationTypes) obj;
 
-            return sms.equals(notificationTypes.sms) && email.equals(notificationTypes.email);
-        }
-    }
+			return sms.equals(notificationTypes.sms) && email.equals(notificationTypes.email);
+		}
+	}
 }
