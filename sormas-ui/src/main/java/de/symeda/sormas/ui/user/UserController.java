@@ -17,9 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -55,8 +59,10 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -64,530 +70,531 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
-import java.util.Objects;
 
 public class UserController {
 
-    private Window popUpWindow;
-
-    private boolean isGeneratePassword = false;
-
-    public void create() {
-        CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
-        Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
-        // user form is too big for typical screens
-        window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
-        window.setHeight(90, Unit.PERCENTAGE);
-    }
-
-    public void edit(UserDto user) {
-        Window window = VaadinUiUtil.createPopupWindow();
-        CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid(), window::close);
-
-        window.setCaption(I18nProperties.getString(Strings.headingEditUser));
-        window.setContent(userComponent);
-        // user form is too big for typical screens
-        window.setWidth(userComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
-        window.setHeight(90, Unit.PERCENTAGE);
-        UI.getCurrent().addWindow(window);
-    }
-
-    public void overview() {
-        String navigationState = UsersView.VIEW_NAME;
-        SormasUI.get().getNavigator().navigateTo(navigationState);
-    }
-
-    /**
-     * Update the fragment without causing navigator to change view
-     */
-    public void setUriFragmentParameter(String caseUuid) {
-        String fragmentParameter;
-        if (caseUuid == null || caseUuid.isEmpty()) {
-            fragmentParameter = "";
-        } else {
-            fragmentParameter = caseUuid;
-        }
-
-        Page page = SormasUI.get().getPage();
-        page.setUriFragment("!" + UsersView.VIEW_NAME + "/" + fragmentParameter, false);
-    }
-
-    public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid, Runnable closeWindowCallback) {
-        UserEditForm userEditForm = new UserEditForm(false);
-        UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
-        userEditForm.setValue(userDto);
-        final CommitDiscardWrapperComponent<UserEditForm> editView =
-                new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
-
-        // Add reset password button
-        if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
-            Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
-            editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
-        }
-
-        editView.addDiscardListener(closeWindowCallback::run);
-        editView.addCommitListener(() -> {
-            if (!userEditForm.getFieldGroup().isModified()) {
-                UserDto user = userEditForm.getValue();
-                UserDto existingUser = FacadeProvider.getUserFacade().getByUuid(user.getUuid());
-                // If user roles have changed, the user might no longer have a district assigned and therefore
-                // needs to be removed as surveillance/contact officer from existing cases/contacts
-                if (existingUser.getDistrict() != null && user.getDistrict() == null) {
-                    openRemoveUserAsOfficerPrompt(result -> {
-                        if (result) {
-                            FacadeProvider.getUserFacade().removeUserAsSurveillanceAndContactOfficer(user.getUuid());
-                            closeWindowCallback.run();
-                        }
-                    });
-                }
-                if (DataHelper.isSame(user, UiUtil.getUser())) {
-
-                    Set<UserRight> oldUserRights =
-                            UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));
-                    Set<UserRight> newUserRights = UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(user.getUserRoles()));
-
-                    if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
-                        new Notification(
-                                I18nProperties.getString(Strings.messageCheckInputData),
-                                I18nProperties.getValidationError(Validations.removeRolesWithEditRightFromOwnUser),
-                                Notification.Type.ERROR_MESSAGE,
-                                true).show(Page.getCurrent());
-                    } else if (!newUserRights.contains(UserRight.USER_EDIT)) {
-                        new Notification(
-                                I18nProperties.getString(Strings.messageCheckInputData),
-                                I18nProperties.getValidationError(Validations.removeRolesWithEditUserFromOwnUser),
-                                Notification.Type.ERROR_MESSAGE,
-                                true).show(Page.getCurrent());
-                    } else {
-                        saveUser(user);
-                        closeWindowCallback.run();
-                    }
-                } else {
-                    saveUser(user);
-                    closeWindowCallback.run();
-                }
-            }
-        });
-
-        return editView;
-    }
-
-    private void openRemoveUserAsOfficerPrompt(Consumer<Boolean> callback) {
-        VaadinUiUtil.showConfirmationPopup(
-                I18nProperties.getString(Strings.headingSaveUser),
-                new Label(I18nProperties.getString(Strings.confirmationRemoveUserAsOfficer)),
-                I18nProperties.getString(Strings.yes),
-                I18nProperties.getString(Strings.no),
-                640,
-                callback);
-    }
-
-    private void saveUser(UserDto user) {
-        if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
-            FacadeProvider.getUserFacade().saveUserRolesAndRestrictions(user, user.getUserRoles());
-        } else {
-            FacadeProvider.getUserFacade().saveUser(user, false);
-        }
-        refreshView();
-    }
-
-    public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
-
-        UserEditForm createForm = new UserEditForm(true);
-        createForm.setValue(UserDto.build());
-        final CommitDiscardWrapperComponent<UserEditForm> editView =
-                new CommitDiscardWrapperComponent<UserEditForm>(createForm, UiUtil.permitted(UserRight.USER_CREATE), createForm.getFieldGroup());
-
-        editView.addCommitListener(new CommitListener() {
-
-            @Override
-            public void onCommit() {
-                if (!createForm.getFieldGroup().isModified()) {
-                    UserDto dto = createForm.getValue();
-                    dto = FacadeProvider.getUserFacade().saveUser(dto, false);
-                    refreshView();
-                    makeInitialPassword(dto.getUuid(), dto.getUserEmail());
-                }
-            }
-        });
-        return editView;
-    }
-
-    public boolean isLoginUnique(String uuid, String userName) {
-        return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
-    }
-
-    public void makeInitialPassword(String userUuid, String userEmail) {
-        if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-            String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
-            showPasswordResetInternalSuccessPopup(newPassword);
-        } else {
-            showAccountCreatedSuccessful();
-        }
-    }
-
-    public void makeNewPassword(String userUuid, String userEmail) {
-        String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
-
-        if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-            showPasswordResetInternalSuccessPopup(newPassword);
-        } else {
-            showPasswordResetExternalSuccessPopup();
-        }
-    }
-
-    public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword) {
-        FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
-        if (isGeneratePassword) {
-            if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-                showPasswordResetInternalSuccessPopup(password);
-            } else {
-                showPasswordResetExternalSuccessPopup();
-            }
-        } else {
-            showPasswordChangeInternalSuccessPopup(I18nProperties.getString(Strings.messagePasswordChange));
-        }
-        isGeneratePassword = false;
-    }
-
-    private void showPasswordResetInternalSuccessPopup(String newPassword) {
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
-        Label passwordLabel = new Label(newPassword);
-        passwordLabel.addStyleName(CssStyles.H2);
-        layout.addComponent(passwordLabel);
-        Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-        popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-        layout.setMargin(true);
-    }
-
-    private void showPasswordChangeInternalSuccessPopup(String passwordSuccessMessage) {
-        showPopupWindow(I18nProperties.getString(Strings.headingChangePassword), passwordSuccessMessage, null, true);
-    }
-
-    private void showPopupWindow(String header, String message, Integer width, Boolean closeable) {
-        VerticalLayout layout = new VerticalLayout();
-        Label messageLabel = new Label(message);
-        messageLabel.addStyleName(CssStyles.H2);
-        layout.addComponent(messageLabel);
-        Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-
-        popupWindow.setCaption(header);
-        if (width != null) {
-            popupWindow.setWidth(width, Unit.PIXELS);
-        }
-
-        layout.setMargin(true);
-        if (closeable) {
-            popupWindow.addCloseListener(event -> popUpWindow.close());
-        }
-    }
-
-    private void showAccountCreatedSuccessful() {
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(new Label(I18nProperties.getString(Strings.messageActivateAccount)));
-        Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-        popupWindow.setCaption(I18nProperties.getString(Strings.headingNewAccount));
-        popupWindow.setWidth(350, Unit.PIXELS);
-        layout.setMargin(true);
-    }
-
-    private void showPasswordResetExternalSuccessPopup() {
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordResetEmailLink)));
-        Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
-        popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-        popupWindow.setWidth(450, Unit.PIXELS);
-        layout.setMargin(true);
-    }
-
-    private void refreshView() {
-        View currentView = SormasUI.get().getNavigator().getCurrentView();
-        if (currentView instanceof UsersView) {
-            // force refresh, because view didn't change
-            ((UsersView) currentView).enter(null);
-        }
-    }
-
-    public Button createResetPasswordButton(String userUuid, String userEmail, CommitDiscardWrapperComponent<UserEditForm> editView) {
-
-        return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid, userEmail, editView);
-                Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
-                resetPasswordComponent.addDoneListener(() -> popupWindow.close());
-                resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
-
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        popupWindow.close();
-                    }
-                });
-                popupWindow.setCaption(I18nProperties.getString(Strings.headingUpdatePassword));
-            }
-        }, ValoTheme.BUTTON_LINK);
-    }
-
-    public Button generatePasswordButton() {
-
-        return ButtonHelper.createIconButton(Captions.userGeneratePassword, VaadinIcons.UNLOCK, new ClickListener() {
-
-            private static final long serialVersionUID = 1L;
-            final UpdatePasswordForm form = new UpdatePasswordForm();
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                isGeneratePassword = true;
-
-                String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
-                form.currentPassword.setCaption(generatedPassword);
-                form.confirmPassword.setCaption(generatedPassword);
-            }
-        }, ValoTheme.BUTTON_LINK);
-    }
-
-    public Button createUpdatePasswordButton() {
-        return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
-                popUpWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
-            }
-        }, ValoTheme.BUTTON_LINK);
-    }
-
-    public ConfirmationComponent getResetPasswordConfirmationComponent(
-            String userUuid,
-            String userEmail,
-            CommitDiscardWrapperComponent<UserEditForm> editView) {
-        ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            protected void onConfirm() {
-                onDone();
-                editView.discard();
-                makeNewPassword(userUuid, userEmail);
-            }
-
-            @Override
-            protected void onCancel() {
-            }
-        };
-        resetPasswordConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.userUpdatePasswordConfirmation));
-        resetPasswordConfirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
-        resetPasswordConfirmationComponent.setMargin(true);
-        return resetPasswordConfirmationComponent;
-    }
-
-    public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
-        UserSettingsForm form = new UserSettingsForm();
-        UserDto user = FacadeProvider.getUserFacade().getByUuid(UiUtil.getUserUuid());
-        form.setValue(user);
-
-        final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
-        component.addCommitListener(() -> {
-            if (!form.getFieldGroup().isModified()) {
-                UserDto changedUser = form.getValue();
-                FacadeProvider.getUserFacade().saveUser(changedUser, true);
-                I18nProperties.setUserLanguage(changedUser.getLanguage());
-                FacadeProvider.getI18nFacade().setUserLanguage(changedUser.getLanguage());
-                Page.getCurrent().reload();
-                commitOrDiscardCallback.run();
-            }
-        });
-        component.addDiscardListener(commitOrDiscardCallback::run);
-
-        return component;
-    }
-
-    public CommitDiscardWrapperComponent<UpdatePasswordForm> getUpdatePasswordComponent() {
-        Label passwordStrengthDesc = new Label();
-        UpdatePasswordForm form = new UpdatePasswordForm();
-        UserDto user = FacadeProvider.getUserFacade().getByUuid(Objects.requireNonNull(UserProvider.getCurrent()).getUuid());
-        form.setValue(user);
-
-        final CommitDiscardWrapperComponent<UpdatePasswordForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
-
-        form.newPassword.setValidationVisible(false);
-        form.confirmPassword.setValidationVisible(false);
-        form.currentPassword.setValidationVisible(false);
-
-        form.newPassword.addBlurListener(event -> {
-            String newPassword = form.newPassword.getValue();
-            if(Objects.nonNull(newPassword)) {
-                if (!FacadeProvider.getUserFacade().isPasswordStrong(newPassword)) {
-                    passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
-                } else {
-                    passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
-                }
-                passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(newPassword));
-            }
-            form.newPassword.setValidationVisible(true);
-        });
-
-        form.confirmPassword.addBlurListener(event -> {
-            form.confirmPassword.setValidationVisible(true);
-        });
-
-        form.currentPassword.addBlurListener(event -> {
-            form.currentPassword.setValidationVisible(true);
-        });
-
-        component.addDiscardListener(() -> popUpWindow.close());
-
-        component.addCommitListener(() -> {
-            if (!form.getFieldGroup().isModified()) {
-                UserDto changedUser = form.getValue();
-                if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getNewPassword())) {
-                    Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
-                } else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
-                    Notification.show(I18nProperties.getString(Strings.messageWrongCurrentPassword), Notification.Type.ERROR_MESSAGE);
-                } else if (!FacadeProvider.getUserFacade().isPasswordStrong(changedUser.getNewPassword())) {
-                    Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
-                } else {
-                    showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getNewPassword(), changedUser.getCurrentPassword());
-                }
-            }
-        });
-
-        Button generatePasswordButton = ControllerProvider.getUserController().generatePasswordButton();
-        generatePasswordButton.addClickListener((ClickListener) event -> {
-            String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
-            form.newPassword.setValue(generatedPassword);
-            form.confirmPassword.setValue(generatedPassword);
-
-            form.newPassword.setValidationVisible(true);
-            form.confirmPassword.setValidationVisible(true);
-        });
-
-        component.getButtonsPanel().addComponent(generatePasswordButton, 0);
-        component.addComponent(passwordStrengthDesc, 1);
-
-        return component;
-    }
-
-
-    public void setFlagIcons(ComboBox cbLanguage) {
-        for (Language language : Language.values()) {
-            cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
-        }
-    }
-
-    public void sync() {
-        if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
-            FacadeProvider.getUserFacade().syncUsersFromAuthenticationProvider();
-            SormasUI.refreshView();
-        } else {
-            Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
-            window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
-        }
-    }
-
-    public void enableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {
-
-        if (selectedRows.isEmpty()) {
-            new Notification(
-                    I18nProperties.getString(Strings.headingNoUsersSelected),
-                    I18nProperties.getString(Strings.messageNoUsersSelected),
-                    Notification.Type.WARNING_MESSAGE,
-                    false).show(Page.getCurrent());
-        } else {
-            VaadinUiUtil.showConfirmationPopup(
-                    I18nProperties.getString(Strings.headingConfirmEnabling),
-                    new Label(String.format(I18nProperties.getString(Strings.confirmationEnableUsers), selectedRows.size())),
-                    I18nProperties.getString(Strings.yes),
-                    I18nProperties.getString(Strings.no),
-                    null,
-                    confirmed -> {
-                        if (Boolean.FALSE.equals(confirmed)) {
-                            return;
-                        }
-
-                        new BulkOperationHandler<UserDto>(
-                                Strings.messageUsersEnabled,
-                                null,
-                                Strings.headingSomeUsersNotEnabled,
-                                Strings.headingUsersNotEnabled,
-                                Strings.messageCountUsersNotEnabled,
-                                null,
-                                null,
-                                null,
-                                null,
-                                Strings.infoBulkProcessFinishedWithSkips,
-                                Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
-
-                            List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
-                            return FacadeProvider.getUserFacade().enableUsers(uuids);
-                        }, new ArrayList<>(selectedRows), remaining -> {
-                            userGrid.reload();
-                            if (CollectionUtils.isNotEmpty(remaining)) {
-                                userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
-                            } else {
-                                overview();
-                            }
-                        });
-                    });
-        }
-    }
-
-    public void disableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {
-
-        if (selectedRows.isEmpty()) {
-            new Notification(
-                    I18nProperties.getString(Strings.headingNoUsersSelected),
-                    I18nProperties.getString(Strings.messageNoUsersSelected),
-                    Notification.Type.WARNING_MESSAGE,
-                    false).show(Page.getCurrent());
-        } else {
-            VaadinUiUtil.showConfirmationPopup(
-                    I18nProperties.getString(Strings.headingConfirmDisabling),
-                    new Label(String.format(I18nProperties.getString(Strings.confirmationDisableUsers), selectedRows.size())),
-                    I18nProperties.getString(Strings.yes),
-                    I18nProperties.getString(Strings.no),
-                    null,
-                    confirmed -> {
-                        if (Boolean.FALSE.equals(confirmed)) {
-                            return;
-                        }
-
-                        new BulkOperationHandler<UserDto>(
-                                Strings.messageUsersDisabled,
-                                null,
-                                Strings.headingSomeUsersNotDisabled,
-                                Strings.headingUsersNotDisabled,
-                                Strings.messageCountUsersNotDisabled,
-                                null,
-                                null,
-                                null,
-                                null,
-                                Strings.infoBulkProcessFinishedWithSkips,
-                                Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
-
-                            List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
-                            return FacadeProvider.getUserFacade().disableUsers(uuids);
-                        }, new ArrayList<>(selectedRows), remaining -> {
-                            userGrid.reload();
-                            if (CollectionUtils.isNotEmpty(remaining)) {
-                                userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
-                            } else {
-                                overview();
-                            }
-                        });
-                    });
-        }
-    }
+	private boolean isGeneratePassword = false;
+	private Window popUpWindow;
+
+	public void create() {
+		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
+		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
+		// user form is too big for typical screens
+		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
+		window.setHeight(90, Unit.PERCENTAGE);
+	}
+
+	public void edit(UserDto user) {
+		Window window = VaadinUiUtil.createPopupWindow();
+		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid(), window::close);
+
+		window.setCaption(I18nProperties.getString(Strings.headingEditUser));
+		window.setContent(userComponent);
+		// user form is too big for typical screens
+		window.setWidth(userComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
+		window.setHeight(90, Unit.PERCENTAGE);
+		UI.getCurrent().addWindow(window);
+	}
+
+	public void overview() {
+		String navigationState = UsersView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	/**
+	 * Update the fragment without causing navigator to change view
+	 */
+	public void setUriFragmentParameter(String caseUuid) {
+		String fragmentParameter;
+		if (caseUuid == null || caseUuid.isEmpty()) {
+			fragmentParameter = "";
+		} else {
+			fragmentParameter = caseUuid;
+		}
+
+		Page page = SormasUI.get().getPage();
+		page.setUriFragment("!" + UsersView.VIEW_NAME + "/" + fragmentParameter, false);
+	}
+
+	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid, Runnable closeWindowCallback) {
+		UserEditForm userEditForm = new UserEditForm(false);
+		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
+		userEditForm.setValue(userDto);
+		final CommitDiscardWrapperComponent<UserEditForm> editView =
+			new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, UiUtil.permitted(UserRight.USER_EDIT), userEditForm.getFieldGroup());
+
+		// Add reset password button
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
+			editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		}
+
+		editView.addDiscardListener(closeWindowCallback::run);
+		editView.addCommitListener(() -> {
+			if (!userEditForm.getFieldGroup().isModified()) {
+				UserDto user = userEditForm.getValue();
+				UserDto existingUser = FacadeProvider.getUserFacade().getByUuid(user.getUuid());
+				// If user roles have changed, the user might no longer have a district assigned and therefore
+				// needs to be removed as surveillance/contact officer from existing cases/contacts
+				if (existingUser.getDistrict() != null && user.getDistrict() == null) {
+					openRemoveUserAsOfficerPrompt(result -> {
+						if (result) {
+							FacadeProvider.getUserFacade().removeUserAsSurveillanceAndContactOfficer(user.getUuid());
+							closeWindowCallback.run();
+						}
+					});
+				}
+				if (DataHelper.isSame(user, UiUtil.getUser())) {
+
+					Set<UserRight> oldUserRights =
+						UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));
+					Set<UserRight> newUserRights = UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(user.getUserRoles()));
+
+					if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeRolesWithEditRightFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+					} else if (!newUserRights.contains(UserRight.USER_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeRolesWithEditUserFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+					} else {
+						saveUser(user);
+						closeWindowCallback.run();
+					}
+				} else {
+					saveUser(user);
+					closeWindowCallback.run();
+				}
+			}
+		});
+
+		return editView;
+	}
+
+	private void openRemoveUserAsOfficerPrompt(Consumer<Boolean> callback) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingSaveUser),
+			new Label(I18nProperties.getString(Strings.confirmationRemoveUserAsOfficer)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			callback);
+	}
+
+	private void saveUser(UserDto user) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			FacadeProvider.getUserFacade().saveUserRolesAndRestrictions(user, user.getUserRoles());
+		} else {
+			FacadeProvider.getUserFacade().saveUser(user, false);
+		}
+		refreshView();
+	}
+
+	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
+
+		UserEditForm createForm = new UserEditForm(true);
+		createForm.setValue(UserDto.build());
+		final CommitDiscardWrapperComponent<UserEditForm> editView =
+			new CommitDiscardWrapperComponent<UserEditForm>(createForm, UiUtil.permitted(UserRight.USER_CREATE), createForm.getFieldGroup());
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				if (!createForm.getFieldGroup().isModified()) {
+					UserDto dto = createForm.getValue();
+					dto = FacadeProvider.getUserFacade().saveUser(dto, false);
+					refreshView();
+					makeInitialPassword(dto.getUuid(), dto.getUserEmail());
+				}
+			}
+		});
+		return editView;
+	}
+
+	public boolean isLoginUnique(String uuid, String userName) {
+		return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
+	}
+
+	public void makeInitialPassword(String userUuid, String userEmail) {
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
+			showPasswordResetInternalSuccessPopup(newPassword);
+		} else {
+			showAccountCreatedSuccessful();
+		}
+	}
+
+	public void makeNewPassword(String userUuid, String userEmail) {
+		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
+
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+			showPasswordResetInternalSuccessPopup(newPassword);
+		} else {
+			showPasswordResetExternalSuccessPopup();
+		}
+	}
+
+	private void showPasswordResetInternalSuccessPopup(String newPassword) {
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
+		Label passwordLabel = new Label(newPassword);
+		passwordLabel.addStyleName(CssStyles.H2);
+		layout.addComponent(passwordLabel);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
+		layout.setMargin(true);
+	}
+
+	private void showAccountCreatedSuccessful() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messageActivateAccount)));
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewAccount));
+		popupWindow.setWidth(350, Unit.PIXELS);
+		layout.setMargin(true);
+	}
+
+	private void showPasswordResetExternalSuccessPopup() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordResetEmailLink)));
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
+		popupWindow.setWidth(450, Unit.PIXELS);
+		layout.setMargin(true);
+	}
+
+	private void refreshView() {
+		View currentView = SormasUI.get().getNavigator().getCurrentView();
+		if (currentView instanceof UsersView) {
+			// force refresh, because view didn't change
+			((UsersView) currentView).enter(null);
+		}
+	}
+
+	public Button createResetPasswordButton(String userUuid, String userEmail, CommitDiscardWrapperComponent<UserEditForm> editView) {
+
+		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid, userEmail, editView);
+				Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
+				resetPasswordComponent.addDoneListener(() -> popupWindow.close());
+				resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						popupWindow.close();
+					}
+				});
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingUpdatePassword));
+			}
+		}, ValoTheme.BUTTON_LINK);
+	}
+
+	public ConfirmationComponent getResetPasswordConfirmationComponent(
+		String userUuid,
+		String userEmail,
+		CommitDiscardWrapperComponent<UserEditForm> editView) {
+		ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onConfirm() {
+				onDone();
+				editView.discard();
+				makeNewPassword(userUuid, userEmail);
+			}
+
+			@Override
+			protected void onCancel() {
+			}
+		};
+		resetPasswordConfirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.userUpdatePasswordConfirmation));
+		resetPasswordConfirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+		resetPasswordConfirmationComponent.setMargin(true);
+		return resetPasswordConfirmationComponent;
+	}
+
+	public CommitDiscardWrapperComponent<UserSettingsForm> getUserSettingsComponent(Runnable commitOrDiscardCallback) {
+		UserSettingsForm form = new UserSettingsForm();
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UiUtil.getUserUuid());
+		form.setValue(user);
+
+		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				UserDto changedUser = form.getValue();
+				FacadeProvider.getUserFacade().saveUser(changedUser, true);
+				I18nProperties.setUserLanguage(changedUser.getLanguage());
+				FacadeProvider.getI18nFacade().setUserLanguage(changedUser.getLanguage());
+				Page.getCurrent().reload();
+				commitOrDiscardCallback.run();
+			}
+		});
+		component.addDiscardListener(commitOrDiscardCallback::run);
+
+		return component;
+	}
+
+	public void setFlagIcons(ComboBox cbLanguage) {
+		for (Language language : Language.values()) {
+			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
+		}
+	}
+
+	public void sync() {
+		if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			if (StringUtils.isBlank(FacadeProvider.getConfigFacade().getAuthenticationProviderSyncedNewUserRole())) {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingSyncUsers),
+					I18nProperties.getString(Strings.messageSyncUsersFromAuthProviderConfigurationError));
+				return;
+			}
+			FacadeProvider.getUserFacade().syncUsersFromAuthenticationProvider();
+			SormasUI.refreshView();
+		} else {
+			Window window = VaadinUiUtil.showPopupWindow(new UsersSyncLayout());
+			window.setCaption(I18nProperties.getCaption(Captions.syncUsers));
+		}
+	}
+
+	public void enableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {
+
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoUsersSelected),
+				I18nProperties.getString(Strings.messageNoUsersSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmEnabling),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationEnableUsers), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				confirmed -> {
+					if (Boolean.FALSE.equals(confirmed)) {
+						return;
+					}
+
+					new BulkOperationHandler<UserDto>(
+						Strings.messageUsersEnabled,
+						null,
+						Strings.headingSomeUsersNotEnabled,
+						Strings.headingUsersNotEnabled,
+						Strings.messageCountUsersNotEnabled,
+						null,
+						null,
+						null,
+						null,
+						Strings.infoBulkProcessFinishedWithSkips,
+						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							return FacadeProvider.getUserFacade().enableUsers(uuids);
+						}, new ArrayList<>(selectedRows), remaining -> {
+							userGrid.reload();
+							if (CollectionUtils.isNotEmpty(remaining)) {
+								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
+							} else {
+								overview();
+							}
+						});
+				});
+		}
+	}
+
+	public void disableAllSelectedItems(Collection<UserDto> selectedRows, UserGrid userGrid) {
+
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoUsersSelected),
+				I18nProperties.getString(Strings.messageNoUsersSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmDisabling),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationDisableUsers), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				confirmed -> {
+					if (Boolean.FALSE.equals(confirmed)) {
+						return;
+					}
+
+					new BulkOperationHandler<UserDto>(
+						Strings.messageUsersDisabled,
+						null,
+						Strings.headingSomeUsersNotDisabled,
+						Strings.headingUsersNotDisabled,
+						Strings.messageCountUsersNotDisabled,
+						null,
+						null,
+						null,
+						null,
+						Strings.infoBulkProcessFinishedWithSkips,
+						Strings.infoBulkProcessFinishedWithoutSuccess).doBulkOperation(batch -> {
+
+							List<String> uuids = batch.stream().map(UserDto::getUuid).collect(Collectors.toList());
+							return FacadeProvider.getUserFacade().disableUsers(uuids);
+						}, new ArrayList<>(selectedRows), remaining -> {
+							userGrid.reload();
+							if (CollectionUtils.isNotEmpty(remaining)) {
+								userGrid.asMultiSelect().selectItems(remaining.toArray(new UserDto[0]));
+							} else {
+								overview();
+							}
+						});
+				});
+		}
+	}
+
+	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword) {
+		FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
+		if (isGeneratePassword) {
+			if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+				showPasswordResetInternalSuccessPopup(password);
+			} else {
+				showPasswordResetExternalSuccessPopup();
+			}
+		} else {
+			showPasswordChangeInternalSuccessPopup(I18nProperties.getString(Strings.messagePasswordChange));
+		}
+		isGeneratePassword = false;
+	}
+
+	private void showPasswordChangeInternalSuccessPopup(String passwordSuccessMessage) {
+		showPopupWindow(I18nProperties.getString(Strings.headingChangePassword), passwordSuccessMessage, null, true);
+	}
+
+	private void showPopupWindow(String header, String message, Integer width, Boolean closeable) {
+		VerticalLayout layout = new VerticalLayout();
+		Label messageLabel = new Label(message);
+		messageLabel.addStyleName(CssStyles.H2);
+		layout.addComponent(messageLabel);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+
+		popupWindow.setCaption(header);
+		if (width != null) {
+			popupWindow.setWidth(width, Unit.PIXELS);
+		}
+
+		layout.setMargin(true);
+		if (closeable) {
+			popupWindow.addCloseListener(event -> popUpWindow.close());
+		}
+	}
+
+	public Button createUpdatePasswordButton() {
+		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
+				popUpWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
+			}
+		}, ValoTheme.BUTTON_LINK);
+	}
+
+	public Button generatePasswordButton() {
+
+		return ButtonHelper.createIconButton(Captions.userGeneratePassword, VaadinIcons.UNLOCK, new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			final UpdatePasswordForm form = new UpdatePasswordForm();
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				isGeneratePassword = true;
+
+				String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
+				form.currentPassword.setCaption(generatedPassword);
+				form.confirmPassword.setCaption(generatedPassword);
+			}
+		}, ValoTheme.BUTTON_LINK);
+	}
+
+	public CommitDiscardWrapperComponent<UpdatePasswordForm> getUpdatePasswordComponent() {
+		Label passwordStrengthDesc = new Label();
+		UpdatePasswordForm form = new UpdatePasswordForm();
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(Objects.requireNonNull(UserProvider.getCurrent()).getUuid());
+		form.setValue(user);
+
+		final CommitDiscardWrapperComponent<UpdatePasswordForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+
+		form.newPassword.setValidationVisible(false);
+		form.confirmPassword.setValidationVisible(false);
+		form.currentPassword.setValidationVisible(false);
+
+		form.newPassword.addBlurListener(event -> {
+			String newPassword = form.newPassword.getValue();
+			if (Objects.nonNull(newPassword)) {
+				if (!FacadeProvider.getUserFacade().isPasswordStrong(newPassword)) {
+					passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
+				} else {
+					passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
+				}
+				passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(newPassword));
+			}
+			form.newPassword.setValidationVisible(true);
+		});
+
+		form.confirmPassword.addBlurListener(event -> {
+			form.confirmPassword.setValidationVisible(true);
+		});
+
+		form.currentPassword.addBlurListener(event -> {
+			form.currentPassword.setValidationVisible(true);
+		});
+
+		component.addDiscardListener(() -> popUpWindow.close());
+
+		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				UserDto changedUser = form.getValue();
+				if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getNewPassword())) {
+					Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
+				} else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
+					Notification.show(I18nProperties.getString(Strings.messageWrongCurrentPassword), Notification.Type.ERROR_MESSAGE);
+				} else if (!FacadeProvider.getUserFacade().isPasswordStrong(changedUser.getNewPassword())) {
+					Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
+				} else {
+					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getNewPassword(), changedUser.getCurrentPassword());
+				}
+			}
+		});
+
+		Button generatePasswordButton = ControllerProvider.getUserController().generatePasswordButton();
+		generatePasswordButton.addClickListener((ClickListener) event -> {
+			String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
+			form.newPassword.setValue(generatedPassword);
+			form.confirmPassword.setValue(generatedPassword);
+
+			form.newPassword.setValidationVisible(true);
+			form.confirmPassword.setValidationVisible(true);
+		});
+
+		component.getButtonsPanel().addComponent(generatePasswordButton, 0);
+		component.addComponent(passwordStrengthDesc, 1);
+
+		return component;
+	}
+
 }

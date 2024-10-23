@@ -21,4 +21,9 @@ public class PathogenTestCriteria extends BaseCriteria implements Serializable {
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
 	}
+
+	public PathogenTestCriteria sample(SampleReferenceDto sample) {
+		this.sample = sample;
+		return this;
+	}
 }

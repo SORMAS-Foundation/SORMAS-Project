@@ -1500,6 +1500,7 @@ public interface Strings {
 	String messageSubcontinentsDearchived = "messageSubcontinentsDearchived";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
+	String messageSyncUsersFromAuthProviderConfigurationError = "messageSyncUsersFromAuthProviderConfigurationError";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
 	String messageTaskArchived = "messageTaskArchived";

@@ -336,7 +336,7 @@
     <string name="heading_confirm_pin">Confirmer le code PIN</string>
     <string name="heading_confirmation_dialog">Confirmation</string>
     <string name="heading_contact_edit">Modifier le contact</string>
-    <string name="heading_contact_information">Contact information</string>
+    <string name="heading_contact_information">Coordonnées du contact</string>
     <string name="heading_contact_new">Nouveau Contact</string>
     <string name="heading_contact_read">Lire le contact</string>
     <string name="heading_contact_summary">Résumé du contact</string>
@@ -353,7 +353,7 @@
     <string name="heading_error_notification_dialog">Oups, une erreur s\'est produite.</string>
     <string name="heading_event_edit">Modifier l\'événement</string>
     <string name="heading_event_new">Nouvel évènement</string>
-    <string name="heading_event_participant">Event Participant</string>
+    <string name="heading_event_participant">Participant à l\'événement</string>
     <string name="heading_event_participant_new">New Event Participant</string>
     <string name="heading_event_read">Lire l\'événement</string>
     <string name="heading_event_summary">Résumé de l\'événement</string>

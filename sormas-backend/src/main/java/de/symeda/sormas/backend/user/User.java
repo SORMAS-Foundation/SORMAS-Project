@@ -136,6 +136,8 @@ public class User extends AbstractDomainObject {
 
 	private boolean hasConsentedToGdpr;
 
+	private String externalId;
+
 	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)
 	public String getUserName() {
 		return userName;
@@ -346,6 +348,15 @@ public class User extends AbstractDomainObject {
 
 	public void setHasConsentedToGdpr(boolean hasConsentedToGdpr) {
 		this.hasConsentedToGdpr = hasConsentedToGdpr;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	/**

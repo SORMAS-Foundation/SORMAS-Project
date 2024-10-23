@@ -2681,6 +2681,7 @@ public interface Captions {
 	String User_associatedOfficer = "User.associatedOfficer";
 	String User_community = "User.community";
 	String User_district = "User.district";
+	String User_externalId = "User.externalId";
 	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
