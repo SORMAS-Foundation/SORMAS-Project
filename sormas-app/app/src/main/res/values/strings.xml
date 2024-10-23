@@ -297,7 +297,7 @@
     <string name="description_epi_week">Epi Week</string>
     <string name="description_first_name">First Name</string>
     <string name="description_last_name">Last Name</string>
-    <string name="description_password">Enter Password</string>
+    <string name="description_password">Password</string>
     <string name="description_period_end">Period End</string>
     <string name="description_period_start">Period Start</string>
     <string name="description_report_message">Your Message</string>
@@ -477,7 +477,7 @@
     <string name="hint_enter_location">Please enter a location</string>
     <string name="hint_first_name">First Name</string>
     <string name="hint_last_name">Last Name</string>
-    <string name="hint_login_password">Password</string>
+    <string name="hint_login_password">Your Password</string>
     <string name="hint_login_username">Username</string>
     <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
     <string name="hint_new_pin_again">Please enter the new PIN again.</string>
