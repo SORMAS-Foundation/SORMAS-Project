@@ -4,12 +4,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum TaskAssignee {
 
-    ALL,
-    CURRENT_USER,
-    OTHER_USERS;
+	ALL,
+	CURRENT_USER,
+	OTHER_USERS;
 
-    @Override
-    public String toString() {
-        return I18nProperties.getEnumCaption(this);
-    }
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }
