@@ -40,6 +40,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
  * @see <a href="https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey documentation HTTP Methods</a>
+ *
  */
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")

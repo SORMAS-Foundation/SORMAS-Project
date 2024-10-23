@@ -130,7 +130,6 @@ public final class ConfigProvider {
         this.context = context;
     }
 
-
     private boolean hasDeviceEncryption() {
 
         // Device encryption is no longer used, because it's not reliably implemented

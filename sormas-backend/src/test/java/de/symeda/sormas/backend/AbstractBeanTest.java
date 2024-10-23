@@ -860,7 +860,6 @@ public abstract class AbstractBeanTest {
     }
 
     protected UserDto useNationalAdminLogin() {
-
         if (nationalAdmin == null) {
             // we don't use TestDataCreator.createUser here, because we first need any user to have the user right to access backend facades
             User user = new User();
@@ -876,9 +875,7 @@ public abstract class AbstractBeanTest {
 
             getUserService().persist(user);
             nationalAdmin = getUserFacade().getByUuid(user.getUuid());
-
         }
-
         return loginWith(nationalAdmin);
     }
 

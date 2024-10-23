@@ -111,7 +111,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     /**
      * Fetches a use from the DB by its username. The check is done case-insensitive.
      *
-     * @param userName The username in any casing.
+	 * @param userName
+	 *            The username in any casing.
      * @return The corresponding User object from the DB.
      */
     public User getByUserName(String userName) {
@@ -188,12 +189,12 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
      * Condition combination if parameter is set:<br />
      * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
      *
+	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
      * @param regionUuids
      * @param districtUuids
      * @param filterByCurrentUserJurisdiction
      * @param activeOnly
      * @param userRights
-     * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
      */
     public List<UserReference> getUserReferences(List<String> regionUuids, List<String> districtUuids, boolean activeOnly, UserRight... userRights) {
 
@@ -224,13 +225,13 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
      * Condition combination if parameter is set:<br />
      * {@code ((regionUuids & districtUuids & communityUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
      *
+	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
      * @param regionUuids
      * @param districtUuids
      * @param communityUuids
      * @param filterByJurisdiction
      * @param activeOnly
      * @param userRights
-     * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
      */
     public List<UserReference> getUserReferences(
             List<String> regionUuids,
@@ -766,6 +767,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
+	 *
      * @param districts
      * @param userRight
      * @return Number of users with specified UserRight on district level
@@ -784,6 +786,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
+	 *
      * @param districts
      * @return Number of users with specified UserRight on community level
      */
@@ -801,6 +804,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
+	 *
      * @param districts
      * @return Number of users with specified UserRight on health facility level
      */
@@ -818,6 +822,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
+	 *
      * @param districts
      * @return Number of users with specified UserRight on pointOfEntry level
      */
@@ -847,7 +852,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
     }
 
     /**
-     * @param root root to {@link User} or {@link UserReference}.
+	 * @param root
+	 *            root to {@link User} or {@link UserReference}.
      */
     private Predicate createDefaultFilter(CriteriaBuilder cb, From<?, ?> root) {
         return cb.isTrue(root.get(User.ACTIVE));

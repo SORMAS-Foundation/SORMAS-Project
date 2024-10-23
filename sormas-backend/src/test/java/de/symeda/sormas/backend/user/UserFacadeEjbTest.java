@@ -64,7 +64,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.Mockito.when;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
 
@@ -189,7 +188,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         AuthProvider authProvider = mock(AuthProvider.class);
 
         MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
-        when(AuthProvider.getProvider(any())).thenReturn(authProvider);
+		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 
         RDCF rdcf = creator.createRDCF();
         UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
@@ -199,7 +198,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         assertThat(
                 validLoginRights,
                 containsInAnyOrder(
-                        UserRole.getUserRights(Collections.singletonList(creator.getUserRole(SURVEILLANCE_SUPERVISOR))).toArray(new UserRight[]{})));
+				UserRole.getUserRights(Collections.singletonList(creator.getUserRole(SURVEILLANCE_SUPERVISOR))).toArray(new UserRight[] {})));
 
         user.setActive(false);
         getUserFacade().saveUser(user, false);
@@ -225,20 +224,20 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         }
 
         for (User user : testUsers) {
-            loginWith(getUserFacade().toDto(user));
+			loginWith(UserFacadeEjb.toDto(user));
             List<UserDto> persistedDefaultUsers = getUserFacade().getUsersWithDefaultPassword();
 
             if (user.hasUserRight(UserRight.USER_EDIT)) {
                 assertEquals(defaultUsers.size(), persistedDefaultUsers.size());
                 for (User defUser : defaultUsers) {
-                    assertThat(persistedDefaultUsers, hasItem(getUserFacade().toDto(defUser)));
+					assertThat(persistedDefaultUsers, hasItem(UserFacadeEjb.toDto(defUser)));
                 }
                 for (User randomUser : randomUsers) {
-                    assertThat(persistedDefaultUsers, not(hasItem(getUserFacade().toDto(randomUser))));
+					assertThat(persistedDefaultUsers, not(hasItem(UserFacadeEjb.toDto(randomUser))));
                 }
             } else if (defaultUsers.contains(user)) {
                 assertEquals(1, persistedDefaultUsers.size());
-                assertEquals(getUserFacade().toDto(user), persistedDefaultUsers.get(0));
+				assertEquals(UserFacadeEjb.toDto(user), persistedDefaultUsers.get(0));
             } else {
                 assertEquals(0, persistedDefaultUsers.size());
             }
@@ -465,7 +464,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         RDCF rdcf = creator.createRDCF();
         UserDto userWithoutAccess = creator.createSurveillanceOfficer(rdcf);
         UserRight[] surveillanceOfficerRights =
-                UserRole.getUserRights(Collections.singletonList(creator.getUserRole(SURVEILLANCE_OFFICER))).toArray(new UserRight[]{});
+			UserRole.getUserRights(Collections.singletonList(creator.getUserRole(SURVEILLANCE_OFFICER))).toArray(new UserRight[] {});
 
         // Successfully retrieve user rights of other user
         loginWith(nationalAdmin);

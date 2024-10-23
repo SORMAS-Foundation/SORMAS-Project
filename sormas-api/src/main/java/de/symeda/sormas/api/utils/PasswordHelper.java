@@ -33,7 +33,6 @@ public final class PasswordHelper {
     }
 
     private static final char[] PASSWORD_CHARS = new char[26 - 2 + 26 - 3 + 8];
-
     static {
         int i = 0;
         for (char ch = 'a'; ch <= 'z'; ch++) {

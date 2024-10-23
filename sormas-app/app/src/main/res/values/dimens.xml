@@ -16,7 +16,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" >
     <!-- Default screen margins, per the Android Design guidelines. -->
     <!-- Martin -->
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -58,6 +58,7 @@
     <dimen name="fragment_padding">24dp</dimen>
     <dimen name="fragment_padding_negative">-24dp</dimen>
     <dimen name="simple_dialog_button_margin">12dp</dimen>
+
 
 
     <dimen name="defaultControlVerticalPadding">16dp</dimen>
@@ -191,6 +192,9 @@
     <dimen name="drawerNotificationCounterRadius">10dp</dimen>
 
 
+
+
+
     <dimen name="activitySubHeadingHeight">48dp</dimen>
     <dimen name="activitySubHeadingHorizontalPadding">24dp</dimen>
     <dimen name="activitySubHeadingVerticalPadding">0dp</dimen>
@@ -215,6 +219,7 @@
 
     <dimen name="overflowMenuVerticalOffset">2.0dp</dimen>
     <dimen name="overflowMenuElevation">4dp</dimen>
+
 
 
     <!-- List Layoutrs -->
@@ -257,6 +262,7 @@
     <dimen name="navigationNumberTextSize">34sp</dimen>
 
 
+
     <!-- Landing Page Menu -->
     <dimen name="subMenuPadding">1dp</dimen>
     <dimen name="subMenuHeaderHeight">48dp</dimen>
@@ -276,6 +282,10 @@
     <dimen name="subMenuCounterHeight">20dp</dimen>
     <dimen name="subMenuCounterRadius">10dp</dimen>
     <dimen name="subMenuCounterPadding">8dp</dimen>
+
+
+
+
 
 
     <!-- Landing Summary -->
@@ -338,6 +348,7 @@
 
     <dimen name="sectionListRowRadius">@dimen/defaultControlRadius</dimen>
     <dimen name="sectionListRowSelectedStrokeSize">1.5dp</dimen>
+
 
 
     <dimen name="verySmallTextSize">10sp</dimen>

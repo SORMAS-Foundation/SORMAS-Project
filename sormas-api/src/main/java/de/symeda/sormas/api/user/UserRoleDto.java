@@ -39,103 +39,103 @@ import de.symeda.sormas.api.utils.ValidationException;
 
 public class UserRoleDto extends EntityDto {
 
-    private static final long serialVersionUID = -547459523041494446L;
+	private static final long serialVersionUID = -547459523041494446L;
 
-    public static final String I18N_PREFIX = "UserRole";
+	public static final String I18N_PREFIX = "UserRole";
 
-    public static final String USER_RIGHTS = "userRights";
-    public static final String CAPTION = "caption";
-    public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
-    public static final String DESCRIPTION = "description";
-    public static final String ENABLED = "enabled";
-    public static final String HAS_OPTIONAL_HEALTH_FACILITY = "hasOptionalHealthFacility";
-    public static final String HAS_ASSOCIATED_DISTRICT_USER = "hasAssociatedDistrictUser";
-    public static final String PORT_HEALTH_USER = "portHealthUser";
-    public static final String NOTIFICATION_TYPES = "notificationTypes";
-    public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
-    public static final String RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES = "restrictAccessToAssignedEntities";
+	public static final String USER_RIGHTS = "userRights";
+	public static final String CAPTION = "caption";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String DESCRIPTION = "description";
+	public static final String ENABLED = "enabled";
+	public static final String HAS_OPTIONAL_HEALTH_FACILITY = "hasOptionalHealthFacility";
+	public static final String HAS_ASSOCIATED_DISTRICT_USER = "hasAssociatedDistrictUser";
+	public static final String PORT_HEALTH_USER = "portHealthUser";
+	public static final String NOTIFICATION_TYPES = "notificationTypes";
+	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
+	public static final String RESTRICT_ACCESS_TO_ASSIGNED_ENTITIES = "restrictAccessToAssignedEntities";
 
-    private Set<UserRight> userRights;
-    private boolean enabled = true;
+	private Set<UserRight> userRights;
+	private boolean enabled = true;
 
-    @Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-    private String caption;
-    @Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
-    private String description;
-    private boolean hasOptionalHealthFacility = false;
-    private boolean hasAssociatedDistrictUser = true;
-    private boolean portHealthUser = false;
-    private DefaultUserRole linkedDefaultUserRole;
-    private JurisdictionLevel jurisdictionLevel;
-    private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
-    private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
-    private boolean restrictAccessToAssignedEntities = false;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String caption;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	private String description;
+	private boolean hasOptionalHealthFacility = false;
+	private boolean hasAssociatedDistrictUser = true;
+	private boolean portHealthUser = false;
+	private DefaultUserRole linkedDefaultUserRole;
+	private JurisdictionLevel jurisdictionLevel;
+	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
+	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
+	private boolean restrictAccessToAssignedEntities = false;
 
-    public static UserRoleDto build(UserRight... userRights) {
+	public static UserRoleDto build(UserRight... userRights) {
 
-        UserRoleDto dto = new UserRoleDto();
-        dto.setUuid(DataHelper.createUuid());
-        Set<UserRight> userRightsSet = new HashSet<>();
-        userRightsSet.addAll(Arrays.asList(userRights));
-        dto.setUserRights(userRightsSet);
-        return dto;
-    }
+		UserRoleDto dto = new UserRoleDto();
+		dto.setUuid(DataHelper.createUuid());
+		Set<UserRight> userRightsSet = new HashSet<>();
+		userRightsSet.addAll(Arrays.asList(userRights));
+		dto.setUserRights(userRightsSet);
+		return dto;
+	}
 
-    public Set<UserRight> getUserRights() {
-        return userRights;
-    }
+	public Set<UserRight> getUserRights() {
+		return userRights;
+	}
 
-    public void setUserRights(Set<UserRight> userRights) {
-        this.userRights = userRights;
-    }
+	public void setUserRights(Set<UserRight> userRights) {
+		this.userRights = userRights;
+	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    public String getCaption() {
-        return caption;
-    }
+	public String getCaption() {
+		return caption;
+	}
 
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
+	public void setCaption(String caption) {
+		this.caption = caption;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public boolean getHasOptionalHealthFacility() {
-        return hasOptionalHealthFacility;
-    }
+	public boolean getHasOptionalHealthFacility() {
+		return hasOptionalHealthFacility;
+	}
 
-    public void setHasOptionalHealthFacility(boolean hasOptionalHealthFacility) {
-        this.hasOptionalHealthFacility = hasOptionalHealthFacility;
-    }
+	public void setHasOptionalHealthFacility(boolean hasOptionalHealthFacility) {
+		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
+	}
 
-    public boolean getHasAssociatedDistrictUser() {
-        return hasAssociatedDistrictUser;
-    }
+	public boolean getHasAssociatedDistrictUser() {
+		return hasAssociatedDistrictUser;
+	}
 
-    public void setHasAssociatedDistrictUser(boolean hasAssociatedDistrictUser) {
-        this.hasAssociatedDistrictUser = hasAssociatedDistrictUser;
-    }
+	public void setHasAssociatedDistrictUser(boolean hasAssociatedDistrictUser) {
+		this.hasAssociatedDistrictUser = hasAssociatedDistrictUser;
+	}
 
-    public boolean isPortHealthUser() {
-        return portHealthUser;
-    }
+	public boolean isPortHealthUser() {
+		return portHealthUser;
+	}
 
-    public void setPortHealthUser(boolean portHealthUser) {
-        this.portHealthUser = portHealthUser;
-    }
+	public void setPortHealthUser(boolean portHealthUser) {
+		this.portHealthUser = portHealthUser;
+	}
 
     public JurisdictionLevel getJurisdictionLevel() {
         return jurisdictionLevel;

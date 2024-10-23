@@ -40,5 +40,4 @@ public class PasswordValidator {
     private static boolean hasLowercaseLetter(String password) {
         return password.chars().anyMatch(Character::isLowerCase);
     }
-
 }
