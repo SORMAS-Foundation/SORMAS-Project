@@ -465,7 +465,7 @@ public abstract class AbstractBeanTest {
 
 	/**
 	 * Using local bean here to avoid multiple transactions in test.
-	 *
+	 * 
 	 * @return
 	 */
 	public CaseFacadeEjb getCaseFacade() {
