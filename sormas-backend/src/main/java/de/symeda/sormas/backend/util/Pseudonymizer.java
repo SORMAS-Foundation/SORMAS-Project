@@ -33,48 +33,62 @@ import de.symeda.sormas.backend.user.UserService;
 
 public final class Pseudonymizer<T> extends DtoPseudonymizer<T> {
 
-	public static <T> Pseudonymizer<T> getDefault(UserService userService) {
-		return getDefault(userService::hasRight, noopSpecialAccessCheck());
+	public static <T> Pseudonymizer<T> getDefault(UserService userService, String serverCountry) {
+		return getDefault(userService::hasRight, noopSpecialAccessCheck(), serverCountry);
 	}
 
-	public static <T> Pseudonymizer<T> getDefault(UserService userService, SpecialAccessCheck<T> specialAccessCheck) {
-		return getDefault(userService::hasRight, specialAccessCheck);
+	public static <T> Pseudonymizer<T> getDefault(UserService userService, SpecialAccessCheck<T> specialAccessCheck, String serverCountry) {
+		return getDefault(userService::hasRight, specialAccessCheck, serverCountry);
 	}
 
-	public static <T> Pseudonymizer<T> getDefault(UserService userService, SpecialAccessCheck<T> specialAccessCheck, String stringValuePlaceholder) {
-		return getDefault(userService::hasRight, specialAccessCheck, stringValuePlaceholder);
+	public static <T> Pseudonymizer<T> getDefault(
+		UserService userService,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String stringValuePlaceholder,
+		String serverCountry) {
+		return getDefault(userService::hasRight, specialAccessCheck, stringValuePlaceholder, serverCountry);
 	}
 
-	public static <T> Pseudonymizer<T> getDefault(UserService userService, String stringValuePlaceholder) {
-		return getDefault(userService::hasRight, noopSpecialAccessCheck(), stringValuePlaceholder);
+	public static <T> Pseudonymizer<T> getDefault(UserService userService, String stringValuePlaceholder, String serverCountry) {
+		return getDefault(userService::hasRight, noopSpecialAccessCheck(), stringValuePlaceholder, serverCountry);
 	}
 
-	private static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
+	private static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck, String serverCountry) {
 		return new Pseudonymizer<>(
-			createDefaultFieldAccessCheckers(true, rightCheck, specialAccessCheck),
-			createDefaultFieldAccessCheckers(false, rightCheck, specialAccessCheck),
+			createDefaultFieldAccessCheckers(true, rightCheck, specialAccessCheck, serverCountry),
+			createDefaultFieldAccessCheckers(false, rightCheck, specialAccessCheck, serverCountry),
 			"",
 			true);
 	}
 
-	private static <T> Pseudonymizer<T> getDefault(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck, String stringValuePlaceholder) {
+	private static <T> Pseudonymizer<T> getDefault(
+		RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String stringValuePlaceholder,
+		String serverCountry) {
 		return new Pseudonymizer<>(
-			createDefaultFieldAccessCheckers(true, rightCheck, specialAccessCheck),
-			createDefaultFieldAccessCheckers(false, rightCheck, specialAccessCheck),
+			createDefaultFieldAccessCheckers(true, rightCheck, specialAccessCheck, serverCountry),
+			createDefaultFieldAccessCheckers(false, rightCheck, specialAccessCheck, serverCountry),
 			stringValuePlaceholder,
 			true);
 	}
 
-	public static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(UserService userService) {
-		return getDefaultWithPlaceHolder(userService, noopSpecialAccessCheck());
+	public static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(UserService userService, String serverCountry) {
+		return getDefaultWithPlaceHolder(userService, noopSpecialAccessCheck(), serverCountry);
 	}
 
-	public static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(UserService userService, SpecialAccessCheck<T> specialAccessCheck) {
-		return getDefaultWithPlaceHolder(userService::hasRight, specialAccessCheck);
+	public static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(
+		UserService userService,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
+		return getDefaultWithPlaceHolder(userService::hasRight, specialAccessCheck, serverCountry);
 	}
 
-	private static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
-		return getDefault(rightCheck, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue));
+	private static <T> Pseudonymizer<T> getDefaultWithPlaceHolder(
+		RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
+		return getDefault(rightCheck, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue), serverCountry);
 	}
 
 	public static <T> Pseudonymizer<T> getDefaultNoCheckers(boolean pseudonymizeMandatoryFields) {
@@ -161,13 +175,14 @@ public final class Pseudonymizer<T> extends DtoPseudonymizer<T> {
 	private static <T> FieldAccessCheckers<T> createDefaultFieldAccessCheckers(
 		boolean inJurisdiction,
 		final RightCheck rightCheck,
-		SpecialAccessCheck<T> specialAccessCheck) {
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
 		PersonalDataFieldAccessChecker<T> personalFieldAccessChecker = inJurisdiction
-			? PersonalDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight, specialAccessCheck)
-			: PersonalDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight, specialAccessCheck);
+			? PersonalDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight, specialAccessCheck, serverCountry)
+			: PersonalDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight, specialAccessCheck, serverCountry);
 		SensitiveDataFieldAccessChecker<T> sensitiveFieldAccessChecker = inJurisdiction
-			? SensitiveDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight, specialAccessCheck)
-			: SensitiveDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight, specialAccessCheck);
+			? SensitiveDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight, specialAccessCheck, serverCountry)
+			: SensitiveDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight, specialAccessCheck, serverCountry);
 
 		return FieldAccessCheckers.withCheckers(Arrays.asList(personalFieldAccessChecker, sensitiveFieldAccessChecker));
 	}

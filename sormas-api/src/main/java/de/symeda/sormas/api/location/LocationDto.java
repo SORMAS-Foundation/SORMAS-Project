@@ -101,8 +101,10 @@ public class LocationDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String details;
-	@PersonalData
-	@SensitiveData
+	@PersonalData(excludeForCountries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SensitiveData(excludeForCountries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String city;
 	@PersonalData

@@ -51,6 +51,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -102,6 +103,8 @@ public class SurveillanceReportFacadeEjb
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public SurveillanceReportFacadeEjb() {
 		super();
@@ -198,7 +201,7 @@ public class SurveillanceReportFacadeEjb
 	@Override
 	protected Pseudonymizer<SurveillanceReportDto> createPseudonymizer(List<SurveillanceReport> surveillanceReports) {
 		List<String> withSpecialAccess = specialCaseAccessService.getSurveillanceReportUuidsWithSpecialAccess(surveillanceReports);
-		return Pseudonymizer.getDefault(userService, r -> withSpecialAccess.contains(r.getUuid()));
+		return Pseudonymizer.getDefault(userService, r -> withSpecialAccess.contains(r.getUuid()), configFacade.getCountryCode());
 	}
 
 	@Override

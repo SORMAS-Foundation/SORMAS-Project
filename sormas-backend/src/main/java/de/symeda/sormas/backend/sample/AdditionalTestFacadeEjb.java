@@ -20,6 +20,7 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -38,6 +39,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	private SampleService sampleService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public AdditionalTestDto getByUuid(String uuid) {
@@ -118,7 +121,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	private List<AdditionalTestDto> toPseudonymizedDtos(List<AdditionalTest> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer<AdditionalTestDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+		Pseudonymizer<AdditionalTestDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 
 		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}

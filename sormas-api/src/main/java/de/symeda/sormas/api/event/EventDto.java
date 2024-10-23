@@ -167,12 +167,16 @@ public class EventDto extends SormasToSormasShareableDto {
 	private InstitutionalPartnerType srcInstitutionalPartnerType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcInstitutionalPartnerTypeDetails;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcFirstName;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcLastName;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcTelNo;
+	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String srcEmail;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)

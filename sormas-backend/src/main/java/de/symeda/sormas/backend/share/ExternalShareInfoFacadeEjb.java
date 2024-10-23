@@ -36,6 +36,7 @@ import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -56,6 +57,9 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 	@EJB
 	private UserService userService;
+
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<ExternalShareInfoDto> getIndexList(ExternalShareInfoCriteria criteria, Integer first, Integer max) {
@@ -78,7 +82,7 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 		List<ExternalShareInfo> shareInfoList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<ExternalShareInfoDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		Pseudonymizer<ExternalShareInfoDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService, configFacade.getCountryCode());
 		return shareInfoList.stream().map(i -> convertToDto(i, pseudonymizer)).collect(Collectors.toList());
 	}
 

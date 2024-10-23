@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -96,6 +97,8 @@ public class TravelEntryFacadeEjb
 	private TravelEntryService travelEntryService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public TravelEntryFacadeEjb() {
 	}
@@ -223,7 +226,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	protected Pseudonymizer<TravelEntryDto> createPseudonymizer(List<TravelEntry> travelEntries) {
-		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(travelEntries));
+		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(travelEntries), configFacade.getCountryCode());
 	}
 
 	private <T extends IsTravelEntry> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsTravelEntry> entries) {

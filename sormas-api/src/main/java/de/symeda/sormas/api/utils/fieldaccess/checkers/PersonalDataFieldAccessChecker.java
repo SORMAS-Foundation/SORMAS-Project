@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -25,25 +26,54 @@ import de.symeda.sormas.api.utils.PersonalData;
 
 public final class PersonalDataFieldAccessChecker<T> extends AnnotationBasedFieldAccessChecker<T> {
 
-	private PersonalDataFieldAccessChecker(final boolean hasRight, SpecialAccessCheck<T> specialAccessCheck) {
+	private final String serverCountry;
+
+	private PersonalDataFieldAccessChecker(final boolean hasRight, SpecialAccessCheck<T> specialAccessCheck, String serverCountry) {
 		super(PersonalData.class, EmbeddedPersonalData.class, hasRight, specialAccessCheck);
+		this.serverCountry = serverCountry;
 	}
 
-	public static <T> PersonalDataFieldAccessChecker<T> inJurisdiction(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
-		return new PersonalDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION), specialAccessCheck);
+	public static <T> PersonalDataFieldAccessChecker<T> inJurisdiction(
+		RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
+		return new PersonalDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION), specialAccessCheck, serverCountry);
 	}
 
-	public static <T> PersonalDataFieldAccessChecker<T> outsideJurisdiction(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
-		return new PersonalDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION), specialAccessCheck);
+	public static <T> PersonalDataFieldAccessChecker<T> outsideJurisdiction(
+		RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
+		return new PersonalDataFieldAccessChecker<>(
+			rightCheck.check(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION),
+			specialAccessCheck,
+			serverCountry);
 	}
 
 	public static <T> PersonalDataFieldAccessChecker<T> forcedNoAccess() {
-		return new PersonalDataFieldAccessChecker<>(false, t -> false);
+		return new PersonalDataFieldAccessChecker<>(false, t -> false, null);
 	}
 
 	@Override
 	protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
 		return annotatedField.getAnnotation(PersonalData.class).mandatoryField();
+	}
+
+	@Override
+	public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
+		boolean annotationPresent = field.isAnnotationPresent(fieldAnnotation);
+
+		if (annotationPresent) {
+			String[] excludeForCountries = field.getAnnotation(PersonalData.class).excludeForCountries();
+			if (Arrays.asList(excludeForCountries).contains(serverCountry)) {
+				return false;
+			}
+		}
+
+		if (!annotationPresent || withMandatory) {
+			return annotationPresent;
+		}
+		return !isAnnotatedFieldMandatory(field);
 	}
 
 	public interface RightCheck {

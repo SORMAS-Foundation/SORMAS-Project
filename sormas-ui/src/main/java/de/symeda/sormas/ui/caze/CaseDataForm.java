@@ -949,8 +949,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
+
 		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
+		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		addField(CaseDataDto.VACCINATION_STATUS);
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
@@ -1081,8 +1083,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			differentPlaceOfStayJurisdiction.setEnabled(false);
 			differentPlaceOfStayJurisdiction.setVisible(false);
 		}
-
-		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();

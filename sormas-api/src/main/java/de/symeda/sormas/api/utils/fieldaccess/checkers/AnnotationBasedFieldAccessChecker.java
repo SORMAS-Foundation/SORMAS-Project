@@ -22,7 +22,7 @@ import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 
 public abstract class AnnotationBasedFieldAccessChecker<T> implements FieldAccessChecker<T> {
 
-	private final Class<? extends Annotation> fieldAnnotation;
+	protected final Class<? extends Annotation> fieldAnnotation;
 	private final Class<? extends Annotation> embeddedAnnotation;
 	private final boolean hasRight;
 	private final SpecialAccessCheck<T> specialAccessCheck;

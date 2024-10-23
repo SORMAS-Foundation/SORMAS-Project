@@ -41,6 +41,9 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,6 +173,8 @@ public class ImmunizationFacadeEjb
 	private VaccinationService vaccinationService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public ImmunizationFacadeEjb() {
 	}
@@ -440,7 +445,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	protected Pseudonymizer<ImmunizationDto> createPseudonymizer(List<Immunization> immunizations) {
-		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(immunizations));
+		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(immunizations), configFacade.getCountryCode());
 	}
 
 	private <T extends IsImmunization> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsImmunization> immunizations) {

@@ -104,6 +104,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
@@ -180,6 +181,8 @@ public class EventParticipantFacadeEjb
 	private VaccinationService vaccinationService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -1157,7 +1160,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	protected Pseudonymizer<EventParticipantDto> createPseudonymizer(List<EventParticipant> eventParticipants) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(eventParticipants));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(eventParticipants), configFacade.getCountryCode());
 	}
 
 	private <T extends IsEventParticipant> SpecialAccessCheck<T> createSpecialAccessChecker(

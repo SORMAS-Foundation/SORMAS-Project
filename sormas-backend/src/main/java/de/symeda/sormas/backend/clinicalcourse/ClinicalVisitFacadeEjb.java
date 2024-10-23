@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -78,6 +79,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private CaseService caseService;
 	@EJB
 	private SymptomsService symptomsService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	//	private String countPositiveSymptomsQuery;
 
@@ -159,7 +162,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		List<ClinicalVisitIndexDto> results = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<ClinicalVisitIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		Pseudonymizer<ClinicalVisitIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService, configFacade.getCountryCode());
 		pseudonymizer.pseudonymizeDtoCollection(ClinicalVisitIndexDto.class, results, ClinicalVisitIndexDto::getInJurisdiction, null);
 
 		// Build the query to count positive symptoms
@@ -209,7 +212,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@Override
 	public ClinicalVisitDto getClinicalVisitByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	@Override
@@ -244,7 +247,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			caseFacade.save(caze);
 		}
 
-		return convertToDto(entity, Pseudonymizer.getDefault(userService));
+		return convertToDto(entity, Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	/**
@@ -286,7 +289,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private List<ClinicalVisitDto> toPseudonymizedDtos(List<ClinicalVisit> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer<ClinicalVisitDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+		Pseudonymizer<ClinicalVisitDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 		List<ClinicalVisitDto> dtos =
 			entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 		return dtos;
@@ -294,7 +297,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@Override
 	public List<ClinicalVisitDto> getByUuids(List<String> uuids) {
-		Pseudonymizer<ClinicalVisitDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+		Pseudonymizer<ClinicalVisitDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 		return service.getByUuids(uuids).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -340,7 +343,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		List<ClinicalVisitExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<ClinicalVisitExportDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		Pseudonymizer<ClinicalVisitExportDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService, configFacade.getCountryCode());
 		for (ClinicalVisitExportDto exportDto : resultList) {
 			exportDto.setSymptoms(SymptomsFacadeEjb.toSymptomsDto(symptomsService.getById(exportDto.getSymptomsId())));
 
@@ -382,7 +385,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private void restorePseudonymizedDto(ClinicalVisitDto clinicalVisit, ClinicalVisit existingClinicalVisit) {
 		if (existingClinicalVisit != null) {
 			boolean inJurisdiction = caseService.inJurisdictionOrOwned(existingClinicalVisit.getClinicalCourse().getCaze());
-			Pseudonymizer<ClinicalVisitDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+			Pseudonymizer<ClinicalVisitDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 			ClinicalVisitDto existingDto = toDto(existingClinicalVisit);
 
 			pseudonymizer.restorePseudonymizedValues(ClinicalVisitDto.class, clinicalVisit, existingDto, inJurisdiction);

@@ -87,6 +87,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
@@ -137,6 +138,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 	private NotificationService notificationService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public VisitFacadeEjb() {
 	}
@@ -528,7 +531,8 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 			if (!resultList.isEmpty()) {
 
-				Pseudonymizer<VisitExportDto> pseudonymizer = Pseudonymizer.getDefault(userService, getSpecialAccessChecker(resultList));
+				Pseudonymizer<VisitExportDto> pseudonymizer =
+					Pseudonymizer.getDefault(userService, getSpecialAccessChecker(resultList), configFacade.getCountryCode());
 				Set<Long> userIds = resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet());
 				Map<Long, UserReference> visitUsers = userIds.isEmpty()
 					? null
@@ -587,7 +591,7 @@ public class VisitFacadeEjb extends AbstractBaseEjb<Visit, VisitDto, VisitIndexD
 
 	@Override
 	protected Pseudonymizer<VisitDto> createPseudonymizer(List<Visit> visits) {
-		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(visits));
+		return Pseudonymizer.getDefault(userService, getSpecialAccessChecker(visits), configFacade.getCountryCode());
 	}
 
 	private <T extends IsVisit> SpecialAccessCheck<T> getSpecialAccessChecker(Collection<? extends IsVisit> visits) {

@@ -161,6 +161,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -291,6 +292,8 @@ public class ContactFacadeEjb
 	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacadeEjb;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -1725,7 +1728,7 @@ public class ContactFacadeEjb
 
 	@Override
 	protected Pseudonymizer<ContactDto> createPseudonymizer(List<Contact> contacts) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(contacts));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(contacts), configFacade.getCountryCode());
 	}
 
 	private <T extends IsContact> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends IsContact> contacts) {

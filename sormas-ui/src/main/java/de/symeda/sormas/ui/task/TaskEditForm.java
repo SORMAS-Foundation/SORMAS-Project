@@ -63,6 +63,7 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 
 @SuppressWarnings("deprecation")
@@ -161,7 +162,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
 		creatorComment.setRows(2);
 		creatorComment.setImmediate(true);
-		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
+		VaadinUiUtil.addGdprMessageOnClick(creatorComment);
+
+		TextArea assigneeReply = addField(TaskDto.ASSIGNEE_REPLY, TextArea.class);
+		assigneeReply.setRows(4);
+		VaadinUiUtil.addGdprMessageOnClick(assigneeReply);
 
 		MultiSelect<UserReferenceDto> observerUsers = addField(TaskDto.OBSERVER_USERS, MultiSelect.class);
 		observerUsers.addValueChangeListener(e -> {

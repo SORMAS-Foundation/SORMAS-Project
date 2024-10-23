@@ -1247,6 +1247,7 @@ public interface Strings {
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
 	String messageCountriesArchived = "messageCountriesArchived";
 	String messageCountriesDearchived = "messageCountriesDearchived";
+	String messageCountriesExcludedFromDataProtection = "messageCountriesExcludedFromDataProtection";
 	String messageCountryArchived = "messageCountryArchived";
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";

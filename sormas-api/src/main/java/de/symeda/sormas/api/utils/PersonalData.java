@@ -27,4 +27,6 @@ import java.lang.annotation.Target;
 public @interface PersonalData {
 
 	boolean mandatoryField() default false;
+
+	String[] excludeForCountries() default {};
 }
