@@ -52,15 +52,15 @@ public interface UserFacade {
 
 	String resetPassword(String uuid);
 
-    String updateUserPassword(String uuid, String newPassword, String currentPassword);
+	String updateUserPassword(String uuid, String newPassword, String currentPassword);
 
-    boolean validatePassword(String uuid, String password);
+	boolean validatePassword(String uuid, String password);
 
-    String checkPasswordStrength(String password);
+	String checkPasswordStrength(String password);
 
-    boolean isPasswordStrong(String password);
+	boolean isPasswordStrong(String password);
 
-    String generatePassword();
+	String generatePassword();
 
 	List<UserDto> getAllAfter(Date date);
 
