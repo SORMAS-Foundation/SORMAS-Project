@@ -94,6 +94,7 @@ public class EnvironmentSampleServiceTest extends AbstractBeanTest {
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf2), is(false));
 
+
 		// national user should have access to all samples
 		loginWith(natUser);
 		assertThat(getEnvironmentSampleService().inJurisdictionOrOwned(samploRdcf1), is(true));
