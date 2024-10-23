@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
 import java.util.List;
@@ -123,6 +124,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private List<SampleReport> sampleReports;
 	private SurveillanceReport surveillanceReport;
 	private String tsv;
+	private String personAdditionalDetails;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -448,5 +450,14 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setTsv(String tsv) {
 		this.tsv = tsv;
+	}
+
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	public String getPersonAdditionalDetails() {
+		return personAdditionalDetails;
+	}
+
+	public void setPersonAdditionalDetails(String personAdditionalDetails) {
+		this.personAdditionalDetails = personAdditionalDetails;
 	}
 }

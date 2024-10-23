@@ -2066,7 +2066,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@PermitAll
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
-		if (configFacade.isFeatureAutomaticCaseClassification()) {
+		if (configFacade.getCaseClassificationCalculationMode(associatedCase.getDisease()).isAutomaticEnabled()) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
 				if (pathogenTestsCount == 0) {
@@ -2263,7 +2263,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
 		boolean setClassificationInfo = true;
-		if (configFacade.isFeatureAutomaticCaseClassification()) {
+		if (configFacade.getCaseClassificationCalculationMode(savedCase.getDisease()).isAutomaticEnabled()) {
 			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE
 				|| configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				// calculate classification

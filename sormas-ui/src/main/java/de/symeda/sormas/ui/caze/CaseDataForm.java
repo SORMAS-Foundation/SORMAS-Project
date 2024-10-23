@@ -498,19 +498,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			ComboBox caseReferenceDefinition = addField(CaseDataDto.CASE_REFERENCE_DEFINITION, ComboBox.class);
 			caseReferenceDefinition.setReadOnly(true);
 
-			if (diseaseClassificationExists()) {
-				Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
-					CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());
-					((Field<CaseClassification>) getField(CaseDataDto.CASE_CLASSIFICATION)).setValue(classification);
-				}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-
-				getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
-
-				if (!UiUtil.permitted(UserRight.CASE_CLASSIFY)) {
-					caseClassificationCalculationButton.setEnabled(false);
-				}
-			}
-
 			//if(cbCaseClassification.getCaption())
 			addField(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CheckBox.class);
 			addField(CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION, CheckBox.class);
@@ -534,6 +521,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		}
+
+		if (diseaseClassificationExists() && FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()) {
+			Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
+				CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());
+				((Field<CaseClassification>) getField(CaseDataDto.CASE_CLASSIFICATION)).setValue(classification);
+			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+
+			getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
+
+			if (!UiUtil.permitted(UserRight.CASE_CLASSIFY)) {
+				caseClassificationCalculationButton.setEnabled(false);
+			}
 		}
 
 		boolean extendedClassification = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassification(disease);
