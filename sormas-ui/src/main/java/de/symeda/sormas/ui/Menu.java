@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import static de.symeda.sormas.ui.UiUtil.permitted;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -45,7 +43,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -56,6 +53,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import static de.symeda.sormas.ui.UiUtil.permitted;
+import de.symeda.sormas.api.feature.FeatureType;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
