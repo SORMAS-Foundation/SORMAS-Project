@@ -37,4 +37,10 @@ public interface UserFacadeRetro {
 
 	@GET("users/uuids")
 	Call<List<String>> pullUuids();
+
+	@POST("users/saveNewPassword/{uuid}/{newPassword}/{currentPassword}")
+	Call<String> saveNewPassword(@Path("uuid") String uuid, @Path("newPassword") String newPassword, @Path("currentPassword") String currentPassword);
+
+	@GET("users/generatePassword")
+	Call<String> generatePassword();
 }

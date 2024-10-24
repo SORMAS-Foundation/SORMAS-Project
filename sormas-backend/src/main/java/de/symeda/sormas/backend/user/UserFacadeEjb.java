@@ -149,6 +149,7 @@ import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PasswordValidator;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -1188,6 +1189,43 @@ public class UserFacadeEjb implements UserFacade {
 		} else {
 			throw new EntityNotFoundException(I18nProperties.getString(Strings.errorNotFound));
 		}
+	}
+
+	@Override
+	@PermitAll
+	public boolean validatePassword(String uuid, String password) {
+		User user = userService.getCurrentUser();
+
+		if (user != null) {
+			return DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()));
+		}
+
+		return false;
+	}
+
+	@PermitAll
+	public String checkPasswordStrength(String password) {
+		return PasswordValidator.checkPasswordStrength(password);
+	}
+
+	@PermitAll
+	@Override
+	public boolean isPasswordStrong(String password) {
+		return PasswordValidator.isStrongPassword(password);
+	}
+
+	@PermitAll
+	@Override
+	public String updateUserPassword(String uuid, String password, String currentPassword) {
+		String updatePassword = userService.updatePassword(uuid, password);
+		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
+		return updatePassword;
+	}
+
+	@PermitAll
+	@Override
+	public String generatePassword() {
+		return userService.generatePassword();
 	}
 
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
