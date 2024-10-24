@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
@@ -159,7 +160,8 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrlInfo.setVisibility(!hasServerUrl() ? View.VISIBLE : View.GONE);
 		binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
 		binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
-		binding.changePassword.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+		binding.changePassword.setVisibility(
+			hasUser && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.PASSWORD_RESET) ? View.VISIBLE : View.GONE);
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);

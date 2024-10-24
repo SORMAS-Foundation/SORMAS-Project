@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import static de.symeda.sormas.ui.UiUtil.permitted;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -145,8 +148,10 @@ public class Menu extends CssLayout {
 		CommitDiscardWrapperComponent<UserSettingsForm> component =
 			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
 
-		Button resetPasswordButton = ControllerProvider.getUserController().createUpdatePasswordButton();
-		component.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		if (permitted(FeatureType.PASSWORD_RESET)) {
+			Button resetPasswordButton = ControllerProvider.getUserController().createUpdatePasswordButton();
+			component.getButtonsPanel().addComponent(resetPasswordButton, 0);
+		}
 
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
