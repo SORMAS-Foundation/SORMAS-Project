@@ -17,10 +17,6 @@ package de.symeda.sormas.app.settings;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.util.List;
-
-import org.hzi.sormas.lbds.messaging.LbdsRelated;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -32,8 +28,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.hzi.sormas.lbds.messaging.LbdsRelated;
+
+import java.util.List;
+
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
@@ -58,13 +57,14 @@ import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
 import de.symeda.sormas.app.lbds.LbdsIntentSender;
-import de.symeda.sormas.app.login.ChangePasswordActivity;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+import de.symeda.sormas.app.login.ChangePasswordActivity;
+import de.symeda.sormas.api.feature.FeatureType;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
