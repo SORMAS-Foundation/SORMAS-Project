@@ -59,6 +59,18 @@ public enum Vaccine {
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	SANOFI_GSK(VaccineManufacturer.SANOFI_GSK),
+	@Diseases(value = {
+		Disease.CSM })
+	MenABCWY(VaccineManufacturer.PFIZER),
+	@Diseases(value = {
+		Disease.MONKEYPOX })
+	ACAM2000(VaccineManufacturer.SANOFI_PASTEUR_BIOLOGICS),
+	@Diseases(value = {
+		Disease.MONKEYPOX })
+	LC_16(VaccineManufacturer.KM_BIOLOGICS),
+	@Diseases(value = {
+		Disease.MONKEYPOX })
+	MVA_BN(VaccineManufacturer.BAVARIAN_NORDIC),
 	UNKNOWN,
 	OTHER;
 
