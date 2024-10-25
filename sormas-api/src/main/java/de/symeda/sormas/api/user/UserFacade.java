@@ -58,7 +58,7 @@ public interface UserFacade {
 
 	String checkPasswordStrength(String password);
 
-	boolean isPasswordStrong(String password);
+	boolean isPasswordWeak(String password);
 
 	String generatePassword();
 

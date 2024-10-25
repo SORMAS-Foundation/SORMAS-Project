@@ -149,9 +149,9 @@ import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PasswordValidator;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.util.PasswordValidator;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -1210,8 +1210,8 @@ public class UserFacadeEjb implements UserFacade {
 
 	@PermitAll
 	@Override
-	public boolean isPasswordStrong(String password) {
-		return PasswordValidator.isStrongPassword(password);
+	public boolean isPasswordWeak(String password) {
+		return !PasswordValidator.isStrongPassword(password);
 	}
 
 	@PermitAll
