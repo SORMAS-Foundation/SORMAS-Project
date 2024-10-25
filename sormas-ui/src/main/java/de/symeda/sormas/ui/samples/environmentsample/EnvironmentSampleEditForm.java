@@ -117,7 +117,7 @@ public class EnvironmentSampleEditForm extends AbstractEditForm<EnvironmentSampl
 			EnvironmentSampleDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(isPseudonymized));
+			UiFieldAccessCheckers.getDefault(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale()));
 		this.isCreate = isCreate;
 		addFields();
 		addValueChangeListener(e -> defaultValueChangeListener((EnvironmentSampleDto) e.getProperty().getValue()));
