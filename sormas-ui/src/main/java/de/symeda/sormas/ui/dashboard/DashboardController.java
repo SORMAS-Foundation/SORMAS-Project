@@ -23,6 +23,7 @@ import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -47,6 +48,10 @@ public class DashboardController {
 
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.DASHBOARD_SAMPLES_VIEW)) {
 			navigator.addView(SampleDashboardView.VIEW_NAME, SampleDashboardView.class);
+		}
+
+		if (permitted(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT, UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)) {
+			navigator.addView(AefiDashboardView.VIEW_NAME, AefiDashboardView.class);
 		}
 	}
 }

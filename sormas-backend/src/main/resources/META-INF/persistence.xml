@@ -86,11 +86,14 @@
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
 		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
 		<class>de.symeda.sormas.backend.externalmessage.labmessage.SampleReport</class>
+		<class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi</class>
+		<class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents</class>
+		<class>de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation</class>
 		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
 		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>
 
 
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<validation-mode>CALLBACK</validation-mode>
