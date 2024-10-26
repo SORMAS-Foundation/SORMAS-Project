@@ -302,7 +302,7 @@ public class UserController {
 			}
 		}, ValoTheme.BUTTON_LINK);
 	}
-
+	
 	public ConfirmationComponent getResetPasswordConfirmationComponent(
 		String userUuid,
 		String userEmail,
@@ -516,8 +516,8 @@ public class UserController {
 				}
 				else if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 					String resetUrl = buildKeycloakForgotPasswordUrl();
-					Page.getCurrent().open(resetUrl, "_blank");
-		        }
+					Page.getCurrent().setLocation(resetUrl);
+				}
 			}
 		}, ValoTheme.BUTTON_LINK);
 	}
