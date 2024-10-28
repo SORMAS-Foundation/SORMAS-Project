@@ -162,7 +162,6 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
-import de.symeda.sormas.api.contact.ContactClassification;
 
 public class TestDataCreator {
 

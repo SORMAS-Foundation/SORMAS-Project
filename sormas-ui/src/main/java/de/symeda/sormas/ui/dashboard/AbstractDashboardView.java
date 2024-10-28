@@ -32,13 +32,13 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
-import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
 
 @SuppressWarnings("serial")
 public abstract class AbstractDashboardView extends AbstractView {
@@ -109,8 +109,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 	protected void navigateToDashboardView(Property.ValueChangeEvent e) {
 		if (DashboardType.SURVEILLANCE.equals(e.getProperty().getValue())) {
 			SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
-		}
-		else if (DashboardType.CONTACTS.equals(e.getProperty().getValue())) {
+		} else if (DashboardType.CONTACTS.equals(e.getProperty().getValue())) {
 			SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);
 		}
 		else if (DashboardType.DISEASE.equals(e.getProperty().getValue())) {

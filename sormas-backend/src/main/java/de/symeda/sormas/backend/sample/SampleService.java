@@ -121,10 +121,6 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
-import java.math.BigInteger;
-import javax.persistence.Query;
-import de.symeda.sormas.api.sample.SpecimenCondition;
 
 @Stateless
 @LocalBean
@@ -1001,7 +997,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		return filter;
 	}
 
-	protected boolean sampleAssignedToActiveEntity(String sampleUuid) {
+	private boolean sampleAssignedToActiveEntity(String sampleUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
@@ -1287,65 +1283,6 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.where(filter);
 		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
 		return em.createQuery(cq).getResultList();
-	}
-
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-
-		if (CollectionUtils.isEmpty(caseIds)) {
-			// Avoid empty IN clause
-			return new HashMap<>();
-		}
-
-		// Avoid parameter limit by joining caseIds to a String instead of n parameters
-		StringBuilder queryBuilder = new StringBuilder();
-		//@formatter:off
-		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
-				.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
-				.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
-				.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
-				.append(".").append(Sample.DELETED).append(" = false ORDER BY ").append(Sample.ASSOCIATED_CASE).append("_id, ")
-				.append(Sample.SAMPLE_DATE_TIME).append(" desc) SELECT sortedsamples.").append(Sample.PATHOGEN_TEST_RESULT).append(", COUNT(")
-				.append(Sample.ASSOCIATED_CASE).append("_id) FROM sortedsamples JOIN ").append(Case.TABLE_NAME).append(" ON sortedsamples.")
-				.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
-				.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (").append(QueryHelper.concatLongs(caseIds)).append(") ")
-				.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
-		//@formatter:on
-
-		Query query = em.createNativeQuery(queryBuilder.toString());
-
-		@SuppressWarnings("unchecked")
-		List<Object[]> results = query.getResultList();
-
-		return results.stream()
-				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
-	}
-
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, SampleJoins joins) {
-		Predicate filter = null;
-		// user that reported it is not able to access it. Otherwise they would also need to access the case
-		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		// lab users can see samples assigned to their laboratory
-		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
-			if (currentUser.getLaboratory() != null) {
-				filter = or(cb, filter, cb.equal(joins.getRoot().get(Sample.LAB), currentUser.getLaboratory()));
-			}
-		}
-
-		// only show samples of a specific disease if a limited disease is set
-		if (filter != null && currentUser.getLimitedDiseases() != null) {
-			filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.equal(
-							cb.selectCase()
-									.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
-									.otherwise(joins.getContact().get(Contact.DISEASE)),
-							currentUser.getLimitedDiseases()));
-		}
-
-		return filter;
 	}
 
 	public void cleanupOldCovidSamples() {

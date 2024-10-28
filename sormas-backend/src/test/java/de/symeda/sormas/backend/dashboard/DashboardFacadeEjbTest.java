@@ -177,6 +177,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());
 	}
+
 	@Test
 	public void testDiseaseBurdenForDashboard() {
 
