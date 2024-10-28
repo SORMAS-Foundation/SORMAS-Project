@@ -142,7 +142,6 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
                         binding.actionPasswordStrength.setTextColor(Color.parseColor(getString(R.color.brightYellow)));
                     }
                     RetroProvider.disconnect();
-
                 }
             });
         } catch (Exception e) {
