@@ -332,7 +332,7 @@ public enum FeatureType {
 			CONTACT_TRACING },
 		null,
 		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE)),
-	DISEASE_DETAILS(true, true, null, null, null);
+	DISEASE_DETAILS(false, true, null, null, null);
 
 	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
 		FeatureType.CASE_SURVEILANCE,

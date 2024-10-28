@@ -207,9 +207,7 @@ public class DiseaseBurdenDto implements Serializable {
 		this.recovered = recovered;
 		this.deaths = deaths;
 	}
-
-
-
+	
 	public Disease getDisease() {
 		return disease;
 	}

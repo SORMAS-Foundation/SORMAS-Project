@@ -967,13 +967,6 @@ public class TestDataCreator {
 		return contact;
 	}
 
-	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze, RDCF rdcf, ContactClassification classification,Date contactDate) {
-		ContactDto contact = createContact(reportingUser, null, contactPerson, caze, contactDate, null, null, rdcf);
-		contact.setContactClassification(classification);
-		contact = beanTest.getContactFacade().save(contact);
-		return contact;
-	}
-
 	public TaskDto createTask(UserReferenceDto assigneeUser) {
 		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, null, new Date(), assigneeUser);
 	}

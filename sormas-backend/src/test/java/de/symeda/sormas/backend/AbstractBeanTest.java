@@ -660,6 +660,7 @@ public abstract class AbstractBeanTest {
 	public OutbreakService getOutbreakService() {
 		return getBean(OutbreakService.class);
 	}
+
 	public ImportFacade getImportFacade() {
 		return getBean(ImportFacadeEjbLocal.class);
 	}

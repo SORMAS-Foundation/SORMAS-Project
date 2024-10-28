@@ -86,7 +86,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetIndexList_noCriteria() {
+	public void testGetIndexListNoCriteria() {
 		// Arrange
 		creator.createRegion("region1");
 		creator.createRegion("region2");

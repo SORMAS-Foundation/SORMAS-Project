@@ -1347,6 +1347,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		return filter;
 	}
+
 	public void cleanupOldCovidSamples() {
 		final Integer maxAgeDays = configFacade.getNegaiveCovidSamplesMaxAgeDays();
 		if (maxAgeDays == null) {

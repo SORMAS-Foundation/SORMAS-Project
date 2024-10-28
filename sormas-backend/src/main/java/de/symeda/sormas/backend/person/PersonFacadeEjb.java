@@ -191,7 +191,6 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 
 @Stateless(name = "PersonFacade")
 @RightsAllowed(UserRight._PERSON_VIEW)
@@ -307,6 +306,16 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	@Override
+	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
+		final User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+		final District district = districtService.getByReferenceDto(districtRef);
+		return toPseudonymizedDtos(service.getDeathsBetween(fromDate, toDate, district, disease, user));
 	}
 
 	public Long getPersonIdByUuid(String uuid) {
@@ -2063,17 +2072,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
-		final User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-		final District district = districtService.getByReferenceDto(districtRef);
-		return toPseudonymizedDtos(service.getDeathsBetween(fromDate, toDate, district, disease, user));
-	}
-
-    @LocalBean
+	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
 

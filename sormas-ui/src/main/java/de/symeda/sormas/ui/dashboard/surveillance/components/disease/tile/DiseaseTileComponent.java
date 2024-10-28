@@ -30,7 +30,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.CssStyles;
-import javax.validation.constraints.NotNull;
 import com.vaadin.ui.Button;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
@@ -45,7 +44,10 @@ public class DiseaseTileComponent extends VerticalLayout {
 		setMargin(false);
 		setSpacing(false);
 
-		addTopLayout(diseaseBurden.getDisease(), diseaseBurden.getCaseCount(), diseaseBurden.getPreviousCaseCount(),
+		addTopLayout(
+			diseaseBurden.getDisease(),
+			diseaseBurden.getCaseCount(),
+			diseaseBurden.getPreviousCaseCount(),
 			diseaseBurden.getOutbreakDistrictCount() > 0);
 		addStatsLayout(diseaseBurden, dashboardDataProvider);
 
@@ -117,13 +119,24 @@ public class DiseaseTileComponent extends VerticalLayout {
 			comparisonLayout.setMargin(false);
 			comparisonLayout.setSpacing(false);
 
-			Label growthLabel = getLabel(casesCount, previousCasesCount);
+			Label growthLabel = new Label("", ContentMode.HTML);
+			String chevronType;
+			if (previousCasesCount < casesCount) {
+				chevronType = VaadinIcons.CHEVRON_UP.getHtml();
+			} else if (previousCasesCount > casesCount) {
+				chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
+			} else {
+				chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
+			}
+			growthLabel.setValue(
+				"<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-" + CssStyles.LABEL_WHITE
+					+ " align-center v-label-align-center bold v-label-bold v-has-width\" " + "	  style=\"margin-top: 3px;\">"
+					+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>" + "</div>");
 
 			comparisonLayout.addComponent(growthLabel);
 
 			Label previousCountLabel = new Label(previousCasesCount.toString());
-			previousCountLabel.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XLARGE,
-					CssStyles.HSPACE_LEFT_4);
+			previousCountLabel.addStyleNames(CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XLARGE, CssStyles.HSPACE_LEFT_4);
 			comparisonLayout.addComponent(previousCountLabel);
 			comparisonLayout.setComponentAlignment(growthLabel, Alignment.MIDDLE_CENTER);
 			comparisonLayout.setComponentAlignment(previousCountLabel, Alignment.MIDDLE_CENTER);
@@ -140,25 +153,6 @@ public class DiseaseTileComponent extends VerticalLayout {
 		addComponent(layout);
 	}
 
-	@NotNull
-	private static Label getLabel(Long casesCount, Long previousCasesCount) {
-		Label growthLabel = new Label("", ContentMode.HTML);
-		String chevronType;
-		if (previousCasesCount < casesCount) {
-			chevronType = VaadinIcons.CHEVRON_UP.getHtml();
-		} else if (previousCasesCount > casesCount) {
-			chevronType = VaadinIcons.CHEVRON_DOWN.getHtml();
-		} else {
-			chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
-		}
-		growthLabel.setValue("<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-"
-				+ CssStyles.LABEL_WHITE + " align-center v-label-align-center bold v-label-bold v-has-width\" "
-				+ "	  style=\"margin-top: 3px;\">"
-				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
-				+ "</div>");
-		return growthLabel;
-	}
-
 	private void addStatsLayout(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
         Long fatalities = diseaseBurden.getCaseDeathCount();
 		Long events = diseaseBurden.getEventCount();
@@ -171,20 +165,24 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
 
-		StatsItem lastReportItem = new StatsItem.Builder(Captions.dashboardLastReport,
-		district.isEmpty() ? I18nProperties.getString(Strings.none) : district).singleColumn(true).build();
+		StatsItem lastReportItem =
+			new StatsItem.Builder(Captions.dashboardLastReport, district.isEmpty() ? I18nProperties.getString(Strings.none) : district)
+				.singleColumn(true)
+				.build();
 		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
 		layout.addComponent(lastReportItem);
 
 		StatsItem fatality = new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build();
 		fatality.addStyleName(CssStyles.HSPACE_LEFT_5);
 		layout.addComponent(fatality);
+
 		StatsItem noOfEventsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
 		noOfEventsItem.addStyleName(CssStyles.VSPACE_4);
 		layout.addComponent(noOfEventsItem);
 
 		Button component = addDiseaseButton(disease, dashboardDataProvider);
 		layout.addComponent(component);
+
 		addComponent(layout);
 	}
 

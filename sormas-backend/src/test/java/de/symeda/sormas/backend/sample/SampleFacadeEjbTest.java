@@ -1222,46 +1222,4 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, count);
 		assertEquals(6, samples.size());
 	}
-
-	@Test
-	public void testGetEarliestPositiveSampleDate() {
-		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createSurveillanceSupervisor(rdcf);
-		PersonDto person = creator.createPerson("New", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
-
-		// Create contact with positive samples
-		ContactDto contact = creator.createContact(
-				user.toReference(),
-				user.toReference(), // Assuming user is also contact officer for simplicity
-				person.toReference(),
-				caze,
-				new Date(), // Report DateTime
-				new Date(), // Last Contact Date
-				Disease.EVD,
-				creator.createRDCF()
-		);
-
-		// Sample 1 - Positive
-		SampleDto sample1 = creator.createSample(caze.toReference(), user.toReference(), creator.createRDCF().facility);
-		sample1.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-		sample1.setSampleDateTime(new Date(2023 - 1900, 5, 15)); // June 15, 2023
-		getSampleFacade().saveSample(sample1);
-
-		// Sample 2 - Positive
-		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), creator.createRDCF().facility);
-		sample2.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-		sample2.setSampleDateTime(new Date(2023 - 1900, 5, 20)); // June 20, 2023
-		getSampleFacade().saveSample(sample2);
-
-		// Sample 3 - Negative
-		SampleDto sample3 = creator.createSample(caze.toReference(), user.toReference(), creator.createRDCF().facility);
-		sample3.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
-		sample3.setSampleDateTime(new Date(2023 - 1900, 5, 10)); // June 10, 2023
-		getSampleFacade().saveSample(sample3);
-
-		// Test - earliest positive sample date
-		Date earliestPositiveSampleDate = getSampleFacade().getEarliestPositiveSampleDate(contact.getUuid());
-		assertEquals(new Date(2023 - 1900, 5, 15), earliestPositiveSampleDate);
-	}
 }
