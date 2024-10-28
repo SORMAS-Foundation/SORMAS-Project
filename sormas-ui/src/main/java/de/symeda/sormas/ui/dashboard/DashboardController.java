@@ -23,6 +23,7 @@ import com.vaadin.navigator.Navigator;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -64,6 +65,10 @@ public class DashboardController {
 		if (permitted(FeatureType.DISEASE_DETAILS)) {
 			navigator.addView(DiseaseDetailsView.VIEW_NAME, DiseaseDetailsView.class);
 		}
+
+		if (permitted(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT, UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)) {
+			navigator.addView(AefiDashboardView.VIEW_NAME, AefiDashboardView.class);
+		}
 	}
 
 	public void navigateToDisease(Disease disease,DashboardDataProvider dashboardDataProvider) {
@@ -92,5 +97,6 @@ public class DashboardController {
 
 		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+
 	}
 }

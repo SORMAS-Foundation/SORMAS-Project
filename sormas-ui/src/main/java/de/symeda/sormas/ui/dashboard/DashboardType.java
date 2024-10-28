@@ -25,6 +25,7 @@ public enum DashboardType {
 	CONTACTS,
 	CAMPAIGNS,
 	SAMPLES,
+	ADVERSE_EVENTS,
 	DISEASE;
 
 	@Override

@@ -2066,7 +2066,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@PermitAll
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
-		if (configFacade.isFeatureAutomaticCaseClassification()) {
+		if (configFacade.getCaseClassificationCalculationMode(associatedCase.getDisease()).isAutomaticEnabled()
+			& associatedCase.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
 				if (pathogenTestsCount == 0) {
@@ -2200,8 +2201,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 
 		updateTasksOnCaseChanged(newCase, existingCase);
-
-		handleClassificationOnCaseChange(existingCase, newCase);
+		if ((existingCase == null || existingCase.getDisease() != newCase.getDisease())
+			&& newCase.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			newCase.setCaseClassification(CaseClassification.CONFIRMED);
+			newCase.setClassificationDate(newCase.getReportDate());
+			newCase.setClassificationUser(newCase.getReportingUser());
+		} else {
+			handleClassificationOnCaseChange(existingCase, newCase);
+		}
 
 		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists
 		// are not empty
@@ -2263,7 +2270,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
 		boolean setClassificationInfo = true;
-		if (configFacade.isFeatureAutomaticCaseClassification()) {
+		if (configFacade.getCaseClassificationCalculationMode(savedCase.getDisease()).isAutomaticEnabled()
+			& savedCase.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE
 				|| configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				// calculate classification

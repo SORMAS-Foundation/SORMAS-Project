@@ -2336,13 +2336,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return super.getDeleteReferenceField(deletionReference);
 	}
 
-	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease) {
-		Integer automaticSampleAssignmentThreshold = diseaseConfigurationFacade.getAutomaticSampleAssignmentThreshold(disease);
-
-		if (automaticSampleAssignmentThreshold == null) {
-			return null;
-		}
-
+	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease, int threshold) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -2364,9 +2358,10 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						Date.class,
 						CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
 					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
-				Long.valueOf(TimeUnit.DAYS.toSeconds(automaticSampleAssignmentThreshold)).doubleValue()));
+				Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue()));
+		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();
-		return caseUuids.size() == 1 ? caseUuids.get(0) : null;
+		return caseUuids.isEmpty() ? null : caseUuids.get(0);
 	}
 }

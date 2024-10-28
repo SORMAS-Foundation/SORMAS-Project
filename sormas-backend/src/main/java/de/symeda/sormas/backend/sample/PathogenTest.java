@@ -248,7 +248,6 @@ public class PathogenTest extends DeletableAdo {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
 	public Date getTestDateTime() {
 		return testDateTime;
 	}
