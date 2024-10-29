@@ -31,6 +31,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
@@ -42,11 +43,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -56,7 +55,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	private static final long serialVersionUID = 1L;
 
 	private static final String HEALTH_CONDITIONS_HEADINGS_LOC = "healthConditionsHeadingLoc";
-	private static final String CONFIDENTIAL_LABEL = "confidentialLabel";
+	private static final String CONFIDENTIAL_LABEL_LOC = "confidentialLabel";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
@@ -70,9 +69,32 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 									CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
 									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
-					) +
-					loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL);
+					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC);
 	//@formatter:on
+
+	private static final List<String> fieldsList = List.of(
+		TUBERCULOSIS,
+		ASPLENIA,
+		HEPATITIS,
+		DIABETES,
+		HIV,
+		HIV_ART,
+		CHRONIC_LIVER_DISEASE,
+		MALIGNANCY_CHEMOTHERAPY,
+		CHRONIC_HEART_FAILURE,
+		CHRONIC_PULMONARY_DISEASE,
+		CHRONIC_KIDNEY_DISEASE,
+		CHRONIC_NEUROLOGIC_CONDITION,
+		DOWN_SYNDROME,
+		CONGENITAL_SYPHILIS,
+		IMMUNODEFICIENCY_OTHER_THAN_HIV,
+		CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
+		OBESITY,
+		CURRENT_SMOKER,
+		FORMER_SMOKER,
+		ASTHMA,
+		SICKLE_CELL_DISEASE,
+		IMMUNODEFICIENCY_INCLUDING_HIV);
 
 	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -85,45 +107,18 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		healthConditionsHeadingLabel.addStyleName(H3);
 		getContent().addComponent(healthConditionsHeadingLabel, HEALTH_CONDITIONS_HEADINGS_LOC);
 
-		if (displayFieldsAllowed()) {
-			addFields(
-				TUBERCULOSIS,
-				ASPLENIA,
-				HEPATITIS,
-				DIABETES,
-				HIV,
-				HIV_ART,
-				CHRONIC_LIVER_DISEASE,
-				MALIGNANCY_CHEMOTHERAPY,
-				CHRONIC_HEART_FAILURE,
-				CHRONIC_PULMONARY_DISEASE,
-				CHRONIC_KIDNEY_DISEASE,
-				CHRONIC_NEUROLOGIC_CONDITION,
-				DOWN_SYNDROME,
-				CONGENITAL_SYPHILIS,
-				IMMUNODEFICIENCY_OTHER_THAN_HIV,
-				CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
-				OBESITY,
-				CURRENT_SMOKER,
-				FORMER_SMOKER,
-				ASTHMA,
-				SICKLE_CELL_DISEASE,
-				IMMUNODEFICIENCY_INCLUDING_HIV);
-			TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
-			otherConditions.setRows(6);
-			otherConditions.setDescription(
-				I18nProperties.getPrefixDescription(HealthConditionsDto.I18N_PREFIX, OTHER_CONDITIONS, "") + "\n"
-					+ I18nProperties.getDescription(Descriptions.descGdpr));
+		addFields(fieldsList);
 
-			initializeVisibilitiesAndAllowedVisibilities();
-			initializeAccessAndAllowedAccesses();
+		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
+		otherConditions.setRows(6);
+		otherConditions.setDescription(
+			I18nProperties.getPrefixDescription(HealthConditionsDto.I18N_PREFIX, OTHER_CONDITIONS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
 
-			FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
-		} else {
-			Label confidentialLabel = new Label(I18nProperties.getCaption(Captions.inaccessibleValue));
-			confidentialLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);
-			getContent().addComponent(confidentialLabel, CONFIDENTIAL_LABEL);
-		}
+		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
+
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 	}
 
 	@Override
@@ -138,7 +133,13 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
 
-	private boolean displayFieldsAllowed() {
-		return UiUtil.permitted(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION);
+	public void setInaccessible() {
+		fieldsList.stream().forEach(field -> {
+			getContent().getComponent(field).setVisible(false);
+		});
+		getContent().getComponent(OTHER_CONDITIONS).setVisible(false);
+		Label confidentialLabel = new Label(I18nProperties.getCaption(Captions.inaccessibleValue));
+		confidentialLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+		getContent().addComponent(confidentialLabel, CONFIDENTIAL_LABEL_LOC);
 	}
 }

@@ -348,13 +348,8 @@ public class AboutView extends VerticalLayout implements View {
 
 	public void attachDataProtectionDictionaryDownloader(AbstractComponent target) {
 		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
-			try {
-				String documentPath = FacadeProvider.getInfoFacade().generateDataProtectionDictionary();
-				IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+			String documentPath = FacadeProvider.getInfoFacade().generateDataProtectionDictionary();
+			IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
 		}, (e) -> {
 		}), DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.DATA_PROTECTION_DICTIONARY, ".xlsx"))).extend(target);
 	}

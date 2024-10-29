@@ -1022,6 +1022,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 
+		addField(CaseDataDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
+
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
@@ -1205,8 +1207,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		List<String> medicalInformationFields =
 			Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION_STATUS, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
-
-		addField(CaseDataDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
