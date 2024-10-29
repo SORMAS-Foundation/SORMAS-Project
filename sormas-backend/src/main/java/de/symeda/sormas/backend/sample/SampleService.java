@@ -56,18 +56,23 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.IsCase;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.IsSample;
+import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
@@ -87,6 +92,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.JurisdictionFlagsService;
@@ -145,6 +151,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public SampleService() {
 		super(Sample.class, DeletableEntityType.SAMPLE);
@@ -1276,5 +1284,38 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		cq.where(filter);
 		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
 		return em.createQuery(cq).getResultList();
+	}
+
+	public void cleanupOldCovidSamples() {
+		final Integer maxAgeDays = configFacade.getNegaiveCovidSamplesMaxAgeDays();
+		if (maxAgeDays == null) {
+			return;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
+		Root<PathogenTest> from = cq.from(PathogenTest.class);
+
+		cq.where(
+			cb.equal(from.get(PathogenTest.TESTED_DISEASE), Disease.CORONAVIRUS),
+			cb.equal(from.get(PathogenTest.TEST_RESULT), PathogenTestResultType.NEGATIVE),
+			cb.notEqual(from.get(PathogenTest.DELETED), true),
+			cb.lessThan(
+				CriteriaBuilderHelper.coalesce(
+					cb,
+					Date.class,
+					from.get(PathogenTest.TEST_DATE_TIME),
+					from.get(PathogenTest.REPORT_DATE),
+					from.get(PathogenTest.CREATION_DATE)),
+				DateHelper.subtractDays(new Date(), maxAgeDays)));
+		em.createQuery(cq).getResultList().stream().collect(Collectors.groupingBy(PathogenTest::getSample)).forEach((sample, tests) -> {
+			if (pathogenTestService.count(new PathogenTestCriteria().sample(sample.toReference())) == tests.size()) {
+				delete(sample, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));
+			} else {
+				tests.forEach(
+					p -> pathogenTestService
+						.delete(p, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion))));
+			}
+		});
 	}
 }

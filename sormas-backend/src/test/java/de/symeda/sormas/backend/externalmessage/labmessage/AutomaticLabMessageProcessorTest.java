@@ -40,6 +40,7 @@ import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -308,6 +309,29 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(getCaseFacade().getAllActiveUuids(), hasSize(0));
 		assertThat(getSampleFacade().getAllActiveUuids(), hasSize(0));
 		assertThat(getPathogenTestFacade().getAllActiveUuids(), hasSize(0));
+	}
+
+	@Test
+	public void testProcessWithExistingPersonWithSameNationalHealthIdAndPersonDetailsNormalizedCheck()
+		throws ExecutionException, InterruptedException {
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonFirstName("john vander");
+			m.setPersonLastName("DOÉ");
+			m.setPersonCity("	PERSON  	 city  \n");
+			m.setPersonStreet(" person   STREET   12A");
+		});
+
+		creator.createPerson("John Van Der", "Doe", Sex.MALE, p -> {
+			p.setNationalHealthId(externalMessage.getPersonNationalHealthId());
+			p.getAddress().setCity("person city");
+			p.getAddress().setStreet("PERSON STREET, 12a");
+		});
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getPersonFacade().count(new PersonCriteria()), is(1L));
 	}
 
 	@Test

@@ -69,6 +69,7 @@ public enum FeatureType {
 	TASK_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_EDITING, Boolean.FALSE)),
 	WEEKLY_REPORTING(true, true, null, null, null),
 	IMMUNIZATION_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
+	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
 	TRAVEL_ENTRIES(true, false, null, null, null),
 
 	DASHBOARD_SURVEILLANCE(true, true, null, null, null),

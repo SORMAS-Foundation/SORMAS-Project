@@ -52,6 +52,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiView;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
@@ -69,6 +70,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.SubcontinentsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -231,6 +233,12 @@ public class MainScreen extends HorizontalLayout {
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
 				VaadinIcons.DASHBOARD);
+		} else if (aefiDashboardPermitted()) {
+			menu.addView(
+				AefiDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
 		}
 
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
@@ -297,6 +305,13 @@ public class MainScreen extends HorizontalLayout {
 				ImmunizationsView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuImmunizations),
 				VaadinIcons.HEALTH_CARD);
+		}
+
+		if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)
+			&& !FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+			&& permitted(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT, UserRight.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)) {
+			ControllerProvider.getAefiController().registerViews(navigator);
+			menu.addView(AefiView.class, AefiView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAdverseEvents), VaadinIcons.BELL_SLASH);
 		}
 
 		if (permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
@@ -439,6 +454,12 @@ public class MainScreen extends HorizontalLayout {
 		return permitted(EnumSet.of(FeatureType.DASHBOARD_SAMPLES, FeatureType.SAMPLES_LAB), UserRight.DASHBOARD_SAMPLES_VIEW);
 	}
 
+	private static boolean aefiDashboardPermitted() {
+		return permitted(
+			EnumSet.of(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT),
+			UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW);
+	}
+
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(
 			Arrays.asList(
@@ -468,7 +489,8 @@ public class MainScreen extends HorizontalLayout {
 				CountriesView.VIEW_NAME,
 				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
-				ImmunizationsView.VIEW_NAME));
+				ImmunizationsView.VIEW_NAME,
+				AefiView.VIEW_NAME));
 
 		if (surveillanceDashboardPermitted()) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);

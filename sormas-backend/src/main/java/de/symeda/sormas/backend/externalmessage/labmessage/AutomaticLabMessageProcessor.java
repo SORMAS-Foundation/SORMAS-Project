@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
+import java.text.Collator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -315,6 +316,21 @@ public class AutomaticLabMessageProcessor {
 			}
 
 			return personValue.equals(messageValue);
+		}
+
+		private boolean unsetOrMatches(String personValue, String messageValue) {
+			if (personValue == null || messageValue == null) {
+				return true;
+			}
+
+			Collator collator = Collator.getInstance();
+			collator.setStrength(Collator.PRIMARY);
+
+			return collator.compare(normalizatString(personValue), normalizatString(messageValue)) == 0;
+		}
+
+		private String normalizatString(String string) {
+			return string.replaceAll("[\\s-,;:]", "");
 		}
 	}
 }
