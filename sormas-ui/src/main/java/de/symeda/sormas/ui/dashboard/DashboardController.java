@@ -62,7 +62,7 @@ public class DashboardController {
 			navigator.addView(SampleDashboardView.VIEW_NAME, SampleDashboardView.class);
 		}
 
-		if (permitted(FeatureType.DISEASE_DETAILS)) {
+		if (permitted(FeatureType.DISEASE_DETAILS, UserRight.DISEASE_DETAILS_VIEW)) {
 			navigator.addView(DiseaseDetailsView.VIEW_NAME, DiseaseDetailsView.class);
 		}
 

@@ -83,7 +83,7 @@ public abstract class AbstractDashboardView extends AbstractView {
 			dashboardSwitcher.setItemCaption(DashboardType.CAMPAIGNS, I18nProperties.getEnumCaption(DashboardType.CAMPAIGNS));
 		}
 
-		if (permitted(FeatureType.DISEASE_DETAILS)) {
+		if (permitted(FeatureType.DISEASE_DETAILS , UserRight.DISEASE_DETAILS_VIEW) ) {
 			dashboardSwitcher.addItem(DashboardType.DISEASE);
 			dashboardSwitcher.setItemCaption(DashboardType.DISEASE, I18nProperties.getEnumCaption(DashboardType.DISEASE));
 		}

@@ -807,6 +807,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
+	@RightsAllowed({UserRight._DISEASE_DETAILS_VIEW})
 	public DiseaseBurdenDto getDiseaseForDashboard(
 			RegionReferenceDto region,
 			DistrictReferenceDto district,
@@ -875,6 +876,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
+	@RightsAllowed({
+			UserRight._DISEASE_DETAILS_VIEW})
 	public DiseaseBurdenDto getDiseaseGridForDashboard(
 			RegionReferenceDto region,
 			DistrictReferenceDto district,

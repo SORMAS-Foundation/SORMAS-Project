@@ -13668,4 +13668,9 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EV
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
 
 INSERT INTO schema_version (version_number, comment) VALUES (552, 'Adverse Events Following Immunization (AEFI) - Entities #12634');
+
+-- Assign DISEASE_DETAILS_VIEW user rights to default admin and national_user user roles
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DISEASE_DETAILS_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+
+INSERT INTO schema_version (version_number, comment) VALUES (553, 'Dashboard Diseases Details View - #12880');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

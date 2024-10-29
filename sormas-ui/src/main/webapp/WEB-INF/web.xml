@@ -514,6 +514,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>DISEASE_DETAILS_VIEW</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CASE_CLINICIAN_VIEW</role-name>
 	</security-role>
 

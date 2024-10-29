@@ -174,7 +174,8 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 			filter = CriteriaBuilderHelper.and(cb, filter, from.get(Outbreak.DISEASE).in(criteria.getDiseases()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Outbreak.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -194,7 +195,8 @@ public class OutbreakService extends AdoServiceWithUserFilterAndJurisdiction<Out
 			filter = CriteriaBuilderHelper.and(cb, filter, activeFilter);
 		}
 		if (criteria.getReportedDateFrom() != null || criteria.getReportedDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(Outbreak.REPORT_DATE), criteria.getReportedDateFrom(), criteria.getReportedDateTo()));
 		}
 
 		return filter;

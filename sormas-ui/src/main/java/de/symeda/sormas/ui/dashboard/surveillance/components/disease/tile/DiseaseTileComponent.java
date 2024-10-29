@@ -35,6 +35,9 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.user.UserRight;
+import static de.symeda.sormas.ui.UiUtil.permitted;
 
 public class DiseaseTileComponent extends VerticalLayout {
 
@@ -153,7 +156,7 @@ public class DiseaseTileComponent extends VerticalLayout {
 		addComponent(layout);
 	}
 
-	private void addStatsLayout(DiseaseBurdenDto diseaseBurden,DashboardDataProvider dashboardDataProvider) {
+	private void addStatsLayout(DiseaseBurdenDto diseaseBurden, DashboardDataProvider dashboardDataProvider) {
         Long fatalities = diseaseBurden.getCaseDeathCount();
 		Long events = diseaseBurden.getEventCount();
 		String district = diseaseBurden.getLastReportedDistrictName();
@@ -166,22 +169,27 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.addStyleName(CssStyles.BACKGROUND_HIGHLIGHT);
 
 		StatsItem lastReportItem =
-			new StatsItem.Builder(Captions.dashboardLastReport, district.isEmpty() ? I18nProperties.getString(Strings.none) : district)
+			new StatsItem.Builder(Captions.dashboardLastReport, district.length() == 0 ? I18nProperties.getString(Strings.none) : district)
 				.singleColumn(true)
 				.build();
 		lastReportItem.addStyleName(CssStyles.VSPACE_TOP_4);
 		layout.addComponent(lastReportItem);
 
 		StatsItem fatality = new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build();
-		fatality.addStyleName(CssStyles.HSPACE_LEFT_5);
+		if (permitted(FeatureType.DISEASE_DETAILS , UserRight.DISEASE_DETAILS_VIEW) ) {
+			fatality.addStyleName(CssStyles.HSPACE_LEFT_5);
+		}
+
 		layout.addComponent(fatality);
 
 		StatsItem noOfEventsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
 		noOfEventsItem.addStyleName(CssStyles.VSPACE_4);
 		layout.addComponent(noOfEventsItem);
 
-		Button component = addDiseaseButton(disease, dashboardDataProvider);
-		layout.addComponent(component);
+		if (permitted(FeatureType.DISEASE_DETAILS , UserRight.DISEASE_DETAILS_VIEW) ) {
+			Button component = addDiseaseButton(disease, dashboardDataProvider);
+			layout.addComponent(component);
+		}
 
 		addComponent(layout);
 	}
