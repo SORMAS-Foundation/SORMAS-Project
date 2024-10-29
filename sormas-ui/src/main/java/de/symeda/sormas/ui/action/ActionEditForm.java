@@ -41,7 +41,6 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.RichTextAreaCustom;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ActionEditForm extends AbstractEditForm<ActionDto> {
@@ -101,7 +100,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		addField(ActionDto.ACTION_MEASURE, TextField.class);
 		TextField title = addField(ActionDto.TITLE, TextField.class);
 		title.addStyleName(SOFT_REQUIRED);
-		RichTextAreaCustom description = addField(ActionDto.DESCRIPTION, RichTextAreaCustom.class);
+		RichTextArea description = addField(ActionDto.DESCRIPTION, RichTextArea.class);
 
 		description.setNullRepresentation("");
 		description.setImmediate(true);

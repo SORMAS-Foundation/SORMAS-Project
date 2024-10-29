@@ -46,6 +46,7 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
@@ -652,7 +653,7 @@ public final class VaadinUiUtil {
 		});
 	}
 
-	public static void addGdprMessageOnClick(RichTextAreaCustom richTextArea) {
+	public static void addGdprMessageOnClick(RichTextArea richTextArea) {
 		AtomicBoolean gdprMessageTriggered = new AtomicBoolean(false);
 		Window subWindowGdpR = VaadinUiUtil.createPopupWindow();
 

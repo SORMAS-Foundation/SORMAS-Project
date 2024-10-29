@@ -85,7 +85,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		healthConditionsHeadingLabel.addStyleName(H3);
 		getContent().addComponent(healthConditionsHeadingLabel, HEALTH_CONDITIONS_HEADINGS_LOC);
 
-		if (UiUtil.permitted(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION)) {
+		if (displayFieldsAllowed()) {
 			addFields(
 				TUBERCULOSIS,
 				ASPLENIA,
@@ -136,5 +136,9 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		field.addValueChangeListener(e -> fireValueChange(false));
 
 		return super.addFieldToLayout(layout, propertyId, field);
+	}
+
+	private boolean displayFieldsAllowed() {
+		return UiUtil.permitted(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION);
 	}
 }

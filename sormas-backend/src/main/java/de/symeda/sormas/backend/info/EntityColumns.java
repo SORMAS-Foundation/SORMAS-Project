@@ -21,8 +21,10 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -42,80 +44,73 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public enum EntityColumn {
+public class EntityColumns {
 
-	ENTITY(256 * 30, EntityColumn::getEntity, false, true, true),
-	FIELD_ID(256 * 30, EntityColumn::getFieldId, false, true, false),
-	FIELD(256 * 30, EntityColumn::getFieldName, false, true, false),
-	TYPE(256 * 30, EntityColumn::getFieldType, true, true, false),
-	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false, true, false),
-	CAPTION(256 * 30, EntityColumn::getCaption, false, true, false),
-	DESCRIPTION(256 * 60, EntityColumn::getDescription, true, true, false),
-	REQUIRED(256 * 10, EntityColumn::getNotNull, false, true, false),
-	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false, true, false),
-	DISEASES(256 * 45, EntityColumn::getDiseases, true, true, false),
-	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false, true, false),
-	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false, false, false),
-	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false, false, false);
+	private final EntityColumn ENTITY = new EntityColumn("ENTITY", 256 * 30, this::getEntity, false, false, false, true);
+	private final EntityColumn FIELD_ID = new EntityColumn("FIELD_ID", 256 * 30, EntityColumns::getFieldId, false, true, true, true);
+	private final EntityColumn FIELD = new EntityColumn("FIELD", 256 * 30, this::getFieldName, false, true, true, true);
+	private final EntityColumn TYPE = new EntityColumn("TYPE", 256 * 30, this::getFieldType, true, true, true, true);
+	private final EntityColumn DATA_PROTECTION = new EntityColumn("DATA_PROTECTION", 256 * 30, this::getDataProtection, false, true, true, true);
+	private final EntityColumn CAPTION = new EntityColumn("CAPTION", 256 * 30, this::getCaption, false, true, true, true);
+	private final EntityColumn DESCRIPTION = new EntityColumn("DESCRIPTION", 256 * 60, this::getDescription, true, true, true, true);
+	private final EntityColumn REQUIRED = new EntityColumn("REQUIRED", 256 * 10, this::getNotNull, false, true, true, true);
+	private final EntityColumn NEW_DISEASE = new EntityColumn("NEW_DISEASE", 256 * 8, this::getNewDisease, false, true, true, true);
+	private final EntityColumn DISEASES = new EntityColumn("DISEASES", 256 * 45, this::getDiseases, true, true, true, true);
+	private final EntityColumn OUTBREAKS = new EntityColumn("OUTBREAKS", 256 * 10, this::getOutbreaks, false, true, true, true);
+	private final EntityColumn IGNORED_COUNTRIES =
+		new EntityColumn("IGNORED_COUNTRIES", 256 * 20, this::getIgnoredCountries, false, true, false, false);
+	private final EntityColumn EXCLUSIVE_COUNTRIES =
+		new EntityColumn("EXCLUSIVE_COUNTRIES", 256 * 20, this::getExclusiveCountries, false, true, false, false);
 
-	private final int width;
-	private final Function<FieldData, String> getValueFromField;
-	private final boolean hasDefaultStyle;
-	private final boolean isDataProtectionColumn;
-	private final boolean isColumnForAllFieldsSheet;
+	private final List<EntityColumn> entityColumns = List.of(
+		ENTITY,
+		FIELD_ID,
+		FIELD,
+		TYPE,
+		DATA_PROTECTION,
+		CAPTION,
+		DESCRIPTION,
+		REQUIRED,
+		NEW_DISEASE,
+		DISEASES,
+		OUTBREAKS,
+		IGNORED_COUNTRIES,
+		EXCLUSIVE_COUNTRIES);
 
-	EntityColumn(
-		int width,
-		Function<FieldData, String> getValueFromField,
-		boolean hasDefaultStyle,
-		boolean isDataProtectionColumn,
-		boolean isColumnForAllFieldsSheet) {
+	private final String serverCountry;
+	private final boolean isDataProtectionFlow;
 
-		this.width = width;
-		this.getValueFromField = getValueFromField;
-		this.hasDefaultStyle = hasDefaultStyle;
-		this.isDataProtectionColumn = isDataProtectionColumn;
-		this.isColumnForAllFieldsSheet = isColumnForAllFieldsSheet;
+	public EntityColumns(final String serverCountry, final boolean isDataProtectionFlow) {
+		this.serverCountry = serverCountry;
+		this.isDataProtectionFlow = isDataProtectionFlow;
 	}
 
-	public int getWidth() {
-		return width;
+	public List<EntityColumn> getEntityColumns() {
+
+		if (isDataProtectionFlow) {
+			return entityColumns.stream().filter(EntityColumn::isDataProtectionColumn).collect(Collectors.toList());
+		}
+
+		return entityColumns.stream().filter(EntityColumn::isDataDictionaryColumn).collect(Collectors.toList());
 	}
 
-	public String getGetValueFromField(FieldData fieldData) {
-		return getValueFromField.apply(fieldData);
+	public List<EntityColumn> getColumnsForAllFieldsSheet() {
+		return entityColumns.stream().filter(EntityColumn::isColumnForAllFieldsSheet).collect(Collectors.toList());
 	}
 
-	public boolean hasDefaultStyle() {
-		return hasDefaultStyle;
-	}
-
-	public boolean isDataProtectionColumn() {
-		return isDataProtectionColumn;
-	}
-
-	public boolean isColumnForAllFieldsSheet() {
-		return isColumnForAllFieldsSheet;
-	}
-
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
-
-	private static String getEntity(FieldData fieldData) {
+	private String getEntity(FieldData fieldData) {
 		return DataHelper.getHumanClassName(fieldData.getEntityClass());
 	}
 
-	private static String getFieldId(FieldData fieldData) {
+	public static String getFieldId(FieldData fieldData) {
 		return DataHelper.getHumanClassName(fieldData.getEntityClass()) + "." + fieldData.getField().getName();
 	}
 
-	private static String getFieldName(FieldData fieldData) {
+	private String getFieldName(FieldData fieldData) {
 		return fieldData.getField().getName();
 	}
 
-	private static String getFieldType(FieldData fieldData) {
+	private String getFieldType(FieldData fieldData) {
 		Class<?> fieldType = fieldData.getField().getType();
 		if (fieldType.isEnum()) {
 			// use enum type name - values are added below
@@ -153,13 +148,16 @@ public enum EntityColumn {
 		return fieldType.getSimpleName();
 	}
 
-	private static String getDataProtection(FieldData fieldData) {
+	private String getDataProtection(FieldData fieldData) {
 		Field field = fieldData.getField();
 
-		if (field.getAnnotation(PersonalData.class) != null) {
+		if (field.getAnnotation(PersonalData.class) != null
+			&& (!isDataProtectionFlow || !Arrays.asList(field.getAnnotation(PersonalData.class).excludeForCountries()).contains(serverCountry))) {
 			return "personal";
 		} else {
-			if (field.getAnnotation(SensitiveData.class) != null) {
+			if (field.getAnnotation(SensitiveData.class) != null
+				&& (!isDataProtectionFlow
+					|| !Arrays.asList(field.getAnnotation(SensitiveData.class).excludeForCountries()).contains(serverCountry))) {
 				return "sensitive";
 			}
 		}
@@ -167,12 +165,16 @@ public enum EntityColumn {
 		return null;
 	}
 
-	private static String getCaption(FieldData fieldData) {
+	private String getCaption(FieldData fieldData) {
 		return I18nProperties.getPrefixCaption(fieldData.getI18NPrefix(), fieldData.getField().getName(), "");
 	}
 
-	private static String getDescription(FieldData fieldData) {
-		String prefixDescription = I18nProperties.getPrefixDescription(fieldData.getI18NPrefix(), fieldData.getField().getName(), "");
+	private String getDescription(FieldData fieldData) {
+		String fieldDescription = I18nProperties.getPrefixDescription(fieldData.getI18NPrefix(), fieldData.getField().getName(), "");
+
+		if (isDataProtectionFlow) {
+			return fieldDescription;
+		}
 
 		String[] excludedForCountries = null;
 
@@ -180,24 +182,23 @@ public enum EntityColumn {
 		if (field.getAnnotation(PersonalData.class) != null) {
 			excludedForCountries = field.getAnnotation(PersonalData.class).excludeForCountries();
 
-		} else {
-			if (field.getAnnotation(SensitiveData.class) != null) {
-				excludedForCountries = field.getAnnotation(SensitiveData.class).excludeForCountries();
-			}
+		} else if (field.getAnnotation(SensitiveData.class) != null) {
+			excludedForCountries = field.getAnnotation(SensitiveData.class).excludeForCountries();
+
 		}
 
 		String description;
 		if (excludedForCountries != null && excludedForCountries.length > 0) {
-			description = prefixDescription + I18nProperties.getString(Strings.messageCountriesExcludedFromDataProtection) + " "
+			description = fieldDescription + I18nProperties.getString(Strings.messageCountriesExcludedFromDataProtection) + " "
 				+ Arrays.toString(excludedForCountries);
 		} else {
-			description = prefixDescription;
+			description = fieldDescription;
 		}
 
 		return description;
 	}
 
-	private static String getNotNull(FieldData fieldData) {
+	private String getNotNull(FieldData fieldData) {
 		if (fieldData.getField().getAnnotation(NotNull.class) == null) {
 			return null;
 		}
@@ -205,11 +206,11 @@ public enum EntityColumn {
 		return Boolean.TRUE.toString();
 	}
 
-	private static String getNewDisease(FieldData fieldData) {
+	private String getNewDisease(FieldData fieldData) {
 		return null;
 	}
 
-	private static String getDiseases(FieldData fieldData) {
+	private String getDiseases(FieldData fieldData) {
 		Diseases diseases = fieldData.getField().getAnnotation(Diseases.class);
 		if (diseases == null) {
 			return "All";
@@ -224,7 +225,7 @@ public enum EntityColumn {
 		}
 	}
 
-	private static String getOutbreaks(FieldData fieldData) {
+	private String getOutbreaks(FieldData fieldData) {
 		if (fieldData.getField().getAnnotation(Outbreaks.class) == null) {
 			return null;
 		}
@@ -232,7 +233,7 @@ public enum EntityColumn {
 		return Boolean.TRUE.toString();
 	}
 
-	private static String getIgnoredCountries(FieldData fieldData) {
+	private String getIgnoredCountries(FieldData fieldData) {
 		HideForCountries hideForCountries = fieldData.getField().getAnnotation(HideForCountries.class);
 		if (hideForCountries == null) {
 			return null;
@@ -248,7 +249,7 @@ public enum EntityColumn {
 		return hideForCountriesString.toString();
 	}
 
-	private static String getExclusiveCountries(FieldData fieldData) {
+	private String getExclusiveCountries(FieldData fieldData) {
 		HideForCountriesExcept hideForCountriesExcept = fieldData.getField().getAnnotation(HideForCountriesExcept.class);
 		if (hideForCountriesExcept == null) {
 			return null;
@@ -262,5 +263,64 @@ public enum EntityColumn {
 		}
 
 		return hideForCountriesExceptString.toString();
+	}
+
+	public class EntityColumn {
+
+		private final String name;
+		private final int width;
+		private final Function<FieldData, String> getValueFromField;
+		private final boolean hasDefaultStyle;
+		private final boolean isDataDictionaryColumn;
+		private final boolean isDataProtectionColumn;
+		private final boolean isColumnForAllFieldsSheet;
+
+		EntityColumn(
+			String name,
+			int width,
+			Function<FieldData, String> getValueFromField,
+			boolean hasDefaultStyle,
+			boolean isDataDictionaryColumn,
+			boolean isDataProtectionColumn,
+			boolean isColumnForAllFieldsSheet) {
+
+			this.name = name;
+			this.width = width;
+			this.getValueFromField = getValueFromField;
+			this.hasDefaultStyle = hasDefaultStyle;
+			this.isDataDictionaryColumn = isDataDictionaryColumn;
+			this.isDataProtectionColumn = isDataProtectionColumn;
+			this.isColumnForAllFieldsSheet = isColumnForAllFieldsSheet;
+		}
+
+		public int getWidth() {
+			return width;
+		}
+
+		public String getGetValueFromField(FieldData fieldData) {
+			return getValueFromField.apply(fieldData);
+		}
+
+		public boolean hasDefaultStyle() {
+			return hasDefaultStyle;
+		}
+
+		public boolean isDataDictionaryColumn() {
+			return isDataDictionaryColumn;
+		}
+
+		public boolean isDataProtectionColumn() {
+			return isDataProtectionColumn;
+		}
+
+		public boolean isColumnForAllFieldsSheet() {
+			return isColumnForAllFieldsSheet;
+		}
+
+		@Override
+		public String toString() {
+			return I18nProperties.getPrefixCaption("EntityColumn", name);
+		}
+
 	}
 }
