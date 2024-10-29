@@ -160,7 +160,7 @@ public interface UserFacade {
 	/**
 	 * Retrieves the user rights of the user specified by the passed UUID, or those of the current user if no UUID is specified.
 	 * Requesting the user rights of another user without the rights to view users and user roles results in an AccessDeniedException.
-	 * 
+	 *
 	 * @param userUuid
 	 *            The UUID of the user to request the user rights for
 	 * @return A set containing the user rights associated to all user roles assigned to the user
