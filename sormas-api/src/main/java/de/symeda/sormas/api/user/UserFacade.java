@@ -79,7 +79,7 @@ public interface UserFacade {
 	long count(UserCriteria userCriteria);
 
 	/**
-	 *
+	 * 
 	 * @param district
 	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
 	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
