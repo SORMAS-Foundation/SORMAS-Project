@@ -21,6 +21,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class DocumentTemplateDto extends EntityDto {
@@ -36,6 +37,22 @@ public class DocumentTemplateDto extends EntityDto {
 	private Disease disease;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String fileName;
+
+	public static DocumentTemplateDto build(DocumentWorkflow documentWorkflow, String fileName) {
+		DocumentTemplateDto dto = new DocumentTemplateDto();
+		dto.setUuid(DataHelper.createUuid());
+		dto.setWorkflow(documentWorkflow);
+		dto.setFileName(fileName);
+
+		return dto;
+	}
+
+	public static DocumentTemplateDto build(DocumentWorkflow documentWorkflow, String fileName, Disease disease) {
+		DocumentTemplateDto dto = build(documentWorkflow, fileName);
+		dto.setDisease(disease);
+
+		return dto;
+	}
 
 	public DocumentWorkflow getWorkflow() {
 		return workflow;

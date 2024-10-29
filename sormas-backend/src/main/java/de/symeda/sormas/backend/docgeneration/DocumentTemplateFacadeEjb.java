@@ -17,12 +17,8 @@ package de.symeda.sormas.backend.docgeneration;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -35,6 +31,7 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -74,6 +71,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -163,7 +161,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		// 1. Read template from custom directory
-		File templateFile = getTemplateFile(template);
+		File templateFile = documentTemplateService.getTemplateFile(template);
 
 		// 2. Extract document variables
 		DocumentVariables documentVariables = getTemplateVariablesDocx(templateFile);
@@ -192,7 +190,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 
 		// 1. Read template from custom directory
-		File templateFile = getTemplateFile(template);
+		File templateFile = documentTemplateService.getTemplateFile(template);
 
 		// 2. Extract document variables
 		DocumentVariables documentVariables = getTemplateVariablesTxt(templateFile);
@@ -295,10 +293,15 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@Override
 	@PermitAll
 	public List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow documentWorkflow, @Nullable Disease disease) {
-		List<DocumentTemplate> templates = documentTemplateService.getByPredicate(
-			(cb, root, cq) -> cb.and(
-				cb.equal(root.get(DocumentTemplate.WORKFLOW), documentWorkflow),
-				cb.or(cb.isNull(root.get(DocumentTemplate.DISEASE)), cb.equal(root.get(DocumentTemplate.DISEASE), disease))));
+		List<DocumentTemplate> templates = documentTemplateService.getByPredicate((cb, root, cq) -> {
+			Predicate diseasePredicate = null;
+
+			if (disease != null) {
+				diseasePredicate = cb.or(cb.isNull(root.get(DocumentTemplate.DISEASE)), cb.equal(root.get(DocumentTemplate.DISEASE), disease));
+			}
+
+			return CriteriaBuilderHelper.and(cb, cb.equal(root.get(DocumentTemplate.WORKFLOW), documentWorkflow), diseasePredicate);
+		});
 
 		return templates.stream().map(DocumentTemplateFacadeEjb::toDto).collect(Collectors.toList());
 	}
@@ -307,11 +310,11 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@RightsAllowed({
 		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
 		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
-	public boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName, Disease disease) {
+	public boolean isExistingTemplateFile(DocumentWorkflow documentWorkflow, Disease disease, String templateName) {
 		assertRequredUserRight(documentWorkflow);
 
-		File templateFile = new File(getWorkflowTemplateDirPath(documentWorkflow, disease).resolve(templateName).toUri());
-		return templateFile.exists();
+		return documentTemplateService.existsFile(documentWorkflow, disease, templateName);
+
 	}
 
 	@Override
@@ -320,7 +323,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		DocumentTemplate template = documentTemplateService.getByReferenceDto(templateReference);
 		DocumentWorkflow documentWorkflow = template.getWorkflow();
 
-		File templateFile = getTemplateFile(template);
+		File templateFile = documentTemplateService.getTemplateFile(template);
 		DocumentVariables documentVariables =
 			documentWorkflow.isDocx() ? getTemplateVariablesDocx(templateFile) : getTemplateVariablesTxt(templateFile);
 		Set<String> propertyKeys = documentVariables.getVariables();
@@ -336,17 +339,18 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@RightsAllowed({
 		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
 		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
-	public void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, Disease disease, byte[] document)
-		throws DocumentTemplateException {
+	public DocumentTemplateDto saveDocumentTemplate(DocumentTemplateDto template, byte[] document) throws DocumentTemplateException {
+		DocumentWorkflow documentWorkflow = template.getWorkflow();
 		assertRequredUserRight(documentWorkflow);
 
-		if (!documentWorkflow.getFileExtension().equalsIgnoreCase(FilenameUtils.getExtension(templateName))) {
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.headingWrongFileType));
+		String fileName = template.getFileName();
+		if (!documentWorkflow.getFileExtension().equalsIgnoreCase(FilenameUtils.getExtension(fileName))) {
+			throw new ValidationRuntimeException(I18nProperties.getString(Strings.headingWrongFileType));
 		}
 
-		String path = FilenameUtils.getPath(templateName);
+		String path = FilenameUtils.getPath(fileName);
 		if (StringUtils.isNotBlank(path)) {
-			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), templateName));
+			throw new ValidationRuntimeException(String.format(I18nProperties.getString(Strings.errorIllegalFilename), fileName));
 		}
 
 		ByteArrayInputStream templateInputStream = new ByteArrayInputStream(document);
@@ -360,30 +364,32 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 			validateEmailTemplate(document);
 		}
 
-		Path workflowTemplateDirPath = getWorkflowTemplateDirPath(documentWorkflow, disease);
-		try {
-			Files.createDirectories(workflowTemplateDirPath);
-		} catch (IOException e) {
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorCreatingTemplateDirectory));
+		DocumentTemplate existingTemplate = documentTemplateService.getByReferenceDto(template.toReference());
+		if (existingTemplate != null) {
+			if (existingTemplate.getWorkflow() != template.getWorkflow()) {
+				throw new ValidationRuntimeException(I18nProperties.getString(Strings.errorDocumentTemplateWorkflowChangeNotAllowed));
+			}
+			if (existingTemplate.getDisease() != template.getDisease() || existingTemplate.getFileName() != template.getFileName()) {
+				documentTemplateService.deleteTemplateFile(existingTemplate);
+			}
 		}
-		try (FileOutputStream fileOutputStream =
-			new FileOutputStream(new File(workflowTemplateDirPath.resolve(FilenameUtils.getName(templateName)).toUri()))) {
-			fileOutputStream.write(document);
-		} catch (IOException e) {
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorWritingTemplate));
-		}
+
+		DocumentTemplate documentTemplate = fillOrBuildEntity(template, existingTemplate);
+		documentTemplateService.ensurePersisted(documentTemplate, document);
+
+		return toDto(documentTemplate);
 	}
 
 	@Override
 	@RightsAllowed({
 		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
 		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
-	public boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException {
+	public boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference) {
 		DocumentTemplate template = documentTemplateService.getByReferenceDto(templateReference);
 
 		assertRequredUserRight(template.getWorkflow());
 
-		documentTemplateService.deletePermanent(template);
+		return documentTemplateService.deletePermanent(template);
 	}
 
 	@Override
@@ -395,20 +401,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		assertRequredUserRight(template.getWorkflow());
 
 		try {
-			return FileUtils.readFileToByteArray(getTemplateFile(template));
+			return FileUtils.readFileToByteArray(documentTemplateService.getTemplateFile(template));
 		} catch (IOException e) {
 			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), template.getFileName()));
 		}
-	}
-
-	private File getTemplateFile(DocumentTemplate template) throws DocumentTemplateException {
-		File templateFile =
-			new File(getWorkflowTemplateDirPath(template.getWorkflow(), template.getDisease()).resolve(template.getFileName()).toString());
-
-		if (!templateFile.exists()) {
-			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorFileNotFound), template.getFileName()));
-		}
-		return templateFile;
 	}
 
 	private DocumentVariables getTemplateVariablesDocx(File templateFile) throws DocumentTemplateException {
@@ -431,16 +427,6 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		String propertyKeyLowerCase = propertyKey.toLowerCase();
 		Matcher matcher = BASENAME_PATTERN.matcher(propertyKeyLowerCase);
 		return matcher.matches() ? matcher.group(1) : "";
-	}
-
-	private Path getWorkflowTemplateDirPath(DocumentWorkflow documentWorkflow, Disease disease) {
-		Path path = Paths.get(configFacade.getCustomFilesPath()).resolve("docgeneration").resolve(documentWorkflow.getTemplateDirectory());
-
-		if (disease != null) {
-			path = path.resolve(disease.name());
-		}
-
-		return path;
 	}
 
 	private EntityDtoAccessHelper.IReferenceDtoResolver getReferenceDtoResolver() {
@@ -513,6 +499,16 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return target;
 	}
 
+	private DocumentTemplate fillOrBuildEntity(DocumentTemplateDto source, DocumentTemplate target) {
+		target = DtoHelper.fillOrBuildEntity(source, target, DocumentTemplate::new, true);
+
+		target.setWorkflow(source.getWorkflow());
+		target.setDisease(source.getDisease());
+		target.setFileName(source.getFileName());
+
+		return target;
+	}
+
 	public static EmailTemplateTexts splitTemplateContent(String content) {
 		return splitTemplateContent(content, true);
 	}
@@ -528,6 +524,10 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		String content = split[1].trim();
 
 		return new EmailTemplateTexts(cleanupSubject ? subjectLine.substring(1).trim() : subjectLine, content);
+	}
+
+	public DocumentTemplateDto getByUuid(String uuid) {
+		return toDto(documentTemplateService.getByUuid(uuid));
 	}
 
 	public static final class EmailTemplateTexts {
@@ -549,7 +549,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		}
 	}
 
-	public class ObjectFormatter {
+	public static class ObjectFormatter {
 
 		public Object format(Object value) {
 			return EntityDtoAccessHelper.formatObject(value);

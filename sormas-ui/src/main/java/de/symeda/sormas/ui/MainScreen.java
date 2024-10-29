@@ -300,7 +300,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
-			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 			ControllerProvider.getTravelEntryController().registerViews(navigator);
 			menu.addView(
 				TravelEntriesView.class,

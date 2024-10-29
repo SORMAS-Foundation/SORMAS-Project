@@ -155,6 +155,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
@@ -897,6 +898,10 @@ public abstract class AbstractBeanTest {
 
 	public DocumentTemplateFacade getDocumentTemplateFacade() {
 		return getBean(DocumentTemplateFacadeEjbLocal.class);
+	}
+
+	public DocumentTemplateService getDocumentTemplateService() {
+		return getBean(DocumentTemplateService.class);
 	}
 
 	public QuarantineOrderFacade getQuarantineOrderFacade() {

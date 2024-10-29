@@ -16,14 +16,26 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.io.FilenameUtils;
+
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.common.BaseAdoService;
@@ -36,31 +48,94 @@ public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	protected DocumentTemplateService() {
+	public DocumentTemplateService() {
 		super(DocumentTemplate.class);
 	}
 
 	@Override
-	public boolean deletePermanent(DocumentTemplate documentTemplate) throws DocumentTemplateException {
-		String fileName = documentTemplate.getFileName();
-		File templateFile = new File(getWorkflowTemplateDirPath(documentTemplate).resolve(fileName).toUri());
-		if (templateFile.exists() && templateFile.isFile()) {
-			return templateFile.delete();
-		} else {
-			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorFileNotFound), fileName));
+	public boolean deletePermanent(DocumentTemplate documentTemplate) {
+		boolean fileDeleted = deleteTemplateFile(documentTemplate);
+		if (fileDeleted) {
+			super.deletePermanent(documentTemplate);
 		}
-		super.deletePermanent(documentTemplate);
+
+		return fileDeleted;
 	}
 
-	private Path getWorkflowTemplateDirPath(DocumentTemplate documentTemplate) {
-		Path path =
-			Paths.get(configFacade.getCustomFilesPath()).resolve("docgeneration").resolve(documentTemplate.getWorkflow().getTemplateDirectory());
+	public boolean deleteTemplateFile(DocumentTemplate documentTemplate) {
+		String fileName = documentTemplate.getFileName();
+		File templateFile = new File(getTemplateDirPath(documentTemplate).resolve(fileName).toUri());
 
-		if (documentTemplate.getDisease() != null) {
-			path = path.resolve(documentTemplate.getDisease().name());
+		boolean deleted = false;
+		boolean exists = templateFile.exists();
+		if (!exists) {
+			return true;
+		}
+
+		if (templateFile.isFile()) {
+			deleted = templateFile.delete();
+		}
+
+		return deleted;
+	}
+
+	private Path getTemplateDirPath(DocumentTemplate documentTemplate) {
+		return getTemplateDirPath(documentTemplate.getWorkflow(), documentTemplate.getDisease());
+	}
+
+	private Path getTemplateDirPath(DocumentWorkflow documentWorkflow, Disease disease) {
+		Path path = Paths.get(configFacade.getCustomFilesPath()).resolve("docgeneration").resolve(documentWorkflow.getTemplateDirectory());
+
+		if (disease != null) {
+			path = path.resolve(disease.name());
 		}
 
 		return path;
 	}
 
+	public boolean existsFile(DocumentWorkflow documentWorkflow, Disease disease, String templateName) {
+		File templateFile = new File(this.getTemplateDirPath(documentWorkflow, disease).resolve(templateName).toUri());
+		return templateFile.exists();
+	}
+
+	public void ensurePersisted(DocumentTemplate documentTemplate, byte[] document) throws DocumentTemplateException {
+		Path workflowTemplateDirPath = getTemplateDirPath(documentTemplate.getWorkflow(), documentTemplate.getDisease());
+		try {
+			Files.createDirectories(workflowTemplateDirPath);
+		} catch (IOException e) {
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorCreatingTemplateDirectory));
+		}
+
+		try (FileOutputStream fileOutputStream =
+			new FileOutputStream(new File(workflowTemplateDirPath.resolve(FilenameUtils.getName(documentTemplate.getFileName())).toUri()))) {
+			fileOutputStream.write(document);
+			ensurePersisted(documentTemplate);
+		} catch (IOException e) {
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorWritingTemplate));
+		}
+	}
+
+	public File getTemplateFile(DocumentTemplate template) throws DocumentTemplateException {
+		File templateFile = new File(getTemplateDirPath(template).resolve(template.getFileName()).toString());
+
+		if (!templateFile.exists()) {
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorFileNotFound), template.getFileName()));
+		}
+		return templateFile;
+	}
+
+	public Map<DocumentWorkflow, List<File>> getAllTemplateFiles() {
+		Map<DocumentWorkflow, List<File>> templateFiles = new HashMap<>();
+
+		for (DocumentWorkflow workflow : DocumentWorkflow.values()) {
+			Path templateDirPath = getTemplateDirPath(workflow, null);
+			File templateDir = templateDirPath.toFile();
+
+			if (templateDir.exists() && templateDir.isDirectory()) {
+				templateFiles.put(workflow, Stream.of(templateDir.listFiles()).filter(File::isFile).collect(Collectors.toList()));
+			}
+		}
+
+		return templateFiles;
+	}
 }

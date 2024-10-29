@@ -37,7 +37,7 @@ public class ExternalEmailOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "ExternalEmailOptions";
 
-	public static final String TEMPLATE_NAME = "templateName";
+	public static final String TEMPLATE = "template";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
 	public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
 
@@ -48,7 +48,6 @@ public class ExternalEmailOptionsDto implements Serializable {
 	@NotNull(message = Validations.requiredField)
 	private ReferenceDto rootEntityReference;
 	@NotNull(message = Validations.requiredField)
-	@Size(min = 1, message = Validations.requiredField)
 	private DocumentTemplateReferenceDto template;
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)

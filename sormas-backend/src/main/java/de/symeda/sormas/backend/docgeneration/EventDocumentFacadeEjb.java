@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.io.IOUtils;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
@@ -72,7 +73,7 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 			byte[] documentToSave = styledHtml.getBytes(StandardCharsets.UTF_8);//mandatory UTF_8
 			try {
 				helper.saveDocument(
-					helper.getDocumentFileName(eventReference, templateReference.getCaption()),
+					helper.getDocumentFileName(eventReference, templateReference),
 					DocumentDto.MIME_TYPE_DEFAULT,
 					documentToSave.length,
 					helper.getDocumentRelatedEntityType(eventReference),
@@ -103,13 +104,13 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 	}
 
 	@Override
-	public List<DocumentTemplateDto> getAvailableTemplates() {
-		return documentTemplateFacade.getAvailableTemplates(DOCUMENT_WORKFLOW, null);
+	public List<DocumentTemplateDto> getAvailableTemplates(Disease disease) {
+		return documentTemplateFacade.getAvailableTemplates(DOCUMENT_WORKFLOW, disease);
 	}
 
 	@Override
-	public DocumentVariables getDocumentVariables(String templateName) throws DocumentTemplateException {
-		return documentTemplateFacade.getDocumentVariables(DOCUMENT_WORKFLOW, templateName);
+	public DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException {
+		return documentTemplateFacade.getDocumentVariables(templateReference);
 	}
 
 	private String createStyledHtml(String title, String body) throws DocumentTemplateException {

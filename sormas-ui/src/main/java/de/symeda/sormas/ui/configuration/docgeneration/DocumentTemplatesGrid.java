@@ -46,7 +46,7 @@ public class DocumentTemplatesGrid extends Grid<DocumentTemplateDto> {
 
 	private final DocumentWorkflow documentWorkflow;
 
-	public DocumentTemplatesGrid(DocumentWorkflow documentWorkflow) {
+	public DocumentTemplatesGrid(DocumentWorkflow documentWorkflow, boolean hasDisease) {
 		super(DocumentTemplateDto.class);
 		this.documentWorkflow = documentWorkflow;
 		setSizeFull();
@@ -55,7 +55,10 @@ public class DocumentTemplatesGrid extends Grid<DocumentTemplateDto> {
 		ListDataProvider<DocumentTemplateDto> dataProvider = DataProvider.fromStream(availableTemplates.stream());
 		setDataProvider(dataProvider);
 
-		setColumns(DocumentTemplateDto.FILE_NAME, DocumentTemplateDto.DISEASE);
+		setColumns(DocumentTemplateDto.FILE_NAME);
+		if (hasDisease) {
+			addColumn(DocumentTemplateDto.DISEASE);
+		}
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(DocumentTemplateDto.I18N_PREFIX, column.getId(), column.getCaption()));

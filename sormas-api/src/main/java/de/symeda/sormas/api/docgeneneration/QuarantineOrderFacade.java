@@ -57,7 +57,7 @@ public interface QuarantineOrderFacade {
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
-	List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow workflow);
+	List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow workflow, Disease disease);
 
-	DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException;
+	DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 }

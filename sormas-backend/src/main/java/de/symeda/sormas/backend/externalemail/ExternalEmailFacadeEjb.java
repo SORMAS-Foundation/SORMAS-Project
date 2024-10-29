@@ -158,7 +158,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private DocGenerationHelper docGenerationHelper;
 
 	@Override
-	public List<DocumentTemplateDto> getTemplateNames(DocumentWorkflow documentWorkflow) {
+	public List<DocumentTemplateDto> getTemplates(DocumentWorkflow documentWorkflow) {
 		return documentTemplateFacade.getAvailableTemplates(documentWorkflow, null);
 	}
 
@@ -340,7 +340,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			try {
 				ExternalEmailOptionsDto emailOptions =
 					new ExternalEmailOptionsDto(options.getDocumentWorkflow(), options.getRootEntityType(), entityRef);
-				emailOptions.setTemplate(options.getTemplateName());
+				emailOptions.setTemplate(options.getTemplate());
 
 				emailOptions.setAttachedDocuments(attachedDocuments);
 				emailOptions.setRootEntityReference(entityRef);

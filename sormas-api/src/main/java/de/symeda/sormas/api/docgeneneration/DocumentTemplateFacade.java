@@ -24,11 +24,11 @@ public interface DocumentTemplateFacade {
 
 	List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow documentWorkflow, Disease disease);
 
+	boolean isExistingTemplateFile(DocumentWorkflow documentWorkflow, Disease disease, String templateName);
+
 	DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 
-	boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName, Disease disease);
-
-	void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, Disease disease, byte[] document)
+	DocumentTemplateDto saveDocumentTemplate(DocumentTemplateDto template, byte[] document)
 		throws DocumentTemplateException;
 
 	boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;

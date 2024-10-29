@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 
@@ -41,7 +42,7 @@ public interface EventDocumentFacade {
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
-	List<DocumentTemplateDto> getAvailableTemplates();
+	List<DocumentTemplateDto> getAvailableTemplates(Disease disease);
 
-	DocumentVariables getDocumentVariables(String templateName) throws DocumentTemplateException;
+	DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 }

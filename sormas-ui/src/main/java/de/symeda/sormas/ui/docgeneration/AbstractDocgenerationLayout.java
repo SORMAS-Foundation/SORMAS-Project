@@ -40,8 +40,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -63,16 +66,17 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	public DocumentVariables documentVariables;
 	public CheckBox checkBoxUploadGeneratedDoc;
 	public HorizontalLayout buttonBar;
+	private Disease defaultDisease;
 
-	public boolean isCheckBoxAfterTemplateSelector;
-
-	public AbstractDocgenerationLayout(
+	protected AbstractDocgenerationLayout(
+		Disease defaultDisease,
 		String captionTemplateSelector,
-		Function<String, String> fileNameFunction,
+		Function<DocumentTemplateDto, String> fileNameFunction,
 		boolean isMultiFilesMode,
-		boolean isCheckBoxAfterTemplateSelector) {
+		boolean uploadCheckboxFirst) {
 
-		this.isCheckBoxAfterTemplateSelector = isCheckBoxAfterTemplateSelector;
+		this.defaultDisease = defaultDisease;
+
 		additionalVariablesComponent = new VerticalLayout();
 		additionalVariablesComponent.setSpacing(false);
 		additionalVariablesComponent.setMargin(new MarginInfo(false, false, true, false));
@@ -84,11 +88,13 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		hideTextfields();
 		hideAdditionalParameters();
 
-		if (isCheckBoxAfterTemplateSelector) {
+		if (uploadCheckboxFirst) {
+			addDiseaseSelector(defaultDisease);
 			addTemplateSelector(captionTemplateSelector, fileNameFunction);
 			addCheckboxUploadButton(isMultiFilesMode);
 		} else {
 			addCheckboxUploadButton(isMultiFilesMode);
+			addDiseaseSelector(defaultDisease);
 			addTemplateSelector(captionTemplateSelector, fileNameFunction);
 		}
 
@@ -125,19 +131,40 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		}
 	}
 
-	private void addTemplateSelector(String captionTemplateSelector, Function<String, String> fileNameFunction) {
+	private void addDiseaseSelector(Disease defaultDisease) {
+		ComboBox<Disease> diseaseSelector = new ComboBox<>();
+		diseaseSelector.setCaption(I18nProperties.getCaption(Captions.disease));
+		diseaseSelector.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+		diseaseSelector.setPlaceholder(I18nProperties.getString(Strings.all));
+		diseaseSelector.setEmptySelectionAllowed(true);
+		diseaseSelector.setWidth(100F, Unit.PERCENTAGE);
+		diseaseSelector.addStyleName(CssStyles.SOFT_REQUIRED);
+		diseaseSelector.setValue(defaultDisease);
+
+		diseaseSelector.addValueChangeListener(e -> {
+			Disease disease = e.getValue();
+			templateSelector.setValue(null);
+
+			templateSelector.setItems(getAvailableTemplates(disease));
+			templateSelector.setItemCaptionGenerator(DocumentTemplateDto::getFileName);
+		});
+
+		addComponent(diseaseSelector);
+	}
+
+	private void addTemplateSelector(String captionTemplateSelector, Function<DocumentTemplateDto, String> fileNameFunction) {
 		templateSelector = new ComboBox<>(captionTemplateSelector);
 		templateSelector.setWidth(100F, Unit.PERCENTAGE);
 		templateSelector.addValueChangeListener(e -> {
-			DocumentTemplateDto templateFile = e.getValue();
-			boolean isValidTemplateFile = templateFile != null;
+			DocumentTemplateDto template = e.getValue();
+			boolean isValidTemplateFile = template != null;
 			createButton.setEnabled(isValidTemplateFile);
 			additionalVariablesComponent.removeAllComponents();
 			hideTextfields();
 			documentVariables = null;
 			if (isValidTemplateFile) {
 				try {
-					documentVariables = getDocumentVariables(templateFile.getUuid());
+					documentVariables = getDocumentVariables(template.toReference());
 					List<String> additionalVariables = documentVariables.getAdditionalVariables();
 					if (additionalVariables != null && !additionalVariables.isEmpty()) {
 						for (String variable : additionalVariables) {
@@ -149,7 +176,7 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 					}
 					performTemplateUpdates();
 					if (fileNameFunction != null) {
-						setStreamResource(templateFile, fileNameFunction.apply(templateFile.getFileName()));
+						setStreamResource(template, fileNameFunction.apply(template));
 					}
 				} catch (IOException | DocumentTemplateException ex) {
 					LoggerFactory.getLogger(getClass()).error("Error while reading document variables.", e);
@@ -164,7 +191,8 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 	}
 
 	protected void init() {
-		templateSelector.setItems(getAvailableTemplates());
+		templateSelector.setItems(getAvailableTemplates(defaultDisease));
+		templateSelector.setItemCaptionGenerator(DocumentTemplateDto::getFileName);
 	}
 
 	private void showTextfields() {
@@ -235,19 +263,12 @@ public abstract class AbstractDocgenerationLayout extends VerticalLayout {
 		return checkBoxUploadGeneratedDoc != null && Boolean.TRUE.equals(checkBoxUploadGeneratedDoc.getValue());
 	}
 
-	protected abstract List<DocumentTemplateDto> getAvailableTemplates();
+	protected abstract List<DocumentTemplateDto> getAvailableTemplates(Disease disease);
 
-	protected abstract DocumentVariables getDocumentVariables(String templateFile) throws IOException, DocumentTemplateException;
+	protected abstract DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference)
+		throws IOException, DocumentTemplateException;
 
 	protected abstract StreamResource createStreamResource(DocumentTemplateDto template, String filename);
 
 	protected abstract String getWindowCaption();
-
-	public boolean isCheckBoxAfterTemplateSelector() {
-		return isCheckBoxAfterTemplateSelector;
-	}
-
-	public void setCheckBoxAfterTemplateSelector(boolean checkBoxAfterTemplateSelector) {
-		isCheckBoxAfterTemplateSelector = checkBoxAfterTemplateSelector;
-	}
 }

@@ -34,6 +34,7 @@ import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -73,12 +74,14 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	public QuarantineOrderLayout(
 		DocumentWorkflow workflow,
+		Disease defaultDisease,
 		@Nullable SampleCriteria sampleCriteria,
 		@Nullable VaccinationCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent,
 		DocumentStreamSupplier documentStreamSupplier,
-		Function<String, String> fileNameFunction) {
+		Function<DocumentTemplateDto, String> fileNameFunction) {
 		super(
+			defaultDisease,
 			I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder),
 			fileNameFunction,
 			isNull(sampleCriteria) && isNull(documentListComponent),
@@ -101,7 +104,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	public QuarantineOrderLayout(DocumentWorkflow workflow) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), null, true, true);
+		super(null, I18nProperties.getCaption(Captions.DocumentTemplate_QuarantineOrder), null, true, true);
 
 		this.workflow = workflow;
 		this.documentStreamSupplier = null;
@@ -166,9 +169,9 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected List<DocumentTemplateDto> getAvailableTemplates() {
+	protected List<DocumentTemplateDto> getAvailableTemplates(Disease disease) {
 		try {
-			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(workflow);
+			return FacadeProvider.getQuarantineOrderFacade().getAvailableTemplates(workflow, disease);
 		} catch (Exception e) {
 			new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 				.show(Page.getCurrent());
@@ -177,8 +180,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected DocumentVariables getDocumentVariables(String templateFile) throws DocumentTemplateException {
-		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(workflow, templateFile);
+	protected DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException {
+		return FacadeProvider.getQuarantineOrderFacade().getDocumentVariables(templateReference);
 	}
 
 	@Override
@@ -194,7 +197,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 			try {
 				InputStream stream = documentStreamSupplier.getStream(
-					template.toReference(),
+					template,
 					sampleReference,
 					pathogenTestReference,
 					vaccinationReference,
@@ -277,7 +280,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 	public interface DocumentStreamSupplier {
 
 		InputStream getStream(
-			DocumentTemplateReferenceDto templateReference,
+			DocumentTemplateDto template,
 			SampleReferenceDto sample,
 			PathogenTestReferenceDto pathogenTest,
 			VaccinationReferenceDto vaccinationReference,

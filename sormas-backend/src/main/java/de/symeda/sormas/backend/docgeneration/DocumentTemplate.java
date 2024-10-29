@@ -25,8 +25,10 @@ import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity
+@Entity(name = "documenttemplates")
 public class DocumentTemplate extends AbstractDomainObject {
+
+	private static final long serialVersionUID = -8191658284208086022L;
 
 	public static final String WORKFLOW = "workflow";
 	public static final String DISEASE = "disease";
