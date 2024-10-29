@@ -875,7 +875,7 @@ public class StartupShutdownService {
 			case 516:
 				fillDefaultUserRole(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER);
 				break;
-			case 552:
+			case 553:
 				createEntitiesForDocumentTemplates();
 				break;
 			default:
