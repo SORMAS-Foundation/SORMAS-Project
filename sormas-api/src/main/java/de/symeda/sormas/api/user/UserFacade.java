@@ -57,7 +57,7 @@ public interface UserFacade {
 	UserDto getByUserName(String userName);
 
 	/**
-	 * 
+	 *  
 	 * @param regionRef
 	 *            reference of the region to be filtered for. When this region is null, it is not filtered in this regard.
 	 *            NOTE: some users don't have a region (often users with NATIONAL_USER role, for example). They will
