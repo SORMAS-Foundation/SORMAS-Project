@@ -47,56 +47,56 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 public class UserResource {
 
-    @GET
-    @Path("/all/{since}")
-    public List<UserDto> getAll(@PathParam("since") long since) {
-        return FacadeProvider.getUserFacade().getAllAfter(new Date(since));
-    }
+	@GET
+	@Path("/all/{since}")
+	public List<UserDto> getAll(@PathParam("since") long since) {
+		return FacadeProvider.getUserFacade().getAllAfter(new Date(since));
+	}
 
-    @POST
-    @Path("/query")
-    public List<UserDto> getByUuids(List<String> uuids) {
-        return FacadeProvider.getUserFacade().getByUuids(uuids);
-    }
+	@POST
+	@Path("/query")
+	public List<UserDto> getByUuids(List<String> uuids) {
+		return FacadeProvider.getUserFacade().getByUuids(uuids);
+	}
 
-    @GET
-    @Path("/uuids")
-    public List<String> getAllUuids() {
-        return FacadeProvider.getUserFacade().getAllUuids();
-    }
+	@GET
+	@Path("/uuids")
+	public List<String> getAllUuids() {
+		return FacadeProvider.getUserFacade().getAllUuids();
+	}
 
-    @POST
-    @Path("/indexList")
-    public Page<UserDto> getIndexList(
-            @RequestBody CriteriaWithSorting<UserCriteria> criteriaWithSorting,
-            @QueryParam("offset") int offset,
-            @QueryParam("size") int size) {
-        return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
-    }
+	@POST
+	@Path("/indexList")
+	public Page<UserDto> getIndexList(
+		@RequestBody CriteriaWithSorting<UserCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
 
-    @GET
-    @Path("/{uuid}")
-    public UserDto getByUuid(@PathParam("uuid") String uuid) {
-        return FacadeProvider.getUserFacade().getByUuid(uuid);
-    }
+	@GET
+	@Path("/{uuid}")
+	public UserDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getUserFacade().getByUuid(uuid);
+	}
 
-    @POST
-    @Path("/userReferenceWithNoOfTask")
-    public List<UserReferenceWithTaskNumbersDto> getUsersWithTaskNumbers(@RequestBody TaskContextIndexCriteria taskContextIndexCriteria) {
-        return FacadeProvider.getUserFacade().getAssignableUsersWithTaskNumbers(taskContextIndexCriteria);
-    }
+	@POST
+	@Path("/userReferenceWithNoOfTask")
+	public List<UserReferenceWithTaskNumbersDto> getUsersWithTaskNumbers(@RequestBody TaskContextIndexCriteria taskContextIndexCriteria) {
+		return FacadeProvider.getUserFacade().getAssignableUsersWithTaskNumbers(taskContextIndexCriteria);
+	}
 
-    @GET
-    @Path("/rights")
-    public List<UserRight> getUserRightsForCurrentUser() {
-        return FacadeProvider.getUserFacade().getUserRights(null);
-    }
+	@GET
+	@Path("/rights")
+	public List<UserRight> getUserRightsForCurrentUser() {
+		return FacadeProvider.getUserFacade().getUserRights(null);
+	}
 
-    @GET
-    @Path("/rights/{uuid}")
-    public List<UserRight> getUserRights(@PathParam("uuid") String uuid) {
-        return FacadeProvider.getUserFacade().getUserRights(uuid);
-    }
+	@GET
+	@Path("/rights/{uuid}")
+	public List<UserRight> getUserRights(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getUserFacade().getUserRights(uuid);
+	}
 
     @POST
     @Path("/saveNewPassword/{uuid}/{newPassword}/{currentPassword}")
