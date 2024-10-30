@@ -58,7 +58,7 @@ public class ExposureDialog extends FormDialog {
 			R.string.heading_exposure,
 			-1,
 			false,
-			UiFieldAccessCheckers.forSensitiveData(exposure.isPseudonymized()),
+			UiFieldAccessCheckers.forSensitiveData(exposure.isPseudonymized(), ConfigProvider.getServerCountryCode()),
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()));
 
 		this.data = exposure;

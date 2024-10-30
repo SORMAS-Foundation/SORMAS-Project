@@ -57,7 +57,7 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 			null,
 			activityRootData,
 			null,
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	@Override

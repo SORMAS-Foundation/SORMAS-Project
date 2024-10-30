@@ -75,7 +75,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getTestedDisease()).andWithCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	// Overrides

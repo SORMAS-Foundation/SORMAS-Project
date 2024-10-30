@@ -27,6 +27,7 @@ import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.therapy.Treatment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentTreatmentEditLayoutBinding;
@@ -51,7 +52,7 @@ public class TreatmentEditFragment extends BaseEditFragment<FragmentTreatmentEdi
 			null,
 			activityRootData,
 			null,
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 	// Instance methods
 

@@ -30,6 +30,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
@@ -51,7 +52,7 @@ public class CampaignFormMetaDialog extends FormDialog {
                 R.layout.dialog_root_two_button_panel_layout,
                 R.string.heading_campaign_form_meta_select,
                 -1,
-                UiFieldAccessCheckers.forSensitiveData(campaign.isPseudonymized()));
+                UiFieldAccessCheckers.forSensitiveData(campaign.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
         this.campaign = campaign;
     }

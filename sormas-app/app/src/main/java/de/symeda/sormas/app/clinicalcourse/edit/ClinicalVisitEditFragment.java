@@ -20,6 +20,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.databinding.FragmentClinicalVisitEditLayoutBinding;
 
 public class ClinicalVisitEditFragment extends BaseEditFragment<FragmentClinicalVisitEditLayoutBinding, ClinicalVisit, ClinicalVisit> {
@@ -32,7 +33,7 @@ public class ClinicalVisitEditFragment extends BaseEditFragment<FragmentClinical
 			null,
 			activityRootData,
 			null,
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	@Override
