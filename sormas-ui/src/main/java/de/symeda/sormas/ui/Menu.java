@@ -147,7 +147,7 @@ public class Menu extends CssLayout {
 		CommitDiscardWrapperComponent<UserSettingsForm> component =
 			ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
 
-		if (permitted(FeatureType.PASSWORD_RESET)) {
+		if (permitted(FeatureType.SELF_PASSWORD_RESET)) {
 			Button resetPasswordButton = ControllerProvider.getUserController().createUpdatePasswordButton();
 			component.getButtonsPanel().addComponent(resetPasswordButton, 0);
 		}

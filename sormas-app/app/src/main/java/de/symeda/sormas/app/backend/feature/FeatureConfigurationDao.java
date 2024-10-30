@@ -171,6 +171,43 @@ public class FeatureConfigurationDao extends AbstractAdoDao<FeatureConfiguration
 		return result;
 	}
 
+	public String getStringPropertyValue(FeatureType featureType, FeatureTypeProperty property) {
+		if (!featureType.getSupportedProperties().contains(property)) {
+			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
+		}
+
+		if (!String.class.isAssignableFrom(property.getReturnType())) {
+			throw new IllegalArgumentException(
+					"Feature type property " + property + " does not have specified return type " + String.class.getSimpleName() + ".");
+		}
+
+		Map<FeatureTypeProperty, Object> propertyObjectMap;
+		try {
+			QueryBuilder builder = queryBuilder();
+			Where where = builder.where();
+			where.eq(FeatureConfiguration.FEATURE_TYPE, featureType);
+			builder.selectColumns(FeatureConfiguration.PROPERTIES);
+
+			FeatureConfiguration featureConfiguration = (FeatureConfiguration) builder.queryForFirst();
+
+			if (featureConfiguration != null && featureConfiguration.getPropertiesJson() != null) {
+				propertyObjectMap = featureConfiguration.getPropertiesMap();
+			} else {
+				return (String) featureType.getSupportedPropertyDefaults().get(property);
+			}
+
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getStringPropertyValue");
+			throw new RuntimeException(e);
+		}
+
+		if (propertyObjectMap != null && propertyObjectMap.containsKey(property)) {
+			return (String) propertyObjectMap.get(property);
+		} else {
+			return null;
+		}
+	}
+
 	public boolean isAnySurveillanceEnabled() {
 		return !isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
 			|| !isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)

@@ -33,6 +33,7 @@ import org.hzi.sormas.lbds.messaging.LbdsRelated;
 import java.util.List;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
@@ -161,7 +162,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
 		binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.changePassword.setVisibility(
-			hasUser && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.PASSWORD_RESET) ? View.VISIBLE : View.GONE);
+			hasUser && DatabaseHelper.getFeatureConfigurationDao().getStringPropertyValue(FeatureType.SELF_PASSWORD_RESET, FeatureTypeProperty.AUTHENTICATION_PROVIDER).equalsIgnoreCase("SORMAS") && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SELF_PASSWORD_RESET) ? View.VISIBLE : View.GONE);
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);

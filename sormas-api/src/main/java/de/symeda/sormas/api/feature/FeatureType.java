@@ -332,7 +332,7 @@ public enum FeatureType {
 			CONTACT_TRACING },
 		null,
 		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE)),
-	PASSWORD_RESET(true, false, null, null, null);
+	SELF_PASSWORD_RESET(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.AUTHENTICATION_PROVIDER, "SORMAS"));
 
 	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
 		FeatureType.CASE_SURVEILANCE,

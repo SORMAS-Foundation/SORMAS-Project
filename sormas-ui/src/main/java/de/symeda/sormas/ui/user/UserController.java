@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -509,12 +510,14 @@ public class UserController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
-				if (authenticationProvider.equalsIgnoreCase(AuthProvider.SORMAS)) {
+				String authenticationProviderFromFeatureConfiguration= FacadeProvider.getFeatureConfigurationFacade()
+						.getProperty(FeatureType.SELF_PASSWORD_RESET, null,
+								FeatureTypeProperty.AUTHENTICATION_PROVIDER, String.class);
+				if (authenticationProviderFromFeatureConfiguration.equalsIgnoreCase(AuthProvider.SORMAS)) {
 					popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
 					popUpWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
 				}
-				else if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
+				else if (authenticationProviderFromFeatureConfiguration.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 					String resetUrl = buildKeycloakForgotPasswordUrl();
 					Page.getCurrent().setLocation(resetUrl);
 				}
