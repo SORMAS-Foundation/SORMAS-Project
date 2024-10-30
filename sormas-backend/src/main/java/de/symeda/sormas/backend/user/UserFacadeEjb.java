@@ -230,6 +230,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLimitedDiseases(source.getLimitedDiseases());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+		target.setExternalId(source.getExternalId());
 
 		target.setUserRoles(source.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
@@ -864,6 +865,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLimitedDiseases(source.getLimitedDiseases());
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
+		target.setExternalId(source.getExternalId());
 
 		fillEntityUserRoles(target, source);
 
@@ -1096,10 +1098,7 @@ public class UserFacadeEjb implements UserFacade {
 		UserRight._SYSTEM })
 	public boolean isSyncEnabled() {
 		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
-		return KEYCLOAK.equalsIgnoreCase(authProvider.getName())
-			&& (featureConfigurationFacade.isFeatureDisabled(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)
-				|| StringUtils.isNotBlank(configFacade.getAuthenticationProviderSyncedNewUserRole()));
-
+		return KEYCLOAK.equalsIgnoreCase(authProvider.getName());
 	}
 
 	@Override

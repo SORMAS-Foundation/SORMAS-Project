@@ -17,12 +17,31 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.ui.UiUtil;
 
 public class FieldAccessHelper {
 
 	public static boolean isAllInaccessible(String... values) {
 		return Stream.of(values).allMatch(v -> I18nProperties.getCaption(Captions.inaccessibleValue).equals(v));
 	}
+
+	public static <T> UiFieldAccessCheckers<T> getFieldAccessCheckers(boolean inJurisdiction, boolean isPseudonymized) {
+		return UiFieldAccessCheckers.forDataAccessLevel(
+			UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction),
+			isPseudonymized,
+			FacadeProvider.getConfigFacade().getCountryLocale());
+	}
+
+	public static <T extends PseudonymizableDto> UiFieldAccessCheckers<T> getFieldAccessCheckers(T dto) {
+		return UiFieldAccessCheckers.forDataAccessLevel(
+			UiUtil.getPseudonymizableDataAccessLevel(dto.isInJurisdiction()),
+			dto.isPseudonymized(),
+			FacadeProvider.getConfigFacade().getCountryLocale());
+	}
+
 }

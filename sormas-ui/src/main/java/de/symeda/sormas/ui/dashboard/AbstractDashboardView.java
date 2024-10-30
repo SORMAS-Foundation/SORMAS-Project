@@ -29,6 +29,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
@@ -66,6 +67,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 			dashboardSwitcher.setItemCaption(DashboardType.SAMPLES, I18nProperties.getEnumCaption(DashboardType.SAMPLES));
 		}
 
+		if (permitted(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT, UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)) {
+			dashboardSwitcher.addItem(DashboardType.ADVERSE_EVENTS);
+			dashboardSwitcher.setItemCaption(DashboardType.ADVERSE_EVENTS, I18nProperties.getEnumCaption(DashboardType.ADVERSE_EVENTS));
+		}
+
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 			dashboardSwitcher.addItem(DashboardType.CAMPAIGNS);
 			dashboardSwitcher.setItemCaption(DashboardType.CAMPAIGNS, I18nProperties.getEnumCaption(DashboardType.CAMPAIGNS));
@@ -96,6 +102,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 			SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);
 		} else if (DashboardType.SAMPLES.equals(e.getProperty().getValue())) {
 			SormasUI.get().getNavigator().navigateTo(SampleDashboardView.VIEW_NAME);
+		} else if (DashboardType.ADVERSE_EVENTS.equals(e.getProperty().getValue())) {
+			SormasUI.get().getNavigator().navigateTo(AefiDashboardView.VIEW_NAME);
 		} else {
 			SormasUI.get().getNavigator().navigateTo(CampaignDashboardView.VIEW_NAME);
 		}

@@ -60,6 +60,7 @@ import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAcces
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
@@ -120,6 +121,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private CountryService countryService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -485,7 +488,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	private Pseudonymizer<PathogenTestDto> createPseudonymizer(Collection<PathogenTest> tests) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(tests));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(tests), configFacade.getCountryCode());
 	}
 
 	private <T extends PathogenTestDto> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<PathogenTest> tests) {

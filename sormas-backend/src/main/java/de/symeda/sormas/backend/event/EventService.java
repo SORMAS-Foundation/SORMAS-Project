@@ -638,7 +638,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	@Override
-	public void deletePermanent(Event event) {
+	public boolean deletePermanent(Event event) {
 
 		// Delete all tasks associated with this event
 		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())), true);
@@ -677,6 +677,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		removeFromSubordinateEvents(event);
 
 		super.deletePermanent(event);
+		return false;
 	}
 
 	private void removeFromSubordinateEvents(Event event) {

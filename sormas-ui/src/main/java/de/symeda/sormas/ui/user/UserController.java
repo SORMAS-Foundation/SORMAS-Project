@@ -347,6 +347,12 @@ public class UserController {
 
 	public void sync() {
 		if (UiUtil.permitted(FeatureType.AUTH_PROVIDER_TO_SORMAS_USER_SYNC)) {
+			if (StringUtils.isBlank(FacadeProvider.getConfigFacade().getAuthenticationProviderSyncedNewUserRole())) {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingSyncUsers),
+					I18nProperties.getString(Strings.messageSyncUsersFromAuthProviderConfigurationError));
+				return;
+			}
 			FacadeProvider.getUserFacade().syncUsersFromAuthenticationProvider();
 			SormasUI.refreshView();
 		} else {

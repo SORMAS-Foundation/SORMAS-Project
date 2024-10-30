@@ -17,6 +17,7 @@ package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
@@ -24,15 +25,16 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 
-public final class PseudonymizedFieldAccessChecker<T> implements FieldAccessChecker<T> {
+public abstract class PseudonymizedFieldAccessChecker<T> implements FieldAccessChecker<T> {
 
 	private final WrappedFieldAccessChecker wrapped;
 
-	public PseudonymizedFieldAccessChecker(
+	private PseudonymizedFieldAccessChecker(
 		Class<? extends Annotation> annotation,
 		Class<? extends Annotation> embeddedAnnotation,
-		boolean isPseudonymized) {
-		this.wrapped = new WrappedFieldAccessChecker(annotation, embeddedAnnotation, isPseudonymized);
+		boolean isPseudonymized,
+		String serverCountry) {
+		this.wrapped = new WrappedFieldAccessChecker(annotation, embeddedAnnotation, isPseudonymized, serverCountry);
 	}
 
 	@Override
@@ -56,24 +58,52 @@ public final class PseudonymizedFieldAccessChecker<T> implements FieldAccessChec
 
 	private final class WrappedFieldAccessChecker extends AnnotationBasedFieldAccessChecker<T> {
 
+		private final String serverCountry;
+
 		private WrappedFieldAccessChecker(
 			Class<? extends Annotation> annotation,
 			Class<? extends Annotation> embeddedAnnotation,
-			boolean isPseudonymized) {
+			boolean isPseudonymized,
+			String serverCountry) {
 			super(annotation, embeddedAnnotation, !isPseudonymized, t -> false);
+			this.serverCountry = serverCountry;
 		}
 
 		@Override
 		protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
 			return false;
 		}
+
+		@Override
+		public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
+			if (isExcludedForCountry(field, serverCountry)) {
+				return false;
+			}
+			return super.isConfiguredForCheck(field, withMandatory);
+		}
 	}
 
-	public static <T> PseudonymizedFieldAccessChecker<T> forPersonalData(boolean isPseudonymized) {
-		return new PseudonymizedFieldAccessChecker<>(PersonalData.class, EmbeddedPersonalData.class, isPseudonymized);
+	protected abstract boolean isExcludedForCountry(Field field, String serverCountry);
+
+	public static <T> PseudonymizedFieldAccessChecker<T> forPersonalData(boolean isPseudonymized, String serverCountry) {
+		return new PseudonymizedFieldAccessChecker<>(PersonalData.class, EmbeddedPersonalData.class, isPseudonymized, serverCountry) {
+
+			@Override
+			protected boolean isExcludedForCountry(Field field, String serverCountry) {
+				return field.getAnnotation(PersonalData.class) != null
+					&& Arrays.asList(field.getAnnotation(PersonalData.class).excludeForCountries()).contains(serverCountry);
+			}
+		};
 	}
 
-	public static <T> PseudonymizedFieldAccessChecker<T> forSensitiveData(boolean isPseudonymized) {
-		return new PseudonymizedFieldAccessChecker<>(SensitiveData.class, EmbeddedSensitiveData.class, isPseudonymized);
+	public static <T> PseudonymizedFieldAccessChecker<T> forSensitiveData(boolean isPseudonymized, String serverCountry) {
+		return new PseudonymizedFieldAccessChecker<>(SensitiveData.class, EmbeddedSensitiveData.class, isPseudonymized, serverCountry) {
+
+			@Override
+			protected boolean isExcludedForCountry(Field field, String serverCountry) {
+				return field.getAnnotation(SensitiveData.class) != null
+					&& Arrays.asList(field.getAnnotation(SensitiveData.class).excludeForCountries()).contains(serverCountry);
+			}
+		};
 	}
 }

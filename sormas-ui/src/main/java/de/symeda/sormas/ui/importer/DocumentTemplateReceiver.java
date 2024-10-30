@@ -10,13 +10,16 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.function.Supplier;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.Upload.StartedEvent;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -35,9 +38,11 @@ public class DocumentTemplateReceiver
 	private File file;
 	private String fName;
 	private final DocumentWorkflow documentWorkflow;
+	private final Supplier<Disease> diseaseSupplier;
 
-	public DocumentTemplateReceiver(DocumentWorkflow documentWorkflow) {
+	public DocumentTemplateReceiver(DocumentWorkflow documentWorkflow, Supplier<Disease> diseaseSupplier) {
 		this.documentWorkflow = documentWorkflow;
+		this.diseaseSupplier = diseaseSupplier;
 	}
 
 	@Override
@@ -89,7 +94,7 @@ public class DocumentTemplateReceiver
 		}
 
 		// Check for duplicate files
-		if (FacadeProvider.getDocumentTemplateFacade().isExistingTemplate(documentWorkflow, fName)) {
+		if (FacadeProvider.getDocumentTemplateFacade().isExistingTemplateFile(documentWorkflow, diseaseSupplier.get(), fName)) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingFileExists),
 				new Label(String.format(I18nProperties.getString(Strings.infoDocumentAlreadyExists), fName)),
@@ -108,8 +113,9 @@ public class DocumentTemplateReceiver
 
 	private void writeTemplateFile() {
 		try {
-			byte[] filecontent = Files.readAllBytes(file.toPath());
-			FacadeProvider.getDocumentTemplateFacade().writeDocumentTemplate(documentWorkflow, fName, filecontent);
+			byte[] fileContent = Files.readAllBytes(file.toPath());
+			DocumentTemplateDto documentTemplateDto = DocumentTemplateDto.build(documentWorkflow, fName, diseaseSupplier.get());
+			FacadeProvider.getDocumentTemplateFacade().saveDocumentTemplate(documentTemplateDto, fileContent);
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));

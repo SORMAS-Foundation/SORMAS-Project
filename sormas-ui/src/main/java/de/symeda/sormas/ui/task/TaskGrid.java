@@ -166,7 +166,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 
 		getColumn(TaskIndexDto.CONTEXT_REFERENCE).setStyleGenerator(new FieldAccessColumnStyleGenerator<>(task -> {
 			boolean isInJurisdiction = task.getTaskJurisdictionFlagsDto().getInJurisdiction();
-			return UiFieldAccessCheckers.getDefault(!isInJurisdiction).hasRight();
+			return UiFieldAccessCheckers.getDefault(!isInJurisdiction, FacadeProvider.getConfigFacade().getCountryLocale()).hasRight();
 		}));
 
 		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, this::navigateToData));

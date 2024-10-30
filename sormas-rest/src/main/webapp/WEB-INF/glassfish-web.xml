@@ -116,6 +116,36 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>PERSON_VIEW</role-name>
         <group-name>PERSON_VIEW</group-name>
     </security-role-mapping>
@@ -588,6 +618,11 @@
     <security-role-mapping>
         <role-name>DASHBOARD_SAMPLES_VIEW</role-name>
         <group-name>DASHBOARD_SAMPLES_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</role-name>
+        <group-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

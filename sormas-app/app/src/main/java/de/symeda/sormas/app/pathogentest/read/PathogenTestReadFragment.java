@@ -44,7 +44,7 @@ public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenT
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	// Overrides

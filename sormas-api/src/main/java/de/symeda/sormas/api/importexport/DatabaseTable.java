@@ -68,6 +68,14 @@ public enum DatabaseTable {
 	IMMUNIZATIONS(DatabaseTableType.SORMAS, "immunizations", dependingOnFeature(FeatureType.IMMUNIZATION_MANAGEMENT)),
 	VACCINATIONS(DatabaseTableType.SORMAS, IMMUNIZATIONS, "vaccinations"),
 
+	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATIONS(DatabaseTableType.SORMAS,
+		"adverse_events_following_immunizations",
+		dependingOnFeature(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT)),
+	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_INVESTIGATIONS(DatabaseTableType.SORMAS,
+		"adverse_events_following_immunization_investigations",
+		dependingOnFeature(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT)),
+	ADVERSE_EVENTS(DatabaseTableType.SORMAS, "adverse_events", dependingOnFeature(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT)),
+
 	SAMPLES(DatabaseTableType.SORMAS, "samples", dependingOnFeature(FeatureType.SAMPLES_LAB)),
 	PATHOGEN_TESTS(DatabaseTableType.SORMAS, SAMPLES, "pathogen_tests"),
 	ADDITIONAL_TESTS(DatabaseTableType.SORMAS, SAMPLES, "additional_tests", dependingOnFeature(FeatureType.ADDITIONAL_TESTS)),

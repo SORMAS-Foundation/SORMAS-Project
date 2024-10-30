@@ -23,11 +23,11 @@ AND c_hist.column_name IS NULL
 AND c.table_name NOT IN
   (SELECT t.table_name FROM information_schema."tables" t
    WHERE t.table_schema = 'public' AND t.table_name NOT LIKE '%_history'
-   AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist .table_name) = 0)
+   AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist.table_name) = 0)
 UNION
 SELECT 'no history table' as remark, t.table_name, null as column_name, null as data_type FROM information_schema."tables" t
 WHERE t.table_schema = 'public' AND t.table_name NOT LIKE '%_history' AND t.table_name NOT IN ('schema_version', 'systemevent') AND t.table_name NOT like 'pg_%'
-AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist .table_name) = 0
+AND (SELECT COUNT(t_hist.table_name) FROM information_schema."tables" t_hist WHERE concat(t.table_name,'_history') = t_hist.table_name) = 0
 UNION
 SELECT 'missing delete history trigger' as remark, t.table_name, null as column_name, null as data_type FROM information_schema."tables" t
 WHERE t.table_schema = 'public'

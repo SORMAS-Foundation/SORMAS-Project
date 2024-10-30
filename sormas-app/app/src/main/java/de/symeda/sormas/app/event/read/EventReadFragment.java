@@ -56,7 +56,7 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	// Overrides

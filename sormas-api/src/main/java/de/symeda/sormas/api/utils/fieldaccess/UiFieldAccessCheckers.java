@@ -48,41 +48,44 @@ public final class UiFieldAccessCheckers<T> {
 		return new UiFieldAccessCheckers<>();
 	}
 
-	public static <T> UiFieldAccessCheckers<T> getDefault(boolean isPseudonymized) {
+	public static <T> UiFieldAccessCheckers<T> getDefault(boolean isPseudonymized, String serverCountry) {
 		UiFieldAccessCheckers<T> fieldAccessCheckers = new UiFieldAccessCheckers<>();
 
-		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized))
-			.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized, serverCountry))
+			.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized, serverCountry));
 
 		return fieldAccessCheckers;
 	}
 
-	public static <T> UiFieldAccessCheckers<T> forPersonalData(boolean isPseudonymized) {
+	public static <T> UiFieldAccessCheckers<T> forPersonalData(boolean isPseudonymized, String serverCountry) {
 		UiFieldAccessCheckers<T> fieldAccessCheckers = new UiFieldAccessCheckers<>();
 
-		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized));
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized, serverCountry));
 
 		return fieldAccessCheckers;
 	}
 
-	public static <T> UiFieldAccessCheckers<T> forSensitiveData(boolean isPseudonymized) {
+	public static <T> UiFieldAccessCheckers<T> forSensitiveData(boolean isPseudonymized, String serverCountry) {
 		UiFieldAccessCheckers<T> fieldAccessCheckers = new UiFieldAccessCheckers<>();
 
-		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized, serverCountry));
 
 		return fieldAccessCheckers;
 	}
 
-	public static <T> UiFieldAccessCheckers<T> forDataAccessLevel(PseudonymizableDataAccessLevel accessLevel, boolean isPseudonymized) {
+	public static <T> UiFieldAccessCheckers<T> forDataAccessLevel(
+		PseudonymizableDataAccessLevel accessLevel,
+		boolean isPseudonymized,
+		String serverCountry) {
 
 		switch (accessLevel) {
 		case ALL:
 		case NONE:
-			return getDefault(isPseudonymized);
+			return getDefault(isPseudonymized, serverCountry);
 		case PERSONAL:
-			return forSensitiveData(isPseudonymized);
+			return forSensitiveData(isPseudonymized, serverCountry);
 		case SENSITIVE:
-			return forPersonalData(isPseudonymized);
+			return forPersonalData(isPseudonymized, serverCountry);
 		default:
 			throw new IllegalArgumentException(accessLevel.name());
 		}

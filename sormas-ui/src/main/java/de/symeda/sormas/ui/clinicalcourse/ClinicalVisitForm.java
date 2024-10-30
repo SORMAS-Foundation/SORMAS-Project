@@ -6,6 +6,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,7 +37,10 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 			ClinicalVisitDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			UiFieldAccessCheckers.forDataAccessLevel(
+				UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction),
+				isPseudonymized,
+				FacadeProvider.getConfigFacade().getCountryLocale()));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}

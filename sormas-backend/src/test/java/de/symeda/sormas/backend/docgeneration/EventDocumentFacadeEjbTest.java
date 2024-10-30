@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FilenameUtils;
@@ -20,6 +22,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -129,11 +132,19 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		File[] testCasesHtml = testCasesDir.listFiles((d, name) -> name.endsWith(".html"));
 		assertNotNull(testCasesHtml);
 
+		Map<String, DocumentTemplate> documentTemplates = new HashMap<>(testCasesHtml.length);
 		for (File testCaseHtml : testCasesHtml) {
 			String testcaseBasename = FilenameUtils.getBaseName(testCaseHtml.getName());
 
+			DocumentTemplate documentTemplate = createDocumentTemplate(DocumentWorkflow.EVENT_HANDOUT, testcaseBasename + ".html");
+			documentTemplates.put(testcaseBasename, documentTemplate);
+		}
+
+		for (File testCaseHtml : testCasesHtml) {
+			String testcaseBasename = FilenameUtils.getBaseName(testCaseHtml.getName());
+			DocumentTemplate documentTemplate = documentTemplates.get(testcaseBasename);
 			String htmlText =
-				eventDocumentFacade.getGeneratedDocument(testcaseBasename + ".html", eventDto.toReference(), new Properties(), Boolean.FALSE);
+				eventDocumentFacade.getGeneratedDocument(toReference(documentTemplate), eventDto.toReference(), new Properties(), Boolean.FALSE);
 			String actual = cleanLineSeparators(
 				htmlText.replaceAll("<p>Event-ID: <b>[A-Z0-9-]*</b></p>", "<p>Event-ID: <b>STN3WX-5JTGYV-IU2LRM-4UHCSOEE</b></p>"));
 
