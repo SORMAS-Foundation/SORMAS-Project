@@ -151,6 +151,7 @@ public class EventParticipantDataView extends AbstractEventParticipantView imple
 			RootEntityType.ROOT_EVENT_PARTICIPANT,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
+			event.getDisease(),
 			sampleCriteria,
 			vaccinationCriteria);
 

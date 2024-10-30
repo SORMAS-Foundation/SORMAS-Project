@@ -5,32 +5,33 @@ import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
+
 @Remote
 public interface DocumentTemplateFacade {
 
 	byte[] generateDocumentDocxFromEntities(
-		DocumentWorkflow documentWorkflow,
-		String templateName,
+		DocumentTemplateReferenceDto templateReference,
 		DocumentTemplateEntities entities,
 		Properties extraProperties)
 		throws DocumentTemplateException;
 
 	String generateDocumentTxtFromEntities(
-		DocumentWorkflow documentWorkflow,
-		String templateName,
+		DocumentTemplateReferenceDto templateReference,
 		DocumentTemplateEntities entities,
 		Properties extraProperties)
 		throws DocumentTemplateException;
 
-	List<String> getAvailableTemplates(DocumentWorkflow documentWorkflow);
+	List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow documentWorkflow, Disease disease);
 
-	DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException;
+	boolean isExistingTemplateFile(DocumentWorkflow documentWorkflow, Disease disease, String templateName);
 
-	boolean isExistingTemplate(DocumentWorkflow documentWorkflow, String templateName);
+	DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 
-	void writeDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName, byte[] document) throws DocumentTemplateException;
+	DocumentTemplateDto saveDocumentTemplate(DocumentTemplateDto template, byte[] document)
+		throws DocumentTemplateException;
 
-	boolean deleteDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException;
+	boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 
-	byte[] getDocumentTemplate(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException;
+	byte[] getDocumentTemplateContent(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 }

@@ -612,11 +612,12 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 	}
 
 	@Override
-	public void deletePermanent(Action action) {
+	public boolean deletePermanent(Action action) {
 
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.ACTION, action.getUuid()).forEach(d -> documentService.markAsDeleted(d));
 
 		super.deletePermanent(action);
+		return false;
 	}
 
 	@Override

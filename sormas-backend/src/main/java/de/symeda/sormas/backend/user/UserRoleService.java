@@ -175,7 +175,7 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 	}
 
 	@Override
-	public void deletePermanent(UserRole userRole) {
+	public boolean deletePermanent(UserRole userRole) {
 
 		List<User> usersWithRole = userService.getAllWithRole(userRole);
 		for (User u : usersWithRole) {
@@ -191,5 +191,6 @@ public class UserRoleService extends AdoServiceWithUserFilterAndJurisdiction<Use
 		}
 
 		super.deletePermanent(userRole);
+		return false;
 	}
 }

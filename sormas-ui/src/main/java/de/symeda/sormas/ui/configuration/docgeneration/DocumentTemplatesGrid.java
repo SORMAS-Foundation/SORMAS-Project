@@ -31,6 +31,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,23 +40,30 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class DocumentTemplatesGrid extends Grid<String> {
+public class DocumentTemplatesGrid extends Grid<DocumentTemplateDto> {
 
 	private static final long serialVersionUID = 2589713987152595369L;
 
 	private final DocumentWorkflow documentWorkflow;
 
-	public DocumentTemplatesGrid(DocumentWorkflow documentWorkflow) {
-		super(String.class);
+	public DocumentTemplatesGrid(DocumentWorkflow documentWorkflow, boolean hasDisease) {
+		super(DocumentTemplateDto.class);
 		this.documentWorkflow = documentWorkflow;
 		setSizeFull();
 
-		List<String> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow);
-		ListDataProvider<String> dataProvider = DataProvider.fromStream(availableTemplates.stream());
+		List<DocumentTemplateDto> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow, null);
+		ListDataProvider<DocumentTemplateDto> dataProvider = DataProvider.fromStream(availableTemplates.stream());
 		setDataProvider(dataProvider);
 
-		removeAllColumns();
-		addColumn(String::toString).setCaption(I18nProperties.getString(Strings.fileName)).setExpandRatio(1);
+		setColumns(DocumentTemplateDto.FILE_NAME);
+		if (hasDisease) {
+			addColumn(DocumentTemplateDto.DISEASE);
+		}
+
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(DocumentTemplateDto.I18N_PREFIX, column.getId(), column.getCaption()));
+		}
+
 		addComponentColumn(this::buildActionButtons).setCaption(I18nProperties.getCaption(Captions.eventActionsView))
 			.setWidth(100)
 			.setStyleGenerator(item -> "v-align-center");
@@ -67,20 +75,20 @@ public class DocumentTemplatesGrid extends Grid<String> {
 
 	public void reload() {
 		// This is bad practice but it works (unlike refreshAll), and in this case its sufficient
-		List<String> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow);
+		List<DocumentTemplateDto> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow, null);
 		setItems(availableTemplates);
 		getDataProvider().refreshAll();
 		setHeightByRows(Math.max(1, availableTemplates.size()));
 	}
 
-	private Button buildDeleteButton(String templateFileName) {
+	private Button buildDeleteButton(DocumentTemplateDto template) {
 		return ButtonHelper.createIconButton(
 			"",
 			VaadinIcons.TRASH,
 			e -> VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), templateFileName), () -> {
+				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), template.getFileName()), () -> {
 					try {
-						FacadeProvider.getDocumentTemplateFacade().deleteDocumentTemplate(documentWorkflow, templateFileName);
+						FacadeProvider.getDocumentTemplateFacade().deleteDocumentTemplate(template.toReference());
 					} catch (DocumentTemplateException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocumentTemplate),
@@ -92,21 +100,21 @@ public class DocumentTemplatesGrid extends Grid<String> {
 				}));
 	}
 
-	private Button buildViewDocumentButton(String templateFileName) {
+	private Button buildViewDocumentButton(DocumentTemplateDto template) {
 		Button viewButton = ButtonHelper.createIconButton(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			try {
-				return new ByteArrayInputStream(FacadeProvider.getDocumentTemplateFacade().getDocumentTemplate(documentWorkflow, templateFileName));
+				return new ByteArrayInputStream(FacadeProvider.getDocumentTemplateFacade().getDocumentTemplateContent(template.toReference()));
 			} catch (DocumentTemplateException e) {
 				new Notification(
-					String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFileName),
+					String.format(I18nProperties.getString(Strings.errorReadingTemplate), template.getFileName()),
 					e.getMessage(),
 					Notification.Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 				return null;
 			}
-		}, templateFileName);
+		}, template.getFileName());
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(viewButton);
 		fileDownloader.setFileDownloadResource(streamResource);
@@ -114,11 +122,11 @@ public class DocumentTemplatesGrid extends Grid<String> {
 		return viewButton;
 	}
 
-	private HorizontalLayout buildActionButtons(String s) {
+	private HorizontalLayout buildActionButtons(DocumentTemplateDto template) {
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
 
-		horizontalLayout.addComponent(buildViewDocumentButton(s));
-		horizontalLayout.addComponent(buildDeleteButton(s));
+		horizontalLayout.addComponent(buildViewDocumentButton(template));
+		horizontalLayout.addComponent(buildDeleteButton(template));
 
 		horizontalLayout.setSpacing(false);
 		horizontalLayout.setMargin(false);

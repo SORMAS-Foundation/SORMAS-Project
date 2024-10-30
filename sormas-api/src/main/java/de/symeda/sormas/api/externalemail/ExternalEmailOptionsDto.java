@@ -23,6 +23,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -36,7 +37,7 @@ public class ExternalEmailOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "ExternalEmailOptions";
 
-	public static final String TEMPLATE_NAME = "templateName";
+	public static final String TEMPLATE = "template";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
 	public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
 
@@ -47,8 +48,7 @@ public class ExternalEmailOptionsDto implements Serializable {
 	@NotNull(message = Validations.requiredField)
 	private ReferenceDto rootEntityReference;
 	@NotNull(message = Validations.requiredField)
-	@Size(min = 1, message = Validations.requiredField)
-	private String templateName;
+	private DocumentTemplateReferenceDto template;
 	@NotNull(message = Validations.requiredField)
 	@Size(min = 1, message = Validations.requiredField)
 	private String recipientEmail;
@@ -78,12 +78,12 @@ public class ExternalEmailOptionsDto implements Serializable {
 		this.rootEntityReference = rootEntityReference;
 	}
 
-	public String getTemplateName() {
-		return templateName;
+	public DocumentTemplateReferenceDto getTemplate() {
+		return template;
 	}
 
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
+	public void setTemplate(DocumentTemplateReferenceDto template) {
+		this.template = template;
 	}
 
 	public String getRecipientEmail() {

@@ -333,7 +333,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	public void deletePermanent(EventParticipant eventParticipant) {
+	public boolean deletePermanent(EventParticipant eventParticipant) {
 		if (eventParticipant.getSamples() != null) {
 			for (Sample sample : eventParticipant.getSamples()) {
 				if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
@@ -354,6 +354,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		});
 
 		super.deletePermanent(eventParticipant);
+		return false;
 	}
 
 	public List<String> getAllUuidsByEventUuids(List<String> eventUuids) {

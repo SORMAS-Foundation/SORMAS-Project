@@ -15,8 +15,7 @@
 
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
-import de.symeda.sormas.backend.common.BaseAdoService;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import java.util.Optional;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -25,7 +24,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Optional;
+
+import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.DeletableAdo;
 
 @Stateless
 @LocalBean
@@ -47,10 +48,11 @@ public class SampleReportService extends BaseAdoService<SampleReport> {
 	}
 
 	@Override
-	public void deletePermanent(SampleReport sampleReport) {
+	public boolean deletePermanent(SampleReport sampleReport) {
 
 		Optional.ofNullable(sampleReport.getTestReports()).ifPresent(testReports -> testReports.forEach(t -> testReportService.deletePermanent(t)));
 
 		super.deletePermanent(sampleReport);
+		return false;
 	}
 }

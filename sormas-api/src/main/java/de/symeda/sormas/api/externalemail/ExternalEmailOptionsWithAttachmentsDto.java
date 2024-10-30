@@ -21,14 +21,12 @@
 package de.symeda.sormas.api.externalemail;
 
 import java.io.Serializable;
-import java.util.Properties;
 import java.util.Set;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderDocumentOptionsDto;
@@ -51,8 +49,7 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 	@NotNull(message = Validations.requiredField)
 	private final RootEntityType rootEntityType;
 	@NotNull(message = Validations.requiredField)
-	@Size(min = 1, message = Validations.requiredField)
-	private String templateName;
+	private DocumentTemplateReferenceDto template;
 	private Set<EmailAttachementDto> attachedDocuments;
 
 	private QuarantineOrderDocumentOptionsDto quarantineOrderDocumentOptionsDto;
@@ -70,12 +67,12 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 		return rootEntityType;
 	}
 
-	public String getTemplateName() {
-		return templateName;
+	public DocumentTemplateReferenceDto getTemplate() {
+		return template;
 	}
 
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
+	public void setTemplate(DocumentTemplateReferenceDto template) {
+		this.template = template;
 	}
 
 	public Set<EmailAttachementDto> getAttachedDocuments() {

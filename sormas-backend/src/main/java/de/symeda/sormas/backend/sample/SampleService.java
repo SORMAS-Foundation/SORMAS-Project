@@ -1038,7 +1038,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	@Override
-	public void deletePermanent(Sample sample) {
+	public boolean deletePermanent(Sample sample) {
 
 		// Delete all pathogen tests of this sample
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
@@ -1063,6 +1063,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		deleteSampleLinks(sample);
 
 		super.deletePermanent(sample);
+		return false;
 	}
 
 	@Override

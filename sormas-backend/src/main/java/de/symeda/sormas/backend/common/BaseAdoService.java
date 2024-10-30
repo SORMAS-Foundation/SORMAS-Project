@@ -517,9 +517,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public void deletePermanent(ADO ado) {
+	public boolean deletePermanent(ADO ado) {
 		em.remove(em.contains(ado) ? ado : em.merge(ado)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
+		return false;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

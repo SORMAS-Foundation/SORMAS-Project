@@ -140,7 +140,7 @@ public class EventDataView extends AbstractEventView {
 			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef(), documentList);
+		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(event, documentList);
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addSidePanelComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 

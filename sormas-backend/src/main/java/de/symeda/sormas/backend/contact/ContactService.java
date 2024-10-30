@@ -1722,7 +1722,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 	@Override
-	public void deletePermanent(Contact contact) {
+	public boolean deletePermanent(Contact contact) {
 
 		// Delete all tasks associated with this case
 		Optional.ofNullable(contact.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
@@ -1763,6 +1763,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		deleteContactLinks(contact);
 
 		super.deletePermanent(contact);
+		return false;
 	}
 
 	private void deleteContactLinks(Contact contact) {

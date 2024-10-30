@@ -13,6 +13,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.action.ActionReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
@@ -45,13 +46,13 @@ public class DocGenerationHelper {
 		}
 	}
 
-	public String getDocumentFileName(ReferenceDto rootEntityReference, String templateFileName) {
+	public String getDocumentFileName(ReferenceDto rootEntityReference, DocumentTemplateReferenceDto templateReference) {
 		List<DocumentDto> docs =
 			documentFacade.getDocumentsRelatedToEntity(getDocumentRelatedEntityType(rootEntityReference), rootEntityReference.getUuid());
 		return generateNewFileName(
 			docs.stream().map(DocumentDto::getName).collect(Collectors.toList()),
 			DataHelper.getShortUuid(rootEntityReference),
-			'-' + templateFileName);
+			'-' + templateReference.getCaption());
 	}
 
 	private String generateNewFileName(List<String> docs, String shortUuid, String templateFileName) {

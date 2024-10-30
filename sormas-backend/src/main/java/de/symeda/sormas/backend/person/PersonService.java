@@ -1054,13 +1054,14 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 	}
 
 	@Override
-	public void deletePermanent(Person person) {
+	public boolean deletePermanent(Person person) {
 
 		manualMessageLogService.getByPersonUuid(person.getUuid())
 			.forEach(manualMessageLog -> manualMessageLogService.deletePermanent(manualMessageLog));
 		visitService.deletePersonVisits(Collections.singletonList(person.getUuid()));
 
 		super.deletePermanent(person);
+		return false;
 	}
 
 	@Override

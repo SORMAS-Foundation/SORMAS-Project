@@ -27,8 +27,11 @@ import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,10 +44,16 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	private DocumentListComponent documentListComponent;
 
 	public EventDocumentLayout(
+		Disease defaultDisease,
 		DocumentListComponent documentListComponent,
-		Function<String, String> fileNameFunction,
+		Function<DocumentTemplateDto, String> fileNameFunction,
 		DocumentInputStreamSupplier documentInputStreamSupplier) {
-		super(I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout), fileNameFunction, isNull(documentListComponent), false);
+		super(
+			defaultDisease,
+			I18nProperties.getCaption(Captions.DocumentTemplate_EventHandout),
+			fileNameFunction,
+			isNull(documentListComponent),
+			false);
 
 		this.documentListComponent = documentListComponent;
 		this.documentInputStreamSupplier = documentInputStreamSupplier;
@@ -53,20 +62,20 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 	}
 
 	@Override
-	protected List<String> getAvailableTemplates() {
-		return FacadeProvider.getEventDocumentFacade().getAvailableTemplates();
+	protected List<DocumentTemplateDto> getAvailableTemplates(Disease disease) {
+		return FacadeProvider.getEventDocumentFacade().getAvailableTemplates(disease);
 	}
 
 	@Override
-	protected DocumentVariables getDocumentVariables(String templateFile) throws DocumentTemplateException {
-		return FacadeProvider.getEventDocumentFacade().getDocumentVariables(templateFile);
+	protected DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException {
+		return FacadeProvider.getEventDocumentFacade().getDocumentVariables(templateReference);
 	}
 
 	@Override
-	protected StreamResource createStreamResource(String templateFile, String filename) {
+	protected StreamResource createStreamResource(DocumentTemplateDto template, String filename) {
 		return new StreamResource((StreamResource.StreamSource) () -> {
 			try {
-				return documentInputStreamSupplier.get(templateFile, readAdditionalVariables(), shouldUploadGeneratedDocument());
+				return documentInputStreamSupplier.get(template, readAdditionalVariables(), shouldUploadGeneratedDocument());
 			} catch (Exception e) {
 				new Notification(I18nProperties.getString(Strings.errorProcessingTemplate), e.getMessage(), Notification.Type.ERROR_MESSAGE)
 					.show(Page.getCurrent());
@@ -86,6 +95,6 @@ public class EventDocumentLayout extends AbstractDocgenerationLayout {
 
 	interface DocumentInputStreamSupplier {
 
-		InputStream get(String templateFile, Properties properties, Boolean shouldUploadGeneratedDoc) throws DocumentTemplateException;
+		InputStream get(DocumentTemplateDto template, Properties properties, Boolean shouldUploadGeneratedDoc) throws DocumentTemplateException;
 	}
 }
