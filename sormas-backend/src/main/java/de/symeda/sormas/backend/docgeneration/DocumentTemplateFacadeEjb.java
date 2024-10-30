@@ -526,6 +526,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return new EmailTemplateTexts(cleanupSubject ? subjectLine.substring(1).trim() : subjectLine, content);
 	}
 
+	@PermitAll
 	public DocumentTemplateDto getByUuid(String uuid) {
 		return toDto(documentTemplateService.getByUuid(uuid));
 	}
