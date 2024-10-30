@@ -523,19 +523,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
 
-		if (diseaseClassificationExists() && FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()) {
-			Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
-				CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());
-				((Field<CaseClassification>) getField(CaseDataDto.CASE_CLASSIFICATION)).setValue(classification);
-			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-
-			getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
-
-			if (!UiUtil.permitted(UserRight.CASE_CLASSIFY)) {
-				caseClassificationCalculationButton.setEnabled(false);
-			}
-		}
-
 		boolean extendedClassification = FacadeProvider.getDiseaseConfigurationFacade().usesExtendedClassification(disease);
 
 		if (extendedClassification) {
@@ -1037,6 +1024,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE);
 		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
+
+		if (diseaseClassificationExists()
+			&& FacadeProvider.getConfigFacade().getCaseClassificationCalculationMode(disease).isManualEnabled()
+			&& isVisibleAllowed(CaseDataDto.CASE_CLASSIFICATION)) {
+			Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
+				CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());
+				((Field<CaseClassification>) getField(CaseDataDto.CASE_CLASSIFICATION)).setValue(classification);
+			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+
+			getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
+
+			if (!UiUtil.permitted(UserRight.CASE_CLASSIFY)) {
+				caseClassificationCalculationButton.setEnabled(false);
+			}
+		}
+
 		if (isEditableAllowed(CaseDataDto.INVESTIGATED_DATE)) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),

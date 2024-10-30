@@ -25,6 +25,12 @@ public enum VaccineManufacturer {
 		Disease.CORONAVIRUS })
 	BIONTECH_PFIZER,
 	@Diseases(value = {
+		Disease.CSM })
+	PFIZER,
+	@Diseases(value = {
+		Disease.MONKEYPOX })
+	BAVARIAN_NORDIC,
+	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	MODERNA,
 	@Diseases(value = {
@@ -34,11 +40,17 @@ public enum VaccineManufacturer {
 		Disease.CORONAVIRUS })
 	JOHNSON_JOHNSON,
 	@Diseases(value = {
+		Disease.MONKEYPOX })
+	KM_BIOLOGICS,
+	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	NOVAVAX,
 	@Diseases(value = {
 		Disease.CORONAVIRUS })
 	SANOFI_GSK,
+	@Diseases(value = {
+		Disease.MONKEYPOX })
+	SANOFI_PASTEUR_BIOLOGICS,
 	VALNEVA,
 	UNKNOWN,
 	OTHER;

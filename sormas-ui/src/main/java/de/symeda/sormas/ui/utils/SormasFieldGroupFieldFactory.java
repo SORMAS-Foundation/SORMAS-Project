@@ -20,6 +20,7 @@ import com.vaadin.v7.ui.RichTextArea;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AdverseEventState;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -27,6 +28,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.fields.vaccines.AefiVaccinationsField;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.components.form.AdverseEventsForm;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
@@ -73,7 +76,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
 		if (type.isEnum()) {
 			if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
-				&& (SymptomState.class.isAssignableFrom(type) || YesNoUnknown.class.isAssignableFrom(type))) {
+				&& (SymptomState.class.isAssignableFrom(type)
+					|| YesNoUnknown.class.isAssignableFrom(type)
+					|| AdverseEventState.class.isAssignableFrom(type))) {
 				NullableOptionGroup field = new NullableOptionGroup();
 				field.setImmediate(true);
 				populateWithEnumData(field, (Class<? extends Enum>) type);
@@ -178,6 +183,10 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new CustomizableEnumPropertiesComponent();
 		} else if (UserField.class.isAssignableFrom(fieldType)) {
 			return (T) new UserField();
+		} else if (AefiVaccinationsField.class.isAssignableFrom(fieldType)) {
+			return (T) new AefiVaccinationsField(fieldAccessCheckers);
+		} else if (AdverseEventsForm.class.isAssignableFrom(fieldType)) {
+			return (T) new AdverseEventsForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckBoxTree<>();
 		} else if (RichTextArea.class.isAssignableFrom(fieldType)) {

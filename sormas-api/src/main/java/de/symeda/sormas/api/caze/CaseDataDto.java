@@ -283,16 +283,20 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		COUNTRY_CODE_SWITZERLAND })
 	private Date districtLevelDate;
 	@Outbreaks
+	@Diseases(value = Disease.RESPIRATORY_SYNCYTIAL_VIRUS, hide = true)
 	private CaseClassification caseClassification;
 	@HideForCountriesExcept
 	private CaseIdentificationSource caseIdentificationSource;
 	@HideForCountriesExcept
 	private ScreeningType screeningType;
 	@Outbreaks
+	@Diseases(value = Disease.RESPIRATORY_SYNCYTIAL_VIRUS, hide = true)
 	private UserReferenceDto classificationUser;
 	@Outbreaks
+	@Diseases(value = Disease.RESPIRATORY_SYNCYTIAL_VIRUS, hide = true)
 	private Date classificationDate;
 	@Outbreaks
+	@Diseases(value = Disease.RESPIRATORY_SYNCYTIAL_VIRUS, hide = true)
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String classificationComment;
@@ -570,21 +574,32 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	private boolean notACaseReasonNegativeTest;
 
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	private boolean notACaseReasonPhysicianInformation;
 
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	private boolean notACaseReasonDifferentPathogen;
 
 	@HideForCountriesExcept
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
 	@SensitiveData
+	@Diseases(value = {
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notACaseReasonDetails;
+
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
 
