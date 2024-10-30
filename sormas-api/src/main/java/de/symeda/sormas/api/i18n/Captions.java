@@ -1394,6 +1394,7 @@ public interface Captions {
 	String documentNoDocuments = "documentNoDocuments";
 	String DocumentTemplate = "DocumentTemplate";
 	String DocumentTemplate_buttonUploadTemplate = "DocumentTemplate.buttonUploadTemplate";
+	String DocumentTemplate_disease = "DocumentTemplate.disease";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
 	String DocumentTemplate_documentUploadWarning = "DocumentTemplate.documentUploadWarning";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
@@ -1407,6 +1408,7 @@ public interface Captions {
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
 	String DocumentTemplate_exampleTemplateTravelEntryEmail = "DocumentTemplate.exampleTemplateTravelEntryEmail";
+	String DocumentTemplate_fileName = "DocumentTemplate.fileName";
 	String DocumentTemplate_fileTooBig = "DocumentTemplate.fileTooBig";
 	String DocumentTemplate_notUploaded = "DocumentTemplate.notUploaded";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
