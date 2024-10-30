@@ -11,6 +11,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -161,8 +162,9 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 		table.setColumnExpandRatio(ACTION_COLUMN_ID, 0);
 
 		table.setCellStyleGenerator(
-			FieldAccessCellStyleGenerator
-				.withFieldAccessCheckers(PersonContactDetailDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+				PersonContactDetailDto.class,
+				UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		table.setColumnExpandRatio(COLUMN_PRIMARY, 0);
 		table.setColumnExpandRatio(COLUMN_OWNER, 0);

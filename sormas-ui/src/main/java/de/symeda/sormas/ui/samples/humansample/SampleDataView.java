@@ -37,7 +37,6 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
@@ -52,6 +51,7 @@ import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
@@ -201,8 +201,7 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 
 			disease = contactDto.getDisease();
 
-			final ContactInfoLayout contactInfoLayout =
-				new ContactInfoLayout(contactDto, UiFieldAccessCheckers.getDefault(contactDto.isPseudonymized()));
+			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(contactDto, FieldAccessHelper.getFieldAccessCheckers(contactDto));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 
 			return (AbstractInfoLayout) contactInfoLayout;
@@ -216,10 +215,8 @@ public class SampleDataView extends AbstractSampleView implements HasName {
 
 			disease = eventDto.getDisease();
 
-			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
-				eventParticipantDto,
-				eventDto,
-				UiFieldAccessCheckers.getDefault(eventParticipantDto.isPseudonymized()));
+			final EventParticipantInfoLayout eventParticipantInfoLayout =
+				new EventParticipantInfoLayout(eventParticipantDto, eventDto, FieldAccessHelper.getFieldAccessCheckers(eventParticipantDto));
 
 			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 

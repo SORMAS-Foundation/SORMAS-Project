@@ -71,6 +71,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -113,6 +114,8 @@ public class VaccinationFacadeEjb
 	private HealthConditionsMapper healthConditionsMapper;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public VaccinationFacadeEjb() {
 	}
@@ -397,7 +400,7 @@ public class VaccinationFacadeEjb
 
 		SpecialAccessCheck<VaccinationDto> specialAccessCheck = t -> specialAccessUuids.contains(t.getUuid());
 
-		return Pseudonymizer.getDefault(userService, specialAccessCheck);
+		return Pseudonymizer.getDefault(userService, specialAccessCheck, configFacade.getCountryCode());
 	}
 
 	@Override

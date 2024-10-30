@@ -312,6 +312,7 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@Valid
 	private EpiDataDto epiData;
 	@Valid
+	@SensitiveData
 	private HealthConditionsDto healthConditions;
 	private YesNoUnknown returningTraveler;
 

@@ -29,6 +29,7 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
@@ -57,6 +58,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private PrescriptionService prescriptionService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<TreatmentIndexDto> getIndexList(TreatmentCriteria criteria) {
@@ -86,7 +89,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer<TreatmentIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		Pseudonymizer<TreatmentIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService, configFacade.getCountryCode());
 		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, indexList, TreatmentIndexDto::getInJurisdiction, null);
 
 		return indexList;
@@ -122,7 +125,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> treatmentIndexDtos = em.createQuery(cq).getResultList();
 
-		Pseudonymizer<TreatmentIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		Pseudonymizer<TreatmentIndexDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService, configFacade.getCountryCode());
 		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, treatmentIndexDtos, TreatmentIndexDto::getInJurisdiction, null);
 
 		return treatmentIndexDtos;
@@ -130,7 +133,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@Override
 	public TreatmentDto getTreatmentByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	@Override
@@ -195,7 +198,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private List<TreatmentDto> toPseudonymizedDtos(List<Treatment> entities) {
 
 		List<Long> inJurisdictionIds = service.getInJurisdictionIds(entities);
-		Pseudonymizer<TreatmentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+		Pseudonymizer<TreatmentDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 
 		return entities.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIds.contains(p.getId()))).collect(Collectors.toList());
 	}
@@ -245,7 +248,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
-		Pseudonymizer<TreatmentExportDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService);
+		Pseudonymizer<TreatmentExportDto> pseudonymizer = Pseudonymizer.getDefaultWithPlaceHolder(userService, configFacade.getCountryCode());
 		pseudonymizer.pseudonymizeDtoCollection(TreatmentExportDto.class, exportList, TreatmentExportDto::getInJurisdiction, null);
 
 		return exportList;
@@ -276,7 +279,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	private void restorePseudonymizedDto(TreatmentDto source, Treatment existingTreatment, TreatmentDto existingDto) {
 		if (existingTreatment != null) {
-			Pseudonymizer<TreatmentDto> pseudonymizer = Pseudonymizer.getDefault(userService);
+			Pseudonymizer<TreatmentDto> pseudonymizer = Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 			pseudonymizer.restorePseudonymizedValues(TreatmentDto.class, source, existingDto, service.inJurisdictionOrOwned(existingTreatment));
 		}
 	}

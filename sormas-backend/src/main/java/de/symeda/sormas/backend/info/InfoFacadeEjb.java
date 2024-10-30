@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellCopyPolicy;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -110,6 +108,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.info.EntityColumns.EntityColumn;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.XssfHelper;
 
@@ -170,35 +169,17 @@ public class InfoFacadeEjb implements InfoFacade {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
-	private static EnumSet<EntityColumn> getColumnsForDataDictionary() {
-		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
-		enumSet.remove(EntityColumn.ENTITY);
-		return enumSet;
-	}
-
 	@Override
 	public boolean isGenerateDataProtectionDictionaryAllowed() {
 		return userService.hasRight(UserRight.EXPORT_DATA_PROTECTION_DATA) && getDataProtectionFile().exists();
 	}
 
-	private static EnumSet<EntityColumn> getColumnsForDataProtectionDictionary() {
-		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
-		return enumSet.stream()
-			.filter(EntityColumn::isDataProtectionColumn)
-			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
-	}
-
-	private static EnumSet<EntityColumn> getColumnsForAllFieldsSheet(EnumSet<EntityColumn> enumSet) {
-		return enumSet.stream()
-			.filter(column -> !column.isColumnForAllFieldsSheet())
-			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
-	}
-
 	@Override
 	public String generateDataDictionary() throws IOException {
+		EntityColumns entityColumns = new EntityColumns(configFacade.getCountryLocale(), false);
 		return generateDataDictionary(
 			DATA_DICTIONARY_ENTITIES,
-			getColumnsForDataDictionary(),
+			entityColumns,
 			new VisibilityChecks((c, f) -> true, FieldVisibilityCheckers.getNoop()),
 			Collections.emptyList(),
 			Collections.emptyMap(),
@@ -218,6 +199,8 @@ public class InfoFacadeEjb implements InfoFacade {
 			.filter(e -> isVisibleByFeatureConfiguration(e.getEntityClass(), featureConfigurations))
 			.collect(Collectors.toList());
 
+		EntityColumns entityColumns = new EntityColumns(configFacade.getCountryLocale(), true);
+
 		try (XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile())) {
 
 			XSSFSheet dataProtectionSheet = dataProtectionInputWorkbook.getSheetAt(0);
@@ -226,7 +209,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
 			return generateDataDictionary(
 				entities,
-				getColumnsForDataProtectionDictionary(),
+				entityColumns,
 				new VisibilityChecks(
 					(dtoClass, field) -> fieldVisibilityCheckers.isVisible(dtoClass, field)
 						&& isVisibleByFeatureConfiguration(field.getType(), featureConfigurations),
@@ -235,14 +218,15 @@ public class InfoFacadeEjb implements InfoFacade {
 				dataProtectionData,
 				true);
 
-		} catch (InvalidFormatException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IOException(e);
 		}
 	}
 
 	private String generateDataDictionary(
 		List<EntityInfo> entities,
-		EnumSet<EntityColumn> entityColumns,
+		EntityColumns entityColumns,
 		VisibilityChecks visibilityChecks,
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells,
@@ -256,7 +240,7 @@ public class InfoFacadeEjb implements InfoFacade {
 				workbook,
 				defaultCellStyle,
 				entities,
-				entityColumns,
+				entityColumns.getColumnsForAllFieldsSheet(),
 				visibilityChecks.fieldVisibilityPredicate,
 				extraColumns,
 				extraCells);
@@ -266,7 +250,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			workbook,
 			defaultCellStyle,
 			entities,
-			getColumnsForAllFieldsSheet(entityColumns),
+			entityColumns.getEntityColumns(),
 			visibilityChecks,
 			extraColumns,
 			extraCells,
@@ -468,7 +452,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		XSSFWorkbook workbook,
 		CellStyle defaultCellStyle,
 		List<EntityInfo> entityInfoList,
-		EnumSet<EntityColumn> entityColumns,
+		List<EntityColumn> entityColumns,
 		VisibilityChecks visibilityChecks,
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells,
@@ -491,7 +475,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		XSSFWorkbook workbook,
 		CellStyle defaultCellStyle,
 		List<EntityInfo> entityInfoList,
-		EnumSet<EntityColumn> entityColumns,
+		List<EntityColumn> entityColumns,
 		BiPredicate<Class<?>, Field> fieldVisibilityPredicate,
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells) {
@@ -529,7 +513,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		XSSFWorkbook workbook,
 		CellStyle defaultCellStyle,
 		EntityInfo entityInfo,
-		EnumSet<EntityColumn> entityColumns,
+		List<EntityColumn> entityColumns,
 		VisibilityChecks visibilityChecks,
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells,
@@ -620,7 +604,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private void copyCellsFromExtraCells(XSSFRow row, FieldData fieldData, Map<String, List<XSSFCell>> extraCells) {
-		String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
+		String fieldId = EntityColumns.getFieldId(fieldData);
 		if (extraCells.containsKey(fieldId)) {
 			extraCells.get(fieldId).forEach(extraCell -> {
 				XSSFCell newCell = row.createCell(row.getLastCellNum());
@@ -631,7 +615,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		}
 	}
 
-	private void buildHeader(XSSFSheet sheet, EnumSet<EntityColumn> entityColumns, List<ColumnData> extraColumns) {
+	private void buildHeader(XSSFSheet sheet, List<EntityColumn> entityColumns, List<ColumnData> extraColumns) {
 		XSSFRow headerRow = sheet.createRow(0);
 		entityColumns.forEach(column -> {
 			int colIndex = Math.max(headerRow.getLastCellNum(), 0);

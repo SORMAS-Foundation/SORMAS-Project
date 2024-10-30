@@ -23,8 +23,12 @@ import java.util.Set;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.OptionGroup;
+
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class NullableOptionGroup extends OptionGroup {
 
@@ -78,5 +82,11 @@ public class NullableOptionGroup extends OptionGroup {
 
 	private Object getFirstValue(Set value) {
 		return value.stream().findFirst().orElse(null);
+	}
+
+	public void setInaccessible() {
+		this.removeAllItems();
+		Item item = this.addItem(1);
+		item.getItemProperty(item.getItemPropertyIds().stream().findFirst().get()).setValue(I18nProperties.getCaption(Captions.inaccessibleValue));
 	}
 }

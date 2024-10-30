@@ -263,6 +263,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 	private String vaccineBatchNumber;
 	private String vaccineUniiCode;
 	private String vaccineAtcCode;
+	@SensitiveData
 	private HealthConditionsDto healthConditions;
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;

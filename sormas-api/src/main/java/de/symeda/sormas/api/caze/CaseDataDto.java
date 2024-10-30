@@ -350,6 +350,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Valid
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@SensitiveData
 	private HealthConditionsDto healthConditions;
 
 	private YesNoUnknown pregnant;
@@ -513,7 +514,9 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
+	@SensitiveData
 	private YesNoUnknown postpartum;
+	@SensitiveData
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
