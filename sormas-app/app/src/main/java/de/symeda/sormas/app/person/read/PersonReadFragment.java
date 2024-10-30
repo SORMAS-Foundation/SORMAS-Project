@@ -70,7 +70,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static PersonReadFragment newInstance(Contact activityRootData) {
@@ -79,7 +79,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static PersonReadFragment newInstance(Immunization activityRootData) {
@@ -88,7 +88,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static PersonReadFragment newInstance(EventParticipant activityRootData) {
@@ -97,7 +97,7 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	private void setUpControlListeners() {

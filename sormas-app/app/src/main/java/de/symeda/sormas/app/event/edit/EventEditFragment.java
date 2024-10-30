@@ -101,7 +101,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 		fragment.isMultiDayEvent = activityRootData.getEndDate() != null;
 

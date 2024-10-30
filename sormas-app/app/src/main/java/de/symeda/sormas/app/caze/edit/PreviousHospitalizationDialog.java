@@ -30,6 +30,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.component.Item;
@@ -60,7 +61,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_previous_hospitalization,
 			-1,
-			UiFieldAccessCheckers.forSensitiveData(previousHospitalization.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(previousHospitalization.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 		this.data = previousHospitalization;
 

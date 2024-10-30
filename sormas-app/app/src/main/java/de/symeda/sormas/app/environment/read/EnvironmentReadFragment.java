@@ -27,7 +27,7 @@ public class EnvironmentReadFragment extends BaseReadFragment<FragmentEnvironmen
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.getNoop(),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 		return environmentReadFragment;
 	}
