@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -70,8 +69,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
 import de.symeda.sormas.ui.UserProvider;
 import java.util.Objects;
 import de.symeda.sormas.ui.ControllerProvider;
-import org.slf4j.LoggerFactory;
-import de.symeda.sormas.api.KeycloakClientConfig;
 
 public class UserController {
 
@@ -303,7 +300,7 @@ public class UserController {
 			}
 		}, ValoTheme.BUTTON_LINK);
 	}
-	
+
 	public ConfirmationComponent getResetPasswordConfirmationComponent(
 		String userUuid,
 		String userEmail,
@@ -466,8 +463,8 @@ public class UserController {
 		}
 	}
 
-	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword) {
-		FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
+	public void showUpdatePassword(String userUuid, String userEmail, String password) {
+		FacadeProvider.getUserFacade().updateUserPassword(userUuid, password);
 		if (isGeneratePassword) {
 			if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
 				showPasswordResetInternalSuccessPopup(password);
@@ -503,42 +500,16 @@ public class UserController {
 	}
 
 	public Button createUpdatePasswordButton() {
-		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
 
+		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-
-				String authenticationProviderFromFeatureConfiguration= FacadeProvider.getFeatureConfigurationFacade()
-						.getProperty(FeatureType.SELF_PASSWORD_RESET, null,
-								FeatureTypeProperty.AUTHENTICATION_PROVIDER, String.class);
-				if (authenticationProviderFromFeatureConfiguration.equalsIgnoreCase(AuthProvider.SORMAS)) {
-					popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
-					popUpWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
-				}
-				else if (authenticationProviderFromFeatureConfiguration.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
-					String resetUrl = buildKeycloakForgotPasswordUrl();
-					Page.getCurrent().setLocation(resetUrl);
-				}
+				popUpWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
+				popUpWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
 			}
 		}, ValoTheme.BUTTON_LINK);
-	}
-
-	private String buildKeycloakForgotPasswordUrl() {
-		try {
-			KeycloakClientConfig keycloakClientConfig = FacadeProvider.getConfigFacade().getKeycloakCredentials();
-
-            return keycloakClientConfig.getKeycloakUrl() +
-					"/realms/" +
-					keycloakClientConfig.getRealm() +
-					"/login-actions/reset-credentials" +
-					"?client_id=" +
-					keycloakClientConfig.getClientId();
-		} catch (Exception e) {
-			LoggerFactory.getLogger(getClass()).error("Could not build Keycloak reset password URL", e);
-			throw new RuntimeException("Could not build Keycloak reset password URL", e);
-		}
 	}
 
 	public Button generatePasswordButton() {
@@ -599,12 +570,12 @@ public class UserController {
 				UserDto changedUser = form.getValue();
 				if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getNewPassword())) {
 					Notification.show(I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed), Notification.Type.ERROR_MESSAGE);
-				} else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
+				} else if (!FacadeProvider.getUserFacade().validateCurrentPassword(changedUser.getCurrentPassword())) {
 					Notification.show(I18nProperties.getString(Strings.messageWrongCurrentPassword), Notification.Type.ERROR_MESSAGE);
 				} else if (FacadeProvider.getUserFacade().isPasswordWeak(changedUser.getNewPassword())) {
 					Notification.show(I18nProperties.getString(Strings.messageNewPasswordFailed), Notification.Type.ERROR_MESSAGE);
 				} else {
-					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getNewPassword(), changedUser.getCurrentPassword());
+					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getNewPassword());
 				}
 			}
 		});

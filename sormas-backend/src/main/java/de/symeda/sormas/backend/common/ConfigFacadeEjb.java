@@ -53,10 +53,6 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import com.jayway.jsonpath.JsonPath;
-import de.symeda.sormas.api.KeycloakClientConfig;
-import org.eclipse.microprofile.config.ConfigProvider;
-import java.util.Optional;
 
 /**
  * Provides the application configuration settings
@@ -694,25 +690,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAuthenticationProvider() {
 		return getProperty(AUTHENTICATION_PROVIDER, "SORMAS");
-	}
-
-	public KeycloakClientConfig getKeycloakCredentials() {
-		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
-		if (oidcJson.isEmpty()) {
-			logger.warn(
-					"Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
-			return null;
-		}
-
-		String OIDC_REALM = "realm";
-		String OIDC_SERVER_URL = "auth-server-url";
-
-		String keycloakJsonConfig = oidcJson.get();
-		String keycloakUrl = JsonPath.read(keycloakJsonConfig, OIDC_SERVER_URL);
-		String realm = JsonPath.read(keycloakJsonConfig, OIDC_REALM);
-		String clientId = "sormas-ui";
-
-		return new KeycloakClientConfig(keycloakUrl,realm,clientId);
 	}
 
 	@Override

@@ -162,7 +162,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
 		binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.changePassword.setVisibility(
-			hasUser && DatabaseHelper.getFeatureConfigurationDao().getStringPropertyValue(FeatureType.SELF_PASSWORD_RESET, FeatureTypeProperty.AUTHENTICATION_PROVIDER).equalsIgnoreCase("SORMAS") && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SELF_PASSWORD_RESET) ? View.VISIBLE : View.GONE);
+			hasUser && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SELF_PASSWORD_RESET) ? View.VISIBLE : View.GONE);
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);

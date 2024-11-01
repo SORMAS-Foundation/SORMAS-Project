@@ -309,7 +309,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
             RetroProvider.connectAsyncHandled(this, true, true, result -> {
                 if (Boolean.TRUE.equals(result)) {
                     try {
-                        executeSaveNewPasswordCall(UserDtoHelper.saveNewPassword(ConfigProvider.getUser().getUuid(), newPassword, currentPassword), this);
+                        executeSaveNewPasswordCall(UserDtoHelper.saveNewPassword(ConfigProvider.getUser().getUuid(), newPassword), this);
                         setNewPassword(newPassword);
                     } catch (Exception e) {
                         binding.actionPasswordStrength.setVisibility(View.VISIBLE);

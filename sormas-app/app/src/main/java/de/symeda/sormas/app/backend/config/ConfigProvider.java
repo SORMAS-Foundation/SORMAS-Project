@@ -320,7 +320,6 @@ public final class ConfigProvider {
 
 		instance.password = password;
 		DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
-
 	}
 
 	public static void setPin(String pin) {

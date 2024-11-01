@@ -30,8 +30,7 @@ public enum FeatureTypeProperty {
 	SHARE_IMMUNIZATIONS(Boolean.class),
 	SHARE_REPORTS(Boolean.class),
 	FETCH_MODE(Boolean.class),
-	FORCE_AUTOMATIC_PROCESSING(Boolean.class),
-	AUTHENTICATION_PROVIDER(String.class);
+	FORCE_AUTOMATIC_PROCESSING(Boolean.class);
 
 	private final Class<?> returnType;
 

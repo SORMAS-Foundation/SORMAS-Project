@@ -52,9 +52,9 @@ public interface UserFacade {
 
 	String resetPassword(String uuid);
 
-	String updateUserPassword(String uuid, String newPassword, String currentPassword);
+	String updateUserPassword(String uuid, String newPassword);
 
-	boolean validatePassword(String uuid, String password);
+	boolean validateCurrentPassword(String password);
 
 	String checkPasswordStrength(String password);
 

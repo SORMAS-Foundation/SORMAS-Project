@@ -667,6 +667,8 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		if (user == null) {
 			throw new IllegalArgumentException("User not found for UUID: " + userUuid);
 		}
+		logger.info(user.getUserName());
+
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
 		ensurePersisted(user);
 

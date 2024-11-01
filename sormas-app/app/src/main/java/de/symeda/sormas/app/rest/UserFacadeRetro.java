@@ -23,6 +23,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import de.symeda.sormas.api.user.UserPasswordChangeDto;
 
 /**
  * Created by Martin Wahnschaffe on 07.06.2016.
@@ -38,8 +39,8 @@ public interface UserFacadeRetro {
 	@GET("users/uuids")
 	Call<List<String>> pullUuids();
 
-	@POST("users/saveNewPassword/{uuid}/{newPassword}/{currentPassword}")
-	Call<String> saveNewPassword(@Path("uuid") String uuid, @Path("newPassword") String newPassword, @Path("currentPassword") String currentPassword);
+	@POST("users/saveNewPassword")
+	Call<String> saveNewPassword(@Body UserPasswordChangeDto userPasswordChangeDto);
 
 	@GET("users/generatePassword")
 	Call<String> generatePassword();

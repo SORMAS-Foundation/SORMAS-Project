@@ -490,7 +490,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         String newPassword = "newPassword";
         String currentPassword = testUser.getPassword();
         String uuid = testUser.getUuid();
-        String result = getUserFacade().updateUserPassword(uuid, newPassword, currentPassword);
+        String result = getUserFacade().updateUserPassword(uuid, newPassword);
 
         // Assert
         assertEquals(newPassword, result);
@@ -502,7 +502,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         UserDto updatedUserDto = getUserFacade().getByUuid(uuid);
 
         loginWith(updatedUserDto); // Login again with changed password
-        assertTrue(getUserFacade().validatePassword(uuid, newPassword)); // Validate the new password
+        assertTrue(getUserFacade().validateCurrentPassword(newPassword)); // Validate the new password
 
     }
 
@@ -524,7 +524,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
         // Act
         UserDto loggedInUser = getUserFacade().getByUuid(user.getUuid());
         loginWith(loggedInUser);
-        boolean result = getUserFacade().validatePassword(loggedInUser.getUuid(), "password"); // Use plain password for validation
+        boolean result = getUserFacade().validateCurrentPassword("password"); // Use plain password for validation
 
         // Assert
         assertTrue(result);
@@ -533,7 +533,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
     @Test
     void testValidatePasswordInvalid() {
         // Act
-        boolean result = getUserFacade().validatePassword("uuid", "password");
+        boolean result = getUserFacade().validateCurrentPassword("password");
 
         // Assert
         assertFalse(result);

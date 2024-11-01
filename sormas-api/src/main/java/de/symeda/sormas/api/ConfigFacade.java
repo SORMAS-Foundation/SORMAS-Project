@@ -126,8 +126,6 @@ public interface ConfigFacade {
 
 	String getAuthenticationProvider();
 
-	KeycloakClientConfig getKeycloakCredentials();
-
 	boolean isAuthenticationProviderUserSyncAtStartupEnabled();
 
 	String getAuthenticationProviderSyncedNewUserRole();

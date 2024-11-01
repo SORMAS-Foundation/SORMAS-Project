@@ -152,6 +152,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.util.PasswordValidator;
+import de.symeda.sormas.backend.user.event.PasswordChangeEvent;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -165,6 +166,8 @@ public class UserFacadeEjb implements UserFacade {
 	private CurrentUserService currentUserService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private KeycloakService keycloakService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
@@ -201,6 +204,8 @@ public class UserFacadeEjb implements UserFacade {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+	@Inject
+	private Event<PasswordChangeEvent> passwordChangeEvent;
 	@Inject
 	private Event<SyncUsersFromProviderEvent> syncUsersFromProviderEventEvent;
 
@@ -1193,13 +1198,15 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	@PermitAll
-	public boolean validatePassword(String uuid, String password) {
+	public boolean validateCurrentPassword(String password) {
 		User user = userService.getCurrentUser();
-
 		if (user != null) {
+			AuthProvider authProvider = AuthProvider.getProvider(configFacade);
+			if(KEYCLOAK.equalsIgnoreCase(authProvider.getName())) {
+				return keycloakService.validateCurrentPassword(user.getUserName(),password);
+			}
 			return DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()));
 		}
-
 		return false;
 	}
 
@@ -1216,9 +1223,12 @@ public class UserFacadeEjb implements UserFacade {
 
 	@PermitAll
 	@Override
-	public String updateUserPassword(String uuid, String password, String currentPassword) {
+	public String updateUserPassword(String uuid, String password) {
 		String updatePassword = userService.updatePassword(uuid, password);
-		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
+		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
+		if(KEYCLOAK.equalsIgnoreCase(authProvider.getName())) {
+			passwordChangeEvent.fire(new PasswordChangeEvent(userService.getByUuid(uuid)));
+		}
 		return updatePassword;
 	}
 

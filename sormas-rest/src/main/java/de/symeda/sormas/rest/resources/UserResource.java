@@ -18,6 +18,7 @@ package de.symeda.sormas.rest.resources;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import de.symeda.sormas.api.user.UserPasswordChangeDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -99,12 +101,9 @@ public class UserResource {
 	}
 
     @POST
-    @Path("/saveNewPassword/{uuid}/{newPassword}/{currentPassword}")
-    public String saveNewPassword(
-            @PathParam("uuid") String uuid,
-            @PathParam("newPassword") String newPassword,
-            @PathParam("currentPassword") String currentPassword) {
-        return FacadeProvider.getUserFacade().updateUserPassword(uuid, newPassword, currentPassword);
+    @Path("/saveNewPassword")
+    public String saveNewPassword(UserPasswordChangeDto userPasswordChangeDto) {
+        return FacadeProvider.getUserFacade().updateUserPassword(userPasswordChangeDto.getUuid(), userPasswordChangeDto.getNewPassword());
     }
 
     @GET
@@ -112,5 +111,4 @@ public class UserResource {
     public String generatePassword() {
         return FacadeProvider.getUserFacade().generatePassword();
     }
-
 }
