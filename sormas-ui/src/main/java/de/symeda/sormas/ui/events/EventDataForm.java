@@ -222,7 +222,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
 		addField(EventDto.UUID, TextField.class);
-		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
+		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addCustomizableEnumField(EventDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);

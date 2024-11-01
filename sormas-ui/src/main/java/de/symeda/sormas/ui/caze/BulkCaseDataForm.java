@@ -169,7 +169,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		diseaseCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkDisease));
 		diseaseCheckBox.setReadOnly(!UiUtil.permitted(UserRight.CASE_CHANGE_DISEASE));
 		getContent().addComponent(diseaseCheckBox, DISEASE_CHECKBOX);
-		ComboBox diseaseField = addDiseaseField(CaseBulkEditData.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(CaseBulkEditData.DISEASE, false, false);
 		diseaseField.setEnabled(false);
 		addField(CaseBulkEditData.DISEASE_DETAILS, TextField.class);
 		addField(CaseBulkEditData.PLAGUE_TYPE, NullableOptionGroup.class);

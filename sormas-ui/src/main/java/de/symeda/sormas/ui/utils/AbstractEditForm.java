@@ -197,8 +197,8 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		super.discard();
 	}
 
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
-		return addDiseaseField(fieldId, showNonPrimaryDiseases, false);
+	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases, boolean hideFollowUpDisabledDiseases) {
+		return addDiseaseField(fieldId, showNonPrimaryDiseases, false, hideFollowUpDisabledDiseases);
 	}
 
 	/**
@@ -213,7 +213,11 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 *            If only a single diseases is active on the server, set it as the default value
 	 */
 	@SuppressWarnings("unchecked")
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases, boolean setServerDiseaseAsDefault) {
+	protected ComboBox addDiseaseField(
+		String fieldId,
+		boolean showNonPrimaryDiseases,
+		boolean setServerDiseaseAsDefault,
+		boolean hideFollowUpDisabledDiseases) {
 
 		diseaseField = addField(fieldId, ComboBox.class);
 		this.setServerDiseaseAsDefault = setServerDiseaseAsDefault;
@@ -233,6 +237,12 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
 		});
+
+		//
+		if (hideFollowUpDisabledDiseases) {
+			removeFollowUpDisabledDiseases(diseaseField);
+		}
+
 		return diseaseField;
 	}
 
@@ -500,6 +510,16 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 			Item newItem = diseaseField.addItem(disease);
 			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
+		}
+	}
+
+	protected void removeFollowUpDisabledDiseases(ComboBox diseaseField) {
+		List<Disease> allActiveDiseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases();
+
+		for (Disease disease : allActiveDiseases) {
+			if (diseaseField.getItem(disease) != null && !disease.isDefaultFollowUpEnabled()) {
+				diseaseField.removeItem(disease);
+			}
 		}
 	}
 
