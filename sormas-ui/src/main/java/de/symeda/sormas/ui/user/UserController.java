@@ -595,5 +595,4 @@ public class UserController {
 
 		return component;
 	}
-
 }

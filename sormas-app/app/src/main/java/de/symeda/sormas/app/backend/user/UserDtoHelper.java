@@ -135,7 +135,6 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 	}
 
 	public static Call<String> saveNewPassword(String uuid, String newPassword) throws NoConnectionException {
-		System.out.println(uuid+" pw: "+newPassword);
 		return RetroProvider.getUserFacade().saveNewPassword(new UserPasswordChangeDto(uuid,newPassword));
 	}
 

@@ -65,7 +65,6 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
-import de.symeda.sormas.backend.user.event.PasswordChangeEvent;
 
 /**
  * @author Alex Vidrean
