@@ -65,6 +65,7 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
+import de.symeda.sormas.backend.user.event.PasswordChangeEvent;
 
 /**
  * @author Alex Vidrean
@@ -275,7 +276,7 @@ public class KeycloakService {
 		}
 		return false;
 	}
-	public void handlePasswordChangeEvent(User user) {
+	public void handlePasswordChangeEvent(@Observes PasswordChangeEvent passwordChangeEvent) {
 		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
 
 		if (oidcJson.isEmpty()) {
@@ -283,7 +284,7 @@ public class KeycloakService {
 					"Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
 			return;
 		}
-
+		User user = passwordChangeEvent.getUser();
 		String password = user.getPassword();
 		String username=user.getUserName();
 
