@@ -759,5 +759,8 @@
     <string name="message_could_not_generate_password">Could not generate password</string>
     <string name="message_could_not_save_password">Could not save password</string>
     <string name="additional_message_passord_weak">Password should contain some text, some numbers and should be more than 8 characters</string>
+    <string name="message_password_copied_to_clipbord">"Password copied to clipboard"</string>
+    <string name="message_password_generated">"Password Generated"</string>
+    <string name="heading_password">"Password"</string>
 
 </resources>
