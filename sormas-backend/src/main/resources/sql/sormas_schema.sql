@@ -13669,10 +13669,6 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EV
 
 INSERT INTO schema_version (version_number, comment) VALUES (552, 'Adverse Events Following Immunization (AEFI) - Entities #12634');
 
-<<<<<<< HEAD
-
-=======
-
 -- 2024-10-23 Add "Disease" Attribute to Document Templates for Filtering #13160
 CREATE TABLE documenttemplates (
     id bigint not null,
@@ -13701,7 +13697,7 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE documenttemplates_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment, upgradeneeded) VALUES (553, 'Add "Disease" Attribute to Document Templates for Filtering #13160', true);
->>>>>>> 247e01fb52a290d194896a3c521cd701f868a843
+
 -- Assign DISEASE_DETAILS_VIEW user rights to default admin and national_user user roles
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DISEASE_DETAILS_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
 
