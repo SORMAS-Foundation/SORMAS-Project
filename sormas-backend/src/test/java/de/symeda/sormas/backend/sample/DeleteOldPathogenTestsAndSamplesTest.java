@@ -54,7 +54,7 @@ public class DeleteOldPathogenTestsAndSamplesTest extends AbstractBeanTest {
 		user = creator.createUser(rdcf).toReference();
 		caze = creator.createCase(user, creator.createPerson().toReference(), rdcf);
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.NEGAIVE_COVID_SAMPLES_MAX_AGE_DAYS, String.valueOf(negativeCovidTestMaxAge));
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS, String.valueOf(negativeCovidTestMaxAge));
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class DeleteOldPathogenTestsAndSamplesTest extends AbstractBeanTest {
 
 	@Test
 	public void testNotConfigured() {
-		MockProducer.getProperties().remove(ConfigFacadeEjb.NEGAIVE_COVID_SAMPLES_MAX_AGE_DAYS);
+		MockProducer.getProperties().remove(ConfigFacadeEjb.NEGATIVE_COVID_TESTS_MAX_AGE_DAYS);
 
 		SampleDto sample = creator.createSample(caze.toReference(), user, rdcf.facility, s -> {
 			s.setPathogenTestResult(PathogenTestResultType.NEGATIVE);

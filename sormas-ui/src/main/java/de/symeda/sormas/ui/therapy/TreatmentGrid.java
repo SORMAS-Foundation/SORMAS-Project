@@ -67,8 +67,9 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 				I18nProperties.getPrefixCaption(TreatmentIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 
 			setCellStyleGenerator(
-				FieldAccessCellStyleGenerator
-					.withFieldAccessCheckers(TreatmentIndexDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+				FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+					TreatmentIndexDto.class,
+					UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 		}
 
 		addItemClickListener(e -> {

@@ -134,6 +134,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -258,6 +259,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private SampleService sampleService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public PersonFacadeEjb() {
 	}
@@ -1613,7 +1616,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	protected Pseudonymizer<PersonDto> createPseudonymizer(List<Person> persons) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(persons));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(persons), configFacade.getCountryCode());
 	}
 
 	private <T extends IsPerson> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends IsPerson> persons) {

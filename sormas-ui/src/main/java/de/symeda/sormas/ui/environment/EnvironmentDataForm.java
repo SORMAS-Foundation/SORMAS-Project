@@ -30,13 +30,12 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.UserField;
@@ -71,7 +70,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			EnvironmentDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized),
+			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized),
 			isEditAllowed);
 		addFields();
 	}

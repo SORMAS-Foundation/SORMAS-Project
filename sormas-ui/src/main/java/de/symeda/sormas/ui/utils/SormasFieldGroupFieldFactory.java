@@ -15,6 +15,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.RichTextArea;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -188,6 +189,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new AdverseEventsForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (CheckBoxTree.class.isAssignableFrom(fieldType)) {
 			return (T) new CheckBoxTree<>();
+		} else if (RichTextArea.class.isAssignableFrom(fieldType)) {
+			return (T) new RichTextArea();
 		}
 		return super.createField(type, fieldType);
 	}

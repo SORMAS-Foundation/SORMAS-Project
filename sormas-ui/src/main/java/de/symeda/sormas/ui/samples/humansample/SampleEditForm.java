@@ -41,12 +41,12 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SampleEditForm extends AbstractSampleForm {
@@ -62,11 +62,7 @@ public class SampleEditForm extends AbstractSampleForm {
 	private Label laboratorySampleHeadingLabel;
 
 	public SampleEditForm(boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
-		super(
-			SampleDto.class,
-			SampleDto.I18N_PREFIX,
-			disease,
-			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+		super(SampleDto.class, SampleDto.I18N_PREFIX, disease, FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 		testsToBeRemovedOnCommit = new ArrayList();
 	}
 

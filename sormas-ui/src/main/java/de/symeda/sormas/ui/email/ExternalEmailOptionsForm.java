@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.email;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +28,8 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
@@ -43,28 +46,28 @@ import de.symeda.sormas.ui.utils.components.MultilineLabel;
 
 public class ExternalEmailOptionsForm extends AbstractEditForm<ExternalEmailOptionsDto> {
 
-    private static final String ATTACHMENT_NOT_AVAILABLE_INFO_LOC = "attachmentNotAvailableInfoLoc";
-    private static final String HTML_LAYOUT = fluidRowLocs(ExternalEmailOptionsDto.TEMPLATE_NAME)
-            + fluidRowLocs(ExternalEmailOptionsDto.RECIPIENT_EMAIL)
-            + fluidRowLocs(ExternalEmailOptionsDto.ATTACHED_DOCUMENTS)
-            + fluidRowLocs(ATTACHMENT_NOT_AVAILABLE_INFO_LOC);
+	private static final String ATTACHMENT_NOT_AVAILABLE_INFO_LOC = "attachmentNotAvailableInfoLoc";
+	private static final String HTML_LAYOUT = fluidRowLocs(ExternalEmailOptionsDto.TEMPLATE)
+		+ fluidRowLocs(ExternalEmailOptionsDto.RECIPIENT_EMAIL)
+		+ fluidRowLocs(ExternalEmailOptionsDto.ATTACHED_DOCUMENTS)
+		+ fluidRowLocs(ATTACHMENT_NOT_AVAILABLE_INFO_LOC);
 
 	private final DocumentWorkflow documentWorkflow;
-    private final DocumentRelatedEntityType documentRelatedEntityType;
+	private final DocumentRelatedEntityType documentRelatedEntityType;
 	private final PersonDto person;
-    private final boolean isAttachmentAvailable;
-    private MultiSelect<DocumentReferenceDto> attachedDocumentsField;
+	private final boolean isAttachmentAvailable;
+	private MultiSelect<DocumentReferenceDto> attachedDocumentsField;
 
-    protected ExternalEmailOptionsForm(
-            DocumentWorkflow documentWorkflow,
-            DocumentRelatedEntityType documentRelatedEntityType,
-            PersonDto person,
-            boolean isAttachmentAvailable) {
+	protected ExternalEmailOptionsForm(
+		DocumentWorkflow documentWorkflow,
+		DocumentRelatedEntityType documentRelatedEntityType,
+		PersonDto person,
+		boolean isAttachmentAvailable) {
 		super(ExternalEmailOptionsDto.class, ExternalEmailOptionsDto.I18N_PREFIX, false);
 		this.documentWorkflow = documentWorkflow;
-        this.documentRelatedEntityType = documentRelatedEntityType;
+		this.documentRelatedEntityType = documentRelatedEntityType;
 		this.person = person;
-        this.isAttachmentAvailable = isAttachmentAvailable;
+		this.isAttachmentAvailable = isAttachmentAvailable;
 
 		addFields();
 		hideValidationUntilNextCommit();
@@ -77,10 +80,14 @@ public class ExternalEmailOptionsForm extends AbstractEditForm<ExternalEmailOpti
 
 	@Override
 	protected void addFields() {
-		ComboBox templateCombo = addField(ExternalEmailOptionsDto.TEMPLATE_NAME, ComboBox.class);
+		ComboBox templateCombo = addField(ExternalEmailOptionsDto.TEMPLATE, ComboBox.class);
 		templateCombo.setRequired(true);
-		List<String> templateNames = FacadeProvider.getExternalEmailFacade().getTemplateNames(documentWorkflow);
-		FieldHelper.updateItems(templateCombo, templateNames);
+		List<DocumentTemplateReferenceDto> templates = FacadeProvider.getExternalEmailFacade()
+			.getTemplates(documentWorkflow)
+			.stream()
+			.map(DocumentTemplateDto::toReference)
+			.collect(Collectors.toList());
+		FieldHelper.updateItems(templateCombo, templates);
 
 		ComboBox recipientEmailCombo = addField(ExternalEmailOptionsDto.RECIPIENT_EMAIL, ComboBox.class);
 		recipientEmailCombo.setRequired(true);
@@ -89,30 +96,30 @@ public class ExternalEmailOptionsForm extends AbstractEditForm<ExternalEmailOpti
 		String primaryEmailAddress = person.getEmailAddress(true);
 		if (StringUtils.isNotBlank(primaryEmailAddress)) {
 			recipientEmailCombo
-                    .setItemCaption(primaryEmailAddress, primaryEmailAddress + " (" + I18nProperties.getCaption(Captions.primarySuffix) + ")");
+				.setItemCaption(primaryEmailAddress, primaryEmailAddress + " (" + I18nProperties.getCaption(Captions.primarySuffix) + ")");
 		}
 
-        if (documentRelatedEntityType != null) {
-            attachedDocumentsField = addField(ExternalEmailOptionsDto.ATTACHED_DOCUMENTS, MultiSelect.class);
-            if (!isAttachmentAvailable) {
-                attachedDocumentsField.setEnabled(false);
+		if (documentRelatedEntityType != null) {
+			attachedDocumentsField = addField(ExternalEmailOptionsDto.ATTACHED_DOCUMENTS, MultiSelect.class);
+			if (!isAttachmentAvailable) {
+				attachedDocumentsField.setEnabled(false);
 
-                MultilineLabel attachmentUnavailableInfo = new MultilineLabel(
-                        VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.messageExternalEmailAttachmentNotAvailableInfo),
-                        ContentMode.HTML);
-                attachmentUnavailableInfo.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
-                getContent().addComponent(attachmentUnavailableInfo, ATTACHMENT_NOT_AVAILABLE_INFO_LOC);
-            }
-        }
-    }
+				MultilineLabel attachmentUnavailableInfo = new MultilineLabel(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.messageExternalEmailAttachmentNotAvailableInfo),
+					ContentMode.HTML);
+				attachmentUnavailableInfo.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
+				getContent().addComponent(attachmentUnavailableInfo, ATTACHMENT_NOT_AVAILABLE_INFO_LOC);
+			}
+		}
+	}
 
-    @Override
-    public void setValue(ExternalEmailOptionsDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-        super.setValue(newFieldValue);
+	@Override
+	public void setValue(ExternalEmailOptionsDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
 
-        if (attachedDocumentsField != null) {
-            attachedDocumentsField.setItems(
-                    FacadeProvider.getExternalEmailFacade().getAttachableDocuments(documentWorkflow, newFieldValue.getRootEntityReference().getUuid()));
-        }
+		if (attachedDocumentsField != null) {
+			attachedDocumentsField.setItems(
+				FacadeProvider.getExternalEmailFacade().getAttachableDocuments(documentWorkflow, newFieldValue.getRootEntityReference().getUuid()));
+		}
 	}
 }

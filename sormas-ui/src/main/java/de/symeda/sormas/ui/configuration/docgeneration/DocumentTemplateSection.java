@@ -39,15 +39,15 @@ public class DocumentTemplateSection extends VerticalLayout {
 
 	private static final long serialVersionUID = 379271838736314055L;
 
-	public DocumentTemplateSection(DocumentWorkflow documentWorkflow) {
+	public DocumentTemplateSection(DocumentWorkflow documentWorkflow, boolean hasDisease) {
 		HorizontalLayout sectionHeader = new HorizontalLayout();
 
-		DocumentTemplatesGrid documentTemplatesGrid = new DocumentTemplatesGrid(documentWorkflow);
+		DocumentTemplatesGrid documentTemplatesGrid = new DocumentTemplatesGrid(documentWorkflow, hasDisease);
 		documentTemplatesGrid.setWidth(700, Unit.PIXELS);
 
 		Label quarantineTemplatesLabel = new Label(documentWorkflow.toString());
 		quarantineTemplatesLabel.addStyleName(H3);
-		Button uploadButton = buildUploadButton(documentWorkflow, documentTemplatesGrid);
+		Button uploadButton = buildUploadButton(documentWorkflow, documentTemplatesGrid, hasDisease);
 		sectionHeader.addComponents(quarantineTemplatesLabel, uploadButton);
 		sectionHeader.setComponentAlignment(uploadButton, Alignment.MIDDLE_RIGHT);
 		sectionHeader.setWidth(700, Unit.PIXELS);
@@ -57,9 +57,9 @@ public class DocumentTemplateSection extends VerticalLayout {
 		setExpandRatio(documentTemplatesGrid, 1F);
 	}
 
-	private Button buildUploadButton(DocumentWorkflow documentWorkflow, DocumentTemplatesGrid documentTemplatesGrid) {
+	private Button buildUploadButton(DocumentWorkflow documentWorkflow, DocumentTemplatesGrid documentTemplatesGrid, boolean hasDisease) {
 		return ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.DocumentTemplate_uploadTemplate), VaadinIcons.UPLOAD, e -> {
-			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout(documentWorkflow));
+			Window window = VaadinUiUtil.showPopupWindow(new DocumentTemplateUploadLayout(documentWorkflow, hasDisease));
 			window.setCaption(String.format(I18nProperties.getCaption(Captions.DocumentTemplate_uploadWorkflowTemplate), documentWorkflow));
 			window.addCloseListener(c -> documentTemplatesGrid.reload());
 		}, ValoTheme.BUTTON_PRIMARY);

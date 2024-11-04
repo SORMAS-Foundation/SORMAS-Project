@@ -34,10 +34,11 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 
 	/**
 	 * <b>DELETES</b> an entity from the database!
-	 * 
+	 *
 	 * @param ado
+	 * @return
 	 */
-	void deletePermanent(ADO ado);
+	boolean deletePermanent(ADO ado);
 
 	/**
 	 * Speichert ein neues Objekt in der Datenbank.

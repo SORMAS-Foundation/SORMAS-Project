@@ -1,16 +1,15 @@
 package de.symeda.sormas.api.docgeneneration;
 
+import java.io.Serializable;
+import java.util.Properties;
+
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Properties;
-
 public class QuarantineOrderDocumentOptionsDto implements Serializable {
 
-    private String templateFile;
+	private DocumentTemplateReferenceDto template;
     private SampleReferenceDto sample;
     private PathogenTestReferenceDto pathogenTest;
     private VaccinationReferenceDto vaccinationReference;
@@ -19,12 +18,12 @@ public class QuarantineOrderDocumentOptionsDto implements Serializable {
     private DocumentWorkflow documentWorkflow;
 
 
-    public String getTemplateFile() {
-        return templateFile;
+	public DocumentTemplateReferenceDto getTemplate() {
+		return template;
     }
 
-    public void setTemplateFile(String templateFile) {
-        this.templateFile = templateFile;
+	public void setTemplate(DocumentTemplateReferenceDto template) {
+		this.template = template;
     }
 
     public SampleReferenceDto getSample() {

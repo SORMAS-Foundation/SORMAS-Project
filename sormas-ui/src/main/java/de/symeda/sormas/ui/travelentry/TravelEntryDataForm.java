@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -439,7 +440,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		boolean inJurisdiction,
 		boolean withPersonalAndSensitive) {
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
+			return FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();

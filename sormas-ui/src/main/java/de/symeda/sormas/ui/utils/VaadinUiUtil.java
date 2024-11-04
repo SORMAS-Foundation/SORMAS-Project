@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -43,12 +44,16 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.RichTextArea;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserDto;
 
 public final class VaadinUiUtil {
 
@@ -631,5 +636,66 @@ public final class VaadinUiUtil {
 		warningLayout.addComponent(infoLabel);
 		popupWindow.addCloseListener(e -> popupWindow.close());
 		popupWindow.setWidth(400, Unit.PIXELS);
+	}
+
+	public static void addGdprMessageOnClick(TextArea textArea) {
+		AtomicBoolean gdprMessageTriggered = new AtomicBoolean(false);
+		Window subWindowGdpR = VaadinUiUtil.createPopupWindow();
+
+		textArea.addFocusListener(i -> {
+			showGdprWindow(textArea, gdprMessageTriggered, subWindowGdpR);
+		});
+
+		textArea.addBlurListener(blurEvent -> {
+			if (gdprMessageTriggered.get() && subWindowGdpR.getParent() == null) {
+				gdprMessageTriggered.set(false);
+			}
+		});
+	}
+
+	public static void addGdprMessageOnClick(RichTextArea richTextArea) {
+		AtomicBoolean gdprMessageTriggered = new AtomicBoolean(false);
+		Window subWindowGdpR = VaadinUiUtil.createPopupWindow();
+
+		richTextArea.addValueChangeListener(event -> {
+			if (!gdprMessageTriggered.get()) {
+				showGdprWindow(richTextArea, gdprMessageTriggered, subWindowGdpR);
+				subWindowGdpR.focus();
+				gdprMessageTriggered.set(true);
+			}
+		});
+	}
+
+	private static void showGdprWindow(AbstractField<?> textArea, AtomicBoolean gdprMessageTriggered, Window subWindowGdpR) {
+		if (!gdprMessageTriggered.get()) {
+			gdprMessageTriggered.set(true);
+			subWindowGdpR.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
+			VerticalLayout subContentGdpr = new VerticalLayout();
+			subWindowGdpR.setContent(subContentGdpr);
+			subWindowGdpR.center();
+			subWindowGdpR.setWidth("40%");
+			subWindowGdpR.setModal(true);
+			subWindowGdpR.setClosable(true);
+
+			Label textGdpr = new Label();
+			textGdpr.setWidth("80%");
+			textGdpr.setSizeFull();
+			textGdpr.setValue(I18nProperties.getString(Strings.messageGdpr));
+			subContentGdpr.addComponent(textGdpr);
+
+			HorizontalLayout buttonLayout = new HorizontalLayout();
+			buttonLayout.setMargin(false);
+			buttonLayout.setSpacing(true);
+			buttonLayout.setWidth(100, Unit.PERCENTAGE);
+			Button buttonGdpr = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionConfirm), event -> {
+				subWindowGdpR.close();
+				textArea.focus();
+			}, ValoTheme.BUTTON_PRIMARY);
+			buttonLayout.addComponent(buttonGdpr);
+			subContentGdpr.addComponent(buttonLayout);
+			buttonLayout.setComponentAlignment(buttonGdpr, Alignment.BOTTOM_RIGHT);
+			buttonLayout.setExpandRatio(buttonGdpr, 0);
+			UI.getCurrent().addWindow(subWindowGdpR);
+		}
 	}
 }

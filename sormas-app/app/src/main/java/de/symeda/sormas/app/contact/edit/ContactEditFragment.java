@@ -85,7 +85,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {

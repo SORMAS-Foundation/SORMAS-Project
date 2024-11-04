@@ -1396,6 +1396,7 @@ public interface Captions {
 	String documentNoDocuments = "documentNoDocuments";
 	String DocumentTemplate = "DocumentTemplate";
 	String DocumentTemplate_buttonUploadTemplate = "DocumentTemplate.buttonUploadTemplate";
+	String DocumentTemplate_disease = "DocumentTemplate.disease";
 	String DocumentTemplate_documentTemplateGuide = "DocumentTemplate.documentTemplateGuide";
 	String DocumentTemplate_documentUploadWarning = "DocumentTemplate.documentUploadWarning";
 	String DocumentTemplate_EventHandout = "DocumentTemplate.EventHandout";
@@ -1409,6 +1410,7 @@ public interface Captions {
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
 	String DocumentTemplate_exampleTemplateTravelEntryEmail = "DocumentTemplate.exampleTemplateTravelEntryEmail";
+	String DocumentTemplate_fileName = "DocumentTemplate.fileName";
 	String DocumentTemplate_fileTooBig = "DocumentTemplate.fileTooBig";
 	String DocumentTemplate_notUploaded = "DocumentTemplate.notUploaded";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
@@ -1423,6 +1425,19 @@ public interface Captions {
 	String edit = "edit";
 	String endDateTime = "endDateTime";
 	String endOfProcessingDate = "endOfProcessingDate";
+	String EntityColumn_CAPTION = "EntityColumn.CAPTION";
+	String EntityColumn_DATA_PROTECTION = "EntityColumn.DATA_PROTECTION";
+	String EntityColumn_DESCRIPTION = "EntityColumn.DESCRIPTION";
+	String EntityColumn_DISEASES = "EntityColumn.DISEASES";
+	String EntityColumn_ENTITY = "EntityColumn.ENTITY";
+	String EntityColumn_EXCLUSIVE_COUNTRIES = "EntityColumn.EXCLUSIVE_COUNTRIES";
+	String EntityColumn_FIELD = "EntityColumn.FIELD";
+	String EntityColumn_FIELD_ID = "EntityColumn.FIELD_ID";
+	String EntityColumn_IGNORED_COUNTRIES = "EntityColumn.IGNORED_COUNTRIES";
+	String EntityColumn_NEW_DISEASE = "EntityColumn.NEW_DISEASE";
+	String EntityColumn_OUTBREAKS = "EntityColumn.OUTBREAKS";
+	String EntityColumn_REQUIRED = "EntityColumn.REQUIRED";
+	String EntityColumn_TYPE = "EntityColumn.TYPE";
 	String Environment = "Environment";
 	String Environment_description = "Environment.description";
 	String Environment_environmentMedia = "Environment.environmentMedia";

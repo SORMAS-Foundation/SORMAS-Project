@@ -60,7 +60,7 @@ public class ActivityAsCaseDialog extends FormDialog {
 			R.string.heading_activityAsCase,
 			-1,
 			false,
-			UiFieldAccessCheckers.forSensitiveData(activityAsCase.isPseudonymized()),
+			UiFieldAccessCheckers.forSensitiveData(activityAsCase.isPseudonymized(), ConfigProvider.getServerCountryCode()),
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()));
 
 		this.data = activityAsCase;
