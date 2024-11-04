@@ -25,6 +25,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseEditMaternalHistoryLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -44,7 +45,7 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 			null,
 			activityRootData,
 			null,
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	// Overrides

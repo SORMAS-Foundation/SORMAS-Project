@@ -111,7 +111,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			PersonDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getDefault(false));
+			UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()));
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPresentCondition = showPresentCondition;
 		this.showSymptomsOnsetDate = showSymptomsOnsetDate;

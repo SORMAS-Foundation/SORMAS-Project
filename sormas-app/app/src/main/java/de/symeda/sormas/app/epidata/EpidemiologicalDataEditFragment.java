@@ -41,6 +41,7 @@ import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.exposure.Exposure;
@@ -65,7 +66,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	private void setUpControlListeners(final FragmentEditEpidLayoutBinding contentBinding) {

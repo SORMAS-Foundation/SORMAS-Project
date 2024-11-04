@@ -47,7 +47,7 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 		return immunizationReadFragment;
 	}

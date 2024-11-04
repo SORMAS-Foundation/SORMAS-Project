@@ -110,7 +110,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.uuid.HasUuid;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -141,6 +140,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DeleteRestoreHandlers;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -1298,8 +1298,7 @@ public class CaseController {
 			person,
 			SymptomsContext.CASE,
 			viewMode,
-			UiFieldAccessCheckers
-				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()), caseDataDto.isPseudonymized()));
+			FieldAccessHelper.getFieldAccessCheckers(caseDataDto));
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView =
@@ -1381,9 +1380,7 @@ public class CaseController {
 
 		CaseDataDto caseDataDto = findCase(caseUuid);
 
-		CaseExternalDataForm caseExternalDataForm = new CaseExternalDataForm(
-			UiFieldAccessCheckers
-				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caseDataDto.isInJurisdiction()), caseDataDto.isPseudonymized()));
+		CaseExternalDataForm caseExternalDataForm = new CaseExternalDataForm(FieldAccessHelper.getFieldAccessCheckers(caseDataDto));
 		caseExternalDataForm.setValue(caseDataDto);
 
 		DetailSubComponentWrapper wrapper = new DetailSubComponentWrapper(() -> null);

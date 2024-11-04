@@ -96,8 +96,9 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 				I18nProperties.getPrefixCaption(PrescriptionIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 
 			setCellStyleGenerator(
-				FieldAccessCellStyleGenerator
-					.withFieldAccessCheckers(PrescriptionIndexDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+				FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+					PrescriptionIndexDto.class,
+					UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 		}
 
 		addItemClickListener(e -> {

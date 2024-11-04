@@ -26,6 +26,7 @@ import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
 import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
@@ -70,7 +71,8 @@ public class DatabaseExportServiceTest {
 		SelfReport.class,
 		Aefi.class,
 		AdverseEvents.class,
-		AefiInvestigation.class);
+		AefiInvestigation.class,
+		DocumentTemplate.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

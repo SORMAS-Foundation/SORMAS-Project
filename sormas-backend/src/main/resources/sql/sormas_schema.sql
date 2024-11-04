@@ -13669,8 +13669,41 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EV
 
 INSERT INTO schema_version (version_number, comment) VALUES (552, 'Adverse Events Following Immunization (AEFI) - Entities #12634');
 
+<<<<<<< HEAD
+
+=======
+
+-- 2024-10-23 Add "Disease" Attribute to Document Templates for Filtering #13160
+CREATE TABLE documenttemplates (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    change_user_id bigint,
+
+    workflow varchar(255) not null,
+    disease varchar(255),
+    fileName text,
+
+    sys_period tstzrange not null,
+    primary key(id)
+);
+
+ALTER TABLE documenttemplates OWNER TO sormas_user;
+ALTER TABLE documenttemplates ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TABLE documenttemplates_history (LIKE documenttemplates);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON documenttemplates
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documenttemplates_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON documenttemplates
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('documenttemplates_history', 'id');
+ALTER TABLE documenttemplates_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment, upgradeneeded) VALUES (553, 'Add "Disease" Attribute to Document Templates for Filtering #13160', true);
+>>>>>>> 247e01fb52a290d194896a3c521cd701f868a843
 -- Assign DISEASE_DETAILS_VIEW user rights to default admin and national_user user roles
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DISEASE_DETAILS_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
 
-INSERT INTO schema_version (version_number, comment) VALUES (553, 'Dashboard Diseases Details View - #12880');
+INSERT INTO schema_version (version_number, comment) VALUES (554, 'Dashboard Diseases Details View - #12880');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -332,12 +332,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> specialAccessChecker = createSpecialAccessChecker(samples);
 		Pseudonymizer<T> rootPseudonymizer = withPlaceHolder
-			? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessChecker)
-			: Pseudonymizer.getDefault(userService, specialAccessChecker);
+			? Pseudonymizer.getDefaultWithPlaceHolder(userService, specialAccessChecker, configFacade.getCountryCode())
+			: Pseudonymizer.getDefault(userService, specialAccessChecker, configFacade.getCountryCode());
 
 		Collection<IsCase> cases = samples.stream().map(IsSample::getAssociatedCase).filter(Objects::nonNull).collect(Collectors.toList());
 
-		return new SamplePseudonymizer<>(rootPseudonymizer, caseFacade.createSimplePseudonymizer(cases), Pseudonymizer.getDefault(userService));
+		return new SamplePseudonymizer<>(
+			rootPseudonymizer,
+			caseFacade.createSimplePseudonymizer(cases),
+			Pseudonymizer.getDefault(userService, configFacade.getCountryCode()));
 	}
 
 	private <T extends IsSample> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(
@@ -1035,7 +1038,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	@Override
-	public void deletePermanent(Sample sample) {
+	public boolean deletePermanent(Sample sample) {
 
 		// Delete all pathogen tests of this sample
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
@@ -1060,6 +1063,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		deleteSampleLinks(sample);
 
 		super.deletePermanent(sample);
+		return false;
 	}
 
 	@Override
@@ -1286,7 +1290,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 	}
 
 	public void cleanupOldCovidSamples() {
-		final Integer maxAgeDays = configFacade.getNegaiveCovidSamplesMaxAgeDays();
+		final Integer maxAgeDays = configFacade.getNegaiveCovidTestsMaxAgeDays();
 		if (maxAgeDays == null) {
 			return;
 		}

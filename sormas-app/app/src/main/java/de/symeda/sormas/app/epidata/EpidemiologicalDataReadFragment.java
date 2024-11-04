@@ -69,7 +69,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static EpidemiologicalDataReadFragment newInstance(Contact activityRootData) {
@@ -78,7 +78,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	private void setUpControlListeners() {
@@ -107,7 +107,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 				ExposureDto.class,
 				(ViewGroup) infoDialog.getBinding().getRoot(),
 				FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(getActivityRootData())),
-				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized()));
+				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 			infoDialog.show();
 		};
@@ -141,7 +141,7 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 				(ViewGroup) infoDialog.getBinding().getRoot(),
 				FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(getActivityRootData()))
 					.andWithCountry(ConfigProvider.getServerCountryCode()),
-				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized()));
+				UiFieldAccessCheckers.forSensitiveData(((PseudonymizableAdo) getActivityRootData()).isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 			infoDialog.show();
 		};

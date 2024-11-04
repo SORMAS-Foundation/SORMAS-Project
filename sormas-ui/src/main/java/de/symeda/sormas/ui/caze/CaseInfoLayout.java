@@ -32,11 +32,11 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 
 @SuppressWarnings("serial")
 public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
@@ -49,10 +49,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 	}
 
 	public CaseInfoLayout(CaseDataDto caseDto, boolean isTravelEntry) {
-		super(
-			CaseDataDto.class,
-			UiFieldAccessCheckers
-				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(caseDto.isInJurisdiction()), caseDto.isPseudonymized()));
+		super(CaseDataDto.class, FieldAccessHelper.getFieldAccessCheckers(caseDto));
 
 		this.caseDto = caseDto;
 		this.isTravelEntry = isTravelEntry;

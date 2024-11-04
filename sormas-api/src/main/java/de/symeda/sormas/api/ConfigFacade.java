@@ -162,5 +162,5 @@ public interface ConfigFacade {
 
 	boolean isAnyCaseClassificationCalculationEnabled();
 
-	Integer getNegaiveCovidSamplesMaxAgeDays();
+	Integer getNegaiveCovidTestsMaxAgeDays();
 }

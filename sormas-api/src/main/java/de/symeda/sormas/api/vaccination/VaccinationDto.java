@@ -69,6 +69,7 @@ public class VaccinationDto extends PseudonymizableDto {
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
 		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
 		hide = true)
+	@SensitiveData
 	private HealthConditionsDto healthConditions;
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;

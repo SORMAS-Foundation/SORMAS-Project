@@ -4176,7 +4176,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private <T extends IsCase> Pseudonymizer<T> createPseudonymizerForDtoWithClinician(
 		@Nullable String pseudonymizedValue,
 		Collection<? extends IsCase> cases) {
-		Pseudonymizer<T> pseudonymizer = Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), pseudonymizedValue);
+		Pseudonymizer<T> pseudonymizer =
+			Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), pseudonymizedValue, configFacade.getCountryCode());
 
 		UserRightFieldAccessChecker<T> clinicianViewRightChecker =
 			new UserRightFieldAccessChecker<>(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
@@ -4187,12 +4188,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@PermitAll
 	public <T extends IsCase> Pseudonymizer<T> createSimplePseudonymizer(Collection<? extends IsCase> cases) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), configFacade.getCountryCode());
 	}
 
 	@PermitAll
 	public <T extends IsCase> Pseudonymizer<T> createSimplePlaceholderPseudonymizer(Collection<T> cases) {
-		return Pseudonymizer.getDefaultWithPlaceHolder(userService, createSpecialAccessChecker(cases));
+		return Pseudonymizer.getDefaultWithPlaceHolder(userService, createSpecialAccessChecker(cases), configFacade.getCountryCode());
 	}
 
 	private <T extends IsCase> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(

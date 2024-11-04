@@ -44,6 +44,7 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
 import de.symeda.sormas.api.DocumentHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.EmailAttachementDto;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
@@ -113,7 +114,7 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected void addFields() {
 		ComboBox templateCombo = addField(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE_NAME, ComboBox.class);
 		templateCombo.setRequired(true);
-		List<String> templateNames = FacadeProvider.getExternalEmailFacade().getTemplateNames(documentWorkflow);
+		List<DocumentTemplateDto> templateNames = FacadeProvider.getExternalEmailFacade().getTemplates(documentWorkflow);
 		FieldHelper.updateItems(templateCombo, templateNames);
 
 		if (Arrays.asList(DocumentWorkflow.CASE_EMAIL, DocumentWorkflow.CONTACT_EMAIL, DocumentWorkflow.TRAVEL_ENTRY_EMAIL)

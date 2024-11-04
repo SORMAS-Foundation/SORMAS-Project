@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 
 import org.junit.jupiter.api.AfterEach;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -35,5 +38,20 @@ public abstract class AbstractDocGenerationTest extends AbstractBeanTest {
 	@AfterEach
 	public void teardown() throws URISyntaxException {
 		reset();
+	}
+
+	protected DocumentTemplate createDocumentTemplate(DocumentWorkflow workflow, String templateFileName) {
+		DocumentTemplate template = new DocumentTemplate();
+		template.setUuid(DataHelper.createUuid());
+		template.setFileName(templateFileName);
+		template.setWorkflow(workflow);
+
+		getDocumentTemplateService().persist(template);
+
+		return template;
+	}
+
+	protected static DocumentTemplateReferenceDto toReference(DocumentTemplate documentTemplate) {
+		return new DocumentTemplateReferenceDto(documentTemplate.getUuid(), documentTemplate.getFileName());
 	}
 }

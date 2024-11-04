@@ -325,6 +325,7 @@ public interface Strings {
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
+	String errorDocumentTemplateWorkflowChangeNotAllowed = "errorDocumentTemplateWorkflowChangeNotAllowed";
 	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEnvironmentSampleNoDispatchRight = "errorEnvironmentSampleNoDispatchRight";
@@ -1288,6 +1289,7 @@ public interface Strings {
 	String messageCountImmunizationsNotRestored = "messageCountImmunizationsNotRestored";
 	String messageCountriesArchived = "messageCountriesArchived";
 	String messageCountriesDearchived = "messageCountriesDearchived";
+	String messageCountriesExcludedFromDataProtection = "messageCountriesExcludedFromDataProtection";
 	String messageCountryArchived = "messageCountryArchived";
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";

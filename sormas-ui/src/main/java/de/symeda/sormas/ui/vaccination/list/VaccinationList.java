@@ -26,11 +26,11 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
@@ -88,9 +88,7 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 						.edit(
 							FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
 							listEntry.getVaccination().getDisease(),
-							UiFieldAccessCheckers.forDataAccessLevel(
-								UiUtil.getPseudonymizableDataAccessLevel(vaccination.isInJurisdiction()),
-								vaccination.isPseudonymized()),
+							FieldAccessHelper.getFieldAccessCheckers(vaccination.isInJurisdiction(), vaccination.isPseudonymized()),
 							true,
 							v -> SormasUI.refreshView(),
 							deleteCallback(),

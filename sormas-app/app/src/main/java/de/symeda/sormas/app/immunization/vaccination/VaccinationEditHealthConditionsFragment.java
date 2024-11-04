@@ -33,7 +33,7 @@ public class VaccinationEditHealthConditionsFragment extends BaseEditHealthCondi
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getImmunization().getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	@Override

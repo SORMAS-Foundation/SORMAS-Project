@@ -277,7 +277,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	@Override
-	public void deletePermanent(TravelEntry travelEntry) {
+	public boolean deletePermanent(TravelEntry travelEntry) {
 		// Delete all tasks associated with this travel entry
 		List<Task> tasks = taskService.findBy(
 			new TaskCriteria().travelEntry(
@@ -295,6 +295,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 			.forEach(document -> documentService.markAsDeleted(document));
 
 		super.deletePermanent(travelEntry);
+		return false;
 	}
 
 	public TravelEntry getLastTravelEntry() {
