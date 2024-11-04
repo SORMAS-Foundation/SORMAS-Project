@@ -17,65 +17,69 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountries;
 
 public enum PathogenTestType {
 
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	ANTIBODY_DETECTION,
 	ANTIGEN_DETECTION,
 	RAPID_TEST,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CULTURE,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	HISTOPATHOLOGY,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	ISOLATION,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	IGM_SERUM_ANTIBODY,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	IGG_SERUM_ANTIBODY,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	IGA_SERUM_ANTIBODY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	INCUBATION_TIME,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	INDIRECT_FLUORESCENT_ANTIBODY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	DIRECT_FLUORESCENT_ANTIBODY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	MICROSCOPY,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	NEUTRALIZING_ANTIBODIES,
 	PCR_RT_PCR,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	GRAM_STAIN,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	LATEX_AGGLUTINATION,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CQ_VALUE_DETECTION,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	SEQUENCING,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	DNA_MICROARRAY,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	TMA,
 	OTHER;
 

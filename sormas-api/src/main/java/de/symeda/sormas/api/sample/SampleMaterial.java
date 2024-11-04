@@ -17,73 +17,75 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountries;
 
 public enum SampleMaterial {
 
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	BLOOD,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	SERA,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	STOOL,
 	NASAL_SWAB,
 	THROAT_SWAB,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	NP_SWAB,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	RECTAL_SWAB,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CEREBROSPINAL_FLUID,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CRUST,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	TISSUE,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	URINE,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CORNEA_PM,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	SALIVA,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	URINE_PM,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	NUCHAL_SKIN_BIOPSY,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	SPUTUM,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	ENDOTRACHEAL_ASPIRATE,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	BRONCHOALVEOLAR_LAVAGE,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	BRAIN_TISSUE,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	ANTERIOR_NARES_SWAB,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	OP_ASPIRATE,
 	NP_ASPIRATE,
-	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	PLEURAL_FLUID,
 	OTHER;
 
