@@ -24,6 +24,7 @@ import java.util.Set;
 
 import de.symeda.sormas.api.PostResponse;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserPasswordChangeDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -31,7 +32,6 @@ import de.symeda.sormas.app.backend.location.LocationDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
-import de.symeda.sormas.api.user.UserPasswordChangeDto;
 
 /**
  * Created by Martin Wahnschaffe on 27.07.2016.
@@ -135,10 +135,12 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 	}
 
 	public static Call<String> saveNewPassword(String uuid, String newPassword) throws NoConnectionException {
-		return RetroProvider.getUserFacade().saveNewPassword(new UserPasswordChangeDto(uuid,newPassword));
+
+		return RetroProvider.getUserFacade().saveNewPassword(new UserPasswordChangeDto(uuid, newPassword));
 	}
 
 	public static Call<String> generatePassword() throws NoConnectionException {
+
 		return RetroProvider.getUserFacade().generatePassword();
 	}
 

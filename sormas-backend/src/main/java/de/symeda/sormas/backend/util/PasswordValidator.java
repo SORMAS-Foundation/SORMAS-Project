@@ -2,42 +2,48 @@ package de.symeda.sormas.backend.util;
 
 public class PasswordValidator {
 
-    private PasswordValidator() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
+	private PasswordValidator() {
 
-    public static String checkPasswordStrength(String password) {
-        boolean strongPassword = isStrongPassword(password);
+		throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+	}
 
-        if (strongPassword) {
-            return "Password is Strong";
-        } else {
-            return "Password is Weak";
-        }
-    }
+	public static String checkPasswordStrength(String password) {
 
-    public static boolean isStrongPassword(String password) {
-        if (password == null) {
-            throw new IllegalArgumentException("Password cannot be null");
-        }
+		boolean strongPassword = isStrongPassword(password);
 
-        boolean isLengthValid = password.length() >= 8;
-        boolean hasDigit = hasDigits(password);
-        boolean hasCapitalLetter = hasCapitalLetter(password);
-        boolean hasLowercaseLetter = hasLowercaseLetter(password);
+		if (strongPassword) {
+			return "Password is Strong";
+		} else {
+			return "Password is Weak";
+		}
+	}
 
-        return isLengthValid && hasDigit && hasCapitalLetter && hasLowercaseLetter;
-    }
+	public static boolean isStrongPassword(String password) {
 
-    private static boolean hasDigits(String password) {
-        return password.chars().anyMatch(Character::isDigit);
-    }
+		if (password == null) {
+			throw new IllegalArgumentException("Password cannot be null");
+		}
 
-    private static boolean hasCapitalLetter(String password) {
-        return password.chars().anyMatch(Character::isUpperCase);
-    }
+		boolean isLengthValid = password.length() >= 8;
+		boolean hasDigit = hasDigits(password);
+		boolean hasCapitalLetter = hasCapitalLetter(password);
+		boolean hasLowercaseLetter = hasLowercaseLetter(password);
 
-    private static boolean hasLowercaseLetter(String password) {
-        return password.chars().anyMatch(Character::isLowerCase);
-    }
+		return isLengthValid && hasDigit && hasCapitalLetter && hasLowercaseLetter;
+	}
+
+	private static boolean hasDigits(String password) {
+
+		return password.chars().anyMatch(Character::isDigit);
+	}
+
+	private static boolean hasCapitalLetter(String password) {
+
+		return password.chars().anyMatch(Character::isUpperCase);
+	}
+
+	private static boolean hasLowercaseLetter(String password) {
+
+		return password.chars().anyMatch(Character::isLowerCase);
+	}
 }

@@ -19,31 +19,37 @@ import androidx.databinding.BaseObservable;
 
 public class ChangePasswordViewModel extends BaseObservable {
 
-    private String currentPassword;
-    private String newPassword;
-    private String confirmPassword;
+	private String currentPassword;
+	private String newPassword;
+	private String confirmPassword;
 
-    public String getCurrentPassword() {
-        return currentPassword;
-    }
+	public String getCurrentPassword() {
 
-    public void setCurrentPassword(String currentPassword) {
-        this.currentPassword = currentPassword;
-    }
+		return currentPassword;
+	}
 
-    public String getNewPassword() {
-        return newPassword;
-    }
+	public void setCurrentPassword(String currentPassword) {
 
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
+		this.currentPassword = currentPassword;
+	}
 
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
+	public String getNewPassword() {
 
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+
+		this.newPassword = newPassword;
+	}
+
+	public String getConfirmPassword() {
+
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+
+		this.confirmPassword = confirmPassword;
+	}
 }

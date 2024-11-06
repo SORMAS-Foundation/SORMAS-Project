@@ -655,6 +655,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	}
 
 	public String generatePassword() {
+
 		return PasswordHelper.createPass(12);
 	}
 

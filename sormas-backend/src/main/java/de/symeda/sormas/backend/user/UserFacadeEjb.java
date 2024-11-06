@@ -143,16 +143,16 @@ import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
+import de.symeda.sormas.backend.user.event.PasswordChangeEvent;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.SyncUsersFromProviderEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PasswordValidator;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
-import de.symeda.sormas.backend.util.PasswordValidator;
-import de.symeda.sormas.backend.user.event.PasswordChangeEvent;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -1199,11 +1199,12 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	@PermitAll
 	public boolean validateCurrentPassword(String password) {
+
 		User user = userService.getCurrentUser();
 		if (user != null) {
 			AuthProvider authProvider = AuthProvider.getProvider(configFacade);
-			if(KEYCLOAK.equalsIgnoreCase(authProvider.getName())) {
-				return keycloakService.validateCurrentPassword(user.getUserName(),password);
+			if (KEYCLOAK.equalsIgnoreCase(authProvider.getName())) {
+				return keycloakService.validateCurrentPassword(user.getUserName(), password);
 			}
 			return DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()));
 		}
@@ -1226,7 +1227,7 @@ public class UserFacadeEjb implements UserFacade {
 	public String updateUserPassword(String uuid, String password) {
 		String updatePassword = userService.updatePassword(uuid, password);
 		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
-		if(KEYCLOAK.equalsIgnoreCase(authProvider.getName())) {
+		if (KEYCLOAK.equalsIgnoreCase(authProvider.getName())) {
 			passwordChangeEvent.fire(new PasswordChangeEvent(userService.getByUuid(uuid)));
 		}
 		return updatePassword;
@@ -1235,6 +1236,7 @@ public class UserFacadeEjb implements UserFacade {
 	@PermitAll
 	@Override
 	public String generatePassword() {
+
 		return userService.generatePassword();
 	}
 

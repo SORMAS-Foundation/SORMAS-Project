@@ -81,29 +81,33 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
 	@Override
 	public void onPause() {
+
 		super.onPause();
 		SoftKeyboardHelper.hideKeyboard(this, binding.changePasswordCurrentPassword.getWindowToken());
 	}
 
 	@Override
 	protected void onDestroy() {
+
 		hidePreloader();
 		super.onDestroy();
 	}
 
 	@Override
 	protected void onResume() {
-		super.onResume();
 
+		super.onResume();
 	}
 
 	public void backToSettings(View view) {
+
 		Intent intent = new Intent(this, SettingsActivity.class);
 		startActivity(intent);
 	}
 
 	@SuppressLint("ResourceType")
 	public void passwordValidationCheck(View view) {
+
 		String newPassword = binding.changePasswordNewPassword.getValue();
 
 		isAtLeast8 = newPassword.length() >= 8;
@@ -125,6 +129,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
 	@SuppressLint("ResourceType")
 	public void generatePassword(View view) {
+
 		if (DataHelper.isNullOrEmpty(ConfigProvider.getServerRestUrl())) {
 			NavigationHelper.goToSettings(this);
 			return;
@@ -151,6 +156,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 
 	@Override
 	public View getRootView() {
+
 		if (binding != null)
 			return binding.getRoot();
 
@@ -158,6 +164,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 	}
 
 	private void executeGeneratePasswordCall(Call<String> call) {
+
 		try {
 			call.enqueue(new Callback<>() {
 
@@ -184,6 +191,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 	}
 
 	private void executeSaveNewPasswordCall(Call<String> call, Activity activity) {
+
 		try {
 			showPreloader();
 
@@ -227,6 +235,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 	}
 
 	public void alertDialog(Activity activity, String message, String title) {
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 		LayoutInflater inflater = activity.getLayoutInflater();
 		View dialogView = inflater.inflate(R.layout.dialog_change_password, null);
@@ -266,6 +275,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 	 * When clicked on submit
 	 **/
 	public void savePassword(View view) {
+
 		binding.changePasswordNewPassword.disableErrorState();
 		binding.changePasswordCurrentPassword.disableErrorState();
 		binding.changePasswordConfirmPassword.disableErrorState();
@@ -323,6 +333,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 	}
 
 	public void showPreloader() {
+
 		if (fragmentFrame != null) {
 			fragmentFrame.setVisibility(View.GONE);
 		}
@@ -332,6 +343,7 @@ public class ChangePasswordActivity extends BaseLocalizedActivity implements Act
 	}
 
 	public void hidePreloader() {
+
 		if (preloader != null) {
 			preloader.setVisibility(View.GONE);
 		}

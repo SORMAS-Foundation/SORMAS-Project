@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,7 +64,6 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class UserFacadeEjbTest extends AbstractBeanTest {
 
@@ -482,73 +482,77 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(EntityNotFoundException.class, () -> getUserFacade().getUserRights("12345"));
 	}
 
-    @Test
-    public void testUpdateUserPassword() {
-        // Arrange
-        User testUser = creator.createTestUser();
+	@Test
+	public void testUpdateUserPassword() {
 
-        String newPassword = "newPassword";
-        String currentPassword = testUser.getPassword();
-        String uuid = testUser.getUuid();
-        String result = getUserFacade().updateUserPassword(uuid, newPassword);
+		// Arrange
+		User testUser = creator.createTestUser();
 
-        // Assert
-        assertEquals(newPassword, result);
+		String newPassword = "newPassword";
+		String currentPassword = testUser.getPassword();
+		String uuid = testUser.getUuid();
+		String result = getUserFacade().updateUserPassword(uuid, newPassword);
 
-        // Verify the password was updated in the database
-        User updatedUser = getUserService().getByUuid(uuid);
+		// Assert
+		assertEquals(newPassword, result);
 
-        assertNotEquals(currentPassword, updatedUser.getPassword()); // Password should be different
-        UserDto updatedUserDto = getUserFacade().getByUuid(uuid);
+		// Verify the password was updated in the database
+		User updatedUser = getUserService().getByUuid(uuid);
 
-        loginWith(updatedUserDto); // Login again with changed password
-        assertTrue(getUserFacade().validateCurrentPassword(newPassword)); // Validate the new password
+		assertNotEquals(currentPassword, updatedUser.getPassword()); // Password should be different
+		UserDto updatedUserDto = getUserFacade().getByUuid(uuid);
 
-    }
+		loginWith(updatedUserDto); // Login again with changed password
+		assertTrue(getUserFacade().validateCurrentPassword(newPassword)); // Validate the new password
 
-    @Test
-    public void testGeneratePassword() {
-        // Act
-        String result = getUserFacade().generatePassword();
+	}
 
-        // Assert
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-    }
+	@Test
+	public void testGeneratePassword() {
 
-    @Test
-    void testValidatePasswordValid() {
-        // Arrange
+		// Act
+		String result = getUserFacade().generatePassword();
 
-        User user = creator.createTestUser();
-        // Act
-        UserDto loggedInUser = getUserFacade().getByUuid(user.getUuid());
-        loginWith(loggedInUser);
-        boolean result = getUserFacade().validateCurrentPassword("password"); // Use plain password for validation
+		// Assert
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+	}
 
-        // Assert
-        assertTrue(result);
-    }
+	@Test
+	void testValidatePasswordValid() {
 
-    @Test
-    void testValidatePasswordInvalid() {
-        // Act
-        boolean result = getUserFacade().validateCurrentPassword("password");
+		User user = creator.createTestUser();
+		// Act
+		UserDto loggedInUser = getUserFacade().getByUuid(user.getUuid());
+		loginWith(loggedInUser);
+		boolean result = getUserFacade().validateCurrentPassword("password"); // Use plain password for validation
 
-        // Assert
-        assertFalse(result);
-    }
+		// Assert
+		assertTrue(result);
+	}
 
-    @Test
-    void testCheckPasswordStrengthStrong() {
-        String result = getUserFacade().checkPasswordStrength("Verystrongassword134$");
-        assertEquals("Password is Strong", result);
-    }
+	@Test
+	void testValidatePasswordInvalid() {
 
-    @Test
-    void testCheckPasswordStrengthWeak() {
-        String result = getUserFacade().checkPasswordStrength("weak");
-        assertEquals("Password is Weak", result);
-    }
+		// Act
+		boolean result = getUserFacade().validateCurrentPassword("password");
+
+		// Assert
+		assertFalse(result);
+	}
+
+	@Test
+	void testCheckPasswordStrengthStrong() {
+
+		String result = getUserFacade().checkPasswordStrength("Verystrongassword134$");
+		assertEquals("Password is Strong", result);
+	}
+
+	@Test
+	void testCheckPasswordStrengthWeak() {
+
+		String result = getUserFacade().checkPasswordStrength("weak");
+		assertEquals("Password is Weak", result);
+	}
 
 }
