@@ -296,13 +296,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox birthDateMonth = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateMonth.setNullSelectionAllowed(true);
-//		birthDateMonth.addItems(DateHelper.getMonthsInYear());
-//		birthDateMonth.setPageLength(12);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		birthDateMonth.setCaption("");
-//		DateHelper.getMonthsInYear()
-//			.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
-//		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
