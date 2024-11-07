@@ -18,11 +18,11 @@
 package de.symeda.sormas.api.disease;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import java.util.Date;
 
 public class DiseaseBurdenDto implements Serializable {
 
