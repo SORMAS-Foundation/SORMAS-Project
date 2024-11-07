@@ -50,6 +50,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllRegion() {
+
 		// Arrange
 		creator.createRegion("region1");
 		creator.createRegion("region2");
@@ -70,6 +71,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetByName() {
+
 		// Arrange
 		creator.createRegion("region1");
 		getRegionService().doFlush();
@@ -87,6 +89,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListNoCriteria() {
+
 		// Arrange
 		creator.createRegion("region1");
 		creator.createRegion("region2");
@@ -101,6 +104,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexList_withCriteriaAndSortProperties() {
+
 		// Arrange
 		creator.createRegion("region1");
 		creator.createRegion("region2");
@@ -128,6 +132,7 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexList_withInvalidSortProperty() {
+
 		// Arrange
 		List<SortProperty> sortProperties = new ArrayList<>();
 		sortProperties.add(new SortProperty("invalidProperty", true));

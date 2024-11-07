@@ -217,6 +217,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
+
 		return outbreakService.getOutbreakDistrictNameByDisease(criteria);
 	}
 

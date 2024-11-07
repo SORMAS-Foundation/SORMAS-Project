@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CaseUserFilterCriteriaTest extends AbstractBeanTest {
     @Test
     public void testRestrictAccessToAssignedEntities() {
+
         CaseUserFilterCriteria criteria = new CaseUserFilterCriteria();
 
         // Test default value
@@ -25,6 +26,7 @@ public class CaseUserFilterCriteriaTest extends AbstractBeanTest {
 
     @Test
     public void testExcludeSharedCases() {
+
         CaseUserFilterCriteria criteria = new CaseUserFilterCriteria();
 
         // Test default value

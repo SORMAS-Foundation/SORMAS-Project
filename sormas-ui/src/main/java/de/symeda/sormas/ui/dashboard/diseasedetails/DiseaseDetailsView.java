@@ -43,10 +43,12 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 
 	private static String diseaseDetailsData;
 	public static void setDiseaseDetailsData(String newData) {
+
 		diseaseDetailsData =newData;
 	}
 
 	public DiseaseDetailsView() {
+
 		super(VIEW_NAME);
 
 		dashboardDataProvider = new DashboardDataProvider();
@@ -91,6 +93,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 	}
 
 	private void setDateFilters(String dateFrom, String dateTo) {
+
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		try {
 			if (dateFrom != null) {
@@ -107,6 +110,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 	}
 
 	private void setDateFilterType(String newDateFilterType) {
+
 		try {
 			if(newDateFilterType!=null&&!newDateFilterType.equals("null")) {
 				NewDateFilterType filterType = NewDateFilterType.valueOf(newDateFilterType);
@@ -118,6 +122,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 	}
 
 	private void setCaseClassification(String caseClassification) {
+
 		try {
 			if(caseClassification!=null && !caseClassification.equals("null")) {
 				CaseClassification classification = CaseClassification.valueOf(caseClassification.replace(" ", "_").toUpperCase().trim());
@@ -130,6 +135,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 	}
 
 	private void setNewCaseDateType(String newCaseDateType) {
+
 		NewCaseDateType caseDateType;
 		switch (newCaseDateType) {
 			case "Symptom onset date":
@@ -145,6 +151,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 	}
 
 	private void setRegion(String regionId) {
+
 		if (regionId != null && !"null".equals(regionId) && !regionId.isEmpty()) {
 			RegionDto region = FacadeProvider.getRegionFacade().getByUuid(regionId);
 			dashboardDataProvider.setRegion(region.toReference());
@@ -162,6 +169,7 @@ public class DiseaseDetailsView extends AbstractDashboardView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+
 		super.enter(event);
 		dashboardDataProvider.setDisease(Disease.valueOf(event.getParameters()));
 		refreshDiseaseData();

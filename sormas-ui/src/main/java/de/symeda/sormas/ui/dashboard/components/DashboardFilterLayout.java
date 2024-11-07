@@ -64,9 +64,6 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import com.vaadin.navigator.ViewChangeListener;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.NewDateFilterType;
 import de.symeda.sormas.ui.dashboard.DashboardType;
@@ -159,6 +156,7 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 	};
 
 	private void createDiseaseFilter() {
+
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
@@ -180,16 +178,6 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 	protected void createRegionAndDistrictFilter() {
 		createRegionFilter(null);
 		createDistrictFilter(null);
-	}
-
-	//Case Classification filter
-	public void createCaseClassificationFilter() {
-		caseClassificationFilter.setWidth(200, Unit.PIXELS);
-		caseClassificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
-		caseClassificationFilter.addItems((Object[]) CaseClassification.values());
-		caseClassificationFilter.addValueChangeListener(e -> dashboardDataProvider.setCaseClassification((CaseClassification) caseClassificationFilter.getValue()));
-		addCustomComponent(caseClassificationFilter, CASE_CLASSIFICATION_FILTER);
-		dashboardDataProvider.setCaseClassification((CaseClassification) caseClassificationFilter.getValue());
 	}
 
 	protected void createRegionFilter(String description) {
@@ -626,6 +614,7 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 	}
 
 	public void setCriteria(DashboardCriteria criteria) {
+
 		regionFilter.setValue(criteria.getRegion());
 		caseClassificationFilter.setValue(criteria.getCaseClassification());
 		setDateFilter(criteria.getDateFrom(), criteria.getDateTo());
@@ -638,6 +627,7 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 	}
 
 	private void updateCurrentPeriodButtons(DashboardCriteria criteria) {
+
 		if (criteria.getDateFilterType().equals(NewDateFilterType.TODAY)) {
 			btnCurrentPeriod.setCaption(btnToday.getCaption());
 		}
@@ -682,6 +672,7 @@ public class DashboardFilterLayout<P extends AbstractDashboardDataProvider> exte
 	}
 
 	public void reload(ViewChangeListener.ViewChangeEvent event) {
+
 		DashboardCriteria criteria = dashboardDataProvider.getCriteria();
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {

@@ -27,6 +27,7 @@ public enum MapPeriodType {
     YEARLY;
 
     public String toString() {
+
         return I18nProperties.getEnumCaption(this);
     }
 }

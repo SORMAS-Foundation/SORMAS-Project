@@ -72,6 +72,7 @@ public class DashboardController {
 	}
 
 	public void navigateToDisease(Disease disease,DashboardDataProvider dashboardDataProvider) {
+
 		Date dateFrom = dashboardDataProvider.getFromDate();
 
 		Date dateTo = dashboardDataProvider.getToDate();

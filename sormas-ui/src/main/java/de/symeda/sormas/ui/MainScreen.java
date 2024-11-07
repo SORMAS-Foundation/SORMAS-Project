@@ -460,10 +460,6 @@ public class MainScreen extends HorizontalLayout {
 			UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW);
 	}
 
-	private static boolean diseaseDetailsDashboardPermitted() {
-		return permitted(EnumSet.of(FeatureType.DISEASE_DETAILS),UserRight.DISEASE_DETAILS_VIEW);
-	}
-
 	private static Set<String> initKnownViews() {
 		final Set<String> views = new HashSet<>(
 			Arrays.asList(

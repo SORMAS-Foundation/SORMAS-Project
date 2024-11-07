@@ -63,6 +63,7 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 	}
 
 	public void refresh() {
+
 		diseaseDetailsComponent.removeAllComponents();
 		diseaseDetailsComponent.refresh();
 		regionalDiseaseBurdenGrid.refresh();
@@ -70,7 +71,8 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 	}
 
 	public void reload() {
-//		Disease Card Layout
+
+		//		Disease Card Layout
 		HorizontalLayout diseaseCardLayout = new HorizontalLayout();
 		diseaseCardLayout.setWidth(50, Unit.PERCENTAGE);
 		diseaseCardLayout.setMargin(true);
@@ -78,7 +80,8 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 		diseaseCardLayout.addComponent(diseaseDetailsComponent);
 		addComponent(diseaseCardLayout, CARD);
 
-//		Grid card layout
+
+		//		Grid card layout
 		HorizontalLayout diseaseGridLayout = new HorizontalLayout();
 		diseaseGridLayout.setWidth(400, Unit.PIXELS);
 		regionalDiseaseBurdenGrid.setHeight(320, Unit.PIXELS);
@@ -98,7 +101,7 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 			}
 		});
 
-//		Map layout 
+//		Map layout
 		HorizontalLayout mapLayout = new HorizontalLayout();
 		mapLayout.setWidth(100, Unit.PERCENTAGE);
 		final int BASE_HEIGHT = 600;
@@ -114,6 +117,7 @@ public class DiseaseDetailsViewLayout extends CustomLayout {
 	}
 
 	public HorizontalLayout viewMoreLayout(String title){
+
 		HorizontalLayout viewMoreLayout = new HorizontalLayout();
 		viewMoreLayout.setMargin(false);
 		viewMoreLayout.setSpacing(false);

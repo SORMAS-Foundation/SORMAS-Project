@@ -32,6 +32,7 @@ public class DiseaseTileViewLayout extends CssLayout {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	public DiseaseTileViewLayout(DashboardDataProvider dashboardDataProvider) {
+
 		this.dashboardDataProvider = dashboardDataProvider;
 	}
 

@@ -57,11 +57,13 @@ public class DiseaseDashboardServiceTest {
 
     @BeforeEach
     public void setUp() {
+
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     public void testGetDiseaseForDashboard() {
+
         RegionReferenceDto region = new RegionReferenceDto();
         DistrictReferenceDto district = new DistrictReferenceDto();
         Disease disease = Disease.CORONAVIRUS;
@@ -112,6 +114,7 @@ public class DiseaseDashboardServiceTest {
 
     @Test
     public void testGetDiseaseGridForDashboard() {
+
         RegionReferenceDto region = new RegionReferenceDto();
         DistrictReferenceDto district = new DistrictReferenceDto();
         Disease disease = Disease.CORONAVIRUS;

@@ -31,11 +31,13 @@ public class DiseaseDetailsComponent extends CssLayout {
     private static final String HTML_DIV_END = "</div>";
 
     public DiseaseDetailsComponent(DashboardDataProvider dashboardDataProvider) {
+
         this.dashboardDataProvider = dashboardDataProvider;
         addStyleName("disease-detail-card-display-top");
     }
 
     public void refresh(){
+
         addTopLayout(
                 dashboardDataProvider.getDiseaseBurdenDetail().getDisease(),
                 dashboardDataProvider.getDiseaseBurdenDetail().getCaseCount(),
@@ -50,6 +52,7 @@ public class DiseaseDetailsComponent extends CssLayout {
     }
 
     private void addTopLayout(Disease disease, Long casesCount, boolean isOutbreak) {
+
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         layout.setSpacing(false);
@@ -123,6 +126,7 @@ public class DiseaseDetailsComponent extends CssLayout {
     }
 
     private void addStatsLayout(Long fatalities, Long totalCase, String outbreakDistrict, String district, Disease disease) {
+
         VerticalLayout layout = new VerticalLayout();
         layout.setWidth(250, Unit.PIXELS);
         layout.setHeight(120, Unit.PIXELS);
@@ -161,6 +165,7 @@ public class DiseaseDetailsComponent extends CssLayout {
 
     private HorizontalLayout createDeathCfrItem(String fatalityLabel, String fatalityValue,
                                                 boolean isCritical, String cfrLabel, String cfrValue ) {
+
         HorizontalLayout layout = new HorizontalLayout();
         layout.setMargin(false);
         layout.setSpacing(true);
@@ -191,6 +196,7 @@ public class DiseaseDetailsComponent extends CssLayout {
     }
 
     private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {
+
         HorizontalLayout layout = new HorizontalLayout();
         layout.setWidth(250, Unit.PIXELS);
         layout.setMargin(false);
@@ -227,6 +233,7 @@ public class DiseaseDetailsComponent extends CssLayout {
     }
 
     private float calculateCfr(long fatalities, long totalCaseCount){
+
         if (fatalities == 0 )
             return 0;
         return ((float) fatalities / totalCaseCount) * 100;

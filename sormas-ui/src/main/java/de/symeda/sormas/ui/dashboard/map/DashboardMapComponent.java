@@ -1087,6 +1087,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	}
 
 	private HorizontalLayout createMapHeader() {
+
 		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		mapHeaderLayout.setSpacing(true);
@@ -1764,6 +1765,7 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 	}
 
 	private void refreshMapDashboard(boolean forced) {
+
 		clearRegionShapes();
 		clearCaseMarkers();
 		clearContactMarkers();

@@ -93,6 +93,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	}
 
 	public void refreshDiseaseData() {
+
 		DiseaseBurdenDto dbd= FacadeProvider.getDashboardFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate
 				,newCaseDateType
 				,caseClassification);
@@ -314,10 +315,12 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	}
 
 	public DiseaseBurdenDto getDiseaseBurdenDetail() {
+
 		return diseaseBurdenDetail;
 	}
 
 	public void setDiseaseBurdenDetail(DiseaseBurdenDto diseaseBurdenDetail) {
+
 		this.diseaseBurdenDetail = diseaseBurdenDetail;
 	}
 
@@ -405,14 +408,17 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	}
 
 	public CaseClassification getCaseClassification() {
+
 		return caseClassification;
 	}
 
 	public void setCaseClassification(CaseClassification caseClassification) {
+
 		this.caseClassification = caseClassification;
 	}
 
 	public void setDateFilterType(NewDateFilterType dateFilterType) {
+
 		this.dateFilterType = dateFilterType;
 	}
 }

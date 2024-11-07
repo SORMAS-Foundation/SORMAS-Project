@@ -159,6 +159,7 @@ public class RegionDto extends InfrastructureDtoWithDefault {
 
 	@Override
 	public String toString() {
+
 		return getName();
 	}
 }

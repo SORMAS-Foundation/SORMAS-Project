@@ -22,6 +22,7 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
 
     @Override
     public void init() {
+
         super.init();
 
         rdcf = creator.createRDCF();
@@ -30,6 +31,7 @@ public class DiseaseFacadeEjbTest  extends AbstractBeanTest {
 
     @Test
     public void testGetDiseaseForDashboard() {
+
         TestDataCreator.RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2");
 
         RegionReferenceDto region = new RegionReferenceDto(rdcf2.region.getUuid());

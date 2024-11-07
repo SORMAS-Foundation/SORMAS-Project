@@ -369,6 +369,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetCaseMeasurePerDistrict() {
+
 		// Create necessary data for testing
 		RDCF rdcf = creator.createRDCF();
 		Date currentDate = new Date();
@@ -390,6 +391,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testCountCasesConvertedFromContacts() {
+
 		// Create necessary data for testing
 		RDCF rdcf = creator.createRDCF();
 		Date currentDate = new Date();
@@ -411,6 +413,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetEventCountByStatus() {
+
 		// Create necessary data for testing
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createSurveillanceSupervisor(rdcf);
@@ -442,6 +445,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIntervalEndDate() {
+
 		DashboardFacadeEjb dashboardFacadeEjb = new DashboardFacadeEjb();
 
 		// Test case 1: DAY grouping

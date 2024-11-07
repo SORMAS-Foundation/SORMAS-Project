@@ -659,6 +659,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public OutbreakService getOutbreakService() {
+
 		return getBean(OutbreakService.class);
 	}
 

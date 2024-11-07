@@ -157,7 +157,8 @@ public class DiseaseTileComponent extends VerticalLayout {
 	}
 
 	private void addStatsLayout(DiseaseBurdenDto diseaseBurden, DashboardDataProvider dashboardDataProvider) {
-        Long fatalities = diseaseBurden.getCaseDeathCount();
+
+		Long fatalities = diseaseBurden.getCaseDeathCount();
 		Long events = diseaseBurden.getEventCount();
 		String district = diseaseBurden.getLastReportedDistrictName();
 		Disease disease = diseaseBurden.getDisease();

@@ -113,22 +113,27 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 	}
 
 	public DashboardType getDashboardType() {
+
 		return dashboardType;
 	}
 
 	public void setDashboardType(DashboardType dashboardType) {
+
 		this.dashboardType = dashboardType;
 	}
 
 	public void setNewCaseDateType(CriteriaDateType newCaseDateType) {
+
 		this.newCaseDateType = newCaseDateType;
 	}
 
 	public CriteriaDateType getNewCaseDateType() {
+
 		return newCaseDateType;
 	}
 
 	public DashboardCriteria getCriteria() {
+
 		return new DashboardCriteria().region(region)
 				.district(district)
 				.disease(disease)
@@ -140,18 +145,22 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 
 
 	public CaseClassification getCaseClassification() {
+
 		return caseClassification;
 	}
 
 	public void setCaseClassification(CaseClassification caseClassification) {
+
 		this.caseClassification = caseClassification;
 	}
 
 	public void setNewCaseDateType(NewCaseDateType newCaseDateType) {
+
 		this.newCaseDateType = newCaseDateType;
 	}
 
 	public NewDateFilterType getDateFilterType() {
+
 		if (dateFilterType == NewDateFilterType.TODAY) {
 			setFromDate(DateHelper.getStartOfDay(new Date()));
 			setToDate(new Date());
@@ -176,6 +185,7 @@ public abstract class AbstractDashboardDataProvider<C extends BaseDashboardCrite
 	}
 
 	public void setDateFilterType(NewDateFilterType dateFilterType) {
+
 		this.dateFilterType = dateFilterType;
 	}
 }

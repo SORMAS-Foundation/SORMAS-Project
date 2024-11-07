@@ -27,6 +27,7 @@ public class DiseaseOverviewComponent extends HorizontalLayout {
     private final Button showTableViewButton;
 
     public DiseaseOverviewComponent(DashboardDataProvider dashboardDataProvider) {
+
         setWidth(100, Sizeable.Unit.PERCENTAGE);
         setMargin(false);
 

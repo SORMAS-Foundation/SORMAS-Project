@@ -125,10 +125,12 @@ public abstract class AbstractDashboardView extends AbstractView {
 	}
 
 	public void refreshDashboard() {
+
 		dashboardDataProvider.refreshData();
 	}
 
 	public void refreshDiseaseData() {
+
 		dashboardDataProvider.refreshDiseaseData();
 	}
 
@@ -138,10 +140,12 @@ public abstract class AbstractDashboardView extends AbstractView {
 	}
 
 	public void setDiseases(Disease disease) {
+
 		this.disease = disease;
 	}
 
 	public Disease getDiseases() {
+
 		return disease;
 	}
 }

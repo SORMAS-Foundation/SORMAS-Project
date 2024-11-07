@@ -60,7 +60,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 
 @Stateless
 @LocalBean

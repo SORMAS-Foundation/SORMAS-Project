@@ -43,18 +43,22 @@ public class CaseUserFilterCriteria {
 	}
 
 	public boolean isRestrictAccessToAssignedEntities() {
+
 		return restrictAccessToAssignedEntities;
 	}
 
 	public void setRestrictAccessToAssignedEntities(boolean restrictAccessToAssignedEntities) {
+
 		this.restrictAccessToAssignedEntities = restrictAccessToAssignedEntities;
 	}
 
 	public boolean isExcludeSharedCases() {
+
 		return excludeSharedCases;
 	}
 
 	public CaseUserFilterCriteria excludeSharedCases(boolean excludeSharedCases) {
+
 		this.excludeSharedCases = excludeSharedCases;
 		return this;
 	}

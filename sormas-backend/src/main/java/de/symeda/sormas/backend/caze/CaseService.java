@@ -186,8 +186,6 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 
 @Stateless
 @LocalBean

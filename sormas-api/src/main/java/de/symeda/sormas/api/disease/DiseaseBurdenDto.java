@@ -18,11 +18,11 @@
 package de.symeda.sormas.api.disease;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
-import java.util.Date;
 
 public class DiseaseBurdenDto implements Serializable {
 
@@ -57,7 +57,6 @@ public class DiseaseBurdenDto implements Serializable {
 	public static final String DEATH = "deaths";
 	public static final String DEATH_COUNT = "deathsCount";
 
-
 	public static final String OTHER = "other";
 	public static final String OTHER_COUNT = "otherCount";
 
@@ -80,7 +79,6 @@ public class DiseaseBurdenDto implements Serializable {
 	private String deaths;
 	private String deathsCount;
 
-
 	private RegionDto region;
 
 	private String recovered;
@@ -92,35 +90,28 @@ public class DiseaseBurdenDto implements Serializable {
 	private String other;
 	private String otherCount;
 
-
 	private Date toDate;
 	private Date fromDate;
 
-	public DiseaseBurdenDto(
-			RegionDto regionDto,
-			String total,
-			String activeCases,
-			String recovered,
-			String deaths,String other) {
+	public DiseaseBurdenDto(RegionDto regionDto, String total, String activeCases, String recovered, String deaths, String other) {
 
 		this.region = regionDto;
 		this.total = total;
 		this.activeCases = activeCases;
 		this.recovered = recovered;
 		this.deaths = deaths;
-		this.other=other;
+		this.other = other;
 	}
 
-
 	public DiseaseBurdenDto(
-			Disease disease,
-			Long caseCount,
-			Long previousCaseCount,
-			Long eventCount,
-			Long outbreakDistrictCount,
-			Long caseDeathCount,
-			String lastReportedDistrictName,
-			String outbreakDistrict) {
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName,
+		String outbreakDistrict) {
 
 		this.disease = disease;
 		this.caseCount = caseCount;
@@ -133,16 +124,16 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public DiseaseBurdenDto(
-			Disease disease,
-			Long caseCount,
-			Long previousCaseCount,
-			Long eventCount,
-			Long outbreakDistrictCount,
-			Long caseDeathCount,
-			String lastReportedDistrictName,
-			String outbreakDistrict,
-			Date from,
-			Date to) {
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName,
+		String outbreakDistrict,
+		Date from,
+		Date to) {
 
 		this.disease = disease;
 		this.caseCount = caseCount;
@@ -153,18 +144,18 @@ public class DiseaseBurdenDto implements Serializable {
 		this.lastReportedDistrictName = lastReportedDistrictName;
 		this.outbreakDistrict = outbreakDistrict;
 		this.fromDate = from;
-		this.toDate =to;
+		this.toDate = to;
 	}
 
 	public DiseaseBurdenDto(
-			Disease disease,
-			Long caseCount,
-			Long previousCaseCount,
-			Long eventCount,
-			Long outbreakDistrictCount,
-			Long caseDeathCount,
-			String lastReportedDistrictName,
-			CaseClassification caseClassification) {
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName,
+		CaseClassification caseClassification) {
 
 		this.disease = disease;
 		this.caseCount = caseCount;
@@ -194,12 +185,7 @@ public class DiseaseBurdenDto implements Serializable {
 		this.lastReportedDistrictName = lastReportedDistrictName;
 	}
 
-	public DiseaseBurdenDto(
-			RegionDto regionDto,
-			String total,
-			String activeCases,
-			String recovered,
-			String deaths) {
+	public DiseaseBurdenDto(RegionDto regionDto, String total, String activeCases, String recovered, String deaths) {
 
 		this.region = regionDto;
 		this.total = total;
@@ -207,7 +193,7 @@ public class DiseaseBurdenDto implements Serializable {
 		this.recovered = recovered;
 		this.deaths = deaths;
 	}
-	
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -217,10 +203,12 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public CaseClassification getCaseClassification() {
+
 		return caseClassification;
 	}
 
 	public void setCaseClassification(CaseClassification caseClassification) {
+
 		this.caseClassification = caseClassification;
 	}
 
@@ -301,18 +289,22 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public Integer getCfr() {
+
 		return cfr;
 	}
 
 	public void setCfr(Integer cfr) {
+
 		this.cfr = cfr;
 	}
 
 	public String getLastReportedDistrict() {
+
 		return lastReportedDistrict;
 	}
 
 	public void setLastReportedDistrict(String lastReportedDistrict) {
+
 		this.lastReportedDistrict = lastReportedDistrict;
 	}
 
@@ -321,6 +313,7 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public void setOutbreakDistrict(String outbreakDistrict) {
+
 		this.outbreakDistrict = outbreakDistrict;
 	}
 
@@ -329,14 +322,17 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public void setDeaths(String deaths) {
+
 		this.deaths = deaths;
 	}
 
 	public RegionDto getRegion() {
+
 		return region;
 	}
 
 	public void setRegion(RegionDto region) {
+
 		this.region = region;
 	}
 
@@ -345,58 +341,72 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public void setRecovered(String recovered) {
+
 		this.recovered = recovered;
 	}
 
 	public String getActiveCases() {
+
 		return activeCases;
 	}
 
 	public void setActiveCases(String activeCases) {
+
 		this.activeCases = activeCases;
 	}
 
 	public String getTotal() {
+
 		return total;
 	}
 
 	public void setTotal(String total) {
+
 		this.total = total;
 	}
 
 	public Date getToDate() {
+
 		return toDate;
 	}
 
 	public void setToDate(Date toDate) {
+
 		this.toDate = toDate;
 	}
 
 	public Date getFromDate() {
+
 		return fromDate;
 	}
 
 	public void setFromDate(Date fromDate) {
+
 		this.fromDate = fromDate;
 	}
 
 	public String getTotalCount() {
+
 		return totalCount;
 	}
 
 	public void setTotalCount(String totalCount) {
+
 		this.totalCount = totalCount;
 	}
 
 	public String getDeathsCount() {
+
 		return deathsCount;
 	}
 
 	public void setDeathsCount(String deathsCount) {
+
 		this.deathsCount = deathsCount;
 	}
 
 	public String getRecoveredCount() {
+
 		return recoveredCount;
 	}
 
@@ -405,37 +415,41 @@ public class DiseaseBurdenDto implements Serializable {
 	}
 
 	public String getActiveCount() {
+
 		return activeCount;
 	}
 
 	public void setActiveCount(String activeCount) {
+
 		this.activeCount = activeCount;
 	}
 
 	public String getOther() {
+
 		return other;
 	}
 
 	public void setOther(String other) {
+
 		this.other = other;
 	}
 
 	public String getOtherCount() {
+
 		return otherCount;
 	}
 
 	public void setOtherCount(String otherCount) {
+
 		this.otherCount = otherCount;
 	}
 
 	@Override
 	public String toString() {
-		return "DiseaseBurdenDto [disease=" + disease + ", total=" + total + ", caseCount=" + caseCount
-				+ ", previousCaseCount=" + previousCaseCount + ", eventCount=" + eventCount + ", outbreakDistrictCount="
-				+ outbreakDistrictCount + ", caseDeathCount=" + caseDeathCount + ", lastReportedDistrictName="
-				+ lastReportedDistrictName + ", caseClassification=" + caseClassification + ", cfr=" + cfr
-				+ ", lastReportedDistrict=" + lastReportedDistrict + ", outbreakDistrict=" + outbreakDistrict
-				+ ", deaths=" + deaths + ", region=" + region + ", recovered=" + recovered + ", activeCases="
-				+ activeCases + ", toDate=" + toDate + ", fromDate=" + fromDate + "]";
+		return "DiseaseBurdenDto [disease=" + disease + ", total=" + total + ", caseCount=" + caseCount + ", previousCaseCount=" + previousCaseCount
+			+ ", eventCount=" + eventCount + ", outbreakDistrictCount=" + outbreakDistrictCount + ", caseDeathCount=" + caseDeathCount
+			+ ", lastReportedDistrictName=" + lastReportedDistrictName + ", caseClassification=" + caseClassification + ", cfr=" + cfr
+			+ ", lastReportedDistrict=" + lastReportedDistrict + ", outbreakDistrict=" + outbreakDistrict + ", deaths=" + deaths + ", region="
+			+ region + ", recovered=" + recovered + ", activeCases=" + activeCases + ", toDate=" + toDate + ", fromDate=" + fromDate + "]";
 	}
 }
