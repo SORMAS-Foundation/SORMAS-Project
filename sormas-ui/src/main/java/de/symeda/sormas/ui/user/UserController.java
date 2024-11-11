@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -59,10 +56,8 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -70,6 +65,10 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 
 public class UserController {
 
