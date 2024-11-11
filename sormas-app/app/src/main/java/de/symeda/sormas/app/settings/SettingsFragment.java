@@ -64,6 +64,7 @@ import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.login.ChangePasswordActivity;
+import de.symeda.sormas.api.feature.FeatureType;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
