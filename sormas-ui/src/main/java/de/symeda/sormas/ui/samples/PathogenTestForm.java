@@ -253,7 +253,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		typingIdField.setVisible(false);
 
 		// Tested Desease or Tested Pathogen, depending on sample type
-		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create);
+		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create, false);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);

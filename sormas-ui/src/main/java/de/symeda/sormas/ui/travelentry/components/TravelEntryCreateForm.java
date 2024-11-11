@@ -113,7 +113,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true);
+		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true, false);
 		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
