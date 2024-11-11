@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.utils;
 
+import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -221,6 +223,11 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 
 		diseaseField = addField(fieldId, ComboBox.class);
 		this.setServerDiseaseAsDefault = setServerDiseaseAsDefault;
+
+		if (hideFollowUpDisabledDiseases) {
+			removeFollowUpDisabledDiseases(diseaseField);
+		}
+
 		if (showNonPrimaryDiseases) {
 			addNonPrimaryDiseasesTo(diseaseField);
 		}
@@ -234,14 +241,9 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			Object value = e.getProperty().getValue();
 			if (value != null && !diseaseField.containsId(value)) {
 				Item newItem = diseaseField.addItem(value);
-				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
+				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
 		});
-
-		//
-		if (hideFollowUpDisabledDiseases) {
-			removeFollowUpDisabledDiseases(diseaseField);
-		}
 
 		return diseaseField;
 	}
@@ -509,17 +511,16 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			}
 
 			Item newItem = diseaseField.addItem(disease);
-			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
+			newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(disease.toString());
 		}
 	}
 
 	protected void removeFollowUpDisabledDiseases(ComboBox diseaseField) {
-		List<Disease> allActiveDiseases = FacadeProvider.getDiseaseConfigurationFacade().getAllActiveDiseases();
-
-		for (Disease disease : allActiveDiseases) {
-			if (diseaseField.getItem(disease) != null && !disease.isDefaultFollowUpEnabled()) {
-				diseaseField.removeItem(disease);
-			}
+		List<Disease> allDiseasesWithFollowUp = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp(true, true, true);
+		diseaseField.removeAllItems();
+		for (Object r : allDiseasesWithFollowUp) {
+			Item newItem = diseaseField.addItem(r);
+			newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
 		}
 	}
 
