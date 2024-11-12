@@ -52,12 +52,22 @@ public interface UserFacade {
 
 	String resetPassword(String uuid);
 
+	String updateUserPassword(String uuid, String newPassword);
+
+	boolean validateCurrentPassword(String password);
+
+	String checkPasswordStrength(String password);
+
+	boolean isPasswordWeak(String password);
+
+	String generatePassword();
+
 	List<UserDto> getAllAfter(Date date);
 
 	UserDto getByUserName(String userName);
 
 	/**
-	 * 
+	 *
 	 * @param regionRef
 	 *            reference of the region to be filtered for. When this region is null, it is not filtered in this regard.
 	 *            NOTE: some users don't have a region (often users with NATIONAL_USER role, for example). They will
@@ -79,7 +89,7 @@ public interface UserFacade {
 	long count(UserCriteria userCriteria);
 
 	/**
-	 * 
+	 *
 	 * @param district
 	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
 	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
@@ -93,7 +103,7 @@ public interface UserFacade {
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, Disease limitedDisease, UserRight... userRights);
 
 	/**
-	 * 
+	 *
 	 * @param district
 	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
 	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
@@ -160,7 +170,7 @@ public interface UserFacade {
 	/**
 	 * Retrieves the user rights of the user specified by the passed UUID, or those of the current user if no UUID is specified.
 	 * Requesting the user rights of another user without the rights to view users and user roles results in an AccessDeniedException.
-	 * 
+	 *
 	 * @param userUuid
 	 *            The UUID of the user to request the user rights for
 	 * @return A set containing the user rights associated to all user roles assigned to the user

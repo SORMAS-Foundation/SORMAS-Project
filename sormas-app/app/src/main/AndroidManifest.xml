@@ -13,6 +13,7 @@
     <uses-feature android:name="android.hardware.location.gps" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".SormasApplication"
@@ -489,6 +490,13 @@
 
         <activity
             android:name=".barcode.BarcodeActivity" />
+
+        <activity
+                android:name=".login.ChangePasswordActivity"
+                android:launchMode="singleTop"
+                android:screenOrientation="portrait"
+                android:theme="@style/SormasTheme"
+                android:windowSoftInputMode="stateHidden" />
 
         <receiver
             android:name=".SormasBootstrap"
