@@ -69,7 +69,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 	}
 
 	private void addDiseaseBurdenView() {
-		diseaseOverviewComponent = new DiseaseOverviewComponent();
+		diseaseOverviewComponent = new DiseaseOverviewComponent(dashboardDataProvider);
 		addComponent(diseaseOverviewComponent, BURDEN_LOC);
 
 		if (UiUtil.hasRegionJurisdictionLevel())

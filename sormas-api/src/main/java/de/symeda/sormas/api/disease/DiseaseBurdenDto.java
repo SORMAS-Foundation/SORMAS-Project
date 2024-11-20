@@ -20,6 +20,9 @@ package de.symeda.sormas.api.disease;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import java.util.Date;
 
 public class DiseaseBurdenDto implements Serializable {
 
@@ -38,13 +41,131 @@ public class DiseaseBurdenDto implements Serializable {
 	public static final String CASE_FATALITY_RATE = "caseFatalityRate";
 	public static final String LAST_REPORTED_DISTRICT_NAME = "lastReportedDistrictName";
 
+	//Regional specific Disease Details
+	public static final String CASES_TOTAL = "total";
+	public static final String CASES_COUNT_TOTAL = "totalCount";
+
+	public static final String CASES_REGION = "region";
+	public static final String CASES_DISTRICT = "district";
+
+	public static final String ACTIVE_CASE = "activeCases";
+	public static final String ACTIVE_COUNT_CASE = "activeCount";
+
+	public static final String RECOVERED_CASES = "recovered";
+	public static final String RECOVERED_COUNT_CASES = "recoveredCount";
+
+	public static final String DEATH = "deaths";
+	public static final String DEATH_COUNT = "deathsCount";
+
+	public static final String OTHER = "other";
+	public static final String OTHER_COUNT = "otherCount";
+
 	private Disease disease;
+	private String total;
+	private String totalCount;
+
 	private Long caseCount;
 	private Long previousCaseCount;
 	private Long eventCount;
 	private Long outbreakDistrictCount;
 	private Long caseDeathCount;
 	private String lastReportedDistrictName;
+	private CaseClassification caseClassification;
+
+	private Integer cfr;
+	private String lastReportedDistrict;
+	private String outbreakDistrict;
+
+	private String deaths;
+	private String deathsCount;
+
+	private RegionDto region;
+
+	private String recovered;
+	private String recoveredCount;
+
+	private String activeCases;
+	private String activeCount;
+
+	private String other;
+	private String otherCount;
+
+	private Date toDate;
+	private Date fromDate;
+
+	public DiseaseBurdenDto(RegionDto regionDto, String total, String activeCases, String recovered, String deaths, String other) {
+
+		this.region = regionDto;
+		this.total = total;
+		this.activeCases = activeCases;
+		this.recovered = recovered;
+		this.deaths = deaths;
+		this.other = other;
+	}
+
+	public DiseaseBurdenDto(
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName,
+		String outbreakDistrict) {
+
+		this.disease = disease;
+		this.caseCount = caseCount;
+		this.previousCaseCount = previousCaseCount;
+		this.eventCount = eventCount;
+		this.outbreakDistrictCount = outbreakDistrictCount;
+		this.caseDeathCount = caseDeathCount;
+		this.lastReportedDistrictName = lastReportedDistrictName;
+		this.outbreakDistrict = outbreakDistrict;
+	}
+
+	public DiseaseBurdenDto(
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName,
+		String outbreakDistrict,
+		Date from,
+		Date to) {
+
+		this.disease = disease;
+		this.caseCount = caseCount;
+		this.previousCaseCount = previousCaseCount;
+		this.eventCount = eventCount;
+		this.outbreakDistrictCount = outbreakDistrictCount;
+		this.caseDeathCount = caseDeathCount;
+		this.lastReportedDistrictName = lastReportedDistrictName;
+		this.outbreakDistrict = outbreakDistrict;
+		this.fromDate = from;
+		this.toDate = to;
+	}
+
+	public DiseaseBurdenDto(
+		Disease disease,
+		Long caseCount,
+		Long previousCaseCount,
+		Long eventCount,
+		Long outbreakDistrictCount,
+		Long caseDeathCount,
+		String lastReportedDistrictName,
+		CaseClassification caseClassification) {
+
+		this.disease = disease;
+		this.caseCount = caseCount;
+		this.previousCaseCount = previousCaseCount;
+		this.eventCount = eventCount;
+		this.outbreakDistrictCount = outbreakDistrictCount;
+		this.caseDeathCount = caseDeathCount;
+		this.lastReportedDistrictName = lastReportedDistrictName;
+		this.caseClassification = caseClassification;
+	}
 
 	public DiseaseBurdenDto(
 		Disease disease,
@@ -64,12 +185,31 @@ public class DiseaseBurdenDto implements Serializable {
 		this.lastReportedDistrictName = lastReportedDistrictName;
 	}
 
+	public DiseaseBurdenDto(RegionDto regionDto, String total, String activeCases, String recovered, String deaths) {
+
+		this.region = regionDto;
+		this.total = total;
+		this.activeCases = activeCases;
+		this.recovered = recovered;
+		this.deaths = deaths;
+	}
+
 	public Disease getDisease() {
 		return disease;
 	}
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public CaseClassification getCaseClassification() {
+
+		return caseClassification;
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+
+		this.caseClassification = caseClassification;
 	}
 
 	public Long getCaseCount() {
@@ -146,5 +286,170 @@ public class DiseaseBurdenDto implements Serializable {
 
 	public Boolean hasCount() {
 		return (caseCount + previousCaseCount + eventCount + outbreakDistrictCount) > 0;
+	}
+
+	public Integer getCfr() {
+
+		return cfr;
+	}
+
+	public void setCfr(Integer cfr) {
+
+		this.cfr = cfr;
+	}
+
+	public String getLastReportedDistrict() {
+
+		return lastReportedDistrict;
+	}
+
+	public void setLastReportedDistrict(String lastReportedDistrict) {
+
+		this.lastReportedDistrict = lastReportedDistrict;
+	}
+
+	public String getOutbreakDistrict() {
+		return outbreakDistrict;
+	}
+
+	public void setOutbreakDistrict(String outbreakDistrict) {
+
+		this.outbreakDistrict = outbreakDistrict;
+	}
+
+	public String getDeaths() {
+		return deaths;
+	}
+
+	public void setDeaths(String deaths) {
+
+		this.deaths = deaths;
+	}
+
+	public RegionDto getRegion() {
+
+		return region;
+	}
+
+	public void setRegion(RegionDto region) {
+
+		this.region = region;
+	}
+
+	public String getRecovered() {
+		return recovered;
+	}
+
+	public void setRecovered(String recovered) {
+
+		this.recovered = recovered;
+	}
+
+	public String getActiveCases() {
+
+		return activeCases;
+	}
+
+	public void setActiveCases(String activeCases) {
+
+		this.activeCases = activeCases;
+	}
+
+	public String getTotal() {
+
+		return total;
+	}
+
+	public void setTotal(String total) {
+
+		this.total = total;
+	}
+
+	public Date getToDate() {
+
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+
+		this.toDate = toDate;
+	}
+
+	public Date getFromDate() {
+
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+
+		this.fromDate = fromDate;
+	}
+
+	public String getTotalCount() {
+
+		return totalCount;
+	}
+
+	public void setTotalCount(String totalCount) {
+
+		this.totalCount = totalCount;
+	}
+
+	public String getDeathsCount() {
+
+		return deathsCount;
+	}
+
+	public void setDeathsCount(String deathsCount) {
+
+		this.deathsCount = deathsCount;
+	}
+
+	public String getRecoveredCount() {
+
+		return recoveredCount;
+	}
+
+	public void setRecoveredCount(String recoveredCount) {
+		this.recoveredCount = recoveredCount;
+	}
+
+	public String getActiveCount() {
+
+		return activeCount;
+	}
+
+	public void setActiveCount(String activeCount) {
+
+		this.activeCount = activeCount;
+	}
+
+	public String getOther() {
+
+		return other;
+	}
+
+	public void setOther(String other) {
+
+		this.other = other;
+	}
+
+	public String getOtherCount() {
+
+		return otherCount;
+	}
+
+	public void setOtherCount(String otherCount) {
+
+		this.otherCount = otherCount;
+	}
+
+	@Override
+	public String toString() {
+		return "DiseaseBurdenDto [disease=" + disease + ", total=" + total + ", caseCount=" + caseCount + ", previousCaseCount=" + previousCaseCount
+			+ ", eventCount=" + eventCount + ", outbreakDistrictCount=" + outbreakDistrictCount + ", caseDeathCount=" + caseDeathCount
+			+ ", lastReportedDistrictName=" + lastReportedDistrictName + ", caseClassification=" + caseClassification + ", cfr=" + cfr
+			+ ", lastReportedDistrict=" + lastReportedDistrict + ", outbreakDistrict=" + outbreakDistrict + ", deaths=" + deaths + ", region="
+			+ region + ", recovered=" + recovered + ", activeCases=" + activeCases + ", toDate=" + toDate + ", fromDate=" + fromDate + "]";
 	}
 }

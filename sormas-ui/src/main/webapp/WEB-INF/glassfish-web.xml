@@ -622,7 +622,12 @@
 
     <security-role-mapping>
         <role-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</role-name>
-        <group-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</group-name>
+        <group-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VI+EW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DISEASE_DETAILS_VIEW</role-name>
+        <group-name>DISEASE_DETAILS_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

@@ -67,6 +67,11 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import java.util.Objects;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 
 @Stateless(name = "DashboardFacade")
 public class DashboardFacadeEjb implements DashboardFacade {
@@ -94,6 +99,12 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	@EJB
 	private DashboardService dashboardService;
+
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+
+	@EJB
+	private RegionFacadeEjb.RegionFacadeEjbLocal regionFacade;
 
 	@Override
 	@RightsAllowed({
@@ -793,6 +804,131 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		}).collect(Collectors.toList());
 
 		return diseasesBurden;
+	}
+
+	@Override
+	@RightsAllowed({UserRight._DISEASE_DETAILS_VIEW})
+	public DiseaseBurdenDto getDiseaseForDashboard(
+			RegionReferenceDto region,
+			DistrictReferenceDto district,
+			Disease disease,
+			Date fromDate,
+			Date toDate,
+			Date previousFrom,
+			Date previousTo,
+			CriteriaDateType newCaseDateType,
+			CaseClassification caseClassification) {
+
+		DashboardCriteria dashboardCriteria =
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
+
+		Map<Disease, Long> newCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
+
+		Map<Disease, Long> events = eventFacade
+				.getEventCountByDisease(new EventCriteria().region(region).district(district).eventDateType(null).eventDateBetween(fromDate, toDate));
+
+		//outbreaks
+		Map<Disease, Long> outbreakDistrictsCount;
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.OUTBREAKS)) {
+			outbreakDistrictsCount = outbreakFacade
+					.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(region).district(district).reportedBetween(fromDate, toDate));
+		} else {
+			outbreakDistrictsCount = new HashMap<>();
+		}
+		//outbreaks
+		Map<Disease, District> outbreakDistricts = outbreakFacade
+				.getOutbreakDistrictNameByDisease(new OutbreakCriteria().disease(disease).region(region).district(district).reportedBetween(fromDate, toDate));
+
+		//last report district
+		Map<Disease, District> lastReportedDistricts = dashboardService.getLastReportedDistrictByDisease(dashboardCriteria);
+
+		//case fatalities
+		Map<Disease, Long> caseFatalities = dashboardService.getDeathCountByDisease(dashboardCriteria);
+
+		//previous cases
+		dashboardCriteria.dateBetween(previousFrom, previousTo);
+		Map<Disease, Long> previousCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
+
+		//build diseasesBurden
+		Long caseCount = newCases.getOrDefault(disease, 0L);
+		Long previousCaseCount = previousCases.getOrDefault(disease, 0L);
+		Long eventCount = events.getOrDefault(disease, 0L);
+		Long outbreakDistrictCount = outbreakDistrictsCount.getOrDefault(disease, 0L);
+		Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
+		District lastReportedDistrict = lastReportedDistricts.getOrDefault(disease, null);
+		District outbreakDistrict = outbreakDistricts.getOrDefault(disease, null);
+
+		String lastReportedDistrictName = lastReportedDistrict == null ? "" : lastReportedDistrict.getName();
+		String outbreakDistrictName = outbreakDistrict == null ? "" : outbreakDistrict.getName();
+
+		return new DiseaseBurdenDto(
+				disease,
+				caseCount,
+				previousCaseCount,
+				eventCount,
+				outbreakDistrictCount,
+				caseFatalityCount,
+				lastReportedDistrictName,
+				outbreakDistrictName,
+				fromDate,
+				toDate
+		);
+	}
+
+	@Override
+	@RightsAllowed({
+			UserRight._DISEASE_DETAILS_VIEW})
+	public DiseaseBurdenDto getDiseaseGridForDashboard(
+			RegionReferenceDto region,
+			DistrictReferenceDto district,
+			Disease disease,
+			Date fromDate,
+			Date toDate,
+			Date previousFrom,
+			Date previousTo,
+			CriteriaDateType newCaseDateType,
+			CaseClassification caseClassification) {
+
+		//Get the region
+		RegionDto regionDto = null;
+		if(Objects.nonNull(region)){
+			regionDto = regionFacade.getByUuid(region.getUuid());
+		}
+
+		//new cases
+		DashboardCriteria dashboardCriteria =
+				new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
+
+		//Load count all dead/ fatalities
+		Map<Disease, Long> allCasesFetched = dashboardService.getCaseCountByDisease(dashboardCriteria);
+
+
+		Map<Disease, Long> caseFatalities = dashboardService.getDeathCountByDisease(dashboardCriteria);
+
+		dashboardCriteria.setOutcome(CaseOutcome.NO_OUTCOME);
+		Map<Disease, Long> archievedCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
+
+		dashboardCriteria.setOutcome(CaseOutcome.RECOVERED);
+		Map<Disease, Long> recoveredCase = dashboardService.getCaseCountByDisease(dashboardCriteria);
+
+		dashboardCriteria.setOutcome(CaseOutcome.UNKNOWN);
+		Map<Disease, Long> unknown = dashboardService.getCaseCountByDisease(dashboardCriteria);
+
+		//build diseasesBurden
+		Long totalCaseCount = allCasesFetched.getOrDefault(disease, 0L);
+		Long activeCaseCount = archievedCase.getOrDefault(disease, 0L);
+		Long recoveredCaseCount = recoveredCase.getOrDefault(disease, 0L);
+		Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
+		Long unknownCaseCount = unknown.getOrDefault(disease, 0L);
+
+		return new DiseaseBurdenDto(
+				regionDto,
+				totalCaseCount.toString(),
+				activeCaseCount.toString(),
+				recoveredCaseCount.toString(),
+				caseFatalityCount.toString(),
+				unknownCaseCount.toString()
+		);
 	}
 
 	@LocalBean

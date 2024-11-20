@@ -9,50 +9,24 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.user;
+package de.symeda.sormas.ui.dashboard.map;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum UserRightGroup {
+public enum MapCasePeriodOption {
 
-	GENERAL,
-	DATA_PROTECTION,
-	DASHBOARD,
-	TASK,
-	PERSON,
-	CASE,
-	CASE_MANAGEMENT,
-	PORT_HEALTH,
-	AGGREGATED_REPORTING,
-	CONTACT,
-	VISIT,
-	EVENT,
-	SAMPLE,
-	IMMUNIZATION,
-	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION,
-	TRAVEL_ENTRY,
-	CAMPAIGN,
-	ENVIRONMENT,
-	SELF_REPORT,
-	STATISTICS,
-	USER,
-	INFRASTRUCTURE,
-	DOCUMENT,
-	EXTERNAL_EMAILS,
+    NEW_CASES,
+    CASES_INCIDENCE;
 
-	EXPORT,
-	CONFIGURATION,
-	EXTERNAL,
-	DISEASE_DETAILS_VIEW;
+    @Override
+    public String toString() {
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+        return I18nProperties.getEnumCaption(this);
+    }
 }

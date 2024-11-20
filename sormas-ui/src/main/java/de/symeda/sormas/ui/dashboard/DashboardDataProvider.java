@@ -40,6 +40,7 @@ import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
 
 // FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
 public class DashboardDataProvider extends AbstractDashboardDataProvider<DashboardCriteria> {
@@ -71,6 +72,9 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
 	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
+	private DiseaseBurdenDto diseaseBurdenDetail;
+	private CaseClassification caseClassification;
+	private NewDateFilterType dateFilterType;
 
 	public void refreshData() {
 
@@ -85,7 +89,22 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 	@Override
 	protected DashboardCriteria newCriteria() {
-		return new DashboardCriteria();
+		return new DashboardCriteria().setDateTypeClass(newCaseDateType);
+	}
+
+	public void refreshDiseaseData() {
+
+		DiseaseBurdenDto dbd= FacadeProvider.getDashboardFacade().getDiseaseForDashboard(region, district, disease, fromDate, toDate, previousFromDate, previousToDate
+				,newCaseDateType
+				,caseClassification);
+
+		setDiseaseBurdenDetail(dbd);
+		Long countOfOutbreakDistricts = 	FacadeProvider.getOutbreakFacade()
+				.getOutbreakDistrictCount(
+						new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate).caseClassification(caseClassification));
+		setOutbreakDistrictCount(countOfOutbreakDistricts);
+
+		this.refreshDataForSelectedDisease();
 	}
 
 	private void refreshDataForQuarantinedContacts() {
@@ -209,7 +228,7 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria));
 		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventDashboardCriteria));
 
-		setOutbreakDistrictCount(
+	setOutbreakDistrictCount(
 			FacadeProvider.getOutbreakFacade()
 				.getOutbreakDistrictCount(
 					new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
@@ -295,6 +314,16 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 		this.diseasesBurden = diseasesBurden;
 	}
 
+	public DiseaseBurdenDto getDiseaseBurdenDetail() {
+
+		return diseaseBurdenDetail;
+	}
+
+	public void setDiseaseBurdenDetail(DiseaseBurdenDto diseaseBurdenDetail) {
+
+		this.diseaseBurdenDetail = diseaseBurdenDetail;
+	}
+
 	public Long getOutbreakDistrictCount() {
 		return outbreakDistrictCount;
 	}
@@ -376,5 +405,20 @@ public class DashboardDataProvider extends AbstractDashboardDataProvider<Dashboa
 
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
+	}
+
+	public CaseClassification getCaseClassification() {
+
+		return caseClassification;
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+
+		this.caseClassification = caseClassification;
+	}
+
+	public void setDateFilterType(NewDateFilterType dateFilterType) {
+
+		this.dateFilterType = dateFilterType;
 	}
 }

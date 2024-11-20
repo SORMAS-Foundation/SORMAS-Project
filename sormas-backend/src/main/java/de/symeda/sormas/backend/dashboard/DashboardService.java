@@ -485,6 +485,10 @@ public class DashboardService {
 				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 		}
 
+		if (dashboardCriteria.getOutcome() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), dashboardCriteria.getOutcome()));
+		}
+
 		// Exclude deleted cases. Archived cases should stay included
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
 

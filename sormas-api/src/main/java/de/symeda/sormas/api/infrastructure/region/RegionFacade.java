@@ -47,4 +47,6 @@ public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDt
 	List<String> getNamesByIds(List<Long> regionIds);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids);
+
+    List<RegionDto> getAllActiveRegions();
 }

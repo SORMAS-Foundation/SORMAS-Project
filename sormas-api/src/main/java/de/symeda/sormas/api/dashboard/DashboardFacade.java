@@ -15,6 +15,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.Disease;
 
 @Remote
 public interface DashboardFacade {
@@ -59,4 +60,28 @@ public interface DashboardFacade {
 		Date previousFromDate,
 		Date previousToDate,
 		CriteriaDateType newCaseDateType);
+
+	DiseaseBurdenDto getDiseaseForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef,
+			Disease disease,
+			Date fromDate,
+			Date toDate,
+			Date previousFromDate,
+			Date previousToDate,
+			CriteriaDateType newCaseDateType,
+			CaseClassification caseClassification
+	);
+
+	DiseaseBurdenDto getDiseaseGridForDashboard(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef,
+			Disease disease,
+			Date from,
+			Date to,
+			Date previousFromDate,
+			Date previousToDate,
+			CriteriaDateType newCaseDateType,
+			CaseClassification caseClassification
+	);
 }

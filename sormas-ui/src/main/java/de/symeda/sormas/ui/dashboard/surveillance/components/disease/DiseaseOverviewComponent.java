@@ -15,6 +15,7 @@ import de.symeda.sormas.ui.dashboard.surveillance.components.disease.burden.Dise
 import de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile.DiseaseTileViewLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 
 public class DiseaseOverviewComponent extends HorizontalLayout {
 
@@ -25,12 +26,13 @@ public class DiseaseOverviewComponent extends HorizontalLayout {
 
     private final Button showTableViewButton;
 
-    public DiseaseOverviewComponent() {
+    public DiseaseOverviewComponent(DashboardDataProvider dashboardDataProvider) {
+
         setWidth(100, Sizeable.Unit.PERCENTAGE);
         setMargin(false);
 
         diseaseBurdenComponent = new DiseaseBurdenComponent();
-        diseaseTileViewLayout = new DiseaseTileViewLayout();
+        diseaseTileViewLayout = new DiseaseTileViewLayout(dashboardDataProvider);
 
         addComponent(diseaseTileViewLayout);
         setExpandRatio(diseaseTileViewLayout, 1);

@@ -43,6 +43,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import de.symeda.sormas.backend.infrastructure.district.District;
 
 @Stateless(name = "OutbreakFacade")
 @RightsAllowed(UserRight._OUTBREAK_VIEW)
@@ -210,6 +211,14 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		User user = userService.getCurrentUser();
 
 		return outbreakService.getOutbreakDistrictCount(criteria, user);
+	}
+
+	@RightsAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
+	public Map<Disease, District> getOutbreakDistrictNameByDisease(OutbreakCriteria criteria) {
+
+		return outbreakService.getOutbreakDistrictNameByDisease(criteria);
 	}
 
 	@LocalBean

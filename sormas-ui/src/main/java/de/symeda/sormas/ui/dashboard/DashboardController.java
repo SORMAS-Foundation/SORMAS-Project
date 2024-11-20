@@ -28,6 +28,18 @@ import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
+import java.util.TimeZone;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.dashboard.NewDateFilterType;
+import de.symeda.sormas.ui.dashboard.diseasedetails.DiseaseDetailsView;
+import de.symeda.sormas.ui.SormasUI;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 public class DashboardController {
 
@@ -50,8 +62,42 @@ public class DashboardController {
 			navigator.addView(SampleDashboardView.VIEW_NAME, SampleDashboardView.class);
 		}
 
+		if (permitted(FeatureType.DISEASE_DETAILS, UserRight.DISEASE_DETAILS_VIEW)) {
+			navigator.addView(DiseaseDetailsView.VIEW_NAME, DiseaseDetailsView.class);
+		}
+
 		if (permitted(FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT, UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW)) {
 			navigator.addView(AefiDashboardView.VIEW_NAME, AefiDashboardView.class);
 		}
+	}
+
+	public void navigateToDisease(Disease disease,DashboardDataProvider dashboardDataProvider) {
+
+		Date dateFrom = dashboardDataProvider.getFromDate();
+
+		Date dateTo = dashboardDataProvider.getToDate();
+
+		NewDateFilterType type = dashboardDataProvider.getDateFilterType();
+
+		CaseClassification caseClassification= dashboardDataProvider.getCaseClassification();
+
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); // Quoted "Z" to indicate UTC, no timezone offset
+		df.setTimeZone(tz);
+		String dateFromAsISO = df.format(dateFrom);
+		String dateToAsISO = df.format(dateTo);
+
+		NewCaseDateType newCaseDateType = dashboardDataProvider.getNewCaseDateType();
+		RegionReferenceDto region = dashboardDataProvider.getRegion();
+		String regionId = null;
+		if(Objects.nonNull(region)&&region.getUuid()!=null){
+			regionId= region.getUuid();
+		}
+		String paramData = dateFromAsISO+"/"+dateToAsISO+"/"+type+"/"+caseClassification+"/"+newCaseDateType+"/"+regionId;
+		DiseaseDetailsView.setDiseaseDetailsData(paramData);
+
+		String navigationState = DiseaseDetailsView.VIEW_NAME + "/" + disease.getName();
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+
 	}
 }

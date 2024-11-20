@@ -275,6 +275,7 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.backend.outbreak.OutbreakService;
 
 @ExtendWith(CdiTestJunitExtension.class)
 @ExtendWith(MockitoExtension.class)
@@ -655,6 +656,11 @@ public abstract class AbstractBeanTest {
 
 	public OutbreakFacade getOutbreakFacade() {
 		return getBean(OutbreakFacadeEjbLocal.class);
+	}
+
+	public OutbreakService getOutbreakService() {
+
+		return getBean(OutbreakService.class);
 	}
 
 	public ImportFacade getImportFacade() {

@@ -643,6 +643,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>DISEASE_DETAILS_VIEW</role-name>
+        <group-name>DISEASE_DETAILS_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CASE_CLINICIAN_VIEW</role-name>
         <group-name>CASE_CLINICIAN_VIEW</group-name>
     </security-role-mapping>

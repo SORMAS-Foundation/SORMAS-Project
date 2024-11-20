@@ -15,44 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.user;
+package de.symeda.sormas.api.dashboard;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-
-public enum UserRightGroup {
-
-	GENERAL,
-	DATA_PROTECTION,
-	DASHBOARD,
-	TASK,
-	PERSON,
-	CASE,
-	CASE_MANAGEMENT,
-	PORT_HEALTH,
-	AGGREGATED_REPORTING,
-	CONTACT,
-	VISIT,
-	EVENT,
-	SAMPLE,
-	IMMUNIZATION,
-	ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION,
-	TRAVEL_ENTRY,
-	CAMPAIGN,
-	ENVIRONMENT,
-	SELF_REPORT,
-	STATISTICS,
-	USER,
-	INFRASTRUCTURE,
-	DOCUMENT,
-	EXTERNAL_EMAILS,
-
-	EXPORT,
-	CONFIGURATION,
-	EXTERNAL,
-	DISEASE_DETAILS_VIEW;
-
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+public enum NewDateFilterType {
+    TODAY,
+    YESTERDAY,
+    THIS_WEEK,
+    LAST_WEEK,
+    THIS_YEAR,
+    CUSTOM;
 }
