@@ -282,6 +282,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
 		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -550,6 +551,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 		facilityCombo.addItem(noFacilityRef);
 		facilityCombo.setValue(noFacilityRef);
+		facilityType.setRequired(false);
 	}
 
 	private void updateFacility() {
