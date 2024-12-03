@@ -31,6 +31,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.vaadin.ui.Window;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
@@ -111,6 +113,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private NullableOptionGroup ogCaseOrigin;
 
 	private PersonCreateForm personCreateForm;
+	private Window warningSimilarPersons;
 
 	private final boolean showHomeAddressForm;
 	private final boolean showPersonSearchButton;
@@ -208,6 +211,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
+
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
 
 		// Jurisdiction fields
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
@@ -729,5 +737,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
 		personCreateForm.setSearchedPerson(searchedPerson);
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 }

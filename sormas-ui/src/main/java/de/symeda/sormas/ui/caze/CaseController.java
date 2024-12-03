@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -130,6 +131,8 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
+import de.symeda.sormas.ui.person.PersonFormHelper;
+import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -150,6 +153,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class CaseController {
+
+	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent;
 
 	public CaseController() {
 
@@ -187,7 +192,7 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null, null, false);
+		caseCreateComponent = getCaseCreateComponent(null, null, null, null, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -740,6 +745,12 @@ public class CaseController {
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
 
+//					if (StringUtils.isNotEmpty(person.getNationalHealthId())) {
+//						PersonFormHelper.warningSimilarPersons(person.getNationalHealthId(), null, () -> {
+//							transferDataToPerson(createForm, person);
+//							FacadeProvider.getPersonFacade().save(person);
+//						});
+//					}
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().save(person);
 
@@ -835,18 +846,60 @@ public class CaseController {
 					} else {
 						// look for potential duplicate
 						final PersonDto duplicatePerson = PersonDto.build();
-						transferDataToPerson(createForm, duplicatePerson);
-						ControllerProvider.getPersonController()
-							.selectOrCreatePerson(
-								duplicatePerson,
-								I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
-								selectedPerson -> {
-									if (selectedPerson != null) {
-										dto.setPerson(selectedPerson);
-										selectOrCreateCase(createForm, dto, selectedPerson);
-									}
-								},
-								true);
+
+						if (createForm.getWarningSimilarPersons() != null) {
+							CommitDiscardWrapperComponent<PersonSelectionGrid> warningPopUpDuplicatePerson =
+								(CommitDiscardWrapperComponent<PersonSelectionGrid>) editView.getWrappedComponent()
+									.getWarningSimilarPersons()
+									.getContent();
+
+							warningPopUpDuplicatePerson.getDiscardButton().setVisible(true);
+							warningPopUpDuplicatePerson.getCommitButton().setCaption("Continue to save");
+							warningPopUpDuplicatePerson.addDoneListener(()-> {
+								VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+							});
+							warningPopUpDuplicatePerson.addCommitListener(() -> {
+
+								transferDataToPerson(createForm, duplicatePerson);
+								ControllerProvider.getPersonController()
+									.selectOrCreatePerson(
+										duplicatePerson,
+										I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+										selectedPerson -> {
+											if (selectedPerson != null) {
+												dto.setPerson(selectedPerson);
+												selectOrCreateCase(createForm, dto, selectedPerson);
+											}
+										},
+										true);
+							});
+						} else {
+							transferDataToPerson(createForm, duplicatePerson);
+							ControllerProvider.getPersonController()
+								.selectOrCreatePerson(
+									duplicatePerson,
+									I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+									selectedPerson -> {
+										if (selectedPerson != null) {
+											dto.setPerson(selectedPerson);
+											selectOrCreateCase(createForm, dto, selectedPerson);
+										}
+									},
+									true);
+
+						}
+//						transferDataToPerson(createForm, duplicatePerson);
+//						ControllerProvider.getPersonController()
+//							.selectOrCreatePerson(
+//								duplicatePerson,
+//								I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+//								selectedPerson -> {
+//									if (selectedPerson != null) {
+//										dto.setPerson(selectedPerson);
+//										selectOrCreateCase(createForm, dto, selectedPerson);
+//									}
+//								},
+//								true);
 					}
 				}
 			}

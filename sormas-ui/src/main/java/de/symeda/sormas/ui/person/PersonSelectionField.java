@@ -269,7 +269,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	 * Load a grid of all persons similar to the given reference person.
 	 */
 	protected void initializeGrid() {
-		defaultCriteria = PersonSimilarityCriteria.forPerson(referencePerson, true);
+		defaultCriteria = PersonSimilarityCriteria.forPerson(referencePerson, true, false);
 		personGrid = new PersonSelectionGrid();
 
 		personGrid.addSelectionListener(e -> {

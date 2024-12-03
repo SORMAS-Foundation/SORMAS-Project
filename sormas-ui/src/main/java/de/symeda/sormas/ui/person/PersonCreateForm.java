@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Window;
+import de.symeda.sormas.ui.utils.components.TextFieldCustom;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -86,6 +88,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private final boolean showPresentCondition;
 	private final boolean showSymptomsOnsetDate;
 	private final boolean showPersonSearchButton;
+	private TextFieldCustom nationalHealthIdField;
+	private Window warningSimilarPersons;
 
 	private static final String HTML_LAYOUT =
 		"%s" + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
@@ -186,7 +190,12 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
 
 		addField(PersonDto.PASSPORT_NUMBER, TextField.class);
-		addField(PersonDto.NATIONAL_HEALTH_ID, TextField.class);
+
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, TextFieldCustom.class);
+//		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
+//			warningSimilarPersons =
+//				PersonFormHelper.warningSimilarPersons(nationalHealthIdField.getValue(), null, () -> getContent());
+//		});
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);
@@ -497,5 +506,13 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
 		this.person = searchedPerson;
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
+	}
+
+	public TextFieldCustom getNationalHealthIdField() {
+		return nationalHealthIdField;
 	}
 }

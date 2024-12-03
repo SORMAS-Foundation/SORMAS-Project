@@ -33,8 +33,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.vaadin.shared.Registration;
+import com.vaadin.ui.Window;
+import de.symeda.sormas.ui.utils.components.TextFieldCustom;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ErrorLevel;
@@ -184,6 +188,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private boolean isPseudonymized;
 	private LocationEditForm addressForm;
 	private PresentConditionChangeListener presentConditionChangeListener;
+	private TextFieldCustom nationalHealthIdField;
+	private Window warningSimilarPersons;
 	//@formatter:on
 
 	public PersonEditForm(
@@ -367,7 +373,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		addField(PersonDto.PASSPORT_NUMBER);
 
-		TextField nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID);
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, TextFieldCustom.class);
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
 		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		nationalHealthIdWarningLabel.setVisible(false);
@@ -382,6 +388,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 		addField(PersonDto.INTERNAL_TOKEN);
+
+		AtomicBoolean nationalHealthIdFirstLoading = new AtomicBoolean(true);
+		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
+			String currentPersonUuid = this.getValue().getUuid();
+			if (nationalHealthIdFirstLoading.get()) {
+				nationalHealthIdFirstLoading.set(false);
+			} else {
+				warningSimilarPersons =
+					PersonFormHelper.warningSimilarPersons(nationalHealthIdField.getValue(), currentPersonUuid, () -> warningSimilarPersons = null);
+			}
+		});
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -903,6 +920,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	public Field getLastNameField() {
 		return lastNameField;
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 
 	@Override

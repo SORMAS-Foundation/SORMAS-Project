@@ -825,6 +825,7 @@ public interface Strings {
 	String headingShowExternalMessage = "headingShowExternalMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSimilarImmunization = "headingSimilarImmunization";
+	String headingSimilarPerson = "headingSimilarPerson";
 	String headingSomeCasesAlreadyInEvent = "headingSomeCasesAlreadyInEvent";
 	String headingSomeCasesNotRestored = "headingSomeCasesNotRestored";
 	String headingSomeContactsAlreadyInEvent = "headingSomeContactsAlreadyInEvent";

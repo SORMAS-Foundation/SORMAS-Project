@@ -20,6 +20,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private String passportNumber;
 	private String nationalHealthId;
 	private String nameUuidExternalIdExternalTokenLike;
+	private boolean checkOnlyForNationalHealthId;
 	/**
 	 * If true, compare the name of the person only to the first and last name fields of the database; if false, compare the
 	 * name of the person to other fields like UUID and external ID as well.
@@ -106,6 +107,14 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 		return this;
 	}
 
+	public boolean isCheckOnlyForNationalHealthId() {
+		return checkOnlyForNationalHealthId;
+	}
+
+	public void setCheckOnlyForNationalHealthId(boolean checkOnlyForNationalHealthId) {
+		this.checkOnlyForNationalHealthId = checkOnlyForNationalHealthId;
+	}
+
 	public String getNameUuidExternalIdExternalTokenLike() {
 		return nameUuidExternalIdExternalTokenLike;
 	}
@@ -140,7 +149,11 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	}
 
 	public static PersonSimilarityCriteria forPerson(PersonDto person) {
-		return forPerson(person, false);
+		return forPerson(person, false, false);
+	}
+
+	public static PersonSimilarityCriteria forPerson(PersonDto person, boolean checkOnlyForNationalHealthId){
+		return forPerson(person, false, checkOnlyForNationalHealthId);
 	}
 
 	/**
@@ -148,7 +161,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	 *            If true, compares the name of the person only to the first and last name fields of the database; if false, compares the
 	 *            name of the person to other fields like UUID and external ID as well.
 	 */
-	public static PersonSimilarityCriteria forPerson(PersonDto person, boolean strictNameComparison) {
+	public static PersonSimilarityCriteria forPerson(PersonDto person, boolean strictNameComparison, boolean checkOnlyForNationalHealthId) {
 
 		PersonSimilarityCriteria personSimilarityCriteria = new PersonSimilarityCriteria().sex(person.getSex())
 			.birthdateDD(person.getBirthdateDD())
@@ -156,6 +169,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 			.birthdateYYYY(person.getBirthdateYYYY())
 			.passportNumber(person.getPassportNumber())
 			.nationalHealthId(person.getNationalHealthId());
+		personSimilarityCriteria.setCheckOnlyForNationalHealthId(checkOnlyForNationalHealthId);
 		if (strictNameComparison) {
 			personSimilarityCriteria.firstName(person.getFirstName()).lastName(person.getLastName()).strictNameComparison(Boolean.TRUE);
 		} else {
