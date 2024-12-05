@@ -28,13 +28,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Window;
-import de.symeda.sormas.ui.utils.components.TextFieldCustom;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -67,6 +66,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.TextFieldCustom;
 
 public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
@@ -192,10 +192,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.PASSPORT_NUMBER, TextField.class);
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, TextFieldCustom.class);
-//		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
-//			warningSimilarPersons =
-//				PersonFormHelper.warningSimilarPersons(nationalHealthIdField.getValue(), null, () -> getContent());
-//		});
+		nationalHealthIdField.setNullRepresentation("");
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);

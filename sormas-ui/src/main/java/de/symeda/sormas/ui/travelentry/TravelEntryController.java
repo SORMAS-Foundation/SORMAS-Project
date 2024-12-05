@@ -20,6 +20,7 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -43,6 +45,9 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class TravelEntryController {
 
+	boolean travelEntrySaveTriggered;
+	CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent;
+
 	public void registerViews(Navigator navigator) {
 		navigator.addView(TravelEntriesView.VIEW_NAME, TravelEntriesView.class);
 		navigator.addView(TravelEntryDataView.VIEW_NAME, TravelEntryDataView.class);
@@ -50,7 +55,7 @@ public class TravelEntryController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(null, null);
+		travelEntryCreateComponent = getTravelEntryCreateComponent(null, null);
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
@@ -106,14 +111,39 @@ public class TravelEntryController {
 
 				if (dto.getPerson() == null) {
 					final PersonDto person = createForm.getPerson();
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-								FacadeProvider.getTravelEntryFacade().save(dto);
-								navigateToTravelEntry(dto.getUuid());
+					if (createForm.getWarningSimilarPersons() != null) {
+						CommitDiscardWrapperComponent<PersonSelectionGrid> warningPopUpDuplicatePerson =
+							(CommitDiscardWrapperComponent<PersonSelectionGrid>) editView.getWrappedComponent()
+								.getWarningSimilarPersons()
+								.getContent();
+						warningPopUpDuplicatePerson.getDiscardButton().setVisible(true);
+						warningPopUpDuplicatePerson.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+						warningPopUpDuplicatePerson.addDoneListener(() -> {
+							if (!travelEntrySaveTriggered) {
+								VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewImmunization));
 							}
-						}, true);
+						});
+						warningPopUpDuplicatePerson.addCommitListener(() -> {
+							travelEntrySaveTriggered = true;
+							ControllerProvider.getPersonController()
+								.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+									if (selectedPerson != null) {
+										dto.setPerson(selectedPerson);
+										FacadeProvider.getTravelEntryFacade().save(dto);
+										navigateToTravelEntry(dto.getUuid());
+									}
+								}, true);
+						});
+					} else {
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(selectedPerson);
+									FacadeProvider.getTravelEntryFacade().save(dto);
+									navigateToTravelEntry(dto.getUuid());
+								}
+							}, true);
+					}
 				} else {
 					FacadeProvider.getTravelEntryFacade().save(dto);
 					navigateToTravelEntry(dto.getUuid());

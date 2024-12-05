@@ -30,6 +30,7 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
+import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.NotificationHelper;
@@ -40,6 +41,9 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class ImmunizationController {
 
+	boolean immunizationSaveTriggered;
+	CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent;
+
 	public void registerViews(Navigator navigator) {
 		navigator.addView(ImmunizationsView.VIEW_NAME, ImmunizationsView.class);
 		navigator.addView(ImmunizationDataView.VIEW_NAME, ImmunizationDataView.class);
@@ -47,7 +51,7 @@ public class ImmunizationController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent = getImmunizationCreateComponent();
+		immunizationCreateComponent = getImmunizationCreateComponent();
 		if (immunizationCreateComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(immunizationCreateComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
@@ -81,6 +85,7 @@ public class ImmunizationController {
 				currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_CREATE),
 				createForm.getFieldGroup());
 
+			immunizationSaveTriggered = false;
 			viewComponent.addCommitListener(() -> {
 				if (!createForm.getFieldGroup().isModified()) {
 					final ImmunizationDto dto = createForm.getValue();
@@ -90,16 +95,44 @@ public class ImmunizationController {
 						selectOrCreateimmunizationForPerson(dto, searchedPerson.toReference());
 					} else {
 						final PersonDto person = createForm.getPerson();
-						ControllerProvider.getPersonController()
-							.selectOrCreatePerson(
-								person,
-								I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization),
-								selectedPerson -> {
-									if (selectedPerson != null) {
-										selectOrCreateimmunizationForPerson(dto, selectedPerson);
-									}
-								},
-								true);
+						if (createForm.getWarningSimilarPersons() != null) {
+							CommitDiscardWrapperComponent<PersonSelectionGrid> warningPopUpDuplicatePerson =
+								(CommitDiscardWrapperComponent<PersonSelectionGrid>) viewComponent.getWrappedComponent()
+									.getWarningSimilarPersons()
+									.getContent();
+							warningPopUpDuplicatePerson.getDiscardButton().setVisible(true);
+							warningPopUpDuplicatePerson.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+							warningPopUpDuplicatePerson.addDoneListener(() -> {
+								if (!immunizationSaveTriggered) {
+									VaadinUiUtil.showModalPopupWindow(viewComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
+								}
+							});
+
+							warningPopUpDuplicatePerson.addCommitListener(() -> {
+								immunizationSaveTriggered = true;
+								ControllerProvider.getPersonController()
+									.selectOrCreatePerson(
+										person,
+										I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization),
+										selectedPerson -> {
+											if (selectedPerson != null) {
+												selectOrCreateimmunizationForPerson(dto, selectedPerson);
+											}
+										},
+										true);
+							});
+						} else {
+							ControllerProvider.getPersonController()
+								.selectOrCreatePerson(
+									person,
+									I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization),
+									selectedPerson -> {
+										if (selectedPerson != null) {
+											selectOrCreateimmunizationForPerson(dto, selectedPerson);
+										}
+									},
+									true);
+						}
 					}
 				}
 			});
