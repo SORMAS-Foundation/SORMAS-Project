@@ -149,7 +149,7 @@ public class AutomaticLabMessageProcessor {
 					callback.cancel();
 				}
 			} else {
-				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true);
+				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true, false);
 				if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
 					logger.debug("[MESSAGE PROCESSING] Similar persons found in the database. Canceling processing.");
 					callback.cancel();

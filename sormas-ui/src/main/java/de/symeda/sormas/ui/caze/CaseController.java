@@ -130,6 +130,7 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.hospitalization.HospitalizationForm;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
+import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -150,6 +151,9 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class CaseController {
+
+	private CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent;
+	private boolean caseSaveTriggered;
 
 	public CaseController() {
 
@@ -187,7 +191,7 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null, null, false);
+		caseCreateComponent = getCaseCreateComponent(null, null, null, null, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -718,6 +722,7 @@ public class CaseController {
 			editView.addFieldGroups(createForm.getHomeAddressForm().getFieldGroup());
 		}
 
+		caseSaveTriggered = false;
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final CaseDataDto dto = createForm.getValue();
@@ -835,25 +840,55 @@ public class CaseController {
 					} else {
 						// look for potential duplicate
 						final PersonDto duplicatePerson = PersonDto.build();
-						transferDataToPerson(createForm, duplicatePerson);
-						ControllerProvider.getPersonController()
-							.selectOrCreatePerson(
-								duplicatePerson,
-								I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
-								selectedPerson -> {
-									if (selectedPerson != null) {
-										dto.setPerson(selectedPerson);
-										selectOrCreateCase(createForm, dto, selectedPerson);
-									}
-								},
-								true);
+
+						if (createForm.getWarningSimilarPersons() != null) {
+							CommitDiscardWrapperComponent<PersonSelectionGrid> warningPopUpDuplicatePerson =
+								(CommitDiscardWrapperComponent<PersonSelectionGrid>) editView.getWrappedComponent()
+									.getWarningSimilarPersons()
+									.getContent();
+
+							warningPopUpDuplicatePerson.getDiscardButton().setVisible(true);
+							warningPopUpDuplicatePerson.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+							warningPopUpDuplicatePerson.addDoneListener(() -> {
+								if (!caseSaveTriggered) {
+									VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+								}
+							});
+							warningPopUpDuplicatePerson.addCommitListener(() -> {
+								caseSaveTriggered = true;
+								transferDataToPerson(createForm, duplicatePerson);
+								ControllerProvider.getPersonController()
+									.selectOrCreatePerson(
+										duplicatePerson,
+										I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+										selectedPerson -> {
+											if (selectedPerson != null) {
+												dto.setPerson(selectedPerson);
+												selectOrCreateCase(createForm, dto, selectedPerson);
+											}
+										},
+										true);
+							});
+						} else {
+							transferDataToPerson(createForm, duplicatePerson);
+							ControllerProvider.getPersonController()
+								.selectOrCreatePerson(
+									duplicatePerson,
+									I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+									selectedPerson -> {
+										if (selectedPerson != null) {
+											dto.setPerson(selectedPerson);
+											selectOrCreateCase(createForm, dto, selectedPerson);
+										}
+									},
+									true);
+						}
 					}
 				}
 			}
 		});
 
 		return editView;
-
 	}
 
 	private void selectOrCreateCase(CaseCreateForm createForm, CaseDataDto dto, PersonReferenceDto selectedPerson) {

@@ -353,16 +353,16 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 				eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
 			break;
 		case IMMUNIZATION:
-				associationPredicate = CriteriaBuilderHelper.and(
-					cb,
-					immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
-					immunizationService.createDefaultFilter(cb, joins.getImmunization()));
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
+				immunizationService.createDefaultFilter(cb, joins.getImmunization()));
 			break;
 		case TRAVEL_ENTRY:
-				associationPredicate = CriteriaBuilderHelper.and(
-					cb,
-					travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
-					travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
+				travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 			break;
 		case ALL:
 		default:
@@ -408,7 +408,8 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter));
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.NATIONAL_HEALTH_ID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -924,7 +925,8 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 			}
 		}
 
-		if (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() && StringUtils.isNotBlank(criteria.getNationalHealthId())) {
+		if (StringUtils.isNotBlank(criteria.getNationalHealthId())
+			&& (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() || criteria.isCheckOnlyForNationalHealthId())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId()));
 		}
 

@@ -104,4 +104,11 @@ public class PersonSelectionGrid extends CustomizableGrid {
 		getContainer().addAll(similarPersons);
 		setHeightByRows(similarPersons.size() > 0 ? (Math.min(similarPersons.size(), 10)) : 1);
 	}
+
+	public void loadData(List<SimilarPersonDto> similarPersons) {
+		getContainer().removeAllItems();
+		getContainer().addAll(similarPersons);
+		setHeightByRows(similarPersons.size() > 0 ? (Math.min(similarPersons.size(), 10)) : 1);
+	}
+
 }

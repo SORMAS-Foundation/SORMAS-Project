@@ -924,6 +924,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getCasePerson().get(Person.NATIONAL_HEALTH_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
 					//contact
 					CriteriaBuilderHelper.ilike(cb, joins.getContact().get(Contact.UUID), textFilter),

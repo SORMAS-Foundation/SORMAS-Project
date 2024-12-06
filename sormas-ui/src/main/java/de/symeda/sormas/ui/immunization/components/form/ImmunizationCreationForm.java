@@ -27,6 +27,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Collections;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -56,6 +57,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -96,6 +98,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
+	private Window warningSimilarPersons;
 
 	public ImmunizationCreationForm() {
 		this(null, null);
@@ -191,6 +194,11 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		personCreateForm = new PersonCreateForm(false, true, false);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
+
 		diseaseField.addValueChangeListener(
 			(ValueChangeListener) valueChangeEvent -> personCreateForm
 				.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue()));
@@ -405,5 +413,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();
 		}
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 }
