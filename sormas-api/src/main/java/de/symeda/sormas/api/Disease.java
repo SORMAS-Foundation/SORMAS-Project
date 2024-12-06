@@ -69,7 +69,7 @@ public enum Disease
 	YAWS_ENDEMIC_SYPHILIS(true, false, false, true, false, 0, true, false, false),
 	MATERNAL_DEATHS(true, false, false, true, false, 0, true, false, false),
 	PERINATAL_DEATHS(true, false, false, true, false, 0, true, false, false),
-	INFLUENZA(true, true, true, true, false, 0, true, false, false),
+	INFLUENZA(true, true, true, false, false, 0, true, false, false),
 	INFLUENZA_A(false, false, true, false, false, 0, true, false, false),
 	INFLUENZA_B(false, false, true, false, false, 0, true, false, false),
 	H_METAPNEUMOVIRUS(true, false, true, false, false, 0, true, false, false),
