@@ -152,8 +152,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class CaseController {
 
-	CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent;
-	boolean caseSaveTriggered;
+	private CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent;
+	private boolean caseSaveTriggered;
 
 	public CaseController() {
 

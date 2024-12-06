@@ -66,7 +66,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.components.TextFieldCustom;
+import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
@@ -88,7 +88,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private final boolean showPresentCondition;
 	private final boolean showSymptomsOnsetDate;
 	private final boolean showPersonSearchButton;
-	private TextFieldCustom nationalHealthIdField;
+	private SormasTextField nationalHealthIdField;
 	private Window warningSimilarPersons;
 
 	private static final String HTML_LAYOUT =
@@ -191,7 +191,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 		addField(PersonDto.PASSPORT_NUMBER, TextField.class);
 
-		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, TextFieldCustom.class);
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
@@ -509,7 +509,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		return warningSimilarPersons;
 	}
 
-	public TextFieldCustom getNationalHealthIdField() {
+	public SormasTextField getNationalHealthIdField() {
 		return nationalHealthIdField;
 	}
 }

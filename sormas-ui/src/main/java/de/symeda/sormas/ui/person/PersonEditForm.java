@@ -96,7 +96,7 @@ import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
-import de.symeda.sormas.ui.utils.components.TextFieldCustom;
+import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
@@ -187,7 +187,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private boolean isPseudonymized;
 	private LocationEditForm addressForm;
 	private PresentConditionChangeListener presentConditionChangeListener;
-	private TextFieldCustom nationalHealthIdField;
+	private SormasTextField nationalHealthIdField;
 	private Window warningSimilarPersons;
 	//@formatter:on
 
@@ -372,7 +372,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		addField(PersonDto.PASSPORT_NUMBER);
 
-		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, TextFieldCustom.class);
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
 		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);

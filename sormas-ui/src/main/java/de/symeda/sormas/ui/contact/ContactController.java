@@ -111,8 +111,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 public class ContactController {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	boolean contactSaveTriggered;
-	CommitDiscardWrapperComponent<ContactCreateForm> createComponent;
+	private boolean contactSaveTriggered;
+	private CommitDiscardWrapperComponent<ContactCreateForm> createComponent;
 
 	public ContactController() {
 

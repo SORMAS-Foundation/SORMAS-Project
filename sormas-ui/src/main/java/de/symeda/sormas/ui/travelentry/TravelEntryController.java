@@ -45,8 +45,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class TravelEntryController {
 
-	boolean travelEntrySaveTriggered;
-	CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent;
+	private boolean travelEntrySaveTriggered;
+	private CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent;
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(TravelEntriesView.VIEW_NAME, TravelEntriesView.class);

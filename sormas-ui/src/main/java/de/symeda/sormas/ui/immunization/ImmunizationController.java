@@ -41,8 +41,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class ImmunizationController {
 
-	boolean immunizationSaveTriggered;
-	CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent;
+	private boolean immunizationSaveTriggered;
+	private CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent;
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(ImmunizationsView.VIEW_NAME, ImmunizationsView.class);

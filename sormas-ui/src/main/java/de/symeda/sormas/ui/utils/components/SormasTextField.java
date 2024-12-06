@@ -6,7 +6,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.TextField;
 
-public class TextFieldCustom extends TextField {
+public class SormasTextField extends TextField {
 
 	/* Value change events */
 

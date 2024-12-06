@@ -43,7 +43,7 @@ import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.utils.components.MultiSelectFiles;
-import de.symeda.sormas.ui.utils.components.TextFieldCustom;
+import de.symeda.sormas.ui.utils.components.SormasTextField;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
@@ -192,8 +192,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new CheckBoxTree<>();
 		} else if (RichTextArea.class.isAssignableFrom(fieldType)) {
 			return (T) new RichTextArea();
-		}else if (TextFieldCustom.class.isAssignableFrom(fieldType)) {
-			return (T) new TextFieldCustom();
+		}else if (SormasTextField.class.isAssignableFrom(fieldType)) {
+			return (T) new SormasTextField();
 		}
 		return super.createField(type, fieldType);
 	}

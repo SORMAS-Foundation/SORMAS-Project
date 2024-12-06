@@ -21,12 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.navigator.ViewLeaveAction;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Validator;
@@ -48,17 +45,10 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonSimilarityCriteria;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
-import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.utils.components.NotBlankTextValidator;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
@@ -623,6 +613,4 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	public void setHeading(String heading) {
 		throw new RuntimeException("setHeading should be implemented in " + getClass().getSimpleName());
 	}
-
-
 }
