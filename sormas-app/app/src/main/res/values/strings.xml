@@ -285,7 +285,7 @@
     <string name="caption_sync_pushed">%1$s/%2$s pushed</string>
     <string name="caption_sync_deleted">%1$s deleted</string>
     <string name="caption_event_search_field">ID, title, description</string>
-`
+
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
     <string name="confirmation_pick_gps">Are you in this place right now?</string>
@@ -722,5 +722,45 @@
     <string name="value_environment_name_unknown">Environment Name N/A</string>
     <string name="rapidEntry">Use rapid event participant entry</string>
     <string name="value_environment_media_unknown">Environment Media N/A</string>
+    <string name="title_activity_change_password">ChangePasswordActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="hint_enter_current_password">"Enter Current Password"</string>
+    <string name="hint_enter_new_password">"Enter New Password"</string>
+    <string name="hint_enter_confirm_new_password">"Enter Confirm Password"</string>
+    <string name="caption_enter_current_password">"Enter Current Password"</string>
+    <string name="caption_enter_new_password">"Enter new Password"</string>
+    <string name="caption_confirm_new_password">"Enter Confirm Password"</string>
+    <string name="error_current_password_empty">Current Password Cannot be Empty</string>
+    <string name="error_new_password_empty">New Password Cannot be Empty</string>
+    <string name="error_confirm_password_empty">Confirm Password Cannot be Empty</string>
+    <string name="error_current_password_incorrect">Current Password is Incorrect</string>
+    <string name="error_passwords_do_not_match">Passwords do not match</string>
+    <string name="error_title">Error</string>
+    <string name="success_title">Success</string>
+    <string name="password_change_success">User\'s password was changed successfully</string>
+    <string name="action_change_password">Change Password</string>
+    <string name="action_generate_password">Generate Password</string>
+    <string name="action_strength_password">Password Strength</string>
+    <string name="description_new_password">New Password</string>
+    <string name="description_confirm_password">Confirm Password</string>
+    <string name="heading_change_password">Change Password</string>
+    <string name="info_change_password">To change your Password you will <b>need to enter your SORMAS user password.</b></string>
+    <string name="message_password_changed">Password has been successfully changed.</string>
+    <string name="message_password_weak">Password Strength is Weak</string>
+    <string name="message_password_moderate">Password Strength is Moderate</string>
+    <string name="message_password_strong">Password Strength is strong</string>
+    <string name="message_could_not_generate_password">Could not generate password</string>
+    <string name="message_could_not_save_password">Could not save password</string>
+    <string name="additional_message_passord_weak">Password should contain some text, some numbers and should be more than 8 characters</string>
+    <string name="message_password_copied_to_clipbord">"Password copied to clipboard"</string>
+    <string name="message_password_generated">"Password Generated"</string>
+    <string name="heading_password">"Password"</string>
 
 </resources>

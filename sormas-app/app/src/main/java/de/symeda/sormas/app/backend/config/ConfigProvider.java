@@ -312,6 +312,16 @@ public final class ConfigProvider {
 		}
 	}
 
+	public static void setNewPassword(String password) {
+
+		if (password == null)
+			throw new NullPointerException("password");
+		password = instance.encodeCredential(password, "Password");
+
+		instance.password = password;
+		DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
+	}
+
 	public static void setPin(String pin) {
 		if (pin == null) {
 			throw new NullPointerException("pin");
@@ -621,7 +631,7 @@ public final class ConfigProvider {
 	/**
 	 * When no locale is set Locale.getDefault is set.
 	 * (Actually not relevant, because the locale is always updated to the server's, so this is just a fallback).
-	 * 
+	 *
 	 * @return Will never be null.
 	 */
 	public static String getServerLocale() {

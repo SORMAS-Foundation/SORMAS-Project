@@ -63,6 +63,8 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
+import de.symeda.sormas.app.login.ChangePasswordActivity;
+import de.symeda.sormas.api.feature.FeatureType;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
@@ -89,6 +91,7 @@ public class SettingsFragment extends BaseLandingFragment {
 
 		binding.settingsServerUrl.setValue(ConfigProvider.getServerRestUrl());
 		binding.changePin.setOnClickListener(v -> changePIN());
+		binding.changePassword.setOnClickListener(v -> changePassword());
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
@@ -157,6 +160,8 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.settingsServerUrlInfo.setVisibility(!hasServerUrl() ? View.VISIBLE : View.GONE);
 		binding.settingsServerUrl.setVisibility(!hasServerUrl() || isShowDevOptions() ? View.VISIBLE : View.GONE);
 		binding.changePin.setVisibility(hasUser ? View.VISIBLE : View.GONE);
+		binding.changePassword.setVisibility(
+			hasUser && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SELF_PASSWORD_RESET) ? View.VISIBLE : View.GONE);
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
@@ -181,6 +186,12 @@ public class SettingsFragment extends BaseLandingFragment {
 	public void changePIN() {
 		Intent intent = new Intent(getActivity(), EnterPinActivity.class);
 		intent.putExtra(EnterPinActivity.CALLED_FROM_SETTINGS, true);
+		startActivity(intent);
+	}
+
+	public void changePassword() {
+
+		Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
 		startActivity(intent);
 	}
 

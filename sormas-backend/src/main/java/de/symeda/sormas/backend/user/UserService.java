@@ -110,7 +110,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 
 	/**
 	 * Fetches a use from the DB by its username. The check is done case-insensitive.
-	 * 
+	 *
 	 * @param userName
 	 *            The username in any casing.
 	 * @return The corresponding User object from the DB.
@@ -188,7 +188,7 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 	 * Loads users filtered by combinable filter conditions.<br />
 	 * Condition combination if parameter is set:<br />
 	 * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
-	 * 
+	 *
 	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
 	 * @param regionUuids
 	 * @param districtUuids
@@ -650,6 +650,28 @@ public class UserService extends AdoServiceWithUserFilterAndJurisdiction<User> {
 		String password = PasswordHelper.createPass(12);
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+
+		return password;
+	}
+
+	public String generatePassword() {
+
+		return PasswordHelper.createPass(12);
+	}
+
+	public String updatePassword(String userUuid, String password) {
+
+		User user = getByUuid(userUuid);
+		if (user == null && password == null) {
+			return null;
+		}
+		if (user == null) {
+			throw new IllegalArgumentException("User not found for UUID: " + userUuid);
+		}
+		logger.info(user.getUserName());
+
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
+		ensurePersisted(user);
 
 		return password;
 	}
