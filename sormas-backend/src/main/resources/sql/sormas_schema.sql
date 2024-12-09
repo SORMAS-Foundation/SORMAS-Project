@@ -13698,4 +13698,17 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE documenttemplates_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment, upgradeneeded) VALUES (553, 'Add "Disease" Attribute to Document Templates for Filtering #13160', true);
+
+-- 2024-11-18 Add New Influenza Disease Types and Modify Display for SORMAS-LuxembourgAdd #13183
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'A', 'Type A',
+        'INFLUENZA', jsonb_build_object('hasDetails', true));
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'B', 'Type B',
+        'INFLUENZA');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'AB', 'Type A+B',
+        'INFLUENZA', jsonb_build_object('hasDetails', true));
+
+INSERT INTO schema_version (version_number, comment) VALUES (554, 'Add New Influenza Disease Types and Modify Display for SORMAS-LuxembourgAdd #13183');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
