@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
@@ -552,6 +553,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 		diseaseVariantField
 			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		if (disease == Disease.INFLUENZA) {
+			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
+			facilityOrHome.select(TypeOfPlace.HOME);
+			getValue().setCaseClassification(CaseClassification.CONFIRMED);
+		} else {
+			facilityOrHome.setValue(null);
+			facilityOrHome.unselect(TypeOfPlace.HOME);
+			getValue().setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+		}
 	}
 
 	private void setNoneFacility() {
