@@ -30,7 +30,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
@@ -282,7 +284,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
-		facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
 		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -545,13 +546,21 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 		diseaseVariantField
 			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		if (Objects.nonNull(disease) && (Disease.INFLUENZA.compareTo(disease) == 0)) {
+			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
+			facilityOrHome.select(TypeOfPlace.HOME);
+			getValue().setCaseClassification(CaseClassification.CONFIRMED);
+		} else {
+			facilityOrHome.setValue(null);
+			facilityOrHome.unselect(TypeOfPlace.HOME);
+			getValue().setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+		}
 	}
 
 	private void setNoneFacility() {
 		FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 		facilityCombo.addItem(noFacilityRef);
 		facilityCombo.setValue(noFacilityRef);
-		facilityType.setRequired(false);
 	}
 
 	private void updateFacility() {
