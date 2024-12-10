@@ -35,6 +35,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -72,6 +73,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -111,6 +113,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private NullableOptionGroup ogCaseOrigin;
 
 	private PersonCreateForm personCreateForm;
+	private Window warningSimilarPersons;
 
 	private final boolean showHomeAddressForm;
 	private final boolean showPersonSearchButton;
@@ -208,6 +211,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
+
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
 
 		// Jurisdiction fields
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
@@ -729,5 +737,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
 		personCreateForm.setSearchedPerson(searchedPerson);
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 }
