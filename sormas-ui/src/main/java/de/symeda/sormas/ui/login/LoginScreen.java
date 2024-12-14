@@ -315,12 +315,6 @@ public class LoginScreen extends CssLayout {
 		imgSormasFoundation.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgSormasFoundation);
 
-		if (!isCustomBranding) {
-			Image imgGiz = new Image(null, new ThemeResource("img/giz-logo.png"));
-			imgGiz.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
-			poweredByLayout.addComponent(imgGiz);
-		}
-
 		loginSidebarLayout.addComponent(poweredByLayout);
 
 		Label customSidebarLabel = new Label();
