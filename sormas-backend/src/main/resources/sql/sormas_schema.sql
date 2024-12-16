@@ -13711,4 +13711,17 @@ VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VA
         'INFLUENZA', jsonb_build_object('hasDetails', true));
 
 INSERT INTO schema_version (version_number, comment) VALUES (554, 'Add New Influenza Disease Types and Modify Display for SORMAS-LuxembourgAdd #13183');
+
+-- 2024-12-12 RSV disease variants #13204
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', ' A', 'Type A',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', ' B', 'Type B',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', ' AB', 'Type A+B',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+
+INSERT INTO schema_version (version_number, comment) VALUES (555, 'RSV disease variants #13204');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
