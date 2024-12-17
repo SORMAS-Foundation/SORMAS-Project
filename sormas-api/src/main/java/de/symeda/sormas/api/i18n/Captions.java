@@ -557,6 +557,7 @@ public interface Captions {
 	String assignmentDate = "assignmentDate";
 	String assignToMe = "assignToMe";
 	String BAGExport = "BAGExport";
+	String birthdateFilter = "birthdateFilter";
 	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
@@ -1993,6 +1994,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String importValueSeparator = "importValueSeparator";
 	String inaccessibleValue = "inaccessibleValue";
+	String includePartialBirthdates = "includePartialBirthdates";
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String lastName = "lastName";

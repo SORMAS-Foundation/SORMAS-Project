@@ -1,5 +1,11 @@
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Date;
+
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -19,10 +25,15 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.BirthdateRangeFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
+
+	private static final String BIRTHDATE_RANGE_FILTER = "birthdateRangeFilter";
+
+	private static final String MORE_FILTERS_HTML_LAYOUT = loc(BIRTHDATE_RANGE_FILTER);
 
 	protected PersonFilterForm() {
 		super(
@@ -42,6 +53,11 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 			PersonCriteria.REGION,
 			PersonCriteria.DISTRICT,
 			PersonCriteria.COMMUNITY };
+	}
+
+	@Override
+	protected String createMoreFiltersHtmlLayout() {
+		return MORE_FILTERS_HTML_LAYOUT;
 	}
 
 	@Override
@@ -76,6 +92,37 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		addField(
 			getContent(),
 			FieldConfiguration.withCaptionAndPixelSized(PersonCriteria.COMMUNITY, I18nProperties.getCaption(Captions.personCommunityPrompt), 140));
+	}
+
+	@Override
+	public void addMoreFilters(CustomLayout moreFiltersContainer) {
+
+		moreFiltersContainer.addComponent(buildBirthdayRangeFilter(), BIRTHDATE_RANGE_FILTER);
+	}
+
+	private HorizontalLayout buildBirthdayRangeFilter() {
+		BirthdateRangeFilterComponent birthdateRangeFilterComponent = new BirthdateRangeFilterComponent(false, this);
+		addApplyHandler(e -> onApplyClick(birthdateRangeFilterComponent));
+
+		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
+		dateFilterRowLayout.setSpacing(true);
+		dateFilterRowLayout.setSizeUndefined();
+
+		dateFilterRowLayout.addComponent(birthdateRangeFilterComponent);
+
+		return dateFilterRowLayout;
+	}
+
+	private void onApplyClick(BirthdateRangeFilterComponent birthdateRangeFilter) {
+		Date birthdateFrom, birthdateTo;
+		Date dateFrom = birthdateRangeFilter.getDateFromFilter().getValue();
+		birthdateFrom = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+		Date dateTo = birthdateRangeFilter.getDateToFilter().getValue();
+		birthdateTo = dateTo != null ? DateHelper.getEndOfDay(dateTo) : null;
+		PersonCriteria criteria = getValue();
+		criteria.setBirthdateFrom(birthdateFrom);
+		criteria.setBirthdateTo(birthdateTo);
+		criteria.setIncludePartialMatch(birthdateRangeFilter.getIncludePartialMatch().getValue());
 	}
 
 	@Override
