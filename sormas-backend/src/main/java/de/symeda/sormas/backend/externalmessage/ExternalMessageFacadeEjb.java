@@ -192,6 +192,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			target.setSampleReports(sampleReports);
 		}
 		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
+		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
+
 		return target;
 	}
 
@@ -367,6 +370,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());
 		}
+
+		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 
 		return target;
 	}

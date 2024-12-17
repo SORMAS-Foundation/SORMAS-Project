@@ -26,12 +26,14 @@ import org.hibernate.annotations.TypeDef;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
@@ -125,6 +127,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	private SurveillanceReport surveillanceReport;
 	private String tsv;
 	private String personAdditionalDetails;
+
+	private VaccinationStatus vaccinationStatus;
+	private YesNoUnknown admittedToHealthFacility;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -459,5 +464,23 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonAdditionalDetails(String personAdditionalDetails) {
 		this.personAdditionalDetails = personAdditionalDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
 }
