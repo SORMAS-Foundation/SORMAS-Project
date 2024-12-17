@@ -705,6 +705,7 @@ public interface Strings {
 	String headingImportSelfReports = "headingImportSelfReports";
 	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingImportTravelEntries = "headingImportTravelEntries";
+	String headingIncorrectDateRange = "headingIncorrectDateRange";
 	String headingInformationSource = "headingInformationSource";
 	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
@@ -1419,6 +1420,7 @@ public interface Strings {
 	String messageImportSuccessful = "messageImportSuccessful";
 	String messageImportSuccessfulWithSkips = "messageImportSuccessfulWithSkips";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
+	String messageIncorrectDateRange = "messageIncorrectDateRange";
 	String messageInfrastructureLocked = "messageInfrastructureLocked";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";
@@ -1680,6 +1682,8 @@ public interface Strings {
 	String promptAllDistricts = "promptAllDistricts";
 	String promptAllRegions = "promptAllRegions";
 	String promptArea = "promptArea";
+	String promptBirthdateFrom = "promptBirthdateFrom";
+	String promptBirthdateTo = "promptBirthdateTo";
 	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
 	String promptCaseOrContactEventSearchField = "promptCaseOrContactEventSearchField";

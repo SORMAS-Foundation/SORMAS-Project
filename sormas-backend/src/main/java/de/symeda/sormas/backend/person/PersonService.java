@@ -114,6 +114,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BirthdateRangeFilterPredicate;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -386,6 +387,15 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateMM(), Person.BIRTHDATE_MM);
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateDD(), Person.BIRTHDATE_DD);
+
+		filter = BirthdateRangeFilterPredicate.createBirthdateRangeFilter(
+			personCriteria.getBirthdateFrom(),
+			personCriteria.getBirthdateTo(),
+			personCriteria.isIncludePartialMatch(),
+			cb,
+			personFrom,
+			filter);
+
 		if (personCriteria.getNameAddressPhoneEmailLike() != null) {
 
 			String[] textFilters = personCriteria.getNameAddressPhoneEmailLike().split("\\s+");

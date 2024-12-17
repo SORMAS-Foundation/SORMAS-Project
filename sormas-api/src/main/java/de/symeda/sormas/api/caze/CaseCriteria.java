@@ -106,6 +106,9 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Date newCaseDateTo;
 	private Date creationDateFrom;
 	private Date creationDateTo;
+	private Date birthdateFrom;
+	private Date birthdateTo;
+	private boolean includePartialMatch;
 	private CriteriaDateType newCaseDateType;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
@@ -550,6 +553,31 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public CaseCriteria creationDateTo(Date creationDateTo) {
 		setCreationDateTo(creationDateTo);
 		return this;
+	}
+
+	public Date getBirthdateFrom() {
+		return birthdateFrom;
+	}
+
+	public void setBirthdateFrom(Date birthdateFrom) {
+		this.birthdateFrom = birthdateFrom;
+	}
+
+	public Date getBirthdateTo() {
+		return birthdateTo;
+	}
+
+	public void setBirthdateTo(Date birthdateTo) {
+		this.birthdateTo = birthdateTo;
+	}
+
+	@IgnoreForUrl
+	public boolean isIncludePartialMatch() {
+		return includePartialMatch;
+	}
+
+	public void setIncludePartialMatch(boolean includePartialMatch) {
+		this.includePartialMatch = includePartialMatch;
 	}
 
 	public Date getQuarantineTo() {

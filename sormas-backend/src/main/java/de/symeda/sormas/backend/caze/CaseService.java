@@ -177,6 +177,7 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BirthdateRangeFilterPredicate;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -912,6 +913,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
+
+		filter = BirthdateRangeFilterPredicate.createBirthdateRangeFilter(
+			caseCriteria.getBirthdateFrom(),
+			caseCriteria.getBirthdateTo(),
+			caseCriteria.isIncludePartialMatch(),
+			cb,
+			joins.getPerson(),
+			filter);
+
 		if (caseCriteria.getBirthdateYYYY() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
 		}

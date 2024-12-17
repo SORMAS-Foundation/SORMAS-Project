@@ -1993,6 +1993,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String importValueSeparator = "importValueSeparator";
 	String inaccessibleValue = "inaccessibleValue";
+	String includePartialBirthdates = "includePartialBirthdates";
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String lastName = "lastName";
