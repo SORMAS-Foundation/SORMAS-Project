@@ -922,7 +922,6 @@ public interface Strings {
 	String infoAutomaticDeletionTooltipYears = "infoAutomaticDeletionTooltipYears";
 	String infoBAGExport = "infoBAGExport";
 	String infoBasicExport = "infoBasicExport";
-	String infoBirthdateFilter = "infoBirthdateFilter";
 	String infoBulkProcess = "infoBulkProcess";
 	String infoBulkProcessCancelled = "infoBulkProcessCancelled";
 	String infoBulkProcessFinished = "infoBulkProcessFinished";

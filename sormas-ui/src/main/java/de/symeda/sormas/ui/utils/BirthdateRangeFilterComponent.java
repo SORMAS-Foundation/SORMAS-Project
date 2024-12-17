@@ -1,22 +1,18 @@
 package de.symeda.sormas.ui.utils;
 
-import static de.symeda.sormas.ui.utils.CssStyles.CHECKBOX_FILTER_INLINE;
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -38,13 +34,6 @@ public class BirthdateRangeFilterComponent extends HorizontalLayout {
 		dateFromFilter = new PopupDateField();
 		dateToFilter = new PopupDateField();
 		includePartialMatch = new CheckBox();
-
-		Label birthdateLabel = new Label();
-		birthdateLabel.setValue(I18nProperties.getCaption(Captions.birthdateFilter));
-		birthdateLabel.addStyleName(CHECKBOX_FILTER_INLINE);
-		birthdateLabel.addStyleName(LABEL_BOLD);
-		birthdateLabel.addStyleName(VSPACE_TOP_4);
-		addComponent(birthdateLabel);
 
 		addComponent(dateFromFilter);
 		addComponent(dateToFilter);
@@ -82,13 +71,8 @@ public class BirthdateRangeFilterComponent extends HorizontalLayout {
 
 		includePartialMatch.setCaption(I18nProperties.getCaption(Captions.includePartialBirthdates));
 		includePartialMatch.addStyleName(VSPACE_TOP_4);
+		includePartialMatch.setDescription(I18nProperties.getDescription(Descriptions.birthdateFilterPartialMatchDescription));
 		addComponent(includePartialMatch);
-
-		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
-		infoLabel.setSizeUndefined();
-		infoLabel.setDescription(I18nProperties.getString(Strings.infoBirthdateFilter));
-		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
-		addComponent(infoLabel);
 	}
 
 	private static void notifyIfIncorrectRange(Date dateFrom, Date dateTo) {

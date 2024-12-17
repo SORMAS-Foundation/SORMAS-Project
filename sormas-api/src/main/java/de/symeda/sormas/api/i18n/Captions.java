@@ -557,7 +557,6 @@ public interface Captions {
 	String assignmentDate = "assignmentDate";
 	String assignToMe = "assignToMe";
 	String BAGExport = "BAGExport";
-	String birthdateFilter = "birthdateFilter";
 	String bulkActionCreatDocuments = "bulkActionCreatDocuments";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
