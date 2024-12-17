@@ -941,7 +941,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
-		addField(CaseDataDto.VACCINATION_STATUS);
+	addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
+//		getContent().addComponent(new Label("Debug vaccination"), CaseDataDto.VACCINATION_STATUS);
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
 

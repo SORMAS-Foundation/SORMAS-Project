@@ -13724,4 +13724,14 @@ VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VA
         'RESPIRATORY_SYNCYTIAL_VIRUS');
 
 INSERT INTO schema_version (version_number, comment) VALUES (555, 'RSV disease variants #13204');
+
+-- 2024-12-12 Additional lab message fields #13203
+ALTER TABLE externalmessage
+    ADD COLUMN vaccinationstatus varchar(255),
+    ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE externalmessage_history
+    ADD COLUMN vaccinationstatus varchar(255),
+    ADD COLUMN admittedtohealthfacility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (556, 'Additional lab message fields #13203');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
