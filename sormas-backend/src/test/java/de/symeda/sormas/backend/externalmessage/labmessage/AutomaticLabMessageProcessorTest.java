@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -211,6 +213,42 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		// the sample should be added on the new case
 		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Collections.singletonList(newCase.getUuid()));
 		assertThat(samples, hasSize(2));
+	}
+
+	/**
+	 * External message with sample date in the threshold period should generate a new sample to the existing case
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 */
+	@Test
+	public void testThresholdAgainstSampleDate() throws ExecutionException, InterruptedException {
+		ExternalMessageDto externalMessage = createExternalMessage(e -> {
+			e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
+		});
+
+		PersonDto person =
+			creator.createPerson(externalMessage.getPersonFirstName(), externalMessage.getPersonLastName(), externalMessage.getPersonSex(), p -> {
+				p.setNationalHealthId(externalMessage.getPersonNationalHealthId());
+			});
+
+		CaseDataDto caze = creator.createCase(reportingUser.toReference(), person.toReference(), rdcf, c -> {
+			c.setDisease(externalMessage.getDisease());
+			c.setReportDate(DateHelper.subtractDays(new Date(), 15));
+		});
+		creator.createSample(caze.toReference(), reportingUser.toReference(), rdcf.facility, s -> {
+			s.setSampleDateTime(DateHelper.subtractDays(new Date(), 15));
+		});
+
+		// set the threshold
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+
+		assertThat(getCaseFacade().count(new CaseCriteria().person(caze.getPerson())), is(1L));
+		assertThat(getSampleFacade().count(new SampleCriteria().caze(caze.toReference())), is(2L));
 	}
 
 	@Test
