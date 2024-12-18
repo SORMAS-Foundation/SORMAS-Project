@@ -36,6 +36,7 @@ public class PersonFormHelper {
 
 				final CommitDiscardWrapperComponent<PersonSelectionGrid> component = new CommitDiscardWrapperComponent<>(similarPersonGrid);
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionDone));
+				component.getCommitButton().setDescription(I18nProperties.getCaption(Captions.actionOkay));
 				component.getDiscardButton().setVisible(false);
 				component.getWrappedComponent().setWidth(800, Sizeable.Unit.PIXELS);
 
