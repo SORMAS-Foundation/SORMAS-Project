@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -2345,7 +2346,9 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return super.getDeleteReferenceField(deletionReference);
 	}
 
-	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease, int threshold) {
+	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease, @Nullable Date sampleDateTime, int threshold) {
+		Date dateToCompareTo = sampleDateTime != null ? sampleDateTime : new Date();
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -2366,7 +2369,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						ExtendedPostgreSQL94Dialect.DATE,
 						Date.class,
 						CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
-					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
 				Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue()));
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
 
