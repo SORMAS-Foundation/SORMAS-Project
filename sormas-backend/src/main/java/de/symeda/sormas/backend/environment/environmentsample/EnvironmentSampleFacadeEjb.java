@@ -42,6 +42,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.disease.PathogenConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,11 +240,14 @@ public class EnvironmentSampleFacadeEjb
 			pathogenTestSampledId.in(sampleIds),
 			cb.isFalse(positivePathogensRoot.get(PathogenTest.DELETED)),
 			cb.equal(positivePathogensRoot.get(PathogenTest.TEST_RESULT), PathogenTestResultType.POSITIVE));
-		positivePathogensCq.multiselect(pathogenTestSampledId, positivePathogensRoot.get(PathogenTest.TESTED_PATHOGEN));
+		positivePathogensCq.multiselect(pathogenTestSampledId, positivePathogensRoot.get(PathogenTest.TESTED_PATHOGEN_VALUE));
 
 		List<Tuple> positivePathogens = QueryHelper.getResultList(em, positivePathogensCq, null, null);
 		positivePathogens.stream()
-			.collect(Collectors.groupingBy(t -> (Long) t.get(0), Collectors.mapping(t -> (Pathogen) t.get(1), Collectors.toList())))
+			.collect(
+				Collectors.groupingBy(
+					t -> (Long) t.get(0),
+					Collectors.mapping(t -> new PathogenConverter().convertToEntityAttribute(null, (String) t.get(1)), Collectors.toList())))
 			.forEach(
 				(sampleId, pathogens) -> samples.stream()
 					.filter(s -> s.getId().equals(sampleId))
@@ -260,7 +264,7 @@ public class EnvironmentSampleFacadeEjb
 		Expression<String> sampleIdExpr = testRoot.get(PathogenTest.ENVIRONMENT_SAMPLE).get(Sample.ID);
 
 		testCq.multiselect(
-			testRoot.get(PathogenTest.TESTED_PATHOGEN),
+			testRoot.get(PathogenTest.TESTED_PATHOGEN_VALUE),
 			testRoot.get(PathogenTest.TESTED_PATHOGEN_DETAILS),
 			testRoot.get(PathogenTest.TEST_RESULT),
 			sampleIdExpr);
@@ -274,7 +278,7 @@ public class EnvironmentSampleFacadeEjb
 			// collecting to map keyed by sample id, keeping the first result that is the latest test for each sample
 			.collect(Collectors.toMap(pathogenTest -> (Long) pathogenTest[3], Function.identity(), (t1, t2) -> t1))
 			.forEach((sampleId, t) -> samples.stream().filter(s -> s.getId().equals(sampleId)).findFirst().ifPresent(s -> {
-				s.setLatestTestedPathogen((Pathogen) t[0]);
+				s.setLatestTestedPathogen(new PathogenConverter().convertToEntityAttribute(null, (String) t[0]));
 				s.setLatestTestedPathogenDetails((String) t[1]);
 				s.setLatestPathogenTestResult((PathogenTestResultType) t[2]);
 			}));

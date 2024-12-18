@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -19,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -36,7 +36,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -52,7 +52,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String TYPE = "type";
 	public static final String DISEASE = "disease";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String CASE_REPORT_DATE = "caseReportDate";
@@ -87,6 +87,7 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private ExternalMessageType type;
 	private Disease disease;
+	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
 	private Date messageDateTime;
@@ -149,14 +150,24 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.disease = disease;
 	}
 
-	@Column
-	@Convert(converter = DiseaseVariantConverter.class)
+	@Column(name = "diseasevariant")
+	public String getDiseaseVariantValue() {
+		return diseaseVariantValue;
+	}
+
+	public void setDiseaseVariantValue(String diseaseVariantValue) {
+		this.diseaseVariantValue = diseaseVariantValue;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariantValue);
+	}
+
+	@Transient
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

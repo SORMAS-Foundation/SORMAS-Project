@@ -686,7 +686,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
 		}
 		if (caseCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT), caseCriteria.getDiseaseVariant()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
@@ -2216,7 +2216,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			root.get(AbstractDomainObject.UUID),
 			root.get(Case.REPORT_DATE),
 			root.get(Case.EXTERNAL_TOKEN),
-			root.get(Case.DISEASE_VARIANT),
+			root.get(Case.DISEASE),
+			root.get(Case.DISEASE_VARIANT_VALUE),
 			symptomsJoin.get(Symptoms.ONSET_DATE));
 
 		cq.where(

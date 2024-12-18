@@ -17,7 +17,9 @@ package de.symeda.sormas.api.caze;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
 public class PreviousCaseDto extends AbstractUuidDto {
@@ -29,11 +31,11 @@ public class PreviousCaseDto extends AbstractUuidDto {
 	private final DiseaseVariant diseaseVariant;
 	private final Date onsetDate;
 
-	public PreviousCaseDto(String uuid, Date reportDate, String externalToken, DiseaseVariant diseaseVariant, Date onsetDate) {
+	public PreviousCaseDto(String uuid, Date reportDate, String externalToken, Disease disease, String diseaseVariant, Date onsetDate) {
 		super(uuid);
 		this.reportDate = reportDate;
 		this.externalToken = externalToken;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.onsetDate = onsetDate;
 	}
 

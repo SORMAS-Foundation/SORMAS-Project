@@ -164,8 +164,10 @@ public class EnvironmentSampleService extends AbstractDeletableAdoService<Enviro
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLaboratory().get(Facility.UUID), criteria.getLaboratory().getUuid()));
 		}
 		if (criteria.getTestedPathogen() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(joins.getPathogenTests().get(PathogenTestDto.TESTED_PATHOGEN), criteria.getTestedPathogen()));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(joins.getPathogenTests().get(PathogenTestDto.TESTED_PATHOGEN_VALUE), criteria.getTestedPathogen().getValue()));
 		}
 		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper

@@ -1550,7 +1550,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			person.get(Person.EDUCATION_TYPE),
 			person.get(Person.EDUCATION_DETAILS),
-			person.get(Person.OCCUPATION_TYPE),
+			person.get(Person.OCCUPATION_TYPE_VALUE),
 			person.get(Person.OCCUPATION_DETAILS),
 			person.get(Person.ARMED_FORCES_RELATION_TYPE),
 

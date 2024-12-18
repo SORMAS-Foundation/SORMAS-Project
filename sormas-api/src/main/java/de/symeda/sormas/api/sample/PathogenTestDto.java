@@ -58,7 +58,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
-	public static final String TESTED_PATHOGEN = "testedPathogen";
+	public static final String TESTED_PATHOGEN_VALUE = "testedPathogenValue";
 	public static final String TESTED_PATHOGEN_DETAILS = "testedPathogenDetails";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";

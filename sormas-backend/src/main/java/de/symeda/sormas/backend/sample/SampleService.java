@@ -67,6 +67,7 @@ import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -1277,7 +1278,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		}
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<DiseaseVariant> cq = cb.createQuery(DiseaseVariant.class);
+		final CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		final Root<Sample> from = cq.from(getElementClass());
 		final Join<Sample, PathogenTest> pathogenTestJoin = from.join(Sample.PATHOGENTESTS, JoinType.LEFT);
 
@@ -1286,8 +1287,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid));
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pathogenTestJoin.get(DeletableAdo.DELETED), false));
 		cq.where(filter);
-		cq.select(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT));
-		return em.createQuery(cq).getResultList();
+		cq.multiselect(pathogenTestJoin.get(PathogenTest.TESTED_DISEASE), pathogenTestJoin.get(PathogenTest.TESTED_DISEASE_VARIANT_VALUE));
+		return em.createQuery(cq)
+			.getResultList()
+			.stream()
+			.map(tuple -> new DiseaseVariantConverter().convertToEntityAttribute((Disease) tuple.get(0), (String) tuple.get(1)))
+			.collect(Collectors.toList());
 	}
 
 	public void cleanupOldCovidSamples() {

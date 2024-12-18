@@ -13,17 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.customizableenum;
+package de.symeda.sormas.api.customizableenum;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.AttributeConverter;
 
+import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 
 /**
  * JPA Converter that converts a JSON String stored in the database to an instance of {@link CustomizableEnum} and vice versa.
@@ -36,7 +32,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
  * @param <T>
  *            The specific extension of {@link CustomizableEnum} for type safety
  */
-public abstract class CustomizableEnumConverter<T extends CustomizableEnum> implements AttributeConverter<T, String> {
+public abstract class CustomizableEnumConverter<T extends CustomizableEnum> {
 
 	private final Class<T> enumClass;
 	private CustomizableEnumFacade customizableEnumFacade;
@@ -45,13 +41,12 @@ public abstract class CustomizableEnumConverter<T extends CustomizableEnum> impl
 		this.enumClass = enumClass;
 	}
 
-	@Override
+
 	public String convertToDatabaseColumn(T enumValue) {
 		return enumValue != null ? enumValue.getValue() : null;
 	}
 
-	@Override
-	public T convertToEntityAttribute(String enumString) {
+	public T convertToEntityAttribute(Disease disease, String enumString) {
 		if (StringUtils.isBlank(enumString)) {
 			return null;
 		}
@@ -66,7 +61,7 @@ public abstract class CustomizableEnumConverter<T extends CustomizableEnum> impl
 				throw new RuntimeException("No CustomizableEnumType for given enumClass " + enumClass + "found");
 			}
 
-			return customizableEnumFacade.getEnumValue(CustomizableEnumType.getByEnumClass(enumClass), enumString);
+			return customizableEnumFacade.getEnumValue(CustomizableEnumType.getByEnumClass(enumClass), disease, enumString);
 		} catch (NamingException e) {
 			throw new RuntimeException(e);
 		}

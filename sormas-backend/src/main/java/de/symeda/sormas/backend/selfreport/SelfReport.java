@@ -22,7 +22,6 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,6 +30,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -41,7 +41,7 @@ import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 
@@ -55,7 +55,7 @@ public class SelfReport extends CoreAdo {
 	public static final String CASE_REFERENCE = "caseReference";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -85,6 +85,7 @@ public class SelfReport extends CoreAdo {
 	private String caseReference;
 	private Disease disease;
 	private String diseaseDetails;
+	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
 	// person data
@@ -161,10 +162,24 @@ public class SelfReport extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@Column
-	@Convert(converter = DiseaseVariantConverter.class)
+	@Column(name = "diseasevariant")
+	public String getDiseaseVariantValue() {
+		return diseaseVariantValue;
+	}
+
+	public void setDiseaseVariantValue(String diseaseVariantValue) {
+		this.diseaseVariantValue = diseaseVariantValue;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariantValue);
+	}
+
+	@Transient
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -174,10 +189,6 @@ public class SelfReport extends CoreAdo {
 
 	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
 		this.diseaseVariantDetails = diseaseVariantDetails;
-	}
-
-	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
-		this.diseaseVariant = diseaseVariant;
 	}
 
 	@Column(nullable = false, length = CHARACTER_LIMIT_DEFAULT)

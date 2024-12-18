@@ -23,6 +23,7 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -91,7 +92,7 @@ public class BAGExportContactDto implements Serializable {
 							   String homeAddressStreet, String homeAddressHouseNumber, String homeAddressCity, String homeAddressPostalCode,
 							   String phoneNumber, String mobileNumber, Sex sex,
 							   Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
-							   OccupationType occupationType,
+							   String occupationType,
 							   QuarantineType quarantineType, String quarantineDetails,
 							   Integer caseLinkCaseIdIsm, Long caseLinkCaseId, Date caseLinkContactDate,
 							   Date startOfQuarantineDate, Date endOfQuarantineDate, EndOfQuarantineReason endOfQuarantineReason, String endOfQuarantineReasonDetails
@@ -112,7 +113,7 @@ public class BAGExportContactDto implements Serializable {
 		this.mobileNumber = mobileNumber;
 		this.sex = sex;
 		this.birthDate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
-		this.occupationType = occupationType;
+		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationType);
 
 		this.quarantineType = quarantineType;
 		this.quarantineDetails = quarantineDetails;

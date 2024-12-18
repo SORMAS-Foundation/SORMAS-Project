@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
@@ -60,7 +61,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		String reporterName,
 		String reporterPostalCode,
 		Disease disease,
-		DiseaseVariant diseaseVariant,
+		String diseaseVariant,
 		String personFirstName,
 		String personLastName,
 		Integer personBirthDateYYYY,
@@ -78,7 +79,7 @@ public class ExternalMessageIndexDto extends AbstractUuidDto {
 		this.reporterName = reporterName;
 		this.reporterPostalCode = reporterPostalCode;
 		this.disease = disease;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
