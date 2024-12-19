@@ -306,10 +306,14 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		diseaseVariant2.setValue(diseaseVariantEnumValue2.getValue());
 
 		Mockito
-			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.when(
+				MockProducer.getCustomizableEnumFacadeForConverter()
+					.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, Disease.CORONAVIRUS, diseaseVariant.getValue()))
 			.thenReturn(diseaseVariant);
 		Mockito
-			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant2.getValue()))
+			.when(
+				MockProducer.getCustomizableEnumFacadeForConverter()
+					.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, Disease.CORONAVIRUS, diseaseVariant2.getValue()))
 			.thenReturn(diseaseVariant2);
 
 		ExternalMessageDto labMessage =

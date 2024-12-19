@@ -114,6 +114,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BirthdateRangeFilterPredicate;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -353,16 +354,16 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 				eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
 			break;
 		case IMMUNIZATION:
-				associationPredicate = CriteriaBuilderHelper.and(
-					cb,
-					immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
-					immunizationService.createDefaultFilter(cb, joins.getImmunization()));
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				immunizationService.createUserFilter(new ImmunizationQueryContext(cb, cq, joins.getImmunizationJoins())),
+				immunizationService.createDefaultFilter(cb, joins.getImmunization()));
 			break;
 		case TRAVEL_ENTRY:
-				associationPredicate = CriteriaBuilderHelper.and(
-					cb,
-					travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
-					travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
+			associationPredicate = CriteriaBuilderHelper.and(
+				cb,
+				travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins())),
+				travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 			break;
 		case ALL:
 		default:
@@ -386,6 +387,15 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateMM(), Person.BIRTHDATE_MM);
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateDD(), Person.BIRTHDATE_DD);
+
+		filter = BirthdateRangeFilterPredicate.createBirthdateRangeFilter(
+			personCriteria.getBirthdateFrom(),
+			personCriteria.getBirthdateTo(),
+			personCriteria.isIncludePartialMatch(),
+			cb,
+			personFrom,
+			filter);
+
 		if (personCriteria.getNameAddressPhoneEmailLike() != null) {
 
 			String[] textFilters = personCriteria.getNameAddressPhoneEmailLike().split("\\s+");
@@ -408,7 +418,8 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter));
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.NATIONAL_HEALTH_ID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -924,7 +935,8 @@ public class PersonService extends AdoServiceWithUserFilterAndJurisdiction<Perso
 			}
 		}
 
-		if (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() && StringUtils.isNotBlank(criteria.getNationalHealthId())) {
+		if (StringUtils.isNotBlank(criteria.getNationalHealthId())
+			&& (configFacade.isDuplicateChecksNationalHealthIdOverridesCriteria() || criteria.isCheckOnlyForNationalHealthId())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId()));
 		}
 

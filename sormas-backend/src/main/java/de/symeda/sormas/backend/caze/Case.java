@@ -29,7 +29,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -42,7 +41,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.selfreport.SelfReport;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
@@ -70,6 +68,7 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -81,7 +80,6 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
@@ -92,6 +90,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -123,7 +122,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String PERSON = "person";
 	public static final String PERSON_ID = "personId";
 	public static final String DISEASE = "disease";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String PLAGUE_TYPE = "plagueType";
@@ -250,6 +249,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private Person person;
 	private String description;
 	private Disease disease;
+	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private String diseaseVariantDetails;
@@ -478,14 +478,24 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 		this.disease = disease;
 	}
 
-	@Column
-	@Convert(converter = DiseaseVariantConverter.class)
+	@Column(name = "diseasevariant")
+	public String getDiseaseVariantValue() {
+		return diseaseVariantValue;
+	}
+
+	public void setDiseaseVariantValue(String diseaseVariantValue) {
+		this.diseaseVariantValue = diseaseVariantValue;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariantValue);
+	}
+
+	@Transient
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

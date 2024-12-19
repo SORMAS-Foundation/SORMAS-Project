@@ -19,28 +19,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.AttributeConverter;
-
+import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.backend.disease.PathogenConverter;
+import de.symeda.sormas.api.disease.PathogenConverter;
 
-public class RequestedPathogensConverter implements AttributeConverter<Set<Pathogen>, String> {
+public class RequestedPathogensConverter {
 
 	private final PathogenConverter pathogenConverter = new PathogenConverter();
 
-	@Override
 	public String convertToDatabaseColumn(Set<Pathogen> pathogens) {
 		return pathogens != null
 			? String.join(",", pathogens.stream().map(pathogenConverter::convertToDatabaseColumn).collect(Collectors.toSet()))
 			: null;
 	}
 
-	@Override
-	public Set<Pathogen> convertToEntityAttribute(String pathogensText) {
+	public Set<Pathogen> convertToEntityAttribute(Disease disease, String pathogensText) {
 		return pathogensText != null
-			? Stream.of(StringUtils.split(pathogensText, ",")).map(pathogenConverter::convertToEntityAttribute).collect(Collectors.toSet())
+			? Stream.of(StringUtils.split(pathogensText, ","))
+				.map((String value) -> pathogenConverter.convertToEntityAttribute(disease, value))
+				.collect(Collectors.toSet())
 			: null;
 	}
 }

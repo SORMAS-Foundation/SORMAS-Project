@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.person;
 
+import java.util.Date;
 import java.util.Set;
 
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
@@ -37,6 +38,9 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 	private CommunityReferenceDto community;
 	private PersonAssociation personAssociation;
 	private Set<String> uuids;
+	private Date birthdateFrom;
+	private Date birthdateTo;
+	private boolean includePartialMatch;
 
 	public PersonCriteria() {
 
@@ -125,6 +129,31 @@ public class PersonCriteria extends BaseCriteria implements Cloneable {
 		validate(personAssociation);
 		this.personAssociation = personAssociation;
 		return this;
+	}
+
+	public Date getBirthdateFrom() {
+		return birthdateFrom;
+	}
+
+	public void setBirthdateFrom(Date birthdateFrom) {
+		this.birthdateFrom = birthdateFrom;
+	}
+
+	public Date getBirthdateTo() {
+		return birthdateTo;
+	}
+
+	public void setBirthdateTo(Date birthdateTo) {
+		this.birthdateTo = birthdateTo;
+	}
+
+	@IgnoreForUrl
+	public boolean isIncludePartialMatch() {
+		return includePartialMatch;
+	}
+
+	public void setIncludePartialMatch(boolean includePartialMatch) {
+		this.includePartialMatch = includePartialMatch;
 	}
 
 	@IgnoreForUrl

@@ -13,10 +13,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.disease;
+package de.symeda.sormas.api.disease;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumConverter;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumConverter;
 
 public class DiseaseVariantConverter extends CustomizableEnumConverter<DiseaseVariant> {
 

@@ -194,7 +194,7 @@ public class PersonExportDto extends AbstractUuidDto implements IsPerson {
 		String otherContactDetails,
 		EducationType educationType,
 		String educationDetails,
-		OccupationType occupationType,
+		String occupationType,
 		String occupationDetails,
 		ArmedForcesRelationType armedForcesRelationType,
 		String passportNumber,
@@ -247,7 +247,7 @@ public class PersonExportDto extends AbstractUuidDto implements IsPerson {
 		this.otherContactDetails = otherContactDetails;
 		this.educationType = educationType;
 		this.educationDetails = educationDetails;
-		this.occupationType = occupationType;
+		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationType);
 		this.occupationDetails = occupationDetails;
 		this.armedForcesRelationType = armedForcesRelationType;
 		this.passportNumber = passportNumber;

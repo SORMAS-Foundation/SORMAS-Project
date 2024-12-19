@@ -19,6 +19,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
@@ -105,12 +106,12 @@ public class EventExportDto extends AbstractUuidDto {
 		String internalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
-		SpecificRisk specificRisk,
+		String specificRisk,
 		EventInvestigationStatus eventInvestigationStatus,
 		Date eventInvestigationStartDate,
 		Date eventInvestigationEndDate,
 		Disease disease,
-		DiseaseVariant diseaseVariant,
+		String diseaseVariant,
 		String diseaseDetails,
 		String diseaseVariantDetails,
 		Date startDate,
@@ -160,12 +161,12 @@ public class EventExportDto extends AbstractUuidDto {
 		this.internalToken = internalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
-		this.specificRisk = specificRisk;
+		this.specificRisk = new SpecificRiskConverter().convertToEntityAttribute(disease, specificRisk);
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventInvestigationStartDate = eventInvestigationStartDate;
 		this.eventInvestigationEndDate = eventInvestigationEndDate;
 		this.disease = disease;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.diseaseDetails = diseaseDetails;
 		this.diseaseVariantDetails = diseaseVariantDetails;
 		this.startDate = startDate;

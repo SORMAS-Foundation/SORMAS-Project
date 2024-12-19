@@ -28,6 +28,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
@@ -362,7 +364,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 	@SuppressWarnings("unchecked")
 	public CaseExportDto(long id, long personId, Double personAddressLatitude, Double personAddressLongitude, Float personAddressLatLonAcc, long epiDataId, long symptomsId,
 						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
-						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
+						 Disease disease, String diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
 						 String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
 						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
@@ -389,7 +391,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String facility, String facilityUuid, String facilityDetails,
 						 String phone, String phoneOwner, String emailAddress, String otherContactDetails, EducationType educationType, String educationDetails,
-						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
+						 String occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, Long prescriptionCount, Long treatmentCount, Long clinicalVisitCount,
@@ -419,7 +421,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.armedForcesRelationType = ArmedForcesRelationType;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.diseaseVariantDetails = diseaseVariantDetails;
 		this.personUuid = personUuid;
 		this.firstName = firstName;
@@ -501,7 +503,7 @@ public class CaseExportDto extends AbstractUuidDto implements IsCase {
 		this.otherContactDetails = otherContactDetails;
 		this.educationType = educationType;
 		this.educationDetails = educationDetails;
-		this.occupationType = occupationType;
+		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationType);
 		this.occupationDetails = occupationDetails;
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 //		this.onsetDate = onsetDate;

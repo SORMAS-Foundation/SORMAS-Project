@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class BAGExportCaseDto implements Serializable {
+
 	private Integer caseIdIsm;
 	private Long caseId;
 	private Long personId;
@@ -124,7 +126,7 @@ public class BAGExportCaseDto implements Serializable {
 							String homeAddressStreet, String homeAddressHouseNumber, String homeAddressCity, String homeAddressPostalCode, String homeAddressCountry,
 							String phoneNumber, String mobileNumber, String emailAddress,
 							Sex sex, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
-							OccupationType occupationType,
+							String occupationType,
 							boolean symptomatic, Date symptomOnsetDate,
 							String activityMappingYn,
 							Date contactTracingContactDate,
@@ -148,7 +150,7 @@ public class BAGExportCaseDto implements Serializable {
 		this.emailAddress = emailAddress;
 		this.sex = sex;
 		this.birthDate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
-		this.occupationType = occupationType;
+		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationType);
 		this.symptomatic = symptomatic ? YesNoUnknown.YES : YesNoUnknown.NO;
 		this.symptomOnsetDate = symptomOnsetDate;
 		this.activityMappingYn = activityMappingYn;

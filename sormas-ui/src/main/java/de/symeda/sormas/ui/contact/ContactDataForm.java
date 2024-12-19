@@ -299,7 +299,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
-		cbDisease = addDiseaseField(ContactDto.DISEASE, false);
+		cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
 		cbDisease.setNullSelectionAllowed(false);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 

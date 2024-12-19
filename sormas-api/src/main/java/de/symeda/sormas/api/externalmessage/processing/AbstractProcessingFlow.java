@@ -175,6 +175,9 @@ public abstract class AbstractProcessingFlow {
 			caseDto.setHealthFacility(processingFacade.getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 
+		caseDto.setVaccinationStatus(externalMessageDto.getVaccinationStatus());
+		caseDto.getHospitalization().setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
+
 		return caseDto;
 	}
 

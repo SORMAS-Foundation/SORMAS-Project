@@ -195,6 +195,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@SensitiveData
 	private Integer birthdateDD;
 	@Outbreaks
+	@PersonalData
+	@SensitiveData
 	private Integer birthdateMM;
 	@Outbreaks
 	private Integer birthdateYYYY;

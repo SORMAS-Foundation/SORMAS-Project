@@ -31,10 +31,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -72,6 +74,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -111,6 +114,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private NullableOptionGroup ogCaseOrigin;
 
 	private PersonCreateForm personCreateForm;
+	private Window warningSimilarPersons;
 
 	private final boolean showHomeAddressForm;
 	private final boolean showPersonSearchButton;
@@ -192,7 +196,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
-		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
+		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true, false);
 		diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
@@ -208,6 +212,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
+
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
 
 		// Jurisdiction fields
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
@@ -544,6 +553,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 		diseaseVariantField
 			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		if (disease == Disease.INFLUENZA) {
+			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
+			facilityOrHome.select(TypeOfPlace.HOME);
+			getValue().setCaseClassification(CaseClassification.CONFIRMED);
+		} else {
+			facilityOrHome.setValue(null);
+			facilityOrHome.unselect(TypeOfPlace.HOME);
+			getValue().setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+		}
 	}
 
 	private void setNoneFacility() {
@@ -729,5 +747,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
 		personCreateForm.setSearchedPerson(searchedPerson);
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 }

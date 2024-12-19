@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -86,6 +88,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private PersonCreateForm personCreateForm;
 
 	private final PersonReferenceDto personDto;
+	private Window warningSimilarPersons;
 
 	public TravelEntryCreateForm() {
 		this(null);
@@ -113,7 +116,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true);
+		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true, false);
 		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
@@ -156,6 +159,10 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
 		getContent().addComponent(personCreateForm, TravelEntryDto.PERSON);
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
 
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		regionCombo.addValueChangeListener(e -> {
@@ -314,5 +321,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			responsibleCommunity.setValue(facility.getCommunity());
 			responsibleCommunity.setReadOnly(true);
 		}
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 }

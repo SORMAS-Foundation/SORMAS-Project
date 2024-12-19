@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -94,6 +96,7 @@ import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
@@ -184,6 +187,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private boolean isPseudonymized;
 	private LocationEditForm addressForm;
 	private PresentConditionChangeListener presentConditionChangeListener;
+	private SormasTextField nationalHealthIdField;
+	private Window warningSimilarPersons;
 	//@formatter:on
 
 	public PersonEditForm(
@@ -296,13 +301,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox birthDateMonth = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateMonth.setNullSelectionAllowed(true);
-		birthDateMonth.addItems(DateHelper.getMonthsInYear());
-		birthDateMonth.setPageLength(12);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		birthDateMonth.setCaption("");
-		DateHelper.getMonthsInYear()
-			.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
-		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -372,7 +372,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		addField(PersonDto.PASSPORT_NUMBER);
 
-		TextField nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID);
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
+		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
 		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		nationalHealthIdWarningLabel.setVisible(false);
@@ -387,6 +388,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 		addField(PersonDto.INTERNAL_TOKEN);
+
+		AtomicBoolean nationalHealthIdFirstLoading = new AtomicBoolean(true);
+		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
+			String currentPersonUuid = this.getValue().getUuid();
+			if (nationalHealthIdFirstLoading.get()) {
+				nationalHealthIdFirstLoading.set(false);
+			} else {
+				warningSimilarPersons =
+					PersonFormHelper.warningSimilarPersons(nationalHealthIdField.getValue(), currentPersonUuid, () -> warningSimilarPersons = null);
+			}
+		});
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -407,7 +419,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
-		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
+		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true, false);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
 
 		// Set requirements that don't need visibility changes and read only status
@@ -445,6 +457,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (isEditableAllowed(PersonDto.BIRTH_DATE_MM)) {
+			birthDateMonth.addItems(DateHelper.getMonthsInYear());
+			birthDateMonth.setPageLength(13);
+			DateHelper.getMonthsInYear()
+				.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
+		}
 
 		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
 			&& !getField(PersonDto.ARMED_FORCES_RELATION_TYPE).isVisible()
@@ -901,6 +920,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	public Field getLastNameField() {
 		return lastNameField;
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 
 	@Override

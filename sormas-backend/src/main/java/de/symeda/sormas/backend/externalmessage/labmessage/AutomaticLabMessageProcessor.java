@@ -16,7 +16,10 @@
 package de.symeda.sormas.backend.externalmessage.labmessage;
 
 import java.text.Collator;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -43,6 +46,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
@@ -149,7 +153,7 @@ public class AutomaticLabMessageProcessor {
 					callback.cancel();
 				}
 			} else {
-				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true);
+				PersonSimilarityCriteria similarityCriteria = PersonSimilarityCriteria.forPerson(person, true, false);
 				if (personFacade.checkMatchingNameInDatabase(user.toReference(), similarityCriteria)) {
 					logger.debug("[MESSAGE PROCESSING] Similar persons found in the database. Canceling processing.");
 					callback.cancel();
@@ -183,7 +187,14 @@ public class AutomaticLabMessageProcessor {
 				}
 
 				Set<String> similarCaseUuids = similarCases.stream().map(CaseSelectionDto::getUuid).collect(Collectors.toSet());
-				String caseUuid = caseService.getCaseUuidForAutomaticSampleAssignment(similarCaseUuids, disease, automaticSampleAssignmentThreshold);
+				Date sampleDate = externalMessageDto.getSampleReports()
+					.stream()
+					.map(SampleReportDto::getSampleDateTime)
+					.filter(Objects::nonNull)
+					.min(Comparator.comparing(Date::getTime))
+					.orElse(null);
+				String caseUuid =
+					caseService.getCaseUuidForAutomaticSampleAssignment(similarCaseUuids, disease, sampleDate, automaticSampleAssignmentThreshold);
 
 				if (caseUuid == null) {
 					logger.debug(

@@ -1993,6 +1993,7 @@ public interface Captions {
 	String importSkips = "importSkips";
 	String importValueSeparator = "importValueSeparator";
 	String inaccessibleValue = "inaccessibleValue";
+	String includePartialBirthdates = "includePartialBirthdates";
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String lastName = "lastName";
@@ -3127,8 +3128,8 @@ public interface Captions {
 	String versionIsMissing = "versionIsMissing";
 	String view = "view";
 	String View_actions = "View.actions";
-	String View_adverseeventinvestigations = "View.adverseeventinvestigations";
 	String View_adverseevents = "View.adverseevents";
+	String View_adverseevents_investigations = "View.adverseevents.investigations";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";
 	String View_aggregatereports_reportdata = "View.aggregatereports.reportdata";
