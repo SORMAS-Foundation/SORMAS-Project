@@ -46,11 +46,11 @@ public interface CustomizableEnumFacade
 	 *            The specific extension of {@link CustomizableEnum} for type safety
 	 * @return The enum instance containing its value, internationalized caption, and optional properties
 	 */
-	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value);
+	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, Disease disease, String value);
 
 	/**
 	 * Works similar to the {@link CustomizableEnumFacade#getEnumValues(CustomizableEnumType, Disease)}, but looks up a specific value.
-	 * Unlike the {@link CustomizableEnumFacade#getEnumValue(CustomizableEnumType, String)}, this method does not throw a RuntimeException
+	 * Unlike the {@link CustomizableEnumFacade#getEnumValue(CustomizableEnumType, Disease, String)}, this method does not throw a RuntimeException
 	 * when an enum can not be found.
 	 * 
 	 * @param type
@@ -106,7 +106,7 @@ public interface CustomizableEnumFacade
 
 	/**
 	 * Clears the caches and reloads the customizable enum values from the database. Does not load enum values by language
-	 * or disease as those are retrieved on demand by using {@link #getEnumValue(CustomizableEnumType, String)} and
+	 * or disease as those are retrieved on demand by using {@link #getEnumValue(CustomizableEnumType, Disease, String)} and
 	 * {@link #getEnumValues(CustomizableEnumType, Disease)}. Exposed to this facade to allow reloading the caches without
 	 * having to restart the server.
 	 */

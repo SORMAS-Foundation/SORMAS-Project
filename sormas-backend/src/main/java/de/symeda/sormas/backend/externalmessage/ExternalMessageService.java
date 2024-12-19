@@ -18,7 +18,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.person.Person;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -93,7 +92,8 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE), criteria.getDisease()));
 		}
 		if (criteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE_VARIANT), criteria.getDiseaseVariant()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()));
 		}
 		if (criteria.getExternalMessageStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.STATUS), criteria.getExternalMessageStatus()));

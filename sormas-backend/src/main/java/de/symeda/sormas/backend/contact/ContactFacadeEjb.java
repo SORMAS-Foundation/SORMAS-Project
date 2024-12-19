@@ -771,7 +771,7 @@ public class ContactFacadeEjb
 			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
 			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY),
 			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
-			joins.getPerson().get(Person.OCCUPATION_TYPE),
+			joins.getPerson().get(Person.OCCUPATION_TYPE_VALUE),
 			joins.getPerson().get(Person.OCCUPATION_DETAILS),
 			joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
 			joins.getRegion().get(Region.NAME),

@@ -582,7 +582,9 @@ public class AbstractSelfReportProcessingFlowTest extends AbstractBeanTest {
 
 		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
 		Mockito
-			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.when(
+				MockProducer.getCustomizableEnumFacadeForConverter()
+					.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, Disease.CORONAVIRUS, diseaseVariant.getValue()))
 			.thenReturn(diseaseVariant);
 		selfReport.setDiseaseVariant(diseaseVariant);
 		selfReport.setDiseaseVariantDetails("Variant Details");

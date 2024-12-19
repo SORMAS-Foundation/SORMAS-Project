@@ -25,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnumConverter;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;

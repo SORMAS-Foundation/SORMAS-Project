@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,14 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.event;
+package de.symeda.sormas.api.disease;
 
-import de.symeda.sormas.api.event.SpecificRisk;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumConverter;
+import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumConverter;
 
-public class SpecificRiskConverter extends CustomizableEnumConverter<SpecificRisk> {
+public class PathogenConverter extends CustomizableEnumConverter<Pathogen> {
 
-	public SpecificRiskConverter() {
-		super(SpecificRisk.class);
+	public PathogenConverter() {
+		super(Pathogen.class);
 	}
 }

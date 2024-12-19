@@ -21,6 +21,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -129,11 +130,11 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		String internalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
-		SpecificRisk specificRisk,
+		String specificRisk,
 		EventInvestigationStatus eventInvestigationStatus,
 		EventManagementStatus eventManagementStatus,
 		Disease disease,
-		DiseaseVariant diseaseVariant,
+		String diseaseVariant,
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
@@ -174,11 +175,11 @@ public class EventIndexDto extends PseudonymizableIndexDto {
 		this.internalToken = internalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
-		this.specificRisk = specificRisk;
+		this.specificRisk = new SpecificRiskConverter().convertToEntityAttribute(disease, specificRisk);
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventManagementStatus = eventManagementStatus;
 		this.disease = disease;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;

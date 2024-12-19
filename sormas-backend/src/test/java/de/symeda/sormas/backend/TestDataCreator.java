@@ -2236,7 +2236,7 @@ public class TestDataCreator {
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(diseaseVariant);
 
-		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, name);
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, disease, name);
 	}
 
 	public Pathogen createPathogen(String value, String caption) {
@@ -2251,7 +2251,7 @@ public class TestDataCreator {
 
 		beanTest.getCustomizableEnumFacade().loadData();
 
-		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, value);
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, null, value);
 	}
 
 	public ExternalShareInfo createExternalShareInfo(

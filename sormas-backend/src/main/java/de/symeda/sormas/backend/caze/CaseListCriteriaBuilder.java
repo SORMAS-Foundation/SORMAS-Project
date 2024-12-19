@@ -219,7 +219,7 @@ public class CaseListCriteriaBuilder {
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
-			root.get(Case.DISEASE_VARIANT),
+			root.get(Case.DISEASE_VARIANT_VALUE),
 			root.get(Case.DISEASE_DETAILS),
 			root.get(Case.CASE_CLASSIFICATION),
 			root.get(Case.INVESTIGATION_STATUS),

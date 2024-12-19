@@ -312,7 +312,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 				event.get(Event.UUID),
 				event.get(Event.EVENT_TITLE),
 				event.get(Event.DISEASE),
-				event.get(Event.DISEASE_VARIANT),
+				event.get(Event.DISEASE_VARIANT_VALUE),
 				event.get(Event.DISEASE_DETAILS),
 				event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 				event.get(Event.START_DATE),
@@ -427,7 +427,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 					expression = event.get(Event.DISEASE);
 					break;
 				case EventActionIndexDto.EVENT_DISEASE_VARIANT:
-					expression = event.get(Event.DISEASE_VARIANT);
+					expression = event.get(Event.DISEASE_VARIANT_VALUE);
 					break;
 				case EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE:
 					expression = event.get(Event.EVENT_IDENTIFICATION_SOURCE);
@@ -523,7 +523,7 @@ public class ActionService extends AdoServiceWithUserFilterAndJurisdiction<Actio
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.DISEASE),
-			event.get(Event.DISEASE_VARIANT),
+			event.get(Event.DISEASE_VARIANT_VALUE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE),

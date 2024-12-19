@@ -25,6 +25,7 @@ import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -141,7 +142,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String caseReferenceNumber, String personUuid, String personFirstName, String personLastName, Disease disease,
-						DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+						String diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
 						String districtUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
@@ -166,7 +167,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.disease = disease;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.diseaseDetails = diseaseDetails;
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
