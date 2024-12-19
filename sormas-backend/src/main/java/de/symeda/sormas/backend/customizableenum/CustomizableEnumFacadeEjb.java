@@ -446,7 +446,7 @@ public class CustomizableEnumFacadeEjb
 			String value = customizableEnumValue.getValue();
 			Set<Disease> diseases = customizableEnumValue.getDiseases();
 
-			if (diseases == null){
+			if (diseases == null) {
 				diseases = Collections.singleton(null);
 			}
 			for (Disease disease : diseases) {
@@ -478,7 +478,9 @@ public class CustomizableEnumFacadeEjb
 	}
 
 	private CustomizableEnumCacheInfo getEnumInfo(CustomizableEnumType type, Disease disease, String value) {
-		return enumInfo.get(type).getOrDefault(disease, Collections.emptyMap()).get(value);
+		return enumInfo.get(type)
+			.getOrDefault(disease, Collections.emptyMap())
+			.getOrDefault(value, disease != null ? getEnumInfo(type, null, value) : null);
 	}
 
 	public CustomizableEnumValueDto toDto(CustomizableEnumValue source) {

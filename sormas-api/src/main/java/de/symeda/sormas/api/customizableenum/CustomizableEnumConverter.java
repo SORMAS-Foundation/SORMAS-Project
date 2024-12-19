@@ -18,8 +18,9 @@ package de.symeda.sormas.api.customizableenum;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import de.symeda.sormas.api.Disease;
 import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.Disease;
 
 /**
  * JPA Converter that converts a JSON String stored in the database to an instance of {@link CustomizableEnum} and vice versa.
@@ -41,7 +42,6 @@ public abstract class CustomizableEnumConverter<T extends CustomizableEnum> {
 		this.enumClass = enumClass;
 	}
 
-
 	public String convertToDatabaseColumn(T enumValue) {
 		return enumValue != null ? enumValue.getValue() : null;
 	}
@@ -61,7 +61,11 @@ public abstract class CustomizableEnumConverter<T extends CustomizableEnum> {
 				throw new RuntimeException("No CustomizableEnumType for given enumClass " + enumClass + "found");
 			}
 
-			return customizableEnumFacade.getEnumValue(CustomizableEnumType.getByEnumClass(enumClass), disease, enumString);
+			T enumValue = customizableEnumFacade.getEnumValue(enumType, disease, enumString);
+			if (enumValue == null && disease != null) {
+				enumValue = customizableEnumFacade.getEnumValue(enumType, null, enumString);
+			}
+			return enumValue;
 		} catch (NamingException e) {
 			throw new RuntimeException(e);
 		}
