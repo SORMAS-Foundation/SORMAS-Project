@@ -15,12 +15,19 @@
 
 package de.symeda.sormas.ui.dashboard.gis;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiDashboardFilterDateType;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.AefiDashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.GisDashboardCriteria;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
@@ -33,8 +40,13 @@ public class GisDashboardDataProvider extends AbstractDashboardDataProvider<GisD
 	private Boolean sampleWithNoDisease;
 	private AefiDashboardFilterDateType aefiDateType = AefiDashboardFilterDateType.REPORT_DATE;
 
+	//disease specific
+	private List<DashboardEventDto> events = new ArrayList<>();
+	private Map<EventStatus, Long> eventCountByStatus;
+
 	@Override
 	public void refreshData() {
+		refreshDataForSelectedDisease();
 	}
 
 	@Override
@@ -58,7 +70,7 @@ public class GisDashboardDataProvider extends AbstractDashboardDataProvider<GisD
 			.dateBetween(fromDate, toDate);
 	}
 
-	private AefiDashboardCriteria buildAefiDashboardCriteria() {
+	public AefiDashboardCriteria buildAefiDashboardCriteria() {
 		return newAefiDashboardCriteria().aefiDashboardDateType(aefiDateType).dateBetween(fromDate, toDate);
 	}
 
@@ -72,6 +84,19 @@ public class GisDashboardDataProvider extends AbstractDashboardDataProvider<GisD
 
 	private AefiDashboardCriteria newAefiDashboardCriteria() {
 		return new AefiDashboardCriteria();
+	}
+
+	public void refreshDataForSelectedDisease() {
+
+		// Update the entities lists according to the filters
+		if (this.disease == null) {
+			return;
+		}
+
+		// Events
+		DashboardCriteria eventDashboardCriteria = buildCaseDashboardCriteria();
+		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventDashboardCriteria));
+		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventDashboardCriteria));
 	}
 
 	public NewCaseDateType getCaseDateType() {
@@ -115,5 +140,21 @@ public class GisDashboardDataProvider extends AbstractDashboardDataProvider<GisD
 
 	public void setAefiDateType(AefiDashboardFilterDateType aefiDateType) {
 		this.aefiDateType = aefiDateType;
+	}
+
+	public List<DashboardEventDto> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<DashboardEventDto> events) {
+		this.events = events;
+	}
+
+	public Map<EventStatus, Long> getEventCountByStatus() {
+		return eventCountByStatus;
+	}
+
+	public void setEventCountByStatus(Map<EventStatus, Long> eventCountByStatus) {
+		this.eventCountByStatus = eventCountByStatus;
 	}
 }

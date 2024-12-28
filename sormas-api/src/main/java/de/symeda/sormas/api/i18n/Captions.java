@@ -1224,6 +1224,7 @@ public interface Captions {
 	String dashboardFollowUpStatusChart = "dashboardFollowUpStatusChart";
 	String dashboardFollowUpUntilChart = "dashboardFollowUpUntilChart";
 	String dashboardFollowUpUntilShort = "dashboardFollowUpUntilShort";
+	String dashboardGisMapFilter = "dashboardGisMapFilter";
 	String dashboardGrouping = "dashboardGrouping";
 	String dashboardGt1ConfirmedCases = "dashboardGt1ConfirmedCases";
 	String dashboardGt1ProbableCases = "dashboardGt1ProbableCases";
@@ -1269,6 +1270,7 @@ public interface Captions {
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
 	String dashboardNumberOfSamples = "dashboardNumberOfSamples";
 	String dashboardOneDay = "dashboardOneDay";
+	String dashboardOtherLabel = "dashboardOtherLabel";
 	String dashboardOutbreak = "dashboardOutbreak";
 	String dashboardPending = "dashboardPending";
 	String dashboardPeriodBefore = "dashboardPeriodBefore";
@@ -3284,6 +3286,7 @@ public interface Captions {
 	String View_dashboard_adverseevents = "View.dashboard.adverseevents";
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
+	String View_dashboard_gis = "View.dashboard.gis";
 	String View_dashboard_samples = "View.dashboard.samples";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_environments = "View.environments";

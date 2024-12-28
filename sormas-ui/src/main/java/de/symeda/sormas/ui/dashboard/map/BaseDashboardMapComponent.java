@@ -57,11 +57,14 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	protected final P dashboardDataProvider;
 	protected LeafletMap map;
 	// Layouts and components
+	protected HorizontalLayout mapHeaderLayout;
 	private final String headingStringTag;
 	private final String headingInfoTag;
 	private CssLayout overlayBackground;
 	private VerticalLayout overlayLayout;
 	private Label overlayMessageLabel;
+	protected HorizontalLayout mapFooterLayout;
+	protected boolean gisDashboard;
 	private PopupButton legendDropdown;
 
 	private Label headingInfoIcon;
@@ -69,6 +72,11 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	private Consumer<Boolean> externalExpandListener;
 
 	public BaseDashboardMapComponent(String headingStringTag, P dashboardDataProvider, String headingInfoTag) {
+		this(headingStringTag, dashboardDataProvider, headingInfoTag, false);
+	}
+
+	public BaseDashboardMapComponent(String headingStringTag, P dashboardDataProvider, String headingInfoTag, boolean gisDashboard) {
+		this.gisDashboard = gisDashboard;
 		this.headingStringTag = headingStringTag;
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.headingInfoTag = headingInfoTag;
@@ -102,8 +110,10 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 			hideMapOverlay();
 
 			loadMapData(fromDate, toDate);
-			// Re-create the map key layout to only show the keys for the selected layers
-			legendDropdown.setContent(createLegend());
+			if (!gisDashboard) {
+				// Re-create the map key layout to only show the keys for the selected layers
+				legendDropdown.setContent(createLegend());
+			}
 		}
 	}
 
@@ -131,7 +141,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	}
 
 	private HorizontalLayout createHeader() {
-		HorizontalLayout mapHeaderLayout = new HorizontalLayout();
+		mapHeaderLayout = new HorizontalLayout();
 		mapHeaderLayout.setWidth(100, Unit.PERCENTAGE);
 		mapHeaderLayout.setSpacing(true);
 		CssStyles.style(mapHeaderLayout, CssStyles.VSPACE_4);
@@ -184,7 +194,7 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 	}
 
 	private HorizontalLayout createFooter() {
-		HorizontalLayout mapFooterLayout = new HorizontalLayout();
+		mapFooterLayout = new HorizontalLayout();
 		mapFooterLayout.setWidth(100, Unit.PERCENTAGE);
 		mapFooterLayout.setSpacing(true);
 		CssStyles.style(mapFooterLayout, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
@@ -313,10 +323,18 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		overlayLayout.setVisible(false);
 		mapLayout.addComponent(overlayLayout);
 
+		if (gisDashboard) {
+			mapLayout.addComponent(createFooter());
+			mapFooterLayout.setWidthUndefined();
+			CssStyles.style(mapFooterLayout, CssStyles.GIS_DASHBOARD_MAP_FOOTER);
+		}
+
 		addComponent(mapLayout);
 		setExpandRatio(mapLayout, 1);
 
-		addComponent(createFooter());
+		if (!gisDashboard) {
+			addComponent(createFooter());
+		}
 	}
 
 	public void appendHeadingInfo(String description) {

@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.dashboard;
 
 import static de.symeda.sormas.ui.UiUtil.permitted;
 
+import java.util.EnumSet;
+
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -32,6 +34,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.adverseeventsfollowingimmunization.AefiDashboardView;
 import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.gis.GisDashboardView;
 import de.symeda.sormas.ui.dashboard.sample.SampleDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -72,6 +75,21 @@ public abstract class AbstractDashboardView extends AbstractView {
 			dashboardSwitcher.setItemCaption(DashboardType.ADVERSE_EVENTS, I18nProperties.getEnumCaption(DashboardType.ADVERSE_EVENTS));
 		}
 
+		if (permitted(
+			EnumSet.of(
+				FeatureType.CASE_SURVEILANCE,
+				FeatureType.CONTACT_TRACING,
+				FeatureType.SAMPLES_LAB,
+				FeatureType.ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_MANAGEMENT),
+			new UserRight[] {
+				UserRight.DASHBOARD_SURVEILLANCE_VIEW,
+				UserRight.DASHBOARD_CONTACT_VIEW,
+				UserRight.DASHBOARD_SAMPLES_VIEW,
+				UserRight.DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW })) {
+			dashboardSwitcher.addItem(DashboardType.GIS);
+			dashboardSwitcher.setItemCaption(DashboardType.GIS, I18nProperties.getEnumCaption(DashboardType.GIS));
+		}
+
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 			dashboardSwitcher.addItem(DashboardType.CAMPAIGNS);
 			dashboardSwitcher.setItemCaption(DashboardType.CAMPAIGNS, I18nProperties.getEnumCaption(DashboardType.CAMPAIGNS));
@@ -104,6 +122,8 @@ public abstract class AbstractDashboardView extends AbstractView {
 			SormasUI.get().getNavigator().navigateTo(SampleDashboardView.VIEW_NAME);
 		} else if (DashboardType.ADVERSE_EVENTS.equals(e.getProperty().getValue())) {
 			SormasUI.get().getNavigator().navigateTo(AefiDashboardView.VIEW_NAME);
+		} else if (DashboardType.GIS.equals(e.getProperty().getValue())) {
+			SormasUI.get().getNavigator().navigateTo(GisDashboardView.VIEW_NAME);
 		} else {
 			SormasUI.get().getNavigator().navigateTo(CampaignDashboardView.VIEW_NAME);
 		}

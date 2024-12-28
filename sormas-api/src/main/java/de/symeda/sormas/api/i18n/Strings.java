@@ -678,6 +678,7 @@ public interface Strings {
 	String headingFollowUpStatus = "headingFollowUpStatus";
 	String headingGenerateCases = "headingGenerateCases";
 	String headingGenerateContacts = "headingGenerateContacts";
+	String headingGisDashboardMap = "headingGisDashboardMap";
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";

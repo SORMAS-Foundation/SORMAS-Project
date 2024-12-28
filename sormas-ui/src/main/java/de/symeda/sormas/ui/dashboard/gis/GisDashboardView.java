@@ -15,9 +15,48 @@
 
 package de.symeda.sormas.ui.dashboard.gis;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
+import com.vaadin.ui.Alignment;
+
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class GisDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/gis";
+
+	private final GisDashboardDataProvider dataProvider;
+	private final GisDashboardMapComponent mapComponent;
+
+	public GisDashboardView() {
+		super(VIEW_NAME);
+
+		dashboardSwitcher.setValue(DashboardType.GIS);
+		dashboardSwitcher.addValueChangeListener(this::navigateToDashboardView);
+
+		dataProvider = new GisDashboardDataProvider();
+		GisDashboardFilterLayout filterLayout = new GisDashboardFilterLayout(this, dataProvider);
+
+		mapComponent = new GisDashboardMapComponent(dataProvider);
+		mapComponent.setSizeFull();
+
+		PopupButton filterDropdown = ButtonHelper.createPopupButton(Captions.dashboardGisMapFilter, filterLayout, CssStyles.BUTTON_SUBTLE);
+		mapComponent.getMapHeaderLayout().addComponent(filterDropdown);
+		mapComponent.getMapHeaderLayout().setComponentAlignment(filterDropdown, Alignment.MIDDLE_LEFT);
+
+		dashboardLayout.addComponent(mapComponent);
+		dashboardLayout.setExpandRatio(mapComponent, 1);
+	}
+
+	@Override
+	public void refreshDashboard() {
+		dataProvider.refreshData();
+
+		mapComponent.updateEntityLoadingStatus();
+		mapComponent.refreshMap();
+	}
 }

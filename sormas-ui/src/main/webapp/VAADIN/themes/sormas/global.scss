@@ -452,32 +452,64 @@
     display: flex;
     flex-wrap: wrap;
   }
-  
+
   .system-configuration-dynamic-input .v-select-optiongroup-wrapping-checkbox-group > .v-checkbox {
     display: flex;
     width: calc(33.33% - 1.5rem);
   }
-  
+
   .system-configuration-dynamic-input .toggle-password .v-spacing {
     display: none;
   }
-  
+
   .system-configuration-dynamic-input .toggle-password .v-slot {
     width: 100% !important;
-  
+
   }
-  
+
   .system-configuration-dynamic-input .toggle-password input {
     height: 36px;
   }
-  
-  .system-configuration-dynamic-input .toggle-password .v-button { 
+
+  .system-configuration-dynamic-input .toggle-password .v-button {
     margin-left: -4rem;
     margin-top: 2px;
   }
-  
+
   .case-notifier-side-view {
     border-top: 1px solid $v-focus-color;
-    padding: 9px 0;    
+    padding: 9px 0;
+  }
+
+  .gis-dashboard-map-header{
+    position: relative;
+    margin: 12px 0px -80px !important;
+    padding-left: 70px;
+    float: left;
+    clear: both;
+    z-index: 5;
+  }
+
+  .gis-dashboard-map-header .v-button {
+    color: #000000 !important;
+    font-weight: 600;
+    background-color: #FFFFFF !important;
+    border-radius: 24px;
+  }
+
+  .gis-dashboard-map-footer{
+    position: relative;
+    margin: -60px 0px 0px;
+    padding-right: 10px;
+    float: right;
+    clear: both;
+    z-index: 5;
+  }
+
+  .gis-dashboard-map-footer .v-button {
+    color: #000000 !important;
+    font-weight: 600;
+    background-color: #FFFFFF !important;
+    border-radius: 24px;
   }
 }

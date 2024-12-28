@@ -71,6 +71,9 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 	private Date toDate;
 	private EntityRelevanceStatus relevanceStatus;
 
+	private boolean showSeriousAefiForMap;
+	private boolean showNonSeriousAefiForMap;
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -225,5 +228,23 @@ public class AefiCriteria extends BaseCriteria implements Serializable {
 	public AefiCriteria aefiType(AefiType aefiType) {
 		this.aefiType = aefiType;
 		return this;
+	}
+
+	public AefiCriteria showSeriousAefiForMap(boolean showSeriousAefi) {
+		this.showSeriousAefiForMap = showSeriousAefi;
+		return this;
+	}
+
+	public AefiCriteria showNonSeriousAefiForMap(boolean showNonSeriousAefi) {
+		this.showNonSeriousAefiForMap = showNonSeriousAefi;
+		return this;
+	}
+
+	public boolean isShowSeriousAefiForMap() {
+		return showSeriousAefiForMap;
+	}
+
+	public boolean isShowNonSeriousAefiForMap() {
+		return showNonSeriousAefiForMap;
 	}
 }
