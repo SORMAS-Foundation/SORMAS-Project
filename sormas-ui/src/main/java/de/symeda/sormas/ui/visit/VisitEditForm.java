@@ -42,13 +42,12 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
@@ -82,7 +81,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			VisitDto.I18N_PREFIX,
 			false,
 			null,
-			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(create || inJurisdiction), !create && isPseudonymized));
+			FieldAccessHelper.getFieldAccessCheckers(create || inJurisdiction, !create && isPseudonymized));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}

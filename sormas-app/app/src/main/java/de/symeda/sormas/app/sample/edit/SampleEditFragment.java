@@ -85,7 +85,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfAssociatedEntity(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()),
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()),
 			UserRight.SAMPLE_EDIT);
 	}
 

@@ -80,6 +80,7 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_1 = "indent-left-1";
 	public static final String INDENT_LEFT_2 = "indent-left-2";
 	public static final String INDENT_LEFT_3 = "indent-left-3";
+	public static final String PADDING_NONE = "padding-none";
 
 	public static final String VAADIN_LABEL = "v-label";
 	public static final String VAADIN_CAPTION = "v-caption";
@@ -238,6 +239,7 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_PROGRESS = "status-progress";
 
 	public static final String GRID_ROW_TITLE = "row-title";
+	public static final String GRID_ROW_SELECTED = "v-grid-row-selected";
 
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
 	public static final String BADGE = "badge";
@@ -308,6 +310,23 @@ public final class CssStyles {
 
 	@Deprecated
 	public static final String CALLOUT = "callout";
+
+	public static final String VIEW_SECTION = "view-section";
+	public static final String PAGE_TITLE = "page-title";
+	public static final String ROUNDED_BORDER = "rounded-border";
+	public static final String ROUNDED_BORDER_TOP = "rounded-border-top";
+	public static final String ROUNDED_BORDER_BOTTOM = "rounded-border-bottom";
+	public static final String ROUNDED_BORDER_SM = "rounded-border-sm";
+	public static final String ROUNDED_BORDER_TOP_SM = "rounded-border-sm-top";
+	public static final String ROUNDED_BORDER_BOTTOM_SM = "rounded-border-sm-bottom";
+	public static final String MARGIN_X_4 = "margin-x-4";
+	public static final String MARGIN_TOP_4 = "margin-top-4";
+	public static final String PADDING_X_8 = "padding-x-8";
+	public static final String PADDING_X_20 = "padding-x-20";
+	public static final String FORM_SECTION_ACCORDION_PANEL_TITLE_BUTTON = "form-section-accordion-panel-title-button";
+	public static final String OPTIONGROUP_CAPTION_FLEX = "optiongroup-caption-flex";
+	public static final String VIEW_SECTION_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4;
+	public static final String VIEW_SECTION_MARGIN_TOP_4_MARGIN_X_4 = VIEW_SECTION + " " + MARGIN_X_4 + " " + MARGIN_TOP_4;
 
 	public static String buildVaadinStyle(String primaryStyle, String... styles) {
 		StringBuilder styleBuilder = new StringBuilder();

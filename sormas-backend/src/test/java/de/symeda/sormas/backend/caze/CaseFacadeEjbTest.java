@@ -3343,7 +3343,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
 		Mockito
-			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.when(
+				MockProducer.getCustomizableEnumFacadeForConverter()
+					.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, Disease.CORONAVIRUS, diseaseVariant.getValue()))
 			.thenReturn(diseaseVariant);
 
 		CaseBulkEditData bulkEditData = new CaseBulkEditData();
@@ -3376,7 +3378,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testBulkUpdateBulkEditDiseaseClearVariantOfChangedDisease() {
 		DiseaseVariant diseaseVariant = creator.createDiseaseVariant("BF.1.2", Disease.CORONAVIRUS);
 		Mockito
-			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariant.getValue()))
+			.when(
+				MockProducer.getCustomizableEnumFacadeForConverter()
+					.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, Disease.CORONAVIRUS, diseaseVariant.getValue()))
 			.thenReturn(diseaseVariant);
 		CaseDataDto caze = creator.createCase(surveillanceSupervisor.toReference(), creator.createPerson().toReference(), rdcf, c -> {
 			c.setDisease(Disease.CORONAVIRUS);

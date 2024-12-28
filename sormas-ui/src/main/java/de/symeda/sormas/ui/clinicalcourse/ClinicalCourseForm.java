@@ -2,10 +2,9 @@ package de.symeda.sormas.ui.clinicalcourse;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 
 public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 
@@ -19,7 +18,7 @@ public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 			ClinicalCourseDto.I18N_PREFIX,
 			true,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 	}
 
 	@Override

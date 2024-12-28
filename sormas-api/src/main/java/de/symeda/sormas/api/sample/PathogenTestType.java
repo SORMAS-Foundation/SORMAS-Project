@@ -24,38 +24,62 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public enum PathogenTestType {
 
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	ANTIBODY_DETECTION,
 	ANTIGEN_DETECTION,
 	RAPID_TEST,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CULTURE,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	HISTOPATHOLOGY,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	ISOLATION,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	IGM_SERUM_ANTIBODY,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	IGG_SERUM_ANTIBODY,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	IGA_SERUM_ANTIBODY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	INCUBATION_TIME,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	INDIRECT_FLUORESCENT_ANTIBODY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	DIRECT_FLUORESCENT_ANTIBODY,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	MICROSCOPY,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	NEUTRALIZING_ANTIBODIES,
 	PCR_RT_PCR,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	GRAM_STAIN,
 	@Diseases(value = {
-		Disease.CORONAVIRUS }, hide = true)
+		Disease.CORONAVIRUS, Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	LATEX_AGGLUTINATION,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	CQ_VALUE_DETECTION,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	SEQUENCING,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	DNA_MICROARRAY,
+	@Diseases(value = {
+			Disease.RESPIRATORY_SYNCYTIAL_VIRUS }, hide = true)
 	TMA,
 	OTHER;
 

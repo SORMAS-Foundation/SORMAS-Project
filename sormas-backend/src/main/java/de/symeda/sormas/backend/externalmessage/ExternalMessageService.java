@@ -50,9 +50,10 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 	}
 
 	@Override
-	public void deletePermanent(ExternalMessage externalMessage) {
+	public boolean deletePermanent(ExternalMessage externalMessage) {
 
 		super.deletePermanent(externalMessage);
+		return false;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -91,7 +92,8 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE), criteria.getDisease()));
 		}
 		if (criteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE_VARIANT), criteria.getDiseaseVariant()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()));
 		}
 		if (criteria.getExternalMessageStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.STATUS), criteria.getExternalMessageStatus()));
@@ -122,6 +124,7 @@ public class ExternalMessageService extends AdoServiceWithUserFilterAndJurisdict
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(ExternalMessage.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(ExternalMessage.PERSON_FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(ExternalMessage.PERSON_LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, labMessage.get(ExternalMessage.PERSON_NATIONAL_HEALTH_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(ExternalMessage.PERSON_POSTAL_CODE), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(ExternalMessage.REPORTER_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(ExternalMessage.REPORTER_POSTAL_CODE), textFilter));

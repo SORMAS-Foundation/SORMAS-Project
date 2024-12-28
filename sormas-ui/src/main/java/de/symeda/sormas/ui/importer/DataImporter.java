@@ -448,7 +448,7 @@ public abstract class DataImporter {
 		if (propertyType.isAssignableFrom(OccupationType.class)) {
 			OccupationType occupationType = null;
 			try {
-				occupationType = FacadeProvider.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, entry);
+				occupationType = FacadeProvider.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, entry);
 			} catch (EJBException e) {
 				//ignore, occupationType will remain null
 			}

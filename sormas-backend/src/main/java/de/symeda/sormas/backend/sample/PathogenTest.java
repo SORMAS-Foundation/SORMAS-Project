@@ -23,7 +23,6 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -32,6 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -41,8 +41,8 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.DeletableAdo;
-import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
-import de.symeda.sormas.backend.disease.PathogenConverter;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -58,9 +58,9 @@ public class PathogenTest extends DeletableAdo {
 	public static final String SAMPLE = "sample";
 	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
 	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String TESTED_DISEASE_VARIANT = "testedDiseaseVariant";
+	public static final String TESTED_DISEASE_VARIANT_VALUE = "testedDiseaseVariantValue";
 	public static final String TESTED_DISEASE_VARIANT_DETAILS = "testedDiseaseVariantDetails";
-	public static final String TESTED_PATHOGEN = "testedPathogen";
+	public static final String TESTED_PATHOGEN_VALUE = "testedPathogenValue";
 	public static final String TESTED_PATHOGEN_DETAILS = "testedPathogenDetails";
 	public static final String TYPING_ID = "typingId";
 	public static final String TEST_TYPE = "testType";
@@ -95,11 +95,11 @@ public class PathogenTest extends DeletableAdo {
 	private Sample sample;
 	private EnvironmentSample environmentSample;
 	private Disease testedDisease;
-	@Convert(converter = DiseaseVariantConverter.class)
+	private String testedDiseaseVariantValue;
 	private DiseaseVariant testedDiseaseVariant;
 	private String testedDiseaseDetails;
 	private String testedDiseaseVariantDetails;
-	@Convert(converter = PathogenConverter.class)
+	private String testedPathogenValue;
 	private Pathogen testedPathogen;
 	private String testedPathogenDetails;
 	private String typingId;
@@ -181,24 +181,44 @@ public class PathogenTest extends DeletableAdo {
 		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
 	}
 
-	@Column
-	@Convert(converter = DiseaseVariantConverter.class)
+	@Column(name = "testeddiseasevariant")
+	public String getTestedDiseaseVariantValue() {
+		return testedDiseaseVariantValue;
+	}
+
+	public void setTestedDiseaseVariantValue(String diseaseVariantValue) {
+		this.testedDiseaseVariantValue = diseaseVariantValue;
+		this.testedDiseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(testedDisease, testedDiseaseVariantValue);
+	}
+
+	@Transient
 	public DiseaseVariant getTestedDiseaseVariant() {
 		return testedDiseaseVariant;
 	}
 
 	public void setTestedDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.testedDiseaseVariant = diseaseVariant;
+		this.testedDiseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
 	}
 
-	@Column
-	@Convert(converter = PathogenConverter.class)
+	@Column(name = "testedpathogen")
+	public String getTestedPathogenValue() {
+		return testedPathogenValue;
+	}
+
+	public void setTestedPathogenValue(String testedPathogenValue) {
+		this.testedPathogenValue = testedPathogenValue;
+		this.testedPathogen = new PathogenConverter().convertToEntityAttribute(null, testedPathogenValue);
+	}
+
+	@Transient
 	public Pathogen getTestedPathogen() {
 		return testedPathogen;
 	}
 
 	public void setTestedPathogen(Pathogen testedPathogen) {
 		this.testedPathogen = testedPathogen;
+		this.testedPathogenValue = new PathogenConverter().convertToDatabaseColumn(testedPathogen);
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -248,7 +268,6 @@ public class PathogenTest extends DeletableAdo {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
 	public Date getTestDateTime() {
 		return testDateTime;
 	}

@@ -101,7 +101,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static PersonEditFragment newInstance(Contact activityRootData) {
@@ -111,7 +111,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static PersonEditFragment newInstance(Immunization activityRootData) {
@@ -121,7 +121,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static PersonEditFragment newInstance(EventParticipant activityRootData) {
@@ -131,7 +131,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	private void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding) {

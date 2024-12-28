@@ -25,6 +25,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBinding;
@@ -41,7 +42,7 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	// Instance methods

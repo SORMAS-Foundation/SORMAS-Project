@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.util.QueryHelper.getResultList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,12 +87,13 @@ public class CustomizableEnumFacadeEjb
 	/**
 	 * Maps a customizable enum type to all enum value strings of that type in the database.
 	 */
-	private static final EnumMap<CustomizableEnumType, List<String>> enumValues = new EnumMap<>(CustomizableEnumType.class);
+	private static final EnumMap<CustomizableEnumType, Map<Disease, List<String>>> enumValues = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type to a map with all enum values of this type as its keys and info, e.g. properties and active status,
 	 * defined for these enum values as its values.
 	 */
-	private static final EnumMap<CustomizableEnumType, Map<String, CustomizableEnumCacheInfo>> enumInfo = new EnumMap<>(CustomizableEnumType.class);
+	private static final EnumMap<CustomizableEnumType, Map<Disease, Map<String, CustomizableEnumCacheInfo>>> enumInfo =
+		new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type (defined by its class) to a map which in turn maps all languages for which translations exist to
 	 * the possible enum values of this type, which then finally map to their translated captions.
@@ -162,10 +165,12 @@ public class CustomizableEnumFacadeEjb
 
 		CustomizableEnumValue existingEntity = service.getByUuid(dto.getUuid());
 
-		List<String> dataTypeValues = enumValues.get(dto.getDataType());
-		if (existingEntity == null && dataTypeValues != null && dataTypeValues.contains(dto.getValue())) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(Validations.customizableEnumValueDuplicateValue, dto.getDataType().toString(), dto.getValue()));
+		for (Disease disease : dto.getDiseases()) {
+			List<String> dataTypeValues = enumValues.get(dto.getDataType()).getOrDefault(disease, Collections.emptyList());
+			if (existingEntity == null && dataTypeValues != null && dataTypeValues.contains(dto.getValue())) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.customizableEnumValueDuplicateValue, dto.getDataType().toString(), dto.getValue()));
+			}
 		}
 
 		CustomizableEnumValue enumValue = fillOrBuildEntity(dto, existingEntity, true);
@@ -267,8 +272,8 @@ public class CustomizableEnumFacadeEjb
 	@Lock(LockType.READ)
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value) {
-		if (!enumValues.get(type).contains(value)) {
+	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, Disease disease, String value) {
+		if (!enumValues.get(type).getOrDefault(disease, Collections.emptyList()).contains(value)) {
 			throw new IllegalArgumentException(String.format("Invalid enum value %s for customizable enum type %s", value, type.toString()));
 		}
 
@@ -279,7 +284,7 @@ public class CustomizableEnumFacadeEjb
 			fillLanguageCache(type, enumClass, language);
 		}
 
-		return buildCustomizableEnum(type, value, language, enumClass);
+		return buildCustomizableEnum(type, disease, value, language, enumClass);
 	}
 
 	@Lock(LockType.READ)
@@ -329,8 +334,8 @@ public class CustomizableEnumFacadeEjb
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}
 
-		return diseaseValuesStream.filter(value -> getEnumInfo(type, value).isActive())
-			.map(value -> buildCustomizableEnum(type, value, language, enumClass))
+		return diseaseValuesStream.filter(value -> getEnumInfo(type, disease, value).isActive())
+			.map(value -> buildCustomizableEnum(type, disease, value, language, enumClass))
 			.sorted(Comparator.comparing(CustomizableEnum::getCaption))
 			.collect(Collectors.toList());
 	}
@@ -341,12 +346,17 @@ public class CustomizableEnumFacadeEjb
 		return !getEnumValues(type, disease).isEmpty();
 	}
 
-	private <T extends CustomizableEnum> T buildCustomizableEnum(CustomizableEnumType type, String value, Language language, Class<T> enumClass) {
+	private <T extends CustomizableEnum> T buildCustomizableEnum(
+		CustomizableEnumType type,
+		Disease disease,
+		String value,
+		Language language,
+		Class<T> enumClass) {
 		try {
 			T enumValue = enumClass.getDeclaredConstructor().newInstance();
 			enumValue.setValue(value);
 			enumValue.setCaption(enumValuesByLanguage.get(enumClass).get(language).get(value));
-			enumValue.setProperties(getEnumInfo(type, value).getProperties());
+			enumValue.setProperties(getEnumInfo(type, disease, value).getProperties());
 			return enumValue;
 		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw new RuntimeException(e);
@@ -426,7 +436,7 @@ public class CustomizableEnumFacadeEjb
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			enumValueEntities.putIfAbsent(enumType, new ArrayList<>());
-			enumValues.putIfAbsent(enumType, new ArrayList<>());
+			enumValues.putIfAbsent(enumType, new HashMap<>());
 		}
 
 		// Build list of customizable enums mapped by their enum type; other caches are built on-demand
@@ -434,14 +444,26 @@ public class CustomizableEnumFacadeEjb
 			CustomizableEnumType enumType = customizableEnumValue.getDataType();
 			enumValueEntities.get(enumType).add(customizableEnumValue);
 			String value = customizableEnumValue.getValue();
-			if (enumValues.get(enumType).contains(value)) {
-				throw new InvalidCustomizationException(
-					"Enum value " + value + " for customizable enum type " + enumType.toString() + " is not unique");
+			Set<Disease> diseases = customizableEnumValue.getDiseases();
+
+			if (diseases == null) {
+				diseases = Collections.singleton(null);
 			}
-			enumValues.get(enumType).add(value);
-			enumInfo.putIfAbsent(enumType, new HashMap<>());
-			enumInfo.get(enumType)
-				.putIfAbsent(value, new CustomizableEnumCacheInfo(customizableEnumValue.getProperties(), customizableEnumValue.isActive()));
+			for (Disease disease : diseases) {
+				if (enumValues.get(enumType).getOrDefault(disease, Collections.emptyList()).contains(value)) {
+					throw new InvalidCustomizationException(
+						"Enum value " + value + " for customizable enum type " + enumType.toString() + " is not unique");
+				}
+
+				enumValues.get(enumType).putIfAbsent(disease, new ArrayList<>());
+				enumValues.get(enumType).get(disease).add(value);
+
+				enumInfo.putIfAbsent(enumType, new HashMap<>());
+				enumInfo.get(enumType).putIfAbsent(disease, new HashMap<>());
+				enumInfo.get(enumType)
+					.get(disease)
+					.putIfAbsent(value, new CustomizableEnumCacheInfo(customizableEnumValue.getProperties(), customizableEnumValue.isActive()));
+			}
 		}
 
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
@@ -455,8 +477,10 @@ public class CustomizableEnumFacadeEjb
 		}
 	}
 
-	private CustomizableEnumCacheInfo getEnumInfo(CustomizableEnumType type, String value) {
-		return enumInfo.get(type).get(value);
+	private CustomizableEnumCacheInfo getEnumInfo(CustomizableEnumType type, Disease disease, String value) {
+		return enumInfo.get(type)
+			.getOrDefault(disease, Collections.emptyMap())
+			.getOrDefault(value, disease != null ? getEnumInfo(type, null, value) : null);
 	}
 
 	public CustomizableEnumValueDto toDto(CustomizableEnumValue source) {

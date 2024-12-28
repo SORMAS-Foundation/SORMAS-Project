@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.utils;
 
+import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,6 +47,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.utils.components.NotBlankTextValidator;
 
 public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
@@ -196,8 +199,8 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		super.discard();
 	}
 
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
-		return addDiseaseField(fieldId, showNonPrimaryDiseases, false);
+	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases, boolean hideFollowUpDisabledDiseases) {
+		return addDiseaseField(fieldId, showNonPrimaryDiseases, false, hideFollowUpDisabledDiseases);
 	}
 
 	/**
@@ -212,10 +215,19 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	 *            If only a single diseases is active on the server, set it as the default value
 	 */
 	@SuppressWarnings("unchecked")
-	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases, boolean setServerDiseaseAsDefault) {
+	protected ComboBox addDiseaseField(
+		String fieldId,
+		boolean showNonPrimaryDiseases,
+		boolean setServerDiseaseAsDefault,
+		boolean hideFollowUpDisabledDiseases) {
 
 		diseaseField = addField(fieldId, ComboBox.class);
 		this.setServerDiseaseAsDefault = setServerDiseaseAsDefault;
+
+		if (hideFollowUpDisabledDiseases) {
+			removeFollowUpDisabledDiseases(diseaseField);
+		}
+
 		if (showNonPrimaryDiseases) {
 			addNonPrimaryDiseasesTo(diseaseField);
 		}
@@ -229,9 +241,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			Object value = e.getProperty().getValue();
 			if (value != null && !diseaseField.containsId(value)) {
 				Item newItem = diseaseField.addItem(value);
-				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
+				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
 		});
+
 		return diseaseField;
 	}
 
@@ -498,7 +511,16 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 			}
 
 			Item newItem = diseaseField.addItem(disease);
-			newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(disease.toString());
+			newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(disease.toString());
+		}
+	}
+
+	protected void removeFollowUpDisabledDiseases(ComboBox diseaseField) {
+		List<Disease> allDiseasesWithFollowUp = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp(true, true, true);
+		diseaseField.removeAllItems();
+		for (Object r : allDiseasesWithFollowUp) {
+			Item newItem = diseaseField.addItem(r);
+			newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
 		}
 	}
 
@@ -564,6 +586,12 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				if (field instanceof ComboBoxWithPlaceholder) {
 					FieldHelper.setComboInaccessible((ComboBoxWithPlaceholder) field);
 				}
+
+				if (field instanceof NullableOptionGroup) {
+					((NullableOptionGroup) field).setInaccessible();
+				}
+				if (field instanceof HealthConditionsForm)
+					((HealthConditionsForm) field).setInaccessible();
 			}
 		}
 

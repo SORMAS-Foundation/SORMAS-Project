@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,7 +36,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
+import de.symeda.sormas.api.event.SpecificRiskConverter;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
@@ -64,7 +65,7 @@ import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -88,7 +89,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
-	public static final String SPECIFIC_RISK = "specificRisk";
+	public static final String SPECIFIC_RISK_VALUE = "specificRiskValue";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -123,7 +124,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String SRC_MEDIA_NAME = "srcMediaName";
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
@@ -151,6 +152,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
+	private String specificRiskValue;
 	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
@@ -185,6 +187,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private String srcMediaName;
 	private String srcMediaDetails;
 	private Disease disease;
+	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private String diseaseVariantDetails;
@@ -238,14 +241,24 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.riskLevel = riskLevel;
 	}
 
-	@Column
-	@Convert(converter = SpecificRiskConverter.class)
+	@Column(name = "specificrisk")
+	public String getSpecificRiskValue() {
+		return specificRiskValue;
+	}
+
+	public void setSpecificRiskValue(String specificRiskValue) {
+		this.specificRiskValue = specificRiskValue;
+		this.specificRisk = new SpecificRiskConverter().convertToEntityAttribute(disease, specificRiskValue);
+	}
+
+	@Transient
 	public SpecificRisk getSpecificRisk() {
 		return specificRisk;
 	}
 
 	public void setSpecificRisk(SpecificRisk specificRisk) {
 		this.specificRisk = specificRisk;
+		this.specificRiskValue = new SpecificRiskConverter().convertToDatabaseColumn(specificRisk);
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -548,14 +561,24 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.disease = disease;
 	}
 
-	@Column
-	@Convert(converter = DiseaseVariantConverter.class)
+	@Column(name = "diseasevariant")
+	public String getDiseaseVariantValue() {
+		return diseaseVariantValue;
+	}
+
+	public void setDiseaseVariantValue(String diseaseVariantValue) {
+		this.diseaseVariantValue = diseaseVariantValue;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariantValue);
+	}
+
+	@Transient
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

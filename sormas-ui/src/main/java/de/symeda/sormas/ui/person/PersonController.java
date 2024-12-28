@@ -474,7 +474,14 @@ public class PersonController {
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				PersonDto dto = editForm.getValue();
-				savePerson(dto);
+				if (editForm.getWarningSimilarPersons() != null) {
+					CommitDiscardWrapperComponent<PersonSelectionGrid> content =
+						(CommitDiscardWrapperComponent<PersonSelectionGrid>) editView.getWrappedComponent().getWarningSimilarPersons().getContent();
+					content.getDiscardButton().setVisible(true);
+					content.addCommitListener(() -> savePerson(dto));
+				} else {
+					savePerson(dto);
+				}
 			}
 		});
 

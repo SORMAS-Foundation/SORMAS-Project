@@ -32,6 +32,7 @@ import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -112,7 +113,9 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 				COLUMN_DESCRIPTION);
 		}
 		table.setCellStyleGenerator(
-			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ExposureDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+				ExposureDto.class,
+				UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (columnId.equals(ACTION_COLUMN_ID)) {

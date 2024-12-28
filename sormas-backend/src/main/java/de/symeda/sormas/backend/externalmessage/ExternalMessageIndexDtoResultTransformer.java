@@ -37,7 +37,7 @@ public class ExternalMessageIndexDtoResultTransformer implements ResultTransform
 		//@formatter:off
         return new ExternalMessageIndexDto(
 				(String) tuple[++index], (ExternalMessageType) tuple[++index], (Date) tuple[++index], (String) tuple[++index], 
-				(String) tuple[++index], (Disease) tuple[++index], (DiseaseVariant) tuple[++index], 
+				(String) tuple[++index], (Disease) tuple[++index], (String) tuple[++index],
 				(String) tuple[++index], (String) tuple[++index],
 				(Integer) tuple[++index], (Integer) tuple[++index], (Integer) tuple[++index], 
 				(String) tuple[++index], (ExternalMessageStatus) tuple[++index], 

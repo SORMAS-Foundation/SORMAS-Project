@@ -801,7 +801,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				joins.getHospitalization().get(Hospitalization.ID),
 				joins.getRoot().get(Case.HEALTH_CONDITIONS).get(HealthConditions.ID),
 				caseRoot.get(Case.UUID),
-				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT), caseRoot.get(Case.DISEASE_DETAILS),
+				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT_VALUE), caseRoot.get(Case.DISEASE_DETAILS),
 				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
 				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
@@ -852,7 +852,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_EMAIL_SUBQUERY),
 				caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
 				joins.getPerson().get(Person.EDUCATION_TYPE),
-				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),
+				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE_VALUE),
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 				caseRoot.get(Case.VACCINATION_STATUS), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
@@ -2066,7 +2066,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@PermitAll
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
-		if (configFacade.getCaseClassificationCalculationMode(associatedCase.getDisease()).isAutomaticEnabled()) {
+		if (configFacade.getCaseClassificationCalculationMode(associatedCase.getDisease()).isAutomaticEnabled()
+			& associatedCase.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
 				if (pathogenTestsCount == 0) {
@@ -2200,8 +2201,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 
 		updateTasksOnCaseChanged(newCase, existingCase);
-
-		handleClassificationOnCaseChange(existingCase, newCase);
+		if ((existingCase == null || existingCase.getDisease() != newCase.getDisease())
+			&& newCase.getDisease() == Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
+			newCase.setCaseClassification(CaseClassification.CONFIRMED);
+			newCase.setClassificationDate(newCase.getReportDate());
+			newCase.setClassificationUser(newCase.getReportingUser());
+		} else {
+			handleClassificationOnCaseChange(existingCase, newCase);
+		}
 
 		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists
 		// are not empty
@@ -2263,7 +2270,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
 		boolean setClassificationInfo = true;
-		if (configFacade.getCaseClassificationCalculationMode(savedCase.getDisease()).isAutomaticEnabled()) {
+		if (configFacade.getCaseClassificationCalculationMode(savedCase.getDisease()).isAutomaticEnabled()
+			& savedCase.getDisease() != Disease.RESPIRATORY_SYNCYTIAL_VIRUS) {
 			if (savedCase.getCaseClassification() != CaseClassification.NO_CASE
 				|| configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 				// calculate classification
@@ -4168,7 +4176,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private <T extends IsCase> Pseudonymizer<T> createPseudonymizerForDtoWithClinician(
 		@Nullable String pseudonymizedValue,
 		Collection<? extends IsCase> cases) {
-		Pseudonymizer<T> pseudonymizer = Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), pseudonymizedValue);
+		Pseudonymizer<T> pseudonymizer =
+			Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), pseudonymizedValue, configFacade.getCountryCode());
 
 		UserRightFieldAccessChecker<T> clinicianViewRightChecker =
 			new UserRightFieldAccessChecker<>(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
@@ -4179,12 +4188,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@PermitAll
 	public <T extends IsCase> Pseudonymizer<T> createSimplePseudonymizer(Collection<? extends IsCase> cases) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(cases), configFacade.getCountryCode());
 	}
 
 	@PermitAll
 	public <T extends IsCase> Pseudonymizer<T> createSimplePlaceholderPseudonymizer(Collection<T> cases) {
-		return Pseudonymizer.getDefaultWithPlaceHolder(userService, createSpecialAccessChecker(cases));
+		return Pseudonymizer.getDefaultWithPlaceHolder(userService, createSpecialAccessChecker(cases), configFacade.getCountryCode());
 	}
 
 	private <T extends IsCase> AnnotationBasedFieldAccessChecker.SpecialAccessCheck<T> createSpecialAccessChecker(

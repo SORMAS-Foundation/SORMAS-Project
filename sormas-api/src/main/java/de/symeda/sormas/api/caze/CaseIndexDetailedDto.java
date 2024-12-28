@@ -75,7 +75,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	//@formatter:off
 	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken,String caseReferenceNumber, String personUuid, String personFirstName, String personLastName,
-								Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+								Disease disease, String diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, Date creationDate,
 								String regionUuid, String districtUuid,
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,

@@ -89,7 +89,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 
 		immunizationEditFragment.setMeansOfImmunizationChange(meansOfImmunizationChange);
 

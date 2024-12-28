@@ -253,7 +253,7 @@ public class SelfReportFacadeEjb
 			selfReport.get(SelfReport.CASE_REFERENCE),
 			selfReport.get(SelfReport.DISEASE),
 			selfReport.get(SelfReport.DISEASE_DETAILS),
-			selfReport.get(SelfReport.DISEASE_VARIANT),
+			selfReport.get(SelfReport.DISEASE_VARIANT_VALUE),
 			selfReport.get(SelfReport.DISEASE_VARIANT_DETAILS),
 			selfReport.get(SelfReport.FIRST_NAME),
 			selfReport.get(SelfReport.LAST_NAME),

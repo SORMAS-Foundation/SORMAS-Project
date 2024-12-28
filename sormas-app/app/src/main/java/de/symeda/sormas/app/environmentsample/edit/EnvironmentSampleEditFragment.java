@@ -68,7 +68,7 @@ public class EnvironmentSampleEditFragment
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()),
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()),
 			UserRight.ENVIRONMENT_SAMPLE_EDIT);
 	}
 

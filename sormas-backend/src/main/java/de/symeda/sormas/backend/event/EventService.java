@@ -638,7 +638,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 	}
 
 	@Override
-	public void deletePermanent(Event event) {
+	public boolean deletePermanent(Event event) {
 
 		// Delete all tasks associated with this event
 		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())), true);
@@ -677,6 +677,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		removeFromSubordinateEvents(event);
 
 		super.deletePermanent(event);
+		return false;
 	}
 
 	private void removeFromSubordinateEvents(Event event) {
@@ -721,7 +722,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
 		}
 		if (eventCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT), eventCriteria.getDiseaseVariant()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT_VALUE), eventCriteria.getDiseaseVariant().getValue()));
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
@@ -730,7 +731,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.RISK_LEVEL), eventCriteria.getRiskLevel()));
 		}
 		if (eventCriteria.getSpecificRisk() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.SPECIFIC_RISK), eventCriteria.getSpecificRisk()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.SPECIFIC_RISK_VALUE), eventCriteria.getSpecificRisk().getValue()));
 		}
 		if (eventCriteria.getEventInvestigationStatus() != null) {
 			filter = CriteriaBuilderHelper

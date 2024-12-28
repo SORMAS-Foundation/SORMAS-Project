@@ -35,6 +35,7 @@ import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.AnnotationBasedFieldAccessChecker.SpecialAccessCheck;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -55,6 +56,8 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 	private UserService userService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@RightsAllowed({
 		UserRight._SEND_MANUAL_EXTERNAL_MESSAGES,
@@ -104,7 +107,7 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 
 	@NotNull
 	private Pseudonymizer<ManualMessageLogIndexDto> createPseudonymizerWithPlaceholder(Collection<ManualMessageLogIndexDto> manualMessageLogs) {
-		return Pseudonymizer.getDefaultWithPlaceHolder(userService, getSpecialAccessChecker(manualMessageLogs));
+		return Pseudonymizer.getDefaultWithPlaceHolder(userService, getSpecialAccessChecker(manualMessageLogs), configFacade.getCountryCode());
 	}
 
 	private SpecialAccessCheck<ManualMessageLogIndexDto> getSpecialAccessChecker(Collection<ManualMessageLogIndexDto> manualMessageLogs) {
@@ -112,7 +115,6 @@ public class ManualMessageLogFacadeEjb implements ManualMessageLogFacade {
 
 		return i -> specialAccessUuids.contains(i.getUuid());
 	}
-
 
 	@LocalBean
 	@Stateless

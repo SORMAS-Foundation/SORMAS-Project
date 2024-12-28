@@ -13257,4 +13257,481 @@ ALTER TABLE externalmessage_history
     ADD COLUMN personadditionaldetails text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (551, '#13147 Phone Number Validation for E-Santé Reports – Remove and Store Non-Numeric Text');
+
+-- 2024-10-16 Adverse Events Following Immunization (AEFI) - Entities #12634
+-- adverse events
+create table adverseevents
+(
+    id bigint not null,
+    uuid varchar(36) not null,
+    changedate timestamp(3) not null,
+    creationdate timestamp(3) not null,
+    severelocalreaction varchar(255),
+    severelocalreactionmorethanthreedays boolean,
+    severelocalreactionbeyondnearestjoint boolean,
+    seizures varchar(255),
+    seizuretype varchar(255),
+    abscess varchar(255),
+    sepsis varchar(255),
+    encephalopathy varchar(255),
+    toxicshocksyndrome varchar(255),
+    thrombocytopenia varchar(255),
+    anaphylaxis varchar(255),
+    feverishfeeling varchar(255),
+    otheradverseeventdetails varchar(255),
+    sys_period tstzrange not null,
+    change_user_id bigint
+);
+
+alter table adverseevents owner to sormas_user;
+
+alter table adverseevents add primary key (id);
+alter table adverseevents add unique (uuid);
+alter table adverseevents add constraint fk_adverseevents_change_user_id foreign key (change_user_id) references users;
+
+-- adverse events history
+CREATE TABLE adverseevents_history (LIKE adverseevents);
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseevents;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON adverseevents
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'adverseevents_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON adverseevents;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON adverseevents
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('adverseevents_history', 'id');
+ALTER TABLE adverseevents_history OWNER TO sormas_user;
+
+-- adverse events following immunization (AEFI)
+create table adverseeventsfollowingimmunization
+(
+    id bigint not null,
+    uuid varchar(36) not null,
+    changedate timestamp(3) not null,
+    creationdate timestamp(3) not null,
+    immunization_id bigint not null,
+    address_id bigint,
+    primarysuspectvaccine_id bigint not null,
+    adverseevents_id bigint not null,
+    person_id bigint,
+    reportdate timestamp not null,
+    reportinguser_id bigint not null,
+    externalid varchar(512),
+    responsibleregion_id bigint,
+    responsibledistrict_id bigint,
+    responsiblecommunity_id bigint,
+    country_id bigint,
+    reportingidnumber varchar(512) not null,
+    firstname varchar(255),
+    lastname varchar(255),
+    phonenumber varchar(255),
+    pregnant varchar(255),
+    trimester varchar(255),
+    lactating varchar(255),
+    onsetageyears integer,
+    onsetagemonths integer,
+    onsetagedays integer,
+    agegroup varchar(255),
+    healthfacility_id bigint,
+    healthfacilitydetails varchar(512),
+    reportingofficername varchar(255),
+    reportingofficerfacility_id bigint,
+    reportingofficerfacilitydetails varchar(512),
+    reportingofficerdesignation varchar(255),
+    reportingofficerdepartment varchar(255),
+    reportingofficeraddress_id bigint,
+    reportingofficerphonenumber varchar(255),
+    reportingofficeremail varchar(255),
+    healthsystemnotifieddate timestamp,
+    todaysdate timestamp,
+    startdatetime timestamp,
+    aefidescription text,
+    serious varchar(255) not null,
+    seriousreason varchar(255),
+    seriousreasondetails text,
+    outcome varchar(255) not null,
+    deathdate timestamp,
+    autopsydone varchar(255),
+    pastmedicalhistory text,
+    investigationneeded varchar(255),
+    investigationplanneddate timestamp,
+    receivedatnationalleveldate timestamp,
+    worldwideid varchar(255),
+    nationallevelcomment text,
+    archived boolean default false,
+    endofprocessingdate timestamp,
+    archiveundonereason varchar(255),
+    deleted boolean default false,
+    deletionreason varchar(255),
+    otherdeletionreason text,
+    sys_period tstzrange not null,
+    change_user_id bigint
+);
+
+alter table adverseeventsfollowingimmunization owner to sormas_user;
+
+alter table adverseeventsfollowingimmunization	add primary key (id);
+alter table adverseeventsfollowingimmunization	add unique (uuid);
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_address_id foreign key (address_id) references location;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_adverseevents_id foreign key (adverseevents_id) references adverseevents;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_change_user_id foreign key (change_user_id) references users;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_country_id foreign key (country_id) references country;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_healthfacility_id foreign key (healthfacility_id) references facility;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_immunization_id	foreign key (immunization_id) references immunization;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_person_id foreign key (person_id) references person;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_primarysuspectvaccine_id foreign key (primarysuspectvaccine_id) references vaccination;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_reporting_user_id foreign key (reportinguser_id) references users;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_reportingofficeraddress_id foreign key (reportingofficeraddress_id) references location;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_reportingofficerfacility_id	foreign key (reportingofficerfacility_id) references facility;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_responsiblecommunity_id	foreign key (responsiblecommunity_id) references community;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_responsibledistrict_id foreign key (responsibledistrict_id) references district;
+alter table adverseeventsfollowingimmunization	add constraint fk_aefi_responsibleregion_id foreign key (responsibleregion_id) references region;
+
+-- AEFI history
+CREATE TABLE adverseeventsfollowingimmunization_history (LIKE adverseeventsfollowingimmunization);
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseeventsfollowingimmunization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON adverseeventsfollowingimmunization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'adverseeventsfollowingimmunization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON adverseeventsfollowingimmunization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON adverseeventsfollowingimmunization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('adverseeventsfollowingimmunization_history', 'id');
+ALTER TABLE adverseeventsfollowingimmunization_history OWNER TO sormas_user;
+
+-- AEFI vaccination
+create table adverseeventsfollowingimmunization_vaccinations
+(
+    adverseeventsfollowingimmunization_id bigint not null,
+    vaccination_id bigint not null,
+    sys_period tstzrange not null
+);
+
+alter table adverseeventsfollowingimmunization_vaccinations owner to sormas_user;
+
+alter table adverseeventsfollowingimmunization_vaccinations add constraint aefi_vaccinations_pkey	primary key (adverseeventsfollowingimmunization_id, vaccination_id);
+alter table adverseeventsfollowingimmunization_vaccinations add constraint fk_aefi_vaccinations_aefi_id foreign key (adverseeventsfollowingimmunization_id) references adverseeventsfollowingimmunization;
+alter table adverseeventsfollowingimmunization_vaccinations add constraint fk_aefi_vaccinations_vaccination_id foreign key (vaccination_id) references vaccination;
+
+-- AEFI vaccination history
+CREATE TABLE adverseeventsfollowingimmunization_vaccinations_history (LIKE adverseeventsfollowingimmunization_vaccinations);
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseeventsfollowingimmunization_vaccinations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON adverseeventsfollowingimmunization_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'adverseeventsfollowingimmunization_vaccinations_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON adverseeventsfollowingimmunization_vaccinations;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON adverseeventsfollowingimmunization_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('adverseeventsfollowingimmunization_vaccinations_history', 'id');
+ALTER TABLE adverseeventsfollowingimmunization_vaccinations_history OWNER TO sormas_user;
+
+-- AEFI investigation
+create table adverseeventsfollowingimmunizationinvestigation
+(
+    id bigint not null,
+    uuid varchar(36) not null,
+    changedate timestamp(3) not null,
+    creationdate timestamp(3) not null,
+    adverseeventsfollowingimmunization_id bigint not null,
+    address_id bigint,
+    primarysuspectvaccine_id bigint,
+    reportdate timestamp not null,
+    reportinguser_id bigint not null,
+    externalid varchar(512),
+    responsibleregion_id bigint,
+    responsibledistrict_id bigint,
+    responsiblecommunity_id bigint,
+    country_id bigint,
+    investigationcaseid varchar(255),
+    placeofvaccination varchar(255) not null,
+    placeofvaccinationdetails varchar(512),
+    vaccinationactivity varchar(255) not null,
+    vaccinationactivitydetails varchar(512),
+    vaccinationfacility_id bigint,
+    vaccinationfacilitydetails varchar(512),
+    reportingofficername varchar(255),
+    reportingofficerfacility_id bigint,
+    reportingofficerfacilitydetails varchar(512),
+    reportingofficerdesignation varchar(255),
+    reportingofficerdepartment varchar(255),
+    reportingofficeraddress_id bigint,
+    reportingofficerlandlinephonenumber varchar(255),
+    reportingofficermobilephonenumber varchar(255),
+    reportingofficeremail varchar(255),
+    investigationdate timestamp not null,
+    formcompletiondate timestamp not null,
+    investigationstage varchar(255),
+    onsetageyears integer,
+    onsetagemonths integer,
+    onsetagedays integer,
+    agegroup varchar(255),
+    typeofsite varchar(255) not null,
+    typeofsitedetails varchar(255),
+    keysymptomdatetime timestamp,
+    hospitalizationdate timestamp,
+    reportedtohealthauthoritydate timestamp,
+    statusondateofinvestigation varchar(255),
+    deathdatetime timestamp,
+    autopsydone varchar(255),
+    autopsydate timestamp,
+    autopsyplanneddatetime timestamp,
+    autopsyreportname varchar(255),
+    pasthistoryofsimilarevent varchar(255),
+    pasthistoryofsimilareventdetails varchar(512),
+    adverseeventafterpreviousvaccinations varchar(255),
+    adverseeventafterpreviousvaccinationsdetails varchar(512),
+    historyofallergytovaccinedrugorfood varchar(255),
+    historyofallergytovaccinedrugorfooddetails varchar(512),
+    preexistingillnessthirtydaysorcongenitaldisorder varchar(255),
+    preexistingillnessthirtydaysorcongenitaldisorderdetails varchar(512),
+    historyofhospitalizationinlastthirtydayswithcause varchar(255),
+    historyofhospitalizationinlastthirtydayswithcausedetails varchar(512),
+    currentlyonconcomitantmedication varchar(255),
+    currentlyonconcomitantmedicationdetails varchar(255),
+    familyhistoryofdiseaseorallergy varchar(255),
+    familyhistoryofdiseaseorallergydetails varchar(512),
+    pregnant varchar(255),
+    numberofweekspregnant integer,
+    breastfeeding varchar(255),
+    birthterm varchar(255),
+    birthweight real,
+    deliveryprocedure varchar(255),
+    deliveryproceduredetails varchar(512),
+    seriousaefiinfosourcestring varchar(512),
+    seriousaefiinfosourcedetails varchar(512),
+    seriousaefiverbalautopsyinfosourcedetails varchar(512),
+    firstcaregiversname varchar(255),
+    othercaregiversnames varchar(512),
+    othersourceswhoprovidedinfo varchar(512),
+    signsandsymptomsfromtimeofvaccination text,
+    clinicaldetailsofficername varchar(255),
+    clinicaldetailsofficerphonenumber varchar(255),
+    clinicaldetailsofficeremail varchar(255),
+    clinicaldetailsofficerdesignation varchar(255),
+    clinicaldetailsdatetime timestamp,
+    patientreceivedmedicalcare varchar(255),
+    patientreceivedmedicalcaredetails text,
+    provisionalorfinaldiagnosis text,
+    patientimmunizedperiod varchar(255),
+    patientimmunizedperioddetails varchar(512),
+    vaccinegivenperiod varchar(255),
+    vaccinegivenperioddetails varchar(512),
+    errorprescribingvaccine varchar(255),
+    errorprescribingvaccinedetails varchar(512),
+    vaccinecouldhavebeenunsterile varchar(255),
+    vaccinecouldhavebeenunsteriledetails varchar(512),
+    vaccinephysicalconditionabnormal varchar(255),
+    vaccinephysicalconditionabnormaldetails varchar(255),
+    errorinvaccinereconstitution varchar(255),
+    errorinvaccinereconstitutiondetails varchar(512),
+    errorinvaccinehandling varchar(255),
+    errorinvaccinehandlingdetails varchar(512),
+    vaccineadministeredincorrectly varchar(255),
+    vaccineadministeredincorrectlydetails varchar(255),
+    numberimmunizedfromconcernedvaccinevial integer,
+    numberimmunizedwithconcernedvaccineinsamesession integer,
+    numberimmunizedconcernedvaccinesamebatchnumberotherlocations integer,
+    numberimmunizedconcernedvaccinesamebatchnumberlocationdetails varchar(512),
+    vaccinehasqualitydefect varchar(255),
+    vaccinehasqualitydefectdetails varchar(512),
+    eventisastressresponserelatedtoimmunization varchar(255),
+    eventisastressresponserelatedtoimmunizationdetails varchar(255),
+    caseispartofacluster varchar(255),
+    caseispartofaclusterdetails varchar(255),
+    numberofcasesdetectedincluster integer,
+    allcasesinclusterreceivedvaccinefromsamevial varchar(255),
+    allcasesinclusterreceivedvaccinefromsamevialdetails varchar(512),
+    numberofvialsusedincluster integer,
+    numberofvialsusedinclusterdetails varchar(255),
+    adsyringesusedforimmunization varchar(255),
+    typeofsyringesused varchar(255),
+    typeofsyringesuseddetails varchar(512),
+    syringesusedadditionaldetails text,
+    samereconstitutionsyringeusedformultiplevialsofsamevaccine varchar(255),
+    samereconstitutionsyringeusedforreconstitutingdifferentvaccines varchar(255),
+    samereconstitutionsyringeforeachvaccinevial varchar(255),
+    samereconstitutionsyringeforeachvaccination varchar(255),
+    vaccinesanddiluentsusedrecommendedbymanufacturer varchar(255),
+    reconstitutionadditionaldetails text,
+    correctdoseorroute varchar(255),
+    timeofreconstitutionmentionedonthevial varchar(255),
+    nontouchtechniquefollowed varchar(255),
+    contraindicationscreenedpriortovaccination varchar(255),
+    numberofaefireportedfromvaccinedistributioncenterlastthirtydays integer,
+    trainingreceivedbyvaccinator varchar(255),
+    lasttrainingreceivedbyvaccinatordate timestamp,
+    injectiontechniqueadditionaldetails text,
+    vaccinestoragerefrigeratortemperaturemonitored varchar(255),
+    anystoragetemperaturedeviationoutsidetwotoeightdegrees varchar(255),
+    storagetemperaturemonitoringadditionaldetails text,
+    correctprocedureforstoragefollowed varchar(255),
+    anyotheriteminrefrigerator varchar(255),
+    partiallyusedreconstitutedvaccinesinrefrigerator varchar(255),
+    unusablevaccinesinrefrigerator varchar(255),
+    unusablediluentsinstore varchar(255),
+    vaccinestoragepointadditionaldetails text,
+    vaccinecarriertype varchar(255),
+    vaccinecarriertypedetails varchar(512),
+    vaccinecarriersenttositeonsamedateasvaccination varchar(255),
+    vaccinecarrierreturnedfromsiteonsamedateasvaccination varchar(255),
+    conditionedicepackused varchar(255),
+    vaccinetransportationadditionaldetails text,
+    similareventsreportedsameperiodandlocality varchar(255),
+    similareventsreportedsameperiodandlocalitydetails varchar(512),
+    numberofsimilareventsreportedsameperiodandlocality integer,
+    numberofthoseaffectedvaccinated integer,
+    numberofthoseaffectednotvaccinated integer,
+    numberofthoseaffectedvaccinatedunknown integer,
+    communityinvestigationadditionaldetails text,
+    otherinvestigationfindings text,
+    investigationstatus varchar(255),
+    investigationstatusdetails text,
+    adverseeventfollowingimmunizationclassification varchar(255),
+    adverseeventfollowingimmunizationclassificationsubtype varchar(255),
+    adverseeventfollowingimmunizationclassificationdetails varchar(512),
+    causality varchar(255),
+    causalitydetails text,
+    investigationcompletiondate timestamp,
+    archived boolean,
+    endofprocessingdate timestamp,
+    archiveundonereason varchar(255),
+    deleted boolean,
+    deletionreason varchar(255),
+    otherdeletionreason text,
+    sys_period tstzrange not null,
+    change_user_id bigint
+);
+
+alter table adverseeventsfollowingimmunizationinvestigation owner to sormas_user;
+
+alter table adverseeventsfollowingimmunizationinvestigation add primary key (id);
+alter table adverseeventsfollowingimmunizationinvestigation add unique (uuid);
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_address_id foreign key (address_id) references location;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_aefi_id foreign key (adverseeventsfollowingimmunization_id) references adverseeventsfollowingimmunization;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_change_user_id foreign key (change_user_id) references users;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_country_id foreign key (country_id) references country;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_primarysuspectvaccine_id foreign key (primarysuspectvaccine_id) references vaccination;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_reportingofficeraddress_id foreign key (reportingofficeraddress_id) references location;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_reportingofficerfacility_id foreign key (reportingofficerfacility_id) references facility;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_reportinguser_id foreign key (reportinguser_id) references users;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_responsiblecommunity_id foreign key (responsiblecommunity_id) references community;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_responsibledistrict_id foreign key (responsibledistrict_id) references district;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_responsibleregion_id foreign key (responsibleregion_id) references region;
+alter table adverseeventsfollowingimmunizationinvestigation add constraint fk_aefiinvestigation_vaccinationfacility_id foreign key (vaccinationfacility_id) references facility;
+
+-- AEFI investigation history
+CREATE TABLE adverseeventsfollowingimmunizationinvestigation_history (LIKE adverseeventsfollowingimmunizationinvestigation);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseeventsfollowingimmunizationinvestigation;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON adverseeventsfollowingimmunizationinvestigation
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'adverseeventsfollowingimmunizationinvestigation_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON adverseeventsfollowingimmunizationinvestigation;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON adverseeventsfollowingimmunizationinvestigation
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('adverseeventsfollowingimmunizationinvestigation_history', 'id');
+
+ALTER TABLE adverseeventsfollowingimmunizationinvestigation_history OWNER TO sormas_user;
+
+-- AEFI investigation vaccination
+create table adverseeventsfollowingimmunizationinvestigation_vaccinations
+(
+    adverseeventsfollowingimmunizationinvestigation_id bigint not null,
+    vaccination_id bigint not null,
+    sys_period tstzrange not null
+);
+
+alter table adverseeventsfollowingimmunizationinvestigation_vaccinations owner to sormas_user;
+
+alter table adverseeventsfollowingimmunizationinvestigation_vaccinations add constraint aefi_investigation_vaccinations_pkey primary key (adverseeventsfollowingimmunizationinvestigation_id, vaccination_id);
+alter table adverseeventsfollowingimmunizationinvestigation_vaccinations add constraint fk_aefiinvestigation_vaccinations_aefiinvestigation_id foreign key (adverseeventsfollowingimmunizationinvestigation_id) references adverseeventsfollowingimmunizationinvestigation;
+alter table adverseeventsfollowingimmunizationinvestigation_vaccinations add constraint fk_aefiinvestigation_vaccinations_vaccination_id foreign key (vaccination_id) references vaccination;
+
+-- AEFI investigation vaccination history
+CREATE TABLE aefiinvestigation_vaccinations_history (LIKE adverseeventsfollowingimmunizationinvestigation_vaccinations);
+DROP TRIGGER IF EXISTS versioning_trigger ON adverseeventsfollowingimmunizationinvestigation_vaccinations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON adverseeventsfollowingimmunizationinvestigation_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aefiinvestigation_vaccinations_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON adverseeventsfollowingimmunizationinvestigation_vaccinations;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON adverseeventsfollowingimmunizationinvestigation_vaccinations
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('aefiinvestigation_vaccinations_history', 'id');
+ALTER TABLE aefiinvestigation_vaccinations_history OWNER TO sormas_user;
+
+-- Assign AEFI user rights to default admin and national_user user roles
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN','NATIONAL_USER');
+
+INSERT INTO schema_version (version_number, comment) VALUES (552, 'Adverse Events Following Immunization (AEFI) - Entities #12634');
+
+
+-- 2024-10-23 Add "Disease" Attribute to Document Templates for Filtering #13160
+CREATE TABLE documenttemplates (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    change_user_id bigint,
+
+    workflow varchar(255) not null,
+    disease varchar(255),
+    fileName text,
+
+    sys_period tstzrange not null,
+    primary key(id)
+);
+
+ALTER TABLE documenttemplates OWNER TO sormas_user;
+ALTER TABLE documenttemplates ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TABLE documenttemplates_history (LIKE documenttemplates);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON documenttemplates
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documenttemplates_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON documenttemplates
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('documenttemplates_history', 'id');
+ALTER TABLE documenttemplates_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment, upgradeneeded) VALUES (553, 'Add "Disease" Attribute to Document Templates for Filtering #13160', true);
+
+-- 2024-11-18 Add New Influenza Disease Types and Modify Display for SORMAS-LuxembourgAdd #13183
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'A', 'Type A',
+        'INFLUENZA', jsonb_build_object('hasDetails', true));
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'B', 'Type B',
+        'INFLUENZA');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases, properties)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'AB', 'Type A+B',
+        'INFLUENZA', jsonb_build_object('hasDetails', true));
+
+INSERT INTO schema_version (version_number, comment) VALUES (554, 'Add New Influenza Disease Types and Modify Display for SORMAS-LuxembourgAdd #13183');
+
+-- 2024-12-12 RSV disease variants #13204
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'A', 'Type A',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'B', 'Type B',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases)
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', 'AB', 'Type A+B',
+        'RESPIRATORY_SYNCYTIAL_VIRUS');
+
+INSERT INTO schema_version (version_number, comment) VALUES (555, 'RSV disease variants #13204');
+
+-- 2024-12-12 Additional lab message fields #13203
+ALTER TABLE externalmessage
+    ADD COLUMN vaccinationstatus varchar(255),
+    ADD COLUMN admittedtohealthfacility varchar(255);
+ALTER TABLE externalmessage_history
+    ADD COLUMN vaccinationstatus varchar(255),
+    ADD COLUMN admittedtohealthfacility varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (556, 'Additional lab message fields #13203');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
