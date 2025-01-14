@@ -189,6 +189,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			HorizontalLayout row = new HorizontalLayout();
 			row.setMargin(false);
 			row.setSpacing(false);
+			row.setWidth(100, Unit.PERCENTAGE);
 
 			if (label != null) {
 				Label rowLabel = new Label(DataHelper.toStringNullable(label) + ":");
@@ -197,6 +198,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			}
 
 			Label rowValue = new Label(DataHelper.toStringNullable(value));
+			rowValue.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			if (!fieldAccessCheckers.isAccessible(SurveillanceReportDto.class, propertyId)) {
 				rowValue.addStyleName(CssStyles.INACCESSIBLE_LABEL);
 			}

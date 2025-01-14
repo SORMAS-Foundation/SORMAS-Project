@@ -1203,6 +1203,7 @@ public interface Strings {
 	String messageCasesRestored = "messageCasesRestored";
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
+	String messageChangingCaseOutcome = "messageChangingCaseOutcome";
 	String messageCheckInputData = "messageCheckInputData";
 	String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	String messageClinicalVisitCreated = "messageClinicalVisitCreated";
@@ -1509,6 +1510,7 @@ public interface Strings {
 	String messageRelatedSampleAndLabMessagesFound = "messageRelatedSampleAndLabMessagesFound";
 	String messageRelatedSampleFound = "messageRelatedSampleFound";
 	String messageRestoreNotPossibleAlreadyInEvent = "messageRestoreNotPossibleAlreadyInEvent";
+	String messageReviewChangesAndConfirm = "messageReviewChangesAndConfirm";
 	String messageSampleErrors = "messageSampleErrors";
 	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
@@ -1819,6 +1821,7 @@ public interface Strings {
 	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
 	String uuidOf = "uuidOf";
+	String warning = "warning";
 	String warningDashboardMapTooManyMarkers = "warningDashboardMapTooManyMarkers";
 	String warningNetworkDiagramTooManyContacts = "warningNetworkDiagramTooManyContacts";
 	String week = "week";
