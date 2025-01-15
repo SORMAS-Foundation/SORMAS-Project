@@ -783,6 +783,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 			}
 		}
+
+		//Birthdate Filter
+		HorizontalLayout birthdateFilterForm = (HorizontalLayout) getMoreFiltersContainer().getComponent(BIRTHDATE_RANGE_FILTER);
+		BirthdateRangeFilterComponent birtdateFilter = (BirthdateRangeFilterComponent) birthdateFilterForm.getComponent(0);
+		birtdateFilter.getDateFromFilter().setValue(criteria.getBirthdateFrom());
+		birtdateFilter.getDateToFilter().setValue(criteria.getBirthdateTo());
+		birtdateFilter.getIncludePartialMatch().setValue(criteria.isIncludePartialMatch());
+
 		ComboBox birthDateDD = getField(CaseCriteria.BIRTHDATE_DD);
 		if (getField(CaseCriteria.BIRTHDATE_YYYY).getValue() != null && getField(CaseCriteria.BIRTHDATE_MM).getValue() != null) {
 			birthDateDD.addItems(
