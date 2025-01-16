@@ -972,6 +972,8 @@ public interface Captions {
 	String Configuration_LineListing = "Configuration.LineListing";
 	String Configuration_Outbreaks = "Configuration.Outbreaks";
 	String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
+	String confirmChangesField = "confirmChangesField";
+	String confirmChangesValue = "confirmChangesValue";
 	String Contact = "Contact";
 	String Contact_additionalDetails = "Contact.additionalDetails";
 	String Contact_ageAndBirthDate = "Contact.ageAndBirthDate";
