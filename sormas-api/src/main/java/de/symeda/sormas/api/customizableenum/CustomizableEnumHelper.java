@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 public class CustomizableEnumHelper {
 
-	private static final String ENUM_VALUE_PATTERN = "[A-Z0-9_.]+";
+	private static final String ENUM_VALUE_PATTERN = "[A-Z0-9_.+]+";
 
 	public static boolean isValidEnumValue(String value) {
 		return Pattern.matches(ENUM_VALUE_PATTERN, value);
