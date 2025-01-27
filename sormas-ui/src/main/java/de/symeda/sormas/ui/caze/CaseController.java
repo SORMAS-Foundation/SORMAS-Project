@@ -635,14 +635,34 @@ public class CaseController {
 		PersonDto convertedPerson,
 		Disease unrelatedDisease,
 		boolean createdFromLabMessage) {
+		return getCaseCreateComponent(
+			convertedContact,
+			convertedEventParticipant,
+			convertedTravelEntry,
+			convertedPerson,
+			unrelatedDisease,
+			createdFromLabMessage,
+			false);
+	}
+
+	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(
+		ContactDto convertedContact,
+		EventParticipantDto convertedEventParticipant,
+		TravelEntryDto convertedTravelEntry,
+		PersonDto convertedPerson,
+		Disease unrelatedDisease,
+		boolean createdFromLabMessage,
+		boolean createdFromSelfReport) {
 
 		assert ((convertedContact == null && convertedEventParticipant == null)
 			|| (convertedContact == null && convertedTravelEntry == null)
 			|| (convertedEventParticipant == null && convertedTravelEntry == null));
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
+		final boolean createdByProcessing = createdFromLabMessage || createdFromSelfReport;
+
 		CaseCreateForm createForm;
-		if (createdFromLabMessage) {
+		if (createdByProcessing) {
 			createForm = new CaseCreateForm(true, false, null);
 		} else {
 			createForm = convertedContact == null && convertedEventParticipant == null && convertedTravelEntry == null && unrelatedDisease == null
@@ -771,7 +791,7 @@ public class CaseController {
 					}
 					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-					if (!createdFromLabMessage) {
+					if (!createdByProcessing) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					}
 				} else if (convertedEventParticipant != null) {
@@ -792,7 +812,7 @@ public class CaseController {
 								FacadeProvider.getCaseFacade()
 									.setSampleAssociationsUnrelatedDisease(updatedEventParticipant.toReference(), dto.toReference());
 							}
-							if (!createdFromLabMessage) {
+							if (!createdByProcessing) {
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 							}
 						} else {
@@ -800,7 +820,7 @@ public class CaseController {
 								convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							}
 							FacadeProvider.getEventParticipantFacade().save(convertedEventParticipant);
-							if (!createdFromLabMessage) {
+							if (!createdByProcessing) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 							}
 						}
@@ -818,10 +838,10 @@ public class CaseController {
 					updatedTravelEntry.setResultingCase(dto.toReference());
 					FacadeProvider.getTravelEntryFacade().save(updatedTravelEntry);
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-					if (!createdFromLabMessage) {
+					if (!createdByProcessing) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					}
-				} else if (createdFromLabMessage) {
+				} else if (createdByProcessing) {
 					PersonDto dbPerson = FacadeProvider.getPersonFacade().getByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
