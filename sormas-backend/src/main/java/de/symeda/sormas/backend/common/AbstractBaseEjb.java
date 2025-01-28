@@ -49,7 +49,13 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	@Override
 	public DTO getByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> service.getByUuid(u, true)).map(this::toPseudonymizedDto).orElse(null);
+		return Optional.of(uuid).map(u -> {
+			ADO byUuid = service.getByUuid(u, true);
+			// fixes some cases where EntityManager retrieves recently updated entities from cache instead of querying the database
+			// e.g. after saving a case person the UI shows the original data
+			em.refresh(byUuid);
+			return byUuid;
+		}).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override

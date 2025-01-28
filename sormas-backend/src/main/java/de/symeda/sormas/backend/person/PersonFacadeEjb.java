@@ -1171,6 +1171,18 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 			}
 
+			if (newPerson.getCauseOfDeathDisease() != null) {
+				personCases.stream()
+					.filter(caseDataDto -> caseDataDto.getDisease().equals(newPerson.getCauseOfDeathDisease()))
+					.collect(Collectors.toList());
+				Case lastCase = Collections.max(personCases, Comparator.comparing(Case::getReportDate));
+				lastCase.setOutcome(CaseOutcome.DECEASED);
+				lastCase.setOutcomeDate(newPerson.getDeathDate());
+				lastCase.setSequelae(null);
+				lastCase.setSequelaeDetails("");
+				caseService.ensurePersisted(lastCase);
+			}
+
 			List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
 			// Call onContactChanged once for every contact
 			// Attention: this may lead to infinite recursion when not properly implemented

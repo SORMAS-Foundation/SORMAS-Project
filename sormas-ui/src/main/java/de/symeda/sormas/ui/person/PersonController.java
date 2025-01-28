@@ -455,6 +455,7 @@ public class PersonController {
 			if (!editForm.getFieldGroup().isModified()) {
 				PersonDto dto = editForm.getValue();
 				savePersonWithPersonConditionChanged(dto);
+//				savePerson(dto);
 			}
 		});
 
@@ -500,8 +501,6 @@ public class PersonController {
 	}
 
 	private void savePersonWithPersonConditionChanged(PersonDto editedPerson) {
-		PersonDto initialPerson = personFacade.getByUuid(editedPerson.getUuid());
-		PresentCondition initialPresentCondition = initialPerson.getPresentCondition();
 
 		CaseDataDto lastCase;
 		if (editedPerson.getCauseOfDeathDisease() != null) {
@@ -518,12 +517,16 @@ public class PersonController {
 		PresentCondition editedPresentCondition = editedPerson.getPresentCondition();
 		if (lastCase != null
 			&& (Arrays.asList(PresentCondition.BURIED, PresentCondition.DEAD).contains(editedPresentCondition))
-			&& !(Arrays.asList(PresentCondition.BURIED, PresentCondition.DEAD).contains(initialPresentCondition))
 			&& editedPerson.getCauseOfDeath().equals(CauseOfDeath.EPIDEMIC_DISEASE)) {
 
-			if (lastCase.getOutcome().equals(CaseOutcome.DECEASED)
-				&& editedPerson.getDeathDate() != null
-				&& editedPerson.getDeathDate().equals(lastCase.getOutcomeDate())) {
+			PersonDto initialPerson = FacadeProvider.getPersonFacade().getByUuid(editedPerson.getUuid());
+			PresentCondition initialPresentCondition = initialPerson.getPresentCondition();
+
+			if (Arrays.asList(PresentCondition.BURIED, PresentCondition.DEAD).contains(initialPresentCondition)
+				&& lastCase.getOutcome().equals(CaseOutcome.DECEASED)
+				&& ((editedPerson.getDeathDate() == null && lastCase.getOutcomeDate() == null)
+					|| (editedPerson.getDeathDate() != null && editedPerson.getDeathDate().equals(lastCase.getOutcomeDate())))) {
+
 				savePerson(editedPerson);
 				return;
 			} else {
@@ -582,11 +585,6 @@ public class PersonController {
 				// actions
 				warningComponent.addCommitListener(() -> {
 					savePerson(editedPerson);
-					lastCase.setOutcome(CaseOutcome.DECEASED);
-					if (editedPerson.getDeathDate() != null) {
-						lastCase.setOutcomeDate(editedPerson.getDeathDate());
-					}
-					FacadeProvider.getCaseFacade().save(lastCase);
 					popupWindow.close();
 				});
 
@@ -598,8 +596,6 @@ public class PersonController {
 
 				return;
 			}
-
-//			savePerson(editedPerson);
 		}
 
 		savePerson(editedPerson);
