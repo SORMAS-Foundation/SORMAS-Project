@@ -509,7 +509,7 @@ public class PersonController {
 				.stream()
 				.filter(caseDataDto -> caseDataDto.getDisease().equals(editedPerson.getCauseOfDeathDisease()))
 				.collect(Collectors.toList());
-			lastCase = Collections.max(personCases, Comparator.comparing(CaseDataDto::getReportDate));
+			lastCase = personCases.isEmpty() ? null : Collections.max(personCases, Comparator.comparing(CaseDataDto::getReportDate));
 		} else {
 			lastCase = null;
 		}

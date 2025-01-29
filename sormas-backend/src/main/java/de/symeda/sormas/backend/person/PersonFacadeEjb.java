@@ -330,7 +330,13 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getByUuid(String uuid) {
-		return super.getByUuid(uuid);
+		return Optional.of(uuid).map(u -> {
+			Person byUuid = service.getByUuid(u, true);
+			// fixes some cases where EntityManager retrieves recently updated entities from cache instead of querying the database
+			// e.g. after saving a case person the UI shows the original data
+			em.refresh(byUuid);
+			return byUuid;
+		}).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override
@@ -1172,15 +1178,17 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			}
 
 			if (newPerson.getCauseOfDeathDisease() != null) {
-				personCases.stream()
+				List<Case> causeOfDeathDiseasePersonCases = personCases.stream()
 					.filter(caseDataDto -> caseDataDto.getDisease().equals(newPerson.getCauseOfDeathDisease()))
 					.collect(Collectors.toList());
-				Case lastCase = Collections.max(personCases, Comparator.comparing(Case::getReportDate));
-				lastCase.setOutcome(CaseOutcome.DECEASED);
-				lastCase.setOutcomeDate(newPerson.getDeathDate());
-				lastCase.setSequelae(null);
-				lastCase.setSequelaeDetails("");
-				caseService.ensurePersisted(lastCase);
+				if (!causeOfDeathDiseasePersonCases.isEmpty()) {
+					Case lastCase = Collections.max(causeOfDeathDiseasePersonCases, Comparator.comparing(Case::getReportDate));
+					lastCase.setOutcome(CaseOutcome.DECEASED);
+					lastCase.setOutcomeDate(newPerson.getDeathDate());
+					lastCase.setSequelae(null);
+					lastCase.setSequelaeDetails("");
+					caseService.ensurePersisted(lastCase);
+				}
 			}
 
 			List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
