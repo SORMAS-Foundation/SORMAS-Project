@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.customizableenum;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumHelper;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -60,5 +63,20 @@ public class CustomizableEnumFacadeEjbTest extends AbstractBeanTest {
 		assertThrows(
 			CustomEnumNotFoundException.class,
 			() -> getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, "any", null));
+	}
+
+	@Test
+	public void testEnumValueValidation() {
+		assertTrue(CustomizableEnumHelper.isValidEnumValue("VALIDSIMPLEVALUE"));
+		assertTrue(CustomizableEnumHelper.isValidEnumValue("VALID_SIMPLE_VALUE"));
+		assertTrue(CustomizableEnumHelper.isValidEnumValue("VALID.SIMPLE.VALUE"));
+		assertTrue(CustomizableEnumHelper.isValidEnumValue("VALID+SIMPLE+VALUE"));
+		assertTrue(CustomizableEnumHelper.isValidEnumValue("VALID_SIM+PLE.VALUE"));
+		assertTrue(CustomizableEnumHelper.isValidEnumValue("VALID_SIMPLE.VALUE+1"));
+
+		assertFalse(CustomizableEnumHelper.isValidEnumValue("invalidvalue"));
+		assertFalse(CustomizableEnumHelper.isValidEnumValue("INVALID-VALUE"));
+		assertFalse(CustomizableEnumHelper.isValidEnumValue("INVALID$VALUE"));
+
 	}
 }
