@@ -1025,6 +1025,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setIncapacitated(source.isIncapacitated());
+		target.setEmancipated(source.isEmancipated());
 
 		return target;
 	}
@@ -1573,6 +1575,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			person.get(Person.ADDITIONAL_DETAILS),
 
+			person.get(Person.IS_INCAPACITATED),
+
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
 		Predicate filter = createIndexListFilter(criteria, personQueryContext);
@@ -1780,6 +1784,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setIncapacitated(source.isIncapacitated());
+		target.setEmancipated(source.isEmancipated());
 
 		return target;
 	}

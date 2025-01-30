@@ -2258,6 +2258,9 @@ public interface Captions {
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
 	String Person_uuid = "Person.uuid";
+	String Person_emancipated = "Person.emancipated";
+	String Person_incapacitated = "Person.incapacitated";
+	String Person_hasGuardian = "Person.hasGuardian";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCommunityPrompt = "personCommunityPrompt";
 	String PersonContactDetail = "PersonContactDetail";
