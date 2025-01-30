@@ -1575,8 +1575,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			person.get(Person.ADDITIONAL_DETAILS),
 
-			person.get(Person.IS_INCAPACITATED),
-
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
 		Predicate filter = createIndexListFilter(criteria, personQueryContext);
