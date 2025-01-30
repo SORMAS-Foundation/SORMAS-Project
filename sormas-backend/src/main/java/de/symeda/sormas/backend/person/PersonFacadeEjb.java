@@ -330,12 +330,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> {
-			Person byUuid = service.getByUuid(u, true);
+		return Optional.of(uuid).map(u -> service.getByUuid(u, true)).map(person -> {
 			// fixes some cases where EntityManager retrieves recently updated entities from cache instead of querying the database
 			// e.g. after saving a case person the UI shows the original data
-			em.refresh(byUuid);
-			return byUuid;
+			em.refresh(person);
+			return person;
 		}).map(this::toPseudonymizedDto).orElse(null);
 	}
 
