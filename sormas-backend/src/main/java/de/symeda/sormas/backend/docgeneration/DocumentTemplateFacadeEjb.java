@@ -531,6 +531,14 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		return toDto(documentTemplateService.getByUuid(uuid));
 	}
 
+	public static DocumentTemplateReferenceDto toReferenceDto(DocumentTemplate documentTemplate) {
+		if (documentTemplate == null) {
+			return null;
+		}
+
+		return new DocumentTemplateReferenceDto(documentTemplate.getUuid(), documentTemplate.getFileName());
+	}
+
 	public static final class EmailTemplateTexts {
 
 		private final String subject;
