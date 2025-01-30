@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.survey;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +36,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
-
-import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
@@ -143,6 +143,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	}
 
 	@Override
+	@RightsAllowed(UserRight._SURVEY_TOKEN_DELETE)
 	public void deletePermanent(String uuid) {
 		surveyTokenService.deletePermanent(surveyTokenService.getByUuid(uuid));
 	}
@@ -151,7 +152,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 
 		List<Selection<?>> selections = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(sortProperties)) {
+		if (isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
