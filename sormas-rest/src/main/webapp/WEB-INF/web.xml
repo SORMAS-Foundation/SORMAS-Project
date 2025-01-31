@@ -837,6 +837,42 @@
 	</security-role>
 
 	<security-role>
+		<role-name>SURVEY_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_CREATE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>SURVEY_TOKEN_IMPORT</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>TRAVEL_ENTRY_ARCHIVE</role-name>
 	</security-role>
 
