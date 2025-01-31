@@ -662,7 +662,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
 	}
 
-	private boolean isMinimumAgesInterval() {
+	private boolean canBeEmancipated() {
 		int approximateAge = getApproximateAge();
 		int zeroYear = getApproximateAgeDaysOrMonths();
 		if ((approximateAge == -1) && (zeroYear == -1)){
@@ -710,7 +710,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private void updateIsIncapacitatedCheckBox(boolean isInitialized) {
 		boolean isIncapacitatedChecked = (isIncapacitated == null) || (isIncapacitated.getValue());
-		isEmancipated.setVisible(!isIncapacitatedChecked && isMinimumAgesInterval());
+		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated());
 		hasGuardian.setValue(isIncapacitatedChecked);
 		if(getApproximateAge() < minimumAdultAge) {
 			nameOfGuardians.setValue(getValue().getNamesOfGuardians());
