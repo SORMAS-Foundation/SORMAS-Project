@@ -656,7 +656,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		isIncapacitated.addValueChangeListener(e -> updateIsIncapacitatedCheckBox(true));
 
 		isEmancipated = addField(PersonDto.IS_EMANCIPATED, CheckBox.class);
-		isEmancipated.addValueChangeListener(e -> updateIsEmancipatedCheckBox());
+		isEmancipated.addValueChangeListener(e -> onEmancipatedChange());
 		hasGuardian.setEnabled(false);
 		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();//2 places
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
@@ -664,10 +664,25 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private boolean isMinimumAgesInterval() {
 		int approximateAge = getApproximateAge();
-		if (approximateAge == -1){
+		int zeroYear = getApproximateAgeDaysOrMonths();
+		if ((approximateAge == -1) && (zeroYear == -1)){
 			return true;
 		}
-		return approximateAge > minimumEmancipatedAge && approximateAge < minimumAdultAge;
+		return approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
+	}
+
+	private int getApproximateAgeDaysOrMonths() {
+		Date birthDate = calcBirthDateValue();
+		if (birthDate != null) {
+			Pair<Integer, ApproximateAgeType> pair =
+					ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
+			if ((pair.getElement0() != null) &&
+					((pair.getElement1() == ApproximateAgeType.MONTHS) ||
+					(pair.getElement1() == ApproximateAgeType.DAYS))) {
+				return pair.getElement0();
+			}
+		}
+		return -1;
 	}
 
 	private int getApproximateAge() {
@@ -682,10 +697,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		return -1;
 	}
 
-	private void updateIsEmancipatedCheckBox() {
+	private void onEmancipatedChange() {
 		boolean isVisible = (isEmancipated == null) || (!isEmancipated.getValue());
+		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		isIncapacitated.setVisible(isVisible);
 		hasGuardian.setValue(isVisible);
+		if(isVisible || isEmancipatedChecked) {
+			nameOfGuardians.setValue("");
+		}
 		updateHasGuardianCheckBox();
 	}
 
