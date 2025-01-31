@@ -1204,6 +1204,7 @@ public interface Strings {
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
 	String messageChangingCaseOutcome = "messageChangingCaseOutcome";
+	String messageChangingPersonPresentCondition = "messageChangingPersonPresentCondition";
 	String messageCheckInputData = "messageCheckInputData";
 	String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	String messageClinicalVisitCreated = "messageClinicalVisitCreated";
