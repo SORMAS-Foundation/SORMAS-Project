@@ -729,8 +729,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		nameOfGuardians.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		hasGuardian.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		if((birthDate == null) || isChildOrUnknownDate ){
-			boolean isVisible = ((isEmancipated != null) && (isEmancipated.isVisible()));
-			if(isVisible) {
+			boolean isEmancipatedVisible = ((isEmancipated != null) && (isEmancipated.isVisible()));
+			if(isEmancipatedVisible) {
 				hasGuardian.setValue(isChildOrUnknownDate);
 			} else {
 				hasGuardian.setValue(true);
