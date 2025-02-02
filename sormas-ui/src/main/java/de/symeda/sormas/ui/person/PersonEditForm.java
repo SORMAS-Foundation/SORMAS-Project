@@ -683,11 +683,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void onEmancipatedChange() {
-		boolean isVisible = (isEmancipated == null) || (!isEmancipated.getValue());
+		boolean isEmancipatedHidden = (isEmancipated == null) || (!isEmancipated.getValue());
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
-		isIncapacitated.setVisible(isVisible);
-		hasGuardian.setValue(isVisible);
-		if(isVisible || isEmancipatedChecked) {
+		hasGuardian.setValue(isEmancipatedHidden);
+		if(isEmancipatedHidden || isEmancipatedChecked) {
 			nameOfGuardians.setValue("");
 		}
 		updateHasGuardianCheckBox();
@@ -714,6 +713,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void updateHasGuardianCheckBox() {
 		boolean isIncapacitatedChecked = (isIncapacitated != null) && (isIncapacitated.getValue());
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
+		if((getApproximateAge(ApproximateAgeType.YEARS) >= minimumAdultAge || (getApproximateAge(ApproximateAgeType.YEARS) < minimumEmancipatedAge) && isEmancipatedChecked)) {
+			isEmancipatedChecked = false;
+			isEmancipated.setValue(Boolean.FALSE);
+			isIncapacitated.setVisible(true);
+		}
 		if(isEmancipatedChecked){
 			hasGuardian.setVisible(false);
 			nameOfGuardians.setVisible(false);
