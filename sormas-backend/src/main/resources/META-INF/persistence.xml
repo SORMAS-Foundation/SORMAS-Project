@@ -92,6 +92,8 @@
 		<class>de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess</class>
 		<class>de.symeda.sormas.backend.selfreport.SelfReport</class>
 		<class>de.symeda.sormas.backend.docgeneration.DocumentTemplate</class>
+		<class>de.symeda.sormas.backend.survey.Survey</class>
+		<class>de.symeda.sormas.backend.survey.SurveyToken</class>
 
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
