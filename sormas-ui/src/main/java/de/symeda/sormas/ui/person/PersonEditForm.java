@@ -168,9 +168,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-									LayoutUtil.fluidRowLocs(PersonDto.HAS_GUARDIAN) +
-									LayoutUtil.fluidRowLocs(PersonDto.IS_INCAPACITATED) +
 									LayoutUtil.fluidRowLocs(PersonDto.IS_EMANCIPATED) +
+									LayoutUtil.fluidRowLocs(PersonDto.IS_INCAPACITATED) +
+									LayoutUtil.fluidRowLocs(PersonDto.HAS_GUARDIAN) +
 									LayoutUtil.fluidRow(
 											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
@@ -508,13 +508,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.BIRTH_DATE_DD, e -> {
 			updateApproximateAge();
 			updateReadyOnlyApproximateAge();
-			updateIsIncapacitatedCheckBox(false);
 		});
 
 		addFieldListeners(PersonDto.BIRTH_DATE_MM, e -> {
 			updateApproximateAge();
 			updateReadyOnlyApproximateAge();
-			updateIsIncapacitatedCheckBox(false);
 		});
 
 		addFieldListeners(PersonDto.BIRTH_DATE_YYYY, e -> {
@@ -675,10 +673,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void onEmancipatedChange() {
-		boolean isEmancipatedHidden = (isEmancipated == null) || (!isEmancipated.getValue());
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
-		hasGuardian.setValue(isEmancipatedHidden);
-		if(isEmancipatedHidden || isEmancipatedChecked) {
+		hasGuardian.setValue(!isEmancipatedChecked);
+		if(isEmancipatedChecked) {
 			nameOfGuardians.setValue("");
 		}
 		updateHasGuardianCheckBox();
@@ -694,7 +691,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
 		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated);
-		hasGuardian.setValue(isIncapacitatedChecked);
+		hasGuardian.setValue(isIncapacitatedChecked || approximateAge < minimumAdultAge);
 		if(getApproximateAgeInYears() < minimumAdultAge) {
 			nameOfGuardians.setValue(getValue().getNamesOfGuardians());
 		}
@@ -724,18 +721,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			return;
 		} else {
 			isIncapacitated.setVisible(true);
+			hasGuardian.setValue(Boolean.TRUE);
 		}
 		Date birthDate = calcBirthDateValue();
 		boolean isChildOrUnknownDate = getApproximateAgeInYears() < minimumAdultAge;
 		nameOfGuardians.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		hasGuardian.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		if((birthDate == null) || isChildOrUnknownDate ){
-			boolean isEmancipatedVisible = ((isEmancipated != null) && (isEmancipated.isVisible()));
-			if(isEmancipatedVisible) {
-				hasGuardian.setValue(isChildOrUnknownDate);
-			} else {
-				hasGuardian.setValue(true);
-			}
+			hasGuardian.setValue(Boolean.TRUE);
 		}
 	}
 
