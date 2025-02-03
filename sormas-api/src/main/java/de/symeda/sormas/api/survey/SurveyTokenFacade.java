@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,16 +13,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.customizableenum;
+package de.symeda.sormas.api.survey;
 
-import java.util.regex.Pattern;
+import java.util.List;
 
-public class CustomizableEnumHelper {
+import javax.ejb.Remote;
+import javax.validation.Valid;
 
-	private static final String ENUM_VALUE_PATTERN = "[A-Z0-9_.+]+";
+import de.symeda.sormas.api.utils.SortProperty;
 
-	public static boolean isValidEnumValue(String value) {
-		return Pattern.matches(ENUM_VALUE_PATTERN, value);
-	}
+@Remote
+public interface SurveyTokenFacade {
 
+	SurveyTokenDto save(@Valid SurveyTokenDto dto);
+
+	SurveyTokenDto getByUuid(String uuid);
+
+	long count(SurveyTokenCriteria criteria);
+
+	List<SurveyTokenIndexDto> getIndexList(SurveyTokenCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	void deletePermanent(String uuid);
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,16 +13,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.customizableenum;
+package de.symeda.sormas.api.survey;
 
-import java.util.regex.Pattern;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.uuid.AbstractUuidDto;
 
-public class CustomizableEnumHelper {
+public class SurveyIndexDto extends AbstractUuidDto {
 
-	private static final String ENUM_VALUE_PATTERN = "[A-Z0-9_.+]+";
+	private static final long serialVersionUID = -5888585683689386052L;
 
-	public static boolean isValidEnumValue(String value) {
-		return Pattern.matches(ENUM_VALUE_PATTERN, value);
+	private final String name;
+	private final Disease disease;
+
+	public SurveyIndexDto(String uuid, String name, Disease disease) {
+		super(uuid);
+		this.name = name;
+		this.disease = disease;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
 }

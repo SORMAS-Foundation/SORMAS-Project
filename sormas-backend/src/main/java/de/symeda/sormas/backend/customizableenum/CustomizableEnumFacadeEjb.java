@@ -134,7 +134,11 @@ public class CustomizableEnumFacadeEjb
 		target.setValue(source.getValue());
 		target.setCaption(source.getCaption());
 		target.setTranslations(source.getTranslations());
-		target.setDiseases(source.getDiseases());
+		if (!source.getDiseases().isEmpty()) {
+			target.setDiseases(source.getDiseases());
+		} else {
+			target.setDiseases(null);
+		}
 		target.setDescription(source.getDescription());
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());
@@ -496,7 +500,9 @@ public class CustomizableEnumFacadeEjb
 		target.setValue(source.getValue());
 		target.setCaption(source.getCaption());
 		target.setTranslations(source.getTranslations());
-		target.setDiseases(source.getDiseases());
+		if (source.getDiseases() != null) {
+			target.setDiseases(source.getDiseases());
+		}
 		target.setDescription(source.getDescription());
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());
