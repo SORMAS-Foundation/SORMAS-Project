@@ -113,6 +113,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String NATIONAL_HEALTH_ID_WARNING_LABEL = "nationalHealthIdWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
+	public static final String HAS_GUARDIAN = "hasGuardian";
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -170,7 +171,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
 									LayoutUtil.fluidRowLocs(PersonDto.IS_EMANCIPATED) +
 									LayoutUtil.fluidRowLocs(PersonDto.IS_INCAPACITATED) +
-									LayoutUtil.fluidRowLocs(PersonDto.HAS_GUARDIAN) +
+									LayoutUtil.fluidRowLocs(HAS_GUARDIAN) +
 									LayoutUtil.fluidRow(
 											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
@@ -647,8 +648,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		hasGuardian = addField(PersonDto.HAS_GUARDIAN, CheckBox.class);
-		hasGuardian.addValueChangeListener(e -> updateHasGuardianCheckBox());
+		hasGuardian = addCustomField(HAS_GUARDIAN, Boolean.class, CheckBox.class);
 
 		isIncapacitated = addField(PersonDto.IS_INCAPACITATED, CheckBox.class);
 		isIncapacitated.addValueChangeListener(e -> updateIsIncapacitatedCheckBox(true));
