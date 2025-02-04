@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.survey;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
@@ -32,8 +33,10 @@ public class SurveyTokenIndexDtoResultTransformer implements ResultTransformer {
 		return new SurveyTokenIndexDto(
 			(String) tuple[++index],
 			(String) tuple[++index],
+			(String) tuple[++index],
+			(String) tuple[++index],
 			new CaseReferenceDto((String) tuple[++index], (String) tuple[++index], (String) tuple[++index]),
-			(String) tuple[++index]);
+			(Date) tuple[++index], (String) tuple[++index]);
 	}
 
 	@Override

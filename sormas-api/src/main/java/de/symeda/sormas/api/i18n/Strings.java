@@ -853,6 +853,7 @@ public interface Strings {
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
+	String headingSurveySideComponent = "headingSurveySideComponent";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
@@ -1043,6 +1044,7 @@ public interface Strings {
 	String infoNoSourceCaseSelectedLineListing = "infoNoSourceCaseSelectedLineListing";
 	String infoNoSubordinateEvents = "infoNoSubordinateEvents";
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
+	String infoNoSurveys = "infoNoSurveys";
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";

@@ -124,12 +124,14 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 				.concat(
 					Stream.of(
 						root.get(SurveyToken.UUID),
+						joins.getSurvey().get(Survey.UUID),
+						joins.getSurvey().get(Survey.NAME),
 						root.get(SurveyToken.TOKEN),
 						joins.getCaseAssignedTo().get(Case.UUID),
 						joins.getCaseAssignedToJoins().getPerson().get(Person.FIRST_NAME),
 						joins.getCaseAssignedToJoins().getPerson().get(Person.LAST_NAME),
-						root.get(SurveyToken.CASE_ASSIGNED_TO),
-						root.get(SurveyToken.ASSIGNMENT_DATE)),
+						root.get(SurveyToken.ASSIGNMENT_DATE),
+						root.get(SurveyToken.RECIPIENT_EMAIL)),
 					// add sort properties to select
 					sortBy(sortProperties, root, cb, cq).stream())
 				.collect(Collectors.toList()));

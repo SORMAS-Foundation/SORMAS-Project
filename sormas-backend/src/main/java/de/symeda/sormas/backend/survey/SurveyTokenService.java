@@ -22,6 +22,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
@@ -41,6 +42,10 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 
 		if (criteria.getTokenLike() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.ilike(cb, root.get(SurveyToken.TOKEN), criteria.getTokenLike()));
+		}
+
+		if (criteria.getCaseAssignedTo() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaseAssignedTo().get(Case.UUID), criteria.getCaseAssignedTo().getUuid()));
 		}
 
 		return filter;

@@ -38,6 +38,7 @@ public class SurveyToken extends AbstractDomainObject {
 	public static final String SURVEY = "survey";
 	public static final String CASE_ASSIGNED_TO = "caseAssignedTo";
 	public static final String ASSIGNMENT_DATE = "assignmentDate";
+	public static final String RECIPIENT_EMAIL = "recipientEmail";
 
 	private String token;
 	private Survey survey;

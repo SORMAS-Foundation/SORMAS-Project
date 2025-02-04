@@ -50,6 +50,7 @@ import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponent;
 import de.symeda.sormas.ui.selfreport.selfreportLink.SelfReportListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessSideComponent;
+import de.symeda.sormas.ui.survey.SurveyListComponentLayout;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -80,6 +81,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String EXTERNAL_EMAILS_LOC = "externalEmails";
 	public static final String SPECIAL_ACCESSES_LOC = "specialAccesses";
 	public static final String SELF_REPORT_LOC = "selfReport";
+	public static final String SURVEYS_LOC = "surveys";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -117,7 +119,8 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			QuarantineOrderDocumentsComponent.QUARANTINE_LOC,
 			EXTERNAL_EMAILS_LOC,
 			SPECIAL_ACCESSES_LOC,
-			SELF_REPORT_LOC);
+			SELF_REPORT_LOC,
+			SURVEYS_LOC);
 
 		container.addComponent(layout);
 
@@ -238,6 +241,11 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 			new SelfReportListComponent(SelfReportType.CASE, new SelfReportCriteria().setCaze(new CaseReferenceDto(caze.getUuid())));
 		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
 		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
+
+		if(UiUtil.permitted(FeatureType.SURVEYS)) {
+			SurveyListComponentLayout surveyList = new SurveyListComponentLayout(getCaseRef(), isEditAllowed, this::showUnsavedChangesPopup);
+			layout.addSidePanelComponent(surveyList, SURVEYS_LOC);
+		}
 
 		final boolean deleted = FacadeProvider.getCaseFacade().isDeleted(uuid);
 		layout.disableIfNecessary(deleted, caseEditAllowed);
