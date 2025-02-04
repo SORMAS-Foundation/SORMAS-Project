@@ -2220,12 +2220,15 @@ public interface Captions {
 	String Person_educationDetails = "Person.educationDetails";
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
+	String Person_emancipated = "Person.emancipated";
 	String Person_externalId = "Person.externalId";
 	String Person_externalToken = "Person.externalToken";
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	String Person_hasCovidApp = "Person.hasCovidApp";
+	String Person_hasGuardian = "Person.hasGuardian";
+	String Person_incapacitated = "Person.incapacitated";
 	String Person_internalToken = "Person.internalToken";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";

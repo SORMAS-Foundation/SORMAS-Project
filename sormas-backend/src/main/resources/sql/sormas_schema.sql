@@ -13810,3 +13810,11 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOK
 
 INSERT INTO schema_version (version_number, comment) VALUES (557, 'Create Survey Tokens data structure #13250');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
+-- 2025-01-10 Add information about legal guardian for "minor / incapacitated" to person entity #13205
+ALTER TABLE person ADD column incapacitated boolean default false;
+ALTER TABLE person ADD column emancipated boolean default false;
+ALTER TABLE person_history ADD COLUMN incapacitated boolean default false;
+ALTER TABLE person_history ADD COLUMN emancipated boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (558, 'Add information about legal guardian for "minor / incapacitated" to person entity #13205');
