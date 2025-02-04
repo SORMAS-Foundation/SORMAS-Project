@@ -142,6 +142,8 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String IMMUNIZATIONS = "immunizations";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String TRAVEL_ENTRIES = "travelEntries";
+	public static final String IS_INCAPACITATED = "isIncapacitated";
+	public static final String IS_EMANCIPATED = "emancipated";
 
 	private String firstName;
 	private String lastName;
@@ -210,6 +212,9 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private Country birthCountry;
 	private Country citizenship;
 	private String additionalDetails;
+
+	private boolean isIncapacitated;
+	private boolean emancipated;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -658,6 +663,24 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setHasCovidApp(boolean hasCovidApp) {
 		this.hasCovidApp = hasCovidApp;
+	}
+
+	@Column
+	public boolean isIncapacitated() {
+		return isIncapacitated;
+	}
+
+	public void setIncapacitated(boolean incapacitated) {
+		isIncapacitated = incapacitated;
+	}
+
+	@Column
+	public boolean isEmancipated() {
+		return emancipated;
+	}
+
+	public void setEmancipated(boolean emancipated) {
+		this.emancipated = emancipated;
 	}
 
 	@Column
