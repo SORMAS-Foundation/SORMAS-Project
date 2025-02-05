@@ -656,7 +656,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		isEmancipated = addField(PersonDto.IS_EMANCIPATED, CheckBox.class);
 		isEmancipated.addValueChangeListener(e -> onEmancipatedChange());
 		hasGuardian.setEnabled(false);
-		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();//2 places
+		hasGuardian.setValue(Boolean.TRUE);
+		nameOfGuardians.setVisible(true);
+		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
 		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
 	}
 
