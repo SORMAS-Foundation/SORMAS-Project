@@ -204,6 +204,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private TextField nameOfGuardians;
 	private long minimumAdultAge;
 	private long minimumEmancipatedAge;
+	private TextField approximateAgeField;
+	private ComboBox approximateAgeTypeField;
 	//@formatter:on
 
 	public PersonEditForm(
@@ -336,10 +338,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
 
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
-		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
 		approximateAgeField
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, approximateAgeField.getCaption()));
-		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
+		approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 
 		approximateAgeField.addValidator(
@@ -347,6 +349,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				approximateAgeField,
 				approximateAgeTypeField,
 				I18nProperties.getValidationError(Validations.softApproximateAgeTooHigh)));
+
+		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
+			updateIsIncapacitatedCheckBox(true);
+		});
+
+		addFieldListeners(PersonDto.APPROXIMATE_AGE_TYPE, e -> {
+			updateIsIncapacitatedCheckBox(true);
+		});
 
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
@@ -655,6 +665,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		isEmancipated = addField(PersonDto.IS_EMANCIPATED, CheckBox.class);
 		isEmancipated.addValueChangeListener(e -> onEmancipatedChange());
+		isEmancipated.setVisible(false);
 		hasGuardian.setEnabled(false);
 		hasGuardian.setValue(Boolean.TRUE);
 		nameOfGuardians.setVisible(true);
@@ -687,10 +698,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isIncapacitatedChecked = (isIncapacitated == null) || (isIncapacitated.getValue());
 		int approximateAge = getApproximateAgeInYears();
 		boolean canBeEmancipated;
-		if(approximateAge == -1) {
+		if(approximateAge == -1 && (approximateAgeField).getValue() != null) {
 			canBeEmancipated = false;
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
+		}
+		if(!canBeEmancipated && (approximateAgeField).getValue() != null){
+			int age = Integer.parseInt(approximateAgeField.getValue());
+			if(approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS){
+				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
+				isEmancipated.setValue(canBeEmancipated);
+			}
 		}
 		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated);
 		hasGuardian.setValue(isIncapacitatedChecked || approximateAge < minimumAdultAge);
