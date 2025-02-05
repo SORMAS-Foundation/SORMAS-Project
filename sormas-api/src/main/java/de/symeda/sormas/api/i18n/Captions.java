@@ -2699,6 +2699,7 @@ public interface Captions {
 	String SurveyToken_responseReceived = "SurveyToken.responseReceived";
 	String SurveyToken_survey = "SurveyToken.survey";
 	String SurveyToken_token = "SurveyToken.token";
+	String SurveyToken_uuid = "SurveyToken.uuid";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
