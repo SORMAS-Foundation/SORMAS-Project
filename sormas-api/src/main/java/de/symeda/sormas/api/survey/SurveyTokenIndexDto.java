@@ -30,15 +30,16 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 	private final CaseReferenceDto caseAssignedTo;
 	private final Date assignmentDate;
 	private final String recipientEmail;
+	private final Boolean responseReceived;
 
 	public SurveyTokenIndexDto(
-		String uuid,
-		String surveyUuid,
-		String surveyName,
-		String token,
-		CaseReferenceDto caseAssignedTo,
-		Date assignmentDate,
-		String recipientEmail) {
+            String uuid,
+            String surveyUuid,
+            String surveyName,
+            String token,
+            CaseReferenceDto caseAssignedTo,
+            Date assignmentDate,
+            String recipientEmail, Boolean responseReceived) {
 		super(uuid);
 		this.surveyUuid = surveyUuid;
 		this.surveyName = surveyName;
@@ -46,7 +47,8 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 		this.caseAssignedTo = caseAssignedTo;
 		this.assignmentDate = assignmentDate;
 		this.recipientEmail = recipientEmail;
-	}
+        this.responseReceived = responseReceived;
+    }
 
 	public String getSurveyUuid() {
 		return surveyUuid;
@@ -70,5 +72,13 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
 	public String getRecipientEmail() {
 		return recipientEmail;
+	}
+
+	public Boolean getResponseReceived() {
+		return responseReceived;
+	}
+
+	public SurveyTokenReferenceDto toReference() {
+		return new SurveyTokenReferenceDto(getUuid(), getSurveyName());
 	}
 }

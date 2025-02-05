@@ -2691,6 +2691,14 @@ public interface Captions {
 	String surveyGenerate = "surveyGenerate";
 	String surveyNew = "surveyNew";
 	String surveySend = "surveySend";
+	String SurveyToken = "SurveyToken";
+	String SurveyToken_assignmentDate = "SurveyToken.assignmentDate";
+	String SurveyToken_caseAssignedTo = "SurveyToken.caseAssignedTo";
+	String SurveyToken_generatedDocument = "SurveyToken.generatedDocument";
+	String SurveyToken_recipientEmail = "SurveyToken.recipientEmail";
+	String SurveyToken_responseReceived = "SurveyToken.responseReceived";
+	String SurveyToken_survey = "SurveyToken.survey";
+	String SurveyToken_token = "SurveyToken.token";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";

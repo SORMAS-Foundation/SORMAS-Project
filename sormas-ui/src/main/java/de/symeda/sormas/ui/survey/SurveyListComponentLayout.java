@@ -1,27 +1,24 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.ui.survey;
 
-import static de.symeda.sormas.ui.utils.CssStyles.LABEL_BOLD;
-
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -39,6 +36,7 @@ import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -52,13 +50,14 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 	private static final long serialVersionUID = -4364573774979104517L;
 
-	public SurveyListComponentLayout(CaseReferenceDto caseRef, boolean isEditAllowed, boolean isEmailAllowed, Consumer<Runnable> actionCallback) {
+	public SurveyListComponentLayout(CaseReferenceDto caseRef, boolean isEditAllowed, boolean isEmailAllowed, Consumer<Runnable> actionWrapper) {
 		super(
 			new SurveyListComponent(
 				I18nProperties.getString(Strings.headingSurveySideComponent),
 				new SurveyTokenCriteria().caseAssignedTo(caseRef),
-				actionCallback,
-				isEditAllowed, isEmailAllowed));
+				actionWrapper,
+				isEditAllowed,
+				isEmailAllowed));
 	}
 
 	private static class SurveyListComponent extends SideComponent {
@@ -66,16 +65,16 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 		private static final long serialVersionUID = 4793190763340951494L;
 
 		public SurveyListComponent(
-				String heading,
-				SurveyTokenCriteria surveyTokenCriteria,
-				Consumer<Runnable> actionCallback,
-				boolean isEditAllowed, boolean isEmailAllowed) {
-			super(heading, actionCallback);
+			String heading,
+			SurveyTokenCriteria surveyTokenCriteria,
+			Consumer<Runnable> actionWrapper,
+			boolean isEditAllowed,
+			boolean isEmailAllowed) {
+			super(heading, actionWrapper);
 
 			setWidth(100, Unit.PERCENTAGE);
 			setMargin(false);
 			setSpacing(false);
-
 
 			VerticalLayout uploadLayout = new VerticalLayout();
 			uploadLayout.setSpacing(true);
@@ -89,9 +88,10 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 				uploadLayout.addComponent(sendSurveyButton);
 			}
 
-			Button generateSurveyDocButton = ButtonHelper.createButton(Captions.surveyGenerate, I18nProperties.getCaption(Captions.surveyGenerate), (e) -> {
-			});
-			if( !isEmailAllowed) {
+			Button generateSurveyDocButton =
+				ButtonHelper.createButton(Captions.surveyGenerate, I18nProperties.getCaption(Captions.surveyGenerate), (e) -> {
+				});
+			if (!isEmailAllowed) {
 				generateSurveyDocButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			}
 
@@ -145,8 +145,7 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 				SurveyListEntry listEntry = new SurveyListEntry(token);
 
 				listEntry.addActionButton(String.valueOf(i), (Button.ClickListener) clickEvent -> {
-//						ControllerProvider.getSurveyController().navigateToData(listEntry.getToken().getSurveyUuid());
-					throw new RuntimeException("Not implemented yet");
+					ControllerProvider.getSurveyTokenController().showCaseSurveyDetails(listEntry.getToken().toReference(), this::reload);
 				}, UiUtil.permitted(isEditAllowed, UserRight.SURVEY_EDIT));
 				listEntry.setEnabled(isEditAllowed);
 				listLayout.addComponent(listEntry);
@@ -179,16 +178,25 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 				surveyNameLabel.setWidth(100, Unit.PERCENTAGE);
 				topLeftLayout.addComponent(surveyNameLabel);
 
-				Label emailLabel = new Label(DateFormatHelper.formatLocalDate(token.getAssignmentDate()));
-				emailLabel.setWidth(100, Unit.PERCENTAGE);
-				topLeftLayout.addComponent(emailLabel);
+				Label assignmentDateLabel = new Label(I18nProperties.getCaption(Captions.creationDate));
+				Label assignmentDate = new Label(DateFormatHelper.formatLocalDate(token.getAssignmentDate()));
+				assignmentDate.setWidth(100, Unit.PERCENTAGE);
+				topLeftLayout.addComponent(new HorizontalLayout(assignmentDateLabel, assignmentDate));
 
-				Label sentToCaptionLabel = new Label(I18nProperties.getCaption(Captions.externalEmailSentTo));
-				sentToCaptionLabel.addStyleName(LABEL_BOLD);
-				if (token.isPseudonymized()) {
-					sentToCaptionLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+				if (StringUtils.isNotBlank(token.getRecipientEmail())) {
+					Label sentToCaptionLabel = new Label(I18nProperties.getCaption(Captions.externalEmailSentTo));
+					Label emailLabel = new Label(token.getRecipientEmail());
+					if (token.isPseudonymized()) {
+						emailLabel.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+					}
+					topLeftLayout.addComponent(new HorizontalLayout(sentToCaptionLabel, emailLabel));
 				}
-				topLeftLayout.addComponent(new HorizontalLayout(sentToCaptionLabel, new Label(token.getRecipientEmail())));
+
+				topLeftLayout.addComponent(
+					new Label(
+						token.getResponseReceived()
+							? I18nProperties.getString(Strings.infoSurveyResponseReceived)
+							: I18nProperties.getString(Strings.infoSurveyResponseNotReceived)));
 			}
 			topLayout.addComponent(topLeftLayout);
 		}
