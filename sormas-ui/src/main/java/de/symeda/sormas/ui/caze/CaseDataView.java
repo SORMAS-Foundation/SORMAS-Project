@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -24,6 +26,7 @@ import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
@@ -226,9 +229,12 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
+		PersonDto casePerson = FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid());
+		boolean isSendEmailAllowed = CollectionUtils.isNotEmpty(casePerson.getAllEmailAddresses());
+
 		if (UiUtil.permitted(FeatureType.EXTERNAL_EMAILS, UserRight.EXTERNAL_EMAIL_SEND)) {
-			ExternalEmailSideComponent externalEmailSideComponent =
-				ExternalEmailSideComponent.forCase(caze, isEditAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
+			ExternalEmailSideComponent externalEmailSideComponent = ExternalEmailSideComponent
+				.forCase(caze, isEditAllowed, caze.getPerson(), isSendEmailAllowed, SormasUI::refreshView, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(new SideComponentLayout(externalEmailSideComponent), EXTERNAL_EMAILS_LOC);
 		}
 
@@ -242,8 +248,9 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		SelfReportListComponentLayout selfReportListComponentLayout = new SelfReportListComponentLayout(selfReportListComponent);
 		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
 
-		if(UiUtil.permitted(FeatureType.SURVEYS)) {
-			SurveyListComponentLayout surveyList = new SurveyListComponentLayout(getCaseRef(), isEditAllowed, this::showUnsavedChangesPopup);
+		if (UiUtil.permitted(FeatureType.SURVEYS)) {
+			SurveyListComponentLayout surveyList =
+				new SurveyListComponentLayout(getCaseRef(), isEditAllowed, isSendEmailAllowed, this::showUnsavedChangesPopup);
 			layout.addSidePanelComponent(surveyList, SURVEYS_LOC);
 		}
 

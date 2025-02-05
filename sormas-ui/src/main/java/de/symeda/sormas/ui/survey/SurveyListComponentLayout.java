@@ -52,13 +52,13 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 	private static final long serialVersionUID = -4364573774979104517L;
 
-	public SurveyListComponentLayout(CaseReferenceDto caseRef, boolean isEditAllowed, Consumer<Runnable> actionCallback) {
+	public SurveyListComponentLayout(CaseReferenceDto caseRef, boolean isEditAllowed, boolean isEmailAllowed, Consumer<Runnable> actionCallback) {
 		super(
 			new SurveyListComponent(
 				I18nProperties.getString(Strings.headingSurveySideComponent),
 				new SurveyTokenCriteria().caseAssignedTo(caseRef),
 				actionCallback,
-				isEditAllowed));
+				isEditAllowed, isEmailAllowed));
 	}
 
 	private static class SurveyListComponent extends SideComponent {
@@ -66,10 +66,10 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 		private static final long serialVersionUID = 4793190763340951494L;
 
 		public SurveyListComponent(
-			String heading,
-			SurveyTokenCriteria surveyTokenCriteria,
-			Consumer<Runnable> actionCallback,
-			boolean isEditAllowed) {
+				String heading,
+				SurveyTokenCriteria surveyTokenCriteria,
+				Consumer<Runnable> actionCallback,
+				boolean isEditAllowed, boolean isEmailAllowed) {
 			super(heading, actionCallback);
 
 			setWidth(100, Unit.PERCENTAGE);
@@ -82,12 +82,19 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 			uploadLayout.setMargin(true);
 			uploadLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 
-			Button sebdSurveyButton = ButtonHelper.createButton(Captions.surveySend, I18nProperties.getCaption(Captions.surveySend), (e) -> {
-			}, ValoTheme.BUTTON_PRIMARY);
-			sebdSurveyButton.setWidth(100, Unit.PERCENTAGE);
-			uploadLayout.addComponent(sebdSurveyButton);
+			if (isEmailAllowed) {
+				Button sendSurveyButton = ButtonHelper.createButton(Captions.surveySend, I18nProperties.getCaption(Captions.surveySend), (e) -> {
+				}, ValoTheme.BUTTON_PRIMARY);
+				sendSurveyButton.setWidth(100, Unit.PERCENTAGE);
+				uploadLayout.addComponent(sendSurveyButton);
+			}
+
 			Button generateSurveyDocButton = ButtonHelper.createButton(Captions.surveyGenerate, I18nProperties.getCaption(Captions.surveyGenerate), (e) -> {
 			});
+			if( !isEmailAllowed) {
+				generateSurveyDocButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			}
+
 			generateSurveyDocButton.setWidth(100, Unit.PERCENTAGE);
 			uploadLayout.addComponent(generateSurveyDocButton);
 
