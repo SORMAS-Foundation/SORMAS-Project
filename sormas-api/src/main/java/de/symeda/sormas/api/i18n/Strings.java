@@ -548,6 +548,7 @@ public interface Strings {
 	String headingCreateNewPerson = "headingCreateNewPerson";
 	String headingCreateNewPrescription = "headingCreateNewPrescription";
 	String headingCreateNewSample = "headingCreateNewSample";
+	String headingCreateNewSurvey = "headingCreateNewSurvey";
 	String headingCreateNewTask = "headingCreateNewTask";
 	String headingCreateNewTaskQuestion = "headingCreateNewTaskQuestion";
 	String headingCreateNewTravelEntry = "headingCreateNewTravelEntry";
@@ -1539,6 +1540,8 @@ public interface Strings {
 	String messageSubcontinentDearchivingNotPossible = "messageSubcontinentDearchivingNotPossible";
 	String messageSubcontinentsArchived = "messageSubcontinentsArchived";
 	String messageSubcontinentsDearchived = "messageSubcontinentsDearchived";
+	String messageSurveyCreated = "messageSurveyCreated";
+	String messageSurveySaved = "messageSurveySaved";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSyncUsersFromAuthProviderConfigurationError = "messageSyncUsersFromAuthProviderConfigurationError";
@@ -1784,6 +1787,7 @@ public interface Strings {
 	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
 	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
 	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
+	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";

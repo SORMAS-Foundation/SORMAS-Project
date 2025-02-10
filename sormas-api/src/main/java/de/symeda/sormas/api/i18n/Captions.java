@@ -2071,6 +2071,7 @@ public interface Captions {
 	String mainMenuSelfReports = "mainMenuSelfReports";
 	String mainMenuShareRequests = "mainMenuShareRequests";
 	String mainMenuStatistics = "mainMenuStatistics";
+	String mainMenuSurveys = "mainMenuSurveys";
 	String mainMenuTasks = "mainMenuTasks";
 	String mainMenuUsers = "mainMenuUsers";
 	String MaternalHistory_ageAtBirth = "MaternalHistory.ageAtBirth";
@@ -2688,6 +2689,8 @@ public interface Captions {
 	String SurveillanceReport_uuid = "SurveillanceReport.uuid";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
+	String surveyNewSurvey = "surveyNewSurvey";
+	String surveySurveyList = "surveySurveyList";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
@@ -3236,6 +3239,7 @@ public interface Captions {
 	String View_shareRequests = "View.shareRequests";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";
+	String View_surveys = "View.surveys";
 	String View_tasks = "View.tasks";
 	String View_tasks_archive = "View.tasks.archive";
 	String View_tasks_sub = "View.tasks.sub";

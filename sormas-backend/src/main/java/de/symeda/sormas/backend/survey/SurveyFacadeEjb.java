@@ -41,6 +41,7 @@ import de.symeda.sormas.api.survey.SurveyCriteria;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyIndexDto;
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
@@ -164,6 +165,16 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		surveyService.deletePermanent(surveyService.getByUuid(uuid));
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return surveyService.exists(uuid);
+	}
+
+	@Override
+	public SurveyReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(surveyService.getByUuid(uuid));
+	}
+
 	private void validate(SurveyDto survey) {
 
 	}
@@ -191,6 +202,15 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		target.setEmailTemplate(DocumentTemplateFacadeEjb.toReferenceDto(source.getEmailTemplate()));
 
 		return target;
+	}
+
+	public static SurveyReferenceDto toReferenceDto(Survey entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new SurveyReferenceDto(entity.getUuid(), entity.getDisease(), entity.getName());
 	}
 
 	@LocalBean

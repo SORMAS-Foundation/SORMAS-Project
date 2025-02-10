@@ -35,6 +35,9 @@ public class SurveyDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Survey";
 
+	public static final String DISEASE = "disease";
+	public static final String SURVEY_NAME = "name";
+
 	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
