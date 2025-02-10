@@ -213,16 +213,15 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		return new SurveyReferenceDto(entity.getUuid(), entity.getDisease(), entity.getName());
 	}
 
-	@LocalBean
 	public SurveyReferenceDto convertToReferenceDto(Survey survey) {
 		return toSurveyReferenceDto(survey);
 	}
 
 	public static SurveyReferenceDto toSurveyReferenceDto(Survey survey) {
-		return new SurveyReferenceDto(survey.getUuid(), survey.getName());
+		return new SurveyReferenceDto(survey.getUuid(), survey.getDisease(), survey.getName());
 	}
 
-    @LocalBean
+	@LocalBean
 	@Stateless
 	public static class SurveyFacadeEjbLocal extends SurveyFacadeEjb {
 
