@@ -15,22 +15,47 @@
 
 package de.symeda.sormas.api.survey;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.uuid.AbstractUuidDto;
+import java.util.Date;
 
-public class SurveyTokenIndexDto extends AbstractUuidDto {
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+
+public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
 	private static final long serialVersionUID = 4358173798026207265L;
 
+	private final String surveyUuid;
+	private final String surveyName;
 	private final String token;
 	private final CaseReferenceDto caseAssignedTo;
-	private final String assignmentDate;
+	private final Date assignmentDate;
+	private final String recipientEmail;
+	private final Boolean responseReceived;
 
-	public SurveyTokenIndexDto(String uuid, String token, CaseReferenceDto caseAssignedTo, String assignmentDate) {
+	public SurveyTokenIndexDto(
+            String uuid,
+            String surveyUuid,
+            String surveyName,
+            String token,
+            CaseReferenceDto caseAssignedTo,
+            Date assignmentDate,
+            String recipientEmail, Boolean responseReceived) {
 		super(uuid);
+		this.surveyUuid = surveyUuid;
+		this.surveyName = surveyName;
 		this.token = token;
 		this.caseAssignedTo = caseAssignedTo;
 		this.assignmentDate = assignmentDate;
+		this.recipientEmail = recipientEmail;
+        this.responseReceived = responseReceived;
+    }
+
+	public String getSurveyUuid() {
+		return surveyUuid;
+	}
+
+	public String getSurveyName() {
+		return surveyName;
 	}
 
 	public String getToken() {
@@ -41,7 +66,19 @@ public class SurveyTokenIndexDto extends AbstractUuidDto {
 		return caseAssignedTo;
 	}
 
-	public String getAssignmentDate() {
+	public Date getAssignmentDate() {
 		return assignmentDate;
+	}
+
+	public String getRecipientEmail() {
+		return recipientEmail;
+	}
+
+	public Boolean getResponseReceived() {
+		return responseReceived;
+	}
+
+	public SurveyTokenReferenceDto toReference() {
+		return new SurveyTokenReferenceDto(getUuid(), getSurveyName());
 	}
 }

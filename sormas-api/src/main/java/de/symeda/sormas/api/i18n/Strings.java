@@ -484,6 +484,7 @@ public interface Strings {
 	String headingCasesRestored = "headingCasesRestored";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
+	String headingCaseSurveyDetails = "headingCaseSurveyDetails";
 	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
@@ -853,6 +854,7 @@ public interface Strings {
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
+	String headingSurveySideComponent = "headingSurveySideComponent";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
@@ -1043,6 +1045,7 @@ public interface Strings {
 	String infoNoSourceCaseSelectedLineListing = "infoNoSourceCaseSelectedLineListing";
 	String infoNoSubordinateEvents = "infoNoSubordinateEvents";
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
+	String infoNoSurveys = "infoNoSurveys";
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
@@ -1098,6 +1101,8 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoSurveyResponseNotReceived = "infoSurveyResponseNotReceived";
+	String infoSurveyResponseReceived = "infoSurveyResponseReceived";
 	String infoSyncUsers = "infoSyncUsers";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";

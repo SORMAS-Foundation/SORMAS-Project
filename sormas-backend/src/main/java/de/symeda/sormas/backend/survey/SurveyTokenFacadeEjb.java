@@ -51,6 +51,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.survey.SurveyFacadeEjb.SurveyFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -68,6 +69,10 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private SurveyTokenService surveyTokenService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private SurveyFacadeEjbLocal surveyFacade;
+	@EJB
+	private SurveyService surveyService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
@@ -124,12 +129,15 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 				.concat(
 					Stream.of(
 						root.get(SurveyToken.UUID),
+						joins.getSurvey().get(Survey.UUID),
+						joins.getSurvey().get(Survey.NAME),
 						root.get(SurveyToken.TOKEN),
 						joins.getCaseAssignedTo().get(Case.UUID),
 						joins.getCaseAssignedToJoins().getPerson().get(Person.FIRST_NAME),
 						joins.getCaseAssignedToJoins().getPerson().get(Person.LAST_NAME),
-						root.get(SurveyToken.CASE_ASSIGNED_TO),
-						root.get(SurveyToken.ASSIGNMENT_DATE)),
+						root.get(SurveyToken.ASSIGNMENT_DATE),
+						root.get(SurveyToken.RECIPIENT_EMAIL),
+						root.get(SurveyToken.RESPONSE_RECEIVED)),
 					// add sort properties to select
 					sortBy(sortProperties, root, cb, cq).stream())
 				.collect(Collectors.toList()));
@@ -188,6 +196,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private SurveyToken fillOrBuildEntity(SurveyTokenDto source, SurveyToken target) {
 		target = DtoHelper.fillOrBuildEntity(source, target, SurveyToken::new, true);
 
+		target.setSurvey(surveyService.getByReferenceDto(source.getSurvey()));
 		target.setToken(source.getToken());
 		target.setCaseAssignedTo(caseService.getByReferenceDto(source.getCaseAssignedTo()));
 		target.setAssignmentDate(source.getAssignmentDate());
@@ -205,6 +214,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		SurveyTokenDto target = new SurveyTokenDto();
 		DtoHelper.fillDto(target, source);
 
+		target.setSurvey(surveyFacade.convertToReferenceDto(source.getSurvey()));
 		target.setToken(source.getToken());
 		target.setCaseAssignedTo(caseFacade.convertToReferenceDto(source.getCaseAssignedTo()));
 		target.setAssignmentDate(source.getAssignmentDate());
