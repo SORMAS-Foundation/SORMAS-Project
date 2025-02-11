@@ -23,14 +23,6 @@ public class SurveyReferenceDto extends ReferenceDto {
 
 	public SurveyReferenceDto(String uuid, String surveyName) {
 		setUuid(uuid);
-		setCaption(buildCaption(surveyName));
-	}
-
-	public static String buildCaption(String surveyName) {
-		StringBuilder stringBuilder = new StringBuilder();
-		if (surveyName != null) {
-			stringBuilder.append(surveyName);
-		}
-		return stringBuilder.toString();
+		setCaption(surveyName != null ? surveyName : "");
 	}
 }

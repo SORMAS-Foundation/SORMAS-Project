@@ -2691,7 +2691,9 @@ public interface Captions {
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
 	String surveyGenerate = "surveyGenerate";
 	String surveyNew = "surveyNew";
+	String surveyNewSurvey = "surveyNewSurvey";
 	String surveySend = "surveySend";
+	String surveySurveyList = "surveySurveyList";
 	String SurveyToken = "SurveyToken";
 	String SurveyToken_assignmentDate = "SurveyToken.assignmentDate";
 	String SurveyToken_caseAssignedTo = "SurveyToken.caseAssignedTo";
@@ -2701,8 +2703,6 @@ public interface Captions {
 	String SurveyToken_survey = "SurveyToken.survey";
 	String SurveyToken_token = "SurveyToken.token";
 	String SurveyToken_uuid = "SurveyToken.uuid";
-    String surveyNewSurvey = "surveyNewSurvey";
-    String surveySurveyList = "surveySurveyList";
 	String symptomJournalOptionsButton = "symptomJournalOptionsButton";
 	String Symptoms = "Symptoms";
 	String Symptoms_abdominalPain = "Symptoms.abdominalPain";
