@@ -33,7 +33,7 @@ public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFr
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+				UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	@Override

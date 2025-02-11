@@ -123,6 +123,36 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT</role-name>
+        <group-name>ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>PERSON_VIEW</role-name>
         <group-name>PERSON_VIEW</group-name>
     </security-role-mapping>
@@ -608,6 +638,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</role-name>
+        <group-name>DASHBOARD_ADVERSE_EVENTS_FOLLOWING_IMMUNIZATION_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CASE_CLINICIAN_VIEW</role-name>
         <group-name>CASE_CLINICIAN_VIEW</group-name>
     </security-role-mapping>
@@ -1021,6 +1056,51 @@
     <security-role-mapping>
         <role-name>DOCUMENT_DELETE</role-name>
         <group-name>DOCUMENT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_VIEW</role-name>
+        <group-name>SURVEY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_CREATE</role-name>
+        <group-name>SURVEY_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_EDIT</role-name>
+        <group-name>SURVEY_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_DELETE</role-name>
+        <group-name>SURVEY_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_VIEW</role-name>
+        <group-name>SURVEY_TOKEN_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_CREATE</role-name>
+        <group-name>SURVEY_TOKEN_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_EDIT</role-name>
+        <group-name>SURVEY_TOKEN_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_DELETE</role-name>
+        <group-name>SURVEY_TOKEN_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_IMPORT</role-name>
+        <group-name>SURVEY_TOKEN_IMPORT</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

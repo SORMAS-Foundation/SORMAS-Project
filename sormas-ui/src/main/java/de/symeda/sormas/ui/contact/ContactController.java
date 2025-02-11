@@ -93,6 +93,7 @@ import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionField;
 import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayout;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
+import de.symeda.sormas.ui.person.PersonSelectionGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
@@ -110,6 +111,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 public class ContactController {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private boolean contactSaveTriggered;
+	private CommitDiscardWrapperComponent<ContactCreateForm> createComponent;
 
 	public ContactController() {
 
@@ -270,8 +273,7 @@ public class ContactController {
 		if (caseRef != null) {
 			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
-		CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
-			getContactCreateComponent(caze, asResultingCase, alternativeCallback, false);
+		createComponent = getContactCreateComponent(caze, asResultingCase, alternativeCallback, false);
 		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
@@ -452,6 +454,7 @@ public class ContactController {
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
 			new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, UiUtil.permitted(UserRight.CONTACT_CREATE), createForm.getFieldGroup());
 
+		contactSaveTriggered = false;
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
@@ -504,26 +507,73 @@ public class ContactController {
 					} else {
 
 						final PersonDto person = PersonDto.build();
-						transferDataToPerson(createForm, person);
 
-						ControllerProvider.getPersonController()
-							.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
-								if (selectedPerson != null) {
-									dto.setPerson(selectedPerson);
+						if (createForm.getWarningSimilarPersons() != null) {
+							CommitDiscardWrapperComponent<PersonSelectionGrid> warningPopUpDuplicatePerson =
+								(CommitDiscardWrapperComponent<PersonSelectionGrid>) createComponent.getWrappedComponent()
+									.getWarningSimilarPersons()
+									.getContent();
+							warningPopUpDuplicatePerson.getDiscardButton().setVisible(true);
+							warningPopUpDuplicatePerson.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+							warningPopUpDuplicatePerson.addDoneListener(() -> {
+								if (!contactSaveTriggered) {
+									VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
+								}
+							});
 
-									selectOrCreateContact(dto, selectedPerson, selectedContactUuid -> {
-										if (selectedContactUuid != null) {
-											editData(selectedContactUuid);
+							warningPopUpDuplicatePerson.addCommitListener(() -> {
+								contactSaveTriggered = true;
+								transferDataToPerson(createForm, person);
+
+								ControllerProvider.getPersonController()
+									.selectOrCreatePerson(
+										person,
+										I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact),
+										selectedPerson -> {
+											if (selectedPerson != null) {
+												dto.setPerson(selectedPerson);
+
+												selectOrCreateContact(dto, selectedPerson, selectedContactUuid -> {
+													if (selectedContactUuid != null) {
+														editData(selectedContactUuid);
+													}
+												});
+											}
+											if (createForm.adoptAddressLayout.isAdoptAddress()) {
+												FacadeProvider.getPersonFacade()
+													.copyHomeAddress(
+														FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(),
+														dto.getPerson());
+											}
+										},
+										true);
+							});
+						} else {
+							transferDataToPerson(createForm, person);
+
+							ControllerProvider.getPersonController()
+								.selectOrCreatePerson(
+									person,
+									I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact),
+									selectedPerson -> {
+										if (selectedPerson != null) {
+											dto.setPerson(selectedPerson);
+
+											selectOrCreateContact(dto, selectedPerson, selectedContactUuid -> {
+												if (selectedContactUuid != null) {
+													editData(selectedContactUuid);
+												}
+											});
 										}
-									});
-								}
-								if (createForm.adoptAddressLayout.isAdoptAddress()) {
-									FacadeProvider.getPersonFacade()
-										.copyHomeAddress(
-											FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(),
-											dto.getPerson());
-								}
-							}, true);
+										if (createForm.adoptAddressLayout.isAdoptAddress()) {
+											FacadeProvider.getPersonFacade()
+												.copyHomeAddress(
+													FacadeProvider.getCaseFacade().getByUuid(dto.getCaze().getUuid()).getPerson(),
+													dto.getPerson());
+										}
+									},
+									true);
+						}
 					}
 				}
 			}

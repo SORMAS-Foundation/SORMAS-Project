@@ -6,6 +6,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
@@ -79,7 +80,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		String caseReference,
 		Disease disease,
 		String diseaseDetails,
-		DiseaseVariant diseaseVariant,
+		String diseaseVariant,
 		String diseaseVariantDetails,
 		String firstName,
 		String lastName,
@@ -111,7 +112,7 @@ public class SelfReportExportDto extends AbstractUuidDto {
 		this.caseReference = caseReference;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariant);
 		this.diseaseVariantDetails = diseaseVariantDetails;
 		this.firstName = firstName;
 		this.lastName = lastName;

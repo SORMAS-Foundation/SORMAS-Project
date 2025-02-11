@@ -21,23 +21,28 @@ import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 
 @Remote
 public interface EventDocumentFacade {
 
-	String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties, Boolean shouldUploadGeneratedDoc)
+	String getGeneratedDocument(
+		DocumentTemplateReferenceDto templateReferenceDto,
+		EventReferenceDto eventReference,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
 	Map<ReferenceDto, byte[]> getGeneratedDocuments(
-		String templateName,
+		DocumentTemplateReferenceDto templateReference,
 		List<EventReferenceDto> eventReferences,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException;
 
-	List<String> getAvailableTemplates();
+	List<DocumentTemplateDto> getAvailableTemplates(Disease disease);
 
-	DocumentVariables getDocumentVariables(String templateName) throws DocumentTemplateException;
+	DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException;
 }

@@ -25,6 +25,7 @@ import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.importexport.format.ExportFormat;
 import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -64,7 +65,7 @@ public class EventActionExportDto implements Serializable {
 		String eventUuid,
 		String eventTitle,
 		Disease eventDisease,
-		DiseaseVariant eventDiseaseVariant,
+		String eventDiseaseVariant,
 		String eventDiseaseDetails,
 		String eventDesc,
 		EventIdentificationSource eventIdentificationSource,
@@ -98,7 +99,7 @@ public class EventActionExportDto implements Serializable {
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
 		this.eventDisease = eventDisease;
-		this.eventDiseaseVariant = eventDiseaseVariant;
+		this.eventDiseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(eventDisease, eventDiseaseVariant);
 		this.eventDiseaseDetails = eventDiseaseDetails;
 		this.eventDesc = eventDesc;
 		this.eventIdentificationSource = eventIdentificationSource;

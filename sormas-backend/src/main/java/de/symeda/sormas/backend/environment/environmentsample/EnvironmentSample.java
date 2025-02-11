@@ -24,7 +24,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,6 +32,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -85,6 +85,7 @@ public class EnvironmentSample extends DeletableAdo {
 	private Float chlorineResiduals;
 	private Facility laboratory;
 	private String laboratoryDetails;
+	private String requestedPathogenTestsValue;
 	private Set<Pathogen> requestedPathogenTests;
 	private String otherRequestedPathogenTests;
 	private Map<WeatherCondition, Boolean> weatherConditions;
@@ -230,14 +231,24 @@ public class EnvironmentSample extends DeletableAdo {
 		this.laboratoryDetails = laboratoryDetails;
 	}
 
-	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
-	@Convert(converter = RequestedPathogensConverter.class)
+	@Column(name = "requestedpathogentests", columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public String getRequestedPathogenTestsValue() {
+		return requestedPathogenTestsValue;
+	}
+
+	public void setRequestedPathogenTestsValue(String requestedPathogenTestsValue) {
+		this.requestedPathogenTestsValue = requestedPathogenTestsValue;
+		this.requestedPathogenTests = new RequestedPathogensConverter().convertToEntityAttribute(null, requestedPathogenTestsValue);
+	}
+
+	@Transient
 	public Set<Pathogen> getRequestedPathogenTests() {
 		return requestedPathogenTests;
 	}
 
 	public void setRequestedPathogenTests(Set<Pathogen> requestedPathogenTests) {
 		this.requestedPathogenTests = requestedPathogenTests;
+		this.requestedPathogenTestsValue = new RequestedPathogensConverter().convertToDatabaseColumn(requestedPathogenTests);
 	}
 
 	@Column(length = CHARACTER_LIMIT_TEXT)

@@ -19,6 +19,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import de.symeda.sormas.api.action.ActionFacade;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiFacade;
+import de.symeda.sormas.api.adverseeventsfollowingimmunization.AefiInvestigationFacade;
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.dashboard.adverseeventsfollowingimmunization.AefiDashboardFacade;
 import de.symeda.sormas.api.dashboard.sample.SampleDashboardFacade;
 import de.symeda.sormas.api.deletionconfiguration.DeletionConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
@@ -101,6 +104,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareReq
 import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoFacade;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
+import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
@@ -147,6 +151,14 @@ public class FacadeProvider {
 
 	public static ImmunizationFacade getImmunizationFacade() {
 		return get().lookupEjbRemote(ImmunizationFacade.class);
+	}
+
+	public static AefiFacade getAefiFacade() {
+		return get().lookupEjbRemote(AefiFacade.class);
+	}
+
+	public static AefiInvestigationFacade getAefiInvestigationFacade() {
+		return get().lookupEjbRemote(AefiInvestigationFacade.class);
 	}
 
 	public static VaccinationFacade getVaccinationFacade() {
@@ -319,6 +331,10 @@ public class FacadeProvider {
 
 	public static SampleDashboardFacade getSampleDashboardFacade() {
 		return get().lookupEjbRemote(SampleDashboardFacade.class);
+	}
+
+	public static AefiDashboardFacade getAefiDashboardFacade() {
+		return get().lookupEjbRemote(AefiDashboardFacade.class);
 	}
 
 	public static DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
@@ -538,6 +554,10 @@ public class FacadeProvider {
 
 	public static SelfReportImportFacade getSelfReportImportFacade() {
 		return get().lookupEjbRemote(SelfReportImportFacade.class);
+	}
+
+	public static SurveyTokenFacade getSurveyTokenFacade() {
+		return get().lookupEjbRemote(SurveyTokenFacade.class);
 	}
 
 	public static NewsFacade getNewsFacade() {

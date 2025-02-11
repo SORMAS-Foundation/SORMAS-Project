@@ -19,6 +19,7 @@ import java.util.function.Function;
 
 import com.vaadin.ui.StyleGenerator;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
 
@@ -28,12 +29,18 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 
 	public static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> getDefault(Class<T> beanType, String columnId) {
 
-		return forFieldAccessCheckers(beanType, columnId, UiFieldAccessCheckers.getDefault(true));
+		return forFieldAccessCheckers(
+			beanType,
+			columnId,
+			UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	public static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forSensitiveData(Class<T> beanType, String columnId) {
 
-		return forFieldAccessCheckers(beanType, columnId, UiFieldAccessCheckers.forSensitiveData(true));
+		return forFieldAccessCheckers(
+			beanType,
+			columnId,
+			UiFieldAccessCheckers.forSensitiveData(true, FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	private static <T extends Pseudonymizable> FieldAccessColumnStyleGenerator<T> forFieldAccessCheckers(

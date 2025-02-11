@@ -49,14 +49,13 @@ import de.symeda.sormas.api.selfreport.SelfReportType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.luxembourg.LuxembourgNationalHealthIdValidator;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.ValidationUtils;
@@ -95,7 +94,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 			SelfReportDto.I18N_PREFIX,
 			true,
 			FieldVisibilityCheckers.withDisease(disease).add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized));
+			FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized));
 	}
 
 	@Override
@@ -115,7 +114,7 @@ public class SelfReportDataForm extends AbstractEditForm<SelfReportDto> {
 		addField(SelfReportDto.CASE_REFERENCE);
 
 		//disease related fieldss
-		ComboBox diseaseField = addDiseaseField(SelfReportDto.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(SelfReportDto.DISEASE, false, false);
 		addField(SelfReportDto.DISEASE_DETAILS, TextField.class);
 		diseaseField.setRequired(true);
 		ComboBox diseaseVariantField = addCustomizableEnumField(SelfReportDto.DISEASE_VARIANT);

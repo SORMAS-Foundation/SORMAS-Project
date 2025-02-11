@@ -37,11 +37,11 @@ public class DocumentTemplatesView extends AbstractConfigurationView {
 
 		super(VIEW_NAME);
 		gridLayout = new VerticalLayout(
-			new DocumentTemplateSection(QUARANTINE_ORDER_CASE),
-			new DocumentTemplateSection(QUARANTINE_ORDER_CONTACT),
-			new DocumentTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT),
-			new DocumentTemplateSection(QUARANTINE_ORDER_TRAVEL_ENTRY),
-			new DocumentTemplateSection(EVENT_HANDOUT));
+			new DocumentTemplateSection(QUARANTINE_ORDER_CASE, true),
+			new DocumentTemplateSection(QUARANTINE_ORDER_CONTACT, true),
+			new DocumentTemplateSection(QUARANTINE_ORDER_EVENT_PARTICIPANT, true),
+			new DocumentTemplateSection(QUARANTINE_ORDER_TRAVEL_ENTRY, true),
+			new DocumentTemplateSection(EVENT_HANDOUT, true));
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);

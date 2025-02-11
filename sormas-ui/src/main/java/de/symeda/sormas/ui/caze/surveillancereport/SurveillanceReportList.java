@@ -46,6 +46,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.PaginationList;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
@@ -124,8 +125,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 
 		public SurveillanceReportListEntry(SurveillanceReportDto report) {
 			this.report = report;
-			this.fieldAccessCheckers = UiFieldAccessCheckers
-				.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(report.isInJurisdiction()), report.isPseudonymized());
+			this.fieldAccessCheckers = FieldAccessHelper.getFieldAccessCheckers(report);
 
 			VerticalLayout mainLayout = new VerticalLayout();
 			mainLayout.setWidth(100, Unit.PERCENTAGE);
@@ -189,6 +189,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			HorizontalLayout row = new HorizontalLayout();
 			row.setMargin(false);
 			row.setSpacing(false);
+			row.setWidth(100, Unit.PERCENTAGE);
 
 			if (label != null) {
 				Label rowLabel = new Label(DataHelper.toStringNullable(label) + ":");
@@ -197,6 +198,7 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 			}
 
 			Label rowValue = new Label(DataHelper.toStringNullable(value));
+			rowValue.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			if (!fieldAccessCheckers.isAccessible(SurveillanceReportDto.class, propertyId)) {
 				rowValue.addStyleName(CssStyles.INACCESSIBLE_LABEL);
 			}

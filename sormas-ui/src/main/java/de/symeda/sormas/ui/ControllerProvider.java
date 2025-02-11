@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.action.ActionController;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiController;
+import de.symeda.sormas.ui.adverseeventsfollowingimmunization.AefiInvestigationController;
 import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
@@ -47,6 +49,7 @@ import de.symeda.sormas.ui.selfreport.SelfReportController;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasController;
 import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
+import de.symeda.sormas.ui.survey.SurveyTokenController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
@@ -90,6 +93,8 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final DocGenerationController docGenerationController;
 	private final TravelEntryController travelEntryController;
 	private final ImmunizationController immunizationController;
+	private final AefiController aefiController;
+	private final AefiInvestigationController aefiInvestigationController;
 	private final VaccinationController vaccinationController;
 	private final ArchivingController archivingController;
 	private final DeleteRestoreController deleteRestoreController;
@@ -100,6 +105,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CustomizableEnumController customizableEnumController;
 	private final SpecialCaseAccessController specialCaseAccessController;
 	private final SelfReportController selfReportController;
+	private final SurveyTokenController surveyTokenController;
 	private final NewsController newsController;
 
 	public ControllerProvider() {
@@ -134,6 +140,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		docGenerationController = new DocGenerationController();
 		travelEntryController = new TravelEntryController();
 		immunizationController = new ImmunizationController();
+		aefiController = new AefiController();
+		aefiInvestigationController = new AefiInvestigationController();
 		vaccinationController = new VaccinationController();
 		archivingController = new ArchivingController();
 		deleteRestoreController = new DeleteRestoreController();
@@ -144,6 +152,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		customizableEnumController = new CustomizableEnumController();
 		specialCaseAccessController = new SpecialCaseAccessController();
 		selfReportController = new SelfReportController();
+		surveyTokenController = new SurveyTokenController();
 		newsController = new NewsController();
 	}
 
@@ -267,6 +276,14 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().immunizationController;
 	}
 
+	public static AefiController getAefiController() {
+		return get().aefiController;
+	}
+
+	public static AefiInvestigationController getAefiInvestigationController() {
+		return get().aefiInvestigationController;
+	}
+
 	public static VaccinationController getVaccinationController() {
 		return get().vaccinationController;
 	}
@@ -305,6 +322,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SelfReportController getSelfReportController() {
 		return get().selfReportController;
+	}
+
+	public static SurveyTokenController getSurveyTokenController() {
+		return get().surveyTokenController;
 	}
 
 	public static NewsController getNewsController() {

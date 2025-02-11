@@ -33,13 +33,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 
 public class SuperordinateEventComponent extends VerticalLayout {
 
@@ -129,11 +129,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 		private final EventDto superordinateEvent;
 
 		public SuperordinateEventInfoLayout(EventDto superordinateEvent) {
-			super(
-				EventDto.class,
-				UiFieldAccessCheckers.forDataAccessLevel(
-					UiUtil.getPseudonymizableDataAccessLevel(superordinateEvent.isInJurisdiction()),
-					superordinateEvent.isPseudonymized()));
+			super(EventDto.class, FieldAccessHelper.getFieldAccessCheckers(superordinateEvent));
 			this.superordinateEvent = superordinateEvent;
 			setSpacing(true);
 			setMargin(false);

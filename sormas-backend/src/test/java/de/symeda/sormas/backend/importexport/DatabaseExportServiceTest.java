@@ -23,6 +23,10 @@ import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AdverseEvents;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.Aefi;
+import de.symeda.sormas.backend.adverseeventsfollowingimmunization.entity.AefiInvestigation;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
@@ -30,6 +34,8 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.news.EiosBoardConfig;
 import de.symeda.sormas.backend.news.News;
 import de.symeda.sormas.backend.selfreport.SelfReport;
+import de.symeda.sormas.backend.survey.Survey;
+import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
@@ -66,6 +72,13 @@ public class DatabaseExportServiceTest {
 		FirstVaccinationDate.class,
 		Environment.class,
 		EnvironmentSample.class,
+		SelfReport.class,
+		Aefi.class,
+		AdverseEvents.class,
+		AefiInvestigation.class,
+		DocumentTemplate.class,
+		Survey.class,
+		SurveyToken.class,
 		SelfReport.class,
 		News.class,
 		EiosBoardConfig.class);
@@ -110,6 +123,10 @@ public class DatabaseExportServiceTest {
 
 		// remove not exported entities from the list of missing ones
 		NOT_EXPORTED_ENTITIES.forEach(e -> missingEntities.remove(e.getSimpleName()));
+
+		//remove aefi join tables
+		missingJoinTables.remove(Aefi.AEFI_VACCINATIONS_TABLE_NAME);
+		missingJoinTables.remove(AefiInvestigation.AEFI_INVESTIGATION_VACCINATIONS_TABLE_NAME);
 
 		assertThat("Missing export configuration for entities [" + String.join(", ", missingEntities) + "]", missingEntities, hasSize(0));
 		assertThat(

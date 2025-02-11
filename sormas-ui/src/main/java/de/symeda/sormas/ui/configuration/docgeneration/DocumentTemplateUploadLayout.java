@@ -16,15 +16,19 @@
 package de.symeda.sormas.ui.configuration.docgeneration;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Upload;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -42,6 +46,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	protected Upload upload;
 	private ImportLayoutComponent importGuideComponent;
 	private final DocumentWorkflow documentWorkflow;
+	private final boolean hasDisease;
 
 	private static final Map<DocumentWorkflow, DocumentTemplateInfoData> templateInfoData = Map.ofEntries(
 		Map.entry(
@@ -79,9 +84,10 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 			DocumentTemplateInfoData
 				.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateTravelEntryEmail, "ExampleDocumentTemplateTravelEntryEmail.txt")));
 
-	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow) {
+	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow, boolean hasDisease) {
 		super();
 		this.documentWorkflow = documentWorkflow;
+		this.hasDisease = hasDisease;
 		addDownloadResourcesComponent();
 		addUploadResourceComponent();
 	}
@@ -116,13 +122,30 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		ImportLayoutComponent uploadTemplateComponent = new ImportLayoutComponent(2, headline, infoText, null, null);
 		addComponent(uploadTemplateComponent);
 
-		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver(documentWorkflow);
+		VerticalLayout uploadLatout = new VerticalLayout();
+		uploadLatout.setMargin(false);
+		uploadLatout.setSpacing(false);
+		uploadLatout.setSizeFull();
+		addComponent(uploadLatout);
+
+		Supplier<Disease> diseaseSupplier = () -> null;
+		if (hasDisease) {
+			ComboBox<Disease> diseaseComboBox = new ComboBox<>();
+			diseaseComboBox.setCaption(I18nProperties.getCaption(Captions.disease));
+			diseaseComboBox.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+			diseaseComboBox.setPlaceholder(I18nProperties.getString(Strings.all));
+			diseaseComboBox.setEmptySelectionAllowed(true);
+			uploadLatout.addComponent(diseaseComboBox);
+			diseaseSupplier = diseaseComboBox::getValue;
+		}
+
+		DocumentTemplateReceiver receiver = new DocumentTemplateReceiver(documentWorkflow, diseaseSupplier);
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.DocumentTemplate_buttonUploadTemplate));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addStartedListener(receiver);
 		upload.addSucceededListener(receiver);
-		addComponent(upload);
+		uploadLatout.addComponent(upload);
 	}
 
 	private void addDownloadResource(String caption, VaadinIcons icon, ClassResource resource) {

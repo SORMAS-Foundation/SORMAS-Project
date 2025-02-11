@@ -43,8 +43,8 @@ public class EventIndexDtoResultTransformer implements ResultTransformer {
 		//@formatter:off
         return new EventIndexDto(
 				(Long) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
-				(EventStatus) tuple[++index], (RiskLevel) tuple[++index], (SpecificRisk) tuple[++index], (EventInvestigationStatus) tuple[++index],
-				(EventManagementStatus) tuple[++index], (Disease) tuple[++index], (DiseaseVariant) tuple[++index], (String) tuple[++index],
+				(EventStatus) tuple[++index], (RiskLevel) tuple[++index], (String) tuple[++index], (EventInvestigationStatus) tuple[++index],
+				(EventManagementStatus) tuple[++index], (Disease) tuple[++index], (String) tuple[++index], (String) tuple[++index],
 				(Date) tuple[++index], (Date) tuple[++index], (Date) tuple[++index], (String) tuple[++index],
 				(String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], 
 				(String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], 

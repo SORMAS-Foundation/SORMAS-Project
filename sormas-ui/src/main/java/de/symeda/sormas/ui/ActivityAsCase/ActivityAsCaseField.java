@@ -31,6 +31,7 @@ import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -80,7 +81,9 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 			.setVisibleColumns(ACTION_COLUMN_ID, COLUMN_ACTIVITY_AS_CASE_TYPE, COLUMN_TYPE_OF_PLACE, COLUMN_DATE, COLUMN_ADDRESS, COLUMN_DESCRIPTION);
 
 		table.setCellStyleGenerator(
-			FieldAccessCellStyleGenerator.withFieldAccessCheckers(ActivityAsCaseDto.class, UiFieldAccessCheckers.forSensitiveData(isPseudonymized)));
+			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+				ActivityAsCaseDto.class,
+				UiFieldAccessCheckers.forSensitiveData(isPseudonymized, FacadeProvider.getConfigFacade().getCountryLocale())));
 
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(ACTION_COLUMN_ID)) {

@@ -79,13 +79,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
@@ -197,7 +197,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		boolean withPersonalAndSensitive) {
 
 		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers.forDataAccessLevel(UiUtil.getPseudonymizableDataAccessLevel(inJurisdiction), isPseudonymized);
+			return FieldAccessHelper.getFieldAccessCheckers(inJurisdiction, isPseudonymized);
 		}
 
 		return UiFieldAccessCheckers.getNoop();
@@ -222,7 +222,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
 		addField(EventDto.UUID, TextField.class);
-		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
+		ComboBox diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addCustomizableEnumField(EventDto.DISEASE_VARIANT);
 		diseaseVariantField.setNullSelectionAllowed(true);
@@ -454,7 +454,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
 
-		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME);
 
 		reportDate.addValidator(
 			new DateComparisonValidator(

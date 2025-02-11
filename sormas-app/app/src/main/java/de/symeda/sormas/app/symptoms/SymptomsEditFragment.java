@@ -84,7 +84,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static SymptomsEditFragment newInstance(Visit activityRootData) {
@@ -94,7 +94,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized(), ConfigProvider.getServerCountryCode()));
 	}
 
 	public static SymptomsEditFragment newInstance(ClinicalVisit activityRootData, String caseUuid) {

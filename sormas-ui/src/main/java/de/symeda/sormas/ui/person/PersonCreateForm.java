@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -65,6 +66,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
@@ -86,6 +88,8 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private final boolean showPresentCondition;
 	private final boolean showSymptomsOnsetDate;
 	private final boolean showPersonSearchButton;
+	private SormasTextField nationalHealthIdField;
+	private Window warningSimilarPersons;
 
 	private static final String HTML_LAYOUT =
 		"%s" + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
@@ -111,7 +115,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			PersonDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getDefault(false));
+			UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()));
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPresentCondition = showPresentCondition;
 		this.showSymptomsOnsetDate = showSymptomsOnsetDate;
@@ -186,7 +190,9 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
 
 		addField(PersonDto.PASSPORT_NUMBER, TextField.class);
-		addField(PersonDto.NATIONAL_HEALTH_ID, TextField.class);
+
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
+		nationalHealthIdField.setNullRepresentation("");
 
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		presentCondition.setVisible(showPresentCondition);
@@ -497,5 +503,13 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
 		this.person = searchedPerson;
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
+	}
+
+	public SormasTextField getNationalHealthIdField() {
+		return nationalHealthIdField;
 	}
 }

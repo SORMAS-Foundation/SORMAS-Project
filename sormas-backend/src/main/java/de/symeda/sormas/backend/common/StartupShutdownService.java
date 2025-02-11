@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,6 +66,7 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
@@ -89,6 +92,8 @@ import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
@@ -188,6 +193,8 @@ public class StartupShutdownService {
 	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private CustomizableEnumValueService customizableEnumValueService;
+	@EJB
+	private DocumentTemplateService documentTemplateService;
 	@EJB
 	private EiosBoardConfigService boardConfigService;
 
@@ -873,6 +880,9 @@ public class StartupShutdownService {
 			case 516:
 				fillDefaultUserRole(DefaultUserRole.ENVIRONMENTAL_SURVEILLANCE_USER);
 				break;
+			case 553:
+				createEntitiesForDocumentTemplates();
+				break;
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
 			}
@@ -1021,6 +1031,21 @@ public class StartupShutdownService {
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			diseaseConfigurationService.ensurePersisted(configuration);
+		});
+	}
+
+	private void createEntitiesForDocumentTemplates() {
+		Map<DocumentWorkflow, List<File>> templateFiles = documentTemplateService.getAllTemplateFiles();
+
+		templateFiles.forEach((workflow, files) -> {
+			for (File file : files) {
+				DocumentTemplate documentTemplate = new DocumentTemplate();
+				documentTemplate.setUuid(DataHelper.createUuid());
+				documentTemplate.setWorkflow(workflow);
+				documentTemplate.setFileName(file.getName());
+
+				documentTemplateService.ensurePersisted(documentTemplate);
+			}
 		});
 	}
 

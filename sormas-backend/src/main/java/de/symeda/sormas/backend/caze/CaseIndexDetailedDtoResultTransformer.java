@@ -45,7 +45,7 @@ public class CaseIndexDetailedDtoResultTransformer implements ResultTransformer 
 
 		//@formatter:off
         return new CaseIndexDetailedDto((Long)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (Disease)tuple[++index],
-                (DiseaseVariant) tuple[++index], (String)tuple[++index], (CaseClassification)tuple[++index], (InvestigationStatus)tuple[++index],
+                (String) tuple[++index], (String)tuple[++index], (CaseClassification)tuple[++index], (InvestigationStatus)tuple[++index],
                 (PresentCondition)tuple[++index], (Date)tuple[++index], (Date)tuple[++index], (String)tuple[++index],
                 (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index],
                 (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (String)tuple[++index], (CaseOutcome) tuple[++index],

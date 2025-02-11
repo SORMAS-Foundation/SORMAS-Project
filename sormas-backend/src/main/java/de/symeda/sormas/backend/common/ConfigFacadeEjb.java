@@ -35,7 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
+import de.symeda.sormas.api.CaseClassificationCalculationMode;
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.RequestContextTO;
@@ -87,7 +89,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
 
-	public static final String FEATURE_AUTOMATIC_CASE_CLASSIFICATION = "feature.automaticcaseclassification";
+	public static final String CASE_CLASSIFICATION_CALCULATION_PREFIX = "caseClassification.";
+	public static final String CASE_CLASSIFICATION_CALCULATION_ALL = CASE_CLASSIFICATION_CALCULATION_PREFIX + "ALL";
 
 	public static final String DOCUMENT_FILES_PATH = "documents.path";
 	public static final String TEMP_FILES_PATH = "temp.path";
@@ -184,6 +187,15 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
 	public static final String IMPORT_FILE_SIZE_LIMIT_MB = "importFileSizeLimitMb";
+	public static final int DEFAULT_IMPORT_FILE_SIZE_LIMIT_MB = 20;
+	public static final String NEGATIVE_COVID_TESTS_MAX_AGE_DAYS = "negativeCovidTestsMaxAgeDays";
+
+	public static final String MINIMUM_EMANCIPATED_AGE = "minimumEmancipatedAge";
+	public static final int DEFAULT_MINIMUM_EMANCIPATED_AGE = 14;
+
+	public static final String MINIMUM_ADULT_AGE = "minimumAdultAge";
+	public static final int DEFAULT_MINIMUM_ADULT_AGE = 18;
+
 	public static final int DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB = 20;
 	public static final String EIOS_URL = "eios.url";
 	public static final String EIOS_ODI_URL = "eios.odi.url";
@@ -239,6 +251,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	protected long getLong(String name, long defaultValue) {
 		return parseProperty(name, defaultValue, Long::parseLong);
+	}
+
+	protected <T extends Enum<T>> T getEnumValue(String name, Class<T> enumType, T defaultValue) {
+		return parseProperty(name, defaultValue, value -> Enum.valueOf(enumType, value));
 	}
 
 	@Override
@@ -410,8 +426,37 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public boolean isFeatureAutomaticCaseClassification() {
-		return getBoolean(FEATURE_AUTOMATIC_CASE_CLASSIFICATION, true);
+	public CaseClassificationCalculationMode getCaseClassificationCalculationMode(Disease disease) {
+		CaseClassificationCalculationMode diseaseConfig =
+			getEnumValue(CASE_CLASSIFICATION_CALCULATION_PREFIX + disease.name(), CaseClassificationCalculationMode.class, null);
+		if (diseaseConfig == null) {
+			diseaseConfig = getCaseClassificationCalculationModeForAllDiseases();
+		}
+
+		return diseaseConfig;
+	}
+
+	private CaseClassificationCalculationMode getCaseClassificationCalculationModeForAllDiseases() {
+		return getEnumValue(
+			CASE_CLASSIFICATION_CALCULATION_ALL,
+			CaseClassificationCalculationMode.class,
+			CaseClassificationCalculationMode.MANUAL_AND_AUTOMATIC);
+	}
+
+	@Override
+	public boolean isAnyCaseClassificationCalculationEnabled() {
+		if (getCaseClassificationCalculationModeForAllDiseases() != CaseClassificationCalculationMode.DISABLED) {
+			return true;
+		}
+
+		List<String> classificationCalculationProps =
+			props.stringPropertyNames().stream().filter(p -> p.startsWith(CASE_CLASSIFICATION_CALCULATION_PREFIX)).collect(Collectors.toList());
+
+		if (classificationCalculationProps.isEmpty()) {
+			return true;
+		}
+
+		return classificationCalculationProps.stream().anyMatch(p -> !CaseClassificationCalculationMode.DISABLED.name().equals(props.getProperty(p)));
 	}
 
 	@Override
@@ -795,7 +840,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public long getImportFileSizeLimitMb() {
-		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
+		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPORT_FILE_SIZE_LIMIT_MB);
 	}
 
 	@Override
@@ -822,6 +867,21 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public void resetRequestContext() {
 		RequestContextHolder.reset();
+	}
+
+	@Override
+	public Integer getNegaiveCovidTestsMaxAgeDays() {
+		return parseProperty(NEGATIVE_COVID_TESTS_MAX_AGE_DAYS, null, Integer::parseInt);
+	}
+
+	@Override
+	public long getMinimumEmancipatedAge() {
+		return getLong(MINIMUM_EMANCIPATED_AGE, DEFAULT_MINIMUM_EMANCIPATED_AGE);
+	}
+
+	@Override
+	public long getMinimumAdultAge() {
+		return getLong(MINIMUM_ADULT_AGE, DEFAULT_MINIMUM_ADULT_AGE);
 	}
 
 	@LocalBean

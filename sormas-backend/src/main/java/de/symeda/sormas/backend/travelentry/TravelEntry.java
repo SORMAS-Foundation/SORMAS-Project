@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,18 +12,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.IsTravelEntry;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
@@ -46,7 +46,7 @@ public class TravelEntry extends CoreAdo implements IsTravelEntry {
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String DELETED = "deleted";
 	public static final String DISEASE = "disease";
-	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
@@ -69,6 +69,7 @@ public class TravelEntry extends CoreAdo implements IsTravelEntry {
 	private boolean deleted;
 	private Disease disease;
 	private String diseaseDetails;
+	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
 	private Region responsibleRegion;
@@ -174,14 +175,24 @@ public class TravelEntry extends CoreAdo implements IsTravelEntry {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@Column
-	@Convert(converter = DiseaseVariantConverter.class)
+	@Column(name = "diseasevariant")
+	public String getDiseaseVariantValue() {
+		return diseaseVariantValue;
+	}
+
+	public void setDiseaseVariantValue(String diseaseVariantValue) {
+		this.diseaseVariantValue = diseaseVariantValue;
+		this.diseaseVariant = new DiseaseVariantConverter().convertToEntityAttribute(disease, diseaseVariantValue);
+	}
+
+	@Transient
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
+		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
 	}
 
 	@Column(columnDefinition = "text")

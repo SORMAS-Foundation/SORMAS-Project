@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -177,6 +178,7 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BirthdateRangeFilterPredicate;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -684,7 +686,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
 		}
 		if (caseCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT), caseCriteria.getDiseaseVariant()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
@@ -912,6 +914,15 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
+
+		filter = BirthdateRangeFilterPredicate.createBirthdateRangeFilter(
+			caseCriteria.getBirthdateFrom(),
+			caseCriteria.getBirthdateTo(),
+			caseCriteria.isIncludePartialMatch(),
+			cb,
+			joins.getPerson(),
+			filter);
+
 		if (caseCriteria.getBirthdateYYYY() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
 		}
@@ -1033,7 +1044,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 	}
 
 	@Override
-	public void deletePermanent(Case caze) {
+	public boolean deletePermanent(Case caze) {
 
 		// Delete all tasks associated with this case
 		Optional.ofNullable(caze.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
@@ -1111,6 +1122,7 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+		return false;
 	}
 
 	private void initVisitSubqueryForDeletion(CriteriaBuilder cb, Root<Visit> visitRoot, Subquery<Long> contactVisitsSubquery) {
@@ -2204,7 +2216,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			root.get(AbstractDomainObject.UUID),
 			root.get(Case.REPORT_DATE),
 			root.get(Case.EXTERNAL_TOKEN),
-			root.get(Case.DISEASE_VARIANT),
+			root.get(Case.DISEASE),
+			root.get(Case.DISEASE_VARIANT_VALUE),
 			symptomsJoin.get(Symptoms.ONSET_DATE));
 
 		cq.where(
@@ -2334,12 +2347,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 		return super.getDeleteReferenceField(deletionReference);
 	}
 
-	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease) {
-		Integer automaticSampleAssignmentThreshold = diseaseConfigurationFacade.getAutomaticSampleAssignmentThreshold(disease);
-
-		if (automaticSampleAssignmentThreshold == null) {
-			return null;
-		}
+	public String getCaseUuidForAutomaticSampleAssignment(Set<String> uuids, Disease disease, @Nullable Date sampleDateTime, int threshold) {
+		Date dateToCompareTo = sampleDateTime != null ? sampleDateTime : new Date();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -2361,10 +2370,11 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 						ExtendedPostgreSQL94Dialect.DATE,
 						Date.class,
 						CriteriaBuilderHelper.coalesce(cb, Date.class, earliestSampleSq, caseRoot.get(Case.REPORT_DATE))),
-					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(new Date()))),
-				Long.valueOf(TimeUnit.DAYS.toSeconds(automaticSampleAssignmentThreshold)).doubleValue()));
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateToCompareTo))),
+				Long.valueOf(TimeUnit.DAYS.toSeconds(threshold)).doubleValue()));
+		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)));
 
 		List<String> caseUuids = em.createQuery(cq).getResultList();
-		return caseUuids.size() == 1 ? caseUuids.get(0) : null;
+		return caseUuids.isEmpty() ? null : caseUuids.get(0);
 	}
 }

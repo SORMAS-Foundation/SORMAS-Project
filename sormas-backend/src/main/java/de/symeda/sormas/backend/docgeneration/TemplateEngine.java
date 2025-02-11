@@ -55,6 +55,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.HtmlHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
@@ -181,13 +182,15 @@ public class TemplateEngine {
 		return Jsoup.clean(stringWriter.toString(), "", HTML_TEMPLATE_WHITELIST, outputSettings);
 	}
 
-	public void validateTemplateDocx(InputStream templateInputStream) throws DocumentTemplateException {
+	public void validateTemplateDocx(InputStream templateInputStream) {
 		try {
 			IXDocReport report = readXDocReport(templateInputStream);
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 			report.extractFields(extractor);
 		} catch (XDocReportException | IOException e) {
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
+			throw new ValidationRuntimeException(I18nProperties.getString(Strings.errorProcessingTemplate));
+		} catch (DocumentTemplateException e) {
+			throw new ValidationRuntimeException(e.getMessage());
 		}
 	}
 
@@ -214,11 +217,11 @@ public class TemplateEngine {
 		}
 	}
 
-	public void validateTemplateTxt(InputStream templateInputStream) throws DocumentTemplateException {
+	public void validateTemplateTxt(InputStream templateInputStream) {
 		getFieldExtractorTxt(new InputStreamReader(templateInputStream), "validate");
 	}
 
-	private FieldsExtractor<FieldExtractor> getFieldExtractorTxt(Reader templateFileReader, String templateName) throws DocumentTemplateException {
+	private FieldsExtractor<FieldExtractor> getFieldExtractorTxt(Reader templateFileReader, String templateName) {
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		ExtractVariablesVelocityVisitor visitor = new ExtractVariablesVelocityVisitor(extractor);
 		try {
@@ -228,7 +231,7 @@ public class TemplateEngine {
 			document.jjtAccept(visitor, null);
 			return extractor;
 		} catch (ParseException e) {
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
+			throw new ValidationRuntimeException(I18nProperties.getString(Strings.errorProcessingTemplate));
 		}
 	}
 

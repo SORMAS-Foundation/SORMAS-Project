@@ -134,6 +134,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -258,6 +259,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private SampleService sampleService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public PersonFacadeEjb() {
 	}
@@ -327,7 +330,12 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getByUuid(String uuid) {
-		return super.getByUuid(uuid);
+		return Optional.of(uuid).map(u -> service.getByUuid(u, true)).map(person -> {
+			// fixes some cases where EntityManager retrieves recently updated entities from cache instead of querying the database
+			// e.g. after saving a case person the UI shows the original data
+			em.refresh(person);
+			return person;
+		}).map(this::toPseudonymizedDto).orElse(null);
 	}
 
 	@Override
@@ -1022,6 +1030,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setIncapacitated(source.isIncapacitated());
+		target.setEmancipated(source.isEmancipated());
 
 		return target;
 	}
@@ -1166,6 +1176,20 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			for (Case personCase : personCases) {
 				CaseDataDto existingCase = CaseFacadeEjb.toCaseDto(personCase);
 				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
+			}
+
+			if (newPerson.getCauseOfDeathDisease() != null) {
+				List<Case> causeOfDeathDiseasePersonCases = personCases.stream()
+					.filter(caseDataDto -> caseDataDto.getDisease().equals(newPerson.getCauseOfDeathDisease()))
+					.collect(Collectors.toList());
+				if (!causeOfDeathDiseasePersonCases.isEmpty()) {
+					Case lastCase = Collections.max(causeOfDeathDiseasePersonCases, Comparator.comparing(Case::getReportDate));
+					lastCase.setOutcome(CaseOutcome.DECEASED);
+					lastCase.setOutcomeDate(newPerson.getDeathDate());
+					lastCase.setSequelae(null);
+					lastCase.setSequelaeDetails("");
+					caseService.ensurePersisted(lastCase);
+				}
 			}
 
 			List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
@@ -1547,7 +1571,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			person.get(Person.EDUCATION_TYPE),
 			person.get(Person.EDUCATION_DETAILS),
-			person.get(Person.OCCUPATION_TYPE),
+			person.get(Person.OCCUPATION_TYPE_VALUE),
 			person.get(Person.OCCUPATION_DETAILS),
 			person.get(Person.ARMED_FORCES_RELATION_TYPE),
 
@@ -1613,7 +1637,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	protected Pseudonymizer<PersonDto> createPseudonymizer(List<Person> persons) {
-		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(persons));
+		return Pseudonymizer.getDefault(userService, createSpecialAccessChecker(persons), configFacade.getCountryCode());
 	}
 
 	private <T extends IsPerson> SpecialAccessCheck<T> createSpecialAccessChecker(Collection<? extends IsPerson> persons) {
@@ -1777,6 +1801,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));
 		target.setAdditionalDetails(source.getAdditionalDetails());
+		target.setIncapacitated(source.isIncapacitated());
+		target.setEmancipated(source.isEmancipated());
 
 		return target;
 	}

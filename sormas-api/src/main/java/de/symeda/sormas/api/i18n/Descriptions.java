@@ -10,6 +10,10 @@ public interface Descriptions {
 	 * 1. java:S115: Violation of name convention for constants of this class is accepted: Close as false positive.
 	 */
 
+	String aefiDashboardDiseaseFilter = "aefiDashboardDiseaseFilter";
+	String aefiDashboardDistrictFilter = "aefiDashboardDistrictFilter";
+	String aefiDashboardRegionFilter = "aefiDashboardRegionFilter";
+	String birthdateFilterPartialMatchDescription = "birthdateFilterPartialMatchDescription";
 	String Campaign_calculatedBasedOn = "Campaign.calculatedBasedOn";
 	String Campaign_campaignPhase = "Campaign.campaignPhase";
 	String CaseData_caseClassification = "CaseData.caseClassification";

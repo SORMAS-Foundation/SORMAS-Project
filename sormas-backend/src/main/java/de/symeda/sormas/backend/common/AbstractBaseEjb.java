@@ -35,6 +35,8 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	protected UserService userService;
 	protected Class<ADO> adoClass;
 	protected Class<DTO> dtoClass;
+	@Inject
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	protected AbstractBaseEjb() {
 	}
@@ -141,23 +143,25 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	}
 
 	protected Pseudonymizer<DTO> createPseudonymizer(List<ADO> adoList) {
-		return Pseudonymizer.getDefault(userService);
+		return Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPseudonymizer() {
-		return Pseudonymizer.getDefault(userService);
+		return Pseudonymizer.getDefault(userService, configFacade.getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPseudonymizer(SpecialAccessCheck<T> specialAccessCheck) {
-		return Pseudonymizer.getDefault(userService, specialAccessCheck);
+		return Pseudonymizer.getDefault(userService, specialAccessCheck, configFacade.getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer() {
-		return Pseudonymizer.getDefault(userService, I18nProperties.getCaption(Captions.inaccessibleValue));
+		return Pseudonymizer.getDefault(userService, I18nProperties.getCaption(Captions.inaccessibleValue), configFacade.getCountryCode());
 	}
 
 	protected <T> Pseudonymizer<T> createGenericPlaceholderPseudonymizer(SpecialAccessCheck<T> specialAccessCheck) {
-		return Pseudonymizer.getDefault(userService, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer<T> aDefault = Pseudonymizer
+			.getDefault(userService, specialAccessCheck, I18nProperties.getCaption(Captions.inaccessibleValue), configFacade.getCountryCode());
+		return aDefault;
 	}
 
 	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);

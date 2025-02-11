@@ -110,6 +110,8 @@ import de.symeda.sormas.api.sormastosormas.entities.event.SormasToSormasEventFac
 import de.symeda.sormas.api.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
+import de.symeda.sormas.api.survey.SurveyFacade;
+import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -156,6 +158,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
@@ -257,6 +260,10 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.survey.SurveyFacadeEjb.SurveyFacadeEjbLocal;
+import de.symeda.sormas.backend.survey.SurveyService;
+import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb.SurveyTokenFacadeEjbLocal;
+import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -904,6 +911,10 @@ public abstract class AbstractBeanTest {
 		return getBean(DocumentTemplateFacadeEjbLocal.class);
 	}
 
+	public DocumentTemplateService getDocumentTemplateService() {
+		return getBean(DocumentTemplateService.class);
+	}
+
 	public QuarantineOrderFacade getQuarantineOrderFacade() {
 		return getBean(QuarantineOrderFacadeEjb.QuarantineOrderFacadeEjbLocal.class);
 	}
@@ -1091,6 +1102,22 @@ public abstract class AbstractBeanTest {
 
 	public SelfReportService getSelfReportService() {
 		return getBean(SelfReportService.class);
+	}
+
+	public SurveyFacade getSurveyFacade() {
+		return getBean(SurveyFacadeEjbLocal.class);
+	}
+
+	public SurveyService getSurveyService() {
+		return getBean(SurveyService.class);
+	}
+
+	public SurveyTokenFacade getSurveyTokenFacade() {
+		return getBean(SurveyTokenFacadeEjbLocal.class);
+	}
+
+	public SurveyTokenService getSurveyTokenService() {
+		return getBean(SurveyTokenService.class);
 	}
 
 	public NewsFacade getNewsFacade() {

@@ -175,6 +175,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setReportMessageId(source.getReportMessageId());
+		target.setPersonAdditionalDetails(source.getPersonAdditionalDetails());
 
 		target.setReportId(source.getReportId());
 		if (source.getAssignee() != null) {
@@ -191,6 +192,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			target.setSampleReports(sampleReports);
 		}
 		target.setSurveillanceReport(surveillanceReportService.getByReferenceDto(source.getSurveillanceReport()));
+		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
+
 		return target;
 	}
 
@@ -354,6 +358,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setStatus(source.getStatus());
 		target.setReportMessageId(source.getReportMessageId());
+		target.setPersonAdditionalDetails(source.getPersonAdditionalDetails());
 
 		target.setReportId(source.getReportId());
 		if (source.getSampleReports() != null) {
@@ -365,6 +370,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());
 		}
+
+		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 
 		return target;
 	}
@@ -484,7 +492,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 							externalMessage.get(ExternalMessage.REPORTER_NAME),
 							externalMessage.get(ExternalMessage.REPORTER_POSTAL_CODE),
 							externalMessage.get(ExternalMessage.DISEASE),
-							externalMessage.get(ExternalMessage.DISEASE_VARIANT),
+							externalMessage.get(ExternalMessage.DISEASE_VARIANT_VALUE),
 							externalMessage.get(ExternalMessage.PERSON_FIRST_NAME),
 							externalMessage.get(ExternalMessage.PERSON_LAST_NAME),
 							externalMessage.get(ExternalMessage.PERSON_BIRTH_DATE_YYYY),

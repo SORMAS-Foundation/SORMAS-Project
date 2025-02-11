@@ -25,6 +25,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @AuditedClass
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
@@ -157,6 +159,13 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private UserReferenceDto reportingUser;
 
 	private boolean automaticProcessingPossible;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String personAdditionalDetails;
+
+	private VaccinationStatus vaccinationStatus;
+
+	private YesNoUnknown admittedToHealthFacility;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -430,6 +439,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.surveillanceReport = surveillanceReport;
 	}
 
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public YesNoUnknown getAdmittedToHealthFacility() {
+		return admittedToHealthFacility;
+	}
+
+	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
+		this.admittedToHealthFacility = admittedToHealthFacility;
+	}
+
 	public static ExternalMessageDto build() {
 
 		ExternalMessageDto message = new ExternalMessageDto();
@@ -506,5 +531,13 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setAutomaticProcessingPossible(boolean automaticProcessingPossible) {
 		this.automaticProcessingPossible = automaticProcessingPossible;
+	}
+
+	public String getPersonAdditionalDetails() {
+		return personAdditionalDetails;
+	}
+
+	public void setPersonAdditionalDetails(String personAdditionalDetails) {
+		this.personAdditionalDetails = personAdditionalDetails;
 	}
 }

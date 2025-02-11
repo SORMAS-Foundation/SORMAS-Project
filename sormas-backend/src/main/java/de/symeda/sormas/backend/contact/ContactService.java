@@ -137,6 +137,7 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.BirthdateRangeFilterPredicate;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -1419,6 +1420,15 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		if (contactCriteria.getPerson() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.UUID), contactCriteria.getPerson().getUuid()));
 		}
+
+		filter = BirthdateRangeFilterPredicate.createBirthdateRangeFilter(
+			contactCriteria.getBirthdateFrom(),
+			contactCriteria.getBirthdateTo(),
+			contactCriteria.isIncludePartialMatch(),
+			cb,
+			joins.getPerson(),
+			filter);
+
 		if (contactCriteria.getBirthdateYYYY() != null) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getPerson().get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
@@ -1482,7 +1492,8 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 				CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(sharesSubQuery), cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (contactCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT), contactCriteria.getDiseaseVariant()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT_VALUE), contactCriteria.getDiseaseVariant().getValue()));
 		}
 		if (contactCriteria.getWithOwnership() != null) {
 			filter = CriteriaBuilderHelper
@@ -1722,7 +1733,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 	}
 
 	@Override
-	public void deletePermanent(Contact contact) {
+	public boolean deletePermanent(Contact contact) {
 
 		// Delete all tasks associated with this case
 		Optional.ofNullable(contact.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
@@ -1763,6 +1774,7 @@ public class ContactService extends AbstractCoreAdoService<Contact, ContactJoins
 		deleteContactLinks(contact);
 
 		super.deletePermanent(contact);
+		return false;
 	}
 
 	private void deleteContactLinks(Contact contact) {

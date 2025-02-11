@@ -26,8 +26,10 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -59,8 +61,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@Override
 	public byte[] getGeneratedDocument(
-		String templateName,
-		DocumentWorkflow workflow,
+		DocumentTemplateReferenceDto templateReference,
 		RootEntityType rootEntityType,
 		ReferenceDto rootEntityReference,
 		SampleReferenceDto sampleReference,
@@ -72,9 +73,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		DocumentTemplateEntities entities = entitiesBuilder
 			.getQuarantineOrderEntities(rootEntityType, rootEntityReference, sampleReference, pathogenTestReference, vaccinationReference);
-		byte[] documentToSave = documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities, extraProperties);
+		byte[] documentToSave = documentTemplateFacade.generateDocumentDocxFromEntities(templateReference, entities, extraProperties);
 		if (shouldUploadGeneratedDoc) {
-			uploadDocument(helper.getDocumentFileName(rootEntityReference, templateName), rootEntityReference, documentToSave);
+			uploadDocument(helper.getDocumentFileName(rootEntityReference, templateReference), rootEntityReference, documentToSave);
 		}
 		return documentToSave;
 	}
@@ -105,22 +106,23 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@Override
 	public Map<ReferenceDto, byte[]> getGeneratedDocuments(
-		String templateName,
-		DocumentWorkflow workflow,
+		DocumentTemplateReferenceDto templateReference,
 		List<ReferenceDto> rootEntityReferences,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
 		throws DocumentTemplateException {
 
-		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities =
-			entitiesBuilder.getQuarantineOrderEntities(workflow, rootEntityReferences);
+		DocumentTemplateDto template = documentTemplateFacade.getByUuid(templateReference.getUuid());
 
-		return getGeneratedDocuments(templateName, workflow, quarantineOrderEntities, extraProperties, shouldUploadGeneratedDoc);
+		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities =
+			entitiesBuilder.getQuarantineOrderEntities(template.getWorkflow(), rootEntityReferences);
+
+		return getGeneratedDocuments(templateReference, quarantineOrderEntities, extraProperties, shouldUploadGeneratedDoc);
 	}
 
 	@Override
 	public Map<ReferenceDto, byte[]> getGeneratedDocumentsForEventParticipants(
-		String templateName,
+		DocumentTemplateReferenceDto templateReference,
 		List<EventParticipantReferenceDto> rootEntityReferences,
 		Disease eventDisease,
 		Properties extraProperties,
@@ -130,17 +132,11 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities =
 			entitiesBuilder.getEventParticipantQuarantineOrderEntities(rootEntityReferences, eventDisease);
 
-		return getGeneratedDocuments(
-			templateName,
-			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
-			quarantineOrderEntities,
-			extraProperties,
-			shouldUploadGeneratedDoc);
+		return getGeneratedDocuments(templateReference, quarantineOrderEntities, extraProperties, shouldUploadGeneratedDoc);
 	}
 
 	private Map<ReferenceDto, byte[]> getGeneratedDocuments(
-		String templateName,
-		DocumentWorkflow workflow,
+		DocumentTemplateReferenceDto templateReference,
 		Map<ReferenceDto, DocumentTemplateEntities> quarantineOrderEntities,
 		Properties extraProperties,
 		Boolean shouldUploadGeneratedDoc)
@@ -149,10 +145,9 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 		Map<ReferenceDto, byte[]> documents = new HashMap<>(quarantineOrderEntities.size());
 
 		for (Map.Entry<ReferenceDto, DocumentTemplateEntities> entities : quarantineOrderEntities.entrySet()) {
-			byte[] documentContent =
-				documentTemplateFacade.generateDocumentDocxFromEntities(workflow, templateName, entities.getValue(), extraProperties);
+			byte[] documentContent = documentTemplateFacade.generateDocumentDocxFromEntities(templateReference, entities.getValue(), extraProperties);
 			if (shouldUploadGeneratedDoc) {
-				uploadDocument(helper.getDocumentFileName(entities.getKey(), templateName), entities.getKey(), documentContent);
+				uploadDocument(helper.getDocumentFileName(entities.getKey(), templateReference), entities.getKey(), documentContent);
 			}
 			documents.put(entities.getKey(), documentContent);
 		}
@@ -161,13 +156,13 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	@Override
-	public List<String> getAvailableTemplates(DocumentWorkflow workflow) {
-		return documentTemplateFacade.getAvailableTemplates(workflow);
+	public List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow workflow, Disease disease) {
+		return documentTemplateFacade.getAvailableTemplates(workflow, disease);
 	}
 
 	@Override
-	public DocumentVariables getDocumentVariables(DocumentWorkflow documentWorkflow, String templateName) throws DocumentTemplateException {
-		return documentTemplateFacade.getDocumentVariables(documentWorkflow, templateName);
+	public DocumentVariables getDocumentVariables(DocumentTemplateReferenceDto templateReference) throws DocumentTemplateException {
+		return documentTemplateFacade.getDocumentVariables(templateReference);
 	}
 
 	@LocalBean

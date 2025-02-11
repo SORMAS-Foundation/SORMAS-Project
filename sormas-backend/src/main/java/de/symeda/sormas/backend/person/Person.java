@@ -28,7 +28,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -53,6 +52,7 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.IsPerson;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -108,7 +108,7 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String PRESENT_CONDITION = "presentCondition";
 	public static final String EDUCATION_TYPE = "educationType";
 	public static final String EDUCATION_DETAILS = "educationDetails";
-	public static final String OCCUPATION_TYPE = "occupationType";
+	public static final String OCCUPATION_TYPE_VALUE = "occupationTypeValue";
 	public static final String OCCUPATION_DETAILS = "occupationDetails";
 	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String FATHERS_NAME = "fathersName";
@@ -142,6 +142,8 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	public static final String IMMUNIZATIONS = "immunizations";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String TRAVEL_ENTRIES = "travelEntries";
+	public static final String IS_INCAPACITATED = "isIncapacitated";
+	public static final String IS_EMANCIPATED = "emancipated";
 
 	private String firstName;
 	private String lastName;
@@ -188,6 +190,7 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private EducationType educationType;
 	private String educationDetails;
 
+	private String occupationTypeValue;
 	private OccupationType occupationType;
 	private String occupationDetails;
 	private ArmedForcesRelationType armedForcesRelationType;
@@ -209,6 +212,9 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 	private Country birthCountry;
 	private Country citizenship;
 	private String additionalDetails;
+
+	private boolean isIncapacitated;
+	private boolean emancipated;
 
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
@@ -455,14 +461,24 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 		this.educationDetails = educationDetails;
 	}
 
-	@Column
-	@Convert(converter = OccupationTypeConverter.class)
+	@Column(name = "occupationtype")
+	public String getOccupationTypeValue() {
+		return occupationTypeValue;
+	}
+
+	public void setOccupationTypeValue(String occupationType) {
+		this.occupationTypeValue = occupationType;
+		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationTypeValue);
+	}
+
+	@Transient
 	public OccupationType getOccupationType() {
 		return occupationType;
 	}
 
 	public void setOccupationType(OccupationType occupationType) {
 		this.occupationType = occupationType;
+		this.occupationTypeValue = new OccupationTypeConverter().convertToDatabaseColumn(occupationType);
 	}
 
 	public String getOccupationDetails() {
@@ -647,6 +663,24 @@ public class Person extends AbstractDomainObject implements IsPerson, HasExterna
 
 	public void setHasCovidApp(boolean hasCovidApp) {
 		this.hasCovidApp = hasCovidApp;
+	}
+
+	@Column
+	public boolean isIncapacitated() {
+		return isIncapacitated;
+	}
+
+	public void setIncapacitated(boolean incapacitated) {
+		isIncapacitated = incapacitated;
+	}
+
+	@Column
+	public boolean isEmancipated() {
+		return emancipated;
+	}
+
+	public void setEmancipated(boolean emancipated) {
+		this.emancipated = emancipated;
 	}
 
 	@Column

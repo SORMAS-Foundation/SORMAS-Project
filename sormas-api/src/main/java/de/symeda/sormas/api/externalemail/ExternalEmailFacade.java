@@ -24,6 +24,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.document.DocumentReferenceDto;
@@ -33,7 +34,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 @Remote
 public interface ExternalEmailFacade {
 
-	List<String> getTemplateNames(DocumentWorkflow documentWorkflow);
+	List<DocumentTemplateDto> getTemplates(DocumentWorkflow documentWorkflow);
 
 	List<DocumentReferenceDto> getAttachableDocuments(DocumentWorkflow documentWorkflow, String relatedEntityUuid);
 

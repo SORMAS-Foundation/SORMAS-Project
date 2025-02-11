@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.backend.selfreport;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Tuple;
@@ -26,25 +31,19 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-import de.symeda.sormas.api.selfreport.SelfReportListEntryDto;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.selfreport.SelfReportCriteria;
+import de.symeda.sormas.api.selfreport.SelfReportListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -115,7 +114,8 @@ public class SelfReportService extends AbstractCoreAdoService<SelfReport, SelfRe
 		}
 
 		if (criteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(SelfReport.DISEASE_VARIANT), criteria.getDiseaseVariant()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(SelfReport.DISEASE_VARIANT_VALUE), criteria.getDiseaseVariant().getValue()));
 		}
 
 		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {

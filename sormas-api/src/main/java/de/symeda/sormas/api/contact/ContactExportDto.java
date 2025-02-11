@@ -46,6 +46,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.OccupationTypeConverter;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
@@ -259,7 +260,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
-							String phone, String phoneOwner, String emailAddress, String otherContactDetails, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
+							String phone, String phoneOwner, String emailAddress, String otherContactDetails, String occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
 							VaccinationStatus vaccinationStatus, String externalID, String externalToken, String internalToken, String caseReferenceNumber,
@@ -337,7 +338,7 @@ public class ContactExportDto extends AbstractUuidDto implements IsContact {
 //			this.otherContactDetails += this.otherContactDetails.equals("") ? otherContactDetail : ", " + otherContactDetail;
 //		}
 		this.otherContactDetails = otherContactDetails;
-		this.occupationType = occupationType;
+		this.occupationType = new OccupationTypeConverter().convertToEntityAttribute(null, occupationType);
 		this.occupationDetails = occupationDetails;
 		this.armedForcesRelationType = armedForcesRelationType;
 		this.region = region;

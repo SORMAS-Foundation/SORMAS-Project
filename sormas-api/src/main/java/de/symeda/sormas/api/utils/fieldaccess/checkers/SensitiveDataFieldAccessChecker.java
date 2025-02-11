@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
@@ -23,25 +24,57 @@ import de.symeda.sormas.api.utils.SensitiveData;
 
 public final class SensitiveDataFieldAccessChecker<T> extends AnnotationBasedFieldAccessChecker<T> {
 
-	private SensitiveDataFieldAccessChecker(final boolean hasRight, SpecialAccessCheck<T> specialAccessCheck) {
+	private final String serverCountry;
+
+	private SensitiveDataFieldAccessChecker(final boolean hasRight, SpecialAccessCheck<T> specialAccessCheck, String serverCountry) {
 		super(SensitiveData.class, EmbeddedSensitiveData.class, hasRight, specialAccessCheck);
+		this.serverCountry = serverCountry;
 	}
 
-	public static <T> SensitiveDataFieldAccessChecker<T> inJurisdiction(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
-		return new SensitiveDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION), specialAccessCheck);
+	public static <T> SensitiveDataFieldAccessChecker<T> inJurisdiction(
+		RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
+		return new SensitiveDataFieldAccessChecker<>(
+			rightCheck.check(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION),
+			specialAccessCheck,
+			serverCountry);
 	}
 
-	public static <T> SensitiveDataFieldAccessChecker<T> outsideJurisdiction(RightCheck rightCheck, SpecialAccessCheck<T> specialAccessCheck) {
-		return new SensitiveDataFieldAccessChecker<>(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION), specialAccessCheck);
+	public static <T> SensitiveDataFieldAccessChecker<T> outsideJurisdiction(
+		RightCheck rightCheck,
+		SpecialAccessCheck<T> specialAccessCheck,
+		String serverCountry) {
+		return new SensitiveDataFieldAccessChecker<>(
+			rightCheck.check(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION),
+			specialAccessCheck,
+			serverCountry);
 	}
 
 	public static <T> SensitiveDataFieldAccessChecker<T> forcedNoAccess() {
-		return new SensitiveDataFieldAccessChecker<>(false, t -> false);
+		return new SensitiveDataFieldAccessChecker<>(false, t -> false, null);
 	}
 
 	@Override
 	protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
 		return annotatedField.getAnnotation(SensitiveData.class).mandatoryField();
+	}
+
+	@Override
+	public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
+		boolean annotationPresent = field.isAnnotationPresent(fieldAnnotation);
+
+		if (annotationPresent) {
+			String[] excludeForCountries = field.getAnnotation(SensitiveData.class).excludeForCountries();
+			if (Arrays.asList(excludeForCountries).contains(serverCountry)) {
+				return false;
+			}
+		}
+
+		if (!annotationPresent || withMandatory) {
+			return annotationPresent;
+		}
+		return !isAnnotatedFieldMandatory(field);
 	}
 
 	public interface RightCheck {

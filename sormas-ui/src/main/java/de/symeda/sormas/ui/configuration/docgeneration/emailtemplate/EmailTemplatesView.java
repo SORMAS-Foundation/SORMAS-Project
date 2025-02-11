@@ -37,10 +37,10 @@ public class EmailTemplatesView extends AbstractConfigurationView {
 		super(VIEW_NAME);
 
 		VerticalLayout gridLayout = new VerticalLayout(
-			new DocumentTemplateSection(CASE_EMAIL),
-			new DocumentTemplateSection(CONTACT_EMAIL),
-			new DocumentTemplateSection(EVENT_PARTICIPANT_EMAIL),
-			new DocumentTemplateSection(TRAVEL_ENTRY_EMAIL));
+			new DocumentTemplateSection(CASE_EMAIL, false),
+			new DocumentTemplateSection(CONTACT_EMAIL, false),
+			new DocumentTemplateSection(EVENT_PARTICIPANT_EMAIL, false),
+			new DocumentTemplateSection(TRAVEL_ENTRY_EMAIL, false));
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
 		gridLayout.setMargin(true);
