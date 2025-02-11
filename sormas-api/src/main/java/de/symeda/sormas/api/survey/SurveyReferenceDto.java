@@ -15,30 +15,21 @@
 
 package de.symeda.sormas.api.survey;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public class SurveyReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8612115227784272980L;
 
-	public SurveyReferenceDto(String uuid, Disease disease, String surveyName) {
+	public SurveyReferenceDto(String uuid, String surveyName) {
 		setUuid(uuid);
-		setCaption(buildCaption(disease, surveyName));
+		setCaption(buildCaption(surveyName));
 	}
 
-	public static String buildCaption(Disease disease, String surveyName) {
+	public static String buildCaption(String surveyName) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(DataHelper.toStringNullable(disease));
-		if (stringBuilder.length() > 0) {
-			stringBuilder.append(" ");
-		}
-
 		if (surveyName != null) {
-			stringBuilder.append(StringUtils.wrap(surveyName, " "));
+			stringBuilder.append(surveyName);
 		}
 		return stringBuilder.toString();
 	}
