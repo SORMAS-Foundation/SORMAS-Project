@@ -27,7 +27,7 @@
         <import type="de.symeda.sormas.api.i18n.Captions" />
         <import type="de.symeda.sormas.api.action.ActionDto"/>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType"/>
-
+        <import type="de.symeda.sormas.api.news.NewsCriteria"/>
         <variable name="criteria" type="de.symeda.sormas.app.news.NewsFilterCriteria"/>
     </data>
 
@@ -76,13 +76,13 @@
                 style="@style/ControlSingleColumnStyle" />
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/start_date_filter"
-                app:hint="@{I18nProperties.getCaption(Captions.date)}"
+                app:hint="@{I18nProperties.getPrefixCaption(NewsCriteria.I18N_PREFIX, NewsCriteria.START_DATE)}"
                 app:showCaption="false"
                 app:value="@={criteria.startDate}"
                 style="@style/ControlSingleColumnStyle" />
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/end_date_filter"
-                app:hint="@{I18nProperties.getCaption(Captions.date)}"
+                app:hint="@{I18nProperties.getPrefixCaption(NewsCriteria.I18N_PREFIX, NewsCriteria.END_DATE)}"
                 app:showCaption="false"
                 app:value="@={criteria.endDate}"
                 style="@style/ControlSingleColumnStyle" />

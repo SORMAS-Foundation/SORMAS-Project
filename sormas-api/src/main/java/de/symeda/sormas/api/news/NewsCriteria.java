@@ -12,6 +12,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class NewsCriteria extends BaseCriteria {
 
+	public static final String I18N_PREFIX = "NewsCriteria";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
