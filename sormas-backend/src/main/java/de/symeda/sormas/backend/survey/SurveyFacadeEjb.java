@@ -175,6 +175,12 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		return toReferenceDto(surveyService.getByUuid(uuid));
 	}
 
+	@Override
+	public Boolean isEditAllowed(String uuid) {
+		Survey survey = surveyService.getByUuid(uuid);
+		return surveyService.isEditAllowed(survey);
+	}
+
 	private void validate(SurveyDto survey) {
 
 	}

@@ -38,4 +38,6 @@ public interface SurveyFacade {
     boolean exists(String uuid);
 
     SurveyReferenceDto getReferenceByUuid(String uuid);
+
+    Boolean isEditAllowed(String uuid);
 }

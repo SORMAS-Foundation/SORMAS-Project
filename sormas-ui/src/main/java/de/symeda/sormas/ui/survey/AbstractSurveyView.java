@@ -1,8 +1,7 @@
-package de.symeda.sormas.ui.surveypages;
+package de.symeda.sormas.ui.survey;
 
 import com.vaadin.navigator.ViewChangeListener;
 
-import de.symeda.sormas.api.EditPermissionFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -10,9 +9,9 @@ import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractEditAllowedDetailView;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 
-public abstract class AbstractSurveyView extends AbstractEditAllowedDetailView<SurveyReferenceDto> {
+public abstract class AbstractSurveyView extends AbstractDetailView<SurveyReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = SurveysView.VIEW_NAME;
 	private static final long serialVersionUID = 5429099481597698053L;
@@ -38,14 +37,8 @@ public abstract class AbstractSurveyView extends AbstractEditAllowedDetailView<S
 		return reference;
 	}
 
-	@Override
-	protected EditPermissionFacade getEditPermissionFacade() {
-		return null;
-	}
-
-	@Override
 	protected boolean isEditAllowed() {
-		return true;
+		return FacadeProvider.getSurveyFacade().isEditAllowed(getReference().getUuid());
 	}
 
 	@Override
@@ -57,6 +50,6 @@ public abstract class AbstractSurveyView extends AbstractEditAllowedDetailView<S
 		menu.addView(SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.surveySurveyList));
 		menu.addView(SurveyDataView.VIEW_NAME, I18nProperties.getCaption(SurveyDto.I18N_PREFIX), params);
 
-		setMainHeaderComponent(ControllerProvider.getSurveyController().getEnvironmentViewTitleLayout(getReference().getUuid()));
+		setMainHeaderComponent(ControllerProvider.getSurveyController().getSurveyViewTitleLayout(getReference().getUuid()));
 	}
 }

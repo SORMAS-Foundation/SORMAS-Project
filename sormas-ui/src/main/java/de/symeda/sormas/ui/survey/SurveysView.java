@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.surveypages;
+package de.symeda.sormas.ui.survey;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
