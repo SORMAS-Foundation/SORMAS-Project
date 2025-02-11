@@ -232,7 +232,7 @@ class FacilityFacadeEjbTest extends AbstractBeanTest {
 			facility.setPostalCode("PostalCode1");
 			facility.setCity("City1");
 		});
-		FacilityDto fac2 = creator.createFacility("Fac2", rdcf.region, rdcf.district, facility -> {
+		creator.createFacility("Fac2", rdcf.region, rdcf.district, facility -> {
 			facility.setStreet("Street2");
 			facility.setHouseNumber("2");
 			facility.setPostalCode("PostalCode2");
@@ -244,7 +244,7 @@ class FacilityFacadeEjbTest extends AbstractBeanTest {
 			facility.setPostalCode("PostalCode2");
 			facility.setCity("City2");
 		});
-		FacilityDto fac4 = creator.createFacility("Fac4", rdcf.region, rdcf.district, facility -> {
+		creator.createFacility("Fac4", rdcf.region, rdcf.district, facility -> {
 			facility.setStreet("Street2");
 			facility.setHouseNumber("4");
 			facility.setPostalCode("PostalCode2");
