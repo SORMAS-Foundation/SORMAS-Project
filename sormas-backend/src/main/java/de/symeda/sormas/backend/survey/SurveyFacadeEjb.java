@@ -175,6 +175,12 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		return toReferenceDto(surveyService.getByUuid(uuid));
 	}
 
+	@Override
+	public Boolean isEditAllowed(String uuid) {
+		Survey survey = surveyService.getByUuid(uuid);
+		return surveyService.isEditAllowed(survey);
+	}
+
 	private void validate(SurveyDto survey) {
 
 	}
@@ -210,10 +216,9 @@ public class SurveyFacadeEjb implements SurveyFacade {
 			return null;
 		}
 
-		return new SurveyReferenceDto(entity.getUuid(), entity.getDisease(), entity.getName());
+		return new SurveyReferenceDto(entity.getUuid(), entity.getName());
 	}
 
-	@LocalBean
 	public SurveyReferenceDto convertToReferenceDto(Survey survey) {
 		return toSurveyReferenceDto(survey);
 	}
@@ -222,7 +227,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		return new SurveyReferenceDto(survey.getUuid(), survey.getName());
 	}
 
-    @LocalBean
+	@LocalBean
 	@Stateless
 	public static class SurveyFacadeEjbLocal extends SurveyFacadeEjb {
 

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.surveypages;
+package de.symeda.sormas.ui.survey;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.survey.SurveyDto;

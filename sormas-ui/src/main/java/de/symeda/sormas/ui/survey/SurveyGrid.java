@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.surveypages;
+package de.symeda.sormas.ui.survey;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.survey.SurveyCriteria;
@@ -33,7 +33,7 @@ public class SurveyGrid extends FilteredGrid<SurveyIndexDto, SurveyCriteria> {
 
 	protected void initlColumns(SurveyCriteria criteria) {
 
-		setColumns(SurveyIndexDto.UUID, SurveyIndexDto.DISEASE, SurveyIndexDto.SURVEY_NAME);
+		setColumns(SurveyIndexDto.UUID, SurveyIndexDto.SURVEY_NAME, SurveyIndexDto.DISEASE);
 
 		((Column<SurveyIndexDto, String>) getColumn(SurveyIndexDto.UUID)).setRenderer(new UuidRenderer());
 

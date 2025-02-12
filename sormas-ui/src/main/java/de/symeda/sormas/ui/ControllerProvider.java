@@ -48,7 +48,6 @@ import de.symeda.sormas.ui.selfreport.SelfReportController;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasController;
 import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
-import de.symeda.sormas.ui.surveypages.SurveyController;
 import de.symeda.sormas.ui.survey.SurveyTokenController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;

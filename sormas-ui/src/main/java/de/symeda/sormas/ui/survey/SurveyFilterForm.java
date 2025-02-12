@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.surveypages;
+package de.symeda.sormas.ui.survey;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -20,8 +20,8 @@ public class SurveyFilterForm extends AbstractFilterForm<SurveyCriteria> {
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
-			SurveyCriteria.DISEASE,
-			SurveyCriteria.FREE_TEXT };
+			SurveyCriteria.FREE_TEXT,
+			SurveyCriteria.DISEASE };
 	}
 
 	@Override

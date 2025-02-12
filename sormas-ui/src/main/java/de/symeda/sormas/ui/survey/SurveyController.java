@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.surveypages;
+package de.symeda.sormas.ui.survey;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Notification;
@@ -101,7 +101,7 @@ public class SurveyController {
 		return editComponent;
 	}
 
-	public TitleLayout getEnvironmentViewTitleLayout(String uuid) {
+	public TitleLayout getSurveyViewTitleLayout(String uuid) {
 		SurveyDto surveyDto = findSurvey(uuid);
 
 		TitleLayout titleLayout = new TitleLayout();

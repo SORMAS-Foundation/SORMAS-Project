@@ -89,7 +89,7 @@ import de.symeda.sormas.ui.selfreport.SelfReportsView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
-import de.symeda.sormas.ui.surveypages.SurveysView;
+import de.symeda.sormas.ui.survey.SurveysView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
 import de.symeda.sormas.ui.user.AbstractUserView;
