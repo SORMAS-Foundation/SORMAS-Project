@@ -50,6 +50,8 @@ public class ExternalEmailSideComponent extends SideComponent {
 	public static ExternalEmailSideComponent forCase(
 		CaseDataDto caze,
 		boolean isEditAllowed,
+		PersonReferenceDto personRef,
+		boolean isSendAllowed,
 		Runnable callback,
 		Consumer<Runnable> sendEmailWrapper) {
 		return new ExternalEmailSideComponent(
@@ -57,7 +59,8 @@ public class ExternalEmailSideComponent extends SideComponent {
 			RootEntityType.ROOT_CASE,
 			DocumentRelatedEntityType.CASE,
 			caze.toReference(),
-			caze.getPerson(),
+			personRef,
+			isSendAllowed,
 			Strings.messageCasePersonHasNoEmail,
 			Strings.messageNoExternalEmailToCaseSent,
 			new ManualMessageLogCriteria().caze(caze.toReference()),
@@ -68,7 +71,7 @@ public class ExternalEmailSideComponent extends SideComponent {
 	}
 
 	public static ExternalEmailSideComponent forContact(ContactDto contact, boolean isEditAllowed, Consumer<Runnable> sendEmailWrapper) {
-		return new ExternalEmailSideComponent(
+		return withPersonRef(
 			DocumentWorkflow.CONTACT_EMAIL,
 			RootEntityType.ROOT_CONTACT,
 			DocumentRelatedEntityType.CONTACT,
@@ -79,7 +82,6 @@ public class ExternalEmailSideComponent extends SideComponent {
 			new ManualMessageLogCriteria().contact(contact.toReference()),
 			isEditAllowed,
 			contact.isInJurisdiction(),
-			null,
 			sendEmailWrapper);
 	}
 
@@ -87,7 +89,7 @@ public class ExternalEmailSideComponent extends SideComponent {
 		EventParticipantDto eventParticipant,
 		boolean isEditAllowed,
 		Consumer<Runnable> sendEmailWrapper) {
-		return new ExternalEmailSideComponent(
+		return withPersonRef(
 			DocumentWorkflow.EVENT_PARTICIPANT_EMAIL,
 			RootEntityType.ROOT_EVENT_PARTICIPANT,
 			null,
@@ -98,12 +100,11 @@ public class ExternalEmailSideComponent extends SideComponent {
 			new ManualMessageLogCriteria().eventParticipant(eventParticipant.toReference()),
 			isEditAllowed,
 			eventParticipant.isInJurisdiction(),
-			null,
 			sendEmailWrapper);
 	}
 
 	public static ExternalEmailSideComponent forTravelEntry(TravelEntryDto travelEntry, boolean isEditAllowed, Consumer<Runnable> sendEmailWrapper) {
-		return new ExternalEmailSideComponent(
+		return withPersonRef(
 			DocumentWorkflow.TRAVEL_ENTRY_EMAIL,
 			RootEntityType.ROOT_TRAVEL_ENTRY,
 			DocumentRelatedEntityType.TRAVEL_ENTRY,
@@ -114,6 +115,37 @@ public class ExternalEmailSideComponent extends SideComponent {
 			new ManualMessageLogCriteria().travelEntry(travelEntry.toReference()),
 			isEditAllowed,
 			travelEntry.isInJurisdiction(),
+			sendEmailWrapper);
+	}
+
+	private static ExternalEmailSideComponent withPersonRef(
+		DocumentWorkflow documentWorkflow,
+		RootEntityType rootEntityType,
+		DocumentRelatedEntityType documentRelatedEntityType,
+		ReferenceDto rootEntityReference,
+		PersonReferenceDto personRef,
+		String noRecipientStringKey,
+		String noEmailsStringKey,
+		ManualMessageLogCriteria baseCriteria,
+		boolean isEditAllowed,
+		boolean isInJurisdiction,
+		Consumer<Runnable> sendEmailWrapper) {
+
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
+		boolean isSendAllowed = CollectionUtils.isNotEmpty(person.getAllEmailAddresses());
+
+		return new ExternalEmailSideComponent(
+			documentWorkflow,
+			rootEntityType,
+			documentRelatedEntityType,
+			rootEntityReference,
+			personRef,
+			isSendAllowed,
+			noRecipientStringKey,
+			noEmailsStringKey,
+			baseCriteria,
+			isEditAllowed,
+			isInJurisdiction,
 			null,
 			sendEmailWrapper);
 	}
@@ -126,6 +158,7 @@ public class ExternalEmailSideComponent extends SideComponent {
 		DocumentRelatedEntityType documentRelatedEntityType,
 		ReferenceDto rootEntityReference,
 		PersonReferenceDto personRef,
+		boolean isSendAllowed,
 		String noRecipientStringKey,
 		String noEmailsStringKey,
 		ManualMessageLogCriteria baseCriteria,
@@ -150,8 +183,7 @@ public class ExternalEmailSideComponent extends SideComponent {
 				UserRight.EXTERNAL_EMAIL_SEND);
 		}
 
-		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(personRef.getUuid());
-		if (isEditAllowed && CollectionUtils.isEmpty(person.getAllEmailAddresses())) {
+		if (isEditAllowed && !isSendAllowed) {
 			if (createButton != null) {
 				createButton.setEnabled(false);
 			}

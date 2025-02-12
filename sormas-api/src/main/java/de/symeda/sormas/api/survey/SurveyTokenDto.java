@@ -18,6 +18,7 @@ package de.symeda.sormas.api.survey;
 import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -35,7 +36,16 @@ public class SurveyTokenDto extends EntityDto {
 	private static final long serialVersionUID = -4598785341989656729L;
 
 	public static final String I18N_PREFIX = "SurveyToken";
+	public static final String SURVEY = "survey";
+	public static final String TOKEN = "token";
+	public static final String CASE_ASSIGNED_TO = "caseAssignedTo";
+	public static final String ASSIGNMENT_DATE = "assignmentDate";
+	public static final String RECIPIENT_EMAIL = "recipientEmail";
+	public static final String GENERATED_DOCUMENT = "generatedDocument";
+	public static final String RESPONSE_RECEIVED = "responseReceived";
 
+	@NotNull(message = Validations.requiredField)
+	private SurveyReferenceDto survey;
 	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String token;
@@ -51,6 +61,14 @@ public class SurveyTokenDto extends EntityDto {
 		token.setUuid(DataHelper.createUuid());
 
 		return token;
+	}
+
+	public SurveyReferenceDto getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(SurveyReferenceDto survey) {
+		this.survey = survey;
 	}
 
 	public String getToken() {

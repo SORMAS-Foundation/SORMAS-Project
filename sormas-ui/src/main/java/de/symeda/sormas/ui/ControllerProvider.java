@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.sormastosormas.SormasToSormasController;
 import de.symeda.sormas.ui.specialcaseaccess.SpecialCaseAccessController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
 import de.symeda.sormas.ui.surveypages.SurveyController;
+import de.symeda.sormas.ui.survey.SurveyTokenController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
@@ -105,6 +106,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SpecialCaseAccessController specialCaseAccessController;
 	private final SelfReportController selfReportController;
 	private final SurveyController surveyController;
+	private final SurveyTokenController surveyTokenController;
 
 	public ControllerProvider() {
 		super();
@@ -151,6 +153,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		specialCaseAccessController = new SpecialCaseAccessController();
 		selfReportController = new SelfReportController();
 		surveyController = new SurveyController();
+		surveyTokenController = new SurveyTokenController();
 	}
 
 	protected static ControllerProvider get() {
@@ -323,5 +326,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SurveyController getSurveyController() {
 		return get().surveyController;
+	}
+
+	public static SurveyTokenController getSurveyTokenController() {
+		return get().surveyTokenController;
 	}
 }

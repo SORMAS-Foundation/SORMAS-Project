@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.survey;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SurveyTokenCriteria extends BaseCriteria {
@@ -23,6 +24,7 @@ public class SurveyTokenCriteria extends BaseCriteria {
 
 	private SurveyReferenceDto survey;
 	private String tokenLike;
+	private CaseReferenceDto caseAssignedTo;
 
 	public SurveyReferenceDto getSurvey() {
 		return survey;
@@ -47,6 +49,19 @@ public class SurveyTokenCriteria extends BaseCriteria {
 
 	public SurveyTokenCriteria tokenLike(String tokenLike) {
 		setTokenLike(tokenLike);
+		return this;
+	}
+
+	public CaseReferenceDto getCaseAssignedTo() {
+		return caseAssignedTo;
+	}
+
+	public void setCaseAssignedTo(CaseReferenceDto caseAssignedTo) {
+		this.caseAssignedTo = caseAssignedTo;
+	}
+
+	public SurveyTokenCriteria caseAssignedTo(CaseReferenceDto caseAssignedTo) {
+		setCaseAssignedTo(caseAssignedTo);
 		return this;
 	}
 }
