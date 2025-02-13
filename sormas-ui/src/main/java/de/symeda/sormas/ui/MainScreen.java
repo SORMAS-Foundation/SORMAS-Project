@@ -89,6 +89,7 @@ import de.symeda.sormas.ui.selfreport.SelfReportsView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
+import de.symeda.sormas.ui.survey.SurveysView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
 import de.symeda.sormas.ui.user.AbstractUserView;
@@ -352,6 +353,11 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.USER_CHECK);
 		}
 
+		if (permitted(FeatureType.SURVEYS, UserRight.SURVEY_VIEW)) {
+			ControllerProvider.getSurveyController().registeredViews(navigator);
+			menu.addView(SurveysView.class, SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSurveys), VaadinIcons.BULLETS);
+		}
+
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
 		}
@@ -490,6 +496,7 @@ public class MainScreen extends HorizontalLayout {
 				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
 				ImmunizationsView.VIEW_NAME,
+				SurveysView.VIEW_NAME,
 				AefiView.VIEW_NAME));
 
 		if (surveillanceDashboardPermitted()) {
