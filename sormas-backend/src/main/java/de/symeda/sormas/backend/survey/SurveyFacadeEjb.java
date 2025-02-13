@@ -165,6 +165,22 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		surveyService.deletePermanent(surveyService.getByUuid(uuid));
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return surveyService.exists(uuid);
+	}
+
+	@Override
+	public SurveyReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(surveyService.getByUuid(uuid));
+	}
+
+	@Override
+	public Boolean isEditAllowed(String uuid) {
+		Survey survey = surveyService.getByUuid(uuid);
+		return surveyService.isEditAllowed(survey);
+	}
+
 	private void validate(SurveyDto survey) {
 
 	}
@@ -194,6 +210,15 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		return target;
 	}
 
+	public static SurveyReferenceDto toReferenceDto(Survey entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new SurveyReferenceDto(entity.getUuid(), entity.getName());
+	}
+
 	public SurveyReferenceDto convertToReferenceDto(Survey survey) {
 		return toSurveyReferenceDto(survey);
 	}
@@ -202,7 +227,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		return new SurveyReferenceDto(survey.getUuid(), survey.getName());
 	}
 
-    @LocalBean
+	@LocalBean
 	@Stateless
 	public static class SurveyFacadeEjbLocal extends SurveyFacadeEjb {
 

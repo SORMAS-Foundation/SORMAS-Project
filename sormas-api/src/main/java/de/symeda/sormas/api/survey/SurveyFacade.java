@@ -34,4 +34,10 @@ public interface SurveyFacade {
     List<SurveyIndexDto> getIndexList(SurveyCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
     void deletePermanent(String uuid);
+
+    boolean exists(String uuid);
+
+    SurveyReferenceDto getReferenceByUuid(String uuid);
+
+    Boolean isEditAllowed(String uuid);
 }
