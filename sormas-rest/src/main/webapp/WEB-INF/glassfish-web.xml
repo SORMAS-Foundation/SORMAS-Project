@@ -1167,4 +1167,14 @@
         <group-name>CUSTOMIZABLE_ENUM_MANAGEMENT</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>VIEW_NEWS</role-name>
+        <group-name>VIEW_NEWS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EDIT_NEWS</role-name>
+        <group-name>EDIT_NEWS</group-name>
+    </security-role-mapping>
+
 </glassfish-web-app>

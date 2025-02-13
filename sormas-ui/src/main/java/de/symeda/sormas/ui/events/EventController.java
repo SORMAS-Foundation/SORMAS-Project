@@ -67,6 +67,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
@@ -74,6 +75,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.news.NewsDto;
+import de.symeda.sormas.api.news.NewsReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -116,6 +120,37 @@ public class EventController {
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
+	}
+
+	public EventDto create(Consumer<EventDto> updateEventDtoConsumer) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent((CaseReferenceDto) null);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		updateEventDtoConsumer.accept(eventDto);
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto create(NewsReferenceDto newsRef) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent((CaseReferenceDto) null);
+		EventDto event = eventCreateComponent.getWrappedComponent().getValue();
+		NewsDto news = FacadeProvider.getNewsFacade().getByUuid(newsRef.getUuid());
+		event.setEventTitle(news.getTitle());
+		event.setEventDesc(news.getDescription());
+		event.setSrcType(EventSourceType.MEDIA_NEWS);
+		event.setSrcMediaWebsite(news.getLink());
+		LocationDto location = event.getEventLocation();
+		if (location == null) {
+			location = LocationDto.build();
+			event.setEventLocation(location);
+		}
+		location.setRegion(news.getRegion());
+		location.setDistrict(news.getDistrict());
+		location.setCommunity(news.getCommunity());
+		event.setRiskLevel(news.getRiskLevel());
+		event.setStartDate(news.getNewsDate());
+
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return event;
 	}
 
 	public EventDto createFromCaseList(List<CaseReferenceDto> caseRefs, Consumer<List<CaseReferenceDto>> callback) {

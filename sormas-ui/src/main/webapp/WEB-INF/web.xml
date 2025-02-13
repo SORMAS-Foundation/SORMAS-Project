@@ -945,4 +945,12 @@
 		<role-name>CUSTOMIZABLE_ENUM_MANAGEMENT</role-name>
 	</security-role>
 
+	<security-role>
+		<role-name>VIEW_NEWS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EDIT_NEWS</role-name>
+	</security-role>
+
 </web-app>

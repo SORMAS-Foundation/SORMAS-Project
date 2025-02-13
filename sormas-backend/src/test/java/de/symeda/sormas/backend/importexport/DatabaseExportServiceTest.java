@@ -31,6 +31,8 @@ import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
+import de.symeda.sormas.backend.news.EiosBoardConfig;
+import de.symeda.sormas.backend.news.News;
 import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.survey.Survey;
 import de.symeda.sormas.backend.survey.SurveyToken;
@@ -76,7 +78,10 @@ public class DatabaseExportServiceTest {
 		AefiInvestigation.class,
 		DocumentTemplate.class,
 		Survey.class,
-		SurveyToken.class);
+		SurveyToken.class,
+		SelfReport.class,
+		News.class,
+		EiosBoardConfig.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

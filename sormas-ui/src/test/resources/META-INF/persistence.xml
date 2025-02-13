@@ -93,6 +93,8 @@
 		<class>de.symeda.sormas.backend.survey.Survey</class>
 		<class>de.symeda.sormas.backend.survey.SurveyToken</class>
 
+        <class>de.symeda.sormas.backend.news.News</class>
+        <class>de.symeda.sormas.backend.news.EiosBoardConfig</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>

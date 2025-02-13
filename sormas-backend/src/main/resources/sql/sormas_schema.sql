@@ -13809,7 +13809,6 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOK
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOKEN_IMPORT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 
 INSERT INTO schema_version (version_number, comment) VALUES (557, 'Create Survey Tokens data structure #13250');
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 -- 2025-01-10 Add information about legal guardian for "minor / incapacitated" to person entity #13205
 ALTER TABLE person ADD column incapacitated boolean default false;
@@ -13818,3 +13817,69 @@ ALTER TABLE person_history ADD COLUMN incapacitated boolean default false;
 ALTER TABLE person_history ADD COLUMN emancipated boolean default false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (558, 'Add information about legal guardian for "minor / incapacitated" to person entity #13205');
+
+create table eiosboardconfig
+(
+    id             bigint       not null
+        primary key,
+    changedate     timestamp(3) not null,
+    creationdate   timestamp(3) not null,
+    uuid           varchar(36)  not null,
+    boardid        bigint,
+    enabled        boolean,
+    starttimestamp bigint,
+    change_user_id bigint,
+    sys_period    tstzrange
+);
+
+ALTER TABLE eiosboardconfig OWNER TO sormas_user;
+CREATE TABLE eiosboardconfig_history
+(
+    LIKE eiosboardconfig
+);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR
+UPDATE ON eiosboardconfig
+    FOR EACH ROW EXECUTE PROCEDURE versioning ('sys_period', 'eiosboardconfig_history', true);
+create table news
+(
+    id                bigint       not null,
+    changedate        timestamp(3) not null,
+    creationdate      timestamp(3) not null,
+    uuid              varchar(36)  not null unique,
+    comments          varchar(4096),
+    contentrestricted boolean,
+    description       varchar(1000000),
+    eiosurl           varchar(4096),
+    newsdate          timestamp,
+    risklevel         varchar(4096),
+    status            varchar(4096),
+    title             varchar(4096),
+    url               varchar(4096),
+    change_user_id    bigint,
+    community_id      bigint,
+    district_id       bigint,
+    region_id         bigint,
+    source_id         bigint,
+    eiosid            bigint unique,
+    disease           varchar(255),
+    sys_period         tstzrange,
+    primary key (id)
+);
+ALTER TABLE news OWNER TO sormas_user;
+ALTER TABLE news
+    ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+CREATE TABLE news_history
+(
+    LIKE news
+);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR
+UPDATE ON news
+    FOR EACH ROW EXECUTE PROCEDURE versioning ('sys_period', 'news_history', true);
+INSERT INTO schema_version (version_number, comment) VALUES (559, '#13131 Setup EIOS Board Configuration and News');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
+
+

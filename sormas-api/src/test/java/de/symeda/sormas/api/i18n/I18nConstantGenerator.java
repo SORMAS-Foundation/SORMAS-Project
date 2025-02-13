@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Generates Constants out of the corresponding property files.
- * 
+ *
  * @see Captions
  * @see Strings
  * @see Validations
@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 public class I18nConstantGenerator {
 
 	private static final String FILE_PATH_PATTERN = "src/main/java/de/symeda/sormas/api/i18n/%s.java";
-
 	private final String propertiesFileName;
 	private final String outputClassName;
 	private final String outputClassFilePath;
@@ -78,7 +77,7 @@ public class I18nConstantGenerator {
 
 	private void generateI18nConstantClass() throws IOException {
 
-		Path path = Paths.get(outputClassFilePath);
+		Path path = Paths.get("sormas-api\\" + outputClassFilePath);
 		String sep = determineLineSeparator(path);
 
 		try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
@@ -180,7 +179,7 @@ public class I18nConstantGenerator {
 		long startTime = System.currentTimeMillis();
 
 		// Check if this program is started with the module directory as working directory.
-		Path path = Paths.get(FILE_PATH_PATTERN.split("/")[0]);
+		Path path = Paths.get("sormas-api\\" + FILE_PATH_PATTERN.split("\\\\")[0]);
 		if (!Files.exists(path)) {
 			throw new IOException(
 				String.format(

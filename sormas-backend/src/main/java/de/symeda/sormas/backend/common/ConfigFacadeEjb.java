@@ -47,6 +47,7 @@ import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.news.eios.EiosConfig;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -195,6 +196,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String MINIMUM_ADULT_AGE = "minimumAdultAge";
 	public static final int DEFAULT_MINIMUM_ADULT_AGE = 18;
 
+	public static final int DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB = 20;
+	public static final String EIOS_URL = "eios.url";
+	public static final String EIOS_ODI_URL = "eios.odi.url";
+	public static final String EIOS_CLIENT_ID = "eios.clientId";
+	public static final String EIOS_CLIENT_SECRET = "eios.clientSecret";
+	public static final String EIOS_SCOPE = "eios.scope";
+	public static final String EIOS_BOARD_IDS = "eios.boardIds";
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -833,6 +841,22 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public long getImportFileSizeLimitMb() {
 		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPORT_FILE_SIZE_LIMIT_MB);
+	}
+
+	@Override
+	public EiosConfig getEIOSConfig() {
+		EiosConfig config = new EiosConfig();
+		config.setEiosUrl(getProperty(EIOS_URL, ""));
+		config.setOidUrl(getProperty(EIOS_ODI_URL, ""));
+		config.setOidcClientId(getProperty(EIOS_CLIENT_ID, ""));
+		config.setOidcClientSecret(getProperty(EIOS_CLIENT_SECRET, ""));
+		config.setOidScope(getProperty(EIOS_SCOPE, ""));
+		return config;
+	}
+
+	@Override
+	public String getEiosBoardIds() {
+		return getProperty(EIOS_BOARD_IDS, "");
 	}
 
 	@Override

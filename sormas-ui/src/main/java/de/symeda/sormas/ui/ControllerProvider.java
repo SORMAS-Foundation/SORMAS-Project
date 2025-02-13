@@ -38,6 +38,7 @@ import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageController;
 import de.symeda.sormas.ui.immunization.ImmunizationController;
+import de.symeda.sormas.ui.news.NewsController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -107,6 +108,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SelfReportController selfReportController;
 	private final SurveyController surveyController;
 	private final SurveyTokenController surveyTokenController;
+	private final NewsController newsController;
 
 	public ControllerProvider() {
 		super();
@@ -154,6 +156,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		selfReportController = new SelfReportController();
 		surveyController = new SurveyController();
 		surveyTokenController = new SurveyTokenController();
+		newsController = new NewsController();
 	}
 
 	protected static ControllerProvider get() {
@@ -331,4 +334,9 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static SurveyTokenController getSurveyTokenController() {
 		return get().surveyTokenController;
 	}
+
+	public static NewsController getNewsController() {
+		return get().newsController;
+	}
+
 }

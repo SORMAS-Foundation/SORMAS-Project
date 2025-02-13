@@ -47,6 +47,7 @@ import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.Externa
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
+import de.symeda.sormas.backend.news.EiosFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb.SpecialCaseAccessFacadeEjbLocal;
@@ -100,6 +101,8 @@ public class CronService {
 	@EJB
 	private SampleService sampleService;
 
+	@EJB
+	private EiosFacadeEjb.EiosFacadeEjbLocal eiosFacade;
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
@@ -304,5 +307,12 @@ public class CronService {
 	@Schedule(hour = "2", minute = "40", persistent = false)
 	public void sofDeleteOldNegativeSamples() {
 		sampleService.cleanupOldCovidSamples();
+	}
+
+	@Schedule(hour = "*/2", persistent = false)
+	public void fetchAndSaveBoardArticlesCron() {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.NEWS_FEATURE)) {
+			eiosFacade.fetchAndSaveBoardArticles();
+		}
 	}
 }

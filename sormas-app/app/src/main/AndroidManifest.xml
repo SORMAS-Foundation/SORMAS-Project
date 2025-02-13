@@ -489,7 +489,14 @@
 
         <activity
             android:name=".barcode.BarcodeActivity" />
-
+        <activity
+                android:name=".news.NewsListActivity"
+                android:launchMode="singleTop"
+                android:screenOrientation="portrait"
+                android:theme="@style/ActivityWithOverflowMenuTheme" />
+        <activity
+                android:name=".CustomWebView"
+                android:exported="false" />
         <receiver
             android:name=".SormasBootstrap"
             android:enabled="true"

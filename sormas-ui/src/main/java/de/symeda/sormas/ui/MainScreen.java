@@ -80,6 +80,8 @@ import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
+import de.symeda.sormas.ui.news.NewsController;
+import de.symeda.sormas.ui.news.NewsView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
@@ -383,6 +385,10 @@ public class MainScreen extends HorizontalLayout {
 				AbstractConfigurationView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COGS);
+		}
+		if (permitted(FeatureType.NEWS_FEATURE, UserRight.VIEW_NEWS)) {
+			menu.addView(NewsView.class, NewsView.VIEW_NAME, I18nProperties.getCaption(Captions.news), VaadinIcons.NEWSPAPER);
+			NewsController.registerViews(navigator);
 		}
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE);
 
