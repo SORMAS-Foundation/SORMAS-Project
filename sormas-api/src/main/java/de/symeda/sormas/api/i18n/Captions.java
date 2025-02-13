@@ -2693,7 +2693,9 @@ public interface Captions {
 	String surveySurveyList = "surveySurveyList";
 	String surveyGenerate = "surveyGenerate";
 	String surveyNew = "surveyNew";
+	String surveyNewSurvey = "surveyNewSurvey";
 	String surveySend = "surveySend";
+	String surveySurveyList = "surveySurveyList";
 	String SurveyToken = "SurveyToken";
 	String SurveyToken_assignmentDate = "SurveyToken.assignmentDate";
 	String SurveyToken_caseAssignedTo = "SurveyToken.caseAssignedTo";
