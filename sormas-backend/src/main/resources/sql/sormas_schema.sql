@@ -13735,21 +13735,30 @@ ALTER TABLE externalmessage_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (556, 'Additional lab message fields #13203');
 
+-- 2025-01-10 Add information about legal guardian for "minor / incapacitated" to person entity #13205
+ALTER TABLE person ADD column incapacitated boolean default false;
+ALTER TABLE person ADD column emancipated boolean default false;
+ALTER TABLE person_history ADD COLUMN incapacitated boolean default false;
+ALTER TABLE person_history ADD COLUMN emancipated boolean default false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (557, 'Add information about legal guardian for "minor / incapacitated" to person entity #13205');
+
+
 -- 2024-12-12 Create Survey Tokens data structure #13250
 CREATE TABLE surveys (
-    id bigint not null,
-    uuid varchar(36) not null unique,
-    changedate timestamp not null,
-    creationdate timestamp not null,
-    change_user_id bigint,
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
 
-    name text not null,
-    disease varchar(255) not null,
-    documenttemplate_id bigint,
-    emailtemplate_id bigint,
+                         name text not null,
+                         disease varchar(255) not null,
+                         documenttemplate_id bigint,
+                         emailtemplate_id bigint,
 
-    sys_period tstzrange not null,
-    primary key(id)
+                         sys_period tstzrange not null,
+                         primary key(id)
 );
 
 ALTER TABLE surveys OWNER TO sormas_user;
@@ -13759,29 +13768,29 @@ ALTER TABLE surveys ADD CONSTRAINT fk_emailtemplate_id FOREIGN KEY (emailtemplat
 
 CREATE TABLE surveys_history (LIKE surveys);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON surveys
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveys_history', true);
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveys_history', true);
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON surveys
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('surveys_history', 'id');
 ALTER TABLE surveys_history OWNER TO sormas_user;
 
 CREATE TABLE surveytokens (
-    id bigint not null,
-    uuid varchar(36) not null unique,
-    changedate timestamp not null,
-    creationdate timestamp not null,
-    change_user_id bigint,
+                              id bigint not null,
+                              uuid varchar(36) not null unique,
+                              changedate timestamp not null,
+                              creationdate timestamp not null,
+                              change_user_id bigint,
 
-    token varchar(255) not null,
-    survey_id bigint not null,
-    caseassignedto_id bigint,
-    assignmentDate timestamp,
-    recipientemail varchar(512),
-    generateddocument_id bigint,
-    responsereceived boolean not null default false,
+                              token varchar(255) not null,
+                              survey_id bigint not null,
+                              caseassignedto_id bigint,
+                              assignmentDate timestamp,
+                              recipientemail varchar(512),
+                              generateddocument_id bigint,
+                              responsereceived boolean not null default false,
 
-    sys_period tstzrange not null,
-    primary key(id)
+                              sys_period tstzrange not null,
+                              primary key(id)
 );
 
 ALTER TABLE surveytokens OWNER TO sormas_user;
@@ -13792,7 +13801,7 @@ ALTER TABLE surveytokens ADD CONSTRAINT fk_generateddocument_id FOREIGN KEY (gen
 
 CREATE TABLE surveytokens_history (LIKE surveytokens);
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON surveytokens
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveytokens_history', true);
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveytokens_history', true);
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON surveytokens
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('surveytokens_history', 'id');
@@ -13808,13 +13817,5 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOK
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOKEN_DELETE' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOKEN_IMPORT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 
-INSERT INTO schema_version (version_number, comment) VALUES (557, 'Create Survey Tokens data structure #13250');
+INSERT INTO schema_version (version_number, comment) VALUES (558, 'Create Survey Tokens data structure #13250');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
-
--- 2025-01-10 Add information about legal guardian for "minor / incapacitated" to person entity #13205
-ALTER TABLE person ADD column incapacitated boolean default false;
-ALTER TABLE person ADD column emancipated boolean default false;
-ALTER TABLE person_history ADD COLUMN incapacitated boolean default false;
-ALTER TABLE person_history ADD COLUMN emancipated boolean default false;
-
-INSERT INTO schema_version (version_number, comment) VALUES (558, 'Add information about legal guardian for "minor / incapacitated" to person entity #13205');
