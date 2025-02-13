@@ -43,6 +43,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -2814,6 +2817,196 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		assertThat(surveillanceReport.getFacilityDetails(), is(nullValue()));
 		assertThat(surveillanceReport.getFacilityRegion(), is(nullValue()));
 		assertThat(surveillanceReport.getFacilityDistrict(), is(nullValue()));
+	}
+
+	@Test
+	public void testCreateCaseWithPertusisTestTypeCultureForLuServers() throws ExecutionException, InterruptedException {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
+		doAnswer(invocation -> {
+			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
+			PersonDto person = invocation.getArgument(0);
+
+			getPersonFacade().save(person);
+
+			callback.done(new EntitySelection<>(person, true));
+
+			return null;
+
+		}).when(handlePickOrCreatePerson).apply(personCaptor.capture(), any());
+
+		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
+		pickOrCreateEntryResult.setNewCase(true);
+		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
+
+		ArgumentCaptor<CaseDataDto> caseCaptor = ArgumentCaptor.forClass(CaseDataDto.class);
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+			caze.setFacilityType(FacilityType.HOSPITAL);
+			caze.setHealthFacility(rdcf.facility);
+			getCaseFacade().save(caze);
+			getCallbackParam(invocation).done(caze);
+			return null;
+		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
+
+		doAnswer((invocation) -> {
+			SampleDto sample = invocation.getArgument(0);
+			sample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> pathogenTests = invocation.getArgument(1);
+			pathogenTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(sample, pathogenTests));
+			return null;
+		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), eq(true), any());
+
+		SampleReportDto sampleReport = SampleReportDto.build();
+		ExternalMessageDto labMessage = createLabMessage(Disease.PERTUSSIS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		labMessage.addSampleReport(sampleReport);
+		sampleReport.setSampleDateTime(new Date());
+		sampleReport.setSampleMaterial(SampleMaterial.BLOOD);
+
+		TestReportDto testReport1 = TestReportDto.build();
+		testReport1.setTestType(PathogenTestType.CULTURE);
+		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
+		sampleReport.addTestReport(testReport1);
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(getExternalMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getSurveillanceReportFacade().getByCaseUuids(Collections.singletonList(result.getData().getCase().getUuid())), hasSize(1));
+
+		verify(handleCreateSampleAndPathogenTests).handle(argThat(sample -> {
+			assertThat(sample.getAssociatedCase(), is(caseCaptor.getValue().toReference()));
+			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleReports().get(0).getSampleDateTime()));
+			assertThat(sample.getSampleMaterial(), is(SampleMaterial.BLOOD));
+			assertThat(sample.getReportingUser(), is(user.toReference()));
+
+			return true;
+		}), argThat(pathogenTests -> {
+			assertThat(pathogenTests, hasSize(1));
+
+			assertThat(pathogenTests.get(0).getTestType(), is(testReport1.getTestType()));
+			assertThat(pathogenTests.get(0).getTestResult(), is(testReport1.getTestResult()));
+
+			return true;
+		}), argThat(entityCreated -> {
+			assertThat(entityCreated, is(true));
+
+			return true;
+		}), argThat(lastSample -> {
+			assertThat(lastSample, is(Boolean.TRUE));
+
+			return true;
+		}), any());
+
+		verify(handleCreateCase).handle(argThat(c -> {
+			assertThat(c.getPerson(), is(personCaptor.getValue().toReference()));
+			assertThat(c.getDisease(), is(Disease.PERTUSSIS));
+			assertThat(c.getCaseClassification(), is(CaseClassification.CONFIRMED));
+			assertThat(c.getInvestigationStatus(), is(InvestigationStatus.PENDING));
+			assertThat(c.getOutcome(), is(CaseOutcome.NO_OUTCOME));
+			assertThat(c.getReportingUser(), is(user.toReference()));
+			return true;
+		}), argThat(p -> p.equals(personCaptor.getValue())), any());
+	}
+
+	@Test
+	public void testCreateCaseWithPertusisOtherTestTypeForLuServers() throws ExecutionException, InterruptedException {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
+		doAnswer(invocation -> {
+			HandlerCallback<EntitySelection<PersonDto>> callback = invocation.getArgument(1);
+			PersonDto person = invocation.getArgument(0);
+
+			getPersonFacade().save(person);
+
+			callback.done(new EntitySelection<>(person, true));
+
+			return null;
+
+		}).when(handlePickOrCreatePerson).apply(personCaptor.capture(), any());
+
+		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
+		pickOrCreateEntryResult.setNewCase(true);
+		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
+
+		ArgumentCaptor<CaseDataDto> caseCaptor = ArgumentCaptor.forClass(CaseDataDto.class);
+		doAnswer((invocation) -> {
+			CaseDataDto caze = invocation.getArgument(0);
+			caze.setResponsibleRegion(rdcf.region);
+			caze.setResponsibleDistrict(rdcf.district);
+			caze.setFacilityType(FacilityType.HOSPITAL);
+			caze.setHealthFacility(rdcf.facility);
+			getCaseFacade().save(caze);
+			getCallbackParam(invocation).done(caze);
+			return null;
+		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
+
+		doAnswer((invocation) -> {
+			SampleDto sample = invocation.getArgument(0);
+			sample.setSamplingReason(SamplingReason.PROFESSIONAL_REASON);
+
+			List<PathogenTestDto> pathogenTests = invocation.getArgument(1);
+			pathogenTests.get(0).setTestResultText("Dummy test result text");
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(sample, pathogenTests));
+			return null;
+		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), eq(true), any());
+
+		SampleReportDto sampleReport = SampleReportDto.build();
+		ExternalMessageDto labMessage = createLabMessage(Disease.PERTUSSIS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		labMessage.addSampleReport(sampleReport);
+		sampleReport.setSampleDateTime(new Date());
+		sampleReport.setSampleMaterial(SampleMaterial.BLOOD);
+
+		TestReportDto testReport1 = TestReportDto.build();
+		testReport1.setTestType(PathogenTestType.RAPID_TEST);
+		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
+		sampleReport.addTestReport(testReport1);
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(labMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(getExternalMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getSurveillanceReportFacade().getByCaseUuids(Collections.singletonList(result.getData().getCase().getUuid())), hasSize(1));
+
+		verify(handleCreateSampleAndPathogenTests).handle(argThat(sample -> {
+			assertThat(sample.getAssociatedCase(), is(caseCaptor.getValue().toReference()));
+			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleReports().get(0).getSampleDateTime()));
+			assertThat(sample.getSampleMaterial(), is(SampleMaterial.BLOOD));
+			assertThat(sample.getReportingUser(), is(user.toReference()));
+
+			return true;
+		}), argThat(pathogenTests -> {
+			assertThat(pathogenTests, hasSize(1));
+
+			assertThat(pathogenTests.get(0).getTestType(), is(testReport1.getTestType()));
+			assertThat(pathogenTests.get(0).getTestResult(), is(testReport1.getTestResult()));
+
+			return true;
+		}), argThat(entityCreated -> {
+			assertThat(entityCreated, is(true));
+
+			return true;
+		}), argThat(lastSample -> {
+			assertThat(lastSample, is(Boolean.TRUE));
+
+			return true;
+		}), any());
+
+		verify(handleCreateCase).handle(argThat(c -> {
+			assertThat(c.getPerson(), is(personCaptor.getValue().toReference()));
+			assertThat(c.getDisease(), is(Disease.PERTUSSIS));
+			assertThat(c.getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
+			assertThat(c.getInvestigationStatus(), is(InvestigationStatus.PENDING));
+			assertThat(c.getOutcome(), is(CaseOutcome.NO_OUTCOME));
+			assertThat(c.getReportingUser(), is(user.toReference()));
+			return true;
+		}), argThat(p -> p.equals(personCaptor.getValue())), any());
 	}
 
 	private ProcessingResult<ExternalMessageProcessingResult> runFlow(ExternalMessageDto labMessage) throws ExecutionException, InterruptedException {

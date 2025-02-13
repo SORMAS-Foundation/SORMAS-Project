@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.customizableenum;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +60,7 @@ public class CustomizableEnumValueDto extends EntityDto {
 	private String caption;
 	@Valid
 	private List<CustomizableEnumTranslation> translations;
-	private Set<Disease> diseases;
+	private Set<Disease> diseases = new HashSet<>();
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Valid
