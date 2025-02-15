@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.report;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.report.AggregateAnonymizeDataDto;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -729,6 +731,47 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		cq.select(cb.count(root));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+	
+	
+	@Override
+	public List<AggregateAnonymizeDataDto> getAggregateAnonymizeData(String toDate, String fromDate) {
+
+		String sqlBuild = "SELECT COUNT(c.id) AS case_count, c.disease, p.sex,  d.uuid,\n" 
+				+ "    	CASE \n"
+				+ "        WHEN p.approximateagetype = 'DAYS' AND p.approximateage <= 28 THEN '0-28 Days'\n"
+				+ "        WHEN p.approximateagetype = 'DAYS' AND p.approximateage > 28 AND p.approximateage <= 365 THEN '29d - 11 months'\n"
+				+ "        WHEN p.approximateagetype = 'MONTHS' AND p.approximateage <= 11 THEN '29d - 11 months'\n"
+				+ "        WHEN p.approximateagetype = 'DAYS' AND p.approximateage > 365 AND p.approximateage <= 1825 THEN '12-59 months'\n"
+				+ "        WHEN p.approximateagetype = 'MONTHS' AND p.approximateage >= 12 AND p.approximateage <= 59 THEN '12-59 months'\n"
+				+ "        WHEN p.approximateagetype = 'MONTHS' AND p.approximateage >= 1 AND p.approximateage < 5 THEN '12-59 months'\n"
+				+ "        WHEN p.approximateagetype = 'YEARS' AND p.approximateage >= 5 AND p.approximateage < 10 THEN '5-9 years'\n"
+				+ "        WHEN p.approximateagetype = 'YEARS' AND p.approximateage >= 10 AND p.approximateage < 20 THEN '10-19 years'\n"
+				+ "        WHEN p.approximateagetype = 'YEARS' AND p.approximateage >= 20 AND p.approximateage <= 40 THEN '20-40 years'\n"
+				+ "        WHEN p.approximateagetype = 'YEARS' AND p.approximateage > 40 THEN '>40 years'\n"
+				+ "      ELSE 'Other'\n" 
+				+ "		END AS age_group,\n"
+				+ "		COUNT(CASE WHEN c.outcome = 'DECEASED' THEN 1 END) AS DEATHS,\n"
+				+ "		COUNT(CASE WHEN c.caseclassification = 'CONFIRMED' THEN 1 END) AS cases \n"
+				+ "		FROM cases c \n" 
+				+ "		LEFT OUTER JOIN person p ON c.person_id = p.id\n"
+				+ "		LEFT OUTER JOIN district d on c.responsibledistrict_id = d.id \n"
+				+ "		WHERE c.reportdate BETWEEN '" + fromDate + "' AND '" + toDate + "' \n"
+				+ "		GROUP BY c.disease, p.sex, age_group, d.uuid;";
+
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = em.createNativeQuery(sqlBuild).getResultList();
+
+		List<AggregateAnonymizeDataDto> resultData = new ArrayList<>();
+
+		resultData.addAll(resultList.stream()
+				.map((result) -> new AggregateAnonymizeDataDto(((BigInteger) result[0]).longValue(),
+						(String) result[1].toString(), (String) result[2].toString(), (String) result[3].toString(),
+						(String) result[4].toString(), ((BigInteger) result[5]).longValue(),
+						((BigInteger) result[6]).longValue()))
+				.collect(Collectors.toList()));
+
+		return resultData;
 	}
 
 	@LocalBean

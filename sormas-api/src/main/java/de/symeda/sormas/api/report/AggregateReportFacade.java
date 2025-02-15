@@ -32,4 +32,6 @@ public interface AggregateReportFacade {
 	long countWithCriteria(AggregateReportCriteria criteria);
 
 	void validate(AggregateReportDto dto);
+
+	List<AggregateAnonymizeDataDto> getAggregateAnonymizeData(String toDate, String fromDate);
 }
