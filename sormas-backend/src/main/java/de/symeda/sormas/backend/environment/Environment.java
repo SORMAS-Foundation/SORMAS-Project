@@ -26,6 +26,7 @@ import org.hibernate.annotations.Type;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.VectorType;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -48,6 +49,7 @@ public class Environment extends CoreAdo {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
 	public static final String WATER_TYPE = "waterType";
+	public static final String VECTOR_TYPE = "vectorType";
 	public static final String OTHER_WATER_TYPE = "otherWaterType";
 	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
 	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
@@ -66,6 +68,7 @@ public class Environment extends CoreAdo {
 	private InvestigationStatus investigationStatus;
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
+	private VectorType vectorType;
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
 	private String otherInfrastructureDetails;
@@ -224,5 +227,14 @@ public class Environment extends CoreAdo {
 
 	public void setEnvironmentSamples(Set<EnvironmentSample> environmentSamples) {
 		this.environmentSamples = environmentSamples;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
 	}
 }

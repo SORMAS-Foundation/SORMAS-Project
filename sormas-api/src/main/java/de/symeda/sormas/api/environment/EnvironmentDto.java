@@ -38,6 +38,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
 	public static final String WATER_TYPE = "waterType";
+	public static final String VECTOR_TYPE = "vectorType";
 	public static final String OTHER_WATER_TYPE = "otherWaterType";
 	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
 	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
@@ -64,6 +65,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	@NotNull(message = Validations.environmentMedia)
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
+	private VectorType vectorType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
@@ -247,5 +249,13 @@ public class EnvironmentDto extends PseudonymizableDto {
 
 	public EnvironmentReferenceDto toReference() {
 		return new EnvironmentReferenceDto(getUuid(), getEnvironmentName());
+	}
+
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
 	}
 }
