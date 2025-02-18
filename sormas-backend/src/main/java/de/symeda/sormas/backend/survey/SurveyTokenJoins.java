@@ -22,12 +22,14 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.QueryJoins;
+import de.symeda.sormas.backend.document.Document;
 
 public class SurveyTokenJoins extends QueryJoins<SurveyToken> {
 
 	private Join<SurveyToken, Survey> survey;
 	private Join<SurveyToken, Case> caseAssignedTo;
 	private CaseJoins caseAssignedToJoins;
+	private Join<SurveyToken, Document> generatedDocument;
 
 	public SurveyTokenJoins(From<?, SurveyToken> root) {
 		super(root);
@@ -55,5 +57,13 @@ public class SurveyTokenJoins extends QueryJoins<SurveyToken> {
 
 	private void setCaseAssignedToJoins(CaseJoins caseAssignedToJoins) {
 		this.caseAssignedToJoins = caseAssignedToJoins;
+	}
+
+	public Join<SurveyToken, Document> getGeneratedDocument() {
+		return getOrCreate(generatedDocument, SurveyToken.GENERATED_DOCUMENT, JoinType.LEFT, this::setGeneratedDocument);
+	}
+
+	private void setGeneratedDocument(Join<SurveyToken, Document> generatedDocument) {
+		this.generatedDocument = generatedDocument;
 	}
 }

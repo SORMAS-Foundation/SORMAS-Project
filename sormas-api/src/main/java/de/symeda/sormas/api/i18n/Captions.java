@@ -2689,6 +2689,7 @@ public interface Captions {
 	String SurveillanceReport_uuid = "SurveillanceReport.uuid";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
+	String SurveyDocumentOptions_survey = "SurveyDocumentOptions.survey";
 	String surveyGenerate = "surveyGenerate";
 	String surveyNew = "surveyNew";
 	String surveyNewSurvey = "surveyNewSurvey";

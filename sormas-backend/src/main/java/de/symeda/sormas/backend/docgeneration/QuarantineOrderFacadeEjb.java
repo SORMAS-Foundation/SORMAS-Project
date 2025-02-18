@@ -36,8 +36,6 @@ import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
@@ -81,27 +79,8 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	}
 
 	public void uploadDocument(String fileName, ReferenceDto rootEntityReference, byte[] documentToSave) throws DocumentTemplateException {
-		try {
-			if (isFileSizeLimitExceeded(documentToSave.length)) {
-				return;
-			}
+		helper.saveDocument(fileName, DocumentDto.MIME_TYPE_DEFAULT, rootEntityReference, documentToSave);
 
-			helper.saveDocument(
-				fileName,
-				DocumentDto.MIME_TYPE_DEFAULT,
-				documentToSave.length,
-				helper.getDocumentRelatedEntityType(rootEntityReference),
-				rootEntityReference.getUuid(),
-				documentToSave);
-		} catch (Exception e) {
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
-		}
-	}
-
-	private boolean isFileSizeLimitExceeded(int length) {
-		long fileSizeLimitMb = configFacade.getDocumentUploadSizeLimitMb();
-		fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
-		return length > fileSizeLimitMb;
 	}
 
 	@Override

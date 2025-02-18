@@ -38,6 +38,8 @@ public class SurveyDto extends EntityDto {
 	public static final String DISEASE = "disease";
 	public static final String SURVEY_NAME = "name";
 
+	public static final String NAME = "name";
+
 	@NotBlank(message = Validations.requiredField)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -83,5 +85,9 @@ public class SurveyDto extends EntityDto {
 
 	public void setEmailTemplate(DocumentTemplateReferenceDto emailTemplate) {
 		this.emailTemplate = emailTemplate;
+	}
+
+	public SurveyReferenceDto toReference() {
+		return new SurveyReferenceDto(getUuid(), getName());
 	}
 }

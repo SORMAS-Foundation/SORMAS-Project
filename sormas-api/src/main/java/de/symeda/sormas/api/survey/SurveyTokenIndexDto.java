@@ -31,6 +31,9 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 	private final Date assignmentDate;
 	private final String recipientEmail;
 	private final Boolean responseReceived;
+	private final String generatedDocumentUuid;
+	private final String generatedDocumentName;
+	private final String generatedDocumentMimeType;
 
 	public SurveyTokenIndexDto(
             String uuid,
@@ -39,7 +42,7 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
             String token,
             CaseReferenceDto caseAssignedTo,
             Date assignmentDate,
-            String recipientEmail, Boolean responseReceived) {
+            String recipientEmail, Boolean responseReceived, String generatedDocumentUuid, String generatedDocumentName, String generatedDocumentMimeType) {
 		super(uuid);
 		this.surveyUuid = surveyUuid;
 		this.surveyName = surveyName;
@@ -48,6 +51,9 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 		this.assignmentDate = assignmentDate;
 		this.recipientEmail = recipientEmail;
         this.responseReceived = responseReceived;
+        this.generatedDocumentUuid = generatedDocumentUuid;
+        this.generatedDocumentName = generatedDocumentName;
+        this.generatedDocumentMimeType = generatedDocumentMimeType;
     }
 
 	public String getSurveyUuid() {
@@ -80,5 +86,17 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
 	public SurveyTokenReferenceDto toReference() {
 		return new SurveyTokenReferenceDto(getUuid(), getSurveyName());
+	}
+
+	public String getGeneratedDocumentUuid() {
+		return generatedDocumentUuid;
+	}
+
+	public String getGeneratedDocumentName() {
+		return generatedDocumentName;
+	}
+
+	public String getGeneratedDocumentMimeType() {
+		return generatedDocumentMimeType;
 	}
 }
