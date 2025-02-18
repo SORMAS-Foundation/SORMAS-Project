@@ -22,8 +22,8 @@
 			"wellKnown": "https://www.sormas.org/.well-known/funding-manifest-urls"
         },
         "repositoryUrl": {
-            "url": "https://github.sorm.as",
-            "wellKnown": "https://sorm.as/.well-known/funding-manifest-urls"
+            "url": "https://github.com/SORMAS-Foundation/SORMAS-Project",
+            "wellKnown": "https://github.com/SORMAS-Foundation/SORMAS-Project/blob/master"
         },
         "licenses": ["spdx:GPL-3.0"],
         "tags": ["publichealth", "health", "surveillance", "epidemic", "nonprofit", "globalgood", "digitalpublicgood"]
@@ -84,7 +84,7 @@
                 "frequency": "one-time",
                 "channels": ["bank", "paypal"]
             }
-		    ]
+	]
     }
 }
 
