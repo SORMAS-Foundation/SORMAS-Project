@@ -25,6 +25,7 @@ import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumController;
+import de.symeda.sormas.ui.configuration.disease.DiseaseConfigurationController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
 import de.symeda.sormas.ui.contact.ContactController;
@@ -101,6 +102,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final EnvironmentSampleController environmentSampleController;
 	private final ExternalEmailController externalEmailController;
 	private final CustomizableEnumController customizableEnumController;
+	private final DiseaseConfigurationController diseaseConfigurationController;
 	private final SpecialCaseAccessController specialCaseAccessController;
 	private final SelfReportController selfReportController;
 
@@ -146,6 +148,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		environmentSampleController = new EnvironmentSampleController();
 		externalEmailController = new ExternalEmailController();
 		customizableEnumController = new CustomizableEnumController();
+		diseaseConfigurationController = new DiseaseConfigurationController();
 		specialCaseAccessController = new SpecialCaseAccessController();
 		selfReportController = new SelfReportController();
 	}
@@ -308,6 +311,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static CustomizableEnumController getCustomizableEnumController() {
 		return get().customizableEnumController;
+	}
+
+	public static DiseaseConfigurationController getDiseaseConfirgurationController() {
+		return get().diseaseConfigurationController;
 	}
 
 	public static SpecialCaseAccessController getSpecialCaseAccessController() {

@@ -59,6 +59,10 @@ public interface Validations {
 	String defaultInfrastructureInvalidParentRegion = "defaultInfrastructureInvalidParentRegion";
 	String defaultInfrastructureNotRemovableChildCommunity = "defaultInfrastructureNotRemovableChildCommunity";
 	String defaultInfrastructureNotRemovableChildDistrict = "defaultInfrastructureNotRemovableChildDistrict";
+	String diseaseConfigurationInvalidAgeGroup = "diseaseConfigurationInvalidAgeGroup";
+	String diseaseConfigurationInvalidEndAge = "diseaseConfigurationInvalidEndAge";
+	String diseaseConfigurationInvalidOpenEndedAgeGroup = "diseaseConfigurationInvalidOpenEndedAgeGroup";
+	String diseaseConfigurationInvalidStartAge = "diseaseConfigurationInvalidStartAge";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String duplicateExternalToken = "duplicateExternalToken";
 	String emailTemplateSubjectInvalid = "emailTemplateSubjectInvalid";
