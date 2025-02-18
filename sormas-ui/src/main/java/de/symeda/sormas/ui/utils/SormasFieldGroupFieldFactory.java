@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.user.UserRoleNotificationCheckboxSet;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumPropertiesComponent;
 import de.symeda.sormas.ui.utils.components.CustomizableEnumTranslationComponent;
+import de.symeda.sormas.ui.utils.components.DiseaseConfigurationAgeGroupComponent;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.utils.components.MultiSelectFiles;
@@ -180,6 +181,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new UserRoleNotificationCheckboxSet();
 		} else if (CustomizableEnumTranslationComponent.class.isAssignableFrom(fieldType)) {
 			return (T) new CustomizableEnumTranslationComponent();
+		} else if (DiseaseConfigurationAgeGroupComponent.class.isAssignableFrom(fieldType)) {
+			return (T) new DiseaseConfigurationAgeGroupComponent();
 		} else if (CustomizableEnumPropertiesComponent.class.isAssignableFrom(fieldType)) {
 			return (T) new CustomizableEnumPropertiesComponent();
 		} else if (UserField.class.isAssignableFrom(fieldType)) {
@@ -192,7 +195,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new CheckBoxTree<>();
 		} else if (RichTextArea.class.isAssignableFrom(fieldType)) {
 			return (T) new RichTextArea();
-		}else if (SormasTextField.class.isAssignableFrom(fieldType)) {
+		} else if (SormasTextField.class.isAssignableFrom(fieldType)) {
 			return (T) new SormasTextField();
 		}
 		return super.createField(type, fieldType);
