@@ -23,7 +23,7 @@
         },
         "repositoryUrl": {
             "url": "https://github.com/SORMAS-Foundation/SORMAS-Project",
-            "wellKnown": "https://github.com/SORMAS-Foundation/SORMAS-Project/blob/development"
+            "wellKnown": "https://github.com/SORMAS-Foundation/SORMAS-Project/blob/development/.well-known/funding-manifest-urls"
         },
         "licenses": ["spdx:GPL-3.0"],
         "tags": ["publichealth", "health", "surveillance", "epidemic", "nonprofit", "globalgood", "digitalpublicgood"]
