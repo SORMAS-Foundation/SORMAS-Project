@@ -10,7 +10,6 @@
         "description": "The SORMAS Foundation is a non-profit organization that aims to support countries in strengthening their surveillance and outbreak management systems through the implementation of SORMAS, as well as to ensure the high-quality standards and sustainability of the software itself.",
         "webpageUrl": {
             "url": "https://www.sormas.org",
-            "wellKnown": "https://www.sormas.org/.well-known/funding-manifest-urls"
         }
     },
     "projects": [{
@@ -19,7 +18,6 @@
         "description": "SORMAS is an open-source digital platform for epidemic and pandemic preparedness and response. The system allows epidemiological diseases surveillance, early detection and management of disease outbreaks. It started as a research project in 2015 and has since then been recognized as a Digital Public Good (DPG) and mature digital Global Good (DGG) and is in use in several countries across 5 WHO regions.",
         "webpageUrl": {
             "url": "https://www.sormas.org",
-			"wellKnown": "https://www.sormas.org/.well-known/funding-manifest-urls"
         },
         "repositoryUrl": {
             "url": "https://github.com/SORMAS-Foundation/SORMAS-Project",
