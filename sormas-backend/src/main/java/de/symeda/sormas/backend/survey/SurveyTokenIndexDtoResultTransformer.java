@@ -38,7 +38,10 @@ public class SurveyTokenIndexDtoResultTransformer implements ResultTransformer {
 			new CaseReferenceDto((String) tuple[++index], (String) tuple[++index], (String) tuple[++index]),
 			(Date) tuple[++index],
 			(String) tuple[++index],
-			(Boolean) tuple[++index]);
+			(Boolean) tuple[++index],
+			(String) tuple[++index],
+			(String) tuple[++index],
+			(String) tuple[++index]);
 	}
 
 	@Override

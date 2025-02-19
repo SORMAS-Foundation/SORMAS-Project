@@ -71,17 +71,11 @@ public class EventDocumentFacadeEjb implements EventDocumentFacade {
 		String styledHtml = createStyledHtml(templateReference.getCaption(), body);
 		if (shouldUploadGeneratedDoc) {
 			byte[] documentToSave = styledHtml.getBytes(StandardCharsets.UTF_8);//mandatory UTF_8
-			try {
-				helper.saveDocument(
-					helper.getDocumentFileName(eventReference, templateReference),
-					DocumentDto.MIME_TYPE_DEFAULT,
-					documentToSave.length,
-					helper.getDocumentRelatedEntityType(eventReference),
-					eventReference.getUuid(),
-					documentToSave);
-			} catch (Exception e) {
-				throw new DocumentTemplateException(I18nProperties.getString(Strings.errorProcessingTemplate));
-			}
+			helper.saveDocument(
+				helper.getDocumentFileName(eventReference, templateReference),
+				DocumentDto.MIME_TYPE_DEFAULT,
+				eventReference,
+				documentToSave);
 		}
 		return styledHtml;
 	}

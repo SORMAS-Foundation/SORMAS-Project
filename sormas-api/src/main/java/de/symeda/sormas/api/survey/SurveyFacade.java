@@ -20,7 +20,10 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationException;
 
 @Remote
 public interface SurveyFacade {
@@ -40,4 +43,8 @@ public interface SurveyFacade {
     SurveyReferenceDto getReferenceByUuid(String uuid);
 
     Boolean isEditAllowed(String uuid);
+
+    List<SurveyDto> getAllByDisease(Disease disease);
+
+    byte[] generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException;
 }

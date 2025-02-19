@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.survey;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,16 +38,33 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.survey.SurveyCriteria;
+import de.symeda.sormas.api.survey.SurveyDocumentOptionsDto;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyIndexDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.backend.FacadeHelper;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.docgeneration.DocGenerationHelper;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateEntitiesBuilder;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.RootEntities;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -64,6 +82,18 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	private SurveyService surveyService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private DocumentTemplateFacadeEjbLocal documentTemplateFacade;
+	@EJB
+	private DocumentTemplateEntitiesBuilder entitiesBuilder;
+	@EJB
+	private DocGenerationHelper docGenerationHelper;
+	@EJB
+	private SurveyTokenService surveyTokenService;
+	@EJB
+	private CaseService caseService;
+	@EJB
+	private DocumentService documentService;
 
 	@Override
 	@RightsAllowed({
@@ -179,6 +209,44 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	public Boolean isEditAllowed(String uuid) {
 		Survey survey = surveyService.getByUuid(uuid);
 		return surveyService.isEditAllowed(survey);
+	}
+
+	@Override
+	public List<SurveyDto> getAllByDisease(Disease disease) {
+		return surveyService.getByPredicate((cb, root, cq) -> cb.equal(root.get(Survey.DISEASE), disease))
+			.stream()
+			.map(this::toDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public byte[] generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException {
+		SurveyDto survey = getByUuid(surveyOptions.getSurvey().getUuid());
+		RootEntityType rootEntityType = surveyOptions.getRootEntityType();
+		ReferenceDto rootEntityReference = surveyOptions.getRootEntityReference();
+
+		SurveyToken token = surveyTokenService.getFistUnusedToken(survey.toReference());
+		if (token == null) {
+			throw new ValidationException(I18nProperties.getString(Strings.errorSurveyTokenNotAvailable));
+		}
+
+		DocumentTemplateEntities entities = entitiesBuilder.resolveEntities(new RootEntities().addReference(rootEntityType, rootEntityReference));
+		byte[] documentContent =
+			documentTemplateFacade.generateDocumentDocxFromEntities(survey.getDocumentTemplate(), entities, surveyOptions.getTemplateProperties());
+
+		DocumentDto documentDto = docGenerationHelper.saveDocument(
+			docGenerationHelper.getDocumentFileName(rootEntityReference, survey.getDocumentTemplate()),
+			DocumentDto.MIME_TYPE_DEFAULT,
+			rootEntityReference,
+			documentContent);
+
+		token.setCaseAssignedTo(caseService.getByReferenceDto(((CaseDataDto) entities.getEntity(RootEntityType.ROOT_CASE)).toReference()));
+		token.setAssignmentDate(new Date());
+		token.setGeneratedDocument(documentService.getByReferenceDto(documentDto.toReference()));
+
+		surveyTokenService.ensurePersisted(token);
+
+		return documentContent;
 	}
 
 	private void validate(SurveyDto survey) {

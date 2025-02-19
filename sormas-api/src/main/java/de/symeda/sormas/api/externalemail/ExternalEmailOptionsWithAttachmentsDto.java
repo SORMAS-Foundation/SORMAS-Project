@@ -40,7 +40,7 @@ public class ExternalEmailOptionsWithAttachmentsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "ExternalEmailOptionsWithAttachments";
 
-	public static final String TEMPLATE_NAME = "templateName";
+	public static final String TEMPLATE = "template";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
 	public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
 

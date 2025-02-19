@@ -390,7 +390,10 @@ public interface Strings {
 	String errorSormasToSormasShareContactWithUnsharedSourceCase = "errorSormasToSormasShareContactWithUnsharedSourceCase";
 	String errorSormasToSormasSharequestNotFound = "errorSormasToSormasSharequestNotFound";
 	String errorSurveillanceReportNotEditable = "errorSurveillanceReportNotEditable";
+	String errorSurveyTokenNotAvailable = "errorSurveyTokenNotAvailable";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
+	String errorUploadGeneratedDocument = "errorUploadGeneratedDocument";
+	String errorUploadGeneratedDocumentExceedsFileSizeLimit = "errorUploadGeneratedDocumentExceedsFileSizeLimit";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
@@ -855,6 +858,7 @@ public interface Strings {
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
+	String headingSurveyGenerateDocument = "headingSurveyGenerateDocument";
 	String headingSurveySideComponent = "headingSurveySideComponent";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";

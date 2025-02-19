@@ -40,6 +40,7 @@ public class SurveyToken extends AbstractDomainObject {
 	public static final String ASSIGNMENT_DATE = "assignmentDate";
 	public static final String RECIPIENT_EMAIL = "recipientEmail";
 	public static final String RESPONSE_RECEIVED = "responseReceived";
+	public static final String GENERATED_DOCUMENT = "generatedDocument";
 
 	private String token;
 	private Survey survey;
