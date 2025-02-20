@@ -285,7 +285,7 @@ public abstract class DataImporter {
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// validate headers
-			if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length <= 1) {
+			if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length < 1) {
 				writeImportError(new String[0], I18nProperties.getValidationError(Validations.importProbablyInvalidSeparator));
 				return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, false);
 			}

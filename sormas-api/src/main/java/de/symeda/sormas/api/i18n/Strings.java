@@ -903,6 +903,7 @@ public interface Strings {
 	String headingVisualization = "headingVisualization";
 	String headingWaterUse = "headingWaterUse";
 	String headingWrongFileType = "headingWrongFileType";
+	String headingImportSurveyTokens = "headingImportSurveyTokens";
 	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
 	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
 	String inactive = "inactive";

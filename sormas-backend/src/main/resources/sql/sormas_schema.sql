@@ -13818,4 +13818,11 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOK
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SURVEY_TOKEN_IMPORT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 
 INSERT INTO schema_version (version_number, comment) VALUES (558, 'Create Survey Tokens data structure #13250');
+
+-- 2025-02-15 Import Survey Tokens #13191
+ALTER TABLE surveytokens ADD CONSTRAINT unique_token_for_survey UNIQUE (token, survey_id);
+ALTER TABLE surveytokens_history ADD CONSTRAINT unique_token_for_survey_history UNIQUE (token, survey_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (559, 'Import Survey Tokens #13191');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

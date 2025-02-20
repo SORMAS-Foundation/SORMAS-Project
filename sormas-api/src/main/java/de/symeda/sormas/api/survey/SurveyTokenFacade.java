@@ -34,4 +34,9 @@ public interface SurveyTokenFacade {
 	List<SurveyTokenIndexDto> getIndexList(SurveyTokenCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void deletePermanent(String uuid);
+
+	String getSurveyTokensImportTemplateFilePath();
+
+	String getSurveyTokensImportTemplateFileName();
+
 }
