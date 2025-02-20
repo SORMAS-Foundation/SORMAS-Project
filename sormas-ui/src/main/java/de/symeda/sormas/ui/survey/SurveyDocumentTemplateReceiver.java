@@ -24,7 +24,7 @@ public class SurveyDocumentTemplateReceiver extends DocumentTemplateReceiver {
 
 	@Override
 	protected void writeDocumentTemplate(DocumentTemplateDto documentTemplateDto, byte[] fileContent) throws DocumentTemplateException {
-		FacadeProvider.getSurveyFacade().importDocumentTemplate(surveyReference, documentTemplateDto, fileContent);
+		FacadeProvider.getSurveyFacade().uploadDocumentTemplate(surveyReference, documentTemplateDto, fileContent);
 	}
 
 	@Override
