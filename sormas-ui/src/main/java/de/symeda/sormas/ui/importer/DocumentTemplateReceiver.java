@@ -116,7 +116,7 @@ public class DocumentTemplateReceiver
 			});
 	}
 
-	private void writeTemplateFile() {
+	public void writeTemplateFile() {
 		try {
 			byte[] fileContent = Files.readAllBytes(file.toPath());
 			DocumentTemplateDto documentTemplateDto = DocumentTemplateDto.build(documentWorkflow, fName, diseaseSupplier.get());
@@ -136,5 +136,13 @@ public class DocumentTemplateReceiver
 
 	public void setDiseaseSupplier(Supplier<Disease> diseaseSupplier) {
 		this.diseaseSupplier = diseaseSupplier;
+	}
+
+	public String getfName() {
+		return fName;
+	}
+
+	public File getFile() {
+		return file;
 	}
 }

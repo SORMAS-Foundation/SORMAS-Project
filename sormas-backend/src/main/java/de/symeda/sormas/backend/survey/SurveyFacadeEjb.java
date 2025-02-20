@@ -17,8 +17,11 @@ package de.symeda.sormas.backend.survey;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +43,7 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.survey.SurveyCriteria;
 import de.symeda.sormas.api.survey.SurveyDto;
@@ -53,11 +57,16 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
+import de.symeda.sormas.backend.docgeneration.TemplateEngine;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
+import fr.opensagres.xdocreport.core.XDocReportException;
+import fr.opensagres.xdocreport.document.IXDocReport;
+import fr.opensagres.xdocreport.template.FieldExtractor;
+import fr.opensagres.xdocreport.template.FieldsExtractor;
 
 @Stateless(name = "SurveyFacade")
 @RightsAllowed(UserRight._SURVEY_VIEW)
@@ -74,6 +83,8 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	private DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 	@EJB
 	private DocumentTemplateService documentTemplateService;
+
+	private TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
 	@RightsAllowed({
@@ -113,6 +124,29 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		assert existingSurvey != null;
 		existingSurvey.setDocumentTemplate(byReferenceDto);
 		surveyService.ensurePersisted(existingSurvey);
+	}
+
+	public boolean validateSurveyDocumentTemplate(byte[] fileContent) throws DocumentTemplateException {
+		IXDocReport report = templateEngine.readXDocReport(new ByteArrayInputStream(fileContent));
+		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
+		DocumentVariables documentVariables = null;
+		try {
+			report.extractFields(extractor);
+			documentVariables = templateEngine.filterExtractedVariables(extractor);
+		} catch (XDocReportException | IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		AtomicBoolean validUploadedFile = new AtomicBoolean(false);
+		if (documentVariables != null && !documentVariables.getVariables().isEmpty()) {
+			documentVariables.getVariables().forEach(docTemplateVariable -> {
+				if (docTemplateVariable.contains(SurveyToken.class.getName() + "." + SurveyToken.TOKEN)) {
+					validUploadedFile.set(true);
+				} ;
+			});
+		}
+
+		return validUploadedFile.get();
 	}
 
 	@Override

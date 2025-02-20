@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -194,7 +195,7 @@ public class TemplateEngine {
 		}
 	}
 
-	protected IXDocReport readXDocReport(InputStream templateInputStream) throws DocumentTemplateException {
+	public IXDocReport readXDocReport(InputStream templateInputStream) throws DocumentTemplateException {
 		ByteArrayOutputStream outStream;
 
 		try {
@@ -235,7 +236,7 @@ public class TemplateEngine {
 		}
 	}
 
-	private DocumentVariables filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
+	public DocumentVariables filterExtractedVariables(FieldsExtractor<FieldExtractor> extractor) {
 		Set<String> variables = new HashSet<>();
 		Set<String> nullableVariables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {

@@ -48,4 +48,6 @@ public interface SurveyFacade {
 
 	void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
 		throws DocumentTemplateException;
+
+    boolean validateSurveyDocumentTemplate(byte[] fileContent) throws DocumentTemplateException;
 }
