@@ -80,7 +80,7 @@ public class DocumentTemplateFacadeEjbTest extends AbstractDocGenerationTest {
 		assertTrue(templatesForLassa.contains(templateDto));
 		assertFalse(templatesForLassa.contains(templateForCovid));
 
-		assertTrue(documentTemplateFacade.deleteDocumentTemplate(templateDto.toReference(), null));
+		assertTrue(documentTemplateFacade.deleteDocumentTemplate(templateDto.toReference(), QUARANTINE_ORDER_CASE));
 		assertFalse(
 			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(QUARANTINE_ORDER_CASE, null, null)).contains(templateDto));
 
