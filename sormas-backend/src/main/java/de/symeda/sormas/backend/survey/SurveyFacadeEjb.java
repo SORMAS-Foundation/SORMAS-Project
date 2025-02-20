@@ -19,6 +19,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,12 +40,19 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.survey.SurveyCriteria;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyFacade;
@@ -52,6 +60,7 @@ import de.symeda.sormas.api.survey.SurveyIndexDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
@@ -71,6 +80,8 @@ import fr.opensagres.xdocreport.template.FieldsExtractor;
 @Stateless(name = "SurveyFacade")
 @RightsAllowed(UserRight._SURVEY_VIEW)
 public class SurveyFacadeEjb implements SurveyFacade {
+
+	private static final String SURVEY_TOKEN_DOCUMENT_PLACEHOLDER = "surveyToken";
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -105,28 +116,32 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SURVEY_EDIT)
-	public void uploadDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+	public void uploadDocumentTemplate(@NotNull SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
 		throws DocumentTemplateException {
-		Survey existingSurvey = surveyRef.getUuid() != null ? surveyService.getByUuid(surveyRef.getUuid()) : null;
+		Survey existingSurvey = surveyService.getByReferenceDto(surveyRef);
 
-		if (existingSurvey != null) {
-			List<DocumentTemplateDto> availableTemplates =
-				documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyRef));
-			if (!availableTemplates.isEmpty()) {
-				availableTemplates.forEach(docTemplate -> {
-					DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
-					documentTemplateService.deletePermanent(existingDocumentTemplate, DocumentWorkflow.SURVEY_DOCUMENT);
-				});
-			}
+		boolean validated = validateSurveyDocumentTemplate(fileContent);
+		if (!validated) {
+			throw new DocumentTemplateException(
+				I18nProperties.getValidationError(Validations.surveyDocumentTemplateMissingTokenVariable, SURVEY_TOKEN_DOCUMENT_PLACEHOLDER));
 		}
+
+		List<DocumentTemplateDto> availableTemplates =
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyRef));
+		if (!availableTemplates.isEmpty()) {
+			availableTemplates.forEach(docTemplate -> {
+				DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
+				documentTemplateService.deletePermanent(existingDocumentTemplate);
+			});
+		}
+
 		DocumentTemplateDto savedDocumentTemplate = documentTemplateFacade.saveDocumentTemplate(uploadedDocumentTemplate, fileContent);
-		DocumentTemplate byReferenceDto = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
-		assert existingSurvey != null;
-		existingSurvey.setDocumentTemplate(byReferenceDto);
+		DocumentTemplate savedDocumentTemplateEntity = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
+		existingSurvey.setDocumentTemplate(savedDocumentTemplateEntity);
 		surveyService.ensurePersisted(existingSurvey);
 	}
 
-	public boolean validateSurveyDocumentTemplate(byte[] fileContent) throws DocumentTemplateException {
+	private boolean validateSurveyDocumentTemplate(byte[] fileContent) throws DocumentTemplateException {
 		IXDocReport report = templateEngine.readXDocReport(new ByteArrayInputStream(fileContent));
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		DocumentVariables documentVariables = null;
@@ -140,7 +155,8 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		AtomicBoolean validUploadedFile = new AtomicBoolean(false);
 		if (documentVariables != null && !documentVariables.getVariables().isEmpty()) {
 			documentVariables.getVariables().forEach(docTemplateVariable -> {
-				if (docTemplateVariable.contains(SurveyToken.class.getName() + "." + SurveyToken.TOKEN)) {
+
+				if (docTemplateVariable.contains(SURVEY_TOKEN_DOCUMENT_PLACEHOLDER)) {
 					validUploadedFile.set(true);
 				} ;
 			});
@@ -151,24 +167,22 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SURVEY_EDIT)
-	public void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedEmailTemplateDto, byte[] fileContent)
+	public void uploadEmailTemplate(@NotNull SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedEmailTemplateDto, byte[] fileContent)
 		throws DocumentTemplateException {
 
-		Survey existingSurvey = surveyReference.getUuid() != null ? surveyService.getByUuid(surveyReference.getUuid()) : null;
+		Survey existingSurvey = surveyService.getByUuid(surveyReference.getUuid());
 
-		if (existingSurvey != null) {
-			List<DocumentTemplateDto> availableTemplates =
-				documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference));
-			if (!availableTemplates.isEmpty()) {
-				availableTemplates.forEach(docTemplate -> {
-					DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
-					documentTemplateService.deletePermanent(existingDocumentTemplate, DocumentWorkflow.SURVEY_EMAIL);
-				});
-			}
+		List<DocumentTemplateDto> availableTemplates =
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference));
+		if (!availableTemplates.isEmpty()) {
+			availableTemplates.forEach(docTemplate -> {
+				DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
+				documentTemplateService.deletePermanent(existingDocumentTemplate);
+			});
 		}
+
 		DocumentTemplateDto savedDocumentTemplate = documentTemplateFacade.saveDocumentTemplate(uploadedEmailTemplateDto, fileContent);
 		DocumentTemplate byReferenceDto = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
-		assert existingSurvey != null;
 		existingSurvey.setEmailTemplate(byReferenceDto);
 		surveyService.ensurePersisted(existingSurvey);
 	}

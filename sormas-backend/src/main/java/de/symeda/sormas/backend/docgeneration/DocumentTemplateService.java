@@ -56,26 +56,25 @@ public class DocumentTemplateService extends BaseAdoService<DocumentTemplate> {
 		super(DocumentTemplate.class);
 	}
 
-	public boolean deletePermanent(DocumentTemplate documentTemplate, DocumentWorkflow documentWorkflow) {
+	public boolean deletePermanent(DocumentTemplate documentTemplate) {
 		boolean fileDeleted = deleteTemplateFile(documentTemplate);
 		if (fileDeleted) {
-			if (documentWorkflow != null) {
+			DocumentWorkflow documentTemplateWorkflow = documentTemplate.getWorkflow();
+			if (documentTemplateWorkflow != null) {
 				Survey survey;
-				switch (documentWorkflow) {
-				case SURVEY_DOCUMENT:
+				if (documentTemplateWorkflow.equals(DocumentWorkflow.SURVEY_DOCUMENT)) {
 					survey = documentTemplate.getSurveyDocTemplate();
 					if (survey != null) {
 						survey.setDocumentTemplate(null);
 						surveyService.ensurePersisted(survey);
 					}
-					break;
-				case SURVEY_EMAIL:
+				}
+				if (documentTemplateWorkflow.equals(DocumentWorkflow.SURVEY_EMAIL)) {
 					survey = documentTemplate.getSurveyEmailTemplate();
 					if (survey != null) {
 						survey.setEmailTemplate(null);
 						surveyService.ensurePersisted(survey);
 					}
-					break;
 				}
 			}
 			super.deletePermanent(documentTemplate);

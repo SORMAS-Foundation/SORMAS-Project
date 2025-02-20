@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -29,7 +30,7 @@ public interface SurveyFacade {
 
     SurveyDto save(@Valid SurveyDto dto);
 
-	void uploadDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+	void uploadDocumentTemplate(@NotNull SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
 		throws DocumentTemplateException;
 
 	SurveyDto getByUuid(String uuid);
@@ -46,8 +47,6 @@ public interface SurveyFacade {
 
 	Boolean isEditAllowed(String uuid);
 
-	void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
+	void uploadEmailTemplate(@NotNull SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
 		throws DocumentTemplateException;
-
-    boolean validateSurveyDocumentTemplate(byte[] fileContent) throws DocumentTemplateException;
 }

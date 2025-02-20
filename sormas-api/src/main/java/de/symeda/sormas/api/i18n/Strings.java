@@ -666,7 +666,6 @@ public interface Strings {
 	String headingExternalMessagesNotDeleted = "headingExternalMessagesNotDeleted";
 	String headingFatalities = "headingFatalities";
 	String headingFetchExternalMessages = "headingFetchExternalMessages";
-	String headingMissingTokenVariableInTemplate = "headingMissingTokenVariableInTemplate";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
 	String headingFollowUpStatus = "headingFollowUpStatus";
@@ -1031,7 +1030,6 @@ public interface Strings {
 	String infoMergingHideDescription = "infoMergingHideDescription";
 	String infoMergingMergeDescription = "infoMergingMergeDescription";
 	String infoMergingPickDescription = "infoMergingPickDescription";
-	String infoMissingTokenVariable = "infoMissingTokenVariable";
 	String infoMoreDetailsAboutHospitalization = "infoMoreDetailsAboutHospitalization";
 	String infoNoAccessToPersonEntities = "infoNoAccessToPersonEntities";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";

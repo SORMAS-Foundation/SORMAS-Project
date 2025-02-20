@@ -408,10 +408,11 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
 	public boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference, DocumentWorkflow documentWorkflow) {
 		DocumentTemplate template = documentTemplateService.getByReferenceDto(templateReference);
+		template.setWorkflow(documentWorkflow);
 
 		assertRequredUserRight(template.getWorkflow());
 
-		return documentTemplateService.deletePermanent(template, documentWorkflow);
+		return documentTemplateService.deletePermanent(template);
 	}
 
 	@Override

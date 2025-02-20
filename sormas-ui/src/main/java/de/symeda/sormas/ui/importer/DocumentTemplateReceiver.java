@@ -125,7 +125,7 @@ public class DocumentTemplateReceiver
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));
 		} catch (Exception e) {
-			new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
+			new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, true)
 				.show(Page.getCurrent());
 		}
 	}

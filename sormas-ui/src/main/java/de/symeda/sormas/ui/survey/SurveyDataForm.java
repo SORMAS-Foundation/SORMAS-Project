@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.survey;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.TextField;
 
@@ -42,18 +43,24 @@ public class SurveyDataForm extends AbstractEditForm<SurveyDto> {
 
 		addField(SurveyDto.SURVEY_NAME, TextField.class);
 
-		gridLayout = new VerticalLayout(
-			new DocumentTemplateSection(
+		DocumentTemplateSection documentTemplateSection = new DocumentTemplateSection(
 				new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyReference),
 				false,
-				new SurveyDocumentTemplateReceiver(DocumentWorkflow.SURVEY_DOCUMENT, surveyReference)),
-			new DocumentTemplateSection(
+				new SurveyDocumentTemplateReceiver(DocumentWorkflow.SURVEY_DOCUMENT, surveyReference));
+		DocumentTemplateSection emailTemplateSection = new DocumentTemplateSection(
 				new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference),
 				false,
-				new SurveyEmailTemplateReceiver(DocumentWorkflow.SURVEY_EMAIL, surveyReference)));
+				new SurveyEmailTemplateReceiver(DocumentWorkflow.SURVEY_EMAIL, surveyReference));
+
+		documentTemplateSection.setMargin(false);
+		emailTemplateSection.setMargin(false);
+
+		gridLayout = new VerticalLayout(
+				documentTemplateSection,
+				emailTemplateSection);
 
 		gridLayout.setWidth(100, Unit.PERCENTAGE);
-		gridLayout.setMargin(true);
+		gridLayout.setMargin(new MarginInfo(true, false, true, false));
 		gridLayout.setSpacing(true);
 		gridLayout.setStyleName("crud-main-layout");
 

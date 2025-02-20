@@ -85,10 +85,10 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 				.forEmailTemplate(Captions.DocumentTemplate_exampleTemplateTravelEntryEmail, "ExampleDocumentTemplateTravelEntryEmail.txt")),
 		Map.entry(
 			DocumentWorkflow.SURVEY_DOCUMENT,
-			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateCases, "ExampleDocumentTemplate.docx")),
+			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateSurveyDocument, "ExampleDocumentTemplateSurveys.docx")),
 		Map.entry(
 			DocumentWorkflow.SURVEY_EMAIL,
-			DocumentTemplateInfoData.forDocumentTemplate(Captions.ExternalEmailOptions_templateName, "ExampleEmailTemplate.docx")));
+			DocumentTemplateInfoData.forDocumentTemplate(Captions.DocumentTemplate_exampleTemplateSurveyEmail, "ExampleDocumentTemplateSurveyEmail.txt")));
 
 	public DocumentTemplateUploadLayout(DocumentWorkflow documentWorkflow, boolean hasDisease, DocumentTemplateReceiver documentTemplateReceiver) {
 		super();

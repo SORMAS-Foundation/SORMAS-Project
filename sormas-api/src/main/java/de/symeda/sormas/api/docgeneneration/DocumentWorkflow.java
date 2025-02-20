@@ -134,9 +134,7 @@ public enum DocumentWorkflow {
 						  ROOT_CASE,
 						  ROOT_PERSON,
 						  ROOT_USER,
-						  ROOT_SAMPLE,
-						  ROOT_PATHOGEN_TEST,
-						  ROOT_VACCINATION),
+						  ROOT_SAMPLE),
 	SURVEY_EMAIL(DocumentWorkflowType.EMAIL,
 			Constants.EMAIL_TEMPLATES_FOLDER + "/surveys",
 			TXT,
@@ -144,9 +142,7 @@ public enum DocumentWorkflow {
 			ROOT_CASE,
 			ROOT_PERSON,
 			ROOT_USER,
-			ROOT_SAMPLE,
-			ROOT_PATHOGEN_TEST,
-			ROOT_VACCINATION),;
+			ROOT_SAMPLE),;
 
 	private final DocumentWorkflowType type;
 	private final String templateDirectory;
