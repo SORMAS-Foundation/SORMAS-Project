@@ -13821,7 +13821,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (558, 'Create Survey
 
 -- 2025-02-15 Import Survey Tokens #13191
 ALTER TABLE surveytokens ADD CONSTRAINT unique_token_for_survey UNIQUE (token, survey_id);
-ALTER TABLE surveytokens_history ADD CONSTRAINT unique_token_for_survey_history UNIQUE (token, survey_id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (559, 'Import Survey Tokens #13191');
 

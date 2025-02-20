@@ -42,7 +42,7 @@ public class ImportSurveyTokensLayout extends AbstractImportLayout {
 		String templateFileName = surveyTokenFacade.getSurveyTokensImportTemplateFileName();
 		String fileNameAddition = "_survey_tokens_import_";
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Survey_Tokens_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 
 		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {

@@ -566,7 +566,6 @@ public class ImportFacadeEjb implements ImportFacade {
 				SurveyTokenDto.ASSIGNMENT_DATE,
 				SurveyTokenDto.CASE_ASSIGNED_TO,
 				SurveyTokenDto.GENERATED_DOCUMENT,
-				SurveyTokenDto.I18N_PREFIX,
 				SurveyTokenDto.RECIPIENT_EMAIL,
 				SurveyTokenDto.RESPONSE_RECEIVED);
 
