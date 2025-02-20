@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.survey;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -22,6 +23,8 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.externalemail.AttachmentException;
+import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationException;
 
@@ -46,5 +49,9 @@ public interface SurveyFacade {
 
     List<SurveyDto> getAllByDisease(Disease disease);
 
-    byte[] generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException;
+    void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException;
+
+    void sendDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException;
+
+    boolean hasUnassignedTokens(SurveyReferenceDto survey);
 }

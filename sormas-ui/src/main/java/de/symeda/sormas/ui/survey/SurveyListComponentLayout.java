@@ -42,6 +42,7 @@ import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -63,6 +64,7 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 	public SurveyListComponentLayout(
 		CaseReferenceDto caseRef,
 		Disease disease,
+		PersonDto person,
 		boolean isEditAllowed,
 		boolean isEmailAllowed,
 		Consumer<Runnable> actionWrapper,
@@ -72,6 +74,7 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 				I18nProperties.getString(Strings.headingSurveySideComponent),
 				caseRef,
 				disease,
+				person,
 				new SurveyTokenCriteria().caseAssignedTo(caseRef),
 				actionWrapper,
 				createCallback,
@@ -87,6 +90,7 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 			String heading,
 			CaseReferenceDto caseRef,
 			Disease disease,
+			PersonDto person,
 			SurveyTokenCriteria surveyTokenCriteria,
 			Consumer<Runnable> actionWrapper,
 			Runnable createCallback,
@@ -105,6 +109,8 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 			if (isEmailAllowed) {
 				Button sendSurveyButton = ButtonHelper.createButton(Captions.surveySend, I18nProperties.getCaption(Captions.surveySend), (e) -> {
+					ControllerProvider.getSurveyDocumentController()
+						.sendSurveyDocument(RootEntityType.ROOT_CASE, caseRef, disease, person, createCallback);
 				}, ValoTheme.BUTTON_PRIMARY);
 				sendSurveyButton.setWidth(100, Unit.PERCENTAGE);
 				uploadLayout.addComponent(sendSurveyButton);
@@ -190,10 +196,10 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 					return new ByteArrayInputStream(documentFacade.getContent(token.getGeneratedDocumentUuid()));
 				} catch (IOException | IllegalArgumentException e) {
 					new Notification(
-							String.format(I18nProperties.getString(Strings.errorReadingDocument), token.getGeneratedDocumentName()),
-							e.getMessage(),
-							Notification.Type.ERROR_MESSAGE,
-							false).show(Page.getCurrent());
+						String.format(I18nProperties.getString(Strings.errorReadingDocument), token.getGeneratedDocumentName()),
+						e.getMessage(),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 					return null;
 				}
 			}, token.getGeneratedDocumentName());

@@ -249,8 +249,14 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		layout.addSidePanelComponent(selfReportListComponentLayout, SELF_REPORT_LOC);
 
 		if (UiUtil.permitted(FeatureType.SURVEYS)) {
-			SurveyListComponentLayout surveyList =
-				new SurveyListComponentLayout(caze.toReference(), caze.getDisease(), isEditAllowed, isSendEmailAllowed, this::showUnsavedChangesPopup, SormasUI::refreshView);
+			SurveyListComponentLayout surveyList = new SurveyListComponentLayout(
+				caze.toReference(),
+				caze.getDisease(),
+				casePerson,
+				isEditAllowed,
+				isSendEmailAllowed,
+				this::showUnsavedChangesPopup,
+				SormasUI::refreshView);
 			layout.addSidePanelComponent(surveyList, SURVEYS_LOC);
 		}
 

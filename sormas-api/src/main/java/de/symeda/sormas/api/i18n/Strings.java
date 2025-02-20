@@ -634,6 +634,7 @@ public interface Strings {
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
+	String headingErrorSendingExternalEmail = "headingErrorSendingExternalEmail";
 	String headingEventData = "headingEventData";
 	String headingEventGroupData = "headingEventGroupData";
 	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
@@ -859,6 +860,7 @@ public interface Strings {
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSurveyGenerateDocument = "headingSurveyGenerateDocument";
+	String headingSurveySendDocument = "headingSurveySendDocument";
 	String headingSurveySideComponent = "headingSurveySideComponent";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";
@@ -1550,6 +1552,9 @@ public interface Strings {
 	String messageSubcontinentsArchived = "messageSubcontinentsArchived";
 	String messageSubcontinentsDearchived = "messageSubcontinentsDearchived";
 	String messageSurveyCreated = "messageSurveyCreated";
+	String messageSurveyNoDocumentTemplate = "messageSurveyNoDocumentTemplate";
+	String messageSurveyNoEmailTemplate = "messageSurveyNoEmailTemplate";
+	String messageSurveyNoTokens = "messageSurveyNoTokens";
 	String messageSurveySaved = "messageSurveySaved";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";

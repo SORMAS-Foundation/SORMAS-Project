@@ -17,7 +17,9 @@ package de.symeda.sormas.backend.survey;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,8 +47,12 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.externalemail.AttachmentException;
+import de.symeda.sormas.api.externalemail.ExternalEmailException;
+import de.symeda.sormas.api.externalemail.ExternalEmailOptionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.survey.SurveyCriteria;
 import de.symeda.sormas.api.survey.SurveyDocumentOptionsDto;
 import de.symeda.sormas.api.survey.SurveyDto;
@@ -56,6 +62,7 @@ import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -65,6 +72,7 @@ import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.RootEntities;
 import de.symeda.sormas.backend.document.DocumentService;
+import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -94,6 +102,8 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	private CaseService caseService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private ExternalEmailFacadeEjbLocal externalEmailFacade;
 
 	@Override
 	@RightsAllowed({
@@ -220,10 +230,51 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	}
 
 	@Override
-	public byte[] generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException {
+	public void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException {
 		SurveyDto survey = getByUuid(surveyOptions.getSurvey().getUuid());
+
+		createSurveyDocument(survey, surveyOptions);
+	}
+
+	@Override
+	public void sendDocument(SurveyDocumentOptionsDto surveyOptions)
+		throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException {
+		Survey survey = surveyService.getByReferenceDto(surveyOptions.getSurvey());
+		SurveyDto surveyDto = toDto(survey);
+
+		TokenAndDocument documentResult = createSurveyDocument(surveyDto, surveyOptions);
+
+		ExternalEmailOptionsDto emailOptions = new ExternalEmailOptionsDto(
+			survey.getEmailTemplate().getWorkflow(),
+			surveyOptions.getRootEntityType(),
+			surveyOptions.getRootEntityReference());
+		emailOptions.setRecipientEmail(surveyOptions.getRecipientEmail());
+		emailOptions.setTemplate(surveyDto.getEmailTemplate());
+		emailOptions.setAttachedDocuments(Collections.singleton(documentResult.document.toReference()));
+
+		externalEmailFacade.sendEmail(emailOptions);
+
+		documentResult.token.setRecipientEmail(surveyOptions.getRecipientEmail());
+		surveyTokenService.ensurePersisted(documentResult.token);
+	}
+
+	@Override
+	public boolean hasUnassignedTokens(SurveyReferenceDto survey) {
+		return surveyTokenService.count((cb, root) -> {
+			SurveyTokenJoins joins = new SurveyTokenJoins(root);
+
+			return cb.and(cb.equal(joins.getSurvey().get(Survey.UUID), survey.getUuid()), cb.isNull(root.get(SurveyToken.CASE_ASSIGNED_TO)));
+		}) > 0;
+	}
+
+	private TokenAndDocument createSurveyDocument(SurveyDto survey, SurveyDocumentOptionsDto surveyOptions)
+		throws DocumentTemplateException, ValidationException {
 		RootEntityType rootEntityType = surveyOptions.getRootEntityType();
 		ReferenceDto rootEntityReference = surveyOptions.getRootEntityReference();
+
+		if (rootEntityType != RootEntityType.ROOT_CASE) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.surveyOnlyCasesSupported));
+		}
 
 		SurveyToken token = surveyTokenService.getFistUnusedToken(survey.toReference());
 		if (token == null) {
@@ -246,7 +297,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 		surveyTokenService.ensurePersisted(token);
 
-		return documentContent;
+		return new TokenAndDocument(token, documentDto);
 	}
 
 	private void validate(SurveyDto survey) {
@@ -299,5 +350,16 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	@Stateless
 	public static class SurveyFacadeEjbLocal extends SurveyFacadeEjb {
 
+	}
+
+	private static final class TokenAndDocument {
+
+		private final SurveyToken token;
+		private final DocumentDto document;
+
+		public TokenAndDocument(SurveyToken token, DocumentDto document) {
+			this.token = token;
+			this.document = document;
+		}
 	}
 }
