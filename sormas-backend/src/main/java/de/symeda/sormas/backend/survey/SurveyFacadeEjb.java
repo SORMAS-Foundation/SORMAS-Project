@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -230,6 +231,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	}
 
 	@Override
+	@PermitAll
 	public void generateDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException {
 		SurveyDto survey = getByUuid(surveyOptions.getSurvey().getUuid());
 
@@ -237,6 +239,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	}
 
 	@Override
+	@PermitAll
 	public void sendDocument(SurveyDocumentOptionsDto surveyOptions)
 		throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException {
 		Survey survey = surveyService.getByReferenceDto(surveyOptions.getSurvey());
