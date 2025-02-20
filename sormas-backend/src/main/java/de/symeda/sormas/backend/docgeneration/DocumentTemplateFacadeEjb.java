@@ -26,11 +26,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.io.FileUtils;
@@ -42,6 +42,7 @@ import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -82,6 +83,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEj
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.survey.Survey;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -292,15 +294,35 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 
 	@Override
 	@PermitAll
-	public List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow documentWorkflow, @Nullable Disease disease) {
+	public List<DocumentTemplateDto> getAvailableTemplates(DocumentTemplateCriteria criteria) {
 		List<DocumentTemplate> templates = documentTemplateService.getByPredicate((cb, root, cq) -> {
-			Predicate diseasePredicate = null;
+			Predicate filter = null;
 
-			if (disease != null) {
-				diseasePredicate = cb.or(cb.isNull(root.get(DocumentTemplate.DISEASE)), cb.equal(root.get(DocumentTemplate.DISEASE), disease));
+			if (criteria.getDisease() != null) {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(cb.isNull(root.get(DocumentTemplate.DISEASE)), cb.equal(root.get(DocumentTemplate.DISEASE), criteria.getDisease())));
 			}
 
-			return CriteriaBuilderHelper.and(cb, cb.equal(root.get(DocumentTemplate.WORKFLOW), documentWorkflow), diseasePredicate);
+			if (criteria.getSurveyReference() != null) {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.equal(
+							root.join(DocumentTemplate.SURVEY_DOC_TEMPLATE, JoinType.LEFT).get(Survey.UUID),
+							criteria.getSurveyReference().getUuid()),
+						cb.equal(
+							root.join(DocumentTemplate.SURVEY_EMAIL_TEMPLATE, JoinType.LEFT).get(Survey.UUID),
+							criteria.getSurveyReference().getUuid())));
+			}
+
+			if (criteria.getDocumentWorkflow() != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(DocumentTemplate.WORKFLOW), criteria.getDocumentWorkflow()));
+			}
+
+			return filter;
 		});
 
 		return templates.stream().map(DocumentTemplateFacadeEjb::toDto).collect(Collectors.toList());
@@ -384,12 +406,12 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 	@RightsAllowed({
 		UserRight._DOCUMENT_TEMPLATE_MANAGEMENT,
 		UserRight._EMAIL_TEMPLATE_MANAGEMENT })
-	public boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference) {
+	public boolean deleteDocumentTemplate(DocumentTemplateReferenceDto templateReference, DocumentWorkflow documentWorkflow) {
 		DocumentTemplate template = documentTemplateService.getByReferenceDto(templateReference);
 
 		assertRequredUserRight(template.getWorkflow());
 
-		return documentTemplateService.deletePermanent(template);
+		return documentTemplateService.deletePermanent(template, documentWorkflow);
 	}
 
 	@Override

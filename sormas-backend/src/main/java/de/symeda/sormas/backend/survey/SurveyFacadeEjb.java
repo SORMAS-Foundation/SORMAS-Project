@@ -37,6 +37,10 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.survey.SurveyCriteria;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyFacade;
@@ -46,7 +50,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -64,6 +70,10 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	private SurveyService surveyService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal documentTemplateFacade;
+	@EJB
+	private DocumentTemplateService documentTemplateService;
 
 	@Override
 	@RightsAllowed({
@@ -80,6 +90,53 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		surveyService.ensurePersisted(survey);
 
 		return toDto(survey);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SURVEY_EDIT)
+	public void uploadDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+		throws DocumentTemplateException {
+		Survey existingSurvey = surveyRef.getUuid() != null ? surveyService.getByUuid(surveyRef.getUuid()) : null;
+
+		if (existingSurvey != null) {
+			List<DocumentTemplateDto> availableTemplates =
+				documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyRef));
+			if (!availableTemplates.isEmpty()) {
+				availableTemplates.forEach(docTemplate -> {
+					DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
+					documentTemplateService.deletePermanent(existingDocumentTemplate, DocumentWorkflow.SURVEY_DOCUMENT);
+				});
+			}
+		}
+		DocumentTemplateDto savedDocumentTemplate = documentTemplateFacade.saveDocumentTemplate(uploadedDocumentTemplate, fileContent);
+		DocumentTemplate byReferenceDto = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
+		assert existingSurvey != null;
+		existingSurvey.setDocumentTemplate(byReferenceDto);
+		surveyService.ensurePersisted(existingSurvey);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SURVEY_EDIT)
+	public void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedEmailTemplateDto, byte[] fileContent)
+		throws DocumentTemplateException {
+
+		Survey existingSurvey = surveyReference.getUuid() != null ? surveyService.getByUuid(surveyReference.getUuid()) : null;
+
+		if (existingSurvey != null) {
+			List<DocumentTemplateDto> availableTemplates =
+				documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference));
+			if (!availableTemplates.isEmpty()) {
+				availableTemplates.forEach(docTemplate -> {
+					DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
+					documentTemplateService.deletePermanent(existingDocumentTemplate, DocumentWorkflow.SURVEY_EMAIL);
+				});
+			}
+		}
+		DocumentTemplateDto savedDocumentTemplate = documentTemplateFacade.saveDocumentTemplate(uploadedEmailTemplateDto, fileContent);
+		DocumentTemplate byReferenceDto = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
+		assert existingSurvey != null;
+		existingSurvey.setEmailTemplate(byReferenceDto);
+		surveyService.ensurePersisted(existingSurvey);
 	}
 
 	@Override

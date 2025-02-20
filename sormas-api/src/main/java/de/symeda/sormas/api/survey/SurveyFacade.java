@@ -20,6 +20,8 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -27,7 +29,10 @@ public interface SurveyFacade {
 
     SurveyDto save(@Valid SurveyDto dto);
 
-    SurveyDto getByUuid(String uuid);
+	void uploadDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+		throws DocumentTemplateException;
+
+	SurveyDto getByUuid(String uuid);
 
     long count(SurveyCriteria criteria);
 
@@ -39,5 +44,8 @@ public interface SurveyFacade {
 
     SurveyReferenceDto getReferenceByUuid(String uuid);
 
-    Boolean isEditAllowed(String uuid);
+	Boolean isEditAllowed(String uuid);
+
+	void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
+		throws DocumentTemplateException;
 }

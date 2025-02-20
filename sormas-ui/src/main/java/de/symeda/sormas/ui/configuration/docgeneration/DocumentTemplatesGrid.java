@@ -31,6 +31,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -45,13 +46,15 @@ public class DocumentTemplatesGrid extends Grid<DocumentTemplateDto> {
 	private static final long serialVersionUID = 2589713987152595369L;
 
 	private final DocumentWorkflow documentWorkflow;
+	private final DocumentTemplateCriteria criteria;
 
-	public DocumentTemplatesGrid(DocumentWorkflow documentWorkflow, boolean hasDisease) {
+	public DocumentTemplatesGrid(DocumentTemplateCriteria documentTemplateCriteria, boolean hasDisease) {
 		super(DocumentTemplateDto.class);
-		this.documentWorkflow = documentWorkflow;
+		this.criteria = documentTemplateCriteria;
+		this.documentWorkflow = documentTemplateCriteria.getDocumentWorkflow();
 		setSizeFull();
 
-		List<DocumentTemplateDto> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow, null);
+		List<DocumentTemplateDto> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentTemplateCriteria);
 		ListDataProvider<DocumentTemplateDto> dataProvider = DataProvider.fromStream(availableTemplates.stream());
 		setDataProvider(dataProvider);
 
@@ -75,7 +78,7 @@ public class DocumentTemplatesGrid extends Grid<DocumentTemplateDto> {
 
 	public void reload() {
 		// This is bad practice but it works (unlike refreshAll), and in this case its sufficient
-		List<DocumentTemplateDto> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(documentWorkflow, null);
+		List<DocumentTemplateDto> availableTemplates = FacadeProvider.getDocumentTemplateFacade().getAvailableTemplates(criteria);
 		setItems(availableTemplates);
 		getDataProvider().refreshAll();
 		setHeightByRows(Math.max(1, availableTemplates.size()));
@@ -88,7 +91,7 @@ public class DocumentTemplatesGrid extends Grid<DocumentTemplateDto> {
 			e -> VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteFile), template.getFileName()), () -> {
 					try {
-						FacadeProvider.getDocumentTemplateFacade().deleteDocumentTemplate(template.toReference());
+						FacadeProvider.getDocumentTemplateFacade().deleteDocumentTemplate(template.toReference(), documentWorkflow);
 					} catch (DocumentTemplateException ex) {
 						new Notification(
 							I18nProperties.getString(Strings.errorDeletingDocumentTemplate),

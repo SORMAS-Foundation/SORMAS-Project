@@ -20,6 +20,7 @@ import com.vaadin.v7.ui.Upload.StartedEvent;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -38,11 +39,11 @@ public class DocumentTemplateReceiver
 	private File file;
 	private String fName;
 	private final DocumentWorkflow documentWorkflow;
-	private final Supplier<Disease> diseaseSupplier;
+	private Supplier<Disease> diseaseSupplier;
 
-	public DocumentTemplateReceiver(DocumentWorkflow documentWorkflow, Supplier<Disease> diseaseSupplier) {
+	public DocumentTemplateReceiver(DocumentWorkflow documentWorkflow) {
 		this.documentWorkflow = documentWorkflow;
-		this.diseaseSupplier = diseaseSupplier;
+		this.diseaseSupplier = () -> null;
 	}
 
 	@Override
@@ -95,27 +96,31 @@ public class DocumentTemplateReceiver
 
 		// Check for duplicate files
 		if (FacadeProvider.getDocumentTemplateFacade().isExistingTemplateFile(documentWorkflow, diseaseSupplier.get(), fName)) {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingFileExists),
-				new Label(String.format(I18nProperties.getString(Strings.infoDocumentAlreadyExists), fName)),
-				I18nProperties.getCaption(Captions.actionConfirm),
-				I18nProperties.getCaption(Captions.actionCancel),
-				null,
-				ok -> {
-					if (ok) {
-						writeTemplateFile();
-					}
-				});
+			duplicateTemplateFileResponse(fName);
 		} else {
 			writeTemplateFile();
 		}
+	}
+
+	protected void duplicateTemplateFileResponse(String fileName) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingFileExists),
+			new Label(String.format(I18nProperties.getString(Strings.infoDocumentAlreadyExists), fileName)),
+			I18nProperties.getCaption(Captions.actionConfirm),
+			I18nProperties.getCaption(Captions.actionCancel),
+			null,
+			ok -> {
+				if (ok) {
+					writeTemplateFile();
+				}
+			});
 	}
 
 	private void writeTemplateFile() {
 		try {
 			byte[] fileContent = Files.readAllBytes(file.toPath());
 			DocumentTemplateDto documentTemplateDto = DocumentTemplateDto.build(documentWorkflow, fName, diseaseSupplier.get());
-			FacadeProvider.getDocumentTemplateFacade().saveDocumentTemplate(documentTemplateDto, fileContent);
+			writeDocumentTemplate(documentTemplateDto, fileContent);
 			VaadinUiUtil.showSimplePopupWindow(
 				I18nProperties.getString(Strings.headingUploadSuccess),
 				I18nProperties.getString(Strings.messageUploadSuccessful));
@@ -123,5 +128,13 @@ public class DocumentTemplateReceiver
 			new Notification(I18nProperties.getString(Strings.headingImportFailed), e.getMessage(), Notification.Type.ERROR_MESSAGE, false)
 				.show(Page.getCurrent());
 		}
+	}
+
+	protected void writeDocumentTemplate(DocumentTemplateDto documentTemplateDto, byte[] fileContent) throws DocumentTemplateException {
+		FacadeProvider.getDocumentTemplateFacade().saveDocumentTemplate(documentTemplateDto, fileContent);
+	}
+
+	public void setDiseaseSupplier(Supplier<Disease> diseaseSupplier) {
+		this.diseaseSupplier = diseaseSupplier;
 	}
 }
