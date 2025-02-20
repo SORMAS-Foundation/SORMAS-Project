@@ -165,7 +165,7 @@ public class ImportExportTest extends AbstractUiBeanTest {
 				rows.stream().map(r -> String.join(",", Arrays.asList(r))).collect(Collectors.joining("\n")).getBytes(StandardCharsets.UTF_8)),
 			out);
 		CaseImporterExtension caseImporter = new CaseImporterExtension(tempFile, true, user);
-		caseImporter.runImport();
+		caseImporter.runImport(false);
 
 		InputStream errorStream = new ByteArrayInputStream(caseImporter.stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();
@@ -320,7 +320,7 @@ public class ImportExportTest extends AbstractUiBeanTest {
 				rows.stream().map(r -> String.join(",", Arrays.asList(r))).collect(Collectors.joining("\n")).getBytes(StandardCharsets.UTF_8)),
 			out);
 		ContactImporterExtension contactImporter = new ContactImporterExtension(tempFile, user);
-		contactImporter.runImport();
+		contactImporter.runImport(false);
 
 		InputStream errorStream = new ByteArrayInputStream(contactImporter.stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
 		List<String[]> errorRows = CSVUtils.createBomCsvReader(errorStream).readAll();

@@ -44,7 +44,7 @@ public class TravelEntryImportLayout extends AbstractImportLayout {
 			resetDownloadErrorReportButton();
 			try {
 				TravelEntryImporter importer = new TravelEntryImporter(file, false, currentUser, (ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true, false);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

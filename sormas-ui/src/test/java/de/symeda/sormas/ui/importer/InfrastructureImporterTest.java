@@ -51,7 +51,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		importer.runImport();
+		importer.runImport(false);
 		List<RegionReferenceDto> regions = getRegionFacade().getReferencesByName("Region with ä", false);
 		assertThat(regions, hasSize(1));
 		RegionReferenceDto region = regions.get(0);
@@ -59,7 +59,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import district
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(districtCsvFile, user, InfrastructureType.DISTRICT);
-		importer.runImport();
+		importer.runImport(false);
 		List<DistrictReferenceDto> districts = getDistrictFacade().getByName("District with ß", region, false);
 		assertThat(districts, hasSize(1));
 		DistrictReferenceDto district = districts.get(0);
@@ -67,7 +67,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import community
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user, InfrastructureType.COMMUNITY);
-		importer.runImport();
+		importer.runImport(false);
 		List<CommunityReferenceDto> communities = getCommunityFacade().getByName("Community with ö", district, false);
 		assertThat(communities, hasSize(1));
 		CommunityReferenceDto community = communities.get(0);
@@ -75,13 +75,13 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user, InfrastructureType.FACILITY);
-		importer.runImport();
+		importer.runImport(false);
 		assertThat(getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false), hasSize(2));
 
 		// Import point of entry from commented CSV file
 		File commentedPoeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test_comment.csv").toURI());
 		importer = new InfrastructureImporterExtension(commentedPoeCsvFile, user, InfrastructureType.POINT_OF_ENTRY);
-		importer.runImport();
+		importer.runImport(false);
 		assertThat(getPointOfEntryFacade().getByName("Airport A", district, false), hasSize(1));
 	}
 
@@ -100,7 +100,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_iso_8859_1.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		importer.runImport();
+		importer.runImport(false);
 		RegionReferenceDto region1 = getRegionFacade().getReferencesByName("Region with ä", false).get(0);
 		assertEquals("Region with ä", region1.getCaption());
 		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Region with ß", false).get(0);
@@ -122,7 +122,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_windows_1252.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		importer.runImport();
+		importer.runImport(false);
 		RegionReferenceDto region1 = getRegionFacade().getReferencesByName("Region with ä", false).get(0);
 		assertEquals("Region with ä", region1.getCaption());
 		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Region with ß", false).get(0);
@@ -143,7 +143,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_utf8.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		importer.runImport();
+		importer.runImport(false);
 		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
 		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
 		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
@@ -164,7 +164,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_utf8_with_bom.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		importer.runImport();
+		importer.runImport(false);
 		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
 		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
 		assertEquals("Sömé rêâlly ßtràngë cøüntry", region2.getCaption());
@@ -185,7 +185,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_iso8859_1.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		importer.runImport();
+		importer.runImport(false);
 
 		List<RegionReferenceDto> allActiveRegions = getRegionFacade().getAllActiveAsReference();
 		RegionReferenceDto region2 = getRegionFacade().getReferencesByName("Sömé rêâlly ßtràngë cøüntry", false).get(0);
@@ -207,31 +207,31 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport(false).getStatus());
 		assertEquals(2, getRegionFacade().count(new RegionCriteria()));
 
 		// Import district
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(districtCsvFile, user, InfrastructureType.DISTRICT);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport(false).getStatus());
 		assertEquals(2, getDistrictFacade().count(new DistrictCriteria()));
 
 		// Import community
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user, InfrastructureType.COMMUNITY);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport(false).getStatus());
 		assertEquals(2, getCommunityFacade().count(new CommunityCriteria()));
 
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user, InfrastructureType.FACILITY);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport(false).getStatus());
 		assertEquals(3, getFacilityFacade().count(new FacilityCriteria()));
 
 		// Import point of entry
 		File poeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(poeCsvFile, user, InfrastructureType.POINT_OF_ENTRY);
-		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport().getStatus());
+		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport(false).getStatus());
 		assertEquals(1, getPointOfEntryFacade().count(new PointOfEntryCriteria()));
 	}
 
@@ -249,7 +249,7 @@ public class InfrastructureImporterTest extends AbstractUiBeanTest {
 
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_bom_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(districtCsvFile, user, InfrastructureType.DISTRICT);
-		importer.runImport();
+		importer.runImport(false);
 
 		// expected Default District + 2 imported districts
 		assertEquals(3, getDistrictFacade().count(new DistrictCriteria()));

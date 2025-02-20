@@ -71,11 +71,11 @@ public class EventImporter extends DataImporter {
 	}
 
 	@Override
-	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible)
+	public void startImport(Consumer<StreamResource> addErrorReportToLayoutCallback, UI currentUI, boolean duplicatesPossible, boolean singleColumnImport)
 		throws IOException, CsvValidationException {
 
 		this.currentUI = currentUI;
-		super.startImport(addErrorReportToLayoutCallback, currentUI, duplicatesPossible);
+		super.startImport(addErrorReportToLayoutCallback, currentUI, duplicatesPossible, singleColumnImport);
 	}
 
 	@Override

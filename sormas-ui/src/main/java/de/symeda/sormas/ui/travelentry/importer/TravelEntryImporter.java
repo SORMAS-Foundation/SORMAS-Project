@@ -50,11 +50,11 @@ public class TravelEntryImporter extends DataImporter {
 	}
 
 	@Override
-	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
+	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible, boolean singleColumnImport)
 		throws IOException, CsvValidationException {
 
 		this.currentUI = currentUI;
-		super.startImport(errorReportConsumer, currentUI, duplicatesPossible);
+		super.startImport(errorReportConsumer, currentUI, duplicatesPossible, singleColumnImport);
 	}
 
 	@Override

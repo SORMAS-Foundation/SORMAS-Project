@@ -53,7 +53,7 @@ public class ImportSurveyTokensLayout extends AbstractImportLayout {
 						currentUser,
 						survey,
 						(ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 						I18nProperties.getString(Strings.headingImportFailed),

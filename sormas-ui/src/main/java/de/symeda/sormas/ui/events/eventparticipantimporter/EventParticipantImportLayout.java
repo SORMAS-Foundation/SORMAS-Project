@@ -56,7 +56,7 @@ public class EventParticipantImportLayout extends AbstractImportLayout {
 				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(event.getUuid(), false);
 				EventParticipantImporter importer =
 					new EventParticipantImporter(file, currentUser, eventDto, (ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true, false);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

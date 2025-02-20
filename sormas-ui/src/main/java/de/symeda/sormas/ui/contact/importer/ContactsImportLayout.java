@@ -35,7 +35,7 @@ public class ContactsImportLayout extends AbstractImportLayout {
 
 			try {
 				ContactImporter importer = new ContactImporter(file, currentUser, null, (ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false, false);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),
