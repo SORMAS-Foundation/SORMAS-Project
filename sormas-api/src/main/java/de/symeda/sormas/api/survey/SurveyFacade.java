@@ -29,7 +29,7 @@ public interface SurveyFacade {
 
     SurveyDto save(@Valid SurveyDto dto);
 
-	void uploadDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+	void importDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
 		throws DocumentTemplateException;
 
 	SurveyDto getByUuid(String uuid);
@@ -46,6 +46,6 @@ public interface SurveyFacade {
 
 	Boolean isEditAllowed(String uuid);
 
-	void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
+	void importEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedDocumentTemplateDto, byte[] fileContent)
 		throws DocumentTemplateException;
 }

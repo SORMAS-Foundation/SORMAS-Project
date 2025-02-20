@@ -94,7 +94,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SURVEY_EDIT)
-	public void uploadDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+	public void importDocumentTemplate(SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
 		throws DocumentTemplateException {
 		Survey existingSurvey = surveyRef.getUuid() != null ? surveyService.getByUuid(surveyRef.getUuid()) : null;
 
@@ -117,7 +117,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 
 	@Override
 	@RightsAllowed(UserRight._SURVEY_EDIT)
-	public void uploadEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedEmailTemplateDto, byte[] fileContent)
+	public void importEmailTemplate(SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedEmailTemplateDto, byte[] fileContent)
 		throws DocumentTemplateException {
 
 		Survey existingSurvey = surveyReference.getUuid() != null ? surveyService.getByUuid(surveyReference.getUuid()) : null;
