@@ -85,6 +85,7 @@ public interface Captions {
 	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
 	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
+	String actionImportSurveyTokens = "actionImportSurveyTokens";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
@@ -131,7 +132,6 @@ public interface Captions {
 	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
 	String actionYesForSome = "actionYesForSome";
-	String actionImportSurveyTokens = "actionImportSurveyTokens";
 	String ActivityAsCase = "ActivityAsCase";
 	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
