@@ -154,7 +154,8 @@ public class SurveyDocumentController {
 			this.disease = disease;
 			this.forEmail = forEmail;
 			this.person = person;
-			this.surveyErrorCallback = e -> {};
+			this.surveyErrorCallback = e -> {
+			};
 
 			addFields();
 			hideValidationUntilNextCommit();
@@ -201,7 +202,7 @@ public class SurveyDocumentController {
 				surveyErrorCallback.accept(false);
 				surveyWarningLabel.setVisible(false);
 
-				if(survey == null) {
+				if (survey == null) {
 					return;
 				}
 
@@ -219,7 +220,7 @@ public class SurveyDocumentController {
 					return;
 				}
 
-				if(!FacadeProvider.getSurveyFacade().hasUnassignedTokens(survey.toReference())) {
+				if (!FacadeProvider.getSurveyFacade().hasUnassignedTokens(survey.toReference())) {
 					surveyWarningLabel.setVisible(true);
 					surveyWarningLabel.setValue(I18nProperties.getString(Strings.messageSurveyNoTokens));
 					surveyErrorCallback.accept(true);
