@@ -18,8 +18,6 @@ package de.symeda.sormas.backend.survey;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,18 +38,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
-import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.survey.SurveyCriteria;
 import de.symeda.sormas.api.survey.SurveyDto;
@@ -60,7 +54,6 @@ import de.symeda.sormas.api.survey.SurveyIndexDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
@@ -72,7 +65,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
-import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.template.FieldExtractor;
 import fr.opensagres.xdocreport.template.FieldsExtractor;
@@ -95,7 +87,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	@EJB
 	private DocumentTemplateService documentTemplateService;
 
-	private TemplateEngine templateEngine = new TemplateEngine();
+	private final TemplateEngine templateEngine = new TemplateEngine();
 
 	@Override
 	@RightsAllowed({
@@ -120,7 +112,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		throws DocumentTemplateException {
 		Survey existingSurvey = surveyService.getByReferenceDto(surveyRef);
 
-		boolean validated = validateSurveyDocumentTemplate(fileContent);
+		boolean validated = validateSurveyDocumentTemplate(fileContent, uploadedDocumentTemplate.getFileName());
 		if (!validated) {
 			throw new DocumentTemplateException(
 				I18nProperties.getValidationError(Validations.surveyDocumentTemplateMissingTokenVariable, SURVEY_TOKEN_DOCUMENT_PLACEHOLDER));
@@ -141,16 +133,8 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		surveyService.ensurePersisted(existingSurvey);
 	}
 
-	private boolean validateSurveyDocumentTemplate(byte[] fileContent) throws DocumentTemplateException {
-		IXDocReport report = templateEngine.readXDocReport(new ByteArrayInputStream(fileContent));
-		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
-		DocumentVariables documentVariables = null;
-		try {
-			report.extractFields(extractor);
-			documentVariables = templateEngine.filterExtractedVariables(extractor);
-		} catch (XDocReportException | IOException e) {
-			throw new RuntimeException(e);
-		}
+	private boolean validateSurveyDocumentTemplate(byte[] fileContent, String fileName) throws DocumentTemplateException {
+		DocumentVariables documentVariables = templateEngine.extractTemplateVariablesDocx(new ByteArrayInputStream(fileContent), fileName);
 
 		AtomicBoolean validUploadedFile = new AtomicBoolean(false);
 		if (documentVariables != null && !documentVariables.getVariables().isEmpty()) {

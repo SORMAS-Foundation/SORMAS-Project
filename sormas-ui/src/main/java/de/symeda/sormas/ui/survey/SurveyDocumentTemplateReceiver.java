@@ -1,8 +1,5 @@
 package de.symeda.sormas.ui.survey;
 
-import java.io.IOException;
-import java.nio.file.Files;
-
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;

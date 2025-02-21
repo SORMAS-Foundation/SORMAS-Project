@@ -92,7 +92,15 @@ public class TemplateEngine {
 
 	public DocumentVariables extractTemplateVariablesDocx(File templateFile) throws DocumentTemplateException {
 		try {
-			FileInputStream templateInputStream = new FileInputStream(templateFile);
+			return extractTemplateVariablesDocx(new FileInputStream(templateFile), templateFile.getName());
+		} catch (FileNotFoundException e) {
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
+		}
+	}
+
+	public DocumentVariables extractTemplateVariablesDocx(InputStream templateInputStream, String fileName) throws DocumentTemplateException {
+		try {
+
 			IXDocReport report = readXDocReport(templateInputStream);
 
 			FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
@@ -100,7 +108,7 @@ public class TemplateEngine {
 
 			return filterExtractedVariables(extractor);
 		} catch (XDocReportException | IOException e) {
-			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), templateFile.getName()));
+			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorReadingTemplate), fileName));
 		}
 	}
 
