@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.externalemail.AttachmentException;
 import de.symeda.sormas.api.externalemail.ExternalEmailException;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -62,4 +63,6 @@ public interface SurveyFacade {
     void sendDocument(SurveyDocumentOptionsDto surveyOptions) throws DocumentTemplateException, ValidationException, AttachmentException, IOException, ExternalEmailException;
 
     boolean hasUnassignedTokens(SurveyReferenceDto survey);
+
+    DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException;
 }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -351,6 +352,15 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		}) > 0;
 	}
 
+	@Override
+	public DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException {
+		SurveyDto survey = getByUuid(surveyRef.getUuid());
+		DocumentVariables variables = documentTemplateFacade.getDocumentVariables(survey.getDocumentTemplate());
+		variables.getAdditionalVariables().remove(SURVEY_TOKEN_DOCUMENT_PLACEHOLDER);
+
+		return variables;
+	}
+
 	private TokenAndDocument createSurveyDocument(SurveyDto survey, SurveyDocumentOptionsDto surveyOptions)
 		throws DocumentTemplateException, ValidationException {
 		RootEntityType rootEntityType = surveyOptions.getRootEntityType();
@@ -366,8 +376,10 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		}
 
 		DocumentTemplateEntities entities = entitiesBuilder.resolveEntities(new RootEntities().addReference(rootEntityType, rootEntityReference));
-		byte[] documentContent =
-			documentTemplateFacade.generateDocumentDocxFromEntities(survey.getDocumentTemplate(), entities, surveyOptions.getTemplateProperties());
+		Properties templateProperties = surveyOptions.getTemplateProperties();
+		templateProperties.setProperty(SURVEY_TOKEN_DOCUMENT_PLACEHOLDER, token.getToken());
+
+		byte[] documentContent = documentTemplateFacade.generateDocumentDocxFromEntities(survey.getDocumentTemplate(), entities, templateProperties);
 
 		DocumentDto documentDto = docGenerationHelper.saveDocument(
 			docGenerationHelper.getDocumentFileName(rootEntityReference, survey.getDocumentTemplate()),
