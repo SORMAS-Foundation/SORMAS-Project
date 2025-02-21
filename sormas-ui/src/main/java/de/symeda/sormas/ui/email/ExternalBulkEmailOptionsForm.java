@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.google.common.io.ByteStreams;
@@ -93,7 +95,8 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected ExternalBulkEmailOptionsForm(
 		DocumentWorkflow documentWorkflow,
 		DocumentRelatedEntityType documentRelatedEntityType,
-		RootEntityType rootEntityType, DocumentWorkflow templatesWorkflow) {
+		RootEntityType rootEntityType,
+		DocumentWorkflow templatesWorkflow) {
 		super(ExternalEmailOptionsWithAttachmentsDto.class, ExternalEmailOptionsWithAttachmentsDto.I18N_PREFIX, false);
 		this.documentWorkflow = documentWorkflow;
 		this.documentRelatedEntityType = documentRelatedEntityType;
@@ -114,7 +117,11 @@ public class ExternalBulkEmailOptionsForm extends AbstractEditForm<ExternalEmail
 	protected void addFields() {
 		ComboBox templateCombo = addField(ExternalEmailOptionsWithAttachmentsDto.TEMPLATE_NAME, ComboBox.class);
 		templateCombo.setRequired(true);
-		List<DocumentTemplateDto> templateNames = FacadeProvider.getExternalEmailFacade().getTemplates(documentWorkflow);
+		List<DocumentTemplateReferenceDto> templateNames = FacadeProvider.getExternalEmailFacade()
+			.getTemplates(documentWorkflow)
+			.stream()
+			.map(DocumentTemplateDto::toReference)
+			.collect(Collectors.toList());
 		FieldHelper.updateItems(templateCombo, templateNames);
 
 		if (Arrays.asList(DocumentWorkflow.CASE_EMAIL, DocumentWorkflow.CONTACT_EMAIL, DocumentWorkflow.TRAVEL_ENTRY_EMAIL)
