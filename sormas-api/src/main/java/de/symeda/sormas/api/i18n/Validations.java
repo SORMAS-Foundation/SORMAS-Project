@@ -260,6 +260,7 @@ public interface Validations {
 	String specifySex = "specifySex";
 	String specifyYear = "specifyYear";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
+	String surveyDocumentTemplateMissingTokenVariable = "surveyDocumentTemplateMissingTokenVariable";
 	String surveyOnlyCasesSupported = "surveyOnlyCasesSupported";
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";

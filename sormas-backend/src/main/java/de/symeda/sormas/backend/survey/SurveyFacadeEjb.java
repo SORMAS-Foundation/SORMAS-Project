@@ -17,11 +17,13 @@ package de.symeda.sormas.backend.survey;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,12 +42,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
+import de.symeda.sormas.api.docgeneneration.DocumentVariables;
+import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.externalemail.AttachmentException;
@@ -68,10 +75,13 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.docgeneration.DocGenerationHelper;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplate;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateEntitiesBuilder;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.DocumentTemplateService;
 import de.symeda.sormas.backend.docgeneration.RootEntities;
+import de.symeda.sormas.backend.docgeneration.TemplateEngine;
 import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEmailFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -84,6 +94,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 @RightsAllowed(UserRight._SURVEY_VIEW)
 public class SurveyFacadeEjb implements SurveyFacade {
 
+	private static final String SURVEY_TOKEN_DOCUMENT_PLACEHOLDER = "surveyToken";
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -91,6 +103,10 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	private SurveyService surveyService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private DocumentTemplateService documentTemplateService;
+
+	private final TemplateEngine templateEngine = new TemplateEngine();
 	@EJB
 	private DocumentTemplateFacadeEjbLocal documentTemplateFacade;
 	@EJB
@@ -121,6 +137,71 @@ public class SurveyFacadeEjb implements SurveyFacade {
 		surveyService.ensurePersisted(survey);
 
 		return toDto(survey);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SURVEY_EDIT)
+	public void uploadDocumentTemplate(@NotNull SurveyReferenceDto surveyRef, DocumentTemplateDto uploadedDocumentTemplate, byte[] fileContent)
+		throws DocumentTemplateException {
+		Survey existingSurvey = surveyService.getByReferenceDto(surveyRef);
+
+		boolean validated = validateSurveyDocumentTemplate(fileContent, uploadedDocumentTemplate.getFileName());
+		if (!validated) {
+			throw new DocumentTemplateException(
+				I18nProperties.getValidationError(Validations.surveyDocumentTemplateMissingTokenVariable, SURVEY_TOKEN_DOCUMENT_PLACEHOLDER));
+		}
+
+		List<DocumentTemplateDto> availableTemplates =
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_DOCUMENT, null, surveyRef));
+		if (!availableTemplates.isEmpty()) {
+			availableTemplates.forEach(docTemplate -> {
+				DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
+				documentTemplateService.deletePermanent(existingDocumentTemplate);
+			});
+		}
+
+		DocumentTemplateDto savedDocumentTemplate = documentTemplateFacade.saveDocumentTemplate(uploadedDocumentTemplate, fileContent);
+		DocumentTemplate savedDocumentTemplateEntity = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
+		existingSurvey.setDocumentTemplate(savedDocumentTemplateEntity);
+		surveyService.ensurePersisted(existingSurvey);
+	}
+
+	private boolean validateSurveyDocumentTemplate(byte[] fileContent, String fileName) throws DocumentTemplateException {
+		DocumentVariables documentVariables = templateEngine.extractTemplateVariablesDocx(new ByteArrayInputStream(fileContent), fileName);
+
+		AtomicBoolean validUploadedFile = new AtomicBoolean(false);
+		if (documentVariables != null && !documentVariables.getVariables().isEmpty()) {
+			documentVariables.getVariables().forEach(docTemplateVariable -> {
+
+				if (docTemplateVariable.contains(SURVEY_TOKEN_DOCUMENT_PLACEHOLDER)) {
+					validUploadedFile.set(true);
+				} ;
+			});
+		}
+
+		return validUploadedFile.get();
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SURVEY_EDIT)
+	public void uploadEmailTemplate(@NotNull SurveyReferenceDto surveyReference, DocumentTemplateDto uploadedEmailTemplateDto, byte[] fileContent)
+		throws DocumentTemplateException {
+
+		Survey existingSurvey = surveyService.getByUuid(surveyReference.getUuid());
+
+		List<DocumentTemplateDto> availableTemplates =
+			documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(DocumentWorkflow.SURVEY_EMAIL, null, surveyReference));
+		if (!availableTemplates.isEmpty()) {
+			availableTemplates.forEach(docTemplate -> {
+				DocumentTemplate existingDocumentTemplate = documentTemplateService.getByUuid(docTemplate.getUuid());
+				documentTemplateService.deletePermanent(existingDocumentTemplate);
+			});
+		}
+
+		DocumentTemplateDto savedDocumentTemplate = documentTemplateFacade.saveDocumentTemplate(uploadedEmailTemplateDto, fileContent);
+		DocumentTemplate byReferenceDto = documentTemplateService.getByReferenceDto(savedDocumentTemplate.toReference());
+		existingSurvey.setEmailTemplate(byReferenceDto);
+		surveyService.ensurePersisted(existingSurvey);
 	}
 
 	@Override

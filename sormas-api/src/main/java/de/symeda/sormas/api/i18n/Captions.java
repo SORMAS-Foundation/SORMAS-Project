@@ -1408,6 +1408,8 @@ public interface Captions {
 	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
 	String DocumentTemplate_exampleTemplateEventParticipantEmail = "DocumentTemplate.exampleTemplateEventParticipantEmail";
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
+	String DocumentTemplate_exampleTemplateSurveyDocument = "DocumentTemplate.exampleTemplateSurveyDocument";
+	String DocumentTemplate_exampleTemplateSurveyEmail = "DocumentTemplate.exampleTemplateSurveyEmail";
 	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
 	String DocumentTemplate_exampleTemplateTravelEntryEmail = "DocumentTemplate.exampleTemplateTravelEntryEmail";
 	String DocumentTemplate_fileName = "DocumentTemplate.fileName";

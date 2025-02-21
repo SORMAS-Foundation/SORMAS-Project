@@ -82,7 +82,7 @@ public class SurveyController {
 
 		SurveyDto surveyDto = FacadeProvider.getSurveyFacade().getByUuid(surveyUuid);
 
-		SurveyDataForm surveyDataForm = new SurveyDataForm(UiUtil.permitted(isEditAllwed, editUserRight));
+		SurveyDataForm surveyDataForm = new SurveyDataForm(UiUtil.permitted(isEditAllwed, editUserRight), surveyDto.toReferenceDto());
 		surveyDataForm.setValue(surveyDto);
 
 		CommitDiscardWrapperComponent<SurveyDataForm> editComponent =

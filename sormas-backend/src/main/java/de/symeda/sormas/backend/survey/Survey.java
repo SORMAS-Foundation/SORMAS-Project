@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -34,6 +34,8 @@ public class Survey extends AbstractDomainObject {
 
 	public static final String NAME = "name";
 	public static final String DISEASE = "disease";
+	public static final String DOCUMENT_TEMPLATE = "documentTemplate";
+	public static final String EMAIL_TEMPLATE = "emailTemplate";
 
 	private String name;
 	private Disease disease;
@@ -58,7 +60,7 @@ public class Survey extends AbstractDomainObject {
 		this.disease = disease;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	public DocumentTemplate getDocumentTemplate() {
 		return documentTemplate;
 	}
@@ -67,7 +69,7 @@ public class Survey extends AbstractDomainObject {
 		this.documentTemplate = documentTemplate;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	public DocumentTemplate getEmailTemplate() {
 		return emailTemplate;
 	}
