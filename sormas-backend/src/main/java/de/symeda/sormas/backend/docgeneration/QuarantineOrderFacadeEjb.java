@@ -26,6 +26,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -157,7 +158,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 	@Override
 	public List<DocumentTemplateDto> getAvailableTemplates(DocumentWorkflow workflow, Disease disease) {
-		return documentTemplateFacade.getAvailableTemplates(workflow, disease);
+		return documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(workflow, disease, null));
 	}
 
 	@Override

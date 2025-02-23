@@ -13743,7 +13743,6 @@ ALTER TABLE person_history ADD COLUMN emancipated boolean default false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (557, 'Add information about legal guardian for "minor / incapacitated" to person entity #13205');
 
-
 -- 2024-12-12 Create Survey Tokens data structure #13250
 CREATE TABLE surveys (
                          id bigint not null,

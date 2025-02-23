@@ -8,7 +8,7 @@ import java.util.Set;
 public class Constants {
 
 	public static final Set<String> createPrefix =
-		Collections.unmodifiableSet(new HashSet<>(Arrays.asList("create", "generate", "build", "clone", "calculate")));
+		Collections.unmodifiableSet(new HashSet<>(Arrays.asList("create", "generate", "build", "clone", "calculate", "upload")));
 	public static final Set<String> readPrefix = Collections.unmodifiableSet(
 		new HashSet<>(
 			Arrays.asList(

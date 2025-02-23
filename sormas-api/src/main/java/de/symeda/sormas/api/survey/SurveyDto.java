@@ -84,4 +84,8 @@ public class SurveyDto extends EntityDto {
 	public void setEmailTemplate(DocumentTemplateReferenceDto emailTemplate) {
 		this.emailTemplate = emailTemplate;
 	}
+
+	public SurveyReferenceDto toReferenceDto() {
+		return new SurveyReferenceDto(this.getUuid(), this.getName());
+	};
 }

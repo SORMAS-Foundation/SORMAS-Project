@@ -982,6 +982,7 @@ public interface Strings {
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
+	String infoDocumentAlreadyExistsCannotUploadAnotherOne = "infoDocumentAlreadyExistsCannotUploadAnotherOne";
 	String infoDocumentOverride = "infoDocumentOverride";
 	String infoDontShareCheckboxAlreadyShared = "infoDontShareCheckboxAlreadyShared";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
