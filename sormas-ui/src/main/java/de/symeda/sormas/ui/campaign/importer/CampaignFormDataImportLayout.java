@@ -41,7 +41,8 @@ public class CampaignFormDataImportLayout extends AbstractImportLayout {
 					campaignForm.getUuid(),
 					campaignReferenceDto,
 					(ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false, false);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false, false
+				);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),
