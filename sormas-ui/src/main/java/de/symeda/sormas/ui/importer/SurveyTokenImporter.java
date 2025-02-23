@@ -28,7 +28,7 @@ public class SurveyTokenImporter extends DataImporter {
 
 	public SurveyTokenImporter(File inputFile, UserDto currentUser, SurveyDto survey, ValueSeparator csvSeparator)
 		throws IOException {
-		super(inputFile, false, currentUser, csvSeparator);
+		super(inputFile, false, currentUser, csvSeparator, true);
 		this.survey = survey;
 	}
 
