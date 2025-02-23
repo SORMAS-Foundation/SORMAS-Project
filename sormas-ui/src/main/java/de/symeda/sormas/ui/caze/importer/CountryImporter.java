@@ -128,7 +128,7 @@ public class CountryImporter extends InfrastructureImporter {
 	}
 
 	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI) throws IOException, CsvValidationException {
-		startImport(errorReportConsumer, currentUI, true, false);
+		startImport(errorReportConsumer, currentUI, true);
 	}
 
 	@Override

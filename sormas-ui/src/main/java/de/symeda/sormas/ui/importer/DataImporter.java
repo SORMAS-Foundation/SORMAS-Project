@@ -157,8 +157,7 @@ public abstract class DataImporter {
 	/**
 	 * Opens a progress layout and runs the import logic in a separate thread.
 	 */
-	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible,
-							boolean singleColumnImport)
+	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
 		throws IOException, CsvValidationException {
 
 		ImportProgressLayout progressLayout = this.getImportProgressLayout(currentUI, duplicatesPossible);
@@ -178,7 +177,7 @@ public abstract class DataImporter {
 				I18nProperties.setUserLanguage(currentUser.getLanguage());
 				FacadeProvider.getI18nFacade().setUserLanguage(currentUser.getLanguage());
 
-				ImportResult importResult = runImport(singleColumnImport);
+				ImportResult importResult = runImport();
 				ImportResultStatus importStatus = importResult.getStatus();
 				boolean hasSkips = importResult.isHasSkips();
 
@@ -252,7 +251,7 @@ public abstract class DataImporter {
 	/**
 	 * To be called by async import thread or unit test
 	 */
-	public ImportResult runImport(boolean singleColumnImport) throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
+	public ImportResult runImport() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException {
 		logger.debug("runImport - {}", inputFile.getAbsolutePath());
 
 		long t0 = System.currentTimeMillis();
@@ -286,7 +285,7 @@ public abstract class DataImporter {
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// validate headers
-			if (!singleColumnImport) {
+			if (!columnNames[1].toLowerCase().contains("token".toLowerCase())) {
 				if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length <= 1) {
 					writeImportError(new String[0], I18nProperties.getValidationError(Validations.importProbablyInvalidSeparator));
 					return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, false);

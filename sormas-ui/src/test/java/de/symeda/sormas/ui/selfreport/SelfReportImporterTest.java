@@ -47,7 +47,7 @@ public class SelfReportImporterTest extends AbstractUiBeanTest {
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_self_report_import_test.csv").toURI());
 
 		SelfReportImporterTest.SelfReportImporterExtension importer = new SelfReportImporterTest.SelfReportImporterExtension(csvFile, true, user);
-		ImportResultStatus importResult = importer.runImport(false).getStatus();
+		ImportResultStatus importResult = importer.runImport().getStatus();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult, importer.errors.toString());
 		assertEquals(2, getSelfReportFacade().count(null));

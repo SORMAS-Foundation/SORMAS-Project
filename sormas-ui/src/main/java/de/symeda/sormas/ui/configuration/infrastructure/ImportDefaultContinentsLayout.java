@@ -51,7 +51,7 @@ public class ImportDefaultContinentsLayout extends AbstractImportDefaultCsvLayou
 			isAllowOverwrite(),
 			(ValueSeparator) separator.getValue());
 		importer.setCsvSeparator(',');
-		importer.startImport(this::extendDownloadErrorReportButton, currentUI, false, false);
+		importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
 	}
 
 	@Override

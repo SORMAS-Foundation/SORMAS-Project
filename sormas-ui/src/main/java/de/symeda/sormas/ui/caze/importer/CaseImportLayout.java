@@ -49,7 +49,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 
 			try {
 				CaseImporter importer = new CaseImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true, false);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

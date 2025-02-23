@@ -108,7 +108,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 				try {
 					DataImporter importer =
 						new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue(), (ValueSeparator) separator.getValue());
-					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true, false);
+					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 				} catch (IOException | CsvValidationException e) {
 					new Notification(
 						I18nProperties.getString(Strings.headingImportFailed),
@@ -197,7 +197,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 							"Import is currently not implemented for infrastructure type " + infrastructureType.name());
 					}
 
-					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true, false);
+					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 				} catch (IOException | CsvValidationException e) {
 					new Notification(
 						I18nProperties.getString(Strings.headingImportFailed),

@@ -50,7 +50,7 @@ public class EnvironmentImportLayout extends AbstractImportLayout {
 
 			try {
 				EnvironmentImporter importer = new EnvironmentImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
-				importer.startImport(EnvironmentImportLayout.this::extendDownloadErrorReportButton, currentUI, true, false);
+				importer.startImport(EnvironmentImportLayout.this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

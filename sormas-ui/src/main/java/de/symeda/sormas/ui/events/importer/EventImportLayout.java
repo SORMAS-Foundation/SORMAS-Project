@@ -49,7 +49,7 @@ public class EventImportLayout extends AbstractImportLayout {
 
 			try {
 				EventImporter importer = new EventImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
-				importer.startImport(EventImportLayout.this::extendDownloadErrorReportButton, currentUI, true, false);
+				importer.startImport(EventImportLayout.this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

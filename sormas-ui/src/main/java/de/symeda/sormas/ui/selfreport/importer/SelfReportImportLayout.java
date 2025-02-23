@@ -32,7 +32,7 @@ public class SelfReportImportLayout extends AbstractImportLayout {
 
 			try {
 				SelfReportImporter importer = new SelfReportImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
-				importer.startImport(SelfReportImportLayout.this::extendDownloadErrorReportButton, currentUI, true, false);
+				importer.startImport(SelfReportImportLayout.this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

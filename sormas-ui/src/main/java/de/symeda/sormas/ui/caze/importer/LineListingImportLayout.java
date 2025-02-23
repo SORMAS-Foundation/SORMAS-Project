@@ -39,7 +39,7 @@ public class LineListingImportLayout extends AbstractImportLayout {
 
 			try {
 				CaseImporter importer = new CaseImporter(file, false, currentUser, (ValueSeparator) separator.getValue());
-				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true, false);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),
