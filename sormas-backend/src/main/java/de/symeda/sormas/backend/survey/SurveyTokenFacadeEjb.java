@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.survey;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,11 +43,13 @@ import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
@@ -80,6 +83,10 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private CaseService caseService;
 	@EJB
 	private DocumentFacadeEjbLocal documentFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
 
 	@Override
 	@RightsAllowed({
@@ -158,6 +165,27 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@RightsAllowed(UserRight._SURVEY_TOKEN_DELETE)
 	public void deletePermanent(String uuid) {
 		surveyTokenService.deletePermanent(surveyTokenService.getByUuid(uuid));
+	}
+
+	@Override
+	public String getSurveyTokensImportTemplateFilePath() {
+		return getImportTemplateFilePath(SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokensImportTemplateFileName() {
+		return getImportTemplateFileName(SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+
+	private String getImportTemplateFilePath(String baseFilename) {
+		java.nio.file.Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
+	}
+
+	private String getImportTemplateFileName(String baseFilename) {
+		String instanceName = DataHelper.cleanStringForFileName(configFacade.getSormasInstanceName().toLowerCase());
+		return instanceName + "_" + baseFilename;
 	}
 
 	private List<Selection<?>> sortBy(List<SortProperty> sortProperties, Root<SurveyToken> root, CriteriaBuilder cb, CriteriaQuery<?> cq) {
