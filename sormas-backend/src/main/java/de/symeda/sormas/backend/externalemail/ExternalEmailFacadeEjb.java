@@ -115,7 +115,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private static final Map<DocumentWorkflow, DocumentRelatedEntityType> DOCUMENT_WORKFLOW_DOCUMENT_RELATION_MAPPING = Map.of(
 		DocumentWorkflow.CASE_EMAIL, DocumentRelatedEntityType.CASE,
 		DocumentWorkflow.CONTACT_EMAIL, DocumentRelatedEntityType.CONTACT,
-		DocumentWorkflow.TRAVEL_ENTRY_EMAIL, DocumentRelatedEntityType.TRAVEL_ENTRY
+		DocumentWorkflow.TRAVEL_ENTRY_EMAIL, DocumentRelatedEntityType.TRAVEL_ENTRY,
+		DocumentWorkflow.SURVEY_EMAIL, DocumentRelatedEntityType.CASE
 	);
 	// @formatter:on
 

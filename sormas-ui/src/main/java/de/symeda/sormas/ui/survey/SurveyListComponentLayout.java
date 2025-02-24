@@ -15,23 +15,34 @@
 
 package de.symeda.sormas.ui.survey;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -50,12 +61,23 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 	private static final long serialVersionUID = -4364573774979104517L;
 
-	public SurveyListComponentLayout(CaseReferenceDto caseRef, boolean isEditAllowed, boolean isEmailAllowed, Consumer<Runnable> actionWrapper) {
+	public SurveyListComponentLayout(
+		CaseReferenceDto caseRef,
+		Disease disease,
+		PersonDto person,
+		boolean isEditAllowed,
+		boolean isEmailAllowed,
+		Consumer<Runnable> actionWrapper,
+		Runnable createCallback) {
 		super(
 			new SurveyListComponent(
 				I18nProperties.getString(Strings.headingSurveySideComponent),
+				caseRef,
+				disease,
+				person,
 				new SurveyTokenCriteria().caseAssignedTo(caseRef),
 				actionWrapper,
+				createCallback,
 				isEditAllowed,
 				isEmailAllowed));
 	}
@@ -66,8 +88,12 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 		public SurveyListComponent(
 			String heading,
+			CaseReferenceDto caseRef,
+			Disease disease,
+			PersonDto person,
 			SurveyTokenCriteria surveyTokenCriteria,
 			Consumer<Runnable> actionWrapper,
+			Runnable createCallback,
 			boolean isEditAllowed,
 			boolean isEmailAllowed) {
 			super(heading, actionWrapper);
@@ -83,6 +109,8 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 			if (isEmailAllowed) {
 				Button sendSurveyButton = ButtonHelper.createButton(Captions.surveySend, I18nProperties.getCaption(Captions.surveySend), (e) -> {
+					ControllerProvider.getSurveyDocumentController()
+						.sendSurveyDocument(RootEntityType.ROOT_CASE, caseRef, disease, person, createCallback);
 				}, ValoTheme.BUTTON_PRIMARY);
 				sendSurveyButton.setWidth(100, Unit.PERCENTAGE);
 				uploadLayout.addComponent(sendSurveyButton);
@@ -90,6 +118,8 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 
 			Button generateSurveyDocButton =
 				ButtonHelper.createButton(Captions.surveyGenerate, I18nProperties.getCaption(Captions.surveyGenerate), (e) -> {
+					ControllerProvider.getSurveyDocumentController()
+						.generateSurveyDocument(RootEntityType.ROOT_CASE, caseRef, disease, createCallback);
 				});
 			if (!isEmailAllowed) {
 				generateSurveyDocButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -144,12 +174,42 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 				SurveyTokenIndexDto token = displayedEntries.get(i);
 				SurveyListEntry listEntry = new SurveyListEntry(token);
 
+				Button downloadButton = buildDownloadButton(token);
+				listEntry.addComponent(downloadButton);
+				listEntry.setComponentAlignment(downloadButton, Alignment.TOP_RIGHT);
+				listEntry.setExpandRatio(downloadButton, 0);
+
 				listEntry.addActionButton(String.valueOf(i), (Button.ClickListener) clickEvent -> {
 					ControllerProvider.getSurveyTokenController().showCaseSurveyDetails(listEntry.getToken().toReference(), this::reload);
 				}, UiUtil.permitted(isEditAllowed, UserRight.SURVEY_EDIT));
 				listEntry.setEnabled(isEditAllowed);
 				listLayout.addComponent(listEntry);
 			}
+		}
+
+		private Button buildDownloadButton(SurveyTokenIndexDto token) {
+			Button viewButton = ButtonHelper.createIconButton(null, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+
+			StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
+				DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();
+				try {
+					return new ByteArrayInputStream(documentFacade.getContent(token.getGeneratedDocumentUuid()));
+				} catch (IOException | IllegalArgumentException e) {
+					new Notification(
+						String.format(I18nProperties.getString(Strings.errorReadingDocument), token.getGeneratedDocumentName()),
+						e.getMessage(),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+					return null;
+				}
+			}, token.getGeneratedDocumentName());
+			streamResource.setMIMEType(token.getGeneratedDocumentMimeType());
+
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(viewButton);
+			fileDownloader.setFileDownloadResource(streamResource);
+
+			return viewButton;
 		}
 	}
 
@@ -199,6 +259,17 @@ public class SurveyListComponentLayout extends SideComponentLayout {
 							: I18nProperties.getString(Strings.infoSurveyResponseNotReceived)));
 			}
 			topLayout.addComponent(topLeftLayout);
+		}
+
+		public void addDeleteButton(String id, Button.ClickListener actionClickListener) {
+			Button actionButton = ButtonHelper.createIconButtonWithCaption(
+				"delete" + id,
+				null,
+				VaadinIcons.TRASH,
+				actionClickListener,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
+
 		}
 
 		public SurveyTokenIndexDto getToken() {

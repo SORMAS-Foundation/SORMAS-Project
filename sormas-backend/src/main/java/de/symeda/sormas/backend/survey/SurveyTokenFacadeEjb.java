@@ -51,6 +51,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.person.Person;
@@ -144,7 +145,10 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 						joins.getCaseAssignedToJoins().getPerson().get(Person.LAST_NAME),
 						root.get(SurveyToken.ASSIGNMENT_DATE),
 						root.get(SurveyToken.RECIPIENT_EMAIL),
-						root.get(SurveyToken.RESPONSE_RECEIVED)),
+						root.get(SurveyToken.RESPONSE_RECEIVED),
+						joins.getGeneratedDocument().get(Document.UUID),
+						joins.getGeneratedDocument().get(Document.NAME),
+						joins.getGeneratedDocument().get(Document.MIME_TYPE)),
 					// add sort properties to select
 					sortBy(sortProperties, root, cb, cq).stream())
 				.collect(Collectors.toList()));
