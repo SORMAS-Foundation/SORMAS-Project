@@ -19,6 +19,7 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateReferenceDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -47,8 +48,10 @@ public class DocGenerationHelper {
 			return DocumentRelatedEntityType.ACTION;
 		} else if (rootEntityReference instanceof EventReferenceDto) {
 			return DocumentRelatedEntityType.EVENT;
-		} else {
+		} else if (rootEntityReference instanceof EventParticipantReferenceDto) {
 			return DocumentRelatedEntityType.TRAVEL_ENTRY;
+		} else {
+			throw new IllegalArgumentException("Root entity reference type not supported: " + rootEntityReference.getClass());
 		}
 	}
 
@@ -77,11 +80,8 @@ public class DocGenerationHelper {
 		return shortUuid + templateFileName;
 	}
 
-	public DocumentDto saveDocument(
-		String fileName,
-		String mimeType,
-		ReferenceDto rootEntityReference,
-		byte[] bytes) throws DocumentTemplateException {
+	public DocumentDto saveDocument(String fileName, String mimeType, ReferenceDto rootEntityReference, byte[] bytes)
+		throws DocumentTemplateException {
 		if (isFileSizeLimitExceeded(bytes.length)) {
 			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorUploadGeneratedDocumentExceedsFileSizeLimit));
 		}
@@ -95,17 +95,17 @@ public class DocGenerationHelper {
 		DocumentRelatedEntityType relatedEntityType = getDocumentRelatedEntityType(rootEntityReference);
 		DocumentRelatedEntityDto documentRelatedEntities = DocumentRelatedEntityDto.build(relatedEntityType, rootEntityReference.getUuid());
 
-        try {
-            return documentFacade.saveDocument(document, bytes, Collections.singletonList(documentRelatedEntities));
-        } catch (IOException e) {
-            throw new DocumentTemplateException(I18nProperties.getString(Strings.errorUploadGeneratedDocument));
-        }
-    }
+		try {
+			return documentFacade.saveDocument(document, bytes, Collections.singletonList(documentRelatedEntities));
+		} catch (IOException e) {
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorUploadGeneratedDocument));
+		}
+	}
 
 	private boolean isFileSizeLimitExceeded(int length) {
 		long fileSizeLimitMb = configFacade.getDocumentUploadSizeLimitMb();
-		fileSizeLimitMb = fileSizeLimitMb * 1_000_000;
-		return length > fileSizeLimitMb;
+		long fileSizeLimitBytes = fileSizeLimitMb * 1_000_000;
+		return length > fileSizeLimitBytes;
 	}
 
 }
