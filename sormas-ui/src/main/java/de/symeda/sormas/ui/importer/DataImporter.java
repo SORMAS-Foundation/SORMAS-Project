@@ -135,7 +135,7 @@ public abstract class DataImporter {
 
 	private final EnumCaptionCache enumCaptionCache;
 
-	private final boolean singleColumnImport;
+	private boolean singleColumnImport;
 
 	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 		this.inputFile = inputFile;
@@ -158,23 +158,8 @@ public abstract class DataImporter {
 	}
 
 	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator, boolean singleColumnImport) throws IOException {
-		this.inputFile = inputFile;
-		this.hasEntityClassRow = hasEntityClassRow;
-		this.currentUser = currentUser;
-		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
+		this(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.singleColumnImport = singleColumnImport;
-
-		Path exportDirectory = getErrorReportFolderPath();
-		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
-			logger.error(exportDirectory + " doesn't exist or cannot be accessed");
-			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
-		}
-		Path errorReportFilePath = exportDirectory.resolve(
-				ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
-						+ DateHelper.formatDateForExport(new Date()) + ".csv");
-		this.errorReportFilePath = errorReportFilePath.toString();
-
-		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator, FacadeProvider.getConfigFacade().getCsvSeparator());
 	}
 
 	/**
