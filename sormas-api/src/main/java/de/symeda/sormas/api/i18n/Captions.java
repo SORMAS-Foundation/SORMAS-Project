@@ -85,6 +85,7 @@ public interface Captions {
 	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
 	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
+	String actionImportSurveyTokens = "actionImportSurveyTokens";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
