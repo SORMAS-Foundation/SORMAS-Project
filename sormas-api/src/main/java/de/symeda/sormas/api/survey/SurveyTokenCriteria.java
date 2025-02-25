@@ -24,6 +24,7 @@ public class SurveyTokenCriteria extends BaseCriteria {
 
 	private SurveyReferenceDto survey;
 	private String tokenLike;
+	private String token;
 	private CaseReferenceDto caseAssignedTo;
 
 	public SurveyReferenceDto getSurvey() {
@@ -45,6 +46,14 @@ public class SurveyTokenCriteria extends BaseCriteria {
 
 	public void setTokenLike(String tokenLike) {
 		this.tokenLike = tokenLike;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	public SurveyTokenCriteria tokenLike(String tokenLike) {
