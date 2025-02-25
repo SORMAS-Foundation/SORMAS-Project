@@ -47,7 +47,7 @@ public class SurveyTokenImporter extends DataImporter {
 			return ImportLineResult.ERROR;
 		}
 
-		EntityDto newEntityDto = SurveyTokenDto.build(survey);
+		EntityDto newEntityDto = SurveyTokenDto.build(survey.toReference());
 
 		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
 			try {

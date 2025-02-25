@@ -206,6 +206,16 @@ public class SurveyFacadeEjb implements SurveyFacade {
 	}
 
 	@Override
+	public List<SurveyReferenceDto> getAllAsReference() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Survey> cq = cb.createQuery(Survey.class);
+		Root<Survey> from = cq.from(Survey.class);
+		cq.orderBy(cb.desc(from.get(Survey.NAME)));
+
+		return em.createQuery(cq).getResultList().stream().map(SurveyFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	@Override
 	@RightsAllowed(UserRight._SURVEY_VIEW)
 	public SurveyDto getByUuid(String uuid) {
 		return toDto(surveyService.getByUuid(uuid));

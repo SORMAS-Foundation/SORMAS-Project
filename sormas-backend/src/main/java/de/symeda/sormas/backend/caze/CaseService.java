@@ -78,6 +78,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PreviousCaseDto;
+import de.symeda.sormas.api.caze.SurveyResponseStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -168,6 +169,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessService;
+import de.symeda.sormas.backend.survey.Survey;
+import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -686,7 +689,8 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
 		}
 		if (caseCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE_VARIANT_VALUE), caseCriteria.getDiseaseVariant().getValue()));
 		}
 		if (caseCriteria.getOutcome() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
@@ -967,6 +971,38 @@ public class CaseService extends AbstractCoreAdoService<Case, CaseJoins> {
 				from,
 				ExternalShareInfo.CAZE,
 				(latestShareDate) -> createChangeDateFilter(cq, cb, joins, latestShareDate, true, true)));
+
+		if (caseCriteria.getSurveyAssignedFrom() != null && caseCriteria.getSurveyAssignedTo() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.between(
+					joins.getSurveyTokens().get(SurveyToken.ASSIGNMENT_DATE),
+					caseCriteria.getSurveyAssignedFrom(),
+					caseCriteria.getSurveyAssignedTo()));
+		} else if (caseCriteria.getSurveyAssignedFrom() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.greaterThanOrEqualTo(joins.getSurveyTokens().get(SurveyToken.ASSIGNMENT_DATE), caseCriteria.getSurveyAssignedFrom()));
+		} else if (caseCriteria.getSurveyAssignedTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.lessThanOrEqualTo(joins.getSurveyTokens().get(SurveyToken.ASSIGNMENT_DATE), caseCriteria.getSurveyAssignedTo()));
+		}
+
+		if (caseCriteria.getSurvey() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getSurveyTokenJoins().getSurvey().get(Survey.UUID), caseCriteria.getSurvey().getUuid()));
+		}
+
+		if (caseCriteria.getSurveyResponseStatus() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(
+					joins.getSurveyTokens().get(SurveyToken.RESPONSE_RECEIVED),
+					caseCriteria.getSurveyResponseStatus() == SurveyResponseStatus.RECEIVED));
+		}
 
 		return filter;
 	}
