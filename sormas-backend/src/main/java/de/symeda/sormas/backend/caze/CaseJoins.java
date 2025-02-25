@@ -44,6 +44,8 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
+import de.symeda.sormas.backend.survey.SurveyToken;
+import de.symeda.sormas.backend.survey.SurveyTokenJoins;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -80,6 +82,8 @@ public class CaseJoins extends QueryJoins<Case> {
 	private SampleJoins sampleJoins;
 	private EventParticipantJoins eventParticipantJoins;
 	private Join<Case, SpecialCaseAccess> specialCaseAccesses;
+	private Join<Case, SurveyToken> surveyTokens;
+	private SurveyTokenJoins surveyTokenJoins;
 
 	public CaseJoins(From<?, Case> caze) {
 		super(caze);
@@ -343,5 +347,21 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private void setSpecialCaseAccesses(Join<Case, SpecialCaseAccess> specialCaseAccesses) {
 		this.specialCaseAccesses = specialCaseAccesses;
+	}
+
+    public Join<Case, SurveyToken> getSurveyTokens() {
+		return getOrCreate(surveyTokens, Case.SURVEY_TOKENS, JoinType.LEFT, this::setSurveyTokens);
+	}
+
+	private void setSurveyTokens(Join<Case, SurveyToken> surveyTokens) {
+		this.surveyTokens = surveyTokens;
+	}
+
+	public SurveyTokenJoins getSurveyTokenJoins() {
+		return getOrCreate(surveyTokenJoins, () -> new SurveyTokenJoins(getSurveyTokens()), this::setSurveyTokenJoins);
+	}
+
+	private void setSurveyTokenJoins(SurveyTokenJoins surveyTokenJoins) {
+		this.surveyTokenJoins = surveyTokenJoins;
 	}
 }

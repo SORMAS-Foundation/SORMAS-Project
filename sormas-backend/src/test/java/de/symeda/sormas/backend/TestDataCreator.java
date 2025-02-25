@@ -126,6 +126,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessDto;
+import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -2464,6 +2465,14 @@ public class TestDataCreator {
 		specialCaseAccess.setEndDateTime(endDateTime);
 
 		return beanTest.getSpecialCaseAccessFacade().save(specialCaseAccess);
+	}
+
+	public SurveyDto createSurvey(String name, Disease disease) {
+		SurveyDto survey = SurveyDto.build();
+		survey.setName(name);
+		survey.setDisease(disease);
+
+		return beanTest.getSurveyFacade().save(survey);
 	}
 
 	/**
