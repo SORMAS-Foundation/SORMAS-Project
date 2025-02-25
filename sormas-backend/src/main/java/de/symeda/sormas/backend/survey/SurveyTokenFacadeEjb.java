@@ -87,6 +87,8 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 
 	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
 
+	private static final String SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME = "import_survey_token_responses_template.csv";
+
 	@Override
 	@RightsAllowed({
 		UserRight._SURVEY_TOKEN_CREATE,
@@ -171,6 +173,16 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@Override
 	public String getSurveyTokensImportTemplateFileName() {
 		return getImportTemplateFileName(SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokenResponsesImportTemplateFilePath() {
+		return getImportTemplateFilePath(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokenResponsesImportTemplateFileName() {
+		return getImportTemplateFileName(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 

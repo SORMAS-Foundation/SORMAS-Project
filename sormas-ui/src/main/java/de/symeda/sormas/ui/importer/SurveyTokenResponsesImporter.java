@@ -3,7 +3,11 @@ package de.symeda.sormas.ui.importer;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
+import de.symeda.sormas.api.survey.SurveyTokenCriteria;
+import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
@@ -20,15 +24,15 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 /**
- * Data importer that is used to import survey tokens.
+ * Data importer that is used to import survey token responses.
  */
-public class SurveyTokenImporter extends DataImporter {
+public class SurveyTokenResponsesImporter extends DataImporter {
 
 	private final SurveyDto survey;
 
-	public SurveyTokenImporter(File inputFile, UserDto currentUser, SurveyDto survey, ValueSeparator csvSeparator)
+	public SurveyTokenResponsesImporter(File inputFile, UserDto currentUser, SurveyDto survey, ValueSeparator csvSeparator)
 		throws IOException {
-		super(inputFile, false, currentUser, csvSeparator, true);
+		super(inputFile, false, currentUser, csvSeparator);
 		this.survey = survey;
 	}
 
@@ -49,6 +53,17 @@ public class SurveyTokenImporter extends DataImporter {
 
 		EntityDto newEntityDto = SurveyTokenDto.build(survey);
 
+		SurveyTokenCriteria criteria = new SurveyTokenCriteria();
+		criteria.setSurvey(survey.toReferenceDto());
+		criteria.setToken(values[0]);
+		List<SurveyTokenIndexDto> list = FacadeProvider.getSurveyTokenFacade().getIndexList(criteria, 1, 1, null);
+		if(list.size() == 1){
+			newEntityDto.setUuid(list.get(0).getUuid());
+			newEntityDto.setChangeDate(new Date());
+		} else {
+			writeImportError(values, String.format("UUID %s was not found  for current survey: %s", values[0], survey.getName()));
+			return ImportLineResult.SKIPPED;
+		}
 		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
 			try {
 				// If the cell entry is not empty, try to insert it into the current object
@@ -69,8 +84,8 @@ public class SurveyTokenImporter extends DataImporter {
 			}
 		}
 
-		// Save the survey token object into the database if the import has no errors or throw an error
-		// if there is already an survey token object with this name in the database
+		// Save the survey token response object into the database if the import has no errors or log a skipped record
+		// if there is already an survey token response object with this name in the database
 		if (!hasImportError) {
 			try {
 				FacadeProvider.getSurveyTokenFacade().save((SurveyTokenDto) newEntityDto);
@@ -85,7 +100,7 @@ public class SurveyTokenImporter extends DataImporter {
 	}
 
 	/**
-	 * Inserts the entry of a single cell into the survey token object.
+	 * Inserts the entry of a single cell into the survey token response object.
 	 */
 	private void insertColumnEntryIntoData(EntityDto newEntityDto, String value, String[] entityPropertyPath)
 			throws InvalidColumnException, ImportErrorException {
@@ -102,7 +117,7 @@ public class SurveyTokenImporter extends DataImporter {
 					Class<?> propertyType = pd.getPropertyType();
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
-					// according to the types of the survey token object's fields; additionally, throw an error if survey token data that
+					// according to the types of the survey token response object's fields; additionally, throw an error if survey token response data that
 					// is referenced in the imported object does not exist in the database
 					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) {
 						throw new UnsupportedOperationException(

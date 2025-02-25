@@ -75,6 +75,8 @@ public interface ImportFacade {
 
 	void generateSurveyTokenImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException, NoSuchFieldException;
 
+	void generateSurveyTokenResponsesImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException, NoSuchFieldException;
+
 	String getCaseImportTemplateFileName();
 
 	String getCaseImportTemplateFilePath();
@@ -158,4 +160,6 @@ public interface ImportFacade {
 	String getSelfReportImportTemplateFileName();
 
 	String getSurveyTokenImportTemplateFilePath();
+
+	String getSurveyTokenResponsesImportTemplateFilePath();
 }

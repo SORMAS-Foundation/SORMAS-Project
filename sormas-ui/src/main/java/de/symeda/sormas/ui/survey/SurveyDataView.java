@@ -15,6 +15,7 @@ import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
+import de.symeda.sormas.ui.configuration.infrastructure.ImportSurveyTokenResponsesLayout;
 import de.symeda.sormas.ui.configuration.infrastructure.ImportSurveyTokensLayout;
 import de.symeda.sormas.ui.samples.HasName;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -61,7 +62,26 @@ public class SurveyDataView extends AbstractSurveyView implements HasName {
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent);
 		container.addComponent(createSurveyTokenImportButton());
+		container.addComponent(createSurveyTokenResponsesButton());
 		container.addComponent(layout);
+	}
+	private HorizontalLayout createSurveyTokenResponsesButton() {
+		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setWidth("100%");
+		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		if (UiUtil.permitted(UserRight.SURVEY_TOKEN_IMPORT)) {
+			Button importSurveyTokenResponsesButton = ButtonHelper.createIconButton(Captions.actionImportSurveyTokenResponses, VaadinIcons.UPLOAD, e -> {
+				Window window = VaadinUiUtil.showPopupWindow(new ImportSurveyTokenResponsesLayout(survey));
+				window.setCaption(I18nProperties.getString(Strings.headingImportSurveyTokenResponses));
+			}, ValoTheme.BUTTON_PRIMARY);
+
+			statusFilterLayout.addComponent(importSurveyTokenResponsesButton);
+			statusFilterLayout.setComponentAlignment(importSurveyTokenResponsesButton, Alignment.MIDDLE_CENTER);
+		}
+		statusFilterLayout.addStyleName("top-bar");
+		return statusFilterLayout;
 	}
 
 	public HorizontalLayout createSurveyTokenImportButton() {

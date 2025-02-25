@@ -44,6 +44,10 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 			filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.ilike(cb, root.get(SurveyToken.TOKEN), criteria.getTokenLike()));
 		}
 
+		if (criteria.getToken() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.ilikePrecise(cb, root.get(SurveyToken.TOKEN), criteria.getToken()));
+		}
+
 		if (criteria.getCaseAssignedTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaseAssignedTo().get(Case.UUID), criteria.getCaseAssignedTo().getUuid()));
 		}
