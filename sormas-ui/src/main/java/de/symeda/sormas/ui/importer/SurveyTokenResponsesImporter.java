@@ -54,7 +54,7 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 		EntityDto newEntityDto = SurveyTokenDto.build(survey);
 
 		SurveyTokenCriteria criteria = new SurveyTokenCriteria();
-		criteria.setSurvey(survey.toReferenceDto());
+		criteria.setSurvey(survey.toReference());
 		criteria.setToken(values[0]);
 		List<SurveyTokenIndexDto> list = FacadeProvider.getSurveyTokenFacade().getIndexList(criteria, 1, 1, null);
 		if(list.size() == 1){
