@@ -8,6 +8,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
@@ -51,17 +52,23 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 			return ImportLineResult.ERROR;
 		}
 
-		EntityDto newEntityDto = SurveyTokenDto.build(survey);
+		int index = ArrayUtils.indexOf(entityProperties, SurveyTokenDto.TOKEN);
+		if(index == -1){
+			writeImportError(values, I18nProperties.getValidationError(Validations.tokenColumnWasNotFound));
+			return ImportLineResult.SKIPPED;
+		}
+
+		EntityDto newEntityDto;
 
 		SurveyTokenCriteria criteria = new SurveyTokenCriteria();
 		criteria.setSurvey(survey.toReference());
-		criteria.setToken(values[0]);
+		criteria.setToken(values[index]);
 		List<SurveyTokenIndexDto> list = FacadeProvider.getSurveyTokenFacade().getIndexList(criteria, 1, 1, null);
 		if(list.size() == 1){
-			newEntityDto.setUuid(list.get(0).getUuid());
+			newEntityDto = FacadeProvider.getSurveyTokenFacade().getByUuid(list.get(0).getUuid());
 			newEntityDto.setChangeDate(new Date());
 		} else {
-			writeImportError(values, String.format("UUID %s was not found  for current survey: %s", values[0], survey.getName()));
+			writeImportError(values, I18nProperties.getValidationError(Validations.tokenWasNotFound, values[index]));
 			return ImportLineResult.SKIPPED;
 		}
 		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
