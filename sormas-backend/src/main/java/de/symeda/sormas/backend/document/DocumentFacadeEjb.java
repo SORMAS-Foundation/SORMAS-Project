@@ -199,6 +199,14 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		return tikaConfig.getMimeRepository().forName(detect.toString());
 	}
 
+	public void deleteDocumentFromAllRelations(String documentUuid) {
+		// The document is only marked as delete here; actual deletion will be done in document storage cleanup via cron job
+		Document document = documentService.getByUuid(documentUuid);
+		document.getRelatedEntities().clear();
+		documentService.markAsDeleted(document);
+		documentService.ensurePersisted(document);
+	}
+
 	@Override
 	@RightsAllowed(UserRight._DOCUMENT_DELETE)
 	public void deleteDocument(String documentUuid, String relatedEntityUuid, DocumentRelatedEntityType relatedEntityType) {
@@ -254,6 +262,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		List<Document> deleted = documentService.getDocumentsMarkedForDeletion();
 		for (Document document : deleted) {
 			documentStorageService.delete(document.getStorageReference());
+			document.getRelatedEntities().clear();
+			documentService.persist(document);
 			documentService.deletePermanent(document);
 		}
 	}

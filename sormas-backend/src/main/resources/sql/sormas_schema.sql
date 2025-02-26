@@ -13823,4 +13823,8 @@ ALTER TABLE surveytokens ADD CONSTRAINT unique_token_for_survey UNIQUE (token, s
 
 INSERT INTO schema_version (version_number, comment) VALUES (559, 'Import Survey Tokens #13191');
 
+ALTER TABLE surveytokens ADD COLUMN responsereceiveddate timestamp;
+ALTER TABLE surveytokens_history ADD COLUMN responsereceiveddate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (560, 'Create survey tokens pages #13253');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

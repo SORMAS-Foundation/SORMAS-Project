@@ -43,6 +43,7 @@ import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
+import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -55,7 +56,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
-import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb.SurveyFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -86,6 +87,8 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private DocumentFacadeEjbLocal documentFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private DocumentService documentService;
 
 	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
 
@@ -144,14 +147,13 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 						joins.getSurvey().get(Survey.NAME),
 						root.get(SurveyToken.TOKEN),
 						joins.getCaseAssignedTo().get(Case.UUID),
-						joins.getCaseAssignedToJoins().getPerson().get(Person.FIRST_NAME),
-						joins.getCaseAssignedToJoins().getPerson().get(Person.LAST_NAME),
 						root.get(SurveyToken.ASSIGNMENT_DATE),
 						root.get(SurveyToken.RECIPIENT_EMAIL),
 						root.get(SurveyToken.RESPONSE_RECEIVED),
 						joins.getGeneratedDocument().get(Document.UUID),
 						joins.getGeneratedDocument().get(Document.NAME),
-						joins.getGeneratedDocument().get(Document.MIME_TYPE)),
+						joins.getGeneratedDocument().get(Document.MIME_TYPE),
+						root.get(SurveyToken.RESPONSE_RECEIVED_DATE)),
 					// add sort properties to select
 					sortBy(sortProperties, root, cb, cq).stream())
 				.collect(Collectors.toList()));
@@ -161,13 +163,29 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 			cq.where(filter);
 		}
 
-		return QueryHelper.getResultList(em, cq, new SurveyTokenIndexDtoResultTransformer(), null, null);
+		List<SurveyTokenIndexDto> resultList = QueryHelper.getResultList(em, cq, new SurveyTokenIndexDtoResultTransformer(), null, null);
+		return resultList;
 	}
 
 	@Override
 	@RightsAllowed(UserRight._SURVEY_TOKEN_DELETE)
 	public void deletePermanent(String uuid) {
-		surveyTokenService.deletePermanent(surveyTokenService.getByUuid(uuid));
+		SurveyToken surveyToken = surveyTokenService.getByUuid(uuid);
+		if (surveyToken.getGeneratedDocument() != null) {
+			documentFacade.deleteDocumentFromAllRelations(surveyToken.getGeneratedDocument().getUuid());
+		}
+		surveyTokenService.deletePermanent(surveyToken);
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return surveyTokenService.exists(uuid);
+	}
+
+	@Override
+	public SurveyTokenReferenceDto getReferenceByUuid(String uuid) {
+		SurveyToken surveyToken = surveyTokenService.getByUuid(uuid);
+		return toReferenceDto(surveyToken);
 	}
 
 	@Override
@@ -194,7 +212,6 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	public SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token) {
 		return toDto(surveyTokenService.getBySurveyAndToken(survey, token));
 	}
-
 
 	private String getImportTemplateFilePath(String baseFilename) {
 		java.nio.file.Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
@@ -252,6 +269,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		target.setAssignmentDate(source.getAssignmentDate());
 		target.setRecipientEmail(source.getRecipientEmail());
 		target.setResponseReceived(source.isResponseReceived());
+		target.setResponseReceivedDate(source.getResponseReceivedDate());
 
 		return target;
 	}
@@ -271,8 +289,18 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 		target.setRecipientEmail(source.getRecipientEmail());
 		target.setGeneratedDocument(DocumentFacadeEjb.toReferenceDto(source.getGeneratedDocument()));
 		target.setResponseReceived(source.isResponseReceived());
+		target.setResponseReceivedDate(source.getResponseReceivedDate());
 
 		return target;
+	}
+
+	public static SurveyTokenReferenceDto toReferenceDto(SurveyToken entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new SurveyTokenReferenceDto(entity.getUuid());
 	}
 
 	@LocalBean

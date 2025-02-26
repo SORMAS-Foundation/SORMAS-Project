@@ -21,6 +21,10 @@ public class SurveyTokenReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8524526281454532572L;
 
+	public SurveyTokenReferenceDto(String uuid) {
+		super(uuid);
+	}
+
 	public SurveyTokenReferenceDto(String uuid, String caption) {
 		super(uuid, caption);
 	}

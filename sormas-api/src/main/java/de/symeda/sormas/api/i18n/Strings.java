@@ -1559,6 +1559,8 @@ public interface Strings {
 	String messageSurveyNoEmailTemplate = "messageSurveyNoEmailTemplate";
 	String messageSurveyNoTokens = "messageSurveyNoTokens";
 	String messageSurveySaved = "messageSurveySaved";
+	String messageSurveyTokenDelete = "messageSurveyTokenDelete";
+	String messageSurveyTokenSaved = "messageSurveyTokenSaved";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSyncUsersFromAuthProviderConfigurationError = "messageSyncUsersFromAuthProviderConfigurationError";
@@ -1805,6 +1807,7 @@ public interface Strings {
 	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
 	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
 	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
+	String promptSurveyTokenFreeTextSearch = "promptSurveyTokenFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";

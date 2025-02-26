@@ -18,17 +18,26 @@ package de.symeda.sormas.ui.survey;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import de.symeda.sormas.api.survey.SurveyTokenDto;
+import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 
 	private static final String HTML_LAYOUT = fluidRowLocs(SurveyTokenDto.UUID, SurveyTokenDto.TOKEN)
 		+ fluidRowLocs(SurveyTokenDto.SURVEY, "")
 		+ fluidRowLocs(SurveyTokenDto.ASSIGNMENT_DATE, SurveyTokenDto.RECIPIENT_EMAIL)
-		+ fluidRowLocs(SurveyTokenDto.RESPONSE_RECEIVED);
+		+ fluidRowLocs(SurveyTokenDto.RESPONSE_RECEIVED, SurveyTokenDto.RESPONSE_RECEIVED_DATE);
+
+	private SurveyTokenReferenceDto surveyTokenReference;
 
 	protected SurveyTokenDataForm() {
 		super(SurveyTokenDto.class, SurveyTokenDto.I18N_PREFIX);
+	}
+
+	protected SurveyTokenDataForm(boolean isEditAllowed, SurveyTokenReferenceDto dto) {
+		super(SurveyTokenDto.class, SurveyTokenDto.I18N_PREFIX);
+		this.surveyTokenReference = dto;
 	}
 
 	@Override
@@ -44,5 +53,8 @@ public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 		addField(SurveyTokenDto.ASSIGNMENT_DATE).setReadOnly(true);
 		addField(SurveyTokenDto.RECIPIENT_EMAIL).setReadOnly(true);
 		addField(SurveyTokenDto.RESPONSE_RECEIVED);
+		addField(SurveyTokenDto.RESPONSE_RECEIVED_DATE);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), SurveyTokenDto.RESPONSE_RECEIVED_DATE, SurveyTokenDto.RESPONSE_RECEIVED, true, true);
 	}
 }

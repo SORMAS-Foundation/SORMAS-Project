@@ -355,6 +355,9 @@ public class MainScreen extends HorizontalLayout {
 
 		if (permitted(FeatureType.SURVEYS, UserRight.SURVEY_VIEW)) {
 			ControllerProvider.getSurveyController().registeredViews(navigator);
+			if (permitted(UserRight.SURVEY_TOKEN_VIEW)) {
+				ControllerProvider.getSurveyTokenController().registeredViews(navigator);
+			}
 			menu.addView(SurveysView.class, SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSurveys), VaadinIcons.BULLETS);
 		}
 

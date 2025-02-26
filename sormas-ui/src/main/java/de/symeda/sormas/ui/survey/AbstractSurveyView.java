@@ -49,7 +49,12 @@ public abstract class AbstractSurveyView extends AbstractDetailView<SurveyRefere
 		menu.removeAllViews();
 		menu.addView(SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.surveySurveyList));
 		menu.addView(SurveyDataView.VIEW_NAME, I18nProperties.getCaption(SurveyDto.I18N_PREFIX), params);
+		menu.addView(SurveyTokensView.VIEW_NAME, I18nProperties.getPrefixCaption(SurveyDto.I18N_PREFIX, Captions.surveySurveyTokenList), params);
 
 		setMainHeaderComponent(ControllerProvider.getSurveyController().getSurveyViewTitleLayout(getReference().getUuid()));
+	}
+
+	public SurveyReferenceDto getSurveyRef() {
+		return (SurveyReferenceDto) getReference();
 	}
 }

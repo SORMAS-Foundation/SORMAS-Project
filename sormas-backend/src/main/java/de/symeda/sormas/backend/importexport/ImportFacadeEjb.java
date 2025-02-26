@@ -74,7 +74,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.survey.SurveyTokenDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
@@ -134,6 +133,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.selfreport.SelfReportDto;
+import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
@@ -558,17 +558,18 @@ public class ImportFacadeEjb implements ImportFacade {
 		List<ImportColumn> importColumns = new ArrayList<>();
 
 		appendListOfFields(
-				importColumns,
-				SurveyTokenDto.class,
-				"",
-				separator,
-				featureConfigurations,
-				SurveyTokenDto.SURVEY,
-				SurveyTokenDto.ASSIGNMENT_DATE,
-				SurveyTokenDto.CASE_ASSIGNED_TO,
-				SurveyTokenDto.GENERATED_DOCUMENT,
-				SurveyTokenDto.RECIPIENT_EMAIL,
-				SurveyTokenDto.RESPONSE_RECEIVED);
+			importColumns,
+			SurveyTokenDto.class,
+			"",
+			separator,
+			featureConfigurations,
+			SurveyTokenDto.SURVEY,
+			SurveyTokenDto.ASSIGNMENT_DATE,
+			SurveyTokenDto.CASE_ASSIGNED_TO,
+			SurveyTokenDto.GENERATED_DOCUMENT,
+			SurveyTokenDto.RECIPIENT_EMAIL,
+			SurveyTokenDto.RESPONSE_RECEIVED,
+			SurveyTokenDto.RESPONSE_RECEIVED_DATE);
 
 		writeTemplate(Paths.get(getSurveyTokenImportTemplateFilePath()), importColumns, false);
 	}

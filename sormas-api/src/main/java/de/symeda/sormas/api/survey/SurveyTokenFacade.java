@@ -44,4 +44,8 @@ public interface SurveyTokenFacade {
 	String getSurveyTokenResponsesImportTemplateFileName();
 
 	SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token);
+
+	boolean exists(String uuid);
+
+	SurveyTokenReferenceDto getReferenceByUuid(String uuid);
 }
