@@ -65,4 +65,6 @@ public interface SurveyFacade {
     boolean hasUnassignedTokens(SurveyReferenceDto survey);
 
     DocumentVariables getDocumentVariables(SurveyReferenceDto surveyRef) throws DocumentTemplateException;
+
+    List<SurveyReferenceDto> getAllAsReference();
 }

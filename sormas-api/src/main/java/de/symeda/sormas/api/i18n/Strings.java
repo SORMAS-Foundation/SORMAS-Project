@@ -1806,7 +1806,11 @@ public interface Strings {
 	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
 	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
 	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
+	String promptSurvey = "promptSurvey";
+	String promptSurveyAssignedFrom = "promptSurveyAssignedFrom";
+	String promptSurveyAssignedTo = "promptSurveyAssignedTo";
 	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
+	String promptSurveyResponseStatus = "promptSurveyResponseStatus";
 	String promptSurveyTokenFreeTextSearch = "promptSurveyTokenFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
