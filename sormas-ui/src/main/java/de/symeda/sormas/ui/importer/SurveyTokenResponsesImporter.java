@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
+import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.survey.SurveyTokenIndexDto;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -52,23 +52,24 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 			return ImportLineResult.ERROR;
 		}
 
-		int index = ArrayUtils.indexOf(entityProperties, SurveyTokenDto.TOKEN);
-		if(index == -1){
+		int tokenIndex = ArrayUtils.indexOf(entityProperties, SurveyTokenDto.TOKEN);
+		if(tokenIndex == -1){
 			writeImportError(values, I18nProperties.getValidationError(Validations.tokenColumnWasNotFound));
 			return ImportLineResult.SKIPPED;
 		}
 
-		EntityDto newEntityDto;
+		SurveyTokenDto newEntityDto;
 
 		SurveyTokenCriteria criteria = new SurveyTokenCriteria();
 		criteria.setSurvey(survey.toReference());
-		criteria.setToken(values[index]);
-		List<SurveyTokenIndexDto> list = FacadeProvider.getSurveyTokenFacade().getIndexList(criteria, 1, 1, null);
+		criteria.setToken(values[tokenIndex]);
+		SurveyTokenFacade getByToken = FacadeProvider.getSurveyTokenFacade();
+		List<SurveyTokenIndexDto> list = getByToken.getIndexList(criteria, 1, 1, null);
 		if(list.size() == 1){
-			newEntityDto = FacadeProvider.getSurveyTokenFacade().getByUuid(list.get(0).getUuid());
+			newEntityDto = getByToken.getByUuid(list.get(0).getUuid());
 			newEntityDto.setChangeDate(new Date());
 		} else {
-			writeImportError(values, I18nProperties.getValidationError(Validations.tokenWasNotFound, values[index]));
+			writeImportError(values, I18nProperties.getValidationError(Validations.tokenWasNotFound, values[tokenIndex]));
 			return ImportLineResult.SKIPPED;
 		}
 		boolean hasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
@@ -84,7 +85,7 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 		});
 
 		if (!hasImportError) {
-			ImportLineResultDto<EntityDto> constraintErrors = validateConstraints(newEntityDto);
+			ImportLineResultDto<SurveyTokenDto> constraintErrors = validateConstraints(newEntityDto);
 			if (constraintErrors.isError()) {
 				writeImportError(values, constraintErrors.getMessage());
 				hasImportError = true;
@@ -95,7 +96,7 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 		// if there is already an survey token response object with this name in the database
 		if (!hasImportError) {
 			try {
-				FacadeProvider.getSurveyTokenFacade().save((SurveyTokenDto) newEntityDto);
+				getByToken.save(newEntityDto);
 				return ImportLineResult.SUCCESS;
 			} catch (ValidationRuntimeException e) {
 				writeImportError(values, e.getMessage());
@@ -109,7 +110,7 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 	/**
 	 * Inserts the entry of a single cell into the survey token response object.
 	 */
-	private void insertColumnEntryIntoData(EntityDto newEntityDto, String value, String[] entityPropertyPath)
+	private void insertColumnEntryIntoData(SurveyTokenDto newEntityDto, String value, String[] entityPropertyPath)
 			throws InvalidColumnException, ImportErrorException {
 
 		Object currentElement = newEntityDto;
