@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
@@ -52,7 +53,7 @@ public class SurveyTokenDataForm extends AbstractEditForm<SurveyTokenDto> {
 		addField(SurveyTokenDto.SURVEY).setReadOnly(true);
 		addField(SurveyTokenDto.ASSIGNMENT_DATE).setReadOnly(true);
 		addField(SurveyTokenDto.RECIPIENT_EMAIL).setReadOnly(true);
-		addField(SurveyTokenDto.RESPONSE_RECEIVED);
+		addField(SurveyTokenDto.RESPONSE_RECEIVED).addStyleName(CssStyles.FORCE_CAPTION);
 		addField(SurveyTokenDto.RESPONSE_RECEIVED_DATE);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), SurveyTokenDto.RESPONSE_RECEIVED_DATE, SurveyTokenDto.RESPONSE_RECEIVED, true, true);
