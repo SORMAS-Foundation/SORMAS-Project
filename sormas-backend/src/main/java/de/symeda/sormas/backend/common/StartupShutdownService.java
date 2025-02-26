@@ -1024,6 +1024,12 @@ public class StartupShutdownService {
 		} catch (IOException | NoSuchFieldException e) {
 			logger.error("Could not create survey token import template .csv file.");
 		}
+
+		try {
+			importFacade.generateSurveyTokenResponsesImportTemplateFile(featureConfigurations);
+		} catch (IOException | NoSuchFieldException e) {
+			logger.error("Could not create survey token responses import template .csv file.");
+		}
 	}
 
 	private void createMissingDiseaseConfigurations() {

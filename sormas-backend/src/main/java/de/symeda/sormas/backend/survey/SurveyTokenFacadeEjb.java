@@ -38,6 +38,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
@@ -87,6 +88,8 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	private static final String SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME = "import_survey_tokens_template.csv";
+
+	private static final String SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME = "import_survey_token_responses_template.csv";
 
 	@Override
 	@RightsAllowed({
@@ -175,6 +178,21 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@Override
 	public String getSurveyTokensImportTemplateFileName() {
 		return getImportTemplateFileName(SURVEY_TOKEN_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokenResponsesImportTemplateFilePath() {
+		return getImportTemplateFilePath(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getSurveyTokenResponsesImportTemplateFileName() {
+		return getImportTemplateFileName(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token) {
+		return toDto(surveyTokenService.getBySurveyAndToken(survey, token));
 	}
 
 

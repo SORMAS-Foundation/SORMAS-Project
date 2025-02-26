@@ -370,7 +370,7 @@ public class SurveyFacadeEjb implements SurveyFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.surveyOnlyCasesSupported));
 		}
 
-		SurveyToken token = surveyTokenService.getFistUnusedToken(survey.toReference());
+		SurveyToken token = surveyTokenService.getFirstUnusedToken(survey.toReference());
 		if (token == null) {
 			throw new ValidationException(I18nProperties.getString(Strings.errorSurveyTokenNotAvailable));
 		}

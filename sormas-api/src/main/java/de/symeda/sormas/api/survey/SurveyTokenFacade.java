@@ -39,4 +39,9 @@ public interface SurveyTokenFacade {
 
 	String getSurveyTokensImportTemplateFileName();
 
+	String getSurveyTokenResponsesImportTemplateFilePath();
+
+	String getSurveyTokenResponsesImportTemplateFileName();
+
+	SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token);
 }
