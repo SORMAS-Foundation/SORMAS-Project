@@ -63,6 +63,14 @@ public class SurveyTokenDto extends EntityDto {
 		return token;
 	}
 
+	public static SurveyTokenDto build(SurveyDto survey) {
+		SurveyTokenDto token = new SurveyTokenDto();
+		token.setUuid(DataHelper.createUuid());
+		token.setSurvey(new SurveyReferenceDto(survey.getUuid(), survey.getName()));
+
+		return token;
+	}
+
 	public SurveyReferenceDto getSurvey() {
 		return survey;
 	}

@@ -710,6 +710,7 @@ public interface Strings {
 	String headingImportRegions = "headingImportRegions";
 	String headingImportSelfReports = "headingImportSelfReports";
 	String headingImportSubcontinents = "headingImportSubcontinents";
+	String headingImportSurveyTokens = "headingImportSurveyTokens";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingIncorrectDateRange = "headingIncorrectDateRange";
 	String headingInformationSource = "headingInformationSource";
