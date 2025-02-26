@@ -21,14 +21,16 @@ public class SurveyController {
 	public void registeredViews(Navigator navigator) {
 		navigator.addView(SurveysView.VIEW_NAME, SurveysView.class);
 		navigator.addView(SurveyDataView.VIEW_NAME, SurveyDataView.class);
+		navigator.addView(SurveyTokensView.VIEW_NAME, SurveyTokensView.class);
 	}
 
 	public void navigateToSurvey(String uuid) {
-		navigateToView(SurveyDataView.VIEW_NAME, uuid);
+		final String navigationState = SurveyDataView.VIEW_NAME + "/" + uuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void navigateToView(String viewName, String uuid) {
-		final String navigationState = viewName + "/" + uuid;
+	public void navigateToSurveyTokens(String uuid) {
+		final String navigationState = SurveyTokensView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 

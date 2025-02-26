@@ -1559,6 +1559,8 @@ public interface Strings {
 	String messageSurveyNoEmailTemplate = "messageSurveyNoEmailTemplate";
 	String messageSurveyNoTokens = "messageSurveyNoTokens";
 	String messageSurveySaved = "messageSurveySaved";
+	String messageSurveyTokenDelete = "messageSurveyTokenDelete";
+	String messageSurveyTokenSaved = "messageSurveyTokenSaved";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSyncUsersFromAuthProviderConfigurationError = "messageSyncUsersFromAuthProviderConfigurationError";
@@ -1809,6 +1811,7 @@ public interface Strings {
 	String promptSurveyAssignedTo = "promptSurveyAssignedTo";
 	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
 	String promptSurveyResponseStatus = "promptSurveyResponseStatus";
+	String promptSurveyTokenFreeTextSearch = "promptSurveyTokenFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";

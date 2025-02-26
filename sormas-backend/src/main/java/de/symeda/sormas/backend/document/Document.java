@@ -126,7 +126,7 @@ public class Document extends AbstractDomainObject {
 		this.storageReference = storageReference;
 	}
 
-	@OneToMany(mappedBy = DocumentRelatedEntity.DOCUMENT, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = DocumentRelatedEntity.DOCUMENT, fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	public Set<DocumentRelatedEntity> getRelatedEntities() {
 		return relatedEntities;

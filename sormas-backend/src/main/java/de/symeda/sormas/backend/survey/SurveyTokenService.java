@@ -22,6 +22,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.backend.caze.Case;
@@ -43,8 +45,9 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getSurvey().get(Survey.UUID), criteria.getSurvey().getUuid()));
 		}
 
-		if (criteria.getTokenLike() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.ilike(cb, root.get(SurveyToken.TOKEN), criteria.getTokenLike()));
+		if (StringUtils.isNotBlank(criteria.getFreeText())) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, CriteriaBuilderHelper.unaccentedIlike(cb, root.get(SurveyToken.TOKEN), criteria.getFreeText()));
 		}
 
 		if (criteria.getToken() != null) {
@@ -54,6 +57,14 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		if (criteria.getCaseAssignedTo() != null) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaseAssignedTo().get(Case.UUID), criteria.getCaseAssignedTo().getUuid()));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getTokenNotAssigned())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(root.get(SurveyToken.CASE_ASSIGNED_TO)));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getResponseReceived())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(SurveyToken.RESPONSE_RECEIVED), Boolean.TRUE));
 		}
 
 		return filter;
@@ -84,4 +95,5 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 
 		return QueryHelper.getFirstResult(em, cq);
 	}
+
 }

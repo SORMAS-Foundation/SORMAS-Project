@@ -17,44 +17,57 @@ package de.symeda.sormas.api.survey;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
+	public static final String I18N_PREFIX = "SurveyToken";
 	private static final long serialVersionUID = 4358173798026207265L;
+
+	public static final String TOKEN = "token";
+	public static final String ASSIGNED_CASE_UUID = "assignedCaseUuid";
+	public static final String ASSIGNEMENT_DATE = "assignmentDate";
+	public static final String RESPONSE_RECEIVED = "responseReceived";
+	public static final String RESPONSE_RECEIVED_DATE = "responseReceivedDate";
 
 	private final String surveyUuid;
 	private final String surveyName;
 	private final String token;
-	private final CaseReferenceDto caseAssignedTo;
+	private final String assignedCaseUuid;
 	private final Date assignmentDate;
 	private final String recipientEmail;
 	private final Boolean responseReceived;
+	private final Date responseReceivedDate;
 	private final String generatedDocumentUuid;
 	private final String generatedDocumentName;
 	private final String generatedDocumentMimeType;
 
 	public SurveyTokenIndexDto(
-            String uuid,
-            String surveyUuid,
-            String surveyName,
-            String token,
-            CaseReferenceDto caseAssignedTo,
-            Date assignmentDate,
-            String recipientEmail, Boolean responseReceived, String generatedDocumentUuid, String generatedDocumentName, String generatedDocumentMimeType) {
+		String uuid,
+		String surveyUuid,
+		String surveyName,
+		String token,
+		String assignedCaseUuid,
+		Date assignmentDate,
+		String recipientEmail,
+		Boolean responseReceived,
+		String generatedDocumentUuid,
+		String generatedDocumentName,
+		String generatedDocumentMimeType,
+		Date generatedDocumentDate) {
 		super(uuid);
 		this.surveyUuid = surveyUuid;
 		this.surveyName = surveyName;
 		this.token = token;
-		this.caseAssignedTo = caseAssignedTo;
+		this.assignedCaseUuid = assignedCaseUuid;
 		this.assignmentDate = assignmentDate;
 		this.recipientEmail = recipientEmail;
-        this.responseReceived = responseReceived;
-        this.generatedDocumentUuid = generatedDocumentUuid;
-        this.generatedDocumentName = generatedDocumentName;
-        this.generatedDocumentMimeType = generatedDocumentMimeType;
-    }
+		this.responseReceived = responseReceived;
+		this.generatedDocumentUuid = generatedDocumentUuid;
+		this.generatedDocumentName = generatedDocumentName;
+		this.generatedDocumentMimeType = generatedDocumentMimeType;
+		this.responseReceivedDate = generatedDocumentDate;
+	}
 
 	public String getSurveyUuid() {
 		return surveyUuid;
@@ -68,8 +81,8 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 		return token;
 	}
 
-	public CaseReferenceDto getCaseAssignedTo() {
-		return caseAssignedTo;
+	public String getAssignedCaseUuid() {
+		return assignedCaseUuid;
 	}
 
 	public Date getAssignmentDate() {
@@ -98,5 +111,9 @@ public class SurveyTokenIndexDto extends PseudonymizableIndexDto {
 
 	public String getGeneratedDocumentMimeType() {
 		return generatedDocumentMimeType;
+	}
+
+	public Date getResponseReceivedDate() {
+		return responseReceivedDate;
 	}
 }

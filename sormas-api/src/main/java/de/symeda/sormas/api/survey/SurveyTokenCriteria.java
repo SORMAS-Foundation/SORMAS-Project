@@ -16,17 +16,25 @@
 package de.symeda.sormas.api.survey;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SurveyTokenCriteria extends BaseCriteria {
 
 	private static final long serialVersionUID = 4551275234176171493L;
 
+	public static final String FREE_TEXT = "freeText";
+	public static final String RESPONSE_RECEIVED = "responseReceived";
+	public static final String TOKEN_NOT_ASSIGNED = "tokenNotAssigned";
+
 	private SurveyReferenceDto survey;
-	private String tokenLike;
+	private String freeText;
 	private String token;
 	private CaseReferenceDto caseAssignedTo;
+	private Boolean responseReceived;
+	private Boolean tokenNotAssigned;
 
+	@IgnoreForUrl
 	public SurveyReferenceDto getSurvey() {
 		return survey;
 	}
@@ -40,12 +48,12 @@ public class SurveyTokenCriteria extends BaseCriteria {
 		return this;
 	}
 
-	public String getTokenLike() {
-		return tokenLike;
+	public String getFreeText() {
+		return freeText;
 	}
 
-	public void setTokenLike(String tokenLike) {
-		this.tokenLike = tokenLike;
+	public void setFreeText(String freeText) {
+		this.freeText = freeText;
 	}
 
 	public String getToken() {
@@ -57,7 +65,7 @@ public class SurveyTokenCriteria extends BaseCriteria {
 	}
 
 	public SurveyTokenCriteria tokenLike(String tokenLike) {
-		setTokenLike(tokenLike);
+		setFreeText(tokenLike);
 		return this;
 	}
 
@@ -72,5 +80,21 @@ public class SurveyTokenCriteria extends BaseCriteria {
 	public SurveyTokenCriteria caseAssignedTo(CaseReferenceDto caseAssignedTo) {
 		setCaseAssignedTo(caseAssignedTo);
 		return this;
+	}
+
+	public Boolean getResponseReceived() {
+		return responseReceived;
+	}
+
+	public void setResponseReceived(Boolean responseReceived) {
+		this.responseReceived = responseReceived;
+	}
+
+	public Boolean getTokenNotAssigned() {
+		return tokenNotAssigned;
+	}
+
+	public void setTokenNotAssigned(Boolean tokenNotAssigned) {
+		this.tokenNotAssigned = tokenNotAssigned;
 	}
 }
