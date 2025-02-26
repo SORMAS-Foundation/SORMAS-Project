@@ -96,6 +96,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
+import de.symeda.sormas.backend.survey.SurveyToken;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -245,6 +246,7 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String CREATION_VERSION = "creationVersion";
 	public static final String SPECIAL_CASE_ACCESSES = "specialCaseAccesses";
 	public static final String SELF_REPORT = "selfReport";
+	public static final String SURVEY_TOKENS = "surveyTokens";
 
 	private Person person;
 	private String description;
@@ -429,6 +431,8 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private List<SpecialCaseAccess> specialCaseAccesses = new ArrayList<>(0);
 
 	private List<SelfReport> selfReport;
+
+	private List<SurveyToken> surveyTokens;
 
 	public static Case build() {
 		Case caze = new Case();
@@ -1787,5 +1791,14 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSelfReport(List<SelfReport> selfReport) {
 		this.selfReport = selfReport;
+	}
+
+	@OneToMany(mappedBy = SurveyToken.CASE_ASSIGNED_TO, fetch = FetchType.LAZY)
+	public List<SurveyToken> getSurveyTokens() {
+		return surveyTokens;
+	}
+
+	public void setSurveyTokens(List<SurveyToken> surveyTokens) {
+		this.surveyTokens = surveyTokens;
 	}
 }
