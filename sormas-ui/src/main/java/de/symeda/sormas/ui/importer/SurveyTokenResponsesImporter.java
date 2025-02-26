@@ -58,12 +58,9 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 			return ImportLineResult.SKIPPED;
 		}
 
-		SurveyTokenDto newEntityDto;
-
 		SurveyTokenFacade tokenFacade = FacadeProvider.getSurveyTokenFacade();
-		SurveyTokenDto surveyTokenDto = tokenFacade.getBySurveyAndToken(survey.toReference(), values[tokenIndex]);
-		if(surveyTokenDto != null){
-			newEntityDto = tokenFacade.getByUuid(surveyTokenDto.getUuid());
+		SurveyTokenDto newEntityDto = tokenFacade.getBySurveyAndToken(survey.toReference(), values[tokenIndex]);
+		if(newEntityDto != null){
 			newEntityDto.setChangeDate(new Date());
 		} else {
 			writeImportError(values, I18nProperties.getValidationError(Validations.tokenWasNotFound, values[tokenIndex]));
