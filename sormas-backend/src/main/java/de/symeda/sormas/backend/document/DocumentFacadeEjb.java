@@ -199,6 +199,8 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		return tikaConfig.getMimeRepository().forName(detect.toString());
 	}
 
+	@Override
+	@RightsAllowed(UserRight._DOCUMENT_DELETE)
 	public void deleteDocumentFromAllRelations(String documentUuid) {
 		// The document is only marked as delete here; actual deletion will be done in document storage cleanup via cron job
 		Document document = documentService.getByUuid(documentUuid);

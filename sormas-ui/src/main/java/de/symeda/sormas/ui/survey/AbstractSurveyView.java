@@ -3,13 +3,17 @@ package de.symeda.sormas.ui.survey;
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.survey.SurveyReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+
+import static de.symeda.sormas.ui.UiUtil.permitted;
 
 public abstract class AbstractSurveyView extends AbstractDetailView<SurveyReferenceDto> {
 
@@ -49,7 +53,10 @@ public abstract class AbstractSurveyView extends AbstractDetailView<SurveyRefere
 		menu.removeAllViews();
 		menu.addView(SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.surveySurveyList));
 		menu.addView(SurveyDataView.VIEW_NAME, I18nProperties.getCaption(SurveyDto.I18N_PREFIX), params);
-		menu.addView(SurveyTokensView.VIEW_NAME, I18nProperties.getPrefixCaption(SurveyDto.I18N_PREFIX, Captions.surveySurveyTokenList), params);
+
+		if (permitted(UserRight.SURVEY_TOKEN_EDIT)) {
+			menu.addView(SurveyTokensView.VIEW_NAME, I18nProperties.getPrefixCaption(SurveyDto.I18N_PREFIX, Captions.surveySurveyTokenList), params);
+		}
 
 		setMainHeaderComponent(ControllerProvider.getSurveyController().getSurveyViewTitleLayout(getReference().getUuid()));
 	}

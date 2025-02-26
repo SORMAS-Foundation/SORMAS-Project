@@ -163,8 +163,7 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 			cq.where(filter);
 		}
 
-		List<SurveyTokenIndexDto> resultList = QueryHelper.getResultList(em, cq, new SurveyTokenIndexDtoResultTransformer(), null, null);
-		return resultList;
+		return QueryHelper.getResultList(em, cq, new SurveyTokenIndexDtoResultTransformer(), null, null);
 	}
 
 	@Override

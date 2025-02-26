@@ -45,5 +45,5 @@ public interface DocumentFacade {
 
 	void cleanupDeletedDocuments();
 
-	void deleteDocumentFromAllRelations(String surveyTokenUuid);
+	void deleteDocumentFromAllRelations(String documentUuid);
 }
