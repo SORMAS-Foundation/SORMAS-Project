@@ -267,6 +267,8 @@ public interface Validations {
 	String taskMissingEventLink = "taskMissingEventLink";
 	String textSizeNotInRange = "textSizeNotInRange";
 	String textTooLong = "textTooLong";
+	String tokenColumnWasNotFound = "tokenColumnWasNotFound";
+	String tokenWasNotFound = "tokenWasNotFound";
 	String userNameNotUnique = "userNameNotUnique";
 	String uuidPatternNotMatching = "uuidPatternNotMatching";
 	String vaccineDosesFormat = "vaccineDosesFormat";

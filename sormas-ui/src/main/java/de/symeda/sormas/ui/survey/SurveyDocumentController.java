@@ -26,8 +26,10 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -56,6 +58,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.MultilineLabel;
 
 public class SurveyDocumentController {
 
@@ -65,7 +68,8 @@ public class SurveyDocumentController {
 		Disease disease,
 		PersonDto person,
 		Runnable callback) {
-		SurveyDocumentOptionsForm form = new SurveyDocumentOptionsForm(disease, true, person);
+		boolean attachmentAvailable = FacadeProvider.getExternalEmailFacade().isAttachmentAvailable(person.toReference());
+		SurveyDocumentOptionsForm form = new SurveyDocumentOptionsForm(disease, true, person, attachmentAvailable);
 		form.setWidth(600, Sizeable.Unit.PIXELS);
 		SurveyDocumentOptionsDto options = new SurveyDocumentOptionsDto(rootEntityType, rootEntityReference);
 		options.setRecipientEmail(person.getEmailAddress(true));
@@ -74,25 +78,29 @@ public class SurveyDocumentController {
 		CommitDiscardWrapperComponent<SurveyDocumentOptionsForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getCaption(Captions.surveySend));
 
-		editView.addCommitListener(() -> {
-			SurveyDocumentOptionsDto surveyOptions = form.getValue();
-			try {
-				FacadeProvider.getSurveyFacade().sendDocument(surveyOptions);
-				callback.run();
-			} catch (DocumentTemplateException | ValidationException e) {
-				new Notification(
-					String.format(I18nProperties.getString(Strings.errorDocumentGeneration), surveyOptions.getSurvey().getCaption()),
-					e.getMessage(),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-			} catch (AttachmentException | IOException | ExternalEmailException e) {
-				new Notification(
-					I18nProperties.getString(Strings.headingErrorSendingExternalEmail),
-					e.getMessage(),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
-			}
-		});
+		if (attachmentAvailable) {
+			editView.addCommitListener(() -> {
+				SurveyDocumentOptionsDto surveyOptions = form.getValue();
+				try {
+					FacadeProvider.getSurveyFacade().sendDocument(surveyOptions);
+					callback.run();
+				} catch (DocumentTemplateException | ValidationException e) {
+					new Notification(
+						String.format(I18nProperties.getString(Strings.errorDocumentGeneration), surveyOptions.getSurvey().getCaption()),
+						e.getMessage(),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				} catch (AttachmentException | IOException | ExternalEmailException e) {
+					new Notification(
+						I18nProperties.getString(Strings.headingErrorSendingExternalEmail),
+						e.getMessage(),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			});
+		} else {
+			editView.getCommitButton().setEnabled(false);
+		}
 		form.setSurveyErrorCallback(inError -> {
 			editView.getCommitButton().setEnabled(!inError);
 		});
@@ -101,7 +109,7 @@ public class SurveyDocumentController {
 	}
 
 	public void generateSurveyDocument(RootEntityType rootEntityType, ReferenceDto rootEntityReference, Disease disease, Runnable callback) {
-		SurveyDocumentOptionsForm form = new SurveyDocumentOptionsForm(disease, false, null);
+		SurveyDocumentOptionsForm form = new SurveyDocumentOptionsForm(disease, false, null, true);
 		form.setWidth(600, Sizeable.Unit.PIXELS);
 		form.setValue(new SurveyDocumentOptionsDto(rootEntityType, rootEntityReference));
 
@@ -136,24 +144,28 @@ public class SurveyDocumentController {
 
 		private static final String SURVEY_WARNING_LOC = "surveyWarningLoc";
 		private static final String TEMPLATE_ADDITIONAL_VARIABLES_LOC = "templateAdditionalVariablesLoc";
+		private static final String ATTACHMENT_NOT_AVAILABLE_INFO_LOC = "attachmentNotAvailableInfoLoc";
 
 		private static final String HTML_LAYOUT = fluidRowLocs(SurveyDocumentOptionsDto.RECIPIENT_EMAIL)
 			+ fluidRowLocs(SurveyDocumentOptionsDto.SURVEY)
 			+ fluidRowLocs(SURVEY_WARNING_LOC)
-			+ fluidRowLocs(TEMPLATE_ADDITIONAL_VARIABLES_LOC);
+			+ fluidRowLocs(TEMPLATE_ADDITIONAL_VARIABLES_LOC)
+			+ fluidRowLocs(ATTACHMENT_NOT_AVAILABLE_INFO_LOC);
 
 		private final Disease disease;
 		private final boolean forEmail;
 		private final PersonDto person;
+		private final boolean attachmentAvailable;
 
 		private VerticalLayout additionalVariablesComponent;
 		private Consumer<Boolean> surveyErrorCallback;
 
-		protected SurveyDocumentOptionsForm(Disease disease, boolean forEmail, PersonDto person) {
+		protected SurveyDocumentOptionsForm(Disease disease, boolean forEmail, PersonDto person, boolean attachmentAvailable) {
 			super(SurveyDocumentOptionsDto.class, SurveyDocumentOptionsDto.I18N_PREFIX, false);
 			this.disease = disease;
 			this.forEmail = forEmail;
 			this.person = person;
+			this.attachmentAvailable = attachmentAvailable;
 			this.surveyErrorCallback = e -> {
 			};
 
@@ -228,8 +240,7 @@ public class SurveyDocumentController {
 				}
 
 				try {
-					DocumentVariables documentVariables =
-						FacadeProvider.getSurveyFacade().getDocumentVariables(survey.toReference());
+					DocumentVariables documentVariables = FacadeProvider.getSurveyFacade().getDocumentVariables(survey.toReference());
 					List<String> additionalVariables = documentVariables.getAdditionalVariables();
 					if (additionalVariables != null && !additionalVariables.isEmpty()) {
 						for (String variable : additionalVariables) {
@@ -244,6 +255,14 @@ public class SurveyDocumentController {
 						.show(Page.getCurrent());
 				}
 			});
+
+			if (!attachmentAvailable) {
+				MultilineLabel attachmentUnavailableInfo = new MultilineLabel(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.messageExternalEmailAttachmentNotAvailableInfo),
+					ContentMode.HTML);
+				attachmentUnavailableInfo.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
+				getContent().addComponent(attachmentUnavailableInfo, ATTACHMENT_NOT_AVAILABLE_INFO_LOC);
+			}
 		}
 
 		protected Properties readAdditionalVariables() {

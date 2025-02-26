@@ -85,6 +85,7 @@ public interface Captions {
 	String actionImportAllContinents = "actionImportAllContinents";
 	String actionImportAllCountries = "actionImportAllCountries";
 	String actionImportAllSubcontinents = "actionImportAllSubcontinents";
+	String actionImportSurveyTokenResponses = "actionImportSurveyTokenResponses";
 	String actionImportSurveyTokens = "actionImportSurveyTokens";
 	String actionLastModifiedByLabel = "actionLastModifiedByLabel";
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
@@ -2692,6 +2693,7 @@ public interface Captions {
 	String SurveillanceReport_uuid = "SurveillanceReport.uuid";
 	String surveillanceReportNewReport = "surveillanceReportNewReport";
 	String surveillanceReportNoReportsForCase = "surveillanceReportNoReportsForCase";
+	String SurveyDocumentOptions_recipientEmail = "SurveyDocumentOptions.recipientEmail";
 	String SurveyDocumentOptions_survey = "SurveyDocumentOptions.survey";
 	String surveyGenerate = "surveyGenerate";
 	String surveyNew = "surveyNew";
