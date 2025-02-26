@@ -21,6 +21,9 @@ public class SurveyReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8612115227784272980L;
 
+	public SurveyReferenceDto() {
+	}
+
 	public SurveyReferenceDto(String uuid, String surveyName) {
 		setUuid(uuid);
 		setCaption(surveyName != null ? surveyName : "");
