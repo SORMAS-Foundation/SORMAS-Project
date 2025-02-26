@@ -38,6 +38,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
@@ -187,6 +188,11 @@ public class SurveyTokenFacadeEjb implements SurveyTokenFacade {
 	@Override
 	public String getSurveyTokenResponsesImportTemplateFileName() {
 		return getImportTemplateFileName(SURVEY_TOKEN_RESPONSES_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public SurveyTokenDto getBySurveyAndToken(SurveyReferenceDto survey, String token) {
+		return toDto(surveyTokenService.getBySurveyAndToken(survey, token));
 	}
 
 

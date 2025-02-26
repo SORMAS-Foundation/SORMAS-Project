@@ -60,13 +60,10 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 
 		SurveyTokenDto newEntityDto;
 
-		SurveyTokenCriteria criteria = new SurveyTokenCriteria();
-		criteria.setSurvey(survey.toReference());
-		criteria.setToken(values[tokenIndex]);
-		SurveyTokenFacade getByToken = FacadeProvider.getSurveyTokenFacade();
-		List<SurveyTokenIndexDto> list = getByToken.getIndexList(criteria, 1, 1, null);
-		if(list.size() == 1){
-			newEntityDto = getByToken.getByUuid(list.get(0).getUuid());
+		SurveyTokenFacade tokenFacade = FacadeProvider.getSurveyTokenFacade();
+		SurveyTokenDto surveyTokenDto = tokenFacade.getBySurveyAndToken(survey.toReference(), values[tokenIndex]);
+		if(surveyTokenDto != null){
+			newEntityDto = tokenFacade.getByUuid(surveyTokenDto.getUuid());
 			newEntityDto.setChangeDate(new Date());
 		} else {
 			writeImportError(values, I18nProperties.getValidationError(Validations.tokenWasNotFound, values[tokenIndex]));
@@ -96,7 +93,7 @@ public class SurveyTokenResponsesImporter extends DataImporter {
 		// if there is already an survey token response object with this name in the database
 		if (!hasImportError) {
 			try {
-				getByToken.save(newEntityDto);
+				tokenFacade.save(newEntityDto);
 				return ImportLineResult.SUCCESS;
 			} catch (ValidationRuntimeException e) {
 				writeImportError(values, e.getMessage());
