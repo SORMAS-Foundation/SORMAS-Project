@@ -291,6 +291,16 @@ public enum UserRight {
 	EXTERNAL_MESSAGE_PUSH(UserRightGroup.EXTERNAL),
 	EXTERNAL_MESSAGE_DELETE(UserRightGroup.EXTERNAL, UserRight._EXTERNAL_MESSAGE_VIEW),
 
+	SURVEY_VIEW(UserRightGroup.SURVEY),
+	SURVEY_CREATE(UserRightGroup.SURVEY, UserRight._SURVEY_VIEW),
+	SURVEY_EDIT(UserRightGroup.SURVEY, UserRight._SURVEY_VIEW),
+	SURVEY_DELETE(UserRightGroup.SURVEY, UserRight._SURVEY_VIEW),
+	SURVEY_TOKEN_VIEW(UserRightGroup.SURVEY, UserRight._SURVEY_VIEW),
+	SURVEY_TOKEN_CREATE(UserRightGroup.SURVEY, UserRight._SURVEY_TOKEN_VIEW),
+	SURVEY_TOKEN_EDIT(UserRightGroup.SURVEY, UserRight._SURVEY_TOKEN_VIEW),
+	SURVEY_TOKEN_DELETE(UserRightGroup.SURVEY, UserRight._SURVEY_TOKEN_VIEW, UserRight._DOCUMENT_DELETE),
+	SURVEY_TOKEN_IMPORT(UserRightGroup.SURVEY, UserRight._SURVEY_TOKEN_VIEW),
+
 	OUTBREAK_VIEW(UserRightGroup.CONFIGURATION),
 	OUTBREAK_EDIT(UserRightGroup.CONFIGURATION, UserRight._OUTBREAK_VIEW),
 	MANAGE_PUBLIC_EXPORT_CONFIGURATION(UserRightGroup.CONFIGURATION),
@@ -515,6 +525,16 @@ public enum UserRight {
 	public static final String _SELF_REPORT_PROCESS = "SELF_REPORT_PROCESS";
 	public static final String _SELF_REPORT_IMPORT = "SELF_REPORT_IMPORT";
 	public static final String _SELF_REPORT_EXPORT = "SELF_REPORT_EXPORT";
+
+	public static final String _SURVEY_VIEW = "SURVEY_VIEW";
+	public static final String _SURVEY_CREATE = "SURVEY_CREATE";
+	public static final String _SURVEY_EDIT = "SURVEY_EDIT";
+	public static final String _SURVEY_DELETE = "SURVEY_DELETE";
+	public static final String _SURVEY_TOKEN_VIEW = "SURVEY_TOKEN_VIEW";
+	public static final String _SURVEY_TOKEN_CREATE = "SURVEY_TOKEN_CREATE";
+	public static final String _SURVEY_TOKEN_EDIT = "SURVEY_TOKEN_EDIT";
+	public static final String _SURVEY_TOKEN_DELETE = "SURVEY_TOKEN_DELETE";
+	public static final String _SURVEY_TOKEN_IMPORT = "SURVEY_TOKEN_IMPORT";
 
 	public static final String _DOCUMENT_VIEW = "DOCUMENT_VIEW";
 	public static final String _DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD";

@@ -260,11 +260,15 @@ public interface Validations {
 	String specifySex = "specifySex";
 	String specifyYear = "specifyYear";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
+	String surveyDocumentTemplateMissingTokenVariable = "surveyDocumentTemplateMissingTokenVariable";
+	String surveyOnlyCasesSupported = "surveyOnlyCasesSupported";
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";
 	String taskMissingEventLink = "taskMissingEventLink";
 	String textSizeNotInRange = "textSizeNotInRange";
 	String textTooLong = "textTooLong";
+	String tokenColumnWasNotFound = "tokenColumnWasNotFound";
+	String tokenWasNotFound = "tokenWasNotFound";
 	String userNameNotUnique = "userNameNotUnique";
 	String uuidPatternNotMatching = "uuidPatternNotMatching";
 	String vaccineDosesFormat = "vaccineDosesFormat";

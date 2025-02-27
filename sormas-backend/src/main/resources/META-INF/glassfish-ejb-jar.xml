@@ -1059,6 +1059,51 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>SURVEY_VIEW</role-name>
+        <group-name>SURVEY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_CREATE</role-name>
+        <group-name>SURVEY_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_EDIT</role-name>
+        <group-name>SURVEY_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_DELETE</role-name>
+        <group-name>SURVEY_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_VIEW</role-name>
+        <group-name>SURVEY_TOKEN_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_CREATE</role-name>
+        <group-name>SURVEY_TOKEN_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_EDIT</role-name>
+        <group-name>SURVEY_TOKEN_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_DELETE</role-name>
+        <group-name>SURVEY_TOKEN_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SURVEY_TOKEN_IMPORT</role-name>
+        <group-name>SURVEY_TOKEN_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EXPORT_DATA_PROTECTION_DATA</role-name>
         <group-name>EXPORT_DATA_PROTECTION_DATA</group-name>
     </security-role-mapping>

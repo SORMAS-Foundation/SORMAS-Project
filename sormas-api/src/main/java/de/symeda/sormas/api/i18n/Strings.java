@@ -390,7 +390,10 @@ public interface Strings {
 	String errorSormasToSormasShareContactWithUnsharedSourceCase = "errorSormasToSormasShareContactWithUnsharedSourceCase";
 	String errorSormasToSormasSharequestNotFound = "errorSormasToSormasSharequestNotFound";
 	String errorSurveillanceReportNotEditable = "errorSurveillanceReportNotEditable";
+	String errorSurveyTokenNotAvailable = "errorSurveyTokenNotAvailable";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
+	String errorUploadGeneratedDocument = "errorUploadGeneratedDocument";
+	String errorUploadGeneratedDocumentExceedsFileSizeLimit = "errorUploadGeneratedDocumentExceedsFileSizeLimit";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String errorWritingTemplate = "errorWritingTemplate";
@@ -484,6 +487,7 @@ public interface Strings {
 	String headingCasesRestored = "headingCasesRestored";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
+	String headingCaseSurveyDetails = "headingCaseSurveyDetails";
 	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
@@ -548,6 +552,7 @@ public interface Strings {
 	String headingCreateNewPerson = "headingCreateNewPerson";
 	String headingCreateNewPrescription = "headingCreateNewPrescription";
 	String headingCreateNewSample = "headingCreateNewSample";
+	String headingCreateNewSurvey = "headingCreateNewSurvey";
 	String headingCreateNewTask = "headingCreateNewTask";
 	String headingCreateNewTaskQuestion = "headingCreateNewTaskQuestion";
 	String headingCreateNewTravelEntry = "headingCreateNewTravelEntry";
@@ -629,6 +634,7 @@ public interface Strings {
 	String headingEpiCurve = "headingEpiCurve";
 	String headingEpiDataSourceCaseContacts = "headingEpiDataSourceCaseContacts";
 	String headingErrorReportNotAvailable = "headingErrorReportNotAvailable";
+	String headingErrorSendingExternalEmail = "headingErrorSendingExternalEmail";
 	String headingEventData = "headingEventData";
 	String headingEventGroupData = "headingEventGroupData";
 	String headingEventGroupLinkEventIssue = "headingEventGroupLinkEventIssue";
@@ -704,6 +710,8 @@ public interface Strings {
 	String headingImportRegions = "headingImportRegions";
 	String headingImportSelfReports = "headingImportSelfReports";
 	String headingImportSubcontinents = "headingImportSubcontinents";
+	String headingImportSurveyTokenResponses = "headingImportSurveyTokenResponses";
+	String headingImportSurveyTokens = "headingImportSurveyTokens";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingIncorrectDateRange = "headingIncorrectDateRange";
 	String headingInformationSource = "headingInformationSource";
@@ -853,6 +861,9 @@ public interface Strings {
 	String headingSpecailCaseAccess = "headingSpecailCaseAccess";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
+	String headingSurveyGenerateDocument = "headingSurveyGenerateDocument";
+	String headingSurveySendDocument = "headingSurveySendDocument";
+	String headingSurveySideComponent = "headingSurveySideComponent";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
 	String headingSyncUsers = "headingSyncUsers";
 	String headingTasksDeleted = "headingTasksDeleted";
@@ -978,6 +989,7 @@ public interface Strings {
 	String infoDeveloperOptionsSeedUsage = "infoDeveloperOptionsSeedUsage";
 	String infoDisplayNetworkDiagram = "infoDisplayNetworkDiagram";
 	String infoDocumentAlreadyExists = "infoDocumentAlreadyExists";
+	String infoDocumentAlreadyExistsCannotUploadAnotherOne = "infoDocumentAlreadyExistsCannotUploadAnotherOne";
 	String infoDocumentOverride = "infoDocumentOverride";
 	String infoDontShareCheckboxAlreadyShared = "infoDontShareCheckboxAlreadyShared";
 	String infoDownloadCaseImportTemplate = "infoDownloadCaseImportTemplate";
@@ -1043,6 +1055,7 @@ public interface Strings {
 	String infoNoSourceCaseSelectedLineListing = "infoNoSourceCaseSelectedLineListing";
 	String infoNoSubordinateEvents = "infoNoSubordinateEvents";
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
+	String infoNoSurveys = "infoNoSurveys";
 	String infoObserverMissingEmail = "infoObserverMissingEmail";
 	String infoObserverMissingEmailOrPhoneNumber = "infoObserverMissingEmailOrPhoneNumber";
 	String infoPersonMergeConfirmation = "infoPersonMergeConfirmation";
@@ -1098,6 +1111,8 @@ public interface Strings {
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
+	String infoSurveyResponseNotReceived = "infoSurveyResponseNotReceived";
+	String infoSurveyResponseReceived = "infoSurveyResponseReceived";
 	String infoSyncUsers = "infoSyncUsers";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
@@ -1539,6 +1554,13 @@ public interface Strings {
 	String messageSubcontinentDearchivingNotPossible = "messageSubcontinentDearchivingNotPossible";
 	String messageSubcontinentsArchived = "messageSubcontinentsArchived";
 	String messageSubcontinentsDearchived = "messageSubcontinentsDearchived";
+	String messageSurveyCreated = "messageSurveyCreated";
+	String messageSurveyNoDocumentTemplate = "messageSurveyNoDocumentTemplate";
+	String messageSurveyNoEmailTemplate = "messageSurveyNoEmailTemplate";
+	String messageSurveyNoTokens = "messageSurveyNoTokens";
+	String messageSurveySaved = "messageSurveySaved";
+	String messageSurveyTokenDelete = "messageSurveyTokenDelete";
+	String messageSurveyTokenSaved = "messageSurveyTokenSaved";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSyncUsersFromAuthProviderConfigurationError = "messageSyncUsersFromAuthProviderConfigurationError";
@@ -1784,6 +1806,12 @@ public interface Strings {
 	String promptSelfReportEpiWeekFrom = "promptSelfReportEpiWeekFrom";
 	String promptSelfReportEpiWeekTo = "promptSelfReportEpiWeekTo";
 	String promptSelfReportFreeTextSearch = "promptSelfReportFreeTextSearch";
+	String promptSurvey = "promptSurvey";
+	String promptSurveyAssignedFrom = "promptSurveyAssignedFrom";
+	String promptSurveyAssignedTo = "promptSurveyAssignedTo";
+	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
+	String promptSurveyResponseStatus = "promptSurveyResponseStatus";
+	String promptSurveyTokenFreeTextSearch = "promptSurveyTokenFreeTextSearch";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";
