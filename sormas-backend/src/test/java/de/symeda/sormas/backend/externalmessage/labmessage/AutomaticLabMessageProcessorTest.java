@@ -30,6 +30,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -100,9 +103,19 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
 	}
 
-	@Test
-	public void testProcessWithNewData() throws ExecutionException, InterruptedException {
-		ExternalMessageDto externalMessage = createExternalMessage(null);
+	@ParameterizedTest
+	@CsvSource({
+		"null, null",
+		"lu, 2010010100774" })
+	public void testProcessWithNewData(final String countryLocale, final String personalHealthId) throws ExecutionException, InterruptedException {
+
+		if (null != countryLocale && !countryLocale.isBlank()) {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+		}
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonNationalHealthId(personalHealthId);
+		});
 
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
 
@@ -115,6 +128,7 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(persons.get(0).getFirstName(), is(externalMessage.getPersonFirstName()));
 		assertThat(persons.get(0).getLastName(), is(externalMessage.getPersonLastName()));
 		assertThat(persons.get(0).getSex(), is(externalMessage.getPersonSex()));
+		assertThat(persons.get(0).getNationalHealthId(), is(externalMessage.getPersonNationalHealthId()));
 
 		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
 		assertThat(cases, hasSize(1));
@@ -140,9 +154,20 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(pathogenTests.get(0).getTestType(), is(PathogenTestType.PCR_RT_PCR));
 	}
 
-	@Test
-	public void testProcessWithExistingPersonNoCase() throws ExecutionException, InterruptedException {
-		ExternalMessageDto externalMessage = createExternalMessage(null);
+	@ParameterizedTest
+	@CsvSource({
+		"null, null",
+		"lu, 2010010100774" })
+	public void testProcessWithExistingPersonNoCase(final String countryLocale, final String personalHealthId)
+		throws ExecutionException, InterruptedException {
+
+		if (null != countryLocale && !countryLocale.isBlank()) {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+		}
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonNationalHealthId(personalHealthId);
+		});
 
 		PersonDto existingPerson =
 			creator.createPerson(externalMessage.getPersonFirstName(), externalMessage.getPersonLastName(), externalMessage.getPersonSex(), p -> {
@@ -168,9 +193,20 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(pathogenTests, hasSize(1));
 	}
 
-	@Test
-	public void testProcessWithExistingPersonAndCase() throws ExecutionException, InterruptedException {
-		ExternalMessageDto externalMessage = createExternalMessage(null);
+	@ParameterizedTest
+	@CsvSource({
+		"null, null",
+		"lu, 2010010100774" })
+	public void testProcessWithExistingPersonAndCase(final String countryLocale, final String personalHealthId)
+		throws ExecutionException, InterruptedException {
+
+		if (null != countryLocale && !countryLocale.isBlank()) {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+		}
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonNationalHealthId(personalHealthId);
+		});
 
 		PersonDto person =
 			creator.createPerson(externalMessage.getPersonFirstName(), externalMessage.getPersonLastName(), externalMessage.getPersonSex(), p -> {
@@ -181,7 +217,8 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 			c.setDisease(externalMessage.getDisease());
 		});
 
-		// can't process if there is no automaticSampleAssignmentThreshold set for the disease
+		// can't process if there is no automaticSampleAssignmentThreshold set for the
+		// disease
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
 		assertThat(result.getStatus(), is(CANCELED));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
@@ -222,7 +259,8 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	}
 
 	/**
-	 * External message with sample date in the threshold period should generate a new sample to the existing case
+	 * External message with sample date in the threshold period should generate a
+	 * new sample to the existing case
 	 * 
 	 * @throws ExecutionException
 	 * @throws InterruptedException
@@ -258,9 +296,20 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(getSampleFacade().count(new SampleCriteria().caze(caze.toReference())), is(2L));
 	}
 
-	@Test
-	public void testProcessWithExistingPersonAndCaseWithBySampleDate() throws ExecutionException, InterruptedException {
-		ExternalMessageDto externalMessage = createExternalMessage(null);
+	@ParameterizedTest
+	@CsvSource({
+		"null, null",
+		"lu, 2010010100774" })
+	public void testProcessWithExistingPersonAndCaseWithBySampleDate(final String countryLocale, final String personalHealthId)
+		throws ExecutionException, InterruptedException {
+
+		if (null != countryLocale && !countryLocale.isBlank()) {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+		}
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonNationalHealthId(personalHealthId);
+		});
 
 		PersonDto person =
 			creator.createPerson(externalMessage.getPersonFirstName(), externalMessage.getPersonLastName(), externalMessage.getPersonSex(), p -> {
@@ -274,7 +323,8 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 
 		SampleDto sample = creator.createSample(caze.toReference(), reportingUser.toReference(), lab.toReference());
 
-		// can't process if there is no automaticSampleAssignmentThreshold set for the disease
+		// can't process if there is no automaticSampleAssignmentThreshold set for the
+		// disease
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
 		assertThat(result.getStatus(), is(CANCELED));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
@@ -317,9 +367,20 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(pathogenTests, hasSize(1));
 	}
 
-	@Test
-	public void testProcessWithMultiplePersonsWithSameNationalHealthId() throws ExecutionException, InterruptedException {
-		ExternalMessageDto externalMessage = createExternalMessage(null);
+	@ParameterizedTest
+	@CsvSource({
+		"null, null",
+		"lu, 2010010100774" })
+	public void testProcessWithMultiplePersonsWithSameNationalHealthId(final String countryLocale, final String personalHealthId)
+		throws ExecutionException, InterruptedException {
+
+		if (null != countryLocale && !countryLocale.isBlank()) {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+		}
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> {
+			m.setPersonNationalHealthId(personalHealthId);
+		});
 
 		creator.createPerson(externalMessage.getPersonFirstName(), externalMessage.getPersonLastName(), externalMessage.getPersonSex(), p -> {
 			p.setNationalHealthId(externalMessage.getPersonNationalHealthId());
@@ -399,28 +460,105 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testProcessMessageWithNoNationalHealthId() throws ExecutionException, InterruptedException {
-		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(null));
+	public void testLUProcessWithSimilarPersonDifferentHealthId() throws ExecutionException, InterruptedException {
+
+		final String messagePersonHealthId = "2010010100774";
+		final String existingPersonHealthId = "1010010100774";
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(messagePersonHealthId));
+
+		PersonDto person = creator.createPerson(
+			externalMessage.getPersonFirstName(),
+			externalMessage.getPersonLastName(),
+			externalMessage.getPersonSex(),
+			m -> m.setNationalHealthId(existingPersonHealthId));
+		// link the person to a contact to be visible in the system
+		creator.createContact(rdcf, reportingUser.toReference(), person.toReference());
 
 		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
 		assertThat(result.getStatus(), is(DONE));
 		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
 		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
-
-		List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
-		assertThat(persons, hasSize(1));
-		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
-		assertThat(cases, hasSize(1));
-		List<SampleDto> samples = getSampleFacade().getByCaseUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList()));
-		assertThat(samples, hasSize(1));
-		List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(samples.get(0).toReference());
-		assertThat(pathogenTests, hasSize(1));
+		assertThat(getPersonFacade().count(new PersonCriteria()), is(2L));
 	}
 
 	@Test
-	public void testProcessPertussisMessageTestTypeCulture() throws ExecutionException, InterruptedException {
+	public void testLUProcessWithExistingPersonSameHealthId() throws ExecutionException, InterruptedException {
+
+		final String healthId = "2010010100774";
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(healthId));
+
+		PersonDto person = creator.createPerson(
+			externalMessage.getPersonFirstName(),
+			externalMessage.getPersonLastName(),
+			externalMessage.getPersonSex(),
+			m -> m.setNationalHealthId(healthId));
+		// link the person to a contact to be visible in the system
+		creator.createContact(rdcf, reportingUser.toReference(), person.toReference());
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getPersonFacade().count(new PersonCriteria()), is(1L));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"",
+		"lu" })
+	public void testProcessMessageWithNoNationalHealthId(final String countryLocale) throws ExecutionException, InterruptedException {
+
+		if (!countryLocale.isBlank()) {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, countryLocale);
+		}
+
+		ExternalMessageDto externalMessage = createExternalMessage(m -> m.setPersonNationalHealthId(null));
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+
+		// Default handling for automated processing
+		if (countryLocale.isBlank()) {
+			assertThat(result.getStatus(), is(DONE));
+			assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+			assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+
+			List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
+			assertThat(persons, hasSize(1));
+			List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
+			assertThat(cases, hasSize(1));
+			List<SampleDto> samples = getSampleFacade().getByCaseUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList()));
+			assertThat(samples, hasSize(1));
+			List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(samples.get(0).toReference());
+			assertThat(pathogenTests, hasSize(1));
+		}
+
+		// Luxembourg specific handling
+		if (countryLocale.equals("lu")) {
+			assertThat(result.getStatus(), is(CANCELED));
+			assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+			assertThat(getExternalMessageFacade().getByUuid(externalMessage.getUuid()).getStatus(), is(ExternalMessageStatus.UNPROCESSED));
+
+			assertThat(getCaseFacade().getAllActiveUuids(), hasSize(0));
+			assertThat(getSampleFacade().getAllActiveUuids(), hasSize(0));
+			assertThat(getPathogenTestFacade().getAllActiveUuids(), hasSize(0));
+		}
+	}
+
+	@Test
+	public void testLUProcessPertussisMessageTestTypeCulture() throws ExecutionException, InterruptedException {
+
+		final String healthId = "2010010100774";
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+
 		ExternalMessageDto cultureMessage = createExternalMessage((messageDto) -> {
+			messageDto.setPersonNationalHealthId(healthId);
 			messageDto.setDisease(Disease.PERTUSSIS);
 			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.CULTURE);
 			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
@@ -438,9 +576,14 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testProcessPertussisTestTypePCR() throws ExecutionException, InterruptedException {
+	public void testLUProcessPertussisTestTypePCR() throws ExecutionException, InterruptedException {
+
+		final String healthId = "2010010100774";
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+
 		ExternalMessageDto pcrMessage = createExternalMessage((messageDto) -> {
+			messageDto.setPersonNationalHealthId(healthId);
 			messageDto.setDisease(Disease.PERTUSSIS);
 			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.PCR_RT_PCR);
 			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
