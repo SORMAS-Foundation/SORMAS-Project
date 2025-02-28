@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.survey;
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.survey.SurveyTokenDto;
 import de.symeda.sormas.api.survey.SurveyTokenReferenceDto;
@@ -66,7 +67,15 @@ public class SurveyTokenDataView extends AbstractDetailView<SurveyTokenReference
 		if (!findReferenceByParams(params)) {
 			return;
 		}
+
+		SurveyTokenDto surveyTokenDto = FacadeProvider.getSurveyTokenFacade().getByUuid(params);
+
 		menu.removeAllViews();
+		menu.addView(
+			SurveyTokensView.VIEW_NAME,
+			I18nProperties.getCaption(Captions.surveySurveyTokenList),
+			surveyTokenDto.getSurvey().getUuid(),
+			true);
 		menu.addView(SurveyTokenDataView.VIEW_NAME, I18nProperties.getCaption(SurveyTokenDto.I18N_PREFIX), params);
 
 		setMainHeaderComponent(ControllerProvider.getSurveyTokenController().getSurveyTokenViewTitleLayout(params));
