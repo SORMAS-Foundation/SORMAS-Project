@@ -13817,4 +13817,7 @@ ALTER TABLE person ADD column emancipated boolean default false;
 ALTER TABLE person_history ADD COLUMN incapacitated boolean default false;
 ALTER TABLE person_history ADD COLUMN emancipated boolean default false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (558, 'Add information about legal guardian for "minor / incapacitated" to person entity #13205');
+ALTER TABLE environments ADD column vectortype varchar(255);
+ALTER TABLE environmentsamples ADD column vectortype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (561, 'Added vectors to the environment #13267');
