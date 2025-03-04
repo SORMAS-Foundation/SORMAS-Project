@@ -128,6 +128,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String IS_EMANCIPATED = "emancipated";
+	public static final String IS_INCAPACITATED = "incapacitated";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -195,6 +197,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@SensitiveData
 	private Integer birthdateDD;
 	@Outbreaks
+	@PersonalData
+	@SensitiveData
 	private Integer birthdateMM;
 	@Outbreaks
 	private Integer birthdateYYYY;
@@ -374,6 +378,9 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
+
+	private boolean emancipated;
+	private boolean incapacitated;
 
 	@SuppressWarnings("serial")
 	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
@@ -1027,6 +1034,22 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public boolean isEmancipated() {
+		return emancipated;
+	}
+
+	public void setEmancipated(boolean emancipated) {
+		this.emancipated = emancipated;
+	}
+
+	public boolean isIncapacitated() {
+		return incapacitated;
+	}
+
+	public void setIncapacitated(boolean incapacitated) {
+		this.incapacitated = incapacitated;
 	}
 
 	@Override

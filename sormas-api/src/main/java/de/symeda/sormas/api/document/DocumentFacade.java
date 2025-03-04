@@ -44,4 +44,6 @@ public interface DocumentFacade {
 	byte[] getContent(String uuid) throws IOException;
 
 	void cleanupDeletedDocuments();
+
+	void deleteDocumentFromAllRelations(String documentUuid);
 }

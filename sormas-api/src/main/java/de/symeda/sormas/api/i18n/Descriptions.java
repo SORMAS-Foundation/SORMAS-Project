@@ -13,6 +13,7 @@ public interface Descriptions {
 	String aefiDashboardDiseaseFilter = "aefiDashboardDiseaseFilter";
 	String aefiDashboardDistrictFilter = "aefiDashboardDistrictFilter";
 	String aefiDashboardRegionFilter = "aefiDashboardRegionFilter";
+	String birthdateFilterPartialMatchDescription = "birthdateFilterPartialMatchDescription";
 	String Campaign_calculatedBasedOn = "Campaign.calculatedBasedOn";
 	String Campaign_campaignPhase = "Campaign.campaignPhase";
 	String CaseData_caseClassification = "CaseData.caseClassification";

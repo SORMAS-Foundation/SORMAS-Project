@@ -62,6 +62,7 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.BirthdateRangeFilterComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -72,6 +73,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	private static final long serialVersionUID = -8326451364091398731L;
 
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
+	private static final String BIRTHDATE_RANGE_FILTER = "birthdateRangeFilter";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(
 		CaseCriteria.PRESENT_CONDITION,
@@ -114,7 +116,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL,
 			CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
 			CaseCriteria.ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL)
-		+ loc(WEEK_AND_DATE_FILTER);
+		+ loc(WEEK_AND_DATE_FILTER)
+		+ loc(BIRTHDATE_RANGE_FILTER)
+		+ filterLocs(CaseCriteria.SURVEY, CaseCriteria.SURVEY_RESPONSE_STATUS, CaseCriteria.SURVEY_ASSIGNED_FROM, CaseCriteria.SURVEY_ASSIGNED_TO);
 
 	protected CaseFilterForm() {
 		super(
@@ -365,7 +369,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.ONLY_CASES_WITH_EVENTS,
 				I18nProperties.getCaption(Captions.caseFilterRelatedToEvent),
 				I18nProperties.getDescription(Descriptions.descCaseFilterRelatedToEvent),
-				CssStyles.CHECKBOX_FILTER_INLINE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
+				CssStyles.CHECKBOX_FILTER_INLINE))
+			.setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
@@ -448,6 +453,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(isExternalShareEnabled), WEEK_AND_DATE_FILTER);
+
+		moreFiltersContainer.addComponent(buildBirthdayRangeFilter(), BIRTHDATE_RANGE_FILTER);
+		if (UiUtil.enabled(FeatureType.SURVEYS)) {
+			buildSurveyFilters(moreFiltersContainer);
+		}
 	}
 
 	@Override
@@ -777,6 +787,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 			}
 		}
+
+		//Birthdate Filter
+		HorizontalLayout birthdateFilterForm = (HorizontalLayout) getMoreFiltersContainer().getComponent(BIRTHDATE_RANGE_FILTER);
+		BirthdateRangeFilterComponent birtdateFilter = (BirthdateRangeFilterComponent) birthdateFilterForm.getComponent(0);
+		birtdateFilter.getDateFromFilter().setValue(criteria.getBirthdateFrom());
+		birtdateFilter.getDateToFilter().setValue(criteria.getBirthdateTo());
+		birtdateFilter.getIncludePartialMatch().setValue(criteria.isIncludePartialMatch());
+
 		ComboBox birthDateDD = getField(CaseCriteria.BIRTHDATE_DD);
 		if (getField(CaseCriteria.BIRTHDATE_YYYY).getValue() != null && getField(CaseCriteria.BIRTHDATE_MM).getValue() != null) {
 			birthDateDD.addItems(
@@ -829,6 +847,35 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		return dateFilterRowLayout;
 	}
 
+	private HorizontalLayout buildBirthdayRangeFilter() {
+		BirthdateRangeFilterComponent birthdateRangeFilterComponent = new BirthdateRangeFilterComponent(false, this);
+		addApplyHandler(e -> onApplyClick(birthdateRangeFilterComponent));
+
+		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
+		dateFilterRowLayout.setSpacing(true);
+		dateFilterRowLayout.setSizeUndefined();
+
+		dateFilterRowLayout.addComponent(birthdateRangeFilterComponent);
+
+		return dateFilterRowLayout;
+	}
+
+	private void buildSurveyFilters(CustomLayout layout) {
+
+		ComboBox surveyCombo = addField(layout, FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.SURVEY, I18nProperties.getString(Strings.promptSurvey), 200));
+		FieldHelper.updateItems(surveyCombo, FacadeProvider.getSurveyFacade().getAllAsReference());
+		addField(layout,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.SURVEY_RESPONSE_STATUS, I18nProperties.getString(Strings.promptSurveyResponseStatus), 200));
+		addField(layout,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_FROM, I18nProperties.getString(Strings.promptSurveyAssignedFrom), 200));
+		addField(layout,
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.SURVEY_ASSIGNED_TO, I18nProperties.getString(Strings.promptSurveyAssignedTo), 200));
+
+	}
+
 	private void onApplyClick(EpiWeekAndDateFilterComponent<CriteriaDateType> weekAndDateFilter) {
 		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
 		Date fromDate, toDate;
@@ -850,6 +897,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		} else {
 			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
+	}
+
+	private void onApplyClick(BirthdateRangeFilterComponent birthdateRangeFilter) {
+		Date birthdateFrom, birthdateTo;
+		Date dateFrom = birthdateRangeFilter.getDateFromFilter().getValue();
+		birthdateFrom = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+		Date dateTo = birthdateRangeFilter.getDateToFilter().getValue();
+		birthdateTo = dateTo != null ? DateHelper.getEndOfDay(dateTo) : null;
+		CaseCriteria criteria = getValue();
+		criteria.setBirthdateFrom(birthdateFrom);
+		criteria.setBirthdateTo(birthdateTo);
+		criteria.setIncludePartialMatch(birthdateRangeFilter.getIncludePartialMatch().getValue());
 	}
 
 	@Override

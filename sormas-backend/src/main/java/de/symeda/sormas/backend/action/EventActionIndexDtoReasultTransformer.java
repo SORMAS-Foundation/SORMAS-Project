@@ -32,7 +32,7 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 			(String) objects[1],
 			(String) objects[2],
 			(Disease) objects[3],
-			(DiseaseVariant) objects[4],
+			(String) objects[4],
 			(String) objects[5],
 			(EventIdentificationSource) objects[6],
 			(Date) objects[7],

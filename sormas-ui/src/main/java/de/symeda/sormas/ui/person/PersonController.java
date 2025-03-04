@@ -19,6 +19,8 @@ package de.symeda.sormas.ui.person;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +31,16 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -48,6 +53,8 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.EventParticipantSelectionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
@@ -55,6 +62,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
@@ -62,6 +70,7 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -75,6 +84,8 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -418,7 +429,7 @@ public class PersonController {
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				PersonDto dto = editForm.getValue();
-				savePerson(dto);
+				savePersonWithPersonConditionChanged(dto);
 			}
 		});
 
@@ -443,7 +454,7 @@ public class PersonController {
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				PersonDto dto = editForm.getValue();
-				savePerson(dto);
+				savePersonWithPersonConditionChanged(dto);
 			}
 		});
 
@@ -474,11 +485,119 @@ public class PersonController {
 		editView.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				PersonDto dto = editForm.getValue();
-				savePerson(dto);
+				if (editForm.getWarningSimilarPersons() != null) {
+					CommitDiscardWrapperComponent<PersonSelectionGrid> content =
+						(CommitDiscardWrapperComponent<PersonSelectionGrid>) editView.getWrappedComponent().getWarningSimilarPersons().getContent();
+					content.getDiscardButton().setVisible(true);
+					content.addCommitListener(() -> savePersonWithPersonConditionChanged(dto));
+				} else {
+					savePersonWithPersonConditionChanged(dto);
+				}
 			}
 		});
 
 		return editView;
+	}
+
+	private void savePersonWithPersonConditionChanged(PersonDto editedPerson) {
+
+		CaseDataDto lastCase;
+		if (editedPerson.getCauseOfDeathDisease() != null) {
+			List<CaseDataDto> personCases = FacadeProvider.getCaseFacade()
+				.getAllCasesOfPerson(editedPerson.getUuid())
+				.stream()
+				.filter(caseDataDto -> caseDataDto.getDisease().equals(editedPerson.getCauseOfDeathDisease()))
+				.collect(Collectors.toList());
+			lastCase = personCases.isEmpty() ? null : Collections.max(personCases, Comparator.comparing(CaseDataDto::getReportDate));
+		} else {
+			lastCase = null;
+		}
+
+		PresentCondition editedPresentCondition = editedPerson.getPresentCondition();
+		if (lastCase != null
+			&& (Arrays.asList(PresentCondition.BURIED, PresentCondition.DEAD).contains(editedPresentCondition))
+			&& editedPerson.getCauseOfDeath().equals(CauseOfDeath.EPIDEMIC_DISEASE)) {
+
+			PersonDto initialPerson = FacadeProvider.getPersonFacade().getByUuid(editedPerson.getUuid());
+			PresentCondition initialPresentCondition = initialPerson.getPresentCondition();
+
+			if (Arrays.asList(PresentCondition.BURIED, PresentCondition.DEAD).contains(initialPresentCondition)
+				&& lastCase.getOutcome().equals(CaseOutcome.DECEASED)
+				&& ((editedPerson.getDeathDate() == null && lastCase.getOutcomeDate() == null)
+					|| (editedPerson.getDeathDate() != null && editedPerson.getDeathDate().equals(lastCase.getOutcomeDate())))) {
+
+				savePerson(editedPerson);
+				return;
+			} else {
+				VerticalLayout warningLayout = new VerticalLayout();
+				warningLayout.setSpacing(false);
+				CommitDiscardWrapperComponent<VerticalLayout> warningComponent = new CommitDiscardWrapperComponent<>(warningLayout);
+				warningComponent.setWidth(100, Unit.PERCENTAGE);
+
+				Window popupWindow = VaadinUiUtil.showPopupWindow(warningComponent, I18nProperties.getString(Strings.warning));
+				Label infoLabel = new Label(I18nProperties.getString(Strings.messageChangingPersonPresentCondition));
+				CssStyles.style(infoLabel, CssStyles.LABEL_LARGE, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+				warningLayout.addComponent(infoLabel);
+
+				// case information
+				warningLayout.addComponent(new Label(lastCase.buildCaption()));
+
+				// confirmation message
+				Label confirmationMessage = new Label(I18nProperties.getString(Strings.messageReviewChangesAndConfirm));
+				confirmationMessage.addStyleName(CssStyles.VSPACE_TOP_3);
+				warningLayout.addComponent(confirmationMessage);
+
+				// changes listed
+				HorizontalLayout changesLayout = new HorizontalLayout();
+				changesLayout.setMargin(false);
+				changesLayout.addStyleNames(CssStyles.VSPACE_TOP_1, CssStyles.VSPACE_2);
+
+				VerticalLayout fieldsLayout = new VerticalLayout();
+				fieldsLayout.setMargin(false);
+				Label fieldsLabel = new Label(I18nProperties.getCaption(Captions.confirmChangesField));
+				fieldsLayout.addComponent(fieldsLabel);
+				fieldsLabel.addStyleName(CssStyles.LABEL_SECONDARY);
+				fieldsLayout.addComponent(new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME)));
+				fieldsLayout.addComponent(new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.OUTCOME_DATE)));
+
+				VerticalLayout arrowsLayout = new VerticalLayout();
+				arrowsLayout.setMargin(false);
+				arrowsLayout.addComponent(new Label());
+				arrowsLayout.addComponent(new Label(VaadinIcons.ARROW_RIGHT.getHtml(), ContentMode.HTML));
+				arrowsLayout.addComponent(new Label(VaadinIcons.ARROW_RIGHT.getHtml(), ContentMode.HTML));
+
+				VerticalLayout valuesLayout = new VerticalLayout();
+				valuesLayout.setMargin(false);
+
+				Label valuesLabel = new Label(I18nProperties.getCaption(Captions.confirmChangesValue));
+				valuesLabel.addStyleName(CssStyles.LABEL_SECONDARY);
+				valuesLayout.addComponent(valuesLabel);
+
+				valuesLayout.addComponent(new Label(CaseOutcome.DECEASED.toString()));
+				valuesLayout.addComponent(new Label(DateFormatHelper.formatDate(editedPerson.getDeathDate())));
+
+				changesLayout.addComponent(fieldsLayout);
+				changesLayout.addComponent(arrowsLayout);
+				changesLayout.addComponent(valuesLayout);
+				warningLayout.addComponent(changesLayout);
+
+				// actions
+				warningComponent.addCommitListener(() -> {
+					savePerson(editedPerson);
+					popupWindow.close();
+				});
+
+				warningComponent.addDiscardListener(() -> popupWindow.close());
+
+				// popup configuration
+				popupWindow.addCloseListener(e -> popupWindow.close());
+				popupWindow.setWidth(600, Sizeable.Unit.PIXELS);
+
+				return;
+			}
+		}
+
+		savePerson(editedPerson);
 	}
 
 	private void savePerson(PersonDto personDto) {

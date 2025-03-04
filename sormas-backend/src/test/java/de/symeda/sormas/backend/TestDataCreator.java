@@ -126,6 +126,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
 import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessDto;
+import de.symeda.sormas.api.survey.SurveyDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -2237,7 +2238,7 @@ public class TestDataCreator {
 
 		beanTest.getCustomizableEnumValueService().ensurePersisted(diseaseVariant);
 
-		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, name);
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, disease, name);
 	}
 
 	public Pathogen createPathogen(String value, String caption) {
@@ -2252,7 +2253,7 @@ public class TestDataCreator {
 
 		beanTest.getCustomizableEnumFacade().loadData();
 
-		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, value);
+		return beanTest.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.PATHOGEN, null, value);
 	}
 
 	public ExternalShareInfo createExternalShareInfo(
@@ -2465,6 +2466,14 @@ public class TestDataCreator {
 		specialCaseAccess.setEndDateTime(endDateTime);
 
 		return beanTest.getSpecialCaseAccessFacade().save(specialCaseAccess);
+	}
+
+	public SurveyDto createSurvey(String name, Disease disease) {
+		SurveyDto survey = SurveyDto.build();
+		survey.setName(name);
+		survey.setDisease(disease);
+
+		return beanTest.getSurveyFacade().save(survey);
 	}
 
 	/**

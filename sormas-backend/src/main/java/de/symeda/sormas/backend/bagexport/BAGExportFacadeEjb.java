@@ -106,7 +106,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.BIRTHDATE_DD),
 			person.get(Person.BIRTHDATE_MM),
 			person.get(Person.BIRTHDATE_YYYY),
-			person.get(Person.OCCUPATION_TYPE),
+			person.get(Person.OCCUPATION_TYPE_VALUE),
 
 			caseJoins.getSymptoms().get(Symptoms.SYMPTOMATIC),
 			caseJoins.getSymptoms().get(Symptoms.ONSET_DATE),
@@ -264,7 +264,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			person.get(Person.BIRTHDATE_DD),
 			person.get(Person.BIRTHDATE_MM),
 			person.get(Person.BIRTHDATE_YYYY),
-			person.get(Person.OCCUPATION_TYPE),
+			person.get(Person.OCCUPATION_TYPE_VALUE),
 			contactRoot.get(Contact.QUARANTINE),
 			contactRoot.get(Contact.QUARANTINE_TYPE_DETAILS),
 			caze.get(Case.CASE_ID_ISM),

@@ -126,7 +126,23 @@ public enum DocumentWorkflow {
 		UserRight.EMAIL_TEMPLATE_MANAGEMENT,
 		ROOT_TRAVEL_ENTRY,
 		ROOT_PERSON,
-		ROOT_USER);
+		ROOT_USER),
+	SURVEY_DOCUMENT(DocumentWorkflowType.DOCUMENT,
+		"survey",
+						  DOCX,
+						  UserRight.SURVEY_EDIT,
+						  ROOT_CASE,
+						  ROOT_PERSON,
+						  ROOT_USER,
+						  ROOT_SAMPLE),
+	SURVEY_EMAIL(DocumentWorkflowType.EMAIL,
+			Constants.EMAIL_TEMPLATES_FOLDER + "/surveys",
+			TXT,
+			UserRight.SURVEY_EDIT,
+			ROOT_CASE,
+			ROOT_PERSON,
+			ROOT_USER,
+			ROOT_SAMPLE),;
 
 	private final DocumentWorkflowType type;
 	private final String templateDirectory;

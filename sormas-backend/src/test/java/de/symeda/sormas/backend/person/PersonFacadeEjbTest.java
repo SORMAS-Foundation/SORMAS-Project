@@ -369,7 +369,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		tmpPerson.setSex(Sex.UNKNOWN);
 		criteria = PersonSimilarityCriteria.forPerson(tmpPerson);
 		assertEquals(1, getPersonFacade().getSimilarPersonDtos(criteria).size());
-		criteria = PersonSimilarityCriteria.forPerson(tmpPerson, true);
+		criteria = PersonSimilarityCriteria.forPerson(tmpPerson, true, false);
 		assertEquals(0, getPersonFacade().getSimilarPersonDtos(criteria).size());
 	}
 
@@ -2349,5 +2349,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			(s) -> s.setContact(getContactService().getByReferenceDto(contact.toReference())));
 
 		assertTrue(getPersonFacade().isSharedOrReceived(person.getUuid()));
+	}
+
+	@Test
+	public void testGetByUnknownUuid() {
+		assertNull(getPersonFacade().getByUuid("UNKNOWN_UUID"));
 	}
 }

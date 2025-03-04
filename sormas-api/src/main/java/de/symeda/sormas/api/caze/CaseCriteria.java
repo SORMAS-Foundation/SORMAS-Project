@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
+import de.symeda.sormas.api.survey.SurveyReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -87,6 +88,10 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String PERSON_LIKE = "personLike";
 	public static final String JURISDICTION_TYPE = "jurisdictionType";
 	public static final String ENTITY_RELEVANCE_STATUS = "relevanceStatus";
+	public static final String SURVEY_ASSIGNED_FROM = "surveyAssignedFrom";
+	public static final String SURVEY_ASSIGNED_TO = "surveyAssignedTo";
+	public static final String SURVEY_RESPONSE_STATUS = "surveyResponseStatus";
+	public static final String SURVEY = "survey";
 
 	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
@@ -106,6 +111,9 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Date newCaseDateTo;
 	private Date creationDateFrom;
 	private Date creationDateTo;
+	private Date birthdateFrom;
+	private Date birthdateTo;
+	private boolean includePartialMatch;
 	private CriteriaDateType newCaseDateType;
 	// Used to re-construct whether users have filtered by epi weeks or dates
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
@@ -151,6 +159,11 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
 	private String personLike;
 	private Boolean withOwnership;
+	private Date surveyAssignedFrom;
+	private Date surveyAssignedTo;
+	private SurveyResponseStatus surveyResponseStatus;
+	private SurveyReferenceDto survey;
+
 	/**
 	 * Used for filtering merge-able cases to filter both lead and similar cases.
 	 */
@@ -552,6 +565,31 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		return this;
 	}
 
+	public Date getBirthdateFrom() {
+		return birthdateFrom;
+	}
+
+	public void setBirthdateFrom(Date birthdateFrom) {
+		this.birthdateFrom = birthdateFrom;
+	}
+
+	public Date getBirthdateTo() {
+		return birthdateTo;
+	}
+
+	public void setBirthdateTo(Date birthdateTo) {
+		this.birthdateTo = birthdateTo;
+	}
+
+	@IgnoreForUrl
+	public boolean isIncludePartialMatch() {
+		return includePartialMatch;
+	}
+
+	public void setIncludePartialMatch(boolean includePartialMatch) {
+		this.includePartialMatch = includePartialMatch;
+	}
+
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
@@ -804,5 +842,37 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public CaseCriteria caseReferenceNumber(String caseReferenceNumber) {
 		this.caseReferenceNumber = caseReferenceNumber;
 		return this;
+	}
+
+	public Date getSurveyAssignedFrom() {
+		return surveyAssignedFrom;
+	}
+
+	public void setSurveyAssignedFrom(Date surveyAssignedFrom) {
+		this.surveyAssignedFrom = surveyAssignedFrom;
+	}
+
+	public Date getSurveyAssignedTo() {
+		return surveyAssignedTo;
+	}
+
+	public void setSurveyAssignedTo(Date surveyAssignedTo) {
+		this.surveyAssignedTo = surveyAssignedTo;
+	}
+
+	public SurveyResponseStatus getSurveyResponseStatus() {
+		return surveyResponseStatus;
+	}
+
+	public void setSurveyResponseStatus(SurveyResponseStatus surveyResponseStatus) {
+		this.surveyResponseStatus = surveyResponseStatus;
+	}
+
+	public SurveyReferenceDto getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(SurveyReferenceDto survey) {
+		this.survey = survey;
 	}
 }

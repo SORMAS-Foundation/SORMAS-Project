@@ -333,9 +333,9 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public FacilityReferenceDto getByAddress(String street, String postalCode, String city) {
+	public FacilityReferenceDto getByAddress(String street, String houseNumber, String postalCode, String city) {
 
-		return toReferenceDto(service.getByAddress(street, postalCode, city));
+		return toReferenceDto(service.getByAddress(street, houseNumber, postalCode, city));
 	}
 
 	@Override

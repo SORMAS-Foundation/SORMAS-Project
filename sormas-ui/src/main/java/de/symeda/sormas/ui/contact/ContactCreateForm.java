@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -119,6 +121,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	ComboBox community;
 
 	private final boolean showPersonSearchButton;
+	private Window warningSimilarPersons;
 
 	/**
 	 * TODO use disease and case relation information given in ContactDto
@@ -151,13 +154,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
-		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
+		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true, true);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
 		personCreateForm = new PersonCreateForm(false, false, false, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
 		getContent().addComponent(personCreateForm, ContactDto.PERSON);
+
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
 
 		addField(ContactDto.RETURNING_TRAVELER, NullableOptionGroup.class);
 		region = addInfrastructureField(ContactDto.REGION);
@@ -430,4 +438,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
+	}
 }

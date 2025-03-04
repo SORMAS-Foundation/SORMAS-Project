@@ -365,6 +365,7 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.UNSPECIFIED_VHF,
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
+		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;

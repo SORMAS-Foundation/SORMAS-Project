@@ -35,6 +35,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.google.common.collect.Sets;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -45,6 +46,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
@@ -72,6 +74,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.person.PersonFormHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -111,6 +114,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private NullableOptionGroup ogCaseOrigin;
 
 	private PersonCreateForm personCreateForm;
+	private Window warningSimilarPersons;
 
 	private final boolean showHomeAddressForm;
 	private final boolean showPersonSearchButton;
@@ -123,6 +127,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
+		+ fluidRowLocs(CaseDataDto.CASE_CLASSIFICATION)
         + fluidRowLocs(CaseDataDto.CASE_REFERENCE_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -166,6 +171,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		this.convertedTravelEntry = convertedTravelEntry;
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPersonSearchButton = showPersonSearchButton;
+
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -192,7 +198,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
-		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
+
+		final NullableOptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, NullableOptionGroup.class);
+		caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+		caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+
+		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true, false);
 		diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
@@ -208,6 +219,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
+
+		personCreateForm.getNationalHealthIdField().addTextFieldValueChangeListener(e -> {
+			warningSimilarPersons = PersonFormHelper
+				.warningSimilarPersons(personCreateForm.getNationalHealthIdField().getValue(), null, () -> warningSimilarPersons = null);
+		});
 
 		// Jurisdiction fields
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
@@ -508,7 +524,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue());
+			handleDiseaseChanged((Disease) valueChangeEvent.getProperty().getValue());
 			personCreateForm.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue());
 		});
 
@@ -519,7 +535,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		if (diseaseField.getValue() != null) {
 			Disease disease = (Disease) diseaseField.getValue();
-			updateDiseaseVariant(disease);
+			handleDiseaseChanged(disease);
 			personCreateForm.updatePresentConditionEnum(disease);
 		}
 	}
@@ -538,12 +554,25 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		responsibleCommunityCombo.setValue(FacadeProvider.getCommunityFacade().getDefaultInfrastructureReference());
 	}
 
-	private void updateDiseaseVariant(Disease disease) {
+	private void handleDiseaseChanged(Disease newDisease) {
 		List<DiseaseVariant> diseaseVariants =
-			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, newDisease);
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 		diseaseVariantField
-			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+			.setVisible(newDisease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+
+		NullableOptionGroup classificationField = getField(CaseDataDto.CASE_CLASSIFICATION);
+		if (newDisease == Disease.INFLUENZA) {
+			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.HOME));
+			facilityOrHome.select(TypeOfPlace.HOME);
+			classificationField.setValue(Sets.newHashSet(CaseClassification.CONFIRMED));
+			classificationField.select(CaseClassification.CONFIRMED);
+		} else {
+			facilityOrHome.setValue(null);
+			facilityOrHome.unselect(TypeOfPlace.HOME);
+			classificationField.setValue(Sets.newHashSet(getValue().getCaseClassification()));
+			classificationField.select(getValue().getCaseClassification());
+		}
 	}
 
 	private void setNoneFacility() {
@@ -729,5 +758,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public void setSearchedPerson(PersonDto searchedPerson) {
 		personCreateForm.setSearchedPerson(searchedPerson);
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 }

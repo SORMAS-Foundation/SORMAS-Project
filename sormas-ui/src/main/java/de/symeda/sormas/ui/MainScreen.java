@@ -89,6 +89,7 @@ import de.symeda.sormas.ui.selfreport.SelfReportsView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
+import de.symeda.sormas.ui.survey.SurveysView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
 import de.symeda.sormas.ui.user.AbstractUserView;
@@ -315,7 +316,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
-			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			ControllerProvider.getTravelEntryController().registerViews(navigator);
 			menu.addView(
 				TravelEntriesView.class,
@@ -350,6 +351,14 @@ public class MainScreen extends HorizontalLayout {
 				SelfReportsView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuSelfReports),
 				VaadinIcons.USER_CHECK);
+		}
+
+		if (permitted(FeatureType.SURVEYS, UserRight.SURVEY_VIEW)) {
+			ControllerProvider.getSurveyController().registeredViews(navigator);
+			if (permitted(UserRight.SURVEY_TOKEN_VIEW)) {
+				ControllerProvider.getSurveyTokenController().registeredViews(navigator);
+			}
+			menu.addView(SurveysView.class, SurveysView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSurveys), VaadinIcons.BULLETS);
 		}
 
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
@@ -490,6 +499,7 @@ public class MainScreen extends HorizontalLayout {
 				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
 				ImmunizationsView.VIEW_NAME,
+				SurveysView.VIEW_NAME,
 				AefiView.VIEW_NAME));
 
 		if (surveillanceDashboardPermitted()) {

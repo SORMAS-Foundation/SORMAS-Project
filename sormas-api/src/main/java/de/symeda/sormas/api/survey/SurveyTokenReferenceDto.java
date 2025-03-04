@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,14 +13,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.disease;
+package de.symeda.sormas.api.survey;
 
-import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.backend.customizableenum.CustomizableEnumConverter;
+import de.symeda.sormas.api.ReferenceDto;
 
-public class PathogenConverter extends CustomizableEnumConverter<Pathogen> {
+public class SurveyTokenReferenceDto extends ReferenceDto {
 
-	public PathogenConverter() {
-		super(Pathogen.class);
+	private static final long serialVersionUID = -8524526281454532572L;
+
+	public SurveyTokenReferenceDto(String uuid) {
+		super(uuid);
+	}
+
+	public SurveyTokenReferenceDto(String uuid, String caption) {
+		super(uuid, caption);
 	}
 }

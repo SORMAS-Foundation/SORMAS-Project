@@ -20,6 +20,7 @@ import static de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus.D
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +32,11 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
@@ -46,6 +51,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -56,7 +62,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 
 public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
@@ -211,6 +219,43 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		// the sample should be added on the new case
 		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Collections.singletonList(newCase.getUuid()));
 		assertThat(samples, hasSize(2));
+	}
+
+	/**
+	 * External message with sample date in the threshold period should generate a new sample to the existing case
+	 * 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 */
+	@Test
+	public void testThresholdAgainstSampleDate() throws ExecutionException, InterruptedException {
+		ExternalMessageDto externalMessage = createExternalMessage(e -> {
+			e.getSampleReports().get(0).setSampleDateTime(DateHelper.subtractDays(new Date(), 10));
+		});
+
+		PersonDto person =
+			creator.createPerson(externalMessage.getPersonFirstName(), externalMessage.getPersonLastName(), externalMessage.getPersonSex(), p -> {
+				p.setNationalHealthId(externalMessage.getPersonNationalHealthId());
+			});
+
+		CaseDataDto caze = creator.createCase(reportingUser.toReference(), person.toReference(), rdcf, c -> {
+			c.setDisease(externalMessage.getDisease());
+			c.setReportDate(DateHelper.subtractDays(new Date(), 15));
+		});
+		creator.createSample(caze.toReference(), reportingUser.toReference(), rdcf.facility, s -> {
+			s.setSampleDateTime(DateHelper.subtractDays(new Date(), 15));
+		});
+
+		// set the threshold
+		creator.updateDiseaseConfiguration(externalMessage.getDisease(), true, true, true, true, null, 10);
+		getBean(DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal.class).loadData();
+
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(externalMessage);
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(externalMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+
+		assertThat(getCaseFacade().count(new CaseCriteria().person(caze.getPerson())), is(1L));
+		assertThat(getSampleFacade().count(new SampleCriteria().caze(caze.toReference())), is(2L));
 	}
 
 	@Test
@@ -370,6 +415,84 @@ public class AutomaticLabMessageProcessorTest extends AbstractBeanTest {
 		assertThat(samples, hasSize(1));
 		List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(samples.get(0).toReference());
 		assertThat(pathogenTests, hasSize(1));
+	}
+
+	@Test
+	public void testProcessPertussisMessageTestTypeCulture() throws ExecutionException, InterruptedException {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ExternalMessageDto cultureMessage = createExternalMessage((messageDto) -> {
+			messageDto.setDisease(Disease.PERTUSSIS);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.CULTURE);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
+		});
+		ProcessingResult<ExternalMessageProcessingResult> result = runFlow(cultureMessage);
+		assertThat(result.getStatus(), is(DONE));
+		assertThat(cultureMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		assertThat(getExternalMessageFacade().getByUuid(cultureMessage.getUuid()).getStatus(), is(ExternalMessageStatus.PROCESSED));
+		CaseDataDto positiveCase = getCaseData();
+		assertThat(positiveCase, is(notNullValue()));
+		assertThat(positiveCase.getDisease(), is(cultureMessage.getDisease()));
+		assertThat(positiveCase.getCaseClassification(), is(CaseClassification.CONFIRMED));
+		assertThat(positiveCase.getInvestigationStatus(), is(InvestigationStatus.PENDING));
+		assertThat(positiveCase.getOutcome(), is(CaseOutcome.NO_OUTCOME));
+	}
+
+	@Test
+	public void testProcessPertussisTestTypePCR() throws ExecutionException, InterruptedException {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "lu");
+		ExternalMessageDto pcrMessage = createExternalMessage((messageDto) -> {
+			messageDto.setDisease(Disease.PERTUSSIS);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.PCR_RT_PCR);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
+		});
+		runFlow(pcrMessage);
+		assertThat(pcrMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		CaseDataDto pcrCase = getCaseData();
+		assertThat(pcrCase, is(notNullValue()));
+		assertThat(pcrCase.getDisease(), is(pcrMessage.getDisease()));
+		assertThat(pcrCase.getCaseClassification(), is(CaseClassification.CONFIRMED));
+		assertThat(pcrCase.getInvestigationStatus(), is(InvestigationStatus.PENDING));
+		assertThat(pcrCase.getOutcome(), is(CaseOutcome.NO_OUTCOME));
+	}
+
+	@Test
+	public void testProcessPertussisTestNegativeResult() throws ExecutionException, InterruptedException {
+		ExternalMessageDto negativeMessage = createExternalMessage((messageDto) -> {
+			messageDto.setDisease(Disease.PERTUSSIS);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.CULTURE);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.NEGATIVE);
+		});
+		runFlow(negativeMessage);
+		assertThat(negativeMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		CaseDataDto negativeCase = getCaseData();
+		assertThat(negativeCase, is(notNullValue()));
+		assertThat(negativeCase.getDisease(), is(negativeMessage.getDisease()));
+		assertThat(negativeCase.getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
+		assertThat(negativeCase.getInvestigationStatus(), is(InvestigationStatus.PENDING));
+		assertThat(negativeCase.getOutcome(), is(CaseOutcome.NO_OUTCOME));
+	}
+
+	@Test
+	public void testProcessPertussisOtherTestType() throws ExecutionException, InterruptedException {
+		ExternalMessageDto rapidTestMessage = createExternalMessage((messageDto) -> {
+			messageDto.setDisease(Disease.PERTUSSIS);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestType(PathogenTestType.RAPID_TEST);
+			messageDto.getSampleReports().get(0).getTestReports().get(0).setTestResult(PathogenTestResultType.POSITIVE);
+		});
+		runFlow(rapidTestMessage);
+		assertThat(rapidTestMessage.getStatus(), is(ExternalMessageStatus.PROCESSED));
+		CaseDataDto rapidTestcase = getCaseData();
+		assertThat(rapidTestcase, is(notNullValue()));
+		assertThat(rapidTestcase.getDisease(), is(rapidTestMessage.getDisease()));
+		assertThat(rapidTestcase.getCaseClassification(), is(CaseClassification.NOT_CLASSIFIED));
+		assertThat(rapidTestcase.getInvestigationStatus(), is(InvestigationStatus.PENDING));
+		assertThat(rapidTestcase.getOutcome(), is(CaseOutcome.NO_OUTCOME));
+	}
+
+	private CaseDataDto getCaseData() {
+		List<PersonDto> persons = getPersonFacade().getAllAfter(new Date(0));
+		List<CaseDataDto> cases = getCaseFacade().getByPersonUuids(persons.stream().map(PersonDto::getUuid).collect(Collectors.toList()));
+		return cases.get(0);
 	}
 
 	private ProcessingResult<ExternalMessageProcessingResult> runFlow(ExternalMessageDto labMessage) throws ExecutionException, InterruptedException {

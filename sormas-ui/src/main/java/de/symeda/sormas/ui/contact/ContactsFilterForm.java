@@ -49,6 +49,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.BirthdateRangeFilterComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -60,6 +61,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	private static final String DISTRICT_INFO_LABEL_ID = "infoContactsViewRegionDistrictFilter";
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
+	private static final String BIRTHDATE_RANGE_FILTER = "birthdateRangeFilter";
 
 	private static final String CHECKBOX_STYLE = CssStyles.CHECKBOX_FILTER_INLINE + " " + CssStyles.VSPACE_3;
 
@@ -92,7 +94,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			ContactCriteria.INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS)
 
-		+ loc(WEEK_AND_DATE_FILTER);
+		+ loc(WEEK_AND_DATE_FILTER)
+		+ loc(BIRTHDATE_RANGE_FILTER);
 
 	protected ContactsFilterForm() {
 		super(
@@ -320,7 +323,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE,
 				I18nProperties.getCaption(Captions.contactOnlyWithSharedEventWithSourceCase),
 				null,
-				CHECKBOX_STYLE)).setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
+				CHECKBOX_STYLE))
+			.setVisible(UiUtil.permitted(UserRight.EVENT_VIEW));
 
 		addField(
 			moreFiltersContainer,
@@ -344,6 +348,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		}
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
+
+		moreFiltersContainer.addComponent(buildBirthdayRangeFilter(), BIRTHDATE_RANGE_FILTER);
 	}
 
 	@Override
@@ -469,6 +475,13 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
 
+		//Birthdate Filter
+		HorizontalLayout birthdateFilterForm = (HorizontalLayout) getMoreFiltersContainer().getComponent(BIRTHDATE_RANGE_FILTER);
+		BirthdateRangeFilterComponent birtdateFilter = (BirthdateRangeFilterComponent) birthdateFilterForm.getComponent(0);
+		birtdateFilter.getDateFromFilter().setValue(newValue.getBirthdateFrom());
+		birtdateFilter.getDateToFilter().setValue(newValue.getBirthdateTo());
+		birtdateFilter.getIncludePartialMatch().setValue(newValue.isIncludePartialMatch());
+
 		if (StringUtils.isBlank(newValue.getEventLike())) {
 			clearAndDisableFields(ContactCriteria.ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE);
 		} else {
@@ -526,6 +539,19 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		return dateFilterRowLayout;
 	}
 
+	private HorizontalLayout buildBirthdayRangeFilter() {
+		BirthdateRangeFilterComponent birthdateRangeFilterComponent = new BirthdateRangeFilterComponent(false, this);
+		addApplyHandler(e -> onApplyClick(birthdateRangeFilterComponent));
+
+		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
+		dateFilterRowLayout.setSpacing(true);
+		dateFilterRowLayout.setSizeUndefined();
+
+		dateFilterRowLayout.addComponent(birthdateRangeFilterComponent);
+
+		return dateFilterRowLayout;
+	}
+
 	private void onApplyClick(EpiWeekAndDateFilterComponent<ContactDateType> weekAndDateFilter) {
 		ContactCriteria criteria = getValue();
 
@@ -553,6 +579,18 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		} else {
 			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
+	}
+
+	private void onApplyClick(BirthdateRangeFilterComponent birthdateRangeFilter) {
+		Date birthdateFrom, birthdateTo;
+		Date dateFrom = birthdateRangeFilter.getDateFromFilter().getValue();
+		birthdateFrom = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+		Date dateTo = birthdateRangeFilter.getDateToFilter().getValue();
+		birthdateTo = dateTo != null ? DateHelper.getEndOfDay(dateTo) : null;
+		ContactCriteria criteria = getValue();
+		criteria.setBirthdateFrom(birthdateFrom);
+		criteria.setBirthdateTo(birthdateTo);
+		criteria.setIncludePartialMatch(birthdateRangeFilter.getIncludePartialMatch().getValue());
 	}
 
 	private void populateContactResponsiblesForRegion(RegionReferenceDto regionReferenceDto) {

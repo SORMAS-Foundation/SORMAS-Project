@@ -135,11 +135,18 @@ public abstract class DataImporter {
 
 	private final EnumCaptionCache enumCaptionCache;
 
+	private final boolean singleColumnImport;
+
 	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
+		this(inputFile, hasEntityClassRow, currentUser, csvSeparator, false);
+	}
+
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator, boolean singleColumnImport) throws IOException {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
 		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
+		this.singleColumnImport = singleColumnImport;
 
 		Path exportDirectory = getErrorReportFolderPath();
 		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
@@ -147,8 +154,8 @@ public abstract class DataImporter {
 			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 		}
 		Path errorReportFilePath = exportDirectory.resolve(
-			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
-				+ DateHelper.formatDateForExport(new Date()) + ".csv");
+				ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
+						+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
 		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator, FacadeProvider.getConfigFacade().getCsvSeparator());
@@ -285,9 +292,13 @@ public abstract class DataImporter {
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// validate headers
-			if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length <= 1) {
-				writeImportError(new String[0], I18nProperties.getValidationError(Validations.importProbablyInvalidSeparator));
-				return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, false);
+			if (!singleColumnImport) {
+				if (!columnNames[1].toLowerCase().contains("token".toLowerCase())) {
+					if (entityClasses != null && entityClasses.length <= 1 || entityProperties.length <= 1) {
+						writeImportError(new String[0], I18nProperties.getValidationError(Validations.importProbablyInvalidSeparator));
+						return ImportResult.withStatus(ImportResultStatus.CANCELED_WITH_ERRORS, false);
+					}
+				}
 			}
 
 			// Read and import all lines from the import file
@@ -448,7 +459,7 @@ public abstract class DataImporter {
 		if (propertyType.isAssignableFrom(OccupationType.class)) {
 			OccupationType occupationType = null;
 			try {
-				occupationType = FacadeProvider.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, entry);
+				occupationType = FacadeProvider.getCustomizableEnumFacade().getEnumValue(CustomizableEnumType.OCCUPATION_TYPE, null, entry);
 			} catch (EJBException e) {
 				//ignore, occupationType will remain null
 			}

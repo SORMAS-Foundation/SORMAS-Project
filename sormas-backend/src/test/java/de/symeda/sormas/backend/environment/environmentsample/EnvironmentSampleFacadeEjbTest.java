@@ -449,7 +449,8 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			reportingUser.toReference(),
 			PathogenTestResultType.POSITIVE,
 			null);
-		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.PATHOGEN, positivePathogen.getValue()))
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.PATHOGEN, null, positivePathogen.getValue()))
 			.thenReturn(positivePathogen);
 
 		Pathogen pendingPathogen = creator.createPathogen("TEST_PATHOGEN_2", "Test pathogen 2");
@@ -461,7 +462,8 @@ public class EnvironmentSampleFacadeEjbTest extends AbstractBeanTest {
 			reportingUser.toReference(),
 			PathogenTestResultType.PENDING,
 			null);
-		Mockito.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.PATHOGEN, pendingPathogen.getValue()))
+		Mockito
+			.when(MockProducer.getCustomizableEnumFacadeForConverter().getEnumValue(CustomizableEnumType.PATHOGEN, null, pendingPathogen.getValue()))
 			.thenReturn(pendingPathogen);
 
 		creator.createEnvironmentSample(environment.toReference(), reportingUser.toReference(), rdcf, lab.toReference(), null);

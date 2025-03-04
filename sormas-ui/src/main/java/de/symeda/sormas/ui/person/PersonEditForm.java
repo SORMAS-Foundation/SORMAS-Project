@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.person;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
+import static de.symeda.sormas.ui.utils.CssStyles.LAYOUT_COL_HIDE_INVSIBLE;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
@@ -33,13 +34,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.ui.CheckBox;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -94,6 +99,7 @@ import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.SormasTextField;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
@@ -107,6 +113,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String NATIONAL_HEALTH_ID_WARNING_LABEL = "nationalHealthIdWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
+	public static final String HAS_GUARDIAN = "hasGuardian";
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -162,6 +169,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 							fluidRowLocs(PersonDto.BIRTH_NAME, "") +
 									fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
 									fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+									LayoutUtil.fluidRowLocs(PersonDto.IS_EMANCIPATED) +
+									LayoutUtil.fluidRowLocs(PersonDto.IS_INCAPACITATED) +
+									LayoutUtil.fluidRowLocs(HAS_GUARDIAN) +
+									LayoutUtil.fluidRow(
+											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
@@ -184,6 +196,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private boolean isPseudonymized;
 	private LocationEditForm addressForm;
 	private PresentConditionChangeListener presentConditionChangeListener;
+	private SormasTextField nationalHealthIdField;
+	private Window warningSimilarPersons;
+	private CheckBox isEmancipated;
+	private CheckBox isIncapacitated;
+	private CheckBox hasGuardian;
+	private TextField nameOfGuardians;
+	private long minimumAdultAge;
+	private long minimumEmancipatedAge;
+	private TextField approximateAgeField;
+	private ComboBox approximateAgeTypeField;
 	//@formatter:on
 
 	public PersonEditForm(
@@ -286,7 +308,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.NICKNAME, TextField.class);
 		addField(PersonDto.MOTHERS_MAIDEN_NAME, TextField.class);
 		addFields(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME);
-		addFields(PersonDto.NAMES_OF_GUARDIANS);
+		nameOfGuardians = addField(PersonDto.NAMES_OF_GUARDIANS, TextField.class);
 		ComboBox presentCondition = addField(PersonDto.PRESENT_CONDITION, ComboBox.class);
 		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -296,13 +318,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox birthDateMonth = addField(PersonDto.BIRTH_DATE_MM, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateMonth.setNullSelectionAllowed(true);
-		birthDateMonth.addItems(DateHelper.getMonthsInYear());
-		birthDateMonth.setPageLength(12);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		birthDateMonth.setCaption("");
-		DateHelper.getMonthsInYear()
-			.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
-		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addField(PersonDto.BIRTH_DATE_YYYY, ComboBox.class);
 		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -321,10 +338,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
 
 		DateField deathDate = addField(PersonDto.DEATH_DATE, DateField.class);
-		TextField approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
+		approximateAgeField = addField(PersonDto.APPROXIMATE_AGE, TextField.class);
 		approximateAgeField
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, approximateAgeField.getCaption()));
-		ComboBox approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
+		approximateAgeTypeField = addField(PersonDto.APPROXIMATE_AGE_TYPE, ComboBox.class);
 		addField(PersonDto.APPROXIMATE_AGE_REFERENCE_DATE, DateField.class);
 
 		approximateAgeField.addValidator(
@@ -332,6 +349,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				approximateAgeField,
 				approximateAgeTypeField,
 				I18nProperties.getValidationError(Validations.softApproximateAgeTooHigh)));
+
+		addFieldListeners(PersonDto.APPROXIMATE_AGE, e -> {
+			updateLegalGuardianSection(false);
+		});
+
+		addFieldListeners(PersonDto.APPROXIMATE_AGE_TYPE, e -> {
+			updateLegalGuardianSection(false);
+		});
 
 		TextField tfGestationAgeAtBirth = addField(PersonDto.GESTATION_AGE_AT_BIRTH, TextField.class);
 		tfGestationAgeAtBirth
@@ -372,7 +397,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		addField(PersonDto.PASSPORT_NUMBER);
 
-		TextField nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID);
+		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
+		nationalHealthIdField.setNullRepresentation("");
 		Label nationalHealthIdWarningLabel = new Label(I18nProperties.getString(Strings.messagePersonNationalHealthIdInvalid));
 		nationalHealthIdWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		nationalHealthIdWarningLabel.setVisible(false);
@@ -387,6 +413,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 		addField(PersonDto.INTERNAL_TOKEN);
+
+		AtomicBoolean nationalHealthIdFirstLoading = new AtomicBoolean(true);
+		nationalHealthIdField.addTextFieldValueChangeListener(e -> {
+			String currentPersonUuid = this.getValue().getUuid();
+			if (nationalHealthIdFirstLoading.get()) {
+				nationalHealthIdFirstLoading.set(false);
+			} else {
+				warningSimilarPersons =
+					PersonFormHelper.warningSimilarPersons(nationalHealthIdField.getValue(), currentPersonUuid, () -> warningSimilarPersons = null);
+			}
+		});
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -407,7 +444,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
 
 		causeOfDeathField = addField(PersonDto.CAUSE_OF_DEATH, ComboBox.class);
-		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true);
+		causeOfDeathDiseaseField = addDiseaseField(PersonDto.CAUSE_OF_DEATH_DISEASE, true, false);
 		causeOfDeathDetailsField = addField(PersonDto.CAUSE_OF_DEATH_DETAILS, TextField.class);
 
 		// Set requirements that don't need visibility changes and read only status
@@ -445,6 +482,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+
+		if (isEditableAllowed(PersonDto.BIRTH_DATE_MM)) {
+			birthDateMonth.addItems(DateHelper.getMonthsInYear());
+			birthDateMonth.setPageLength(13);
+			DateHelper.getMonthsInYear()
+				.forEach(month -> birthDateMonth.setItemCaption(month, de.symeda.sormas.api.Month.values()[month - 1].toString()));
+		}
 
 		if (!getField(PersonDto.OCCUPATION_TYPE).isVisible()
 			&& !getField(PersonDto.ARMED_FORCES_RELATION_TYPE).isVisible()
@@ -485,6 +529,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.BIRTH_DATE_YYYY, e -> {
 			updateApproximateAge();
 			updateReadyOnlyApproximateAge();
+			updateLegalGuardianSection(false);
 		});
 
 		addFieldListeners(PersonDto.DEATH_DATE, e -> updateApproximateAge());
@@ -612,6 +657,108 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			I18nProperties.getPrefixDescription(PersonDto.I18N_PREFIX, PersonDto.ADDITIONAL_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		hasGuardian = addCustomField(HAS_GUARDIAN, Boolean.class, CheckBox.class);
+
+		isIncapacitated = addField(PersonDto.IS_INCAPACITATED, CheckBox.class);
+		isIncapacitated.addValueChangeListener(e -> updateLegalGuardianSection(true));
+
+		isEmancipated = addField(PersonDto.IS_EMANCIPATED, CheckBox.class);
+		isEmancipated.addValueChangeListener(e -> onEmancipatedChange());
+		isEmancipated.setVisible(false);
+		hasGuardian.setEnabled(false);
+		hasGuardian.setValue(Boolean.TRUE);
+		nameOfGuardians.setVisible(true);
+		minimumAdultAge = FacadeProvider.getConfigFacade().getMinimumAdultAge();
+		minimumEmancipatedAge = FacadeProvider.getConfigFacade().getMinimumEmancipatedAge();
+	}
+
+	private int getApproximateAgeInYears() {
+		Date birthDate = calcBirthDateValue();
+		if (birthDate != null) {
+			Pair<Integer, ApproximateAgeType> pair =
+					ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
+			if ((pair.getElement0() != null) && (pair.getElement1() == ApproximateAgeType.YEARS)) {
+				return pair.getElement0();
+			}
+		}
+		return -1;
+	}
+
+	private void onEmancipatedChange() {
+		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
+		hasGuardian.setValue(!isEmancipatedChecked);
+		if(isEmancipatedChecked) {
+			nameOfGuardians.setValue("");
+		}
+		updateHasGuardianCheckBox(isEmancipatedChecked);
+	}
+
+	private void updateLegalGuardianSection(boolean isInitialized) {
+		boolean isIncapacitatedChecked = (isIncapacitated == null) || (isIncapacitated.getValue());
+		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
+		int approximateAge = getApproximateAgeInYears();
+		boolean canBeEmancipated = personCanBeEmancipated(approximateAge, isEmancipatedChecked);
+		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated);
+		hasGuardian.setValue(isIncapacitatedChecked || approximateAge < minimumAdultAge);
+		if(getApproximateAgeInYears() < minimumAdultAge) {
+			nameOfGuardians.setValue(getValue().getNamesOfGuardians());
+		}
+		updateHasGuardianCheckBox(false);
+		hardResetNameOfGuardians(isInitialized);
+	}
+
+	private boolean personCanBeEmancipated(int approximateAge, boolean change) {
+		boolean canBeEmancipated;
+		if(approximateAge == -1 && (approximateAgeField).getValue() != null) {
+			canBeEmancipated = false;
+		} else {
+			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
+		}
+		if(!canBeEmancipated && (approximateAgeField).getValue() != null){
+			int age = Integer.parseInt(approximateAgeField.getValue());
+			if(approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS){
+				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
+				if (change) {
+					isEmancipated.setValue(canBeEmancipated);
+				}
+			}
+		}
+		return canBeEmancipated;
+	}
+
+	private void hardResetNameOfGuardians(boolean isInitialized) {
+		boolean isIncapacitatedChecked = (isIncapacitated != null) && (isIncapacitated.getValue());
+		if (getApproximateAgeInYears() != -1 && getApproximateAgeInYears() >= minimumAdultAge && !isIncapacitatedChecked && isInitialized) {
+			nameOfGuardians.setValue("");
+		}
+	}
+
+	private void updateHasGuardianCheckBox(boolean onEmancipatedChange) {
+		boolean isIncapacitatedChecked = (isIncapacitated != null) && (isIncapacitated.getValue());
+		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
+		boolean canBe = personCanBeEmancipated(getApproximateAgeInYears(), onEmancipatedChange);
+		if((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
+			isEmancipatedChecked = false;
+			isEmancipated.setValue(Boolean.FALSE);
+			isIncapacitated.setVisible(true);
+		}
+		if(isEmancipatedChecked){
+			hasGuardian.setVisible(false);
+			nameOfGuardians.setVisible(false);
+			isIncapacitated.setVisible(false);
+			return;
+		} else {
+			isIncapacitated.setVisible(true);
+			hasGuardian.setValue(Boolean.TRUE);
+		}
+		Date birthDate = calcBirthDateValue();
+		boolean isChildOrUnknownDate = getApproximateAgeInYears() < minimumAdultAge;
+		nameOfGuardians.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
+		hasGuardian.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
+		if((birthDate == null) || isChildOrUnknownDate ){
+			hasGuardian.setValue(Boolean.TRUE);
+		}
 	}
 
 	@Override
@@ -901,6 +1048,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	public Field getLastNameField() {
 		return lastNameField;
+	}
+
+	public Window getWarningSimilarPersons() {
+		return warningSimilarPersons;
 	}
 
 	@Override

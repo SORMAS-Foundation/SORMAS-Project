@@ -51,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.docgeneneration.DocumentTemplateCriteria;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateDto;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateEntities;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
@@ -114,7 +115,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private static final Map<DocumentWorkflow, DocumentRelatedEntityType> DOCUMENT_WORKFLOW_DOCUMENT_RELATION_MAPPING = Map.of(
 		DocumentWorkflow.CASE_EMAIL, DocumentRelatedEntityType.CASE,
 		DocumentWorkflow.CONTACT_EMAIL, DocumentRelatedEntityType.CONTACT,
-		DocumentWorkflow.TRAVEL_ENTRY_EMAIL, DocumentRelatedEntityType.TRAVEL_ENTRY
+		DocumentWorkflow.TRAVEL_ENTRY_EMAIL, DocumentRelatedEntityType.TRAVEL_ENTRY,
+		DocumentWorkflow.SURVEY_EMAIL, DocumentRelatedEntityType.CASE
 	);
 	// @formatter:on
 
@@ -159,7 +161,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 
 	@Override
 	public List<DocumentTemplateDto> getTemplates(DocumentWorkflow documentWorkflow) {
-		return documentTemplateFacade.getAvailableTemplates(documentWorkflow, null);
+		return documentTemplateFacade.getAvailableTemplates(new DocumentTemplateCriteria(documentWorkflow, null, null));
 	}
 
 	@Override

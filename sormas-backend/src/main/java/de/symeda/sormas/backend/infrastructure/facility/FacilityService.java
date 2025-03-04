@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.infrastructure.facility;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import javax.ejb.EJB;
@@ -200,7 +201,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Facility getByAddress(String street, String postalCode, String city) {
+	public Facility getByAddress(String street, String houseNumber, String postalCode, String city) {
 
 		if (StringUtils.isAnyBlank(street, postalCode, city)) {
 			return null;
@@ -213,6 +214,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility, 
 		Predicate filter = cb.and(
 			createBasicFilter(cb, from),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.STREET))), street.trim().toLowerCase()),
+			cb.equal(
+				cb.lower(cb.trim(from.get(Facility.HOUSE_NUMBER))),
+				Optional.ofNullable(houseNumber).map(s -> s.trim().toLowerCase()).orElse(null)),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.POSTAL_CODE))), postalCode.trim().toLowerCase()),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.CITY))), city.trim().toLowerCase()));
 

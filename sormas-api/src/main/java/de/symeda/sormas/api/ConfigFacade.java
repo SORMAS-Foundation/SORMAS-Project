@@ -163,4 +163,8 @@ public interface ConfigFacade {
 	boolean isAnyCaseClassificationCalculationEnabled();
 
 	Integer getNegaiveCovidTestsMaxAgeDays();
+
+	long getMinimumEmancipatedAge();
+
+	long getMinimumAdultAge();
 }
