@@ -28,6 +28,7 @@ import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumContro
 import de.symeda.sormas.ui.configuration.disease.DiseaseConfigurationController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreakController;
+import de.symeda.sormas.ui.configuration.system.SystemConfigurationController;
 import de.symeda.sormas.ui.contact.ContactController;
 import de.symeda.sormas.ui.customexport.CustomExportController;
 import de.symeda.sormas.ui.dashboard.DashboardController;
@@ -111,6 +112,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SurveyController surveyController;
 	private final SurveyTokenController surveyTokenController;
 	private final SurveyDocumentController surveyDocumentController;
+	private final SystemConfigurationController systemConfigurationController;
 
 	public ControllerProvider() {
 		super();
@@ -160,6 +162,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		surveyController = new SurveyController();
 		surveyTokenController = new SurveyTokenController();
 		surveyDocumentController = new SurveyDocumentController();
+		systemConfigurationController = new SystemConfigurationController();
 	}
 
 	protected static ControllerProvider get() {
@@ -344,5 +347,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SurveyDocumentController getSurveyDocumentController() {
 		return get().surveyDocumentController;
+	}
+
+	public static SystemConfigurationController getSystemConfigurationController() {
+		return get().systemConfigurationController;
 	}
 }

@@ -90,6 +90,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShar
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccessFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyFacadeEjb;
 import de.symeda.sormas.backend.survey.SurveyTokenFacadeEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategoryEjb;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
@@ -500,6 +502,16 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testSurveyTokenFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(SurveyTokenFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testSystemConfigurationCategoryEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SystemConfigurationCategoryEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testSystemConfigurationValueEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SystemConfigurationValueEjb.class, AuthMode.CLASS_AND_METHODS, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {

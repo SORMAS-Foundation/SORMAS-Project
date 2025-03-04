@@ -13869,4 +13869,67 @@ VALUES('ENVIRONMENT_LINK', tstzrange(
                            ), 1);
 
 INSERT INTO schema_version (version_number, comment) VALUES (563, 'Events and environment linkage #13266');
+-- 2025-03-03 Create system config structures #13269
+CREATE TABLE systemconfigurationcategory (
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
+
+                         "name" varchar(255) not null,
+                         caption text,
+                         "description" text,
+
+                         sys_period tstzrange not null,
+                         primary key(id)
+);
+
+ALTER TABLE systemconfigurationcategory OWNER TO sormas_user;
+ALTER TABLE systemconfigurationcategory ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+
+CREATE TABLE systemconfigurationcategory_history (LIKE systemconfigurationcategory);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON systemconfigurationcategory
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'systemconfigurationcategory_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON systemconfigurationcategory
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationcategory_history', 'id');
+ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
+
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'General', 'General configuration settings');
+
+CREATE TABLE systemconfigurationvalue (
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
+
+                         category_id bigint not null,
+                         config_key varchar(255) not null,
+                         config_value text,
+                         value_pattern varchar(255),
+                         value_encrypt boolean default false,
+
+                         sys_period tstzrange not null,
+                         primary key(id)
+);
+
+ALTER TABLE systemconfigurationvalue OWNER TO sormas_user;
+ALTER TABLE systemconfigurationvalue ADD CONSTRAINT fk_change_user_id FOREIGN KEY (change_user_id) REFERENCES users (id);
+ALTER TABLE systemconfigurationvalue ADD CONSTRAINT fk_systemconfigurationcategory FOREIGN KEY (category_id) REFERENCES systemconfigurationcategory (id);
+
+CREATE TABLE systemconfigurationvalue_history (LIKE systemconfigurationvalue);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON systemconfigurationvalue
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'systemconfigurationvalue_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON systemconfigurationvalue
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemconfigurationvalue_history', 'id');
+ALTER TABLE systemconfigurationvalue_history OWNER TO sormas_user;
+
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SYSTEM_CONFIGURATION' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (561, 'Create system config structures #13269');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

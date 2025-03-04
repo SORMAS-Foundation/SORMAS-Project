@@ -102,6 +102,8 @@ import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.specialcaseaccess.SpecialCaseAccess;
 import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -206,6 +208,8 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.FEATURE_CONFIGURATIONS, FeatureConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DISEASE_CONFIGURATIONS, DiseaseConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.DELETION_CONFIGURATIONS, DeletionConfiguration.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_VALUES, SystemConfigurationValue.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_CATEGORIES, SystemConfigurationCategory.TABLE_NAME);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

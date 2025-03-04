@@ -266,6 +266,9 @@ public interface Validations {
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	String surveyDocumentTemplateMissingTokenVariable = "surveyDocumentTemplateMissingTokenVariable";
 	String surveyOnlyCasesSupported = "surveyOnlyCasesSupported";
+	String systemConfigurationValueInvalidKey = "systemConfigurationValueInvalidKey";
+	String systemConfigurationValueInvalidValue = "systemConfigurationValueInvalidValue";
+	String systemConfigurationValuePatternNotMatched = "systemConfigurationValuePatternNotMatched";
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";
 	String taskMissingEventLink = "taskMissingEventLink";

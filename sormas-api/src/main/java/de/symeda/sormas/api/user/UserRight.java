@@ -312,6 +312,7 @@ public enum UserRight {
 	EXTERNAL_EMAIL_SEND(UserRightGroup.EXTERNAL_EMAILS),
 	EXTERNAL_EMAIL_ATTACH_DOCUMENTS(UserRightGroup.EXTERNAL_EMAILS, UserRight._EXTERNAL_EMAIL_SEND),
 	CUSTOMIZABLE_ENUM_MANAGEMENT(UserRightGroup.CONFIGURATION),
+	SYSTEM_CONFIGURATION(UserRightGroup.CONFIGURATION),
 	DISEASE_MANAGEMENT(UserRightGroup.CONFIGURATION);
 
 	//@formatter:on
@@ -554,6 +555,7 @@ public enum UserRight {
 	public static final String _EXTERNAL_EMAIL_SEND = "EXTERNAL_EMAIL_SEND";
 	public static final String _EXTERNAL_EMAIL_ATTACH_DOCUMENTS = "EXTERNAL_EMAIL_ATTACH_DOCUMENTS";
 	public static final String _CUSTOMIZABLE_ENUM_MANAGEMENT = "CUSTOMIZABLE_ENUM_MANAGEMENT";
+	public static final String _SYSTEM_CONFIGURATION = "SYSTEM_CONFIGURATION";
 	public static final String _DISEASE_MANAGEMENT = "DISEASE_MANAGEMENT";
 
 	private static final Map<UserRight, Set<UserRight>> userRightDependencies = buildUserRightDependencies();

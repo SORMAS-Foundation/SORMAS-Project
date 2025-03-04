@@ -1577,6 +1577,7 @@ public interface Strings {
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
 	String messageSyncUsersFromAuthProviderConfigurationError = "messageSyncUsersFromAuthProviderConfigurationError";
+	String messageSystemConfigurationValueSaved = "messageSystemConfigurationValueSaved";
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageSystemFollowUpCanceledByDropping = "messageSystemFollowUpCanceledByDropping";
 	String messageTaskArchived = "messageTaskArchived";
@@ -1833,6 +1834,7 @@ public interface Strings {
 	String promptSurveyFreeTextSearch = "promptSurveyFreeTextSearch";
 	String promptSurveyResponseStatus = "promptSurveyResponseStatus";
 	String promptSurveyTokenFreeTextSearch = "promptSurveyTokenFreeTextSearch";
+	String promptSystemConfigurationSearchField = "promptSystemConfigurationSearchField";
 	String promptTaskDateFrom = "promptTaskDateFrom";
 	String promptTaskDateTo = "promptTaskDateTo";
 	String promptTaskDateType = "promptTaskDateType";

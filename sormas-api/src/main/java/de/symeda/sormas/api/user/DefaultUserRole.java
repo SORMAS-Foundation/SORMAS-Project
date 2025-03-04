@@ -483,7 +483,8 @@ public enum DefaultUserRole {
 					SORMAS_REST,
 					SORMAS_UI,
 					DEV_MODE,
-					CUSTOMIZABLE_ENUM_MANAGEMENT));
+					CUSTOMIZABLE_ENUM_MANAGEMENT,
+					SYSTEM_CONFIGURATION));
 			break;
 		case ADMIN_SUPERVISOR:
 			userRights.addAll(
