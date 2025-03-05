@@ -39,7 +39,6 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
 	public static final String WATER_TYPE = "waterType";
-	public static final String VECTOR_TYPE = "vectorType";
 	public static final String OTHER_WATER_TYPE = "otherWaterType";
 	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
 	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
@@ -48,6 +47,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String LOCATION = "location";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String VECTOR_TYPE = "vectorType";
 	public static final String EVENTS = "events";
 
 	@NotNull(message = Validations.validReportDateTime)
@@ -67,7 +67,6 @@ public class EnvironmentDto extends PseudonymizableDto {
 	@NotNull(message = Validations.environmentMedia)
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
-	private VectorType vectorType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
@@ -85,6 +84,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	private VectorType vectorType;
 
 	private EventReferenceDto event;
 

@@ -55,7 +55,6 @@ public class Environment extends CoreAdo {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
 	public static final String WATER_TYPE = "waterType";
-	public static final String VECTOR_TYPE = "vectorType";
 	public static final String OTHER_WATER_TYPE = "otherWaterType";
 	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
 	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
@@ -64,6 +63,7 @@ public class Environment extends CoreAdo {
 	public static final String OTHER_WATER_USE = "otherWaterUse";
 	public static final String LOCATION = "location";
 	public static final String ENVIRONMENT_SAMPLES = "environmentSamples";
+	public static final String VECTOR_TYPE = "vectorType";
 	public static final String EVENTS = "events";
 
 	private Date reportDate;
@@ -75,7 +75,6 @@ public class Environment extends CoreAdo {
 	private InvestigationStatus investigationStatus;
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
-	private VectorType vectorType;
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
 	private String otherInfrastructureDetails;
@@ -84,6 +83,7 @@ public class Environment extends CoreAdo {
 	private Location location;
 	private List<Event> events = new ArrayList<>();
 	private Set<EnvironmentSample> environmentSamples = new HashSet<>();
+	private VectorType vectorType;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable = false)

@@ -37,7 +37,7 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.EXTERNAL_ID)
             + fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") + fluidRowLocs(EnvironmentDto.ENVIRONMENT_NAME, "")+
-			fluidRowLocs(EnvironmentDto.VECTOR_TYPE, "")+
+            fluidRowLocs(EnvironmentDto.VECTOR_TYPE, "")+
             loc(LOCATION_HEADING_LOC) +
             fluidRowLocs(EnvironmentDto.LOCATION) +
             fluidRowLocs("", EnvironmentDto.RESPONSIBLE_USER);
@@ -95,6 +95,7 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 				vectorType.setVisible(false);
 			}
 		});
+
 		regionField.addValueChangeListener(e -> {
 			List<UserReferenceDto> filteredResponsibleUsers;
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

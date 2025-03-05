@@ -104,6 +104,8 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		otherWaterType.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 		ComboBox vectorType = addField(EnvironmentDto.VECTOR_TYPE, ComboBox.class);
 
+		ComboBox vectorType = addField(EnvironmentDto.VECTOR_TYPE, ComboBox.class);
+
 		ComboBox infrastructureDetails = addField(EnvironmentDto.INFRASTUCTURE_DETAILS, ComboBox.class);
 		TextField otherInfrastructureDetails = addField(EnvironmentDto.OTHER_INFRASTRUCTUIRE_DETAILS, TextField.class);
 		otherInfrastructureDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
