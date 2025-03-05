@@ -52,6 +52,7 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 			fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") +
 			fluidRowLocs(EnvironmentDto.WATER_TYPE, EnvironmentDto.OTHER_WATER_TYPE) +
 			fluidRowLocs(EnvironmentDto.INFRASTUCTURE_DETAILS, EnvironmentDto.OTHER_INFRASTRUCTUIRE_DETAILS) +
+			fluidRowLocs(EnvironmentDto.VECTOR_TYPE, "") +
 			fluidRowLocs(WATER_USE_HEADING_LOC) +
 			fluidRowLocs(EnvironmentDto.WATER_USE) +
 			fluidRowLocs(EnvironmentDto.OTHER_WATER_USE) +
@@ -101,6 +102,8 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 		ComboBox waterType = addField(EnvironmentDto.WATER_TYPE, ComboBox.class);
 		TextField otherWaterType = addField(EnvironmentDto.OTHER_WATER_TYPE, TextField.class);
 		otherWaterType.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+
+		ComboBox vectorType = addField(EnvironmentDto.VECTOR_TYPE, ComboBox.class);
 
 		ComboBox infrastructureDetails = addField(EnvironmentDto.INFRASTUCTURE_DETAILS, ComboBox.class);
 		TextField otherInfrastructureDetails = addField(EnvironmentDto.OTHER_INFRASTRUCTUIRE_DETAILS, TextField.class);
@@ -199,21 +202,26 @@ public class EnvironmentDataForm extends AbstractEditForm<EnvironmentDto> {
 
 		environmentMedia.addValueChangeListener(valueChangeEvent -> {
 			if (EnvironmentMedia.WATER.equals(valueChangeEvent.getProperty().getValue())) {
-				waterType.setVisible(true);
-				infrastructureDetails.setVisible(true);
-				waterUseCheckBoxTree.setVisible(true);
-				useOfWaterHeading.setVisible(true);
-			} else {
+				vectorType.setVisible(false);
+				setVisible(true, infrastructureDetails, waterUseCheckBoxTree, otherWaterUse);
+			} else if (EnvironmentMedia.VECTORS.equals(valueChangeEvent.getProperty().getValue())) {
 				useOfWaterHeading.setVisible(false);
-				waterType.setVisible(false);
-				infrastructureDetails.setVisible(false);
-				waterUseCheckBoxTree.setVisible(false);
-				otherWaterUse.setVisible(false);
+				setVisible(false, waterType, infrastructureDetails, waterUseCheckBoxTree, otherWaterUse);
+				vectorType.setVisible(true);
 				waterType.clear();
 				infrastructureDetails.clear();
 				waterUseCheckBoxTree.clear();
 				waterUseCheckBoxTree.clear();
 				otherWaterUse.clear();
+			} else {
+				useOfWaterHeading.setVisible(false);
+				setVisible(false, waterType, infrastructureDetails, waterUseCheckBoxTree, otherWaterUse, vectorType);
+				waterType.clear();
+				infrastructureDetails.clear();
+				waterUseCheckBoxTree.clear();
+				waterUseCheckBoxTree.clear();
+				otherWaterUse.clear();
+				vectorType.clear();
 			}
 		});
 

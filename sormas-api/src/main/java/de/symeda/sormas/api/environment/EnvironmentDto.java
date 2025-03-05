@@ -46,6 +46,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String LOCATION = "location";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String VECTOR_TYPE = "vectorType";
 
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
@@ -81,6 +82,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	private VectorType vectorType;
 
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
@@ -247,5 +249,13 @@ public class EnvironmentDto extends PseudonymizableDto {
 
 	public EnvironmentReferenceDto toReference() {
 		return new EnvironmentReferenceDto(getUuid(), getEnvironmentName());
+	}
+
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
 	}
 }

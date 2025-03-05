@@ -1459,6 +1459,7 @@ public interface Captions {
 	String Environment_uuid = "Environment.uuid";
 	String Environment_waterType = "Environment.waterType";
 	String Environment_waterUse = "Environment.waterUse";
+	String Environment_vectorType = "Environment.vectorType";
 	String environmentActiveEnvironments = "environmentActiveEnvironments";
 	String environmentAllActiveAndArchivedEnvironments = "environmentAllActiveAndArchivedEnvironments";
 	String environmentArchivedEnvironments = "environmentArchivedEnvironments";

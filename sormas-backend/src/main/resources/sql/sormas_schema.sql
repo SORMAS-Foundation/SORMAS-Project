@@ -13827,4 +13827,10 @@ ALTER TABLE surveytokens ADD COLUMN responsereceiveddate timestamp;
 ALTER TABLE surveytokens_history ADD COLUMN responsereceiveddate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (560, 'Create survey tokens pages #13253');
+
+-- added new column as vectortype for environment and environment sample
+ALTER TABLE environments ADD column IF NOT EXISTS vectortype varchar(255);
+ALTER TABLE environmentsamples ADD column IF NOT EXISTS  vectortype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (561, 'Added vectors to the environment #13267');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
