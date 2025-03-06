@@ -38,11 +38,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.sormas.api.event.SpecificRiskConverter;
 import org.hibernate.annotations.Type;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventIdentificationSource;
@@ -59,13 +59,14 @@ import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.SpecificRisk;
+import de.symeda.sormas.api.event.SpecificRiskConverter;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -83,6 +84,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String TABLE_NAME = "events";
 
 	public static final String EVENTS_EVENT_GROUPS_TABLE_NAME = "events_eventgroups";
+	public static final String EVENTS_ENVIRONMENTS_TABLE_NAME = "events_environments";
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
@@ -146,6 +148,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String ENVIRONMENTS = "environments";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;
@@ -215,6 +218,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private List<Task> tasks;
 	private List<Action> actions;
 	private List<EventGroup> eventGroups;
+	private List<Environment> environments;
 
 	private String internalToken;
 
@@ -839,4 +843,17 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.externalShares = externalShares;
 	}
 
+	@ManyToMany(mappedBy = Environment.EVENTS, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<Environment> getEnvironments() {
+		return environments;
+	}
+
+	public void setEnvironments(List<Environment> environments) {
+		this.environments = environments;
+	}
+
+	public void unlinkEnvironment(Environment environment) {
+		environments.remove(environment);
+		environment.getEvents().remove(this);
+	}
 }

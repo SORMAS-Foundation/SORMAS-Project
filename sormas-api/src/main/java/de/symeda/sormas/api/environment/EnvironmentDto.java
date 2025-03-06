@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -38,6 +39,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
 	public static final String WATER_TYPE = "waterType";
+	public static final String VECTOR_TYPE = "vectorType";
 	public static final String OTHER_WATER_TYPE = "otherWaterType";
 	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
 	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
@@ -46,6 +48,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	public static final String LOCATION = "location";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String EVENTS = "events";
 
 	@NotNull(message = Validations.validReportDateTime)
 	private Date reportDate;
@@ -64,6 +67,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	@NotNull(message = Validations.environmentMedia)
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
+	private VectorType vectorType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
@@ -82,6 +86,8 @@ public class EnvironmentDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 
+	private EventReferenceDto event;
+
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
 		environment.setUuid(DataHelper.createUuid());
@@ -99,6 +105,12 @@ public class EnvironmentDto extends PseudonymizableDto {
 		environment.getLocation().setDistrict(currentUser.getDistrict());
 
 		return environment;
+	}
+
+	public EnvironmentDto build(EventReferenceDto event) {
+		EnvironmentDto environment = build();
+		environment.setEvent(event);
+		return this;
 	}
 
 	public Date getReportDate() {
@@ -247,5 +259,25 @@ public class EnvironmentDto extends PseudonymizableDto {
 
 	public EnvironmentReferenceDto toReference() {
 		return new EnvironmentReferenceDto(getUuid(), getEnvironmentName());
+	}
+
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
+	}
+
+	public EventReferenceDto getEvent() {
+		return event;
+	}
+
+	public void setEvent(EventReferenceDto event) {
+		this.event = event;
+	}
+
+	public void addEvent(EventReferenceDto event) {
+		this.setEvent(event);
 	}
 }

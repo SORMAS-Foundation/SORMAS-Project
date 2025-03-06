@@ -29,6 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -91,10 +92,11 @@ public class EnvironmentsView extends AbstractView {
 		}
 
 		if (UiUtil.permitted(UserRight.ENVIRONMENT_CREATE)) {
+			EnvironmentReferenceDto referenceDto = new EnvironmentReferenceDto();
 			final Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.environmentNewEnvironment,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEnvironmentController().create(),
+				e -> ControllerProvider.getEnvironmentController().create(referenceDto),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnNewContact);
 		}

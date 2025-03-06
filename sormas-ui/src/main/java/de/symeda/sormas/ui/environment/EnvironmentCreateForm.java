@@ -15,6 +15,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentMedia;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -36,6 +37,7 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.EXTERNAL_ID)
             + fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") + fluidRowLocs(EnvironmentDto.ENVIRONMENT_NAME, "")+
+			fluidRowLocs(EnvironmentDto.VECTOR_TYPE, "")+
             loc(LOCATION_HEADING_LOC) +
             fluidRowLocs(EnvironmentDto.LOCATION) +
             fluidRowLocs("", EnvironmentDto.RESPONSIBLE_USER);
@@ -63,7 +65,9 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 		TextField externalIdField = addField(EnvironmentDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
+		ComboBox environmentMedia = addField(EnvironmentDto.ENVIRONMENT_MEDIA, ComboBox.class);
+		ComboBox vectorType = addField(EnvironmentDto.VECTOR_TYPE, ComboBox.class);
+		vectorType.setVisible(false);
 		addField(EnvironmentDto.ENVIRONMENT_NAME, TextField.class);
 
 		Label locationHeadingLabel = new Label(I18nProperties.getString(Strings.headingLocation));
@@ -84,6 +88,13 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 			.getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null, UserRight.ENVIRONMENT_EDIT);
 		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 
+		environmentMedia.addValueChangeListener(valueChangeEvent -> {
+			if (EnvironmentMedia.VECTORS.toString().equalsIgnoreCase(valueChangeEvent.getProperty().getValue().toString())) {
+				vectorType.setVisible(true);
+			} else {
+				vectorType.setVisible(false);
+			}
+		});
 		regionField.addValueChangeListener(e -> {
 			List<UserReferenceDto> filteredResponsibleUsers;
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

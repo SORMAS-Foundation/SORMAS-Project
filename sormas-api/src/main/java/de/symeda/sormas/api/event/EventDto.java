@@ -15,7 +15,10 @@
 
 package de.symeda.sormas.api.event;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -28,6 +31,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -233,6 +237,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	private List<EnvironmentReferenceDto> environmentReferenceDtos = new ArrayList<>();
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -261,6 +266,12 @@ public class EventDto extends SormasToSormasShareableDto {
 
 		event.setDisease(disease);
 
+		return event;
+	}
+
+	public static EventDto build(EnvironmentReferenceDto environment, UserDto user) {
+		EventDto event = build();
+		event.setEnvironmentReferenceDtos(Arrays.asList(environment));
 		return event;
 	}
 
@@ -758,5 +769,13 @@ public class EventDto extends SormasToSormasShareableDto {
 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public List<EnvironmentReferenceDto> getEnvironmentReferenceDtos() {
+		return environmentReferenceDtos;
+	}
+
+	public void setEnvironmentReferenceDtos(List<EnvironmentReferenceDto> environmentReferenceDtos) {
+		this.environmentReferenceDtos = environmentReferenceDtos;
 	}
 }

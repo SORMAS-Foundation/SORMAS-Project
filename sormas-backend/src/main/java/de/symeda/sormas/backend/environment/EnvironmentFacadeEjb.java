@@ -49,6 +49,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -72,6 +74,9 @@ public class EnvironmentFacadeEjb
 
 	public EnvironmentFacadeEjb() {
 	}
+
+	@EJB
+	private EventService eventService;
 
 	@Inject
 	public EnvironmentFacadeEjb(EnvironmentService service) {
@@ -121,6 +126,36 @@ public class EnvironmentFacadeEjb
 
 		cq.select(cb.countDistinct(environment));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public List<EnvironmentIndexDto> getEnvironmentsByEvent(EnvironmentCriteria environmentCriteria) {
+		Predicate filter = null;
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EnvironmentIndexDto> cq = cb.createQuery(EnvironmentIndexDto.class);
+		Root<Environment> environment = cq.from(Environment.class);
+		cq.multiselect(
+			environment.get(Environment.UUID),
+			environment.get(Environment.EXTERNAL_ID),
+			environment.get(Environment.ENVIRONMENT_NAME),
+			environment.get(Environment.ENVIRONMENT_MEDIA),
+			environment.get(Environment.REPORT_DATE),
+			environment.get(Environment.INVESTIGATION_STATUS),
+			environment.get(Environment.DELETION_REASON),
+			environment.get(Environment.OTHER_DELETION_REASON));
+
+		EnvironmentQueryContext queryContext = new EnvironmentQueryContext(cb, cq, environment);
+		EnvironmentJoins joins = queryContext.getJoins();
+		Join<Environment, Event> eventJoin = joins.getEvents();
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.UUID), environmentCriteria.getEvent().getUuid()));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+
 	}
 
 	@Override
@@ -312,6 +347,11 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
+		target.setVectorType(EnvironmentMedia.VECTORS.equals(source.getEnvironmentMedia()) ? source.getVectorType() : null);
+
+		if (source.getEvent() != null) {
+			target.getEvents().add(eventService.getByReferenceDto(source.getEvent()));
+		}
 
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
@@ -343,7 +383,7 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
-
+		target.setVectorType(source.getVectorType());
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
@@ -456,6 +496,15 @@ public class EnvironmentFacadeEjb
 		}
 
 		return service.getAllActiveUuids(user);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._ENVIRONMENT_LINK)
+	public void unlinkEnvironment(EnvironmentIndexDto environmentReferenceDto, String eventUuid) {
+		Event event = eventService.getByUuid(eventUuid);
+		Environment environment = service.getByUuid(environmentReferenceDto.getUuid());
+		event.unlinkEnvironment(environment);
+		service.ensurePersisted(environment);
 	}
 
 	@Override

@@ -3,8 +3,10 @@ package de.symeda.sormas.backend.environment;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +17,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -26,10 +30,12 @@ import org.hibernate.annotations.Type;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.environment.EnvironmentInfrastructureDetails;
 import de.symeda.sormas.api.environment.EnvironmentMedia;
+import de.symeda.sormas.api.environment.VectorType;
 import de.symeda.sormas.api.environment.WaterType;
 import de.symeda.sormas.api.environment.WaterUse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -38,6 +44,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class Environment extends CoreAdo {
 
 	public static final String I18N_PREFIX = "Environment";
+	public static final String EVENTS_ENVIRONMENTS_TABLE_NAME = "events_environments";
 
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
@@ -48,6 +55,7 @@ public class Environment extends CoreAdo {
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
 	public static final String WATER_TYPE = "waterType";
+	public static final String VECTOR_TYPE = "vectorType";
 	public static final String OTHER_WATER_TYPE = "otherWaterType";
 	public static final String INFRASTUCTURE_DETAILS = "infrastructureDetails";
 	public static final String OTHER_INFRASTRUCTUIRE_DETAILS = "otherInfrastructureDetails";
@@ -56,6 +64,7 @@ public class Environment extends CoreAdo {
 	public static final String OTHER_WATER_USE = "otherWaterUse";
 	public static final String LOCATION = "location";
 	public static final String ENVIRONMENT_SAMPLES = "environmentSamples";
+	public static final String EVENTS = "events";
 
 	private Date reportDate;
 	private User reportingUser;
@@ -66,12 +75,14 @@ public class Environment extends CoreAdo {
 	private InvestigationStatus investigationStatus;
 	private EnvironmentMedia environmentMedia;
 	private WaterType waterType;
+	private VectorType vectorType;
 	private String otherWaterType;
 	private EnvironmentInfrastructureDetails infrastructureDetails;
 	private String otherInfrastructureDetails;
 	private Map<WaterUse, Boolean> waterUse;
 	private String otherWaterUse;
 	private Location location;
+	private List<Event> events = new ArrayList<>();
 	private Set<EnvironmentSample> environmentSamples = new HashSet<>();
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -224,5 +235,27 @@ public class Environment extends CoreAdo {
 
 	public void setEnvironmentSamples(Set<EnvironmentSample> environmentSamples) {
 		this.environmentSamples = environmentSamples;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public VectorType getVectorType() {
+		return vectorType;
+	}
+
+	public void setVectorType(VectorType vectorType) {
+		this.vectorType = vectorType;
+	}
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = EVENTS_ENVIRONMENTS_TABLE_NAME,
+		joinColumns = @JoinColumn(name = "environment_id"),
+		inverseJoinColumns = @JoinColumn(name = "event_id"))
+
+	public List<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<Event> events) {
+		this.events = events;
 	}
 }

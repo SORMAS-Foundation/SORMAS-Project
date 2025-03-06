@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.ui.environment;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
@@ -23,6 +27,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentIndexDto;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -34,6 +40,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.events.EventDataView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -47,21 +54,67 @@ public class EnvironmentController {
 		navigator.addView(EnvironmentDataView.VIEW_NAME, EnvironmentDataView.class);
 	}
 
-	public void create() {
-		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent();
+	public void create(EnvironmentReferenceDto referenceDto) {
+		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent(referenceDto);
 		if (environmentCreateComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(environmentCreateComponent, I18nProperties.getString(Strings.headingCreateNewEnvironment));
 		}
 
 	}
 
-	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent() {
+	public void selectOrCreateEnvironment(EnvironmentReferenceDto referenceDto, Consumer<List<EnvironmentReferenceDto>> callback) {
+		EnvironmentSelectionField selectionField = new EnvironmentSelectionField(referenceDto);
+		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EnvironmentSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.addCommitListener(() -> {
+			EnvironmentIndexDto selectedIndexEnvironment = selectionField.getValue();
+			if (selectedIndexEnvironment != null) {
+				EnvironmentDto selectedEnvironment = FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(selectedIndexEnvironment.getUuid());
+				selectedEnvironment.setEvent(FacadeProvider.getEventFacade().getReferenceByUuid(referenceDto.getEvent().getUuid()));
+				FacadeProvider.getEnvironmentFacade().save(selectedEnvironment);
+				if (referenceDto.getEvent() != null) {
+					String page = EventDataView.VIEW_NAME + "/" + referenceDto.getEvent().getUuid();
+					pageNavigate(false, page);
+				} else {
+					navigateToData(referenceDto.getUuid());
+				}
+				Notification.show(I18nProperties.getString(Strings.messageEnvironmentLinkedToEvent), Notification.Type.TRAY_NOTIFICATION);
+			} else {
+				create(referenceDto);
+			}
+		});
+
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEnvironment));
+	}
+
+	public void navigateToData(String eventUuid) {
+		navigateToData(eventUuid, false);
+	}
+
+	public void navigateToData(String eventUuid, boolean openTab) {
+
+		String navigationState = EnvironmentDataView.VIEW_NAME + "/" + eventUuid;
+		pageNavigate(openTab, navigationState);
+	}
+
+	private void pageNavigate(boolean openTab, String navigationState) {
+		if (openTab) {
+			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		}
+	}
+
+	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent(EnvironmentReferenceDto referenceDto) {
 		UserProvider curentUser = UiUtil.getCurrentUserProvider();
 
 		if (curentUser != null) {
 			EnvironmentCreateForm createForm;
 			createForm = new EnvironmentCreateForm();
 			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
+			environment.setEvent(referenceDto.getEvent());
 			createForm.setValue(environment);
 			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
 				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
@@ -210,5 +263,10 @@ public class EnvironmentController {
 
 	private EnvironmentDto findEnvironment(String uuid) {
 		return FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(uuid);
+	}
+
+	public void unlinkEnvironment(EnvironmentIndexDto environmentIndex, String eventUuid) {
+		FacadeProvider.getEnvironmentFacade().unlinkEnvironment(environmentIndex, eventUuid);
+		Notification.show(I18nProperties.getString(Strings.messageEventUnlinkedFromEnvironment), Notification.Type.TRAY_NOTIFICATION);
 	}
 }

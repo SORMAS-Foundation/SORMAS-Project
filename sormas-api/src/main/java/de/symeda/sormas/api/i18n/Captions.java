@@ -1459,6 +1459,7 @@ public interface Captions {
 	String Environment_uuid = "Environment.uuid";
 	String Environment_waterType = "Environment.waterType";
 	String Environment_waterUse = "Environment.waterUse";
+	String Environment_vectorType = "Environment.vectorType";
 	String environmentActiveEnvironments = "environmentActiveEnvironments";
 	String environmentAllActiveAndArchivedEnvironments = "environmentAllActiveAndArchivedEnvironments";
 	String environmentArchivedEnvironments = "environmentArchivedEnvironments";
@@ -1505,6 +1506,8 @@ public interface Captions {
 	String environmentSampleReceived = "environmentSampleReceived";
 	String environmentSampleShipped = "environmentSampleShipped";
 	String environmentSampleViewType = "environmentSampleViewType";
+	String environmentNoEnvs = "environmentNoEnvs";
+	String environmentNewEnv = "environmentNewEnvironment";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
@@ -1644,10 +1647,18 @@ public interface Captions {
 	String eventLinkToEventsWithinTheSameFacility = "eventLinkToEventsWithinTheSameFacility";
 	String eventNewEvent = "eventNewEvent";
 	String eventNewEventGroup = "eventNewEventGroup";
+	String eventNewEnvironment = "eventNewEnvironment";
+	String eventEnvironmentMedia = "Event.environmentMedia";
+	String eventEnvironmentReportDate = "Event.environmentReportDate";
+	String eventEnvironmentInvestigationStatus = "Event.environment.investigationStatus";
+	String eventLinkToEnvironment = "eventLinkToEnvironment";
 	String eventNoDisease = "eventNoDisease";
 	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String eventNoEventLinkedToContact = "eventNoEventLinkedToContact";
 	String eventNoEventLinkedToEventGroup = "eventNoEventLinkedToEventGroup";
+	String eventNoEventLinkedToEnvironment = "eventNoEventLinkedToEnvironment";
+	String environmentSelect = "environmentSelect";
+	String eventUnlinkEnvironment = "eventUnlinkEnvironment";
 	String eventOnlyWithContactSourceCaseInvolved = "eventOnlyWithContactSourceCaseInvolved";
 	String eventOpenSuperordinateEvent = "eventOpenSuperordinateEvent";
 	String EventParticipant = "EventParticipant";
@@ -1711,6 +1722,7 @@ public interface Captions {
 	String eventSelect = "eventSelect";
 	String eventSelectGroup = "eventSelectGroup";
 	String eventSubordinateEvents = "eventSubordinateEvents";
+	String environmentEvents = "environmentEvents";
 	String eventSuperordinateEvent = "eventSuperordinateEvent";
 	String eventUnlinkEvent = "eventUnlinkEvent";
 	String eventUnlinkEventGroup = "eventUnlinkEventGroup";
@@ -2021,6 +2033,7 @@ public interface Captions {
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
 	String linkEventGroup = "linkEventGroup";
+	String linkEnvironment = "linkEnvironment";
 	String linkImmunizationToCaseButton = "linkImmunizationToCaseButton";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";

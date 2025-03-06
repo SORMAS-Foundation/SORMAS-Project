@@ -39,6 +39,7 @@ import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.docgeneration.EventDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
+import de.symeda.sormas.ui.environment.EnvironmentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.events.eventLink.SuperordinateEventComponent;
 import de.symeda.sormas.ui.events.groups.EventGroupListComponent;
@@ -67,6 +68,7 @@ public class EventDataView extends AbstractEventView {
 	public static final String SUBORDINATE_EVENTS_LOC = "subordinate-events";
 	public static final String SUPERORDINATE_EVENT_LOC = "superordinate-event";
 	public static final String EVENT_GROUPS_LOC = "event-groups";
+	public static final String ENVIRONMENT_LOC = "environment";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	private CommitDiscardWrapperComponent<?> editComponent;
@@ -101,6 +103,7 @@ public class EventDataView extends AbstractEventView {
 			SUPERORDINATE_EVENT_LOC,
 			SUBORDINATE_EVENTS_LOC,
 			EVENT_GROUPS_LOC,
+			ENVIRONMENT_LOC,
 			SORMAS_TO_SORMAS_LOC,
 			ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC,
 			SHORTCUT_LINKS_LOC);
@@ -119,6 +122,13 @@ public class EventDataView extends AbstractEventView {
 				new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease(), this::showUnsavedChangesPopup, isEditAllowed);
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
+		}
+
+		if (UiUtil.permitted(FeatureType.ENVIRONMENT_MANAGEMENT, UserRight.ENVIRONMENT_VIEW)) {
+			EnvironmentListComponent environmentList =
+				new EnvironmentListComponent(event.toReference(), isEditAllowed, this::showUnsavedChangesPopup);
+			environmentList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(environmentList, ENVIRONMENT_LOC);
 		}
 
 		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());

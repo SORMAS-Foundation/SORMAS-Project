@@ -722,7 +722,8 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
 		}
 		if (eventCriteria.getDiseaseVariant() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT_VALUE), eventCriteria.getDiseaseVariant().getValue()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT_VALUE), eventCriteria.getDiseaseVariant().getValue()));
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
@@ -748,6 +749,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 		if (eventCriteria.getTypeOfPlace() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
 		}
+
 		if (eventCriteria.getRelevanceStatus() != null) {
 			if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
@@ -771,6 +773,21 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCommunity().get(Community.UUID), eventCriteria.getCommunity().getUuid()));
 		}
+		/*
+		 * if (eventCriteria.getEnvironment() != null && eventCriteria.getEnvironment().getUuid() != null) {
+		 * filter = CriteriaBuilderHelper.and(
+		 * cb,
+		 * filter,
+		 * cb.or(
+		 * cb.notEqual(joins.getEventEnvironments().get(Event.UUID), eventCriteria.getEnvironment().getUuid()),
+		 * cb.isNull(joins.getEventEnvironments().get(Event.UUID))));
+		 */
+		/*
+		 * filter = CriteriaBuilderHelper
+		 * .and(cb, filter, cb.equal(joins.getEventEnvironments().get(Community.UUID), eventCriteria.getEnvironment().getUuid()));
+		 *//*
+			 * }
+			 */
 
 		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(

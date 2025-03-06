@@ -190,6 +190,7 @@ public interface Strings {
 	String confirmationSinceExternalMessages = "confirmationSinceExternalMessages";
 	String confirmationUnclearExternalMessage = "confirmationUnclearExternalMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
+	String confirmationUnlinkEventFromEnvironment = "confirmationUnlinkEventFromEnvironment";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmationVaccinationStatusUpdate = "confirmationVaccinationStatusUpdate";
 	String confirmExternalMessageCorrectionThrough = "confirmExternalMessageCorrectionThrough";
@@ -783,6 +784,7 @@ public interface Strings {
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
+	String headingPickOrCreateEnvironment = "headingPickOrCreateEnvironment";
 	String headingPickOrMergePerson = "headingPickOrMergePerson";
 	String headingPickOrMergePersonConfirmation = "headingPickOrMergePersonConfirmation";
 	String headingPlaceOfStayInHospital = "headingPlaceOfStayInHospital";
@@ -881,6 +883,7 @@ public interface Strings {
 	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
+	String headingUnlinkEventFromEnvironment = "headingUnlinkEventFromEnvironment";
 	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
 	String headingUpdatedPathogenTestInformation = "headingUpdatedPathogenTestInformation";
 	String headingUpdatedPersonInformation = "headingUpdatedPersonInformation";
@@ -1078,7 +1081,8 @@ public interface Strings {
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
-	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent = "infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
+	String infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent =
+		"infoPickorMergeEventParticipantDuplicateEventParticipantByPersonByEvent";
 	String infoPlaceOfStayInHospital = "infoPlaceOfStayInHospital";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
@@ -1121,6 +1125,7 @@ public interface Strings {
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoUserSyncProcess = "infoUserSyncProcess";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
+	String infoPickOrCreateEnvironmentForEvent = "infoPickOrCreateEnvironmentForEvent";
 	String labelActualLongSeed = "labelActualLongSeed";
 	String labelNoVaccinationDate = "labelNoVaccinationDate";
 	String labelNoVaccineName = "labelNoVaccineName";
@@ -1370,6 +1375,8 @@ public interface Strings {
 	String messageEventGroupSaved = "messageEventGroupSaved";
 	String messageEventJurisdictionUpdated = "messageEventJurisdictionUpdated";
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
+	String messageEnvironmentLinkedToEvent = "messageEnvironmentLinkedToEvent";
+	String messageEnvironmentAlreadyLinkedToEvent = "messageEnvironmentAlreadyLinkedToEvent";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
 	String messageEventOutsideJurisdictionDeletionDenied = "messageEventOutsideJurisdictionDeletionDenied";
@@ -1385,6 +1392,7 @@ public interface Strings {
 	String messageEventParticipantToCaseWithoutEventDisease = "messageEventParticipantToCaseWithoutEventDisease";
 	String messageEventParticipantToContactWithoutEventDisease = "messageEventParticipantToContactWithoutEventDisease";
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
+	String messageEventUnlinked = "messageEventUnlinked";
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsLinkedToGroup = "messageEventsLinkedToGroup";
@@ -1394,6 +1402,7 @@ public interface Strings {
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
 	String messageEventUnlinkedFromEventGroup = "messageEventUnlinkedFromEventGroup";
+	String messageEventUnlinkedFromEnvironment = "messageEventUnlinkedFromEnvironment";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
@@ -1572,6 +1581,7 @@ public interface Strings {
 	String messageTasksEdited = "messageTasksEdited";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageThisPersonAlreadyEventParticipant = "messageThisPersonAlreadyEventParticipant";
+	String messageThisEventAlreadyLinkedToEnvironment = "messageThisEventAlreadyLinkedToEnvironment";
 	String messageTravelEntriesDeleted = "messageTravelEntriesDeleted";
 	String messageTravelEntriesRestored = "messageTravelEntriesRestored";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
@@ -1765,6 +1775,7 @@ public interface Strings {
 	String promptEventSignalEvolutionEpiWeekFrom = "promptEventSignalEvolutionEpiWeekFrom";
 	String promptEventSignalEvolutionEpiWeekTo = "promptEventSignalEvolutionEpiWeekTo";
 	String promptEventsSearchField = "promptEventsSearchField";
+	String promptEnvironmentSearchField = "promptEnvironmentSearchField";
 	String promptEventsSearchFieldEventGroups = "promptEventsSearchFieldEventGroups";
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";

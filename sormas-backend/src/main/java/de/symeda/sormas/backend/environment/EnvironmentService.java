@@ -9,6 +9,8 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -21,6 +23,7 @@ import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.common.DeletableEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
+import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -34,6 +37,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSampleService;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -55,6 +59,42 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 
 	public EnvironmentService() {
 		super(Environment.class, DeletableEntityType.ENVIRONMENT);
+	}
+
+	public List<EnvironmentIndexDto> getAllEnvironmentsByEvent(EnvironmentCriteria criteria) {
+		Predicate filter = null;
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EnvironmentIndexDto> cq = cb.createQuery(EnvironmentIndexDto.class);
+		Root<Environment> root = cq.from(Environment.class);
+		EnvironmentQueryContext queryContext = new EnvironmentQueryContext(cb, cq, root);
+		EnvironmentJoins joins = queryContext.getJoins();
+		Join<Environment, Event> eventJoin = joins.getEvents().join(Event.ENVIRONMENTS, JoinType.LEFT);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.UUID), criteria.getEvent().getUuid()));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<EnvironmentIndexDto> getAllEnvironmentsNotLinkedToEvent(EnvironmentCriteria criteria) {
+		Predicate filter = null;
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EnvironmentIndexDto> cq = cb.createQuery(EnvironmentIndexDto.class);
+		Root<Environment> root = cq.from(Environment.class);
+		EnvironmentQueryContext queryContext = new EnvironmentQueryContext(cb, cq, root);
+		EnvironmentJoins joins = queryContext.getJoins();
+		Join<Environment, Event> eventJoin = joins.getEvents().join(Event.ENVIRONMENTS, JoinType.LEFT);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.UUID), criteria.getEvent().getUuid()));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
 	}
 
 	public String getSimilarEnvironmentUuid(EnvironmentCriteria criteria) {
@@ -211,6 +251,24 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		return filter;
 	}
 
+	public Predicate buildEventsFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
+		if (environmentCriteria == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = environmentQueryContext.getCriteriaBuilder();
+		From<?, Environment> from = environmentQueryContext.getRoot();
+		final EnvironmentJoins joins = environmentQueryContext.getJoins();
+		Join<Environment, Event> eventJoin = joins.getEvents().join(Event.ENVIRONMENTS, JoinType.LEFT);
+
+		Predicate filter = null;
+
+		if (environmentCriteria.getEvent().getUuid() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(eventJoin.get(Event.UUID), environmentCriteria.getEvent().getUuid()));
+		}
+		return filter;
+	}
+
 	public Predicate buildCriteriaFilter(EnvironmentCriteria environmentCriteria, EnvironmentQueryContext environmentQueryContext) {
 
 		if (environmentCriteria == null) {
@@ -234,6 +292,7 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 					CriteriaBuilderHelper.ilike(cb, from.get(Environment.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.ENVIRONMENT_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.ENVIRONMENT_MEDIA), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Environment.DESCRIPTION), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}

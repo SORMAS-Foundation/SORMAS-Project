@@ -2,16 +2,14 @@ package de.symeda.sormas.api.environment;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum EnvironmentMedia {
+public enum VectorType {
 
-	WATER,
-	SOIL_ROCK,
-	AIR,
-	BIOTA,
-	VECTORS;
+	MOSQUITOS,
+	TICKS;
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
 }
