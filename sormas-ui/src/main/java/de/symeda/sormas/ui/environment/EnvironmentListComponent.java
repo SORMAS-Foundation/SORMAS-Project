@@ -19,16 +19,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EnvironmentListComponent extends VerticalLayout {
 
-	private EnvironmentReferenceDto environmentReference;
-	private EnvironmentList list;
-	private Button createButton;
 	private final Consumer<Runnable> actionCallback;
 
 	public EnvironmentListComponent(EventReferenceDto eventReferenceDto, boolean isEditAllowed, Consumer<Runnable> actionCallback) {
@@ -45,7 +41,7 @@ public class EnvironmentListComponent extends VerticalLayout {
 				EnvironmentReferenceDto dto = new EnvironmentReferenceDto();
 				dto.setEvent(eventReferenceDto);
 				if (events > 0) {
-					ControllerProvider.getEnvironmentController().selectOrCreateEnvironment(dto, (r) -> SormasUI.refreshView());
+					ControllerProvider.getEnvironmentController().selectOrCreateEnvironment(dto);
 				} else {
 					ControllerProvider.getEnvironmentController().create(dto);
 				}

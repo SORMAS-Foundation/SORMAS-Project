@@ -16,9 +16,9 @@
 package de.symeda.sormas.ui.environment;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -26,6 +26,7 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
@@ -62,7 +63,7 @@ public class EnvironmentController {
 
 	}
 
-	public void selectOrCreateEnvironment(EnvironmentReferenceDto referenceDto, Consumer<List<EnvironmentReferenceDto>> callback) {
+	public void selectOrCreateEnvironment(EnvironmentReferenceDto referenceDto) {
 		EnvironmentSelectionField selectionField = new EnvironmentSelectionField(referenceDto);
 		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
@@ -70,16 +71,30 @@ public class EnvironmentController {
 		component.addCommitListener(() -> {
 			EnvironmentIndexDto selectedIndexEnvironment = selectionField.getValue();
 			if (selectedIndexEnvironment != null) {
-				EnvironmentDto selectedEnvironment = FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(selectedIndexEnvironment.getUuid());
-				selectedEnvironment.setEvent(FacadeProvider.getEventFacade().getReferenceByUuid(referenceDto.getEvent().getUuid()));
-				FacadeProvider.getEnvironmentFacade().save(selectedEnvironment);
-				if (referenceDto.getEvent() != null) {
-					String page = EventDataView.VIEW_NAME + "/" + referenceDto.getEvent().getUuid();
-					pageNavigate(false, page);
+				EnvironmentCriteria criteria = new EnvironmentCriteria();
+				criteria.setEvent(referenceDto.getEvent());
+				List<EnvironmentIndexDto> eventEnvironments = FacadeProvider.getEnvironmentFacade().getEnvironmentsByEvent(criteria);
+				if (!eventEnvironments.contains(selectedIndexEnvironment)) {
+					EnvironmentDto selectedEnvironment =
+						FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(selectedIndexEnvironment.getUuid());
+					selectedEnvironment.setEvent(FacadeProvider.getEventFacade().getReferenceByUuid(referenceDto.getEvent().getUuid()));
+					FacadeProvider.getEnvironmentFacade().save(selectedEnvironment);
+					if (referenceDto.getEvent() != null) {
+						String page = EventDataView.VIEW_NAME + "/" + referenceDto.getEvent().getUuid();
+						pageNavigate(false, page);
+					} else {
+						navigateToData(referenceDto.getUuid());
+					}
+					Notification.show(I18nProperties.getString(Strings.messageEnvironmentLinkedToEvent), Notification.Type.TRAY_NOTIFICATION);
 				} else {
-					navigateToData(referenceDto.getUuid());
+					Notification notification = new Notification(
+						I18nProperties.getString(Strings.messageEnvironmentAlreadyLinkedToEvent),
+						"",
+						Notification.Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
 				}
-				Notification.show(I18nProperties.getString(Strings.messageEnvironmentLinkedToEvent), Notification.Type.TRAY_NOTIFICATION);
+
 			} else {
 				create(referenceDto);
 			}

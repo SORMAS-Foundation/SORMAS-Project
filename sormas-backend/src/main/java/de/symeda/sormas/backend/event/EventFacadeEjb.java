@@ -720,7 +720,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
 
 			// specific to filtering the events
-			if (eventCriteria.getEnvironment() != null && eventCriteria.getEnvironment().getUuid() != null) {
+			if (eventCriteria.getEnvironment() != null) {
 				filter = CriteriaBuilderHelper.and(
 					cb,
 					filter,
