@@ -2939,7 +2939,9 @@ public interface Captions {
 	String syncUsers = "syncUsers";
 	String system = "system";
 	String SystemConfigurationValue_category = "SystemConfigurationValue.category";
+	String SystemConfigurationValue_categoryName = "SystemConfigurationValue.categoryName";
 	String SystemConfigurationValue_encrytp = "SystemConfigurationValue.encrytp";
+	String SystemConfigurationValue_General = "SystemConfigurationValue.General";
 	String SystemConfigurationValue_key = "SystemConfigurationValue.key";
 	String SystemConfigurationValue_pattern = "SystemConfigurationValue.pattern";
 	String SystemConfigurationValue_value = "SystemConfigurationValue.value";

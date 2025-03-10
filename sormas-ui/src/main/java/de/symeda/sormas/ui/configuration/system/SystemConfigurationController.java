@@ -33,7 +33,8 @@ public class SystemConfigurationController {
     /**
      * Opens a modal window to edit the system configuration value identified by the given UUID.
      *
-     * @param uuid the UUID of the system configuration value to be edited
+     * @param uuid
+     *            the UUID of the system configuration value to be edited
      */
     public void editSystemConfigurationValue(String uuid) {
 

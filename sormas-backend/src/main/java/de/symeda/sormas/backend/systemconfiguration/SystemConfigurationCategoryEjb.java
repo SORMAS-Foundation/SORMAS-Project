@@ -62,6 +62,12 @@ public class SystemConfigurationCategoryEjb
     AbstractBaseEjb<SystemConfigurationCategory, SystemConfigurationCategoryDto, SystemConfigurationCategoryIndexDto, SystemConfigurationCategoryReferenceDto, SystemConfigurationCategoryService, SystemConfigurationCategoryCriteria>
     implements SystemConfigurationCategoryFacade {
 
+    @LocalBean
+    @Stateless
+    public static class SystemConfigurationCategoryEjbLocal extends SystemConfigurationCategoryEjb {
+
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationCategoryEjb.class);
 
     /**
@@ -73,7 +79,7 @@ public class SystemConfigurationCategoryEjb
 
     @PermitAll
     @Inject
-    public void setService(SystemConfigurationCategoryService service) {
+    public void setService(final SystemConfigurationCategoryService service) {
         this.service = service;
     }
 
@@ -88,6 +94,7 @@ public class SystemConfigurationCategoryEjb
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
     @Override
     public SystemConfigurationCategoryDto save(final SystemConfigurationCategoryDto dto) {
+
         if (dto == null) {
             return null;
         }
@@ -113,6 +120,7 @@ public class SystemConfigurationCategoryEjb
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
     @Override
     public long count(final SystemConfigurationCategoryCriteria criteria) {
+
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         final Root<SystemConfigurationCategory> root = cq.from(SystemConfigurationCategory.class);
@@ -234,6 +242,30 @@ public class SystemConfigurationCategoryEjb
     }
 
     /**
+     * Get the default system configuration category DTO.
+     *
+     * @return the default system configuration category DTO
+     */
+    @Lock(LockType.READ)
+    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+    @Override
+    public SystemConfigurationCategoryDto getDefaultCategoryDto() {
+        return toDto(service.getDefaultCategory());
+    }
+
+    /**
+     * Get the default system configuration category reference DTO.
+     *
+     * @return the default system configuration category reference DTO
+     */
+    @Lock(LockType.READ)
+    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+    @Override
+    public SystemConfigurationCategoryReferenceDto getDefaultCategoryReferenceDto() {
+        return toRefDto(service.getDefaultCategory());
+    }
+
+    /**
      * Fill or build a system configuration category entity from a DTO.
      *
      * @param source
@@ -249,9 +281,12 @@ public class SystemConfigurationCategoryEjb
         @NotNull final SystemConfigurationCategoryDto source,
         SystemConfigurationCategory target,
         final boolean checkChangeDate) {
+
+        target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationCategory::new, checkChangeDate);
         target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationCategory::new, checkChangeDate);
 
         target.setName(source.getName());
+        target.setCaption(source.getCaption());
         target.setDescription(source.getDescription());
 
         return target;
@@ -266,6 +301,7 @@ public class SystemConfigurationCategoryEjb
      */
     @Override
     protected SystemConfigurationCategoryDto toDto(final SystemConfigurationCategory source) {
+
         if (source == null) {
             return null;
         }
@@ -289,6 +325,7 @@ public class SystemConfigurationCategoryEjb
      */
     @Override
     protected SystemConfigurationCategoryReferenceDto toRefDto(final SystemConfigurationCategory source) {
+
         if (source == null) {
             return null;
         }
@@ -314,7 +351,6 @@ public class SystemConfigurationCategoryEjb
         final SystemConfigurationCategoryDto dto,
         final Pseudonymizer<SystemConfigurationCategoryDto> pseudonymizer,
         final boolean inJurisdiction) {
-        // No anonymization required
         LOGGER.debug("Pseudonymizing SystemConfigurationCategory ignored: {}", source);
     }
 
@@ -336,7 +372,6 @@ public class SystemConfigurationCategoryEjb
         final SystemConfigurationCategoryDto existingDto,
         final SystemConfigurationCategory entity,
         final Pseudonymizer<SystemConfigurationCategoryDto> pseudonymizer) {
-        // No anonymization required
         LOGGER.debug("Restoring pseudonymized SystemConfigurationCategory ignored: {}", dto);
     }
 
@@ -348,6 +383,7 @@ public class SystemConfigurationCategoryEjb
      * @return the converted index DTO
      */
     private SystemConfigurationCategoryIndexDto toIndexDto(final SystemConfigurationCategory entity) {
+
         if (entity == null) {
             return null;
         }
@@ -360,35 +396,5 @@ public class SystemConfigurationCategoryEjb
         dto.setCaption(entity.getCaption());
 
         return dto;
-    }
-
-    /**
-     * Get the default system configuration category DTO.
-     *
-     * @return the default system configuration category DTO
-     */
-    @Lock(LockType.READ)
-    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
-    @Override
-    public SystemConfigurationCategoryDto getDefaultCategoryDto() {
-        return toDto(service.getDefaultCategory());
-    }
-
-    /**
-     * Get the default system configuration category reference DTO.
-     *
-     * @return the default system configuration category reference DTO
-     */
-    @Lock(LockType.READ)
-    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
-    @Override
-    public SystemConfigurationCategoryReferenceDto getDefaultCategoryReferenceDto() {
-        return toRefDto(service.getDefaultCategory());
-    }
-
-    @LocalBean
-    @Stateless
-    public static class SystemConfigurationCategoryEjbLocal extends SystemConfigurationCategoryEjb {
-
     }
 }

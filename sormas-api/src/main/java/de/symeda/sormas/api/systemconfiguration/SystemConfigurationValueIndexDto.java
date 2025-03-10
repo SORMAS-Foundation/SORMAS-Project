@@ -19,43 +19,74 @@ import de.symeda.sormas.api.EntityDto;
 
 public class SystemConfigurationValueIndexDto extends EntityDto {
 
+    public static final String I18N_PREFIX = "SystemConfigurationValue";
+
     private static final long serialVersionUID = 1L;
 
-    public static final String VALUE_PROPERTY_NAME = "value";
     public static final String KEY_PROPERTY_NAME = "key";
+    public static final String VALUE_PROPERTY_NAME = "value";
     public static final String ENCRYPTED_PROPERTY_NAME = "encrypted";
+    public static final String CATEGORY_NAME_PROPERTY_NAME = "categoryName";
+    public static final String CATEGORY_CAPTION_PROPERTY_NAME = "categoryCaption";
+    public static final String CATEGORY_DESCRIPTION_PROPERTY_NAME = "categoryDescription";
 
     private String value;
     private String key;
     private boolean encrypted;
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
+    private String categoryName;
+    private String categoryCaption;
+    private String categoryDescription;
 
     public String getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(final String key) {
         this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(final String value) {
+        this.value = value;
     }
 
     public boolean isEncrypted() {
         return encrypted;
     }
-    
-    
-    public void setEncrypted(boolean encrypted) {
+
+    public void setEncrypted(final boolean encrypted) {
         this.encrypted = encrypted;
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(final String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCategoryCaption() {
+        return categoryCaption;
+    }
+
+    public void setCategoryCaption(final String categoryCaption) {
+        this.categoryCaption = categoryCaption;
+    }
+
+    public String getCategoryDescription() {
+        return categoryDescription;
+    }
+
+    public void setCategoryDescription(final String categoryDescription) {
+        this.categoryDescription = categoryDescription;
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return super.equals(o);
     }
 

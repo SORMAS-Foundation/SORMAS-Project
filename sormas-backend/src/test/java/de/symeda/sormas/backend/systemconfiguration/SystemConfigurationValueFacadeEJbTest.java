@@ -39,11 +39,14 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     @Test
     void testGetSystemConfigurationValue() {
 
-        final SystemConfigurationValue configValue = createSystemConfigurationValue("TEST_KEY", "test-value");
+        final SystemConfigurationValue configValue = createSystemConfigurationValue("TEST_KEY");
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
-        assertThat(configValueDto.getKey(), is("TEST_KEY"));
-        assertThat(configValueDto.getValue(), is("test-value"));
+        assertThat(configValueDto.getValue(), is(configValue.getValue()));
+        assertThat(configValueDto.getCategory().getUuid(), is(configValue.getCategory().getUuid()));
+        assertThat(configValueDto.getEncrypt(), is(configValue.getEncrypt()));
+        assertThat(configValueDto.getPattern(), is(configValue.getPattern()));
+        assertThat(configValueDto.getValidationMessage(), is(configValue.getValidationMessage()));
     }
 
     /**
@@ -52,18 +55,30 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     @Test
     void testUpdateSystemConfigurationValue() {
 
-        final SystemConfigurationValue configValue = createSystemConfigurationValue("TEST_KEY", "test-value");
+        final SystemConfigurationValue configValue = createSystemConfigurationValue("TEST_KEY");
 
         SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
-        assertThat(configValueDto.getValue(), is("test-value"));
+        assertThat(configValueDto.getValue(), is(configValue.getValue()));
+        assertThat(configValueDto.getCategory().getUuid(), is(configValue.getCategory().getUuid()));
 
         configValueDto.setValue("updated-value");
+        configValueDto.setEncrypt(true);
+        configValueDto.setPattern("updated-pattern");
+        configValueDto.setValidationMessage("updated-validation-message");
 
         final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
         assertThat(updatedConfigValue.getValue(), is("updated-value"));
+        assertThat(updatedConfigValue.getCategory().getUuid(), is(configValue.getCategory().getUuid()));
+        assertThat(updatedConfigValue.getEncrypt(), is(true));
+        assertThat(configValueDto.getPattern(), is("updated-pattern"));
+        assertThat(updatedConfigValue.getValidationMessage(), is("updated-validation-message"));
 
         configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
         assertThat(configValueDto.getValue(), is("updated-value"));
+        assertThat(configValueDto.getCategory().getUuid(), is(configValue.getCategory().getUuid()));
+        assertThat(configValueDto.getEncrypt(), is(true));
+        assertThat(configValueDto.getPattern(), is("updated-pattern"));
+        assertThat(configValueDto.getValidationMessage(), is("updated-validation-message"));
     }
 
     /**
@@ -217,12 +232,15 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
      *            the value of the configuration value
      * @return the created SystemConfigurationValue
      */
-    private SystemConfigurationValue createSystemConfigurationValue(final String key, final String value) {
+    private SystemConfigurationValue createSystemConfigurationValue(final String key) {
+
         final SystemConfigurationValue configValue = new SystemConfigurationValue();
         configValue.setUuid(DataHelper.createUuid());
         configValue.setKey(key);
-        configValue.setValue(value);
+        configValue.setValue("test-value");
         configValue.setCategory(getOrCreateDefaultCategory());
+        configValue.setEncrypt(false);
+        configValue.setValidationMessage("validation-message");
         getSystemConfigurationValueService().ensurePersisted(configValue);
         return configValue;
     }
@@ -239,6 +257,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
      * @return the created SystemConfigurationValue
      */
     private SystemConfigurationValue createSystemConfigurationValue(final String key, final String value, final String pattern) {
+
         final SystemConfigurationValue configValue = new SystemConfigurationValue();
         configValue.setUuid(DataHelper.createUuid());
         configValue.setKey(key);

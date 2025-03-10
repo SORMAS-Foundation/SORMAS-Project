@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.configuration.system;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -95,6 +94,18 @@ public class SystemConfigurationView extends AbstractConfigurationView {
         categoryFilter = new ComboBox<>(
             I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, SystemConfigurationValueDto.CATEGORY_PROPERTY_NAME),
             FacadeProvider.getSystemConfigurationCategoryFacade().getAllAfter(null));
+
+        categoryFilter.setItemCaptionGenerator(v -> {
+            final StringBuilder caption = new StringBuilder();
+            SystemConfigurationI18nHelper.processI18nString(
+                v.getCaption(),
+                (defaultName, key) -> caption.append(I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, key, defaultName)));
+            if (caption.length() == 0) {
+                caption.append(v.getCaption());
+            }
+            return caption.toString();
+        });
+
         categoryFilter.addValueChangeListener(e -> {
             final SystemConfigurationCategoryDto category = e.getValue();
             if (category == null) {

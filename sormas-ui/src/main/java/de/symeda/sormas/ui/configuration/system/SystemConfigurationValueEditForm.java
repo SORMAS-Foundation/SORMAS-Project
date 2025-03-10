@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
+import com.vaadin.data.Binder;
 import com.vaadin.v7.ui.PasswordField;
 
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
@@ -29,7 +30,10 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
  */
 public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemConfigurationValueDto> {
 
-	private static final String HTML_LAYOUT = fluidRowLocs(SystemConfigurationValueDto.VALUE_PROPERTY_NAME);
+	private static final String HTML_LAYOUT =
+		locs(SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME, SystemConfigurationValueDto.VALIDATION_MESSAGE_PROPERTY_NAME);
+
+	private SystemConfigurationValueDynamicInput dynamicInput = null;
 
 	/**
 	 * Constructor for creating a new SystemConfigurationValueEditForm.
@@ -49,7 +53,13 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 		setWidth(640, Unit.PIXELS);
 		setValue(value);
 
-		addFields();
+		final Binder<SystemConfigurationValueDtoWrapper> binder = new Binder<>(SystemConfigurationValueDtoWrapper.class);
+		binder.setBean(new SystemConfigurationValueDtoWrapper(value));
+
+		dynamicInput = new SystemConfigurationValueDynamicInput();
+		binder.forField(dynamicInput).bind(SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME);
+		getContent().addComponent(dynamicInput, SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME);
+
 	}
 
 	/**
@@ -57,6 +67,7 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 	 */
 	@Override
 	protected void addFields() {
+
 		if (getValue().getEncrypt().booleanValue()) {
 			addField(SystemConfigurationValueDto.VALUE_PROPERTY_NAME, PasswordField.class);
 		} else {
@@ -75,5 +86,4 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

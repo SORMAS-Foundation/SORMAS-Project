@@ -13869,6 +13869,7 @@ VALUES('ENVIRONMENT_LINK', tstzrange(
                            ), 1);
 
 INSERT INTO schema_version (version_number, comment) VALUES (563, 'Events and environment linkage #13266');
+
 -- 2025-03-03 Create system config structures #13269
 CREATE TABLE systemconfigurationcategory (
                          id bigint not null,
@@ -13897,7 +13898,7 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE systemconfigurationcategory_history OWNER TO sormas_user;
 
 INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) 
-VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'General', 'General configuration settings');
+VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'GENERAL_CATEGORY', 'i18n/General/categoryGeneral', 'i18n/General/categoryGeneral');
 
 CREATE TABLE systemconfigurationvalue (
                          id bigint not null,
@@ -13911,6 +13912,8 @@ CREATE TABLE systemconfigurationvalue (
                          config_value text,
                          value_pattern varchar(255),
                          value_encrypt boolean default false,
+                         data_provider varchar(255),
+                         validation_message varchar(255),
 
                          sys_period tstzrange not null,
                          primary key(id)

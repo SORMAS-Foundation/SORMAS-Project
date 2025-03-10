@@ -36,19 +36,22 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public static final String CATEGORY_FIELD_NAME = "category";
     public static final String PATTERN_FIELD_NAME = "pattern";
     public static final String ENCRYPT_FIELD_NAME = "encrypt";
+    public static final String DATA_PROVIDER_FIELD_NAME = "dataProvider";
 
     private String value;
     private String key;
     private SystemConfigurationCategory category;
     private String pattern;
     private Boolean encrypt;
+    private String dataProvider;
+    private String validationMessage;
 
     @Column(nullable = false, name = "config_value")
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -57,7 +60,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(final String key) {
         this.key = key;
     }
 
@@ -66,7 +69,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return category;
     }
 
-    public void setCategory(SystemConfigurationCategory category) {
+    public void setCategory(final SystemConfigurationCategory category) {
         this.category = category;
     }
 
@@ -75,7 +78,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return pattern;
     }
 
-    public void setPattern(String pattern) {
+    public void setPattern(final String pattern) {
         this.pattern = pattern;
     }
 
@@ -85,12 +88,30 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return encrypt;
     }
 
-    public void setEncrypt(Boolean encrypt) {
+    public void setEncrypt(final Boolean encrypt) {
         this.encrypt = encrypt;
     }
 
+    @Column(name = "data_provider")
+    public String getDataProvider() {
+        return dataProvider;
+    }
+
+    public void setDataProvider(final String dataProvider) {
+        this.dataProvider = dataProvider;
+    }
+
+    @Column(name = "validation_message")
+    public String getValidationMessage() {
+        return validationMessage;
+    }
+
+    public void setValidationMessage(final String validationMessage) {
+        this.validationMessage = validationMessage;
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return super.equals(o);
     }
 
@@ -98,5 +119,4 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public int hashCode() {
         return super.hashCode();
     }
-
 }

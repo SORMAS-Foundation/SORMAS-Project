@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDataProvider;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueHelper;
@@ -71,6 +72,11 @@ public class SystemConfigurationValueEjb
     AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
     implements SystemConfigurationValueFacade {
 
+    @LocalBean
+    @Stateless
+    public static class SystemConfigurationValueEjbLocal extends SystemConfigurationValueEjb {
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationValueEjb.class);
 
     private static final TreeMap<String, Optional<String>> configurationValuesByKey = new TreeMap<>();
@@ -89,19 +95,19 @@ public class SystemConfigurationValueEjb
 
     @PermitAll
     @Inject
-    public void setCategoryService(SystemConfigurationCategoryService categoryService) {
+    public void setCategoryService(final SystemConfigurationCategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
     @PermitAll
     @Inject
-    public void setCategoryFacade(SystemConfigurationCategoryEjb.SystemConfigurationCategoryEjbLocal categoryFacade) {
+    public void setCategoryFacade(final SystemConfigurationCategoryEjb.SystemConfigurationCategoryEjbLocal categoryFacade) {
         this.categoryFacade = categoryFacade;
     }
 
     @PermitAll
     @Inject
-    public void setService(SystemConfigurationValueService service) {
+    public void setService(final SystemConfigurationValueService service) {
         this.service = service;
     }
 
@@ -308,9 +314,35 @@ public class SystemConfigurationValueEjb
             && !dto.getPattern().isBlank()
             && !SystemConfigurationValueHelper.isConfigurationValueMatchingPattern(dto.getValue(), dto.getPattern())) {
             LOGGER.warn("Invalid value in SystemConfigurationValueDto: {}", dto);
-            throw new ValidationRuntimeException(
-                I18nProperties.getValidationError(Validations.systemConfigurationValuePatternNotMatched, dto.getPattern()));
+
+            String message = null;
+            if (null != dto.getValidationMessage() && !dto.getValidationMessage().isEmpty()) {
+                message = I18nProperties.getValidationError(dto.getValidationMessage(), dto.getValue());
+            }
+            if (null == message || message.isEmpty()) {
+                message = I18nProperties.getValidationError(Validations.systemConfigurationValuePatternNotMatched, dto.getPattern());
+            }
+            throw new ValidationRuntimeException(message);
         }
+    }
+
+    /**
+     * Loads system configuration data into the cache.
+     * This method initializes the cache by fetching all system configuration values from the service,
+     * clearing the existing cache, and then populating it with the retrieved data.
+     * Duplicate keys will be replaced with the latest value retrieved from the service.
+     */
+    @PermitAll
+    @PostConstruct
+    @Override
+    public void loadData() {
+
+        LOGGER.info("Loading SystemConfiguration data into cache");
+        configurationValuesByKey.clear();
+
+        service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), Optional.ofNullable(value.getValue())));
+
+        LOGGER.info("SystemConfiguration data loaded into cache successfully");
     }
 
     /**
@@ -340,6 +372,10 @@ public class SystemConfigurationValueEjb
         target.setCategory(categoryService.getByReferenceDto(source.getCategory()));
         target.setEncrypt(source.getEncrypt());
         target.setPattern(source.getPattern());
+        target.setDataProvider(source.getDataProvider() != null ? source.getDataProvider().getClass().getName() : null);
+        target.setValidationMessage(source.getValidationMessage());
+
+        // other fields are only to be set from db init scripts
 
         return target;
     }
@@ -370,6 +406,20 @@ public class SystemConfigurationValueEjb
                 : categoryFacade.getDefaultCategoryReferenceDto());
         target.setPattern(source.getPattern());
         target.setEncrypt(source.getEncrypt());
+
+        // Instantiate SystemConfigurationValueDataProvider based on class name
+        if (source.getDataProvider() != null) {
+            try {
+                final Class<?> clazz = Class.forName(source.getDataProvider());
+                final SystemConfigurationValueDataProvider dataProvider =
+                    (SystemConfigurationValueDataProvider) clazz.getDeclaredConstructor().newInstance();
+                target.setDataProvider(dataProvider);
+            } catch (final Exception e) {
+                LOGGER.error("Failed to instantiate SystemConfigurationValueDataProvider", e);
+            }
+        }
+
+        target.setValidationMessage(source.getValidationMessage());
 
         return target;
     }
@@ -410,7 +460,6 @@ public class SystemConfigurationValueEjb
         final SystemConfigurationValueDto dto,
         final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer,
         final boolean inJurisdiction) {
-        // No anonymization required
         LOGGER.debug("Pseudonymizing SystemConfigurationValue ignored: {}", source);
     }
 
@@ -433,7 +482,6 @@ public class SystemConfigurationValueEjb
         final SystemConfigurationValueDto existingDto,
         final SystemConfigurationValue entity,
         final Pseudonymizer<SystemConfigurationValueDto> pseudonymizer) {
-        // No anonymization required
         LOGGER.debug("Restoring pseudonymized SystemConfigurationValue ignored: {}", dto);
     }
 
@@ -456,32 +504,11 @@ public class SystemConfigurationValueEjb
         dto.setValue(entity.getValue());
         dto.setKey(entity.getKey());
         dto.setEncrypted(entity.getEncrypt()); // encrypt needed for list view
+        dto.setCategoryName(entity.getCategory() != null ? entity.getCategory().getName() : null);
+        dto.setCategoryCaption(entity.getCategory() != null ? entity.getCategory().getCaption() : null);
+        dto.setCategoryDescription(entity.getCategory() != null ? entity.getCategory().getDescription() : null);
 
         return dto;
-    }
-
-    /**
-     * Loads system configuration data into the cache.
-     * This method initializes the cache by fetching all system configuration values from the service,
-     * clearing the existing cache, and then populating it with the retrieved data.
-     * Duplicate keys will be replaced with the latest value retrieved from the service.
-     */
-    @PermitAll
-    @PostConstruct
-    @Override
-    public void loadData() {
-
-        LOGGER.info("Loading SystemConfiguration data into cache");
-        configurationValuesByKey.clear();
-
-        service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), Optional.ofNullable(value.getValue())));
-
-        LOGGER.info("SystemConfiguration data loaded into cache successfully");
-    }
-
-    @LocalBean
-    @Stateless
-    public static class SystemConfigurationValueEjbLocal extends SystemConfigurationValueEjb {
     }
 
 }

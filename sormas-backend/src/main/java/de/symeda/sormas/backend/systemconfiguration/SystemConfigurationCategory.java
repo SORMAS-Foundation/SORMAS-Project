@@ -27,21 +27,21 @@ public class SystemConfigurationCategory extends AbstractDomainObject {
 
     public static final String TABLE_NAME = "systemconfigurationcategory";
 
-    public static final String NAME_FIELD_NAME = "name";
-    public static final String DESCRIPTION_FIELD_NAME = "description";
     public static final String CAPTION_FIELD_NAME = "caption";
+    public static final String DESCRIPTION_FIELD_NAME = "description";
+    public static final String NAME_FIELD_NAME = "name";
 
-    private String name;
-    private String description;
     private String caption;
+    private String description;
+    private String name;
 
-    @Column(nullable = false)
-    public String getName() {
-        return name;
+    @Column
+    public String getCaption() {
+        return caption;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCaption(final String caption) {
+        this.caption = caption;
     }
 
     @Column
@@ -49,21 +49,21 @@ public class SystemConfigurationCategory extends AbstractDomainObject {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
-    @Column
-    public String getCaption() {
-        return caption;
+    @Column(nullable = false)
+    public String getName() {
+        return name;
     }
 
-    public void setCaption(String caption) {
-        this.caption = caption;
+    public void setName(final String name) {
+        this.name = name;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return super.equals(o);
     }
 

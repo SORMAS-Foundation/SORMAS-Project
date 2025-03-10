@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.systemconfiguration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,9 +45,11 @@ class SystemConfigurationCategoryFacadeEJbTest extends AbstractBeanTest {
     @Test
     void testGetDefaultCategory() {
 
-        SystemConfigurationCategoryDto categoryDto = getSystemConfigurationCategoryFacade().getDefaultCategoryDto();
+        final SystemConfigurationCategoryDto categoryDto = getSystemConfigurationCategoryFacade().getDefaultCategoryDto();
 
         assertThat(categoryDto.getName(), is(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME));
+        assertThat(categoryDto.getCaption(), is(notNullValue()));
+        assertThat(categoryDto.getDescription(), is(notNullValue()));
     }
 
     /**
@@ -58,13 +61,16 @@ class SystemConfigurationCategoryFacadeEJbTest extends AbstractBeanTest {
         SystemConfigurationCategoryDto categoryDto = getSystemConfigurationCategoryFacade().getDefaultCategoryDto();
         assertThat(categoryDto.getName(), is(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME));
 
+        categoryDto.setCaption("updated-caption");
         categoryDto.setDescription("updated-description");
 
-        SystemConfigurationCategoryDto updatedCategory = getSystemConfigurationCategoryFacade().save(categoryDto);
+        final SystemConfigurationCategoryDto updatedCategory = getSystemConfigurationCategoryFacade().save(categoryDto);
+        assertThat(updatedCategory.getCaption(), is("updated-caption"));
         assertThat(updatedCategory.getDescription(), is("updated-description"));
 
         categoryDto = getSystemConfigurationCategoryFacade().getDefaultCategoryDto();
         assertThat(categoryDto.getName(), is(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME));
+        assertThat(categoryDto.getCaption(), is("updated-caption"));
         assertThat(categoryDto.getDescription(), is("updated-description"));
     }
 
@@ -75,9 +81,12 @@ class SystemConfigurationCategoryFacadeEJbTest extends AbstractBeanTest {
      */
     private SystemConfigurationCategory createDefaultCategory() {
 
-        SystemConfigurationCategory category = new SystemConfigurationCategory();
+        final SystemConfigurationCategory category = new SystemConfigurationCategory();
         category.setUuid(DataHelper.createUuid());
         category.setName(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME);
+        category.setCaption("default-category-caption");
+        category.setDescription("default-category-description");
+
         getSystemConfigurationCategoryService().ensurePersisted(category);
         return category;
     }

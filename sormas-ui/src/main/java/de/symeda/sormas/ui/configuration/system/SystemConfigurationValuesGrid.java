@@ -20,7 +20,6 @@ import java.util.Random;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueIndexDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -32,14 +31,22 @@ public class SystemConfigurationValuesGrid extends FilteredGrid<SystemConfigurat
 
 	private static final long serialVersionUID = 1L;
 
+	private static final Random RANDOM = new Random();
+
 	/**
 	 * Constructs a new SystemConfigurationValuesGrid with the specified criteria.
 	 *
-	 * @param criteria the criteria for filtering system configuration values
+	 * @param criteria
+	 *            the criteria for filtering system configuration values
 	 */
-	public SystemConfigurationValuesGrid(SystemConfigurationValueCriteria criteria) {
+	public SystemConfigurationValuesGrid(final SystemConfigurationValueCriteria criteria) {
 
 		super(SystemConfigurationValueIndexDto.class);
+
+		initGrid(criteria);
+	}
+
+	protected void initGrid(final SystemConfigurationValueCriteria criteria) {
 		setSizeFull();
 
 		setLazyDataProvider(
@@ -47,17 +54,36 @@ public class SystemConfigurationValuesGrid extends FilteredGrid<SystemConfigurat
 			FacadeProvider.getSystemConfigurationValueFacade()::count);
 		setCriteria(criteria);
 
-		removeColumn(SystemConfigurationValueDto.VALUE_PROPERTY_NAME);
+		removeColumn(SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME);
 
-		addColumn(value -> value.isEncrypted() ? "*".repeat(new Random().nextInt(50)) : value.getValue())
-			.setId(SystemConfigurationValueDto.VALUE_PROPERTY_NAME);
+		addColumn(value -> value.isEncrypted() ? "*".repeat(RANDOM.nextInt(50)) : value.getValue())
+			.setId(SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME);
 
-		setColumns(SystemConfigurationValueDto.KEY_PROPERTY_NAME, SystemConfigurationValueDto.VALUE_PROPERTY_NAME);
+		removeColumn(SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME);
+		addColumn(value -> {
+			final StringBuilder caption = new StringBuilder();
+			SystemConfigurationI18nHelper.processI18nString(
+				value.getCategoryCaption(),
+				(defaultName, key) -> caption
+					.append(I18nProperties.getPrefixCaption(SystemConfigurationValueIndexDto.I18N_PREFIX, key, defaultName)));
+			if (caption.length() == 0) {
+				caption.append(value.getCategoryCaption());
+			}
+			return caption.toString();
+		}).setId(SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME);
+
+		setColumns(
+			SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME,
+			SystemConfigurationValueIndexDto.KEY_PROPERTY_NAME,
+			SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME);
 
 		addEditColumn(e -> ControllerProvider.getSystemConfigurationController().editSystemConfigurationValue(e.getUuid()));
 
-		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(SystemConfigurationValueDto.I18N_PREFIX, column.getId(), column.getCaption()));
+		for (final Column<?, ?> column : getColumns()) {
+			if (column.getId().equals(SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME)) {
+				continue;
+			}
+			column.setCaption(I18nProperties.getPrefixCaption(SystemConfigurationValueIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 	}
 
@@ -67,4 +93,5 @@ public class SystemConfigurationValuesGrid extends FilteredGrid<SystemConfigurat
 	public void reload() {
 		getDataProvider().refreshAll();
 	}
+
 }

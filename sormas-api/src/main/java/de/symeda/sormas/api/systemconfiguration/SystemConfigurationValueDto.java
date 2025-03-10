@@ -33,6 +33,8 @@ public class SystemConfigurationValueDto extends EntityDto {
     public static final String CATEGORY_PROPERTY_NAME = "category";
     public static final String PATTERN_PROPERTY_NAME = "pattern";
     public static final String ENCRYPT_PROPERTY_NAME = "encrypt";
+    public static final String DATA_PROVIDER_PROPERTY_NAME = "dataProvider";
+    public static final String VALIDATION_MESSAGE_PROPERTY_NAME = "validationMessage";
 
     @NotNull(message = Validations.required)
     @Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -49,11 +51,15 @@ public class SystemConfigurationValueDto extends EntityDto {
     @NotNull(message = Validations.required)
     private Boolean encrypt;
 
+    private SystemConfigurationValueDataProvider dataProvider;
+
+    private String validationMessage;
+
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -61,7 +67,7 @@ public class SystemConfigurationValueDto extends EntityDto {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(final String key) {
         this.key = key;
     }
 
@@ -69,7 +75,7 @@ public class SystemConfigurationValueDto extends EntityDto {
         return category;
     }
 
-    public void setCategory(SystemConfigurationCategoryReferenceDto category) {
+    public void setCategory(final SystemConfigurationCategoryReferenceDto category) {
         this.category = category;
     }
 
@@ -77,7 +83,7 @@ public class SystemConfigurationValueDto extends EntityDto {
         return pattern;
     }
 
-    public void setPattern(String pattern) {
+    public void setPattern(final String pattern) {
         this.pattern = pattern;
     }
 
@@ -85,12 +91,28 @@ public class SystemConfigurationValueDto extends EntityDto {
         return encrypt;
     }
 
-    public void setEncrypt(Boolean encrypt) {
+    public void setEncrypt(final Boolean encrypt) {
         this.encrypt = encrypt;
     }
 
+    public SystemConfigurationValueDataProvider getDataProvider() {
+        return dataProvider;
+    }
+
+    public void setDataProvider(final SystemConfigurationValueDataProvider dataProvider) {
+        this.dataProvider = dataProvider;
+    }
+
+    public String getValidationMessage() {
+        return validationMessage;
+    }
+
+    public void setValidationMessage(final String validationMessage) {
+        this.validationMessage = validationMessage;
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return super.equals(o);
     }
 
