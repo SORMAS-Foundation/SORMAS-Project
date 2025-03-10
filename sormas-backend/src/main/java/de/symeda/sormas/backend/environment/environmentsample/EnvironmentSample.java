@@ -101,9 +101,9 @@ public class EnvironmentSample extends DeletableAdo {
 	private SpecimenCondition specimenCondition;
 	private Location location;
 	private String generalComment;
+	private VectorType vectorType;
 
 	private List<PathogenTest> pathogenTests;
-	private VectorType vectorType;
 
 	@ManyToOne(optional = false)
 	public Environment getEnvironment() {
@@ -375,6 +375,7 @@ public class EnvironmentSample extends DeletableAdo {
 	public void setPathogenTests(List<PathogenTest> pathogenTests) {
 		this.pathogenTests = pathogenTests;
 	}
+
 	@Enumerated(EnumType.STRING)
 	public VectorType getVectorType() {
 		return vectorType;

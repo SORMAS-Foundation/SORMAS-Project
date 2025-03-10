@@ -570,6 +570,7 @@ public class EnvironmentSampleFacadeEjb
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 		target.setVectorType(EnvironmentSampleMaterial.VECTORS.equals(source.getSampleMaterial()) ? source.getVectorType() : null);
+
 		return target;
 	}
 

@@ -13828,6 +13828,11 @@ ALTER TABLE surveytokens_history ADD COLUMN responsereceiveddate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (560, 'Create survey tokens pages #13253');
 
+-- added new column as vectortype for environment and environment sample
+ALTER TABLE environments ADD column IF NOT EXISTS vectortype varchar(255);
+ALTER TABLE environmentsamples ADD column IF NOT EXISTS  vectortype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (561, 'Added vectors to the environment #13267');
 -- 2025-03-10 events and environment linkage 13266
 CREATE TABLE IF NOT EXISTS events_environments (
                                                    event_id bigint NOT NULL,
@@ -13840,14 +13845,14 @@ ALTER TABLE events_environments OWNER TO sormas_user;
 ALTER TABLE events_environments ADD CONSTRAINT fk_events_environment_environment_id FOREIGN KEY (environment_id) REFERENCES environments(id);
 ALTER TABLE events_environments ADD CONSTRAINT fk_events_environment_event_id FOREIGN KEY (event_id) REFERENCES events(id);
 
-CREATE TABLE IF NOT EXISTS events_environments_history (LIKE events_environments);
+CREATE TABLE  events_environments_history (LIKE events_environments);
 
 DROP TRIGGER IF EXISTS versioning_trigger ON events_environments;
 
-CREATE TRIGGER IF NOT EXISTS versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_environments
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON events_environments
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_environments_history','true');
 
-INSERT INTO public.userroles_userrights
+INSERT INTO userroles_userrights
 (userright, sys_period, userrole_id)
 VALUES('ENVIRONMENT_LINK', tstzrange(
                 CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '1 hour', '[)'
