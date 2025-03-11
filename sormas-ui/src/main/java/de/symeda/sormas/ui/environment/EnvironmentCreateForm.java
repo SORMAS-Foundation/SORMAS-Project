@@ -36,8 +36,8 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 
 	//@formatter:off
     private static final String HTML_LAYOUT = fluidRowLocs(EnvironmentDto.REPORT_DATE, EnvironmentDto.EXTERNAL_ID)
-            + fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") + fluidRowLocs(EnvironmentDto.ENVIRONMENT_NAME, "")+
-            fluidRowLocs(EnvironmentDto.VECTOR_TYPE, "")+
+            + fluidRowLocs(EnvironmentDto.ENVIRONMENT_MEDIA, "") + fluidRowLocs(EnvironmentDto.ENVIRONMENT_NAME, "") +
+            fluidRowLocs(EnvironmentDto.VECTOR_TYPE, "") +
             loc(LOCATION_HEADING_LOC) +
             fluidRowLocs(EnvironmentDto.LOCATION) +
             fluidRowLocs("", EnvironmentDto.RESPONSIBLE_USER);
@@ -89,7 +89,7 @@ public class EnvironmentCreateForm extends AbstractEditForm<EnvironmentDto> {
 		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 
 		environmentMedia.addValueChangeListener(valueChangeEvent -> {
-			if (EnvironmentMedia.VECTORS.toString().equalsIgnoreCase(valueChangeEvent.getProperty().getValue().toString())) {
+			if (EnvironmentMedia.VECTORS.equals(valueChangeEvent.getProperty().getValue())) {
 				vectorType.setVisible(true);
 			} else {
 				vectorType.setVisible(false);
