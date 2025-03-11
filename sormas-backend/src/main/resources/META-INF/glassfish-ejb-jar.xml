@@ -948,6 +948,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>ENVIRONMENT_LINK</role-name>
+        <group-name>ENVIRONMENT_LINK</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>ENVIRONMENT_SAMPLE_VIEW</role-name>
         <group-name>ENVIRONMENT_SAMPLE_VIEW</group-name>
     </security-role-mapping>
