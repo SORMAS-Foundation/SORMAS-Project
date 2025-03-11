@@ -384,6 +384,9 @@ public class EnvironmentFacadeEjb
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
 		target.setVectorType(source.getVectorType());
+
+		target.setVectorType(source.getVectorType());
+
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
