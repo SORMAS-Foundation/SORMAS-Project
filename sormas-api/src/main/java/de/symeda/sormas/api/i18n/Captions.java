@@ -1457,6 +1457,7 @@ public interface Captions {
 	String Environment_reportingUser = "Environment.reportingUser";
 	String Environment_responsibleUser = "Environment.responsibleUser";
 	String Environment_uuid = "Environment.uuid";
+	String Environment_vectorType = "Environment.vectorType";
 	String Environment_waterType = "Environment.waterType";
 	String Environment_waterUse = "Environment.waterUse";
 	String environmentActiveEnvironments = "environmentActiveEnvironments";
@@ -1495,6 +1496,7 @@ public interface Captions {
 	String EnvironmentSample_specimenCondition = "EnvironmentSample.specimenCondition";
 	String EnvironmentSample_turbidity = "EnvironmentSample.turbidity";
 	String EnvironmentSample_uuid = "EnvironmentSample.uuid";
+	String EnvironmentSample_vectorType = "EnvironmentSample.vectorType";
 	String EnvironmentSample_weatherConditions = "EnvironmentSample.weatherConditions";
 	String environmentSampleActiveSamples = "environmentSampleActiveSamples";
 	String environmentSampleAllActiveAndArchivedSamples = "environmentSampleAllActiveAndArchivedSamples";

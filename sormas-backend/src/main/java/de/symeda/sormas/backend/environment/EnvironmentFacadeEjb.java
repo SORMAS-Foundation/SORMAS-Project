@@ -312,6 +312,7 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
+		target.setVectorType(EnvironmentMedia.VECTORS.equals(source.getEnvironmentMedia()) ? source.getVectorType() : null);
 
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
@@ -343,6 +344,7 @@ public class EnvironmentFacadeEjb
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
+		target.setVectorType(source.getVectorType());
 
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
