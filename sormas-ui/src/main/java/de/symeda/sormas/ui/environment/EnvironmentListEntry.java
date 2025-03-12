@@ -45,16 +45,16 @@ public class EnvironmentListEntry extends SideComponentField {
 			CssStyles.style(environmentNameLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			topLeftLayout.addComponent(environmentNameLabel);
 			Label environmentMediaLabel = new Label(
-				I18nProperties.getCaption(Captions.eventEnvironmentMedia) + ": " + DataHelper.toStringNullable(environment.getEnvironmentMedia()));
+				I18nProperties.getCaption(Captions.Event_environmentMedia) + ": " + DataHelper.toStringNullable(environment.getEnvironmentMedia()));
 			CssStyles.style(environmentMediaLabel, CssStyles.HSPACE_RIGHT_4);
 			topLeftLayout.addComponent(environmentMediaLabel);
 			Label investigationStatusLabel = new Label(
-				I18nProperties.getCaption(Captions.eventEnvironmentInvestigationStatus) + ": "
+				I18nProperties.getCaption(Captions.Event_environment_investigationStatus) + ": "
 					+ DataHelper.toStringNullable(environment.getInvestigationStatus()));
 			CssStyles.style(investigationStatusLabel);
 			topLeftLayout.addComponent(investigationStatusLabel);
 			Label envReportDtLabel = new Label(
-				I18nProperties.getCaption(Captions.eventEnvironmentReportDate) + ": "
+				I18nProperties.getCaption(Captions.Event_environmentReportDate) + ": "
 					+ DataHelper.toStringNullable(DateHelper.formatLocalDate(environment.getReportDate(), I18nProperties.getUserLanguage())));
 			CssStyles.style(envReportDtLabel);
 			envReportDtLabel.setWidth(100, Unit.PERCENTAGE);

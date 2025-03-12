@@ -1587,6 +1587,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return specialCaseAccessService.hasEventParticipantWithSpecialAccess(eventRef);
 	}
 
+	@RightsAllowed(UserRight._EVENT_EDIT)
 	public void unlinkEnvironment(EnvironmentReferenceDto environmentReference, EventDto event) {
 		Environment environment = environmentService.getByUuid(environmentReference.getUuid());
 		environment.getEvents().removeIf(e -> e.getUuid().equals(event.getUuid()));

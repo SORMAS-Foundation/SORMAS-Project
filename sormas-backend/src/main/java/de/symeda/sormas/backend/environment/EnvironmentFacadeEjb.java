@@ -238,8 +238,12 @@ public class EnvironmentFacadeEjb
 		CriteriaQuery<?> cq = environmentQueryContext.getQuery();
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
+			Join<Location, Region> region = environmentQueryContext.getJoins().getLocationJoins().getRegion();
+			Join<Location, District> district = environmentQueryContext.getJoins().getLocationJoins().getDistrict();
+			Join<Location, Community> community = environmentQueryContext.getJoins().getLocationJoins().getCommunity();
 			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
+				CriteriaBuilderHelper.OrderBuilder orderBuilder = CriteriaBuilderHelper.createOrderBuilder(cb, sortProperty.ascending);
+				Expression<?> expression = null;
 				switch (sortProperty.propertyName) {
 				case EnvironmentIndexDto.UUID:
 				case EnvironmentIndexDto.EXTERNAL_ID:
@@ -250,15 +254,12 @@ public class EnvironmentFacadeEjb
 					expression = environmentQueryContext.getRoot().get(sortProperty.propertyName);
 					break;
 				case EnvironmentIndexDto.REGION:
-					Join<Location, Region> region = environmentQueryContext.getJoins().getLocationJoins().getRegion();
 					expression = region.get(Region.NAME);
 					break;
 				case EnvironmentIndexDto.DISTRICT:
-					Join<Location, District> district = environmentQueryContext.getJoins().getLocationJoins().getDistrict();
 					expression = district.get(District.NAME);
 					break;
 				case EnvironmentIndexDto.COMMUNITY:
-					Join<Location, Community> community = environmentQueryContext.getJoins().getLocationJoins().getCommunity();
 					expression = community.get(Community.NAME);
 					break;
 				case EnvironmentIndexDto.POSTAL_CODE:
@@ -268,11 +269,23 @@ public class EnvironmentFacadeEjb
 					Join<Environment, Location> location = environmentQueryContext.getJoins().getLocation();
 					expression = location.get(sortProperty.propertyName);
 					break;
+				case EnvironmentIndexDto.ENVIRONMENT_LOCATION:
+					order.addAll(
+						orderBuilder.build(
+							cb.lower(region.get(Region.NAME)),
+							cb.lower(district.get(District.NAME)),
+							cb.lower(community.get(Community.NAME))));
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-				selections.add(expression);
+				if (expression != null) {
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					selections.add(expression);
+				} else {
+					selections.addAll(order.stream().map(Order::getExpression).collect(Collectors.toList()));
+				}
+
 			}
 			cq.orderBy(order);
 		} else {
