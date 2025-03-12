@@ -26,18 +26,9 @@ public class EnvironmentJoins extends QueryJoins<Environment> {
 	private EnvironmentSampleJoins environmentSampleJoins;
 	private Join<Environment, Event> events;
 
-//	private JoinType eventJoinType;
-
 	public EnvironmentJoins(From<?, Environment> root) {
 		super(root);
 	}
-
-	/*
-	 * public EnvironmentJoins(From<?, Environment> root, JoinType eventJoinType) {
-	 * super(root);
-	 * this.eventJoinType = eventJoinType;
-	 * }
-	 */
 
 	public Join<Environment, Location> getLocation() {
 		return getOrCreate(location, Environment.LOCATION, JoinType.LEFT, this::setLocation);

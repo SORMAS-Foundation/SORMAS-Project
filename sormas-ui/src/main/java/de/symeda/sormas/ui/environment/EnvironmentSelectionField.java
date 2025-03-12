@@ -46,18 +46,6 @@ public class EnvironmentSelectionField extends CustomField<EnvironmentIndexDto> 
 	Button applyButton;
 	HorizontalLayout weekAndDateFilterLayout;
 
-	/*
-	 * public EnvironmentSelectionField(String infoPickOrCreateEnvironment, boolean allowCreation, Consumer<EnvironmentCriteria>
-	 * setDefaultFilters) {
-	 * this.infoPickOrCreateEnvironment = infoPickOrCreateEnvironment;
-	 * this.searchField = new TextField();
-	 * this.criteria = new EnvironmentCriteria();
-	 * this.allowCreation = allowCreation;
-	 * this.setDefaultFilters = setDefaultFilters;
-	 * initializeGrid();
-	 * }
-	 */
-
 	public EnvironmentSelectionField(EnvironmentReferenceDto referenceDto) {
 		this.infoPickOrCreateEnvironment = I18nProperties.getString(Strings.infoPickOrCreateEnvironmentForEvent);
 		this.searchField = new TextField();
@@ -112,15 +100,15 @@ public class EnvironmentSelectionField extends CustomField<EnvironmentIndexDto> 
 	@Override
 	protected Component initContent() {
 		mainLayout = new VerticalLayout();
-		mainLayout.setSpacing(true);
 		mainLayout.setMargin(false);
+		mainLayout.setSpacing(true);
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 		addInfoComponent();
 
 		VerticalLayout filterLayout = new VerticalLayout();
-		filterLayout.setSpacing(false);
 		filterLayout.setMargin(false);
+		filterLayout.setSpacing(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		filterLayout.addComponent(createFilterBar());
@@ -153,14 +141,14 @@ public class EnvironmentSelectionField extends CustomField<EnvironmentIndexDto> 
 		applyButton.addClickListener(e -> {
 
 			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-			Date fromDate = null;
 			Date toDate = null;
+			Date fromDate = null;
 			if (dateFilterOption == DateFilterOption.DATE) {
-				if (weekAndDateFilter.getDateFromFilter().getValue() != null) {
-					fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
-				}
 				if (weekAndDateFilter.getDateToFilter().getValue() != null) {
 					toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
+				}
+				if (weekAndDateFilter.getDateFromFilter().getValue() != null) {
+					fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
 				}
 			} else {
 				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
@@ -221,8 +209,8 @@ public class EnvironmentSelectionField extends CustomField<EnvironmentIndexDto> 
 		rbCreateEnvironment.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbSelectEnvironment.setValue(null);
-				environmentGrid.deselectAll();
 				environmentGrid.setEnabled(false);
+				environmentGrid.deselectAll();
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}
@@ -254,23 +242,6 @@ public class EnvironmentSelectionField extends CustomField<EnvironmentIndexDto> 
 
 		mainLayout.addComponent(rbSelectEnvironment);
 	}
-
-	/*
-	 * public static EnvironmentSelectionField forSelectedEnvironment(EnvironmentDto environmentDto) {
-	 * EnvironmentSelectionField environmentSelectionField =
-	 * new EnvironmentSelectionField(I18nProperties.getString(Strings.infoPickOrCreateEnvironmentForEvent), false, environmentCriteria -> {
-	 * });
-	 * environmentSelectionField.weekAndDateFilter.getDateFromFilter().addValueChangeListener(valueChangeEvent -> {
-	 * Date selectedFromDate = environmentSelectionField.weekAndDateFilter.getDateFromFilter().getValue();
-	 * prepareSubordinateFilters(
-	 * environmentDto,
-	 * environmentSelectionField,
-	 * selectedFromDate,
-	 * environmentSelectionField.weekAndDateFilter.getDateFromFilter());
-	 * });
-	 * return environmentSelectionField;
-	 * }
-	 */
 
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
 		this.selectionChangeCallback = callback;

@@ -28,13 +28,6 @@ public class EnvironmentReferenceDto extends ReferenceDto {
 		this.environmentName = environmentName;
 	}
 
-	/*
-	 * public EnvironmentReferenceDto(String uuid, String environmentName) {
-	 * setUuid(uuid);
-	 * this.environmentName = environmentName;
-	 * }
-	 */
-
 	@Override
 	public String getCaption() {
 		return environmentName.trim().length() > 0 ? environmentName : DataHelper.getShortUuid(getUuid());
