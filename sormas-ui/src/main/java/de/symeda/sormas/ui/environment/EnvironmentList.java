@@ -11,11 +11,13 @@ import de.symeda.sormas.api.environment.EnvironmentIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.PaginationList;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EnvironmentList extends PaginationList<EnvironmentIndexDto> {
 
@@ -56,8 +58,18 @@ public class EnvironmentList extends PaginationList<EnvironmentIndexDto> {
 
 			if (UiUtil.permitted(UserRight.ENVIRONMENT_CREATE)) {
 				listEntry.addUnlinkEnvironmentListener(i, (Button.ClickListener) clickEvent -> {
-					ControllerProvider.getEnvironmentController().unlinkEnvironment(environmentIndex, event.getUuid());
-					reload();
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingUnlinkEnvironmentFromEvent),
+						new Label(I18nProperties.getString(Strings.confirmationUnlinkEnvironmentFromEvent)),
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						480,
+						confirmed -> {
+							if (confirmed) {
+								ControllerProvider.getEnvironmentController().unlinkEnvironment(environmentIndex, event.getUuid());
+								reload();
+							}
+						});
 				});
 			}
 

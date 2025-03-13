@@ -57,24 +57,6 @@ public class EnvironmentService extends AbstractCoreAdoService<Environment, Envi
 		super(Environment.class, DeletableEntityType.ENVIRONMENT);
 	}
 
-	/*
-	 * public List<EnvironmentIndexDto> getAllEnvironmentsByEvent(EnvironmentCriteria criteria) {
-	 * Predicate filter = null;
-	 * CriteriaBuilder cb = em.getCriteriaBuilder();
-	 * CriteriaQuery<EnvironmentIndexDto> cq = cb.createQuery(EnvironmentIndexDto.class);
-	 * Root<Environment> root = cq.from(Environment.class);
-	 * EnvironmentQueryContext queryContext = new EnvironmentQueryContext(cb, cq, root);
-	 * EnvironmentJoins joins = queryContext.getJoins();
-	 * Join<Environment, Event> eventJoin = joins.getEvents().join(Event.ENVIRONMENTS, JoinType.LEFT);
-	 * filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(eventJoin.get(Event.UUID), criteria.getEvent().getUuid()));
-	 * if (filter != null) {
-	 * cq.where(filter);
-	 * }
-	 * cq.distinct(true);
-	 * return em.createQuery(cq).getResultList();
-	 * }
-	 */
-
 	public String getSimilarEnvironmentUuid(EnvironmentCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -190,6 +190,7 @@ public interface Strings {
 	String confirmationSinceExternalMessages = "confirmationSinceExternalMessages";
 	String confirmationUnclearExternalMessage = "confirmationUnclearExternalMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
+	String confirmationUnlinkEnvironmentFromEvent = "confirmationUnlinkEnvironmentFromEvent";
 	String confirmationUnlinkEventFromEnvironment = "confirmationUnlinkEventFromEnvironment";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmationVaccinationStatusUpdate = "confirmationVaccinationStatusUpdate";
@@ -883,6 +884,7 @@ public interface Strings {
 	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
+	String headingUnlinkEnvironmentFromEvent = "headingUnlinkEnvironmentFromEvent";
 	String headingUnlinkEventFromEnvironment = "headingUnlinkEventFromEnvironment";
 	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
 	String headingUpdatedPathogenTestInformation = "headingUpdatedPathogenTestInformation";

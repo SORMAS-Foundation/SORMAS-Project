@@ -84,7 +84,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String TABLE_NAME = "events";
 
 	public static final String EVENTS_EVENT_GROUPS_TABLE_NAME = "events_eventgroups";
-	public static final String EVENTS_ENVIRONMENTS_TABLE_NAME = "events_environments";
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
@@ -843,7 +842,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.externalShares = externalShares;
 	}
 
-	@ManyToMany(mappedBy = Environment.EVENTS, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = Environment.EVENTS, fetch = FetchType.LAZY)
 	public List<Environment> getEnvironments() {
 		return environments;
 	}

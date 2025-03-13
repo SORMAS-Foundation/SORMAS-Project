@@ -246,11 +246,10 @@ public class Environment extends CoreAdo {
 		this.vectorType = vectorType;
 	}
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = EVENTS_ENVIRONMENTS_TABLE_NAME,
 		joinColumns = @JoinColumn(name = "environment_id"),
 		inverseJoinColumns = @JoinColumn(name = "event_id"))
-
 	public List<Event> getEvents() {
 		return events;
 	}
