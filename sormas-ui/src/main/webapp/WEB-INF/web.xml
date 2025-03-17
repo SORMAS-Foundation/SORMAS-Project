@@ -758,6 +758,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>ENVIRONMENT_LINK</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>ENVIRONMENT_SAMPLE_VIEW</role-name>
 	</security-role>
 
