@@ -1265,8 +1265,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
 		target.setEventManagementStatus(source.getEventManagementStatus());
 		if (source.getEnvironments() != null) {
-			target
-				.setEnvironmentReferenceDtos(source.getEnvironments().stream().map(EnvironmentFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+			target.setEnvironmentReferenceDtos(
+				source.getEnvironments().stream().map(EnvironmentFacadeEjb::toReferenceDto).collect(Collectors.toList()));
 		}
 
 		target.setReportLat(source.getReportLat());

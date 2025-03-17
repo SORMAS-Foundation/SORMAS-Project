@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.environment;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -88,7 +88,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private String otherDeletionReason;
 	private VectorType vectorType;
 
-	private Set<EventReferenceDto> eventReferenceDtos = new HashSet<>();
+	private List<EventReferenceDto> eventReferenceDtos = new ArrayList<>();
 
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
@@ -269,14 +269,13 @@ public class EnvironmentDto extends PseudonymizableDto {
 		if (!eventReferenceDtos.contains(eventReferenceDto)) {
 			this.eventReferenceDtos.add(eventReferenceDto);
 		}
-		this.getEventReferenceDtos().add(eventReferenceDto);
 	}
 
-	public Set<EventReferenceDto> getEventReferenceDtos() {
+	public List<EventReferenceDto> getEventReferenceDtos() {
 		return eventReferenceDtos;
 	}
 
-	public void setEventReferenceDtos(Set<EventReferenceDto> eventReferenceDtos) {
+	public void setEventReferenceDtos(List<EventReferenceDto> eventReferenceDtos) {
 		this.eventReferenceDtos = eventReferenceDtos;
 	}
 }

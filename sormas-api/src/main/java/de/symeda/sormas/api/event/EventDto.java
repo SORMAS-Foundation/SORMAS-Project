@@ -15,10 +15,10 @@
 
 package de.symeda.sormas.api.event;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -236,7 +236,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
-	private Set<EnvironmentReferenceDto> environmentReferenceDtos = new HashSet<>();
+	private List<EnvironmentReferenceDto> environmentReferenceDtos = new ArrayList<>();
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -764,11 +764,11 @@ public class EventDto extends SormasToSormasShareableDto {
 		this.otherDeletionReason = otherDeletionReason;
 	}
 
-	public Set<EnvironmentReferenceDto> getEnvironmentReferenceDtos() {
+	public List<EnvironmentReferenceDto> getEnvironmentReferenceDtos() {
 		return environmentReferenceDtos;
 	}
 
-	public void setEnvironmentReferenceDtos(Set<EnvironmentReferenceDto> environmentReferenceDtos) {
+	public void setEnvironmentReferenceDtos(List<EnvironmentReferenceDto> environmentReferenceDtos) {
 		this.environmentReferenceDtos = environmentReferenceDtos;
 	}
 }
