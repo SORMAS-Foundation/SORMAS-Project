@@ -1049,6 +1049,7 @@ public interface Strings {
 	String infoNoAefiInvestigations = "infoNoAefiInvestigations";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
 	String infoNoCustomizableEnumTranslations = "infoNoCustomizableEnumTranslations";
+	String infoNoDiseaseConfigurationAgeGroups = "infoNoDiseaseConfigurationAgeGroups";
 	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEnvironmentSamples = "infoNoEnvironmentSamples";
 	String infoNoEventGroups = "infoNoEventGroups";
@@ -1134,6 +1135,7 @@ public interface Strings {
 	String labelNumberOfCommunities = "labelNumberOfCommunities";
 	String labelNumberOfContinents = "labelNumberOfContinents";
 	String labelNumberOfCountries = "labelNumberOfCountries";
+	String labelNumberOfDiseaseConfigurations = "labelNumberOfDiseaseConfigurations";
 	String labelNumberOfDistricts = "labelNumberOfDistricts";
 	String labelNumberOfFacilities = "labelNumberOfFacilities";
 	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
@@ -1340,6 +1342,7 @@ public interface Strings {
 	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
 	String messageDeleteWithPendingShareRequest = "messageDeleteWithPendingShareRequest";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
+	String messageDiseaseConfigurationSaved = "messageDiseaseConfigurationSaved";
 	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
@@ -1739,6 +1742,12 @@ public interface Strings {
 	String promptCustomizableEnumTranslationLanguage = "promptCustomizableEnumTranslationLanguage";
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
+	String promptDiseaseConfigurationAgeFrom = "promptDiseaseConfigurationAgeFrom";
+	String promptDiseaseConfigurationAgeTo = "promptDiseaseConfigurationAgeTo";
+	String promptDiseaseConfigurationEndAge = "promptDiseaseConfigurationEndAge";
+	String promptDiseaseConfigurationEndAgeType = "promptDiseaseConfigurationEndAgeType";
+	String promptDiseaseConfigurationStartAge = "promptDiseaseConfigurationStartAge";
+	String promptDiseaseConfigurationStartAgeType = "promptDiseaseConfigurationStartAgeType";
 	String promptDistrict = "promptDistrict";
 	String promptEmail = "promptEmail";
 	String promptEnvironmentDateFrom = "promptEnvironmentDateFrom";

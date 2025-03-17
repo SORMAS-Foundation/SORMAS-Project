@@ -13837,6 +13837,12 @@ ALTER TABLE environmentsamples_history ADD COLUMN vectortype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (561, 'Added vectors to the environment #13267');
 
+-- 2025-03-17 add default disease configuration user rights for admin user role #13265
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DISEASE_MANAGEMENT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (562, 'Disease configuration user interface #13265');
+
+
 -- 2025-03-10 events and environment linkage 13266
 CREATE TABLE IF NOT EXISTS events_environments (
                                                    event_id bigint NOT NULL,
@@ -13862,5 +13868,5 @@ VALUES('ENVIRONMENT_LINK', tstzrange(
                 CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '1 hour', '[)'
                            ), 1);
 
-INSERT INTO schema_version (version_number, comment) VALUES (562, 'Events and environment linkage #13266');
+INSERT INTO schema_version (version_number, comment) VALUES (563, 'Events and environment linkage #13266');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

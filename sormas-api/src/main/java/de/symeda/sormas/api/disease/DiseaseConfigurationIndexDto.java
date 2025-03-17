@@ -1,32 +1,44 @@
-package de.symeda.sormas.backend.disease;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2024 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+package de.symeda.sormas.api.disease;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.audit.AuditIgnore;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.api.EntityDto;
 
-@Entity(name = DiseaseConfiguration.TABLE_NAME)
-@AuditIgnore(retainWrites = true)
-public class DiseaseConfiguration extends AbstractDomainObject {
+public class DiseaseConfigurationIndexDto extends EntityDto {
 
-	private static final long serialVersionUID = -7653585175036656526L;
+	private static final long serialVersionUID = -8929454025217616891L;
 
-	public static final String TABLE_NAME = "diseaseconfiguration";
+	public static final String I18N_PREFIX = "DiseaseConfiguration";
 
 	public static final String DISEASE = "disease";
 	public static final String ACTIVE = "active";
 	public static final String PRIMARY_DISEASE = "primaryDisease";
 	public static final String CASE_SURVEILLANCE_ENABLED = "caseSurveillanceEnabled";
 	public static final String AGGREGATE_REPORTING_ENABLED = "aggregateReportingEnabled";
+	public static final String FOLLOW_UP_ENABLED = "followUpEnabled";
+	public static final String FOLLOW_UP_DURATION = "followUpDuration";
+	public static final String CASE_FOLLOW_UP_DURATION = "caseFollowUpDuration";
+	public static final String EVENT_PARTICIPANT_FOLLOW_UP_DURATION = "eventParticipantFollowUpDuration";
+	public static final String EXTENDED_CLASSIFICATION = "extendedClassification";
+	public static final String EXTENDED_CLASSIFICATION_MULTI = "extendedClassificationMulti";
+	public static final String AGE_GROUPS = "ageGroups";
+	public static final String AUTOMATIC_SAMPLE_ASSIGNMENT_THRESHOLD = "automaticSampleAssignmentThreshold";
 
 	private Disease disease;
 	private Boolean active;
@@ -40,17 +52,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
 	private List<String> ageGroups;
-
 	private Integer automaticSampleAssignmentThreshold;
 
-	public static DiseaseConfiguration build(Disease disease) {
-		DiseaseConfiguration configuration = new DiseaseConfiguration();
-		configuration.setDisease(disease);
-		return configuration;
-	}
-
-	@Enumerated(EnumType.STRING)
-	@Column(unique = true)
 	public Disease getDisease() {
 		return disease;
 	}
@@ -59,7 +62,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.disease = disease;
 	}
 
-	@Column
 	public Boolean getActive() {
 		return active;
 	}
@@ -68,7 +70,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.active = active;
 	}
 
-	@Column
 	public Boolean getPrimaryDisease() {
 		return primaryDisease;
 	}
@@ -77,16 +78,14 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.primaryDisease = primaryDisease;
 	}
 
-	@Column
 	public Boolean getCaseSurveillanceEnabled() {
 		return caseSurveillanceEnabled;
 	}
 
-	public void setCaseSurveillanceEnabled(Boolean caseBased) {
-		this.caseSurveillanceEnabled = caseBased;
+	public void setCaseSurveillanceEnabled(Boolean caseSurveillanceEnabled) {
+		this.caseSurveillanceEnabled = caseSurveillanceEnabled;
 	}
 
-	@Column
 	public Boolean getAggregateReportingEnabled() {
 		return aggregateReportingEnabled;
 	}
@@ -95,7 +94,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.aggregateReportingEnabled = aggregateReportingEnabled;
 	}
 
-	@Column
 	public Boolean getFollowUpEnabled() {
 		return followUpEnabled;
 	}
@@ -104,7 +102,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.followUpEnabled = followUpEnabled;
 	}
 
-	@Column
 	public Integer getFollowUpDuration() {
 		return followUpDuration;
 	}
@@ -113,7 +110,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.followUpDuration = followUpDuration;
 	}
 
-	@Column
 	public Integer getCaseFollowUpDuration() {
 		return caseFollowUpDuration;
 	}
@@ -122,7 +118,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.caseFollowUpDuration = caseFollowUpDuration;
 	}
 
-	@Column
 	public Integer getEventParticipantFollowUpDuration() {
 		return eventParticipantFollowUpDuration;
 	}
@@ -131,7 +126,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.eventParticipantFollowUpDuration = eventParticipantFollowUpDuration;
 	}
 
-	@Column
 	public Boolean getExtendedClassification() {
 		return extendedClassification;
 	}
@@ -140,7 +134,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.extendedClassification = extendedClassification;
 	}
 
-	@Column
 	public Boolean getExtendedClassificationMulti() {
 		return extendedClassificationMulti;
 	}
@@ -149,8 +142,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.extendedClassificationMulti = extendedClassificationMulti;
 	}
 
-	@Column(length = CHARACTER_LIMIT_TEXT)
-	@Convert(converter = AgeGroupsConverter.class)
 	public List<String> getAgeGroups() {
 		return ageGroups;
 	}
@@ -159,7 +150,6 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.ageGroups = ageGroups;
 	}
 
-	@Column
 	public Integer getAutomaticSampleAssignmentThreshold() {
 		return automaticSampleAssignmentThreshold;
 	}
