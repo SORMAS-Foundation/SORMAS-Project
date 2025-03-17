@@ -16,6 +16,8 @@
 package de.symeda.sormas.ui.configuration.disease;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Alignment;
@@ -25,7 +27,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.ActiveRelevanceStatus;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueIndexDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationCriteria;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFilterReportingType;
@@ -103,7 +104,7 @@ public class DiseaseConfigurationView extends AbstractConfigurationView {
 
 		diseaseFilter = new ComboBox<>(
 			I18nProperties.getPrefixCaption(CustomizableEnumValueIndexDto.I18N_PREFIX, CustomizableEnumValueIndexDto.DISEASES),
-			FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
+			Arrays.stream(Disease.values()).sorted(Comparator.comparing(Disease::toString)).collect(Collectors.toList()));
 		diseaseFilter.addValueChangeListener(e -> {
 			criteria.disease(e.getValue());
 			grid.reload();

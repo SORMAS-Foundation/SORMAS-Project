@@ -36,6 +36,7 @@ public class DiseaseConfigurationController {
 			new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
 		cdw.addCommitListener(() -> {
 			FacadeProvider.getDiseaseConfigurationFacade().saveDiseaseConfiguration(editForm.getValue());
+			FacadeProvider.getDiseaseConfigurationFacade().loadData();
 			Notification.show(I18nProperties.getString(Strings.messageDiseaseConfigurationSaved), Notification.Type.ASSISTIVE_NOTIFICATION);
 			SormasUI.get().getNavigator().navigateTo(DiseaseConfigurationView.VIEW_NAME);
 		});
