@@ -111,9 +111,6 @@ public class EventListComponent extends VerticalLayout {
 		EventList eventList = new EventList(superordinateEvent, actionCallback, isEditAllowed);
 		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), true, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
-			if (superordinateEvent.getEnvironment() != null) {
-				eventCriteria.setEnvironment(superordinateEvent.getEnvironment());
-			}
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
 				ControllerProvider.getEventController().selectOrCreateSubordinateEvent(superordinateEvent);

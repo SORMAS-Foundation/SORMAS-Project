@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,11 +41,11 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -472,10 +471,9 @@ public class EventController {
 				List<EventIndexDto> environmentEvents = FacadeProvider.getEventFacade().getIndexList(eventCriteria, null, null, null);
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-				eventReferenceDto.setEnvironment(environment.toReference());
 				if (!environmentEvents.contains(selectedEvent)) {
 					EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(environment.getUuid());
-					environmentDto.addEvent(eventReferenceDto);
+					environmentDto.addEventReference(eventReferenceDto);
 					FacadeProvider.getEnvironmentFacade().save(environmentDto);
 				} else {
 					Notification notification =
@@ -917,14 +915,15 @@ public class EventController {
 
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
-				EventDto dto = eventCreateForm.getValue();
-				dto.setEnvironmentReferenceDtos(Arrays.asList(environment.toReference()));
-				FacadeProvider.getEventFacade().save(dto);
+				EventDto eventDto = eventCreateForm.getValue();
+				EnvironmentReferenceDto referenceDto = new EnvironmentReferenceDto(environment.getUuid());
+				eventDto.getEnvironmentReferenceDtos().add(referenceDto);
+				FacadeProvider.getEventFacade().save(eventDto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.TRAY_NOTIFICATION);
 				// maintining the relation in both sides for event and environment
 				EnvironmentDto environmentDto = FacadeProvider.getEnvironmentFacade().getByUuid(environment.getUuid());
-				EventReferenceDto createdEvent = new EventReferenceDto(dto.getUuid());
-				environmentDto.addEvent(createdEvent);
+				EventReferenceDto createdEvent = new EventReferenceDto(eventDto.getUuid());
+				environmentDto.getEventReferenceDtos().add(createdEvent);
 				FacadeProvider.getEnvironmentFacade().save(environmentDto);
 				SormasUI.refreshView();
 			}

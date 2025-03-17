@@ -178,8 +178,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@EJB
 	private EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
-	private EnvironmentFacadeEjb.EnvironmentFacadeEjbLocal environmentFacade;
-	@EJB
 	private EventService eventService;
 	@EJB
 	private EventParticipantService eventParticipantService;
@@ -1267,11 +1265,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
 		target.setEventManagementStatus(source.getEventManagementStatus());
 		if (source.getEnvironments() != null) {
-			var environmentReferenceDtos = new ArrayList<EnvironmentReferenceDto>();
-			source.getEnvironments().stream().forEach(environment -> {
-				environmentReferenceDtos.add(EnvironmentFacadeEjb.toReferenceDto(environment));
-			});
-			target.getEnvironmentReferenceDtos().addAll(environmentReferenceDtos);
+			target
+				.setEnvironmentReferenceDtos(source.getEnvironments().stream().map(EnvironmentFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
 		}
 
 		target.setReportLat(source.getReportLat());

@@ -22,7 +22,6 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -34,7 +33,6 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 public class EventReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
-	private EnvironmentReferenceDto environment;
 
 	public EventReferenceDto() {
 
@@ -82,18 +80,5 @@ public class EventReferenceDto extends ReferenceDto {
 		Language language = I18nProperties.getUserLanguage();
 		return diseaseString + " " + eventStatusString + " " + eventInvestigationStatusString + " " + I18nProperties.getString(Strings.on) + " "
 			+ DateHelper.formatLocalDate(eventDate, language);
-	}
-
-	public EventReferenceDto environment(EnvironmentReferenceDto environment) {
-		this.environment = environment;
-		return this;
-	}
-
-	public void setEnvironment(EnvironmentReferenceDto environment) {
-		this.environment = environment;
-	}
-
-	public EnvironmentReferenceDto getEnvironment() {
-		return environment;
 	}
 }

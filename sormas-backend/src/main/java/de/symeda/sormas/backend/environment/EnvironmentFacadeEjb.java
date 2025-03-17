@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -362,8 +363,9 @@ public class EnvironmentFacadeEjb
 		target.setWaterUse(source.getWaterUse());
 		target.setVectorType(EnvironmentMedia.VECTORS.equals(source.getEnvironmentMedia()) ? source.getVectorType() : null);
 
-		if (source.getEvent() != null) {
-			target.getEvents().add(eventService.getByReferenceDto(source.getEvent()));
+		if (source.getEventReferenceDtos() != null) {
+			target.getEvents()
+				.addAll(source.getEventReferenceDtos().stream().map(e -> eventService.getByReferenceDto(e)).collect(Collectors.toList()));
 		}
 
 		target.setDeleted(source.isDeleted());
@@ -397,9 +399,7 @@ public class EnvironmentFacadeEjb
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
 		target.setVectorType(source.getVectorType());
-
-		target.setVectorType(source.getVectorType());
-
+		source.getEvents().stream().map(EventFacadeEjb::toEventDto);
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());

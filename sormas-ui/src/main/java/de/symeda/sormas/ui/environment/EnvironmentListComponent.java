@@ -12,7 +12,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
-import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -38,12 +38,11 @@ public class EnvironmentListComponent extends VerticalLayout {
 				criteria.setEvent(eventReferenceDto);
 				//check if there are active environments in the database
 				long events = FacadeProvider.getEnvironmentFacade().count(criteria);
-				EnvironmentReferenceDto dto = new EnvironmentReferenceDto();
-				dto.setEvent(eventReferenceDto);
+				EventDto eventDto = FacadeProvider.getEventFacade().getByUuid(eventReferenceDto.getUuid());
 				if (events > 0) {
-					ControllerProvider.getEnvironmentController().selectOrCreateEnvironment(dto);
+					ControllerProvider.getEnvironmentController().selectOrCreateEnvironment(eventDto);
 				} else {
-					ControllerProvider.getEnvironmentController().create(dto);
+					ControllerProvider.getEnvironmentController().create(eventDto);
 				}
 			},
 			isEditAllowed);

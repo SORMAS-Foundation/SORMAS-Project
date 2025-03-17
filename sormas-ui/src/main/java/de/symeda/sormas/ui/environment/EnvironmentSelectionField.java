@@ -14,7 +14,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
-import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -46,11 +45,10 @@ public class EnvironmentSelectionField extends CustomField<EnvironmentIndexDto> 
 	Button applyButton;
 	HorizontalLayout weekAndDateFilterLayout;
 
-	public EnvironmentSelectionField(EnvironmentReferenceDto referenceDto) {
+	public EnvironmentSelectionField() {
 		this.infoPickOrCreateEnvironment = I18nProperties.getString(Strings.infoPickOrCreateEnvironmentForEvent);
 		this.searchField = new TextField();
 		this.criteria = new EnvironmentCriteria();
-		criteria.setEvent(referenceDto.getEvent());
 		this.allowCreation = true;
 		this.weekAndDateFilterLayout = buildWeekAndDateFilter();
 		initializeGrid();

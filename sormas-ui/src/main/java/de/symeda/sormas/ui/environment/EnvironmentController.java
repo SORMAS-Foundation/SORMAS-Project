@@ -29,7 +29,7 @@ import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
 import de.symeda.sormas.api.environment.EnvironmentIndexDto;
-import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -55,16 +55,23 @@ public class EnvironmentController {
 		navigator.addView(EnvironmentDataView.VIEW_NAME, EnvironmentDataView.class);
 	}
 
-	public void create(EnvironmentReferenceDto referenceDto) {
-		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent(referenceDto);
+	public void create() {
+		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent();
 		if (environmentCreateComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(environmentCreateComponent, I18nProperties.getString(Strings.headingCreateNewEnvironment));
 		}
 
 	}
 
-	public void selectOrCreateEnvironment(EnvironmentReferenceDto referenceDto) {
-		EnvironmentSelectionField selectionField = new EnvironmentSelectionField(referenceDto);
+	public void create(EventDto eventDto) {
+		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent(eventDto);
+		if (environmentCreateComponent != null) {
+			VaadinUiUtil.showModalPopupWindow(environmentCreateComponent, I18nProperties.getString(Strings.headingCreateNewEnvironment));
+		}
+	}
+
+	public void selectOrCreateEnvironment(EventDto eventDto) {
+		EnvironmentSelectionField selectionField = new EnvironmentSelectionField();
 		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EnvironmentSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
@@ -72,18 +79,18 @@ public class EnvironmentController {
 			EnvironmentIndexDto selectedIndexEnvironment = selectionField.getValue();
 			if (selectedIndexEnvironment != null) {
 				EnvironmentCriteria criteria = new EnvironmentCriteria();
-				criteria.setEvent(referenceDto.getEvent());
+				criteria.setEvent(eventDto.toReference());
 				List<EnvironmentIndexDto> eventEnvironments = FacadeProvider.getEnvironmentFacade().getEnvironmentsByEvent(criteria);
 				if (!eventEnvironments.contains(selectedIndexEnvironment)) {
 					EnvironmentDto selectedEnvironment =
 						FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(selectedIndexEnvironment.getUuid());
-					selectedEnvironment.setEvent(FacadeProvider.getEventFacade().getReferenceByUuid(referenceDto.getEvent().getUuid()));
+					selectedEnvironment.addEventReference(eventDto.toReference());
 					FacadeProvider.getEnvironmentFacade().save(selectedEnvironment);
-					if (referenceDto.getEvent() != null) {
-						String page = EventDataView.VIEW_NAME + "/" + referenceDto.getEvent().getUuid();
+					if (eventDto != null) {
+						String page = EventDataView.VIEW_NAME + "/" + eventDto.getUuid();
 						pageNavigate(false, page);
 					} else {
-						navigateToData(referenceDto.getUuid());
+						navigateToData(EventDataView.VIEW_NAME);
 					}
 					Notification.show(I18nProperties.getString(Strings.messageEnvironmentLinkedToEvent), Notification.Type.TRAY_NOTIFICATION);
 				} else {
@@ -96,7 +103,7 @@ public class EnvironmentController {
 				}
 
 			} else {
-				create(referenceDto);
+				create(eventDto);
 			}
 		});
 
@@ -122,14 +129,13 @@ public class EnvironmentController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent(EnvironmentReferenceDto referenceDto) {
+	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent() {
 		UserProvider curentUser = UiUtil.getCurrentUserProvider();
 
 		if (curentUser != null) {
 			EnvironmentCreateForm createForm;
 			createForm = new EnvironmentCreateForm();
 			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
-			environment.setEvent(referenceDto.getEvent());
 			createForm.setValue(environment);
 			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
 				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
@@ -146,6 +152,32 @@ public class EnvironmentController {
 			return editView;
 		}
 
+		return null;
+
+	}
+
+	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent(EventDto eventDto) {
+		UserProvider curentUser = UiUtil.getCurrentUserProvider();
+
+		if (curentUser != null) {
+			EnvironmentCreateForm createForm;
+			createForm = new EnvironmentCreateForm();
+			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
+			environment.addEventReference(eventDto.toReference());
+			createForm.setValue(environment);
+			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
+				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
+			editView.addCommitListener(() -> {
+				if (!createForm.getFieldGroup().isModified()) {
+					EnvironmentDto environmentDto = createForm.getValue();
+					environmentDto.addEventReference(eventDto.toReference());
+					FacadeProvider.getEnvironmentFacade().save(environmentDto);
+					Notification.show(I18nProperties.getString(Strings.messageEnvironmentCreated), Notification.Type.WARNING_MESSAGE);
+					navigateToEnvironment(environmentDto.getUuid());
+				}
+			});
+			return editView;
+		}
 		return null;
 
 	}

@@ -1,7 +1,9 @@
 package de.symeda.sormas.api.environment;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -86,7 +88,7 @@ public class EnvironmentDto extends PseudonymizableDto {
 	private String otherDeletionReason;
 	private VectorType vectorType;
 
-	private EventReferenceDto event;
+	private Set<EventReferenceDto> eventReferenceDtos = new HashSet<>();
 
 	public static EnvironmentDto build() {
 		final EnvironmentDto environment = new EnvironmentDto();
@@ -105,12 +107,6 @@ public class EnvironmentDto extends PseudonymizableDto {
 		environment.getLocation().setDistrict(currentUser.getDistrict());
 
 		return environment;
-	}
-
-	public EnvironmentDto build(EventReferenceDto event) {
-		EnvironmentDto environment = build();
-		environment.setEvent(event);
-		return this;
 	}
 
 	public Date getReportDate() {
@@ -269,15 +265,18 @@ public class EnvironmentDto extends PseudonymizableDto {
 		this.vectorType = vectorType;
 	}
 
-	public EventReferenceDto getEvent() {
-		return event;
+	public void addEventReference(EventReferenceDto eventReferenceDto) {
+		if (!eventReferenceDtos.contains(eventReferenceDto)) {
+			this.eventReferenceDtos.add(eventReferenceDto);
+		}
+		this.getEventReferenceDtos().add(eventReferenceDto);
 	}
 
-	public void setEvent(EventReferenceDto event) {
-		this.event = event;
+	public Set<EventReferenceDto> getEventReferenceDtos() {
+		return eventReferenceDtos;
 	}
 
-	public void addEvent(EventReferenceDto event) {
-		this.setEvent(event);
+	public void setEventReferenceDtos(Set<EventReferenceDto> eventReferenceDtos) {
+		this.eventReferenceDtos = eventReferenceDtos;
 	}
 }
