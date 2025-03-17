@@ -13836,4 +13836,10 @@ ALTER TABLE environments_history ADD COLUMN vectortype varchar(255);
 ALTER TABLE environmentsamples_history ADD COLUMN vectortype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (561, 'Added vectors to the environment #13267');
+
+-- 2025-03-17 add default disease configuration user rights for admin user role #13265
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'DISEASE_MANAGEMENT' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (562, 'Disease configuration user interface #13265');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

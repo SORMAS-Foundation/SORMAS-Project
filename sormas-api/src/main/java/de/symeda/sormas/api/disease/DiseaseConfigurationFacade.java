@@ -67,4 +67,6 @@ public interface DiseaseConfigurationFacade {
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties);
+
+	void loadData();
 }

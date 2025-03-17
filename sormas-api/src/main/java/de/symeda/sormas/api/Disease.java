@@ -33,7 +33,7 @@ public enum Disease
 	EVD(true, true, true, false, true, 21, true, false, false),
 	GUINEA_WORM(true, true, true, false, false, 0, true, false, false),
 	LASSA(true, true, true, false, true, 21, true, false, false),
-	MEASLES(true, true, true, false, false, 21, true, true, false),
+	MEASLES(true, true, true, false, true, 21, true, true, false),
 	MONKEYPOX(true, true, true, false, true, 21, true, false, false),
 	NEW_INFLUENZA(true, true, true, false, true, 17, true, false, false),
 	PLAGUE(true, true, true, false, true, 7, true, false, false),
