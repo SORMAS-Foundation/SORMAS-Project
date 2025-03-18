@@ -21,6 +21,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 /**
@@ -35,6 +36,12 @@ public class SystemConfigurationCategoryDto extends EntityDto {
     public static final String NAME_PROPERTY_NAME = "name";
     public static final String DESCRIPTION_PROPERTY_NAME = "description";
     public static final String CAPTION_PROPERTY_NAME = "caption";
+
+    public static SystemConfigurationCategoryDto build() {
+        final SystemConfigurationCategoryDto systemConfigurationCategory = new SystemConfigurationCategoryDto();
+        systemConfigurationCategory.setUuid(DataHelper.createUuid());
+        return systemConfigurationCategory;
+    }
 
     @NotNull(message = Validations.required)
     @Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -58,7 +65,8 @@ public class SystemConfigurationCategoryDto extends EntityDto {
     /**
      * Sets the name of the system configuration category.
      *
-     * @param name the name to set.
+     * @param name
+     *            the name to set.
      */
     public void setName(String name) {
         this.name = name;
@@ -76,7 +84,8 @@ public class SystemConfigurationCategoryDto extends EntityDto {
     /**
      * Sets the description of the system configuration category.
      *
-     * @param description the description to set.
+     * @param description
+     *            the description to set.
      */
     public void setDescription(String description) {
         this.description = description;
@@ -94,7 +103,8 @@ public class SystemConfigurationCategoryDto extends EntityDto {
     /**
      * Sets the caption of the system configuration category.
      *
-     * @param caption the caption to set.
+     * @param caption
+     *            the caption to set.
      */
     public void setCaption(String caption) {
         this.caption = caption;
@@ -113,7 +123,8 @@ public class SystemConfigurationCategoryDto extends EntityDto {
     /**
      * Indicates whether some other object is "equal to" this one.
      *
-     * @param o the reference object with which to compare.
+     * @param o
+     *            the reference object with which to compare.
      * @return true if this object is the same as the obj argument; false otherwise.
      */
     @Override

@@ -26,7 +26,11 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -64,9 +68,11 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  * Implementation of the {@link SystemConfigurationValueFacade} interface.
  * Provides methods to manage system configuration settings.
  */
-@Stateless(name = "SystemConfigurationValueFacade")
+@Singleton(name = "SystemConfigurationValueFacade")
 @PermitAll
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+@Startup
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class SystemConfigurationValueEjb
     extends
     AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
@@ -77,9 +83,11 @@ public class SystemConfigurationValueEjb
     public static class SystemConfigurationValueEjbLocal extends SystemConfigurationValueEjb {
     }
 
+    private static final long serialVersionUID = 1L;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationValueEjb.class);
 
-    private static final TreeMap<String, Optional<String>> configurationValuesByKey = new TreeMap<>();
+    private final TreeMap<String, String> configurationValuesByKey = new TreeMap<>();
 
     private SystemConfigurationCategoryService categoryService;
 
@@ -120,13 +128,18 @@ public class SystemConfigurationValueEjb
      */
     @PermitAll
     @Override
-    public Optional<String> getValue(final String key) {
+    public String getValue(final String key) {
 
         if (configurationValuesByKey.isEmpty()) {
             loadData();
         }
 
         return configurationValuesByKey.get(key);
+    }
+
+    @PermitAll
+    public boolean exists(final String key) {
+        return configurationValuesByKey.containsKey(key);
     }
 
     /**
@@ -305,9 +318,14 @@ public class SystemConfigurationValueEjb
             return;
         }
 
-        if (!SystemConfigurationValueHelper.isConfigurationValueValid(dto.getValue())) {
+        if ((null == dto.getOptional() || !dto.getOptional()) && !SystemConfigurationValueHelper.isConfigurationValueValid(dto.getValue())) {
             LOGGER.warn("Invalid value in SystemConfigurationValueDto: {}", dto);
             throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.systemConfigurationValueInvalidValue));
+        }
+
+        // Do not attempt to match patterns for optional values
+        if ((null != dto.getOptional() && dto.getOptional()) && (null == dto.getValue() || dto.getValue().isBlank())) {
+            return;
         }
 
         if (dto.getPattern() != null
@@ -333,14 +351,14 @@ public class SystemConfigurationValueEjb
      * Duplicate keys will be replaced with the latest value retrieved from the service.
      */
     @PermitAll
-    @PostConstruct
     @Override
+    @PostConstruct
     public void loadData() {
 
         LOGGER.info("Loading SystemConfiguration data into cache");
         configurationValuesByKey.clear();
 
-        service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), Optional.ofNullable(value.getValue())));
+        service.getAll().forEach(value -> configurationValuesByKey.put(value.getKey(), value.getValue()));
 
         LOGGER.info("SystemConfiguration data loaded into cache successfully");
     }
@@ -370,6 +388,7 @@ public class SystemConfigurationValueEjb
         target.setKey(source.getKey());
         target.setValue(source.getValue());
         target.setCategory(categoryService.getByReferenceDto(source.getCategory()));
+        target.setOptional(source.getOptional() != null ? source.getOptional() : Boolean.FALSE);
         target.setEncrypt(source.getEncrypt());
         target.setPattern(source.getPattern());
         target.setDataProvider(source.getDataProvider() != null ? source.getDataProvider().getClass().getName() : null);
@@ -404,6 +423,7 @@ public class SystemConfigurationValueEjb
             source.getCategory() != null
                 ? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
                 : categoryFacade.getDefaultCategoryReferenceDto());
+        target.setOptional(source.getOptional() != null ? source.getOptional() : Boolean.FALSE);
         target.setPattern(source.getPattern());
         target.setEncrypt(source.getEncrypt());
 

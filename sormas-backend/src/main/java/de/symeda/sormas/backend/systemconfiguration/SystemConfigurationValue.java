@@ -34,6 +34,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     public static final String VALUE_FIELD_NAME = "value";
     public static final String KEY_FIELD_NAME = "key";
     public static final String CATEGORY_FIELD_NAME = "category";
+    public static final String OPTIONAL_FIELD_NAME = "optional";
     public static final String PATTERN_FIELD_NAME = "pattern";
     public static final String ENCRYPT_FIELD_NAME = "encrypt";
     public static final String DATA_PROVIDER_FIELD_NAME = "dataProvider";
@@ -41,12 +42,13 @@ public class SystemConfigurationValue extends AbstractDomainObject {
     private String value;
     private String key;
     private SystemConfigurationCategory category;
+    private Boolean optional;
     private String pattern;
     private Boolean encrypt;
     private String dataProvider;
     private String validationMessage;
 
-    @Column(nullable = false, name = "config_value")
+    @Column(nullable = true, name = "config_value")
     public String getValue() {
         return value;
     }
@@ -71,6 +73,16 @@ public class SystemConfigurationValue extends AbstractDomainObject {
 
     public void setCategory(final SystemConfigurationCategory category) {
         this.category = category;
+    }
+
+    @Column(name = "value_optional")
+    @ColumnDefault("false")
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 
     @Column(name = "value_pattern")

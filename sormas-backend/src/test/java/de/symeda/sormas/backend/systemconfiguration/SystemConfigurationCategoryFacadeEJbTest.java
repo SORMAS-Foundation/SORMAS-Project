@@ -53,6 +53,18 @@ class SystemConfigurationCategoryFacadeEJbTest extends AbstractBeanTest {
     }
 
     /**
+     * Test to verify that a category can be retrieved by name .
+     */
+    @Test
+    void testGetCategoryByName() {
+        final SystemConfigurationCategoryDto categoryDto =
+            getSystemConfigurationCategoryFacade().getCategoryDtoByName(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME);
+        assertThat(categoryDto.getName(), is(SystemConfigurationCategoryService.DEFAULT_CATEGORY_NAME));
+        assertThat(categoryDto.getCaption(), is(notNullValue()));
+        assertThat(categoryDto.getDescription(), is(notNullValue()));
+    }
+
+    /**
      * Test to verify that a category can be updated.
      */
     @Test

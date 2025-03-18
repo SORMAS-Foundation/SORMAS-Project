@@ -13910,6 +13910,7 @@ CREATE TABLE systemconfigurationvalue (
                          category_id bigint not null,
                          config_key varchar(255) not null,
                          config_value text,
+                         value_optional boolean default false,
                          value_pattern varchar(255),
                          value_encrypt boolean default false,
                          data_provider varchar(255),

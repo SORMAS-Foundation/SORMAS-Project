@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.systemconfiguration;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,8 @@ import de.symeda.sormas.api.BaseFacade;
 @Remote
 public interface SystemConfigurationValueFacade
 	extends
-	BaseFacade<SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueCriteria> {
+	BaseFacade<SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueCriteria>,
+	Serializable {
 
 	List<SystemConfigurationValueDto> getByUuids(List<String> uuids);
 
@@ -43,7 +45,10 @@ public interface SystemConfigurationValueFacade
 	 *            The key of the configuration value to retrieve.
 	 * @return An {@link Optional} containing the value if found, or an empty {@link Optional} if not found.
 	 */
-	public Optional<String> getValue(String key);
+	public String getValue(String key);
+
+	
+	public boolean exists(String key);
 
 	/**
 	 * Clears the caches and reloads the system configuration values from the database.

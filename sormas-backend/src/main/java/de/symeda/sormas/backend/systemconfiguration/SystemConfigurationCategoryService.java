@@ -29,17 +29,25 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
     }
 
     /**
+     * Constructor with element class parameter.
+     *
+     * @param elementClass
+     *            the class of the element
+     */
+    protected SystemConfigurationCategoryService(final Class<SystemConfigurationCategory> elementClass) {
+        super(elementClass);
+    }
+
+    /**
      * Retrieves the default category.
      *
-     * @return the default category 
-     * @throws IllegalStateException if no default category is found
+     * @return the default category
+     * @throws IllegalStateException
+     *             if no default category is found
      */
     public SystemConfigurationCategory getDefaultCategory() {
-        final SystemConfigurationCategory defaultCategory =
-            getByPredicate((cb, root, cq) -> cb.equal(root.get(SystemConfigurationCategory.NAME_FIELD_NAME), DEFAULT_CATEGORY_NAME)).stream()
-                .findFirst()
-                .orElse(null);
 
+        final SystemConfigurationCategory defaultCategory = getCategoryByName(DEFAULT_CATEGORY_NAME);
         if (null == defaultCategory) {
             logger.error("No default category found with name: {}", DEFAULT_CATEGORY_NAME);
             throw new IllegalStateException("No default category found");
@@ -50,13 +58,23 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
     }
 
     /**
-     * Constructor with element class parameter.
+     * Retrieves a category by its name.
      *
-     * @param elementClass
-     *            the class of the element
+     * @param name
+     *            the name of the category
+     * @return the category with the specified name, or null if no such category exists
      */
-    protected SystemConfigurationCategoryService(Class<SystemConfigurationCategory> elementClass) {
-        super(elementClass);
+    public SystemConfigurationCategory getCategoryByName(final String name) {
+
+        final SystemConfigurationCategory category =
+            getByPredicate((cb, root, cq) -> cb.equal(root.get(SystemConfigurationCategory.NAME_FIELD_NAME), name)).stream().findFirst().orElse(null);
+
+        if (null == category) {
+            logger.debug("No category found with name: {}", name);
+            return null;
+        }
+
+        return category;
     }
 
     /**
@@ -71,7 +89,7 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
      * @return the user filter predicate
      */
     @Override
-    public Predicate createUserFilter(CriteriaBuilder cb, @SuppressWarnings("rawtypes") CriteriaQuery cq, From<?, SystemConfigurationCategory> from) {
+    public Predicate createUserFilter(final CriteriaBuilder cb, @SuppressWarnings("rawtypes") final CriteriaQuery cq, final From<?, SystemConfigurationCategory> from) {
         return null;
     }
 
@@ -86,17 +104,17 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
      *            the root entity
      * @return the criteria filter predicate
      */
-    public Predicate buildCriteriaFilter(SystemConfigurationCategoryCriteria criteria, CriteriaBuilder cb, Root<SystemConfigurationCategory> from) {
-        Predicate filter = cb.conjunction();
+    public Predicate buildCriteriaFilter(final SystemConfigurationCategoryCriteria criteria, final CriteriaBuilder cb, final Root<SystemConfigurationCategory> from) {
 
+        Predicate filter = cb.conjunction();
         if (criteria.getFreeTextFilter() != null) {
-            String[] textFilters = criteria.getFreeTextFilter().split("\\s+");
-            for (String textFilter : textFilters) {
+            final String[] textFilters = criteria.getFreeTextFilter().split("\\s+");
+            for (final String textFilter : textFilters) {
                 if (textFilter.isEmpty()) {
                     continue;
                 }
 
-                Predicate likeFilters = cb.or(
+                final Predicate likeFilters = cb.or(
                     CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SystemConfigurationCategory.NAME_FIELD_NAME), textFilter),
                     CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SystemConfigurationCategory.DESCRIPTION_FIELD_NAME), textFilter));
                 filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);

@@ -50,6 +50,26 @@ public interface SystemConfigurationCategoryFacade
     SystemConfigurationCategoryReferenceDto getDefaultCategoryReferenceDto();
 
     /**
+     * Get a category dto by category name.
+     *
+     * @param name
+     *            category name
+     *
+     * @return the default system configuration category reference DTO
+     */
+    SystemConfigurationCategoryDto getCategoryDtoByName(String name);
+
+    /**
+     * Get a category reference dto by category name.
+     *
+     * @param name
+     *            category name
+     *
+     * @return the default system configuration category reference DTO
+     */
+    SystemConfigurationCategoryReferenceDto getCategoryReferenceDtoByName(String name);
+
+    /**
      * Get all UUIDs of system configuration categories.
      *
      * @return the list of all UUIDs

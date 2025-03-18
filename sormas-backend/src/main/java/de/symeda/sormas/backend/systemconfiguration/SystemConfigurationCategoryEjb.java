@@ -247,7 +247,7 @@ public class SystemConfigurationCategoryEjb
      * @return the default system configuration category DTO
      */
     @Lock(LockType.READ)
-    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+    @PermitAll
     @Override
     public SystemConfigurationCategoryDto getDefaultCategoryDto() {
         return toDto(service.getDefaultCategory());
@@ -259,10 +259,24 @@ public class SystemConfigurationCategoryEjb
      * @return the default system configuration category reference DTO
      */
     @Lock(LockType.READ)
-    @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
+    @PermitAll
     @Override
     public SystemConfigurationCategoryReferenceDto getDefaultCategoryReferenceDto() {
         return toRefDto(service.getDefaultCategory());
+    }
+
+    @Lock(LockType.READ)
+    @PermitAll
+    @Override
+    public SystemConfigurationCategoryDto getCategoryDtoByName(String name) {
+        return toDto(service.getCategoryByName(name));
+    }
+
+    @Lock(LockType.READ)
+    @PermitAll
+    @Override
+    public SystemConfigurationCategoryReferenceDto getCategoryReferenceDtoByName(String name) {
+        return toRefDto(service.getCategoryByName(name));
     }
 
     /**

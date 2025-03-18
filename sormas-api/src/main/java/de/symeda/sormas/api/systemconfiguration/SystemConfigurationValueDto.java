@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class SystemConfigurationValueDto extends EntityDto {
@@ -31,10 +32,17 @@ public class SystemConfigurationValueDto extends EntityDto {
     public static final String VALUE_PROPERTY_NAME = "value";
     public static final String KEY_PROPERTY_NAME = "key";
     public static final String CATEGORY_PROPERTY_NAME = "category";
+    public static final String OPTIONAL_PROPERTY_NAME = "optional";
     public static final String PATTERN_PROPERTY_NAME = "pattern";
     public static final String ENCRYPT_PROPERTY_NAME = "encrypt";
     public static final String DATA_PROVIDER_PROPERTY_NAME = "dataProvider";
     public static final String VALIDATION_MESSAGE_PROPERTY_NAME = "validationMessage";
+
+    public static SystemConfigurationValueDto build() {
+        final SystemConfigurationValueDto systemConfigurationValue = new SystemConfigurationValueDto();
+        systemConfigurationValue.setUuid(DataHelper.createUuid());
+        return systemConfigurationValue;
+    }
 
     @NotNull(message = Validations.required)
     @Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -45,6 +53,8 @@ public class SystemConfigurationValueDto extends EntityDto {
     private String key;
 
     private SystemConfigurationCategoryReferenceDto category;
+
+    private Boolean optional;
 
     private String pattern;
 
@@ -77,6 +87,14 @@ public class SystemConfigurationValueDto extends EntityDto {
 
     public void setCategory(final SystemConfigurationCategoryReferenceDto category) {
         this.category = category;
+    }
+
+    public Boolean getOptional() {
+        return this.optional;
+    }
+
+    public void setOptional(final Boolean optional) {
+        this.optional = optional;
     }
 
     public String getPattern() {

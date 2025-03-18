@@ -224,6 +224,24 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     }
 
     /**
+     * Test the validation of an optional system configuration value.
+     */
+    @Test
+    void testValidateOptionalSystemConfigurationValue() {
+
+        final SystemConfigurationValue configValue = createSystemConfigurationValue("OPTIONAL_KEY", null, null);
+        final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
+        configValueDto.setOptional(true);
+
+        // Validate optional value
+        final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
+
+        assertThat(updatedConfigValue.getKey(), is("OPTIONAL_KEY"));
+        assertThat(updatedConfigValue.getValue(), is((String) null));
+        assertThat(updatedConfigValue.getOptional(), is(Boolean.TRUE));
+    }
+
+    /**
      * Create a new system configuration value with the specified key and value.
      *
      * @param key
@@ -246,7 +264,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
     }
 
     /**
-     * Create a new system configuration value with the specified key,value and pattern.
+     * Create a new system configuration value with the specified key, value, and pattern.
      *
      * @param key
      *            the key of the configuration value
