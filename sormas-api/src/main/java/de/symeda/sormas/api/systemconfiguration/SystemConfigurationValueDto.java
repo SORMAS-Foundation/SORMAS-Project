@@ -23,6 +23,10 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+/**
+ * Data Transfer Object for System Configuration Value.
+ * This class represents a value in the system configuration.
+ */
 public class SystemConfigurationValueDto extends EntityDto {
 
     private static final long serialVersionUID = 1L;
@@ -64,6 +68,44 @@ public class SystemConfigurationValueDto extends EntityDto {
     private SystemConfigurationValueDataProvider dataProvider;
 
     private String validationMessage;
+
+    /**
+     * Default constructor.
+     */
+    public SystemConfigurationValueDto() {
+        // Default constructor
+    }
+
+    /**
+     * Constructor to initialize the fields.
+     *
+     * @param value            the value of the system configuration.
+     * @param key              the key of the system configuration.
+     * @param category         the category reference of the system configuration.
+     * @param optional         whether the configuration is optional.
+     * @param pattern          the pattern of the system configuration.
+     * @param encrypt          whether the configuration is encrypted.
+     * @param dataProvider     the data provider for the system configuration.
+     * @param validationMessage the validation message for the system configuration.
+     */
+    public SystemConfigurationValueDto(
+        String value,
+        String key,
+        SystemConfigurationCategoryReferenceDto category,
+        Boolean optional,
+        String pattern,
+        Boolean encrypt,
+        SystemConfigurationValueDataProvider dataProvider,
+        String validationMessage) {
+        this.value = value;
+        this.key = key;
+        this.category = category;
+        this.optional = optional;
+        this.pattern = pattern;
+        this.encrypt = encrypt;
+        this.dataProvider = dataProvider;
+        this.validationMessage = validationMessage;
+    }
 
     public String getValue() {
         return value;

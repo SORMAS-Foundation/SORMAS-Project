@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.configuration.system;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -52,7 +53,6 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
         DROPDOWN,
         CHECKBOX_GRID
     }
-
     /**
      * Interface for listening to value change events.
      */
@@ -68,7 +68,6 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
          */
         void valueChange(ValueChangeEvent event);
     }
-
     /**
      * Event representing a change in value.
      */
@@ -85,6 +84,14 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
         }
     }
 
+    private static final String STYLE_NAME_DYNAMIC_INPUT = "system-configuration-dynamic-input";
+
+    private static final String STYLE_NAME_TOGGLE_PASSWORD = "toggle-password";
+
+    private static final String STYLE_NAME_WRAPPING_CHECKBOX_GROUP = "wrapping-checkbox-group";
+
+    private static final long serialVersionUID = 1L;
+
     private SystemConfigurationValueDto value;
 
     @Override
@@ -94,6 +101,8 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
 
     @Override
     public void doSetValue(final SystemConfigurationValueDto newFieldValue) {
+
+        Objects.requireNonNull(newFieldValue);
         this.value = newFieldValue;
     }
 
@@ -150,7 +159,7 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
     @Override
     protected Component initContent() {
 
-        addStyleName("system-configuration-dynamic-input");
+        addStyleName(STYLE_NAME_DYNAMIC_INPUT);
 
         final var mainLayout = new VerticalLayout();
 
@@ -199,7 +208,7 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
 
         final var layout = new HorizontalLayout();
         layout.setWidthFull();
-        layout.addStyleName("toggle-password");
+        layout.addStyleName(STYLE_NAME_TOGGLE_PASSWORD);
         final var passwordField = new PasswordField();
         passwordField.setValue(getValue().getValue());
         passwordField.setWidthFull();
@@ -268,7 +277,7 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
         cbg.select(getValue().getDataProvider().getMappedValues(getValue()).values().toArray(new String[] {}));
         cbg.addValueChangeListener(event -> fireValueChange(cbg));
         cbg.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-        cbg.addStyleName("wrapping-checkbox-group");
+        cbg.addStyleName(STYLE_NAME_WRAPPING_CHECKBOX_GROUP);
         cbg.setWidthFull();
         return cbg;
     }

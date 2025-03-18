@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.systemconfiguration;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
@@ -94,26 +95,29 @@ public class SystemConfigurationCategoryEjb
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
     @Override
     public SystemConfigurationCategoryDto save(final SystemConfigurationCategoryDto dto) {
+        LOGGER.debug("Entering save method with dto: {}", dto);
 
-        if (dto == null) {
+        if (null == dto) {
+            LOGGER.debug("DTO is null, returning null");
             return null;
         }
 
         validate(dto);
 
         final SystemConfigurationCategory existing = service.getByUuid(dto.getUuid());
-
         final SystemConfigurationCategory newValue = fillOrBuildEntity(dto, existing, true);
         service.ensurePersisted(newValue);
 
-        return toDto(newValue);
+        SystemConfigurationCategoryDto result = toDto(newValue);
+        LOGGER.debug("Exiting save method with result: {}", result);
+        return result;
     }
 
     /**
      * Count the number of system configuration categories matching the criteria.
      *
      * @param criteria
-     *            the criteria to match
+     *            the criteria to match; must not be null
      * @return the count of matching system configuration categories
      */
     @Lock(LockType.READ)
@@ -138,8 +142,8 @@ public class SystemConfigurationCategoryEjb
      * Get system configuration categories by their UUIDs.
      *
      * @param uuids
-     *            the list of UUIDs
-     * @return the list of matching system configuration category DTOs
+     *            the list of UUIDs; must not be null or empty
+     * @return the list of matching system configuration category DTOs; never null
      */
     @Lock(LockType.READ)
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
@@ -151,7 +155,7 @@ public class SystemConfigurationCategoryEjb
     /**
      * Get all UUIDs of system configuration categories.
      *
-     * @return the list of all UUIDs
+     * @return the list of all UUIDs; never null
      */
     @Lock(LockType.READ)
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
@@ -164,14 +168,14 @@ public class SystemConfigurationCategoryEjb
      * Get a list of system configuration category index DTOs matching the criteria.
      *
      * @param criteria
-     *            the criteria to match
+     *            the criteria to match; can be null
      * @param first
-     *            the first result to retrieve
+     *            the first result to retrieve; can be null
      * @param max
-     *            the maximum number of results to retrieve
+     *            the maximum number of results to retrieve; can be null
      * @param sortProperties
-     *            the properties to sort by
-     * @return the list of matching system configuration category index DTOs
+     *            the properties to sort by; must not be null
+     * @return the list of matching system configuration category index DTOs; never null
      */
     @Lock(LockType.READ)
     @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
@@ -229,7 +233,7 @@ public class SystemConfigurationCategoryEjb
      * Validate a system configuration category DTO.
      *
      * @param dto
-     *            the system configuration category DTO
+     *            the system configuration category DTO; must not be null
      * @throws ValidationRuntimeException
      *             if validation fails
      */
@@ -244,7 +248,7 @@ public class SystemConfigurationCategoryEjb
     /**
      * Get the default system configuration category DTO.
      *
-     * @return the default system configuration category DTO
+     * @return the default system configuration category DTO; never null
      */
     @Lock(LockType.READ)
     @PermitAll
@@ -256,7 +260,7 @@ public class SystemConfigurationCategoryEjb
     /**
      * Get the default system configuration category reference DTO.
      *
-     * @return the default system configuration category reference DTO
+     * @return the default system configuration category reference DTO; never null
      */
     @Lock(LockType.READ)
     @PermitAll
@@ -265,6 +269,13 @@ public class SystemConfigurationCategoryEjb
         return toRefDto(service.getDefaultCategory());
     }
 
+    /**
+     * Get a system configuration category DTO by its name.
+     *
+     * @param name
+     *            the name of the category; must not be null
+     * @return the system configuration category DTO; can be null if not found
+     */
     @Lock(LockType.READ)
     @PermitAll
     @Override
@@ -272,6 +283,13 @@ public class SystemConfigurationCategoryEjb
         return toDto(service.getCategoryByName(name));
     }
 
+    /**
+     * Get a system configuration category reference DTO by its name.
+     *
+     * @param name
+     *            the name of the category; must not be null
+     * @return the system configuration category reference DTO; can be null if not found
+     */
     @Lock(LockType.READ)
     @PermitAll
     @Override
@@ -283,12 +301,12 @@ public class SystemConfigurationCategoryEjb
      * Fill or build a system configuration category entity from a DTO.
      *
      * @param source
-     *            the source DTO
+     *            the source DTO; must not be null
      * @param target
-     *            the target entity
+     *            the target entity; can be null
      * @param checkChangeDate
      *            whether to check the change date
-     * @return the filled or built entity
+     * @return the filled or built entity; never null
      */
     @Override
     protected SystemConfigurationCategory fillOrBuildEntity(
@@ -296,7 +314,8 @@ public class SystemConfigurationCategoryEjb
         SystemConfigurationCategory target,
         final boolean checkChangeDate) {
 
-        target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationCategory::new, checkChangeDate);
+        Objects.requireNonNull(source, "Source DTO must not be null");
+
         target = DtoHelper.fillOrBuildEntity(source, target, SystemConfigurationCategory::new, checkChangeDate);
 
         target.setName(source.getName());
@@ -310,13 +329,13 @@ public class SystemConfigurationCategoryEjb
      * Convert a system configuration category entity to a DTO.
      *
      * @param source
-     *            the source entity
-     * @return the converted DTO
+     *            the source entity; can be null
+     * @return the converted DTO; can be null if source is null
      */
     @Override
     protected SystemConfigurationCategoryDto toDto(final SystemConfigurationCategory source) {
 
-        if (source == null) {
+        if (null == source) {
             return null;
         }
 
@@ -334,13 +353,13 @@ public class SystemConfigurationCategoryEjb
      * Convert a system configuration category entity to a reference DTO.
      *
      * @param source
-     *            the source entity
-     * @return the converted reference DTO
+     *            the source entity; can be null
+     * @return the converted reference DTO; can be null if source is null
      */
     @Override
     protected SystemConfigurationCategoryReferenceDto toRefDto(final SystemConfigurationCategory source) {
 
-        if (source == null) {
+        if (null == source) {
             return null;
         }
 
@@ -351,11 +370,11 @@ public class SystemConfigurationCategoryEjb
      * Pseudonymize a system configuration category DTO.
      *
      * @param source
-     *            the source entity
+     *            the source entity; must not be null
      * @param dto
-     *            the DTO to pseudonymize
+     *            the DTO to pseudonymize; must not be null
      * @param pseudonymizer
-     *            the pseudonymizer to use
+     *            the pseudonymizer to use; must not be null
      * @param inJurisdiction
      *            whether the pseudonymization is in jurisdiction
      */
@@ -372,13 +391,13 @@ public class SystemConfigurationCategoryEjb
      * Restore a pseudonymized system configuration category DTO.
      *
      * @param dto
-     *            the DTO to restore
+     *            the DTO to restore; must not be null
      * @param existingDto
-     *            the existing DTO
+     *            the existing DTO; can be null
      * @param entity
-     *            the entity
+     *            the entity; must not be null
      * @param pseudonymizer
-     *            the pseudonymizer to use
+     *            the pseudonymizer to use; must not be null
      */
     @Override
     protected void restorePseudonymizedDto(
@@ -393,12 +412,12 @@ public class SystemConfigurationCategoryEjb
      * Convert a system configuration category entity to an index DTO.
      *
      * @param entity
-     *            the entity to convert
-     * @return the converted index DTO
+     *            the entity to convert; can be null
+     * @return the converted index DTO; can be null if entity is null
      */
     private SystemConfigurationCategoryIndexDto toIndexDto(final SystemConfigurationCategory entity) {
 
-        if (entity == null) {
+        if (null == entity) {
             return null;
         }
 

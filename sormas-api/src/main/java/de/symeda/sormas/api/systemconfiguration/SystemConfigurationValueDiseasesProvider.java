@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
-
 import de.symeda.sormas.api.Disease;
 
 /**
@@ -67,9 +65,9 @@ public class SystemConfigurationValueDiseasesProvider implements SystemConfigura
      *            the DTO to apply the values to.
      */
     @Override
-    public void applyValues(@Nonnull final Map<String, String> values, @Nonnull final SystemConfigurationValueDto dto) {
+    public void applyValues(final Map<String, String> values, final SystemConfigurationValueDto dto) {
 
-        if (values.isEmpty()) {
+        if (null == values || values.isEmpty()) {
             return;
         }
         final String pipeSeparatedValues = values.keySet().stream().collect(Collectors.joining("|"));
@@ -85,9 +83,9 @@ public class SystemConfigurationValueDiseasesProvider implements SystemConfigura
      * @return a map of disease names with short string.
      */
     @Override
-    public Map<String, String> getMappedValues(@Nonnull final SystemConfigurationValueDto dto) {
+    public Map<String, String> getMappedValues(final SystemConfigurationValueDto dto) {
 
-        if (null == dto.getValue() || dto.getValue().isBlank()) {
+        if (null == dto || null == dto.getValue() || dto.getValue().isBlank()) {
             return Collections.emptyMap();
         }
 

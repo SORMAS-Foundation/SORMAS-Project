@@ -33,7 +33,7 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 	private static final String HTML_LAYOUT =
 		locs(SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME, SystemConfigurationValueDto.VALIDATION_MESSAGE_PROPERTY_NAME);
 
-	private SystemConfigurationValueDynamicInput dynamicInput = null;
+	private final SystemConfigurationValueDynamicInput dynamicInput;
 
 	/**
 	 * Constructor for creating a new SystemConfigurationValueEditForm.

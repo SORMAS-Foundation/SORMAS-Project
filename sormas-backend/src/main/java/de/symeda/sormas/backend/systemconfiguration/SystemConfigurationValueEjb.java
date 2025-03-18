@@ -69,7 +69,6 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  * Provides methods to manage system configuration settings.
  */
 @Singleton(name = "SystemConfigurationValueFacade")
-@PermitAll
 @RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 @Startup
 @TransactionManagement(TransactionManagementType.CONTAINER)

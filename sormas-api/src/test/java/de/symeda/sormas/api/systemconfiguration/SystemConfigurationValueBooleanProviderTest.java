@@ -17,15 +17,14 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueBooleanProvider;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 
 /**
  * Test class for {@link SystemConfigurationValueBooleanProvider}.
@@ -57,9 +56,8 @@ class SystemConfigurationValueBooleanProviderTest {
      */
     @Test
     void testGetOptions() {
-
         final Map<String, String> options = provider.getOptions();
-        assertThat(options, is(Map.of("v1", "true", "v2", "false")));
+        assertThat("Options should match the expected map", options, is(Map.of("v1", "true", "v2", "false")));
     }
 
     /**
@@ -67,13 +65,32 @@ class SystemConfigurationValueBooleanProviderTest {
      */
     @Test
     void testApplyValues() {
-
         final SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
         final Map<String, String> values = Map.of("v1", "true");
 
         provider.applyValues(values, dto);
 
-        assertThat(dto.getValue(), is("true"));
+        assertThat("DTO value should be 'true'", dto.getValue(), is("true"));
+    }
+
+    /**
+     * Tests the {@link SystemConfigurationValueBooleanProvider#applyValues(Map, SystemConfigurationValueDto)} method with null values.
+     */
+    @Test
+    void testApplyValuesWithNullValues() {
+        final SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+        provider.applyValues(null, dto);
+        assertThat("DTO value should be null when applying null values", dto.getValue(), is(nullValue()));
+    }
+
+    /**
+     * Tests the {@link SystemConfigurationValueBooleanProvider#applyValues(Map, SystemConfigurationValueDto)} method with empty values.
+     */
+    @Test
+    void testApplyValuesWithEmptyValues() {
+        final SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+        provider.applyValues(Collections.emptyMap(), dto);
+        assertThat("DTO value should be null when applying empty values", dto.getValue(), is(nullValue()));
     }
 
     /**
@@ -81,12 +98,20 @@ class SystemConfigurationValueBooleanProviderTest {
      */
     @Test
     void testGetMappedValues() {
-
         final SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
         dto.setValue("true");
 
         final Map<String, String> mappedValues = provider.getMappedValues(dto);
 
-        assertThat(mappedValues, is(Map.of("v1", "true")));
+        assertThat("Mapped values should match the expected map", mappedValues, is(Map.of("v1", "true")));
+    }
+
+    /**
+     * Tests the {@link SystemConfigurationValueBooleanProvider#getMappedValues(SystemConfigurationValueDto)} method with a null DTO.
+     */
+    @Test
+    void testGetMappedValuesWithNullDto() {
+        final Map<String, String> mappedValues = provider.getMappedValues(null);
+        assertThat("Mapped values should be empty when DTO is null", mappedValues, is(Collections.emptyMap()));
     }
 }

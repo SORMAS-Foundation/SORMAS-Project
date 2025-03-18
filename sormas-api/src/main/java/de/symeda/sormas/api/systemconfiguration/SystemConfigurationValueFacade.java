@@ -4,7 +4,7 @@
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * (at any later version.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -29,30 +29,44 @@ import de.symeda.sormas.api.BaseFacade;
  */
 @Remote
 public interface SystemConfigurationValueFacade
-	extends
-	BaseFacade<SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueCriteria>,
-	Serializable {
+    extends
+    BaseFacade<SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueCriteria>,
+    Serializable {
 
-	List<SystemConfigurationValueDto> getByUuids(List<String> uuids);
+    /**
+     * Retrieves system configuration values by their UUIDs.
+     *
+     * @param uuids the list of UUIDs
+     * @return the list of matching system configuration value DTOs
+     */
+    List<SystemConfigurationValueDto> getByUuids(List<String> uuids);
 
-	List<String> getAllUuids();
+    /**
+     * Retrieves all UUIDs of system configuration values.
+     *
+     * @return the list of all UUIDs
+     */
+    List<String> getAllUuids();
 
-	/**
-	 * Retrieves a configuration value associated with the given key.
-	 * The implementors should assure that propper caching is used.
-	 *
-	 * @param key
-	 *            The key of the configuration value to retrieve.
-	 * @return An {@link Optional} containing the value if found, or an empty {@link Optional} if not found.
-	 */
-	public String getValue(String key);
+    /**
+     * Retrieves a configuration value associated with the given key.
+     * The implementors should assure that proper caching is used.
+     *
+     * @param key The key of the configuration value to retrieve.
+     * @return the value of the configuration.
+     */
+    String getValue(String key);
 
-	
-	public boolean exists(String key);
+    /**
+     * Checks if a configuration value exists for the given key.
+     *
+     * @param key The key to check.
+     * @return true if the configuration value exists, false otherwise.
+     */
+    boolean exists(String key);
 
-	/**
-	 * Clears the caches and reloads the system configuration values from the database.
-	 * s
-	 */
-	void loadData();
+    /**
+     * Clears the caches and reloads the system configuration values from the database.
+     */
+    void loadData();
 }

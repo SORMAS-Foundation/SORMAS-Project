@@ -40,7 +40,7 @@ public class SystemConfigurationCategory extends AbstractDomainObject {
         return caption;
     }
 
-    public void setCaption(final String caption) {
+    public void setCaption(String caption) {
         this.caption = caption;
     }
 
@@ -49,7 +49,7 @@ public class SystemConfigurationCategory extends AbstractDomainObject {
         return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -58,12 +58,12 @@ public class SystemConfigurationCategory extends AbstractDomainObject {
         return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         return super.equals(o);
     }
 

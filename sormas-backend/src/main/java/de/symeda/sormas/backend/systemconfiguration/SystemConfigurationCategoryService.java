@@ -50,7 +50,7 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
         final SystemConfigurationCategory defaultCategory = getCategoryByName(DEFAULT_CATEGORY_NAME);
         if (null == defaultCategory) {
             logger.error("No default category found with name: {}", DEFAULT_CATEGORY_NAME);
-            throw new IllegalStateException("No default category found");
+            throw new IllegalStateException("No default category found.");
         }
 
         logger.debug("Default category retrieved: {}", defaultCategory);
@@ -70,7 +70,7 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
             getByPredicate((cb, root, cq) -> cb.equal(root.get(SystemConfigurationCategory.NAME_FIELD_NAME), name)).stream().findFirst().orElse(null);
 
         if (null == category) {
-            logger.debug("No category found with name: {}", name);
+            logger.warn("No category found with name: {}", name);
             return null;
         }
 
@@ -89,7 +89,10 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
      * @return the user filter predicate
      */
     @Override
-    public Predicate createUserFilter(final CriteriaBuilder cb, @SuppressWarnings("rawtypes") final CriteriaQuery cq, final From<?, SystemConfigurationCategory> from) {
+    public Predicate createUserFilter(
+        final CriteriaBuilder cb,
+        @SuppressWarnings("rawtypes") final CriteriaQuery cq,
+        final From<?, SystemConfigurationCategory> from) {
         return null;
     }
 
@@ -104,7 +107,10 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
      *            the root entity
      * @return the criteria filter predicate
      */
-    public Predicate buildCriteriaFilter(final SystemConfigurationCategoryCriteria criteria, final CriteriaBuilder cb, final Root<SystemConfigurationCategory> from) {
+    public Predicate buildCriteriaFilter(
+        final SystemConfigurationCategoryCriteria criteria,
+        final CriteriaBuilder cb,
+        final Root<SystemConfigurationCategory> from) {
 
         Predicate filter = cb.conjunction();
         if (criteria.getFreeTextFilter() != null) {
@@ -114,9 +120,11 @@ public class SystemConfigurationCategoryService extends AdoServiceWithUserFilter
                     continue;
                 }
 
+                final String sanitizedTextFilter = textFilter.replaceAll("[^a-zA-Z0-9-_]", "");
+
                 final Predicate likeFilters = cb.or(
-                    CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SystemConfigurationCategory.NAME_FIELD_NAME), textFilter),
-                    CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SystemConfigurationCategory.DESCRIPTION_FIELD_NAME), textFilter));
+                    CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SystemConfigurationCategory.NAME_FIELD_NAME), sanitizedTextFilter),
+                    CriteriaBuilderHelper.unaccentedIlike(cb, from.get(SystemConfigurationCategory.DESCRIPTION_FIELD_NAME), sanitizedTextFilter));
                 filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
             }
         }

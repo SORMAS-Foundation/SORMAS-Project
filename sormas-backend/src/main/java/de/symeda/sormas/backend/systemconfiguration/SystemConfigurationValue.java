@@ -53,7 +53,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return value;
     }
 
-    public void setValue(final String value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -62,7 +62,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return key;
     }
 
-    public void setKey(final String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
@@ -71,7 +71,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return category;
     }
 
-    public void setCategory(final SystemConfigurationCategory category) {
+    public void setCategory(SystemConfigurationCategory category) {
         this.category = category;
     }
 
@@ -90,7 +90,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return pattern;
     }
 
-    public void setPattern(final String pattern) {
+    public void setPattern(String pattern) {
         this.pattern = pattern;
     }
 
@@ -100,7 +100,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return encrypt;
     }
 
-    public void setEncrypt(final Boolean encrypt) {
+    public void setEncrypt(Boolean encrypt) {
         this.encrypt = encrypt;
     }
 
@@ -109,7 +109,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return dataProvider;
     }
 
-    public void setDataProvider(final String dataProvider) {
+    public void setDataProvider(String dataProvider) {
         this.dataProvider = dataProvider;
     }
 
@@ -118,12 +118,12 @@ public class SystemConfigurationValue extends AbstractDomainObject {
         return validationMessage;
     }
 
-    public void setValidationMessage(final String validationMessage) {
+    public void setValidationMessage(String validationMessage) {
         this.validationMessage = validationMessage;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         return super.equals(o);
     }
 

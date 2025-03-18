@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 
 /**
  * Data Transfer Object for System Configuration Category.
+ * This class represents a category in the system configuration.
  */
 public class SystemConfigurationCategoryDto extends EntityDto {
 
@@ -52,6 +53,26 @@ public class SystemConfigurationCategoryDto extends EntityDto {
 
     @Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
     private String caption;
+
+    /**
+     * Default constructor.
+     */
+    public SystemConfigurationCategoryDto() {
+        // Default constructor
+    }
+
+    /**
+     * Constructor to initialize the fields.
+     *
+     * @param name        the name of the system configuration category.
+     * @param description the description of the system configuration category.
+     * @param caption     the caption of the system configuration category.
+     */
+    public SystemConfigurationCategoryDto(String name, String description, String caption) {
+        this.name = name;
+        this.description = description;
+        this.caption = caption;
+    }
 
     /**
      * Gets the name of the system configuration category.

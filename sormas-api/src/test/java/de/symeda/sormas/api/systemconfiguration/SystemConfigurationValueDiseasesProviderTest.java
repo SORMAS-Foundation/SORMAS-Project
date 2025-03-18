@@ -4,7 +4,7 @@
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * (at your option) any later version).
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -27,8 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDiseasesProvider;
-import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 
 /**
  * Unit tests for {@link SystemConfigurationValueDiseasesProvider}.
@@ -37,42 +35,42 @@ class SystemConfigurationValueDiseasesProviderTest {
 
     private SystemConfigurationValueDiseasesProvider provider;
 
-    /**
-     * Sets up the test environment before each test.
-     */
     @BeforeEach
     void setUp() {
         provider = new SystemConfigurationValueDiseasesProvider();
     }
 
     /**
-     * Tests the {@link SystemConfigurationValueDiseasesProvider#getKeys()} method.
+     * Test to verify that the keys returned by the provider match the expected keys.
      */
     @Test
     void testGetKeys() {
+        Set<String> expectedKeys = Arrays.stream(Disease.values()).map(Disease::getName).collect(Collectors.toSet());
 
-        final Set<String> keys = provider.getKeys();
-        assertThat(keys, is(Set.of(Disease.values()).stream().map(Disease::getName).collect(Collectors.toSet())));
+        Set<String> keys = provider.getKeys();
+
+        assertThat(keys, is(expectedKeys));
     }
 
     /**
-     * Tests the {@link SystemConfigurationValueDiseasesProvider#getOptions()} method.
+     * Test to verify that the options returned by the provider match the expected options.
      */
     @Test
     void testGetOptions() {
+        Map<String, String> expectedOptions = Arrays.stream(Disease.values()).collect(Collectors.toMap(Disease::getName, Disease::toShortString));
 
-        final Map<String, String> options = provider.getOptions();
-        assertThat(options, is(Arrays.stream(Disease.values()).collect(Collectors.toMap(Disease::getName, Disease::toShortString))));
+        Map<String, String> options = provider.getOptions();
+
+        assertThat(options, is(expectedOptions));
     }
 
     /**
-     * Tests the {@link SystemConfigurationValueDiseasesProvider#applyValues(Map, SystemConfigurationValueDto)} method.
+     * Test to verify that the provider correctly applies values to the DTO.
      */
     @Test
     void testApplyValues() {
-
-        final SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
-        final Map<String, String> values = Map.of(Disease.TUBERCULOSIS.getName(), Disease.TUBERCULOSIS.toShortString());
+        SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+        Map<String, String> values = Map.of(Disease.TUBERCULOSIS.getName(), Disease.TUBERCULOSIS.toShortString());
 
         provider.applyValues(values, dto);
 
@@ -80,16 +78,68 @@ class SystemConfigurationValueDiseasesProviderTest {
     }
 
     /**
-     * Tests the {@link SystemConfigurationValueDiseasesProvider#getMappedValues(SystemConfigurationValueDto)} method.
+     * Test to verify that the mapped values returned by the provider match the expected mapped values.
      */
     @Test
     void testGetMappedValues() {
-
-        final SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+        SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
         dto.setValue(Disease.TUBERCULOSIS.getName());
 
-        final Map<String, String> mappedValues = provider.getMappedValues(dto);
+        Map<String, String> expectedMappedValues = Map.of(Disease.TUBERCULOSIS.getName(), Disease.TUBERCULOSIS.toShortString());
 
-        assertThat(mappedValues, is(Map.of(Disease.TUBERCULOSIS.getName(), Disease.TUBERCULOSIS.toShortString())));
+        Map<String, String> mappedValues = provider.getMappedValues(dto);
+
+        assertThat(mappedValues, is(expectedMappedValues));
     }
+
+    /**
+     * Test to verify that the provider correctly handles empty values when applying them to the DTO.
+     */
+    @Test
+    void testApplyValuesWithEmptyValues() {
+        SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+        Map<String, String> values = Map.of();
+
+        provider.applyValues(values, dto);
+
+        assertThat(dto.getValue(), is((String) null));
+    }
+
+    /**
+     * Test to verify that the provider correctly handles an empty DTO when getting mapped values.
+     */
+    @Test
+    void testGetMappedValuesWithEmptyDto() {
+        SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+
+        Map<String, String> mappedValues = provider.getMappedValues(dto);
+
+        assertThat(mappedValues.isEmpty(), is(true));
+    }
+
+    /**
+     * Test to verify that the provider correctly handles null values when applying them to the DTO.
+     */
+    @Test
+    void testApplyValuesWithNullValues() {
+        SystemConfigurationValueDto dto = new SystemConfigurationValueDto();
+        Map<String, String> values = null;
+
+        provider.applyValues(values, dto);
+
+        assertThat(dto.getValue(), is((String) null));
+    }
+
+    /**
+     * Test to verify that the provider correctly handles a null DTO when getting mapped values.
+     */
+    @Test
+    void testGetMappedValuesWithNullDto() {
+        SystemConfigurationValueDto dto = null;
+
+        Map<String, String> mappedValues = provider.getMappedValues(dto);
+
+        assertThat(mappedValues.isEmpty(), is(true));
+    }
+
 }

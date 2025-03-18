@@ -17,6 +17,9 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import de.symeda.sormas.api.EntityDto;
 
+/**
+ * Data Transfer Object for system configuration values.
+ */
 public class SystemConfigurationValueIndexDto extends EntityDto {
 
     public static final String I18N_PREFIX = "SystemConfigurationValue";
@@ -37,56 +40,116 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     private String categoryCaption;
     private String categoryDescription;
 
+    /**
+     * Gets the key of the configuration.
+     * 
+     * @return the key
+     */
     public String getKey() {
         return key;
     }
 
-    public void setKey(final String key) {
+    /**
+     * Sets the key of the configuration.
+     * 
+     * @param key the key to set
+     */
+    public void setKey(String key) {
         this.key = key;
     }
 
+    /**
+     * Gets the value of the configuration.
+     * 
+     * @return the value
+     */
     public String getValue() {
         return value;
     }
 
-    public void setValue(final String value) {
+    /**
+     * Sets the value of the configuration.
+     * 
+     * @param value the value to set
+     */
+    public void setValue(String value) {
         this.value = value;
     }
 
+    /**
+     * Checks if the configuration value is encrypted.
+     * 
+     * @return true if encrypted, false otherwise
+     */
     public boolean isEncrypted() {
         return encrypted;
     }
 
-    public void setEncrypted(final boolean encrypted) {
+    /**
+     * Sets the encryption status of the configuration value.
+     * 
+     * @param encrypted the encryption status to set
+     */
+    public void setEncrypted(boolean encrypted) {
         this.encrypted = encrypted;
     }
 
+    /**
+     * Gets the category name of the configuration.
+     * 
+     * @return the category name
+     */
     public String getCategoryName() {
         return categoryName;
     }
 
-    public void setCategoryName(final String categoryName) {
+    /**
+     * Sets the category name of the configuration.
+     * 
+     * @param categoryName the category name to set
+     */
+    public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
 
+    /**
+     * Gets the category caption of the configuration.
+     * 
+     * @return the category caption
+     */
     public String getCategoryCaption() {
         return categoryCaption;
     }
 
-    public void setCategoryCaption(final String categoryCaption) {
+    /**
+     * Sets the category caption of the configuration.
+     * 
+     * @param categoryCaption the category caption to set
+     */
+    public void setCategoryCaption(String categoryCaption) {
         this.categoryCaption = categoryCaption;
     }
 
+    /**
+     * Gets the category description of the configuration.
+     * 
+     * @return the category description
+     */
     public String getCategoryDescription() {
         return categoryDescription;
     }
 
-    public void setCategoryDescription(final String categoryDescription) {
+    /**
+     * Sets the category description of the configuration.
+     * 
+     * @param categoryDescription the category description to set
+     */
+    public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         return super.equals(o);
     }
 

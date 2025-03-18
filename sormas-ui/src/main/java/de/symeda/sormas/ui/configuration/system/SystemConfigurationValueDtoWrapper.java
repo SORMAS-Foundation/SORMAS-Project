@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import java.util.Objects;
+
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 
 /**
@@ -24,7 +26,7 @@ public class SystemConfigurationValueDtoWrapper {
 
     public static final String WRAPPED_OBJECT_PROPERTY_NAME = "wrappedObject";
 
-    private SystemConfigurationValueDto wrappedObject;
+    private final SystemConfigurationValueDto wrappedObject;
 
     /**
      * Constructor to initialize the wrapper with a SystemConfigurationValueDto object.
@@ -33,6 +35,8 @@ public class SystemConfigurationValueDtoWrapper {
      *            the SystemConfigurationValueDto object to be wrapped
      */
     public SystemConfigurationValueDtoWrapper(final SystemConfigurationValueDto wrappedObject) {
+
+        Objects.requireNonNull(wrappedObject, "wrappedObject must not be null");
         this.wrappedObject = wrappedObject;
     }
 
@@ -45,13 +49,4 @@ public class SystemConfigurationValueDtoWrapper {
         return wrappedObject;
     }
 
-    /**
-     * Sets the wrapped SystemConfigurationValueDto object.
-     *
-     * @param wrappedObject
-     *            the SystemConfigurationValueDto object to be wrapped
-     */
-    public void setWrappedObject(final SystemConfigurationValueDto wrappedObject) {
-        this.wrappedObject = wrappedObject;
-    }
 }

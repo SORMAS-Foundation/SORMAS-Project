@@ -18,12 +18,14 @@ package de.symeda.sormas.api.systemconfiguration;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-
 /**
  * Provides boolean values for system configuration.
  */
 public class SystemConfigurationValueBooleanProvider implements SystemConfigurationValueDataProvider {
+
+    private static final String KEY_V1 = "v1";
+    private static final String OPTION_TRUE = "true";
+    private static final String OPTION_FALSE = "false";
 
     /**
      * Gets the keys for the boolean values.
@@ -32,7 +34,7 @@ public class SystemConfigurationValueBooleanProvider implements SystemConfigurat
      */
     @Override
     public Set<String> getKeys() {
-        return Set.of("v1");
+        return Set.of(KEY_V1);
     }
 
     /**
@@ -42,7 +44,7 @@ public class SystemConfigurationValueBooleanProvider implements SystemConfigurat
      */
     @Override
     public Map<String, String> getOptions() {
-        return Map.of("v1", "true", "v2", "false");
+        return Map.of(KEY_V1, OPTION_TRUE, "v2", OPTION_FALSE);
     }
 
     /**
@@ -54,9 +56,11 @@ public class SystemConfigurationValueBooleanProvider implements SystemConfigurat
      *            the DTO to apply the values to.
      */
     @Override
-    public void applyValues(@Nonnull final Map<String, String> values, @Nonnull final SystemConfigurationValueDto dto) {
-
-        if (values.isEmpty()) {
+    public void applyValues(final Map<String, String> values, final SystemConfigurationValueDto dto) {
+        if (null == dto) {
+            return;
+        }
+        if (null == values || values.isEmpty()) {
             return;
         }
         values.values().stream().findFirst().ifPresent(dto::setValue);
@@ -70,8 +74,11 @@ public class SystemConfigurationValueBooleanProvider implements SystemConfigurat
      * @return a map of the values.
      */
     @Override
-    public Map<String, String> getMappedValues(@Nonnull final SystemConfigurationValueDto dto) {
-        return Map.of("v1", dto.getValue());
+    public Map<String, String> getMappedValues(final SystemConfigurationValueDto dto) {
+        if (null == dto) {
+            return Map.of();
+        }
+        return Map.of(KEY_V1, dto.getValue());
     }
 
 }

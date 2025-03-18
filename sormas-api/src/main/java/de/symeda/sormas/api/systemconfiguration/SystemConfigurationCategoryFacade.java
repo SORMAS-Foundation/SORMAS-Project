@@ -21,6 +21,10 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.BaseFacade;
 
+/**
+ * Facade interface for managing System Configuration Categories.
+ * Provides methods to perform CRUD operations and retrieve specific categories.
+ */
 @Remote
 public interface SystemConfigurationCategoryFacade
     extends
@@ -29,8 +33,7 @@ public interface SystemConfigurationCategoryFacade
     /**
      * Get system configuration categories by their UUIDs.
      *
-     * @param uuids
-     *            the list of UUIDs
+     * @param uuids the list of UUIDs
      * @return the list of matching system configuration category DTOs
      */
     List<SystemConfigurationCategoryDto> getByUuids(List<String> uuids);
@@ -50,22 +53,18 @@ public interface SystemConfigurationCategoryFacade
     SystemConfigurationCategoryReferenceDto getDefaultCategoryReferenceDto();
 
     /**
-     * Get a category dto by category name.
+     * Get a category DTO by category name.
      *
-     * @param name
-     *            category name
-     *
-     * @return the default system configuration category reference DTO
+     * @param name the category name
+     * @return the system configuration category DTO
      */
     SystemConfigurationCategoryDto getCategoryDtoByName(String name);
 
     /**
-     * Get a category reference dto by category name.
+     * Get a category reference DTO by category name.
      *
-     * @param name
-     *            category name
-     *
-     * @return the default system configuration category reference DTO
+     * @param name the category name
+     * @return the system configuration category reference DTO
      */
     SystemConfigurationCategoryReferenceDto getCategoryReferenceDtoByName(String name);
 

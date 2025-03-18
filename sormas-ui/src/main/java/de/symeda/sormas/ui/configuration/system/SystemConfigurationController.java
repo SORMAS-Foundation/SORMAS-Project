@@ -24,11 +24,20 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controller for handling system configuration value operations.
  */
 public class SystemConfigurationController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SystemConfigurationController.class);
+
+    private static final String MESSAGE_SYSTEM_CONFIGURATION_VALUE_SAVED = I18nProperties.getString(Strings.messageSystemConfigurationValueSaved);
+    private static final String ERROR_SAVING_SYSTEM_CONFIGURATION_VALUE = I18nProperties.getString(Strings.errorProblemOccurred);
+    private static final String ERROR_EDITING_SYSTEM_CONFIGURATION_VALUE = I18nProperties.getString(Strings.errorProblemOccurred);
+    private static final String EDIT = I18nProperties.getString(Strings.edit);
 
     /**
      * Opens a modal window to edit the system configuration value identified by the given UUID.
@@ -37,18 +46,27 @@ public class SystemConfigurationController {
      *            the UUID of the system configuration value to be edited
      */
     public void editSystemConfigurationValue(String uuid) {
+        try {
+            SystemConfigurationValueDto systemConfigurationValue = FacadeProvider.getSystemConfigurationValueFacade().getByUuid(uuid);
+            SystemConfigurationValueEditForm editForm = new SystemConfigurationValueEditForm(systemConfigurationValue);
 
-        SystemConfigurationValueDto systemConfigurationValue = FacadeProvider.getSystemConfigurationValueFacade().getByUuid(uuid);
-        SystemConfigurationValueEditForm editForm = new SystemConfigurationValueEditForm(systemConfigurationValue);
+            final CommitDiscardWrapperComponent<SystemConfigurationValueEditForm> cdw =
+                new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
+            cdw.addCommitListener(() -> {
+                try {
+                    FacadeProvider.getSystemConfigurationValueFacade().save(editForm.getValue());
+                    Notification.show(MESSAGE_SYSTEM_CONFIGURATION_VALUE_SAVED, Notification.Type.ASSISTIVE_NOTIFICATION);
+                    SormasUI.get().getNavigator().navigateTo(SystemConfigurationView.VIEW_NAME);
+                } catch (Exception e) {
+                    logger.error("Error saving system configuration value", e);
+                    Notification.show(ERROR_SAVING_SYSTEM_CONFIGURATION_VALUE, Notification.Type.ERROR_MESSAGE);
+                }
+            });
 
-        final CommitDiscardWrapperComponent<SystemConfigurationValueEditForm> cdw =
-            new CommitDiscardWrapperComponent<>(editForm, editForm.getFieldGroup());
-        cdw.addCommitListener(() -> {
-            FacadeProvider.getSystemConfigurationValueFacade().save(editForm.getValue());
-            Notification.show(I18nProperties.getString(Strings.messageSystemConfigurationValueSaved), Notification.Type.ASSISTIVE_NOTIFICATION);
-            SormasUI.get().getNavigator().navigateTo(SystemConfigurationView.VIEW_NAME);
-        });
-
-        VaadinUiUtil.showModalPopupWindow(cdw, I18nProperties.getString(Strings.edit) + " " + systemConfigurationValue.getKey());
+            VaadinUiUtil.showModalPopupWindow(cdw, EDIT + " " + systemConfigurationValue.getKey());
+        } catch (Exception e) {
+            logger.error("Error editing system configuration value", e);
+            Notification.show(ERROR_EDITING_SYSTEM_CONFIGURATION_VALUE, Notification.Type.ERROR_MESSAGE);
+        }
     }
 }
