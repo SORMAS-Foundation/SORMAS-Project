@@ -20,8 +20,7 @@
 ## FAQ (Frequently Asked Questions)
 
 ### Where can I find the documentation?
-We provide an extensive documentation of SORMAS for users, system administrators, Developers and DevOps in our Wiki:
-https://wiki.sorm.as
+We provide an extensive documentation of SORMAS for users, system administrators, Developers and DevOps in our <a href="https://wiki.sorm.as" target="_blank">Wiki</a>.
 
 ### How Does it Work?
 You can give SORMAS a try on our demo server at <https://demo.sormas.org>!
