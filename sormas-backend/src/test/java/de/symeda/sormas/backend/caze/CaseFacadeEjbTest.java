@@ -531,6 +531,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// Follow-up status and duration should be set to no follow-up and null
 		// respectively because
 		// Measles does not require a follow-up
+		// As per latest commit 199db4db282aee51ffed6571fdab208df0569626 Measles required followup
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(21), UtilDate.toLocalDate(contact.getFollowUpUntil()));
+
+		caze.setDisease(Disease.DENGUE);
+		getCaseFacade().save(caze);
+
+		// Dengue does not require a follow-up
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertNull(contact.getFollowUpUntil());
