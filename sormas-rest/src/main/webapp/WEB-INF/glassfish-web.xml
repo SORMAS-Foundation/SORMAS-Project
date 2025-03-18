@@ -51,6 +51,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>DISEASE_MANAGEMENT</role-name>
+        <group-name>DISEASE_MANAGEMENT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CASE_CHANGE_EPID_NUMBER</role-name>
         <group-name>CASE_CHANGE_EPID_NUMBER</group-name>
     </security-role-mapping>
