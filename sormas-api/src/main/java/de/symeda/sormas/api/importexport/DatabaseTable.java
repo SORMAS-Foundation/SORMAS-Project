@@ -63,6 +63,9 @@ public enum DatabaseTable {
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_participants"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
 
+	ENVIRONMENTS(DatabaseTableType.SORMAS, "environments", dependingOnFeature(FeatureType.ENVIRONMENT_MANAGEMENT)),
+	EVENT_ENVIRONMENTS(DatabaseTableType.SORMAS, ENVIRONMENTS, "events_environments"),
+
 	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, "travel_entries", dependingOnFeature(FeatureType.TRAVEL_ENTRIES)),
 
 	IMMUNIZATIONS(DatabaseTableType.SORMAS, "immunizations", dependingOnFeature(FeatureType.IMMUNIZATION_MANAGEMENT)),

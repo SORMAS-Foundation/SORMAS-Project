@@ -255,6 +255,10 @@ public class Environment extends CoreAdo {
 	}
 
 	public void setEvents(List<Event> events) {
-		this.events = events;
+		if (events != null) {
+			this.events = events;
+		} else {
+			this.events = new ArrayList<>();
+		}
 	}
 }

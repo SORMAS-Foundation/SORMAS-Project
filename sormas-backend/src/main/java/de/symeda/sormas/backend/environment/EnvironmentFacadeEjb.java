@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -364,8 +365,12 @@ public class EnvironmentFacadeEjb
 		target.setVectorType(EnvironmentMedia.VECTORS.equals(source.getEnvironmentMedia()) ? source.getVectorType() : null);
 
 		if (source.getEventReferenceDtos() != null) {
-			target.getEvents()
-				.addAll(source.getEventReferenceDtos().stream().map(e -> eventService.getByReferenceDto(e)).collect(Collectors.toList()));
+			target.setEvents(
+				source.getEventReferenceDtos()
+					.stream()
+					.filter(Objects::nonNull)
+					.map(e -> eventService.getByReferenceDto(e))
+					.collect(Collectors.toList()));
 		}
 
 		target.setDeleted(source.isDeleted());
@@ -399,7 +404,10 @@ public class EnvironmentFacadeEjb
 		target.setWaterType(source.getWaterType());
 		target.setWaterUse(source.getWaterUse());
 		target.setVectorType(source.getVectorType());
-		source.getEvents().stream().map(EventFacadeEjb::toEventDto);
+		if (source.getEvents() != null) {
+			target.setEventReferenceDtos(
+				source.getEvents().stream().filter(Objects::nonNull).map(EventFacadeEjb::toReferenceDto).collect(Collectors.toList()));
+		}
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
@@ -516,11 +524,15 @@ public class EnvironmentFacadeEjb
 
 	@Override
 	@RightsAllowed(UserRight._ENVIRONMENT_LINK)
-	public void unlinkEnvironment(EnvironmentIndexDto environmentReferenceDto, String eventUuid) {
-		Event event = eventService.getByUuid(eventUuid);
-		Environment environment = service.getByUuid(environmentReferenceDto.getUuid());
-		event.unlinkEnvironment(environment);
-		service.ensurePersisted(environment);
+	public void unlinkEnvironment(EnvironmentIndexDto environmentIndexDto, String eventUuid) {
+		if (environmentIndexDto != null && eventUuid != null) {
+			Event event = eventService.getByUuid(eventUuid);
+			Environment environment = service.getByUuid(environmentIndexDto.getUuid());
+			event.unlinkEnvironment(environment);
+			service.ensurePersisted(environment);
+		} else {
+			throw new IllegalArgumentException("Invalid environment UUID : " + environmentIndexDto.getUuid() + " and event UUID : " + eventUuid);
+		}
 	}
 
 	@Override

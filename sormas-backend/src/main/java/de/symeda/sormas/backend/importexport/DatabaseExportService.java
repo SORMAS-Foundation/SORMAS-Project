@@ -148,6 +148,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, Event.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS_EVENTGROUPS, Event.EVENTS_EVENT_GROUPS_TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTGROUPS, EventGroup.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.EVENT_ENVIRONMENTS, EventGroup.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTPARTICIPANTS, EventParticipant.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.ACTIONS, Action.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TRAVEL_ENTRIES, TravelEntry.TABLE_NAME);
