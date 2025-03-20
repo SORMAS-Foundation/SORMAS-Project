@@ -15,14 +15,21 @@
 
 package de.symeda.sormas.ui.environment;
 
+import java.util.List;
+
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
+import de.symeda.sormas.api.environment.EnvironmentCriteria;
 import de.symeda.sormas.api.environment.EnvironmentDto;
+import de.symeda.sormas.api.environment.EnvironmentIndexDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -34,6 +41,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.events.EventDataView;
 import de.symeda.sormas.ui.utils.ArchiveHandlers;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -53,6 +61,72 @@ public class EnvironmentController {
 			VaadinUiUtil.showModalPopupWindow(environmentCreateComponent, I18nProperties.getString(Strings.headingCreateNewEnvironment));
 		}
 
+	}
+
+	public void create(EventDto eventDto) {
+		CommitDiscardWrapperComponent<EnvironmentCreateForm> environmentCreateComponent = getEnvironmentCreateComponent(eventDto);
+		if (environmentCreateComponent != null) {
+			VaadinUiUtil.showModalPopupWindow(environmentCreateComponent, I18nProperties.getString(Strings.headingCreateNewEnvironment));
+		}
+	}
+
+	public void selectOrCreateEnvironment(EventDto eventDto) {
+		EnvironmentSelectionField selectionField = new EnvironmentSelectionField();
+		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EnvironmentSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
+		component.addCommitListener(() -> {
+			EnvironmentIndexDto selectedIndexEnvironment = selectionField.getValue();
+			if (selectedIndexEnvironment != null) {
+				EnvironmentCriteria criteria = new EnvironmentCriteria();
+				criteria.setEvent(eventDto.toReference());
+				List<EnvironmentIndexDto> eventEnvironments = FacadeProvider.getEnvironmentFacade().getEnvironmentsByEvent(criteria);
+				if (!eventEnvironments.contains(selectedIndexEnvironment)) {
+					EnvironmentDto selectedEnvironment =
+						FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(selectedIndexEnvironment.getUuid());
+					selectedEnvironment.addEventReference(eventDto.toReference());
+					FacadeProvider.getEnvironmentFacade().save(selectedEnvironment);
+					if (eventDto != null) {
+						String page = EventDataView.VIEW_NAME + "/" + eventDto.getUuid();
+						pageNavigate(false, page);
+					} else {
+						navigateToData(EventDataView.VIEW_NAME);
+					}
+					Notification.show(I18nProperties.getString(Strings.messageEnvironmentLinkedToEvent), Notification.Type.TRAY_NOTIFICATION);
+				} else {
+					Notification notification = new Notification(
+						I18nProperties.getString(Strings.messageEnvironmentAlreadyLinkedToEvent),
+						"",
+						Notification.Type.HUMANIZED_MESSAGE);
+					notification.setDelayMsec(10000);
+					notification.show(Page.getCurrent());
+				}
+
+			} else {
+				create(eventDto);
+			}
+		});
+
+		selectionField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEnvironment));
+	}
+
+	public void navigateToData(String eventUuid) {
+		navigateToData(eventUuid, false);
+	}
+
+	public void navigateToData(String eventUuid, boolean openTab) {
+
+		String navigationState = EnvironmentDataView.VIEW_NAME + "/" + eventUuid;
+		pageNavigate(openTab, navigationState);
+	}
+
+	private void pageNavigate(boolean openTab, String navigationState) {
+		if (openTab) {
+			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(navigationState);
+		}
 	}
 
 	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent() {
@@ -78,6 +152,32 @@ public class EnvironmentController {
 			return editView;
 		}
 
+		return null;
+
+	}
+
+	public CommitDiscardWrapperComponent<EnvironmentCreateForm> getEnvironmentCreateComponent(EventDto eventDto) {
+		UserProvider curentUser = UiUtil.getCurrentUserProvider();
+
+		if (curentUser != null) {
+			EnvironmentCreateForm createForm;
+			createForm = new EnvironmentCreateForm();
+			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
+			environment.addEventReference(eventDto.toReference());
+			createForm.setValue(environment);
+			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
+				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
+			editView.addCommitListener(() -> {
+				if (!createForm.getFieldGroup().isModified()) {
+					EnvironmentDto environmentDto = createForm.getValue();
+					environmentDto.addEventReference(eventDto.toReference());
+					FacadeProvider.getEnvironmentFacade().save(environmentDto);
+					Notification.show(I18nProperties.getString(Strings.messageEnvironmentCreated), Notification.Type.WARNING_MESSAGE);
+					navigateToEnvironment(environmentDto.getUuid());
+				}
+			});
+			return editView;
+		}
 		return null;
 
 	}
@@ -210,5 +310,10 @@ public class EnvironmentController {
 
 	private EnvironmentDto findEnvironment(String uuid) {
 		return FacadeProvider.getEnvironmentFacade().getEnvironmentByUuid(uuid);
+	}
+
+	public void unlinkEnvironment(EnvironmentIndexDto environmentIndex, String eventUuid) {
+		FacadeProvider.getEnvironmentFacade().unlinkEnvironment(environmentIndex, eventUuid);
+		Notification.show(I18nProperties.getString(Strings.messageEventUnlinkedFromEnvironment), Notification.Type.TRAY_NOTIFICATION);
 	}
 }

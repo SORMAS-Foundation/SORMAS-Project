@@ -190,6 +190,8 @@ public interface Strings {
 	String confirmationSinceExternalMessages = "confirmationSinceExternalMessages";
 	String confirmationUnclearExternalMessage = "confirmationUnclearExternalMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
+	String confirmationUnlinkEnvironmentFromEvent = "confirmationUnlinkEnvironmentFromEvent";
+	String confirmationUnlinkEventFromEnvironment = "confirmationUnlinkEventFromEnvironment";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmationVaccinationStatusUpdate = "confirmationVaccinationStatusUpdate";
 	String confirmExternalMessageCorrectionThrough = "confirmExternalMessageCorrectionThrough";
@@ -777,6 +779,7 @@ public interface Strings {
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
+	String headingPickOrCreateEnvironment = "headingPickOrCreateEnvironment";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreateEventGroup = "headingPickOrCreateEventGroup";
 	String headingPickOrCreateImmunization = "headingPickOrCreateImmunization";
@@ -881,6 +884,8 @@ public interface Strings {
 	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
 	String headingUnderFollowUp = "headingUnderFollowUp";
 	String headingUnlinkCaseFromEvent = "headingUnlinkCaseFromEvent";
+	String headingUnlinkEnvironmentFromEvent = "headingUnlinkEnvironmentFromEvent";
+	String headingUnlinkEventFromEnvironment = "headingUnlinkEventFromEnvironment";
 	String headingUpdateCaseWithNewDiseaseVariant = "headingUpdateCaseWithNewDiseaseVariant";
 	String headingUpdatedPathogenTestInformation = "headingUpdatedPathogenTestInformation";
 	String headingUpdatedPersonInformation = "headingUpdatedPersonInformation";
@@ -1067,6 +1072,7 @@ public interface Strings {
 	String infoPickEventParticipantsForPersonMerge = "infoPickEventParticipantsForPersonMerge";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
+	String infoPickOrCreateEnvironmentForEvent = "infoPickOrCreateEnvironmentForEvent";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateEventForCases = "infoPickOrCreateEventForCases";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
@@ -1351,10 +1357,12 @@ public interface Strings {
 	String messageEntityNotFound = "messageEntityNotFound";
 	String messageEntriesEdited = "messageEntriesEdited";
 	String messageEntryCreated = "messageEntryCreated";
+	String messageEnvironmentAlreadyLinkedToEvent = "messageEnvironmentAlreadyLinkedToEvent";
 	String messageEnvironmentArchived = "messageEnvironmentArchived";
 	String messageEnvironmentCreated = "messageEnvironmentCreated";
 	String messageEnvironmentDearchived = "messageEnvironmentDearchived";
 	String messageEnvironmentJurisdictionUpdated = "messageEnvironmentJurisdictionUpdated";
+	String messageEnvironmentLinkedToEvent = "messageEnvironmentLinkedToEvent";
 	String messageEnvironmentSampleOutsideJurisdictionDeletionDenied = "messageEnvironmentSampleOutsideJurisdictionDeletionDenied";
 	String messageEnvironmentSampleSaved = "messageEnvironmentSampleSaved";
 	String messageEnvironmentSamplesDeleted = "messageEnvironmentSamplesDeleted";
@@ -1396,6 +1404,8 @@ public interface Strings {
 	String messageEventsSentToSurvnet = "messageEventsSentToSurvnet";
 	String messageEventSubordinateEventUnlinked = "messageEventSubordinateEventUnlinked";
 	String messageEventSuperordinateEventUnlinked = "messageEventSuperordinateEventUnlinked";
+	String messageEventUnlinked = "messageEventUnlinked";
+	String messageEventUnlinkedFromEnvironment = "messageEventUnlinkedFromEnvironment";
 	String messageEventUnlinkedFromEventGroup = "messageEventUnlinkedFromEventGroup";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
@@ -1574,6 +1584,7 @@ public interface Strings {
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTasksEdited = "messageTasksEdited";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
+	String messageThisEventAlreadyLinkedToEnvironment = "messageThisEventAlreadyLinkedToEnvironment";
 	String messageThisPersonAlreadyEventParticipant = "messageThisPersonAlreadyEventParticipant";
 	String messageTravelEntriesDeleted = "messageTravelEntriesDeleted";
 	String messageTravelEntriesRestored = "messageTravelEntriesRestored";
@@ -1761,6 +1772,7 @@ public interface Strings {
 	String promptEnvironmentSampleLonTo = "promptEnvironmentSampleLonTo";
 	String promptEnvironmentSampleRegion = "promptEnvironmentSampleRegion";
 	String promptEnvironmentSampleTestedPathogen = "promptEnvironmentSampleTestedPathogen";
+	String promptEnvironmentSearchField = "promptEnvironmentSearchField";
 	String promptEventDateFrom = "promptEventDateFrom";
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventDateType = "promptEventDateType";

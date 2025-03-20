@@ -30,6 +30,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -88,4 +89,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	boolean isInJurisdictionOrOwned(String uuid);
 
 	boolean hasParticipantWithSpecialAccess(EventReferenceDto eventRef);
+
+	void unlinkEnvironment(EnvironmentReferenceDto environmentReferenceDto, EventDto event);
 }

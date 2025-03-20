@@ -26,6 +26,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -110,6 +111,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	private EnvironmentReferenceDto environment;
 
 	public EventCriteria() {
 		super(EventCriteriaDateType.class);
@@ -706,5 +708,16 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public void setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool) {
 		this.onlyEntitiesChangedSinceLastSharedWithExternalSurvTool = onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public EventCriteria environment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
+		return this;
+	}
+	public EnvironmentReferenceDto getEnvironment() {
+		return environment;
+	}
+	public void setEnvironment(EnvironmentReferenceDto environment) {
+		this.environment = environment;
 	}
 }

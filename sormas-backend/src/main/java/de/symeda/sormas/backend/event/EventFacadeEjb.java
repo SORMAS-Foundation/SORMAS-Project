@@ -69,6 +69,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.common.progress.ProcessedEntity;
 import de.symeda.sormas.api.common.progress.ProcessedEntityStatus;
+import de.symeda.sormas.api.environment.EnvironmentReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -105,6 +106,9 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.environment.Environment;
+import de.symeda.sormas.backend.environment.EnvironmentFacadeEjb;
+import de.symeda.sormas.backend.environment.EnvironmentService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -183,6 +187,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private ManagedScheduledExecutorService executorService;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private EnvironmentService environmentService;
 
 	public EventFacadeEjb() {
 	}
@@ -440,6 +446,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		cq.distinct(true);
 		Root<Event> event = cq.from(Event.class);
 		EventQueryContext queryContext = new EventQueryContext(cb, cq, event);
 
@@ -709,6 +716,15 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
+
+			// specific to filtering the events
+			if (eventCriteria.getEnvironment() != null) {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.equal(eventQueryContext.getJoins().getEventEnvironments().get(Environment.UUID), eventCriteria.getEnvironment().getUuid()));
+			}
+
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -1185,7 +1201,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	private void addSuperordinateEventToSet(Event event, Set<String> uuids) {
 
-		if (event.getSuperordinateEvent() != null) {
+		if (event != null && event.getSuperordinateEvent() != null) {
 			uuids.add(event.getSuperordinateEvent().getUuid());
 			addSuperordinateEventToSet(event.getSuperordinateEvent(), uuids);
 		}
@@ -1248,6 +1264,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
 		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
 		target.setEventManagementStatus(source.getEventManagementStatus());
+		if (source.getEnvironments() != null) {
+			target.setEnvironmentReferenceDtos(
+				source.getEnvironments().stream().map(EnvironmentFacadeEjb::toReferenceDto).collect(Collectors.toList()));
+		}
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -1389,6 +1409,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		if (source.getEnvironmentReferenceDtos() != null) {
+			target.setEnvironments(environmentService.getByReferenceDtos(source.getEnvironmentReferenceDtos()));
+		}
 
 		return target;
 	}
@@ -1557,6 +1580,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	public boolean hasParticipantWithSpecialAccess(EventReferenceDto eventRef) {
 		return specialCaseAccessService.hasEventParticipantWithSpecialAccess(eventRef);
+	}
+
+	@RightsAllowed(UserRight._EVENT_EDIT)
+	public void unlinkEnvironment(EnvironmentReferenceDto environmentReference, EventDto event) {
+		Environment environment = environmentService.getByUuid(environmentReference.getUuid());
+		environment.getEvents().removeIf(e -> e.getUuid().equals(event.getUuid()));
+		environmentService.ensurePersisted(environment);
 	}
 
 	@LocalBean

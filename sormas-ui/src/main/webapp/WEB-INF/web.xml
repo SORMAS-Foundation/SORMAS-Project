@@ -54,6 +54,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>DISEASE_MANAGEMENT</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CASE_CHANGE_EPID_NUMBER</role-name>
 	</security-role>
 
@@ -755,6 +759,10 @@
 
 	<security-role>
 		<role-name>ENVIRONMENT_EXPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>ENVIRONMENT_LINK</role-name>
 	</security-role>
 
 	<security-role>

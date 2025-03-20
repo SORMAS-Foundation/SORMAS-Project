@@ -24,6 +24,7 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.QueryJoins;
+import de.symeda.sormas.backend.environment.Environment;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -40,6 +41,7 @@ public class EventJoins extends QueryJoins<Event> {
 	private Join<Event, Location> location;
 	private From<?, EventParticipant> eventParticipants;
 	private Join<Event, EventGroup> eventGroup;
+	private Join<Event, Environment> eventEnvironments;
 	private Join<Event, Action> eventActions;
 	private Join<Event, Event> superordinateEvent;
 
@@ -157,5 +159,13 @@ public class EventJoins extends QueryJoins<Event> {
 
 	private void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
 		this.eventParticipantJoins = eventParticipantJoins;
+	}
+
+	public Join<Event, Environment> getEventEnvironments() {
+		return getOrCreate(eventEnvironments, Event.ENVIRONMENTS, JoinType.LEFT, this::setEventEnvironments);
+	}
+
+	public void setEventEnvironments(Join<Event, Environment> eventEnvironments) {
+		this.eventEnvironments = eventEnvironments;
 	}
 }

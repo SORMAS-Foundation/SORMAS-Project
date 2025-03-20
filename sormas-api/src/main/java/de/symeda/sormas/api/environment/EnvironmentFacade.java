@@ -13,4 +13,7 @@ public interface EnvironmentFacade extends CoreFacade<EnvironmentDto, Environmen
 
 	EnvironmentDto getEnvironmentByUuid(String uuid);
 
+	void unlinkEnvironment(EnvironmentIndexDto environmentReferenceDto, String eventUuid);
+
+	List<EnvironmentIndexDto> getEnvironmentsByEvent(EnvironmentCriteria environmentCriteria);
 }

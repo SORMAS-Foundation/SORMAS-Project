@@ -1,9 +1,12 @@
 package de.symeda.sormas.api.environment;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.utils.HasCaption;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
@@ -20,6 +23,7 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String ENVIRONMENT_NAME = "environmentName";
 	public static final String ENVIRONMENT_MEDIA = "environmentMedia";
+	public static final String ENVIRONMENT_LOCATION = "environmentLocation";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -62,6 +66,7 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 	private boolean pseudonymized;
 	private DeletionReason deletionReason;
 	private String otherDeletionReason;
+	private EnvironmentIndexLocation environmentLocation;
 
 	public EnvironmentIndexDto(
 		String uuid,
@@ -97,6 +102,27 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 		this.deletionReason = deletionReason;
 		this.otherDeletionReason = otherDeletionReason;
 		this.inJurisdiction = inJurisdiction;
+		this.environmentLocation = new EnvironmentIndexLocation(region, district, community, city);
+	}
+
+	public EnvironmentIndexDto(
+		String uuid,
+		String externalId,
+		String environmentName,
+		EnvironmentMedia environmentMedia,
+		Date reportDate,
+		InvestigationStatus investigationStatus,
+		DeletionReason deletionReason,
+		String otherDeletionReason) {
+
+		super(uuid);
+		this.externalId = externalId;
+		this.environmentName = environmentName;
+		this.environmentMedia = environmentMedia;
+		this.reportDate = reportDate;
+		this.investigationStatus = investigationStatus;
+		this.deletionReason = deletionReason;
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	public EnvironmentIndexDto(String uuid) {
@@ -233,5 +259,51 @@ public class EnvironmentIndexDto extends AbstractUuidDto implements Pseudonymiza
 	@Override
 	public void setInJurisdiction(boolean inJurisdiction) {
 		this.inJurisdiction = inJurisdiction;
+	}
+
+	public EnvironmentIndexLocation getEnvironmentLocation() {
+		return environmentLocation;
+	}
+
+	public void setEnvironmentLocation(EnvironmentIndexLocation environmentLocation) {
+		this.environmentLocation = environmentLocation;
+	}
+
+	public static class EnvironmentIndexLocation implements Serializable, HasCaption {
+
+		private String regionName;
+		private String districtName;
+		private String communityName;
+		private String city;
+		private String street;
+		private String houseNumber;
+		private String additionalInformation;
+
+		public EnvironmentIndexLocation(String regionName, String districtName, String communityName, String city) {
+			this.regionName = regionName;
+			this.districtName = districtName;
+			this.communityName = communityName;
+			this.city = city;
+		}
+
+		public String getRegion() {
+			return regionName;
+		}
+
+		public String getDistrict() {
+			return districtName;
+		}
+
+		public String getCommunity() {
+			return communityName;
+		}
+
+		public String getAddress() {
+			return LocationReferenceDto.buildCaption(city, street, houseNumber, additionalInformation);
+		}
+
+		public String buildCaption() {
+			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
+		}
 	}
 }

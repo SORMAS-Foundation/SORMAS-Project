@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -30,6 +31,7 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 	public static final String GPS_LAT_TO = "gpsLatTo";
 	public static final String GPS_LON_FROM = "gpsLonFrom";
 	public static final String GPS_LON_TO = "gpsLonTo";
+	public static final String EVENT_REFERENCE_DTO = "eventReferenceDto";
 	private static final long serialVersionUID = -2947852193651003088L;
 
 	private String freeText;
@@ -58,6 +60,8 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 	 * Used for similarity detection at import
 	 */
 	private Double gpsLon;
+
+	private EventReferenceDto event;
 
 	@IgnoreForUrl
 	public String getFreeText() {
@@ -312,5 +316,18 @@ public class EnvironmentCriteria extends BaseCriteria implements Serializable {
 		this.reportDateFrom = reportDateFrom;
 		this.reportDateTo = reportDateTo;
 		this.dateFilterOption = dateFilterOption;
+	}
+
+	public EnvironmentCriteria event(EventReferenceDto event) {
+		this.event = event;
+		return this;
+	}
+
+	public EventReferenceDto getEvent() {
+		return event;
+	}
+
+	public void setEvent(EventReferenceDto event) {
+		this.event = event;
 	}
 }
