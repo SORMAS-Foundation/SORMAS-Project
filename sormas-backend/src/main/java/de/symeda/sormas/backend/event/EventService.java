@@ -722,8 +722,7 @@ public class EventService extends AbstractCoreAdoService<Event, EventJoins> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
 		}
 		if (eventCriteria.getDiseaseVariant() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT_VALUE), eventCriteria.getDiseaseVariant().getValue()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT_VALUE), eventCriteria.getDiseaseVariant().getValue()));
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
