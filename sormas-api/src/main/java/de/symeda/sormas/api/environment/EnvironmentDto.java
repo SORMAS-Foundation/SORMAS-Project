@@ -266,10 +266,12 @@ public class EnvironmentDto extends PseudonymizableDto {
 	}
 
 	public void addEventReference(EventReferenceDto eventReferenceDto) {
-		if (eventReferenceDto != null && !eventReferenceDtos.contains(eventReferenceDto)) {
-			this.eventReferenceDtos.add(eventReferenceDto);
+		if (eventReferenceDto != null) {
+			if (!eventReferenceDtos.contains(eventReferenceDto)) {
+				this.eventReferenceDtos.add(eventReferenceDto);
+			}
 		} else {
-			throw new IllegalArgumentException("event UUID " + eventReferenceDto.getUuid() + " is already added");
+			throw new IllegalArgumentException("eventReferenceDto is " + eventReferenceDto);
 		}
 	}
 
