@@ -13934,6 +13934,6 @@ ALTER TABLE systemconfigurationvalue_history OWNER TO sormas_user;
 
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SYSTEM_CONFIGURATION' FROM public.userroles WHERE userroles.linkeddefaultuserrole in ('ADMIN');
 
-INSERT INTO schema_version (version_number, comment) VALUES (561, 'Create system config structures #13269');
+INSERT INTO schema_version (version_number, comment) VALUES (564, 'Create system config structures #13269');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
