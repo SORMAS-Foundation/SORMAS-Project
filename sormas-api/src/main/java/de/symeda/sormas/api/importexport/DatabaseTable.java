@@ -153,7 +153,10 @@ public enum DatabaseTable {
 			FeatureType.CASE_FOLLOWUP)),
 	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "feature_configurations", null),
 	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "disease_configurations", null),
-	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null);
+	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null),
+
+	SYSTEM_CONFIGURATION_VALUES(DatabaseTableType.CONFIGURATION, "system_configuration_values", null),
+	SYSTEM_CONFIGURATION_CATEGORIES(DatabaseTableType.CONFIGURATION, "system_configuration_categories", null);
 
 	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()

@@ -266,6 +266,14 @@ public interface Validations {
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	String surveyDocumentTemplateMissingTokenVariable = "surveyDocumentTemplateMissingTokenVariable";
 	String surveyOnlyCasesSupported = "surveyOnlyCasesSupported";
+	String systemConfigurationValueInvalidKey = "systemConfigurationValueInvalidKey";
+	String systemConfigurationValueInvalidValue = "systemConfigurationValueInvalidValue";
+	String systemConfigurationValuePatternNotMatched = "systemConfigurationValuePatternNotMatched";
+	String systemConfigurationValueValidationNotADirectory = "systemConfigurationValueValidationNotADirectory";
+	String systemConfigurationValueValidationNotAFile = "systemConfigurationValueValidationNotAFile";
+	String systemConfigurationValueValidationNotAIPAddr = "systemConfigurationValueValidationNotAIPAddr";
+	String systemConfigurationValueValidationNotANumber = "systemConfigurationValueValidationNotANumber";
+	String systemConfigurationValueValidationNotValid = "systemConfigurationValueValidationNotValid";
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";
 	String taskMissingEventLink = "taskMissingEventLink";

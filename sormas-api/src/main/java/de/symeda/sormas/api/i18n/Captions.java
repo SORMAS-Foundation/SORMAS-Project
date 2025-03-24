@@ -2938,6 +2938,13 @@ public interface Captions {
 	String syncSuccessful = "syncSuccessful";
 	String syncUsers = "syncUsers";
 	String system = "system";
+	String SystemConfigurationValue_category = "SystemConfigurationValue.category";
+	String SystemConfigurationValue_categoryName = "SystemConfigurationValue.categoryName";
+	String SystemConfigurationValue_encrytp = "SystemConfigurationValue.encrytp";
+	String SystemConfigurationValue_General = "SystemConfigurationValue.General";
+	String SystemConfigurationValue_key = "SystemConfigurationValue.key";
+	String SystemConfigurationValue_pattern = "SystemConfigurationValue.pattern";
+	String SystemConfigurationValue_value = "SystemConfigurationValue.value";
 	String Task = "Task";
 	String Task_assignedByUser = "Task.assignedByUser";
 	String Task_assigneeReply = "Task.assigneeReply";
@@ -3250,6 +3257,8 @@ public interface Captions {
 	String View_configuration_regions_short = "View.configuration.regions.short";
 	String View_configuration_subcontinents = "View.configuration.subcontinents";
 	String View_configuration_subcontinents_short = "View.configuration.subcontinents.short";
+	String View_configuration_systemConfiguration = "View.configuration.systemConfiguration";
+	String View_configuration_systemConfiguration_short = "View.configuration.systemConfiguration.short";
 	String View_configuration_templates = "View.configuration.templates";
 	String View_configuration_templates_short = "View.configuration.templates.short";
 	String View_configuration_userrights = "View.configuration.userrights";

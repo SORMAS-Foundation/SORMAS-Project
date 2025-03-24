@@ -94,7 +94,8 @@
 		<class>de.symeda.sormas.backend.docgeneration.DocumentTemplate</class>
 		<class>de.symeda.sormas.backend.survey.Survey</class>
 		<class>de.symeda.sormas.backend.survey.SurveyToken</class>
-
+		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValue</class>
+		<class>de.symeda.sormas.backend.systemconfiguration.SystemConfigurationCategory</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

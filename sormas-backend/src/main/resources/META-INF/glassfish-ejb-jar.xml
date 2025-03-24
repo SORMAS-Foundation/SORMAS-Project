@@ -1173,6 +1173,11 @@
         <group-name>CUSTOMIZABLE_ENUM_MANAGEMENT</group-name>
     </security-role-mapping>
 
+    <security-role-mapping>
+        <role-name>SYSTEM_CONFIGURATION</role-name>
+        <group-name>SYSTEM_CONFIGURATION</group-name>
+    </security-role-mapping>
+
 	<!-- SYSTEM ROLE -->
 	<security-role-mapping>
 		<role-name>SYSTEM</role-name>

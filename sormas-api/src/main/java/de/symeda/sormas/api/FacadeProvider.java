@@ -106,6 +106,8 @@ import de.symeda.sormas.api.specialcaseaccess.SpecialCaseAccessFacade;
 import de.symeda.sormas.api.survey.SurveyFacade;
 import de.symeda.sormas.api.survey.SurveyTokenFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationCategoryFacade;
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -562,6 +564,14 @@ public class FacadeProvider {
 
 	public static SurveyTokenFacade getSurveyTokenFacade() {
 		return get().lookupEjbRemote(SurveyTokenFacade.class);
+	}
+
+	public static SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
+		return get().lookupEjbRemote(SystemConfigurationValueFacade.class);
+	}
+
+	public static SystemConfigurationCategoryFacade getSystemConfigurationCategoryFacade() {
+		return get().lookupEjbRemote(SystemConfigurationCategoryFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

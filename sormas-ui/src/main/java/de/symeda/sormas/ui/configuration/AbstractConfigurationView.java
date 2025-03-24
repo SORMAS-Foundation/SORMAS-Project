@@ -46,6 +46,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.SubcontinentsView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
+import de.symeda.sormas.ui.configuration.system.SystemConfigurationView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
@@ -125,6 +126,11 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		if (UiUtil.permitted(UserRight.DISEASE_MANAGEMENT)) {
 			navigator.addView(DiseaseConfigurationView.VIEW_NAME, DiseaseConfigurationView.class);
 			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : DiseaseConfigurationView.class;
+		}
+
+		if(UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
+			navigator.addView(SystemConfigurationView.VIEW_NAME, SystemConfigurationView.class);
+			firstAccessibleView = firstAccessibleView != null ? firstAccessibleView : SystemConfigurationView.class;
 		}
 
 		if (FacadeProvider.getConfigFacade().isDevMode() && UiUtil.permitted(UserRight.DEV_MODE)) {
@@ -254,6 +260,14 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			menu.addView(
 				DiseaseConfigurationView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DiseaseConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+		}
+
+		if (UiUtil.permitted(UserRight.SYSTEM_CONFIGURATION)) {
+			menu.addView(
+				SystemConfigurationView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", SystemConfigurationView.VIEW_NAME.replace("/", ".") + ".short", ""),
 				null,
 				false);
 		}
