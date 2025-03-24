@@ -26,8 +26,10 @@ import org.hibernate.annotations.TypeDef;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PhoneNumberType;
@@ -36,10 +38,10 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -55,7 +57,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_REPORT_DATE = "caseReportDate";
+	public static final String CASE_SYMPTOMS = "caseSymptoms";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -91,8 +95,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
 	private Date messageDateTime;
-
+	private CaseClassification caseClassification;
 	private Date caseReportDate;
+	private Symptoms caseSymptoms;
 	private String reporterName;
 	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
@@ -168,6 +173,24 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public void setCaseSymptoms(Symptoms caseSymptoms) {
+		this.caseSymptoms = caseSymptoms;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "casesymptoms_id")
+	public Symptoms getCaseSymptoms() {
+		return caseSymptoms;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

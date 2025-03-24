@@ -13992,4 +13992,13 @@ ALTER TABLE person_history ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (566, 'Entries to the LUX+TB specific #13319');
 
+-- 2025-03-24 Doctor declaration handling #13294
+ALTER TABLE externalmessage ADD COLUMN caseclassification varchar(255) DEFAULT 'NOT_CLASSIFIED';
+ALTER TABLE externalmessage_history ADD COLUMN caseclassification varchar(255) DEFAULT 'NOT_CLASSIFIED';
+
+ALTER TABLE externalmessage ADD COLUMN casesymptoms_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_casesymptoms_id FOREIGN KEY (casesymptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+INSERT INTO schema_version (version_number, comment) VALUES (566, 'Doctor declaration handling #13294');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

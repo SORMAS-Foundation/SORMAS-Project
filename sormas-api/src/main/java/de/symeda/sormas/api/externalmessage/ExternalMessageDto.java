@@ -25,6 +25,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.audit.AuditIncludeProperty;
 import de.symeda.sormas.api.audit.AuditedClass;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -55,7 +57,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_REPORT_DATE = "caseReportDate";
+	public static final String CASE_SYMPTOMS = "caseSymptoms";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_ID = "reporterExternalId";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -94,7 +98,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String diseaseVariantDetails;
 	@AuditIncludeProperty
 	private Date messageDateTime;
+
+	private CaseClassification caseClassification;
 	private Date caseReportDate;
+	private SymptomsDto caseSymptoms;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
@@ -207,12 +214,27 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.messageDateTime = messageDateTime;
 	}
 
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
 	public Date getCaseReportDate() {
 		return caseReportDate;
 	}
 
 	public void setCaseReportDate(Date caseReportDate) {
 		this.caseReportDate = caseReportDate;
+	}
+
+	public void setCaseSymptoms(SymptomsDto caseSymptoms) {
+		this.caseSymptoms = caseSymptoms;
+	}
+	
+	public SymptomsDto getCaseSymptoms() {
+		return caseSymptoms;
 	}
 
 	public String getReporterName() {
