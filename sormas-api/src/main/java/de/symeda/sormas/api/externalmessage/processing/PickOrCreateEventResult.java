@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2023 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,33 +13,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.processing.labmessage;
+package de.symeda.sormas.api.externalmessage.processing;
 
-import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 
-public class PickOrCreateSampleResult {
+public class PickOrCreateEventResult {
 
-	private SampleDto sample;
+	private EventIndexDto event;
 
-	private boolean newSample;
+	private boolean newEvent;
 
-	public SampleDto getSample() {
-		return sample;
+	public EventIndexDto getEvent() {
+		return event;
 	}
 
-	public void setSample(SampleDto sample) {
-		this.sample = sample;
+	public void setEvent(EventIndexDto event) {
+		this.event = event;
 	}
 
-	public boolean isSelectedSample() {
-		return sample != null;
+	public boolean isEventSelected() {
+		return event != null;
 	}
 
-	public boolean isNewSample() {
-		return newSample;
+	public boolean isNewEvent() {
+		return newEvent;
 	}
 
-	public void setNewSample(boolean newSample) {
-		this.newSample = newSample;
+	public void setNewEvent(boolean newEvent) {
+		this.newEvent = newEvent;
 	}
 }

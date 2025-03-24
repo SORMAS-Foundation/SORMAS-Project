@@ -46,10 +46,10 @@ public abstract class AbstractProcessingFlow {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected final UserDto user;
+	private final UserDto user;
 
-	protected final ExternalMessageMapper mapper;
-	protected final ExternalMessageProcessingFacade processingFacade;
+	private final ExternalMessageMapper mapper;
+	private final ExternalMessageProcessingFacade processingFacade;
 
 	public AbstractProcessingFlow(UserDto user, ExternalMessageMapper mapper, ExternalMessageProcessingFacade processingFacade) {
 		this.user = user;
@@ -197,6 +197,18 @@ public abstract class AbstractProcessingFlow {
 		caseDto.getHospitalization().setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
 
 		return caseDto;
+	}
+
+	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
+		return processingFacade;
+	}
+
+	public UserDto getUser() {
+		return user;
+	}
+
+	public ExternalMessageMapper getMapper() {
+		return mapper;
 	}
 
 }
