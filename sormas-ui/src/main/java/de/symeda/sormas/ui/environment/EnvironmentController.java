@@ -163,7 +163,6 @@ public class EnvironmentController {
 			EnvironmentCreateForm createForm;
 			createForm = new EnvironmentCreateForm();
 			final EnvironmentDto environment = EnvironmentDto.build(curentUser.getUser());
-			environment.addEventReference(eventDto.toReference());
 			createForm.setValue(environment);
 			final CommitDiscardWrapperComponent<EnvironmentCreateForm> editView =
 				new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.ENVIRONMENT_CREATE), createForm.getFieldGroup());
