@@ -28,6 +28,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
@@ -36,6 +37,8 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.symptoms.Symptoms;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -44,6 +47,8 @@ public class ExternalMessageFacadeEjbMappingTest {
 
 	@Mock
 	private SampleReportFacadeEjb.SampleReportFacadeEjbLocal sampleReportFacade;
+	@Mock
+	private SymptomsFacadeEjb.SymptomsFacadeEjbLocal symptomsFacadeEjb;
 	@Mock
 	private UserService userservice;
 	@Mock
@@ -110,6 +115,10 @@ public class ExternalMessageFacadeEjbMappingTest {
 
 		when(countryService.getByReferenceDto(source.getPersonCountry())).thenReturn(country);
 		when(facilityService.getByReferenceDto(source.getPersonFacility())).thenReturn(facility);
+
+		final SymptomsDto symptomsDto = new SymptomsDto();
+		source.setCaseSymptoms(symptomsDto);
+		when(symptomsFacadeEjb.fillOrBuildEntity(symptomsDto, null, true)).thenReturn(new Symptoms());
 
 		ExternalMessage result = sut.fillOrBuildEntity(source, null, true);
 
