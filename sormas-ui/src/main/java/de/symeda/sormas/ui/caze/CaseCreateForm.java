@@ -142,10 +142,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRowLocs(DONT_SHARE_WARNING_LOC)
         + fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION)
         + fluidRowLocs(PLACE_OF_STAY_HEADING_LOC)
-        + fluidRowLocs(FACILITY_OR_HOME_LOC)
+        + fluidRow(fluidColumnLoc(6,0,FACILITY_OR_HOME_LOC),fluidColumnLoc(6,0,CaseDataDto.POST_MORTEM))
         + fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
         + fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
-        + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
+        + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS, CaseDataDto.DEPARTMENT)
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
         + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
@@ -308,6 +308,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityType.setWidth(100, Unit.PERCENTAGE);
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
+
+		addField(CaseDataDto.POST_MORTEM, CheckBox.class);
+
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 		ComboBox cbPointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
@@ -315,6 +318,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
 
+		addField(CaseDataDto.DEPARTMENT, TextField.class);
 		if (convertedTravelEntry != null) {
 			differentPointOfEntryJurisdiction.setValue(true);
 			RegionReferenceDto regionReferenceDto = convertedTravelEntry.getPointOfEntryRegion() != null

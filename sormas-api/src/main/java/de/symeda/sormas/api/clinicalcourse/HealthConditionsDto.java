@@ -48,6 +48,9 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	public static final String ASTHMA = "asthma";
 	public static final String SICKLE_CELL_DISEASE = "sickleCellDisease";
 	public static final String IMMUNODEFICIENCY_INCLUDING_HIV = "immunodeficiencyIncludingHiv";
+	public static final String TUBERCULOSIS_INFECTED_YEAR = "tuberculosisInfectedYear";
+	public static final String PREVIOUS_TUBERCULOSIS_TREATMENT = "previousTuberculosisTreatment";
+	public static final String COMPLIANCE_WITH_TREATMENT = "complianceWithTreatment";
 
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -55,12 +58,16 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown tuberculosis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown hepatitis;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown diabetes;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -68,49 +75,71 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown hiv;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown hivArt;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown chronicLiverDisease;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown malignancyChemotherapy;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown chronicHeartFailure;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown chronicPulmonaryDisease;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown chronicKidneyDisease;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown chronicNeurologicCondition;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown downSyndrome;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown obesity;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown currentSmoker;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown formerSmoker;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown asthma;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
-		CountryHelper.COUNTRY_CODE_SWITZERLAND })
+		CountryHelper.COUNTRY_CODE_SWITZERLAND,
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown sickleCellDisease;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -118,7 +147,18 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	private String otherConditions;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private YesNoUnknown previousTuberculosisTreatment;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private Integer tuberculosisInfectedYear;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	private ComplianceWithTreatment complianceWithTreatment;
 
 	public static HealthConditionsDto build() {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
@@ -180,7 +220,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
 
-	@Order(10)
+	@Order(32)
 	public YesNoUnknown getHiv() {
 		return hiv;
 	}
@@ -331,5 +371,30 @@ public class HealthConditionsDto extends PseudonymizableDto {
 
 	public void setOtherConditions(String otherConditions) {
 		this.otherConditions = otherConditions;
+	}
+
+	@Order(10)
+	public YesNoUnknown getPreviousTuberculosisTreatment() {
+		return previousTuberculosisTreatment;
+	}
+
+	public void setPreviousTuberculosisTreatment(YesNoUnknown previousTuberculosisTreatment) {
+		this.previousTuberculosisTreatment = previousTuberculosisTreatment;
+	}
+
+	public Integer getTuberculosisInfectedYear() {
+		return tuberculosisInfectedYear;
+	}
+
+	public void setTuberculosisInfectedYear(Integer tuberculosisInfectedYear) {
+		this.tuberculosisInfectedYear = tuberculosisInfectedYear;
+	}
+
+	public ComplianceWithTreatment getComplianceWithTreatment() {
+		return complianceWithTreatment;
+	}
+
+	public void setComplianceWithTreatment(ComplianceWithTreatment complianceWithTreatment) {
+		this.complianceWithTreatment = complianceWithTreatment;
 	}
 }

@@ -213,7 +213,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumnLoc(4, 0, CaseDataDto.PREVIOUS_INFECTION_DATE)
 					) +
 					fluidRowLocs(CaseDataDto.REINFECTION_DETAILS) +
-					fluidRowLocs(9, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE) +
+					fluidRowLocs(3, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE, 3, CaseDataDto.POST_MORTEM) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
@@ -228,6 +228,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					inlineLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS, CASE_REFER_POINT_OF_ENTRY_BTN_LOC) +
+					fluidRow(fluidColumnLoc(6, 0,null),fluidColumnLoc(6,0,CaseDataDto.DEPARTMENT)) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
@@ -433,6 +434,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
+		addField(CaseDataDto.DEPARTMENT, TextField.class);
 		addField(CaseDataDto.INTERNAL_TOKEN, TextField.class);
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
@@ -443,6 +445,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
 
+		CheckBox postmortem = addField(CaseDataDto.POST_MORTEM, CheckBox.class);
+		postmortem.setVisible(false);
 		addField(CaseDataDto.CASE_IDENTIFICATION_SOURCE);
 		addField(CaseDataDto.SCREENING_TYPE);
 
@@ -924,9 +928,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 		dfQuarantineTo.addValueChangeListener(e -> onQuarantineEndChange());
 		this.addValueChangeListener(e -> onValueChange());
-		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
-		generalCommentLabel.addStyleName(H3);
-		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
+			generalCommentLabel.addStyleName(H3);
+			getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
+		}
 
 		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(6);
@@ -941,7 +947,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
 		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
-	addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
+		addField(CaseDataDto.VACCINATION_STATUS, TextField.class);
 //		getContent().addComponent(new Label("Debug vaccination"), CaseDataDto.VACCINATION_STATUS);
 		addFields(CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
 		addDateField(CaseDataDto.SMALLPOX_LAST_VACCINATION_DATE, DateField.class, 0);
@@ -1160,6 +1166,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN),
 				true);
 		}
+		if (isVisibleAllowed(CaseDataDto.POST_MORTEM)) {
+			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.POST_MORTEM, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.DECEASED), false);
+		}
 		if (isVisibleAllowed(CaseDataDto.SEQUELAE_DETAILS)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE_DETAILS, CaseDataDto.SEQUELAE, Arrays.asList(YesNoUnknown.YES), true);
 		}
@@ -1221,7 +1230,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-		if (!shouldHidePaperFormDates()) {
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && !shouldHidePaperFormDates()) {
 			Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
 			paperFormDatesLabel.addStyleName(H3);
 			getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);

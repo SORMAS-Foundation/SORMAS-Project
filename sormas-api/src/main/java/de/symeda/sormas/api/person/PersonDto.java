@@ -130,6 +130,8 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String IS_EMANCIPATED = "emancipated";
 	public static final String IS_INCAPACITATED = "incapacitated";
+	public static final String ENTRY_DATE = "entryDate";
+	public static final String LIVING_STATUS = "livingStatus";
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	// Fields are declared in the order they should appear in the import template
@@ -368,10 +370,12 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
-	@HideForCountriesExcept(countries = {})
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	private CountryReferenceDto birthCountry;
-	@HideForCountriesExcept(countries = {})
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
@@ -381,6 +385,14 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	private boolean emancipated;
 	private boolean incapacitated;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SensitiveData
+	private Date entryDate;
+	@HideForCountriesExcept(countries = {
+		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
+	@SensitiveData
+	private LivingStatus livingStatus;
 
 	@SuppressWarnings("serial")
 	public static class SeveralNonPrimaryContactDetailsException extends RuntimeException {
@@ -1064,6 +1076,22 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
+	}
+
+	public Date getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(Date entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	public LivingStatus getLivingStatus() {
+		return livingStatus;
+	}
+
+	public void setLivingStatus(LivingStatus livingStatus) {
+		this.livingStatus = livingStatus;
 	}
 
 	@Override

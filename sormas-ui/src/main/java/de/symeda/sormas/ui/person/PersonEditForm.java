@@ -143,6 +143,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
                             oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
                     ) +
+                    fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
@@ -392,10 +393,28 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
+		ComboBox birthCountryCB = addInfrastructureField(PersonDto.BIRTH_COUNTRY);
 		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
-
 		addField(PersonDto.PASSPORT_NUMBER);
+		birthCountryCB.addItems(countries);
+
+		ComboBox livingStatusCB = addField(PersonDto.LIVING_STATUS, ComboBox.class);
+		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
+
+		birthCountryCB.addValueChangeListener(e -> {
+			CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
+			if (countryRef.getIsoCode().equalsIgnoreCase(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+				livingStatusCB.setVisible(false);
+				livingStatusCB.setRequired(false);
+				entryDateDF.setVisible(false);
+				entryDateDF.setRequired(false);
+			} else {
+				livingStatusCB.setVisible(true);
+				livingStatusCB.setRequired(true);
+				entryDateDF.setVisible(true);
+				entryDateDF.setRequired(true);
+			}
+		});
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");
@@ -677,7 +696,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		Date birthDate = calcBirthDateValue();
 		if (birthDate != null) {
 			Pair<Integer, ApproximateAgeType> pair =
-					ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
+				ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
 			if ((pair.getElement0() != null) && (pair.getElement1() == ApproximateAgeType.YEARS)) {
 				return pair.getElement0();
 			}
@@ -688,7 +707,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void onEmancipatedChange() {
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		hasGuardian.setValue(!isEmancipatedChecked);
-		if(isEmancipatedChecked) {
+		if (isEmancipatedChecked) {
 			nameOfGuardians.setValue("");
 		}
 		updateHasGuardianCheckBox(isEmancipatedChecked);
@@ -701,7 +720,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean canBeEmancipated = personCanBeEmancipated(approximateAge, isEmancipatedChecked);
 		isEmancipated.setVisible(!isIncapacitatedChecked && canBeEmancipated);
 		hasGuardian.setValue(isIncapacitatedChecked || approximateAge < minimumAdultAge);
-		if(getApproximateAgeInYears() < minimumAdultAge) {
+		if (getApproximateAgeInYears() < minimumAdultAge) {
 			nameOfGuardians.setValue(getValue().getNamesOfGuardians());
 		}
 		updateHasGuardianCheckBox(false);
@@ -710,14 +729,14 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private boolean personCanBeEmancipated(int approximateAge, boolean change) {
 		boolean canBeEmancipated;
-		if(approximateAge == -1 && (approximateAgeField).getValue() != null) {
+		if (approximateAge == -1 && (approximateAgeField).getValue() != null) {
 			canBeEmancipated = false;
 		} else {
 			canBeEmancipated = approximateAge >= minimumEmancipatedAge && approximateAge < minimumAdultAge;
 		}
-		if(!canBeEmancipated && (approximateAgeField).getValue() != null){
+		if (!canBeEmancipated && (approximateAgeField).getValue() != null) {
 			int age = Integer.parseInt(approximateAgeField.getValue());
-			if(approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS){
+			if (approximateAgeTypeField.getValue() == ApproximateAgeType.YEARS) {
 				canBeEmancipated = age >= minimumEmancipatedAge && age < minimumAdultAge;
 				if (change) {
 					isEmancipated.setValue(canBeEmancipated);
@@ -738,12 +757,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isIncapacitatedChecked = (isIncapacitated != null) && (isIncapacitated.getValue());
 		boolean isEmancipatedChecked = (isEmancipated != null) && (isEmancipated.getValue());
 		boolean canBe = personCanBeEmancipated(getApproximateAgeInYears(), onEmancipatedChange);
-		if((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
+		if ((!canBe || isIncapacitatedChecked) && isEmancipatedChecked) {
 			isEmancipatedChecked = false;
 			isEmancipated.setValue(Boolean.FALSE);
 			isIncapacitated.setVisible(true);
 		}
-		if(isEmancipatedChecked){
+		if (isEmancipatedChecked) {
 			hasGuardian.setVisible(false);
 			nameOfGuardians.setVisible(false);
 			isIncapacitated.setVisible(false);
@@ -756,7 +775,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		boolean isChildOrUnknownDate = getApproximateAgeInYears() < minimumAdultAge;
 		nameOfGuardians.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
 		hasGuardian.setVisible(isChildOrUnknownDate || isIncapacitatedChecked);
-		if((birthDate == null) || isChildOrUnknownDate ){
+		if ((birthDate == null) || isChildOrUnknownDate) {
 			hasGuardian.setValue(Boolean.TRUE);
 		}
 	}

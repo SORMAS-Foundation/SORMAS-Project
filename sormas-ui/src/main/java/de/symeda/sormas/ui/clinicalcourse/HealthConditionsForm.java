@@ -8,6 +8,7 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.CHRONIC_KI
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.CHRONIC_LIVER_DISEASE;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.CHRONIC_NEUROLOGIC_CONDITION;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.CHRONIC_PULMONARY_DISEASE;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.COMPLIANCE_WITH_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.CONGENITAL_SYPHILIS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.CURRENT_SMOKER;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.DIABETES;
@@ -22,8 +23,10 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.IMMUNODEFI
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.MALIGNANCY_CHEMOTHERAPY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS_INFECTED_YEAR;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
@@ -35,14 +38,18 @@ import java.util.List;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -62,18 +69,19 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			loc(HEALTH_CONDITIONS_HEADINGS_LOC) +
 					fluidRow(
 							fluidColumn(6, 0, locs(
-									TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,
+									TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,
 									IMMUNODEFICIENCY_INCLUDING_HIV, HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
 									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY)),
 							fluidColumn(6, 0, locs(
 									CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
-									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
+									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE, TUBERCULOSIS_INFECTED_YEAR, COMPLIANCE_WITH_TREATMENT))
 					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC);
 	//@formatter:on
 
 	private static final List<String> fieldsList = List.of(
 		TUBERCULOSIS,
+		PREVIOUS_TUBERCULOSIS_TREATMENT,
 		ASPLENIA,
 		HEPATITIS,
 		DIABETES,
@@ -94,7 +102,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		FORMER_SMOKER,
 		ASTHMA,
 		SICKLE_CELL_DISEASE,
-		IMMUNODEFICIENCY_INCLUDING_HIV);
+		IMMUNODEFICIENCY_INCLUDING_HIV,
+		COMPLIANCE_WITH_TREATMENT);
 
 	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -108,6 +117,28 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		getContent().addComponent(healthConditionsHeadingLabel, HEALTH_CONDITIONS_HEADINGS_LOC);
 
 		addFields(fieldsList);
+
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+
+			ComboBox tbInfectedYear = addField(HealthConditionsDto.TUBERCULOSIS_INFECTED_YEAR, ComboBox.class);
+			tbInfectedYear
+				.setCaption(I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, HealthConditionsDto.TUBERCULOSIS_INFECTED_YEAR));
+			tbInfectedYear.setNullSelectionAllowed(true);
+			tbInfectedYear.addItems(DateHelper.getYearsToNow());
+			tbInfectedYear.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+			tbInfectedYear.setInputPrompt(I18nProperties.getString(Strings.year));
+
+			FieldHelper.setVisibleWhen(getFieldGroup(), TUBERCULOSIS_INFECTED_YEAR, TUBERCULOSIS, Arrays.asList(YesNoUnknown.YES), true);
+			FieldHelper.setVisibleWhen(getFieldGroup(), PREVIOUS_TUBERCULOSIS_TREATMENT, TUBERCULOSIS, Arrays.asList(YesNoUnknown.YES), true);
+			FieldHelper
+				.setVisibleWhen(getFieldGroup(), COMPLIANCE_WITH_TREATMENT, PREVIOUS_TUBERCULOSIS_TREATMENT, Arrays.asList(YesNoUnknown.YES), true);
+
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				PREVIOUS_TUBERCULOSIS_TREATMENT,
+				Arrays.asList(COMPLIANCE_WITH_TREATMENT),
+				Arrays.asList(PREVIOUS_TUBERCULOSIS_TREATMENT));
+		}
 
 		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
 		otherConditions.setRows(6);

@@ -434,6 +434,10 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	private List<SurveyToken> surveyTokens;
 
+	private boolean postMortem;
+
+	private String healthFacilityDepartment;
+
 	public static Case build() {
 		Case caze = new Case();
 		caze.setSystemCaseClassification(CaseClassification.NOT_CLASSIFIED);
@@ -1800,5 +1804,21 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSurveyTokens(List<SurveyToken> surveyTokens) {
 		this.surveyTokens = surveyTokens;
+	}
+
+	public boolean isPostMortem() {
+		return postMortem;
+	}
+
+	public void setPostMortem(boolean postMortem) {
+		this.postMortem = postMortem;
+	}
+
+	public String getHealthFacilityDepartment() {
+		return healthFacilityDepartment;
+	}
+
+	public void setHealthFacilityDepartment(String healthFacilityDepartment) {
+		this.healthFacilityDepartment = healthFacilityDepartment;
 	}
 }
