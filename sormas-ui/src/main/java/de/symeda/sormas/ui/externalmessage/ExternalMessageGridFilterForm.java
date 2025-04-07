@@ -99,10 +99,7 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
 		assignee.setNullSelectionAllowed(true);
 
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			addField(FieldConfiguration.pixelSized(ExternalMessageDto.TYPE, 140), ComboBox.class);
-		}
-
+		addField(FieldConfiguration.pixelSized(ExternalMessageDto.TYPE, 140), ComboBox.class);
 		addField(FieldConfiguration.pixelSized(ExternalMessageCriteria.DISEASE, 140));
 		addField(FieldConfiguration.pixelSized(CaseDataDto.DISEASE_VARIANT, 140), ComboBox.class);
 
