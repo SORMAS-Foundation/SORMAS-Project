@@ -60,6 +60,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.notifier.NotifierReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
@@ -227,6 +228,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	public static final String EXTERNAL_DATA = "externalData";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+
+	public static final String NOTIFIER = "notifier";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -620,6 +623,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+
+	private NotifierReferenceDto notifier;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1775,6 +1780,14 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setHealthConditions(HealthConditionsDto healthConditions) {
 		this.healthConditions = healthConditions;
+	}
+
+	public NotifierReferenceDto getNotifier() {
+		return notifier;
+	}
+
+	public void setNotifier(NotifierReferenceDto notifier) {
+		this.notifier = notifier;
 	}
 
 	@JsonIgnore

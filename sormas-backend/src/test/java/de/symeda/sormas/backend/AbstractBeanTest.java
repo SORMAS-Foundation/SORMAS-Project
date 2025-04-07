@@ -96,6 +96,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -177,12 +178,7 @@ import de.symeda.sormas.backend.externalemail.ExternalEmailFacadeEjb.ExternalEma
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
-import de.symeda.sormas.backend.externalmessage.labmessage.AutomaticLabMessageProcessor;
-import de.symeda.sormas.backend.externalmessage.labmessage.ExternalMessageProcessingFacadeEjbLocal;
-import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportFacadeEjb;
-import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
-import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
-import de.symeda.sormas.backend.externalmessage.labmessage.TestReportService;
+import de.symeda.sormas.backend.externalmessage.labmessage.*;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -217,6 +213,8 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -276,13 +274,9 @@ import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLoc
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
-import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.*;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRoleService;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -1135,5 +1129,13 @@ public abstract class AbstractBeanTest {
 
 	public SystemConfigurationValueService getSystemConfigurationValueService() {
 		return getBean(SystemConfigurationValueService.class);
+	}
+
+	public NotifierFacade getNotifierFacade() {
+		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
+	public NotifierService getNotifierService() {
+		return getBean(NotifierService.class);
 	}
 }
