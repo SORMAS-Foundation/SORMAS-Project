@@ -678,6 +678,7 @@ public interface Captions {
 	String CaseData_creationDate = "CaseData.creationDate";
 	String CaseData_deletionReason = "CaseData.deletionReason";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
+	String CaseData_department = "CaseData.department";
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_differentPointOfEntryJurisdiction = "CaseData.differentPointOfEntryJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
@@ -743,6 +744,7 @@ public interface Captions {
 	String CaseData_pointOfEntryName = "CaseData.pointOfEntryName";
 	String CaseData_pointOfEntryRegion = "CaseData.pointOfEntryRegion";
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
+	String CaseData_postMortem = "CaseData.postMortem";
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_previousInfectionDate = "CaseData.previousInfectionDate";
@@ -1935,6 +1937,7 @@ public interface Captions {
 	String HealthConditions_chronicLiverDisease = "HealthConditions.chronicLiverDisease";
 	String HealthConditions_chronicNeurologicCondition = "HealthConditions.chronicNeurologicCondition";
 	String HealthConditions_chronicPulmonaryDisease = "HealthConditions.chronicPulmonaryDisease";
+	String HealthConditions_complianceWithTreatment = "HealthConditions.complianceWithTreatment";
 	String HealthConditions_congenitalSyphilis = "HealthConditions.congenitalSyphilis";
 	String HealthConditions_currentSmoker = "HealthConditions.currentSmoker";
 	String HealthConditions_diabetes = "HealthConditions.diabetes";
@@ -1948,8 +1951,10 @@ public interface Captions {
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_obesity = "HealthConditions.obesity";
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
+	String HealthConditions_previousTuberculosisTreatment = "HealthConditions.previousTuberculosisTreatment";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String HealthConditions_tuberculosisInfectionYear = "HealthConditions.tuberculosisInfectionYear";
 	String humanSampleViewType = "humanSampleViewType";
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
@@ -2252,6 +2257,7 @@ public interface Captions {
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
 	String Person_emancipated = "Person.emancipated";
+	String Person_entryDate = "Person.entryDate";
 	String Person_externalId = "Person.externalId";
 	String Person_externalToken = "Person.externalToken";
 	String Person_fathersName = "Person.fathersName";
@@ -2262,6 +2268,7 @@ public interface Captions {
 	String Person_incapacitated = "Person.incapacitated";
 	String Person_internalToken = "Person.internalToken";
 	String Person_lastDisease = "Person.lastDisease";
+	String Person_livingStatus = "Person.livingStatus";
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";
 	String Person_mothersName = "Person.mothersName";

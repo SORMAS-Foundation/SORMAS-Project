@@ -213,7 +213,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							fluidColumnLoc(4, 0, CaseDataDto.PREVIOUS_INFECTION_DATE)
 					) +
 					fluidRowLocs(CaseDataDto.REINFECTION_DETAILS) +
-					fluidRowLocs(3, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE, 3, CaseDataDto.POST_MORTEM) +
+					fluidRowLocs(6, CaseDataDto.OUTCOME, 3, CaseDataDto.OUTCOME_DATE, 3, CaseDataDto.POST_MORTEM) +
 					fluidRowLocs(3, CaseDataDto.SEQUELAE, 9, CaseDataDto.SEQUELAE_DETAILS) +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
@@ -228,7 +228,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					inlineLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS, CASE_REFER_POINT_OF_ENTRY_BTN_LOC) +
-					fluidRow(fluidColumnLoc(6, 0,null),fluidColumnLoc(6,0,CaseDataDto.DEPARTMENT)) +
+					fluidRow(fluidColumnLoc(6, 0,CaseDataDto.DEPARTMENT)) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
@@ -305,10 +305,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBoxWithPlaceholder facilityTypeCombo;
 	private ComboBox facilityCombo;
 	private TextField facilityDetails;
+	private TextField tfDepartment;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
 	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
+	private CheckBox postMortemCB;
 
 	public CaseDataForm(
 		String caseUuid,
@@ -434,7 +436,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
-		addField(CaseDataDto.DEPARTMENT, TextField.class);
+		tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
+		tfDepartment.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DEPARTMENT));
 		addField(CaseDataDto.INTERNAL_TOKEN, TextField.class);
 		addField(CaseDataDto.CASE_REFERENCE_NUMBER, TextField.class);
 
@@ -444,9 +447,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.SEQUELAE, NullableOptionGroup.class);
 
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
-
-		CheckBox postmortem = addField(CaseDataDto.POST_MORTEM, CheckBox.class);
-		postmortem.setVisible(false);
+		postMortemCB = addField(CaseDataDto.POST_MORTEM, CheckBox.class);
+		postMortemCB.setValue(false);
 		addField(CaseDataDto.CASE_IDENTIFICATION_SOURCE);
 		addField(CaseDataDto.SCREENING_TYPE);
 
@@ -819,6 +821,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					facilityCombo.setRequired(true);
 				}
 				updateFacilityDetails(facilityCombo, facilityDetails);
+				tfDepartment.setVisible(true);
 			} else {
 				// switched from facility to home
 				if (!facilityCombo.isReadOnly()) {
@@ -828,6 +831,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 				facilityTypeGroup.clear();
 				facilityTypeCombo.clear();
+				tfDepartment.setVisible(false);
+				tfDepartment.clear();
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(
@@ -1166,9 +1171,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN),
 				true);
 		}
-		if (isVisibleAllowed(CaseDataDto.POST_MORTEM)) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.POST_MORTEM, CaseDataDto.OUTCOME, Arrays.asList(CaseOutcome.DECEASED), false);
-		}
 		if (isVisibleAllowed(CaseDataDto.SEQUELAE_DETAILS)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.SEQUELAE_DETAILS, CaseDataDto.SEQUELAE, Arrays.asList(YesNoUnknown.YES), true);
 		}
@@ -1254,7 +1256,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		setVisible(false, CaseDataDto.DELETION_REASON, CaseDataDto.OTHER_DELETION_REASON);
 
 		addValueChangeListener(e -> {
-			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
+			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease(), postMortemCB));
 
 			FieldHelper.updateOfficersField(surveillanceOfficerField, getValue(), UserRight.CASE_RESPONSIBLE);
 
@@ -1682,6 +1684,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityDetails.setValue(healthFacilityDetails);
 		facilityCombo.setReadOnly(readOnlyFacility);
 		facilityDetails.setReadOnly(readOnlyFacilityDetails);
+		boolean isPostmortem = isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease.equals(Disease.TUBERCULOSIS) ? true : false;
+		postMortemCB.setVisible(isPostmortem);
 	}
 
 	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
@@ -1778,10 +1782,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		private final AbstractSelect diseaseField;
 
 		private final Disease currentDisease;
+		private final List<Field> fields;
 
-		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
+		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease, Field... fields) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
+			this.fields = Arrays.asList(fields);
 		}
 
 		@Override
@@ -1795,6 +1801,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					@Override
 					protected void onConfirm() {
 						diseaseField.removeValueChangeListener(DiseaseChangeListener.this);
+						fields.stream().forEach(field -> {
+							if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+								if (diseaseField.getValue().equals(Disease.TUBERCULOSIS) && field.getId().equals(CaseDataDto.POST_MORTEM)) {
+									field.setVisible(true);
+									field.setValue(false);
+								} else {
+									field.setVisible(false);
+									field.setValue(false);
+								}
+							}
+						});
 					}
 
 					@Override

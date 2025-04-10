@@ -26,15 +26,17 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_COND
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.PREVIOUS_TUBERCULOSIS_TREATMENT;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS;
-import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS_INFECTED_YEAR;
+import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS_INFECTION_YEAR;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
@@ -44,6 +46,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -56,6 +59,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> {
 
@@ -63,8 +67,11 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	private static final String HEALTH_CONDITIONS_HEADINGS_LOC = "healthConditionsHeadingLoc";
 	private static final String CONFIDENTIAL_LABEL_LOC = "confidentialLabel";
+	private static final String DIAGNOSIS_LABEL_LOC = "diagnosisLabel"; //TODO Dependency with Obinna
 
 	//@formatter:off
+	public static final String TB_INFECTION_YEAR_LAYOUT = fluidRowLocs(6, "LBL_TUBERCULOSIS_INFECTION_YEAR", 6, TUBERCULOSIS_INFECTION_YEAR);
+	public static final String TBA_LAYOUT = fluidRowLocs(6, "LBL_COMPLIANCE_WITH_TREATMENT", 6, COMPLIANCE_WITH_TREATMENT);
 	private static final String HTML_LAYOUT =
 			loc(HEALTH_CONDITIONS_HEADINGS_LOC) +
 					fluidRow(
@@ -73,10 +80,10 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 									IMMUNODEFICIENCY_INCLUDING_HIV, HIV, HIV_ART, CONGENITAL_SYPHILIS, DOWN_SYNDROME,
 									CHRONIC_LIVER_DISEASE, MALIGNANCY_CHEMOTHERAPY)),
 							fluidColumn(6, 0, locs(
-									CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
+									"TUBERCULOSIS_INFECTION_YEAR_LAYOUT","COMPLIANCE_WITH_TREATMENT_LAYOUT",CHRONIC_HEART_FAILURE, CHRONIC_PULMONARY_DISEASE, CHRONIC_KIDNEY_DISEASE,
 									CHRONIC_NEUROLOGIC_CONDITION, CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION,
-									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE, TUBERCULOSIS_INFECTED_YEAR, COMPLIANCE_WITH_TREATMENT))
-					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC);
+									OBESITY, CURRENT_SMOKER, FORMER_SMOKER, ASTHMA, SICKLE_CELL_DISEASE))
+					) + loc(OTHER_CONDITIONS) + loc(CONFIDENTIAL_LABEL_LOC)+loc(DIAGNOSIS_LABEL_LOC);
 	//@formatter:on
 
 	private static final List<String> fieldsList = List.of(
@@ -102,8 +109,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		FORMER_SMOKER,
 		ASTHMA,
 		SICKLE_CELL_DISEASE,
-		IMMUNODEFICIENCY_INCLUDING_HIV,
-		COMPLIANCE_WITH_TREATMENT);
+		IMMUNODEFICIENCY_INCLUDING_HIV);
 
 	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -120,24 +126,47 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 
-			ComboBox tbInfectedYear = addField(HealthConditionsDto.TUBERCULOSIS_INFECTED_YEAR, ComboBox.class);
-			tbInfectedYear
-				.setCaption(I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, HealthConditionsDto.TUBERCULOSIS_INFECTED_YEAR));
-			tbInfectedYear.setNullSelectionAllowed(true);
-			tbInfectedYear.addItems(DateHelper.getYearsToNow());
-			tbInfectedYear.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-			tbInfectedYear.setInputPrompt(I18nProperties.getString(Strings.year));
-
-			FieldHelper.setVisibleWhen(getFieldGroup(), TUBERCULOSIS_INFECTED_YEAR, TUBERCULOSIS, Arrays.asList(YesNoUnknown.YES), true);
-			FieldHelper.setVisibleWhen(getFieldGroup(), PREVIOUS_TUBERCULOSIS_TREATMENT, TUBERCULOSIS, Arrays.asList(YesNoUnknown.YES), true);
 			FieldHelper
-				.setVisibleWhen(getFieldGroup(), COMPLIANCE_WITH_TREATMENT, PREVIOUS_TUBERCULOSIS_TREATMENT, Arrays.asList(YesNoUnknown.YES), true);
+				.setVisibleWhen(getFieldGroup(), Arrays.asList(PREVIOUS_TUBERCULOSIS_TREATMENT), TUBERCULOSIS, Arrays.asList(YesNoUnknown.YES), true);
 
-			FieldHelper.setRequiredWhen(
-				getFieldGroup(),
-				PREVIOUS_TUBERCULOSIS_TREATMENT,
-				Arrays.asList(COMPLIANCE_WITH_TREATMENT),
-				Arrays.asList(PREVIOUS_TUBERCULOSIS_TREATMENT));
+			CustomLayout infectionYearLayout = new CustomLayout();
+			infectionYearLayout.setTemplateContents(TB_INFECTION_YEAR_LAYOUT);
+			// infection year label
+			Label lblInfectionYear = new Label(I18nProperties.getCaption(Captions.HealthConditions_tuberculosisInfectionYear));
+			infectionYearLayout.addComponent(lblInfectionYear, "LBL_TUBERCULOSIS_INFECTION_YEAR");
+			getContent().addComponent(infectionYearLayout, "TUBERCULOSIS_INFECTION_YEAR_LAYOUT");
+			// infection year combobox
+			ComboBox tempInfectionYearCB = addField(infectionYearLayout, TUBERCULOSIS_INFECTION_YEAR, ComboBox.class);
+			tempInfectionYearCB.addItems(DateHelper.getYearsToNow());
+			tempInfectionYearCB.setNullSelectionAllowed(true);
+			tempInfectionYearCB.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+			tempInfectionYearCB.setInputPrompt(I18nProperties.getString(Strings.year));
+			tempInfectionYearCB.setCaption(null);
+			infectionYearLayout.addComponent(tempInfectionYearCB, TUBERCULOSIS_INFECTION_YEAR);
+			// validation for visibility
+			fieldVisibilityCheck(getField(TUBERCULOSIS), tempInfectionYearCB, lblInfectionYear);
+			// compliance with treatment layout
+			CustomLayout complianceTreatmentLayout = new CustomLayout();
+			complianceTreatmentLayout.setTemplateContents(TBA_LAYOUT);
+			complianceTreatmentLayout.setStyleName("compliance-padding");
+			complianceTreatmentLayout.setVisible(true);
+			// compliance with treatment label
+			Label lblComplianceWithTreatment = new Label(I18nProperties.getCaption(Captions.HealthConditions_complianceWithTreatment));
+			lblComplianceWithTreatment.addStyleName("padding-bottom: 50px;");
+			complianceTreatmentLayout.addComponent(lblComplianceWithTreatment, "LBL_COMPLIANCE_WITH_TREATMENT");
+			// compliance with treatment combobox
+			ComboBox complianceWithTreatmentCB = addField(complianceTreatmentLayout, COMPLIANCE_WITH_TREATMENT, ComboBox.class);
+			complianceWithTreatmentCB.setId(COMPLIANCE_WITH_TREATMENT);
+			complianceWithTreatmentCB.addItems(ComplianceWithTreatment.values());
+//			complianceWithTreatmentCB.addStyleName("padding-bottom: 80px;margin-bottom:16px;");
+			complianceTreatmentLayout.addComponent(complianceWithTreatmentCB, COMPLIANCE_WITH_TREATMENT);
+			getContent().addComponent(complianceTreatmentLayout, "COMPLIANCE_WITH_TREATMENT_LAYOUT");
+
+			complianceWithTreatmentCB.setCaption(null);
+			complianceWithTreatmentCB.setVisible(false);
+			// compliance with treatment validation
+			fieldVisibilityCheck(getField(PREVIOUS_TUBERCULOSIS_TREATMENT), complianceWithTreatmentCB, lblComplianceWithTreatment);
+
 		}
 
 		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
@@ -150,6 +179,23 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
+	}
+
+	/**
+	 * Visibility check for the YesNoUnknown fields
+	 *
+	 * @param input
+	 * @param field
+	 * @param label
+	 */
+	private void fieldVisibilityCheck(NullableOptionGroup input, Field field, Label label) {
+		input.addValueChangeListener(event -> {
+			Set<Object> set = (Set<Object>) event.getProperty().getValue();
+			boolean visible = set.contains(YesNoUnknown.YES) ? true : false;
+			field.setVisible(visible);
+			label.setVisible(visible);
+			field.clear();
+		});
 	}
 
 	@Override

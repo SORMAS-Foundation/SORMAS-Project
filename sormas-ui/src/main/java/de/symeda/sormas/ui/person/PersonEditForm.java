@@ -128,6 +128,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
                     fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+					fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
                     fluidRow(
                             oneOfFourCol(PersonDto.DEATH_DATE),
                             oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
@@ -176,7 +177,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									LayoutUtil.fluidRow(
 											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
@@ -400,19 +400,27 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		ComboBox livingStatusCB = addField(PersonDto.LIVING_STATUS, ComboBox.class);
 		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
-
+		livingStatusCB.setVisible(false);
+		entryDateDF.setVisible(false);
 		birthCountryCB.addValueChangeListener(e -> {
 			CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
-			if (countryRef.getIsoCode().equalsIgnoreCase(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-				livingStatusCB.setVisible(false);
-				livingStatusCB.setRequired(false);
-				entryDateDF.setVisible(false);
-				entryDateDF.setRequired(false);
-			} else {
-				livingStatusCB.setVisible(true);
-				livingStatusCB.setRequired(true);
-				entryDateDF.setVisible(true);
-				entryDateDF.setRequired(true);
+			if (this.disease != null && this.disease.equals(Disease.TUBERCULOSIS)) {
+				if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+					&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
+						.stream()
+						.noneMatch(country -> country.equalsIgnoreCase(countryRef.getIsoCode()))) {
+					livingStatusCB.setVisible(true);
+					livingStatusCB.setRequired(true);
+					entryDateDF.setVisible(true);
+					entryDateDF.setRequired(true);
+				} else {
+					livingStatusCB.setVisible(false);
+					livingStatusCB.setRequired(false);
+					livingStatusCB.clear();
+					entryDateDF.setVisible(false);
+					entryDateDF.setRequired(false);
+					entryDateDF.clear();
+				}
 			}
 		});
 

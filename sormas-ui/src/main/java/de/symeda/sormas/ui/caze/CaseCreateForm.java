@@ -142,7 +142,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRowLocs(DONT_SHARE_WARNING_LOC)
         + fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION)
         + fluidRowLocs(PLACE_OF_STAY_HEADING_LOC)
-        + fluidRow(fluidColumnLoc(6,0,FACILITY_OR_HOME_LOC),fluidColumnLoc(6,0,CaseDataDto.POST_MORTEM))
+        + fluidRow(fluidColumnLoc(6,0,FACILITY_OR_HOME_LOC))
         + fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
         + fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
         + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS, CaseDataDto.DEPARTMENT)
@@ -309,8 +309,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
 
-		addField(CaseDataDto.POST_MORTEM, CheckBox.class);
-
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 		ComboBox cbPointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
@@ -318,7 +316,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
 
-		addField(CaseDataDto.DEPARTMENT, TextField.class);
+		TextField tfDepartment = addField(CaseDataDto.DEPARTMENT, TextField.class);
+		tfDepartment.setVisible(false);
 		if (convertedTravelEntry != null) {
 			differentPointOfEntryJurisdiction.setValue(true);
 			RegionReferenceDto regionReferenceDto = convertedTravelEntry.getPointOfEntryRegion() != null
@@ -392,9 +391,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 						facilityCombo.setRequired(true);
 					}
 					updateFacilityFields(facilityCombo, facilityDetails);
+					tfDepartment.setVisible(true);
 				} else if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())
 					|| ((facilityOrHome.getValue() instanceof java.util.Set) && TypeOfPlace.HOME.equals(facilityOrHome.getNullableValue()))) {
 					setNoneFacility();
+					tfDepartment.setVisible(false);
+					tfDepartment.clear();
 				} else {
 					facilityCombo.removeAllItems();
 					facilityCombo.setValue(null);

@@ -61,7 +61,7 @@ public class HealthConditionsMapper {
 		target.setSickleCellDisease(source.getSickleCellDisease());
 		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
-		target.setTuberculosisInfectedYear(source.getTuberculosisInfectedYear());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 		return target;
 	}
@@ -97,7 +97,7 @@ public class HealthConditionsMapper {
 		target.setSickleCellDisease(source.getSickleCellDisease());
 		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 		target.setPreviousTuberculosisTreatment(source.getPreviousTuberculosisTreatment());
-		target.setTuberculosisInfectedYear(source.getTuberculosisInfectedYear());
+		target.setTuberculosisInfectionYear(source.getTuberculosisInfectionYear());
 		target.setComplianceWithTreatment(source.getComplianceWithTreatment());
 
 		return target;

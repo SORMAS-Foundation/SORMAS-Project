@@ -42,7 +42,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	private String otherConditions;
 
-	private Integer tuberculosisInfectedYear;
+	private Integer tuberculosisInfectionYear;
 	private YesNoUnknown previousTuberculosisTreatment;
 	private ComplianceWithTreatment complianceWithTreatment;
 
@@ -253,12 +253,12 @@ public class HealthConditions extends AbstractDomainObject {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
 
-	public Integer getTuberculosisInfectedYear() {
-		return tuberculosisInfectedYear;
+	public Integer getTuberculosisInfectionYear() {
+		return tuberculosisInfectionYear;
 	}
 
-	public void setTuberculosisInfectedYear(Integer tuberculosisInfectedYear) {
-		this.tuberculosisInfectedYear = tuberculosisInfectedYear;
+	public void setTuberculosisInfectionYear(Integer tuberculosisInfectionYear) {
+		this.tuberculosisInfectionYear = tuberculosisInfectionYear;
 	}
 
 	@Enumerated(EnumType.STRING)

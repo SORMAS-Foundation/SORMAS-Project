@@ -642,6 +642,8 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {
+		Disease.TUBERCULOSIS })
 	private boolean postMortem;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_LUXEMBOURG)
 	private String department;
