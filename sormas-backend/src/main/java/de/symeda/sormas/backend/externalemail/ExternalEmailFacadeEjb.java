@@ -243,10 +243,12 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 		}
 
 		SurveyTokenCriteria surveyTokenCriteria = new SurveyTokenCriteria();
-		surveyTokenCriteria.caseAssignedTo((CaseReferenceDto) options.getRootEntityReference());
-		if (options.getAttachedDocuments() != null && options.getAttachedDocuments().size() > 0) {
-			DocumentReferenceDto documentRef = options.getAttachedDocuments().iterator().next();
-			surveyTokenCriteria.document(documentRef);
+		if(options.getRootEntityReference() instanceof CaseReferenceDto){
+			surveyTokenCriteria.caseAssignedTo((CaseReferenceDto) options.getRootEntityReference());
+			if (options.getAttachedDocuments() != null && options.getAttachedDocuments().size() > 0) {
+				DocumentReferenceDto documentRef = options.getAttachedDocuments().iterator().next();
+				surveyTokenCriteria.document(documentRef);
+			}
 		}
 
 		Properties externalEmailProperties = new Properties();
