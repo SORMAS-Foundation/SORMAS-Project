@@ -118,6 +118,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExtendedReduced;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
@@ -1021,7 +1022,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 
-		addField(CaseDataDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
+		addField(CaseDataDto.HEALTH_CONDITIONS, new HealthConditionsForm(disease, new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop()))
+			.setCaption(null);
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -1684,8 +1686,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityDetails.setValue(healthFacilityDetails);
 		facilityCombo.setReadOnly(readOnlyFacility);
 		facilityDetails.setReadOnly(readOnlyFacilityDetails);
-		boolean isPostmortem = isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease.equals(Disease.TUBERCULOSIS) ? true : false;
-		postMortemCB.setVisible(isPostmortem);
+		boolean postmortemVisibility =
+			isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && disease.equals(Disease.TUBERCULOSIS) ? true : false;
+		postMortemCB.setVisible(postmortemVisibility);
 	}
 
 	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {

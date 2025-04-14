@@ -61,17 +61,11 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown asplenia;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown hepatitis;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown diabetes;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
@@ -81,83 +75,51 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	private YesNoUnknown hivArt;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown chronicLiverDisease;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown malignancyChemotherapy;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown chronicHeartFailure;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown chronicPulmonaryDisease;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown chronicKidneyDisease;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown chronicNeurologicCondition;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown downSyndrome;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown congenitalSyphilis;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown obesity;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown currentSmoker;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown formerSmoker;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown asthma;
 	@HideForCountries(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown sickleCellDisease;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_GERMANY,
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)

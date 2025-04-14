@@ -40,12 +40,14 @@ import java.util.Set;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.clinicalcourse.ComplianceWithTreatment;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -68,6 +70,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 	private static final String HEALTH_CONDITIONS_HEADINGS_LOC = "healthConditionsHeadingLoc";
 	private static final String CONFIDENTIAL_LABEL_LOC = "confidentialLabel";
 	private static final String DIAGNOSIS_LABEL_LOC = "diagnosisLabel"; //TODO Dependency with Obinna
+	private Disease disease;
 
 	//@formatter:off
 	public static final String TB_INFECTION_YEAR_LAYOUT = fluidRowLocs(6, "LBL_TUBERCULOSIS_INFECTION_YEAR", 6, TUBERCULOSIS_INFECTION_YEAR);
@@ -115,6 +118,12 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 	}
 
+	public HealthConditionsForm(Disease disease, FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(HealthConditionsDto.class, I18N_PREFIX, false, fieldVisibilityCheckers, fieldAccessCheckers);
+		this.disease = disease;
+		addFields();
+	}
+
 	@Override
 	protected void addFields() {
 
@@ -124,6 +133,18 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		addFields(fieldsList);
 
+		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
+		otherConditions.setRows(6);
+		otherConditions.setDescription(
+			I18nProperties.getPrefixDescription(HealthConditionsDto.I18N_PREFIX, OTHER_CONDITIONS, "") + "\n"
+				+ I18nProperties.getDescription(Descriptions.descGdpr));
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
+
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
+
+		//Below requirement (showing the treatment year and its compliances only applicable for LUX)
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
 
 			FieldHelper
@@ -158,7 +179,6 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			ComboBox complianceWithTreatmentCB = addField(complianceTreatmentLayout, COMPLIANCE_WITH_TREATMENT, ComboBox.class);
 			complianceWithTreatmentCB.setId(COMPLIANCE_WITH_TREATMENT);
 			complianceWithTreatmentCB.addItems(ComplianceWithTreatment.values());
-//			complianceWithTreatmentCB.addStyleName("padding-bottom: 80px;margin-bottom:16px;");
 			complianceTreatmentLayout.addComponent(complianceWithTreatmentCB, COMPLIANCE_WITH_TREATMENT);
 			getContent().addComponent(complianceTreatmentLayout, "COMPLIANCE_WITH_TREATMENT_LAYOUT");
 
@@ -167,22 +187,34 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 			// compliance with treatment validation
 			fieldVisibilityCheck(getField(PREVIOUS_TUBERCULOSIS_TREATMENT), complianceWithTreatmentCB, lblComplianceWithTreatment);
 
+			// Only for TUBERCULOSIS disease below fields are visible,
+			// for all other diseases all health conditions should visible.
+			// This requirement is LUX + TB specific
+			if (Disease.TUBERCULOSIS.equals(disease)) {
+				List<String> visibilityHealthConditions = Arrays.asList(TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, HIV, HIV_ART);
+				fieldVisibilityCheck(getFieldGroup(), visibilityHealthConditions);
+			}
 		}
 
-		TextArea otherConditions = addField(OTHER_CONDITIONS, TextArea.class);
-		otherConditions.setRows(6);
-		otherConditions.setDescription(
-			I18nProperties.getPrefixDescription(HealthConditionsDto.I18N_PREFIX, OTHER_CONDITIONS, "") + "\n"
-				+ I18nProperties.getDescription(Descriptions.descGdpr));
-
-		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
-
-		initializeVisibilitiesAndAllowedVisibilities();
-		initializeAccessAndAllowedAccesses();
 	}
 
 	/**
-	 * Visibility check for the YesNoUnknown fields
+	 * visibility check of the fields based on disease(which is not belongs to its dto)
+	 * 
+	 * @param fieldGroup
+	 * @param visibilities
+	 */
+	private void fieldVisibilityCheck(FieldGroup fieldGroup, List<String> visibilities) {
+		fieldGroup.getFields().stream().forEach(field -> {
+			if (!visibilities.contains(field.getId())) {
+				field.setVisible(false);
+				field.clear();
+			}
+		});
+	}
+
+	/**
+	 * Visibility check for the YesNoUnknown fields and their relevant labels
 	 *
 	 * @param input
 	 * @param field
