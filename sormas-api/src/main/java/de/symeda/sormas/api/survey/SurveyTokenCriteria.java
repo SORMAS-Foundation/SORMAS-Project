@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.survey;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.document.DocumentReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -33,6 +34,7 @@ public class SurveyTokenCriteria extends BaseCriteria {
 	private CaseReferenceDto caseAssignedTo;
 	private Boolean responseReceived;
 	private Boolean tokenNotAssigned;
+	private DocumentReferenceDto document;
 
 	@IgnoreForUrl
 	public SurveyReferenceDto getSurvey() {
@@ -96,5 +98,18 @@ public class SurveyTokenCriteria extends BaseCriteria {
 
 	public void setTokenNotAssigned(Boolean tokenNotAssigned) {
 		this.tokenNotAssigned = tokenNotAssigned;
+	}
+
+	public SurveyTokenCriteria document(DocumentReferenceDto document) {
+		setDocument(document);
+		return this;
+	}
+
+	public DocumentReferenceDto getDocument() {
+		return document;
+	}
+
+	public void setDocument(DocumentReferenceDto document) {
+		this.document = document;
 	}
 }
