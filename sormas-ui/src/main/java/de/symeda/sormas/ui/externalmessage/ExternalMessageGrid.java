@@ -99,13 +99,13 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD).setSortable(false);
 
 		String[] columns = new String[] {
-			SHOW_MESSAGE,
-			ExternalMessageIndexDto.UUID };
+			SHOW_MESSAGE };
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			columns = ArrayUtils.add(columns, ExternalMessageIndexDto.TYPE);
+			columns = ArrayUtils.add(columns, ExternalMessageIndexDto.UUID);
 		}
 		columns = ArrayUtils.addAll(
 			columns,
+			ExternalMessageIndexDto.TYPE,
 			ExternalMessageIndexDto.MESSAGE_DATE_TIME,
 			ExternalMessageIndexDto.REPORTER_NAME,
 			ExternalMessageIndexDto.REPORTER_POSTAL_CODE,
@@ -121,7 +121,9 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			COLUMN_DOWNLOAD);
 		setColumns(columns);
 
-		((Column<ExternalMessageIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+			((Column<ExternalMessageIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
+		}
 		((Column<ExternalMessageIndexDto, Date>) getColumn(ExternalMessageIndexDto.MESSAGE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		((Column<ExternalMessageIndexDto, Date>) getColumn(ExternalMessageIndexDto.PERSON_BIRTH_DATE))
