@@ -123,8 +123,6 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
-	@Diseases(value = {
-		Disease.TUBERCULOSIS }, hide = true)
 	private String otherConditions;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
@@ -133,12 +131,12 @@ public class HealthConditionsDto extends PseudonymizableDto {
 	private YesNoUnknown previousTuberculosisTreatment;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	@Diseases({
+	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	private Integer tuberculosisInfectionYear;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
-	@Diseases({
+	@Diseases(value = {
 		Disease.TUBERCULOSIS })
 	private ComplianceWithTreatment complianceWithTreatment;
 

@@ -13966,7 +13966,18 @@ ALTER TABLE cases ADD COLUMN notifier_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_notifier_id FOREIGN KEY (notifier_id) REFERENCES notifier (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE cases ADD COLUMN notifierdate timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');    
+INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');
 
+-- 2025-04-14 Notifier handling #13319
+
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
+ALTER TABLE cases ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS  previousTuberculosisTreatment VARCHAR(255);
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS  tuberculosisInfectionYear int8 default 0;
+ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS complianceWithTreatment VARCHAR(255);
+ALTER TABLE person ADD COLUMN IF NOT EXISTS entrydate date;
+ALTER TABLE person ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (566, 'Entries to the LUX+TB specific #13319');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

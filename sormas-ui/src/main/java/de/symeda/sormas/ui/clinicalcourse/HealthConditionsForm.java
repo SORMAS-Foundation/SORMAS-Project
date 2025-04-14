@@ -141,66 +141,68 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 
-		initializeVisibilitiesAndAllowedVisibilities();
-		initializeAccessAndAllowedAccesses();
-
 		//Below requirement (showing the treatment year and its compliances only applicable for LUX)
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-
-			FieldHelper
-				.setVisibleWhen(getFieldGroup(), Arrays.asList(PREVIOUS_TUBERCULOSIS_TREATMENT), TUBERCULOSIS, Arrays.asList(YesNoUnknown.YES), true);
-
-			CustomLayout infectionYearLayout = new CustomLayout();
-			infectionYearLayout.setTemplateContents(TB_INFECTION_YEAR_LAYOUT);
-			// infection year label
-			Label lblInfectionYear = new Label(I18nProperties.getCaption(Captions.HealthConditions_tuberculosisInfectionYear));
-			infectionYearLayout.addComponent(lblInfectionYear, "LBL_TUBERCULOSIS_INFECTION_YEAR");
-			getContent().addComponent(infectionYearLayout, "TUBERCULOSIS_INFECTION_YEAR_LAYOUT");
-			// infection year combobox
-			ComboBox tempInfectionYearCB = addField(infectionYearLayout, TUBERCULOSIS_INFECTION_YEAR, ComboBox.class);
-			tempInfectionYearCB.addItems(DateHelper.getYearsToNow());
-			tempInfectionYearCB.setNullSelectionAllowed(true);
-			tempInfectionYearCB.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
-			tempInfectionYearCB.setInputPrompt(I18nProperties.getString(Strings.year));
-			tempInfectionYearCB.setCaption(null);
-			infectionYearLayout.addComponent(tempInfectionYearCB, TUBERCULOSIS_INFECTION_YEAR);
-			// validation for visibility
-			fieldVisibilityCheck(getField(TUBERCULOSIS), tempInfectionYearCB, lblInfectionYear);
-			// compliance with treatment layout
-			CustomLayout complianceTreatmentLayout = new CustomLayout();
-			complianceTreatmentLayout.setTemplateContents(TBA_LAYOUT);
-			complianceTreatmentLayout.setStyleName("compliance-padding");
-			complianceTreatmentLayout.setVisible(true);
-			// compliance with treatment label
-			Label lblComplianceWithTreatment = new Label(I18nProperties.getCaption(Captions.HealthConditions_complianceWithTreatment));
-			lblComplianceWithTreatment.addStyleName("padding-bottom: 50px;");
-			complianceTreatmentLayout.addComponent(lblComplianceWithTreatment, "LBL_COMPLIANCE_WITH_TREATMENT");
-			// compliance with treatment combobox
-			ComboBox complianceWithTreatmentCB = addField(complianceTreatmentLayout, COMPLIANCE_WITH_TREATMENT, ComboBox.class);
-			complianceWithTreatmentCB.setId(COMPLIANCE_WITH_TREATMENT);
-			complianceWithTreatmentCB.addItems(ComplianceWithTreatment.values());
-			complianceTreatmentLayout.addComponent(complianceWithTreatmentCB, COMPLIANCE_WITH_TREATMENT);
-			getContent().addComponent(complianceTreatmentLayout, "COMPLIANCE_WITH_TREATMENT_LAYOUT");
-
-			complianceWithTreatmentCB.setCaption(null);
-			complianceWithTreatmentCB.setVisible(false);
-			// compliance with treatment validation
-			fieldVisibilityCheck(getField(PREVIOUS_TUBERCULOSIS_TREATMENT), complianceWithTreatmentCB, lblComplianceWithTreatment);
-
-			// Only for TUBERCULOSIS disease below fields are visible,
-			// for all other diseases all health conditions should visible.
-			// This requirement is LUX + TB specific
 			if (Disease.TUBERCULOSIS.equals(disease)) {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					Arrays.asList(PREVIOUS_TUBERCULOSIS_TREATMENT),
+					TUBERCULOSIS,
+					Arrays.asList(YesNoUnknown.YES),
+					true);
+
+				CustomLayout infectionYearLayout = new CustomLayout();
+				infectionYearLayout.setTemplateContents(TB_INFECTION_YEAR_LAYOUT);
+				// infection year label
+				Label lblInfectionYear = new Label(I18nProperties.getCaption(Captions.HealthConditions_tuberculosisInfectionYear));
+				infectionYearLayout.addComponent(lblInfectionYear, "LBL_TUBERCULOSIS_INFECTION_YEAR");
+				getContent().addComponent(infectionYearLayout, "TUBERCULOSIS_INFECTION_YEAR_LAYOUT");
+				// infection year combobox
+				ComboBox tempInfectionYearCB = addField(infectionYearLayout, TUBERCULOSIS_INFECTION_YEAR, ComboBox.class);
+				tempInfectionYearCB.addItems(DateHelper.getYearsToNow());
+				tempInfectionYearCB.setNullSelectionAllowed(true);
+				tempInfectionYearCB.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+				tempInfectionYearCB.setInputPrompt(I18nProperties.getString(Strings.year));
+				tempInfectionYearCB.setCaption(null);
+				infectionYearLayout.addComponent(tempInfectionYearCB, TUBERCULOSIS_INFECTION_YEAR);
+				// validation for visibility
+				fieldVisibilityCheck(getField(TUBERCULOSIS), tempInfectionYearCB, lblInfectionYear);
+				// compliance with treatment layout
+				CustomLayout complianceTreatmentLayout = new CustomLayout();
+				complianceTreatmentLayout.setTemplateContents(TBA_LAYOUT);
+				complianceTreatmentLayout.setStyleName("compliance-padding");
+				complianceTreatmentLayout.setVisible(true);
+				// compliance with treatment label
+				Label lblComplianceWithTreatment = new Label(I18nProperties.getCaption(Captions.HealthConditions_complianceWithTreatment));
+				complianceTreatmentLayout.addComponent(lblComplianceWithTreatment, "LBL_COMPLIANCE_WITH_TREATMENT");
+				// compliance with treatment combobox
+				ComboBox complianceWithTreatmentCB = addField(complianceTreatmentLayout, COMPLIANCE_WITH_TREATMENT, ComboBox.class);
+				complianceWithTreatmentCB.setId(COMPLIANCE_WITH_TREATMENT);
+				complianceWithTreatmentCB.addItems(ComplianceWithTreatment.values());
+				complianceTreatmentLayout.addComponent(complianceWithTreatmentCB, COMPLIANCE_WITH_TREATMENT);
+				getContent().addComponent(complianceTreatmentLayout, "COMPLIANCE_WITH_TREATMENT_LAYOUT");
+
+				complianceWithTreatmentCB.setCaption(null);
+				complianceWithTreatmentCB.setVisible(false);
+				// compliance with treatment validation
+				fieldVisibilityCheck(getField(PREVIOUS_TUBERCULOSIS_TREATMENT), complianceWithTreatmentCB, lblComplianceWithTreatment);
+
+				// Only for TUBERCULOSIS disease below fields are visible,
+				// for all other diseases all health conditions should visible.
+				// This requirement is LUX + TB specific
 				List<String> visibilityHealthConditions = Arrays.asList(TUBERCULOSIS, PREVIOUS_TUBERCULOSIS_TREATMENT, HIV, HIV_ART);
 				fieldVisibilityCheck(getFieldGroup(), visibilityHealthConditions);
 			}
 		}
 
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
+
 	}
 
 	/**
 	 * visibility check of the fields based on disease(which is not belongs to its dto)
-	 * 
+	 *
 	 * @param fieldGroup
 	 * @param visibilities
 	 */

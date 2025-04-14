@@ -1022,7 +1022,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 
-		addField(CaseDataDto.HEALTH_CONDITIONS, new HealthConditionsForm(disease, new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop()))
+		addField(
+			CaseDataDto.HEALTH_CONDITIONS,
+			new HealthConditionsForm(
+				disease,
+				FieldVisibilityCheckers.withDisease(disease)
+					.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale())))
 			.setCaption(null);
 
 		// Set initial visibilities & accesses
