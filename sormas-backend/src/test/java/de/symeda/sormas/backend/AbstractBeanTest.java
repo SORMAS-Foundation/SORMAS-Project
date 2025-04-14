@@ -96,6 +96,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -217,6 +218,8 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.person.notifier.NotifierEjb;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -1135,5 +1138,13 @@ public abstract class AbstractBeanTest {
 
 	public SystemConfigurationValueService getSystemConfigurationValueService() {
 		return getBean(SystemConfigurationValueService.class);
+	}
+
+	public NotifierFacade getNotifierFacade() {
+		return getBean(NotifierEjb.NotifierEjbLocal.class);
+	}
+
+	public NotifierService getNotifierService() {
+		return getBean(NotifierService.class);
 	}
 }

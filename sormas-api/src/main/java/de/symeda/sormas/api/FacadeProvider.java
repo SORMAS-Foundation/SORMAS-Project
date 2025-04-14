@@ -85,6 +85,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.manualmessagelog.ManualMessageLogFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -572,6 +573,10 @@ public class FacadeProvider {
 
 	public static SystemConfigurationCategoryFacade getSystemConfigurationCategoryFacade() {
 		return get().lookupEjbRemote(SystemConfigurationCategoryFacade.class);
+	}
+
+	public static NotifierFacade getNotifierFacade() {
+		return get().lookupEjbRemote(NotifierFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

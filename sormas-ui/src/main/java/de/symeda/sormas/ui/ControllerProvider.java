@@ -64,6 +64,7 @@ import de.symeda.sormas.ui.utils.DeleteRestoreController;
 import de.symeda.sormas.ui.utils.PermanentDeleteController;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
+import de.symeda.sormas.ui.caze.notifier.CaseNotifierSideViewController;
 
 public class ControllerProvider extends BaseControllerProvider {
 
@@ -113,6 +114,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final SurveyTokenController surveyTokenController;
 	private final SurveyDocumentController surveyDocumentController;
 	private final SystemConfigurationController systemConfigurationController;
+	private final CaseNotifierSideViewController caseNotifierSideViewController;
 
 	public ControllerProvider() {
 		super();
@@ -163,6 +165,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		surveyTokenController = new SurveyTokenController();
 		surveyDocumentController = new SurveyDocumentController();
 		systemConfigurationController = new SystemConfigurationController();
+		caseNotifierSideViewController = new CaseNotifierSideViewController();
 	}
 
 	protected static ControllerProvider get() {
@@ -351,5 +354,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static SystemConfigurationController getSystemConfigurationController() {
 		return get().systemConfigurationController;
+	}
+
+	public static CaseNotifierSideViewController getCaseNotifierSideViewController() {
+		return get().caseNotifierSideViewController;
 	}
 }

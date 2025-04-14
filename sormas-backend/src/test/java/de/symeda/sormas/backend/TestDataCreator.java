@@ -113,6 +113,7 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -2473,6 +2474,17 @@ public class TestDataCreator {
 		survey.setDisease(disease);
 
 		return beanTest.getSurveyFacade().save(survey);
+	}
+
+	public NotifierDto createNotifier(String firstName, String lastName, String email, String phone, String address, String registrationNumber) {
+		NotifierDto notifier = new NotifierDto();
+		notifier.setFirstName(firstName);
+		notifier.setLastName(lastName);
+		notifier.setEmail(email);
+		notifier.setPhone(phone);
+		notifier.setAddress(address);
+		notifier.setRegistrationNumber(registrationNumber);
+		return notifier;
 	}
 
 	/**

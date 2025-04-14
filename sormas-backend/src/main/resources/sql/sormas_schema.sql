@@ -13936,4 +13936,37 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT id, 'SYSTEM_CON
 
 INSERT INTO schema_version (version_number, comment) VALUES (564, 'Create system config structures #13269');
 
+-- 2025-03-28 Notifier handling #13283
+CREATE TABLE notifier (
+                         id bigint not null,
+                         uuid varchar(36) not null unique,
+                         changedate timestamp not null,
+                         creationdate timestamp not null,
+                         change_user_id bigint,
+
+                         registrationnumber varchar(255) not null,
+                         firstname varchar(255),
+                         lastname varchar(255),
+                         address text,
+                         email varchar(255),
+                         phone varchar(255),
+
+                         sys_period tstzrange not null,
+                         primary key(id)
+);
+
+CREATE TABLE notifier_history (LIKE notifier);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON notifier
+                                                       FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'notifier_history', true);
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON notifier
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('notifier_history', 'id');
+
+ALTER TABLE cases ADD COLUMN notifier_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_notifier_id FOREIGN KEY (notifier_id) REFERENCES notifier (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE cases ADD COLUMN notifierdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');    
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
