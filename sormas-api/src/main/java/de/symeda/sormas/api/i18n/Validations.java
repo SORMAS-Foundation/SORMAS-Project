@@ -261,6 +261,7 @@ public interface Validations {
 	String specifyFirstName = "specifyFirstName";
 	String specifyJurisdictionLevel = "specifyJurisdictionLevel";
 	String specifyLastName = "specifyLastName";
+	String specifyRegistrationNumber = "specifyRegistrationNumber";
 	String specifySex = "specifySex";
 	String specifyYear = "specifyYear";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";

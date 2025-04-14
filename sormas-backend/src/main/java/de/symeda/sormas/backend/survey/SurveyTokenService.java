@@ -67,6 +67,10 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(SurveyToken.RESPONSE_RECEIVED), Boolean.TRUE));
 		}
 
+		if (criteria.getDocument() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getGeneratedDocument().get(Case.UUID), criteria.getDocument().getUuid()));
+		}
+
 		return filter;
 	}
 
@@ -83,6 +87,20 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		return QueryHelper.getFirstResult(em, cq);
 	}
 
+	public SurveyToken getToken(SurveyTokenCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
+		Root<SurveyToken> root = cq.from(SurveyToken.class);
+		cq.select(root);
+		Predicate filter = CriteriaBuilderHelper.and(cb, this.buildCriteriaFilter(criteria, cb, root, new SurveyTokenJoins(root)));
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(root.get(SurveyToken.ASSIGNMENT_DATE)));
+
+		return QueryHelper.getFirstResult(em, cq);
+	}
+
 	public SurveyToken getBySurveyAndToken(SurveyReferenceDto survey, String token) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SurveyToken> cq = cb.createQuery(SurveyToken.class);
@@ -90,8 +108,7 @@ public class SurveyTokenService extends BaseAdoService<SurveyToken> {
 		SurveyTokenJoins joins = new SurveyTokenJoins(root);
 
 		cq.select(root);
-		cq.where(cb.equal(joins.getSurvey().get(Survey.UUID), survey.getUuid()),
-				cb.equal(root.get(SurveyToken.TOKEN), token));
+		cq.where(cb.equal(joins.getSurvey().get(Survey.UUID), survey.getUuid()), cb.equal(root.get(SurveyToken.TOKEN), token));
 
 		return QueryHelper.getFirstResult(em, cq);
 	}

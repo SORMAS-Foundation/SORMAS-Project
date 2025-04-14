@@ -478,6 +478,7 @@ public interface Strings {
 	String headingCaseFatalityRate = "headingCaseFatalityRate";
 	String headingCaseFound = "headingCaseFound";
 	String headingCaseImport = "headingCaseImport";
+	String headingCaseNotifiedBy = "headingCaseNotifiedBy";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
 	String headingCasesDeleted = "headingCasesDeleted";
 	String headingCasesGuide = "headingCasesGuide";
@@ -1633,6 +1634,7 @@ public interface Strings {
 	String no = "no";
 	String none = "none";
 	String notAnswered = "notAnswered";
+	String notApplicable = "notApplicable";
 	String notificationCaseClassificationChanged = "notificationCaseClassificationChanged";
 	String notificationCaseInvestigationDone = "notificationCaseInvestigationDone";
 	String notificationContactSymptomatic = "notificationContactSymptomatic";

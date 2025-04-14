@@ -89,6 +89,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.notifier.Notifier;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.selfreport.SelfReport;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -247,6 +248,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	public static final String SPECIAL_CASE_ACCESSES = "specialCaseAccesses";
 	public static final String SELF_REPORT = "selfReport";
 	public static final String SURVEY_TOKENS = "surveyTokens";
+
+	public static final String NOTIFIER="notifier";
+	public static final String NOTIFIER_DATE="notifierDate";
 
 	private Person person;
 	private String description;
@@ -433,6 +437,9 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 	private List<SelfReport> selfReport;
 
 	private List<SurveyToken> surveyTokens;
+
+	private Notifier notifier;
+	private Date notifierDate;
 
 	private boolean postMortem;
 
@@ -1804,6 +1811,24 @@ public class Case extends CoreAdo implements IsCase, SormasToSormasShareable, Ha
 
 	public void setSurveyTokens(List<SurveyToken> surveyTokens) {
 		this.surveyTokens = surveyTokens;
+	}
+
+	@ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+	public Notifier getNotifier() {
+		return notifier;
+	}
+
+	public void setNotifier(Notifier notifier) {
+		this.notifier = notifier;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getNotifierDate() {
+		return notifierDate;
+	}
+
+	public void setNotifierDate(Date notifierDate) {
+		this.notifierDate = notifierDate;
 	}
 
 	public boolean isPostMortem() {

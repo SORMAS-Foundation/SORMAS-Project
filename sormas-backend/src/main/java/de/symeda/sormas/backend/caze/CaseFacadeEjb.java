@@ -304,6 +304,8 @@ import de.symeda.sormas.backend.outbreak.OutbreakService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.notifier.NotifierDtoHelper;
+import de.symeda.sormas.backend.person.notifier.NotifierService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
@@ -506,6 +508,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 	@EJB
 	private SpecialCaseAccessService specialCaseAccessService;
+	@EJB
+	private NotifierService notifierService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -3194,6 +3198,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setPostMortem(source.isPostMortem());
 		target.setDepartment(source.getHealthFacilityDepartment());
 
+		if (source.getNotifier() != null) {
+			target.setNotifier(NotifierDtoHelper.toVersionReferenceDto(source.getNotifier(), source.getNotifierDate()));
+
+		}
+
 		return target;
 	}
 
@@ -3396,6 +3405,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 		target.setPostMortem(source.isPostMortem());
 		target.setHealthFacilityDepartment(source.getDepartment());
+
+		if (source.getNotifier() != null) {
+			target.setNotifier(notifierService.getVersionByReferenceDto(source.getNotifier()));
+			target.setNotifierDate(notifierService.getVersionDateByReferenceDto(source.getNotifier()));
+		}
+
 		return target;
 	}
 

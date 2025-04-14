@@ -156,7 +156,9 @@ public enum DatabaseTable {
 	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null),
 
 	SYSTEM_CONFIGURATION_VALUES(DatabaseTableType.CONFIGURATION, "system_configuration_values", null),
-	SYSTEM_CONFIGURATION_CATEGORIES(DatabaseTableType.CONFIGURATION, "system_configuration_categories", null);
+	SYSTEM_CONFIGURATION_CATEGORIES(DatabaseTableType.CONFIGURATION, "system_configuration_categories", null),
+
+	NOTIFIER(DatabaseTableType.SORMAS, "notifier", null);
 
 	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
 		return (featureConfigurations, configFacade) -> featureConfigurations.stream()

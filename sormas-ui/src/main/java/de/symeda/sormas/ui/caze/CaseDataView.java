@@ -39,6 +39,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
+import de.symeda.sormas.ui.caze.notifier.CaseNotifierSideViewComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
@@ -85,6 +86,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 	public static final String SPECIAL_ACCESSES_LOC = "specialAccesses";
 	public static final String SELF_REPORT_LOC = "selfReport";
 	public static final String SURVEYS_LOC = "surveys";
+	public static final String CASE_NOTIFIER_LOC = "caseNotifier";
 	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
@@ -109,6 +111,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 		LayoutWithSidePanel layout = new LayoutWithSidePanel(
 			editComponent,
+			CASE_NOTIFIER_LOC,
 			TASKS_LOC,
 			SAMPLES_LOC,
 			EVENTS_LOC,
@@ -130,6 +133,13 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		final String uuid = caze.getUuid();
 		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(uuid);
 		boolean isEditAllowed = isEditAllowed();
+
+		if (UiUtil.enabled(FeatureType.SURVEILLANCE_REPORTS) && caze.getNotifier() != null) {
+			CaseNotifierSideViewComponent notifierSideViewComponent =
+				new CaseNotifierSideViewComponent(caze);
+			notifierSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+			layout.addSidePanelComponent(notifierSideViewComponent, CASE_NOTIFIER_LOC);
+		}
 
 		if (UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			TaskListComponent taskList =
@@ -212,6 +222,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 
 			layout.addSidePanelComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
+
 		DocumentListComponent documentList = null;
 		if (UiUtil.permitted(FeatureType.DOCUMENTS, UserRight.DOCUMENT_VIEW)) {
 

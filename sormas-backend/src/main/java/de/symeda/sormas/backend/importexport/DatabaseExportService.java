@@ -89,6 +89,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
+import de.symeda.sormas.backend.person.notifier.Notifier;
 import de.symeda.sormas.backend.report.AggregateReport;
 import de.symeda.sormas.backend.report.WeeklyReport;
 import de.symeda.sormas.backend.report.WeeklyReportEntry;
@@ -210,6 +211,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.DELETION_CONFIGURATIONS, DeletionConfiguration.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_VALUES, SystemConfigurationValue.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SYSTEM_CONFIGURATION_CATEGORIES, SystemConfigurationCategory.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.NOTIFIER, Notifier.TABLE_NAME);
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.survey.SurveyTokenCriteria;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +104,8 @@ import de.symeda.sormas.backend.manualmessagelog.ManualMessageLog;
 import de.symeda.sormas.backend.manualmessagelog.ManualMessageLogService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.survey.SurveyToken;
+import de.symeda.sormas.backend.survey.SurveyTokenService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -111,6 +115,7 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExternalEmailFacadeEjb.class);
 	public static final int ATTACHMENT_PASSWORD_LENGTH = 10;
+	private static final String SURVEY_TOKEN_DOCUMENT_PLACEHOLDER = "surveyToken";
 	// @formatter:off
 	private static final Map<DocumentWorkflow, DocumentRelatedEntityType> DOCUMENT_WORKFLOW_DOCUMENT_RELATION_MAPPING = Map.of(
 		DocumentWorkflow.CASE_EMAIL, DocumentRelatedEntityType.CASE,
@@ -158,6 +163,8 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
 	private DocGenerationHelper docGenerationHelper;
+	@EJB
+	private SurveyTokenService surveyTokenService;
 
 	@Override
 	public List<DocumentTemplateDto> getTemplates(DocumentWorkflow documentWorkflow) {
@@ -235,7 +242,22 @@ public class ExternalEmailFacadeEjb implements ExternalEmailFacade {
 			emailAttachments = attachmentService.createEncryptedPdfs(filesToBeEncryped, password);
 		}
 
-		String generatedText = documentTemplateFacade.generateDocumentTxtFromEntities(options.getTemplate(), documentEntities, null);
+		SurveyTokenCriteria surveyTokenCriteria = new SurveyTokenCriteria();
+		if(options.getRootEntityReference() instanceof CaseReferenceDto){
+			surveyTokenCriteria.caseAssignedTo((CaseReferenceDto) options.getRootEntityReference());
+			if (options.getAttachedDocuments() != null && options.getAttachedDocuments().size() > 0) {
+				DocumentReferenceDto documentRef = options.getAttachedDocuments().iterator().next();
+				surveyTokenCriteria.document(documentRef);
+			}
+		}
+
+		Properties externalEmailProperties = new Properties();
+		SurveyToken surveyToken = surveyTokenService.getToken(surveyTokenCriteria);
+		if (surveyToken != null) {
+			externalEmailProperties.setProperty(SURVEY_TOKEN_DOCUMENT_PLACEHOLDER, surveyToken.getToken());
+		}
+
+		String generatedText = documentTemplateFacade.generateDocumentTxtFromEntities(options.getTemplate(), documentEntities, externalEmailProperties);
 		EmailTemplateTexts emailTexts = splitTemplateContent(generatedText);
 
 		try {

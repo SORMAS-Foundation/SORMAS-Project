@@ -2153,10 +2153,12 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String Notification_dateOfNotification = "Notification.dateOfNotification";
 	String notificationType = "notificationType";
 	String notificationType_caption = "notificationType.caption";
 	String notificationType_description = "notificationType.description";
 	String notificationType_group = "notificationType.group";
+	String Notifier_notification = "Notifier.notification";
 	String notSpecified = "notSpecified";
 	String notTestedYet = "notTestedYet";
 	String noUserSelected = "noUserSelected";
