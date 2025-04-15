@@ -13965,6 +13965,8 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE cases ADD COLUMN notifier_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_notifier_id FOREIGN KEY (notifier_id) REFERENCES notifier (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE cases ADD COLUMN notifierdate timestamp;
+ALTER TABLE cases_history ADD COLUMN notifier_id bigint;
+ALTER TABLE cases_history ADD COLUMN notifierdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');
 -- 2025-04-14 Notifier handling #13319
