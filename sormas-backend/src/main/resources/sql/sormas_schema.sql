@@ -13972,11 +13972,23 @@ INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to S
 
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
+
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
+
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS  previousTuberculosisTreatment VARCHAR(255);
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS  tuberculosisInfectionYear int8 default 0;
 ALTER TABLE healthconditions ADD COLUMN IF NOT EXISTS complianceWithTreatment VARCHAR(255);
+
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS  previousTuberculosisTreatment VARCHAR(255);
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS  tuberculosisInfectionYear int8 default 0;
+ALTER TABLE healthconditions_history ADD COLUMN IF NOT EXISTS complianceWithTreatment VARCHAR(255);
+
 ALTER TABLE person ADD COLUMN IF NOT EXISTS entrydate date;
 ALTER TABLE person ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
+
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS entrydate date;
+ALTER TABLE person_history ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (566, 'Entries to the LUX+TB specific #13319');
 
