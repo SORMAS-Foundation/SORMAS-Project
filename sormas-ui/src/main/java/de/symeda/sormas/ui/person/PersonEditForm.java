@@ -128,6 +128,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
                     fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+					fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
                     fluidRow(
                             oneOfFourCol(PersonDto.DEATH_DATE),
                             oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
@@ -143,6 +144,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
                             oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
                     ) +
+                    fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
@@ -175,7 +177,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 									LayoutUtil.fluidRow(
 											LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE, 6, 0, PersonDto.NAMES_OF_GUARDIANS)) +
 									fluidRowLocs(PersonDto.NAMES_OF_GUARDIANS) +
-                                    fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
@@ -392,10 +393,36 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
+		ComboBox birthCountryCB = addInfrastructureField(PersonDto.BIRTH_COUNTRY);
 		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
-
 		addField(PersonDto.PASSPORT_NUMBER);
+		birthCountryCB.addItems(countries);
+
+		ComboBox livingStatusCB = addField(PersonDto.LIVING_STATUS, ComboBox.class);
+		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
+		livingStatusCB.setVisible(false);
+		entryDateDF.setVisible(false);
+		birthCountryCB.addValueChangeListener(e -> {
+			CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
+			if (this.disease != null && this.disease.equals(Disease.TUBERCULOSIS)) {
+				if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+					&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
+						.stream()
+						.noneMatch(country -> country.equalsIgnoreCase(countryRef.getIsoCode()))) {
+					livingStatusCB.setVisible(true);
+					livingStatusCB.setRequired(true);
+					entryDateDF.setVisible(true);
+					entryDateDF.setRequired(true);
+				} else {
+					livingStatusCB.setVisible(false);
+					livingStatusCB.setRequired(false);
+					livingStatusCB.clear();
+					entryDateDF.setVisible(false);
+					entryDateDF.setRequired(false);
+					entryDateDF.clear();
+				}
+			}
+		});
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);
 		nationalHealthIdField.setNullRepresentation("");

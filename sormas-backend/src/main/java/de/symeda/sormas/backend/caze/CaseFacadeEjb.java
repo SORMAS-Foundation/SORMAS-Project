@@ -3195,6 +3195,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setPostMortem(source.isPostMortem());
+		target.setDepartment(source.getHealthFacilityDepartment());
 
 		if (source.getNotifier() != null) {
 			target.setNotifier(NotifierDtoHelper.toVersionReferenceDto(source.getNotifier(), source.getNotifierDate()));
@@ -3401,6 +3403,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setPostMortem(source.isPostMortem());
+		target.setHealthFacilityDepartment(source.getDepartment());
 
 		if (source.getNotifier() != null) {
 			target.setNotifier(notifierService.getVersionByReferenceDto(source.getNotifier()));

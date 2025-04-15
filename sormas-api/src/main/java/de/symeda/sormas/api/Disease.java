@@ -57,7 +57,7 @@ public enum Disease
 	DIARRHEA_BLOOD(true, false, false, true, false, 0, true, false, false),
 	SNAKE_BITE(true, false, false, true, false, 0, true, false, false),
 	RUBELLA(true, false, false, true, false, 0, true, false, false),
-	TUBERCULOSIS(true, false, false, true, false, 0, true, false, false),
+	TUBERCULOSIS(true, true, true, true, false, 0, true, false, false),
 	LEPROSY(true, false, false, true, false, 0, true, false, false),
 	LYMPHATIC_FILARIASIS(true, false, false, true, false, 0, true, false, false),
 	BURULI_ULCER(true, false, false, true, false, 0, true, false, false),
