@@ -13969,8 +13969,8 @@ ALTER TABLE cases_history ADD COLUMN notifier_id bigint;
 ALTER TABLE cases_history ADD COLUMN notifierdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');
--- 2025-04-14 Notifier handling #13319
 
+-- 2025-04-14 Entries to the LUX+TB specific #13319
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
 
@@ -14030,7 +14030,7 @@ ALTER TABLE externalmessage_history ADD COLUMN treatmentstarted VARCHAR(255);
 ALTER TABLE externalmessage_history ADD COLUMN treatmentstarteddate TIMESTAMP;
 ALTER TABLE externalmessage_history ADD COLUMN diagnosticdate TIMESTAMP;
 
-INSERT INTO schema_version (version_number, comment) VALUES (566, 'Doctor declaration handling #13294');
+INSERT INTO schema_version (version_number, comment) VALUES (567, 'Doctor declaration handling #13294');
 
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
