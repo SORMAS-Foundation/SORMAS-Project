@@ -109,7 +109,8 @@ public class ExternalMessageController {
 			FacadeProvider.getFacilityFacade(),
 			FacadeProvider.getCustomizableEnumFacade(),
 			FacadeProvider.getCountryFacade(),
-			FacadeProvider.getSurveillanceReportFacade()) {
+			FacadeProvider.getSurveillanceReportFacade(),
+			FacadeProvider.getNotifierFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {

@@ -21,7 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -36,7 +38,13 @@ import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.therapy.TherapyDto;
+import de.symeda.sormas.api.therapy.TherapyReferenceDto;
+import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DtoCopyHelper;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.flow.FlowThen;
 
@@ -59,6 +67,13 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		super(user, externalMessage, mapper, processingFacade);
 	}
 
+	/**
+	 * Handles the flow for creating or selecting an event participant.
+	 *
+	 * @param flow
+	 *            The current flow of processing.
+	 * @return The updated flow after processing the event participant.
+	 */
 	protected FlowThen<ExternalMessageProcessingResult> doCreateEventParticipantFlow(FlowThen<ExternalMessageProcessingResult> flow) {
 
 		//@formatter:off
@@ -103,6 +118,15 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		//@formatter:on
 	}
 
+	/**
+	 * Handles the flow when a case is selected.
+	 *
+	 * @param caseSelection
+	 *            The selected case.
+	 * @param flow
+	 *            The current flow of processing.
+	 * @return The updated flow after processing the selected case.
+	 */
 	protected FlowThen<ExternalMessageProcessingResult> doCaseSelectedFlow(
 		CaseSelectionDto caseSelection,
 		FlowThen<ExternalMessageProcessingResult> flow) {
@@ -118,6 +142,15 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		});
 	}
 
+	/**
+	 * Handles the flow when a contact is selected.
+	 *
+	 * @param contactSelection
+	 *            The selected contact.
+	 * @param flow
+	 *            The current flow of processing.
+	 * @return The updated flow after processing the selected contact.
+	 */
 	protected FlowThen<ExternalMessageProcessingResult> doContactSelectedFlow(
 		SimilarContactDto contactSelection,
 		FlowThen<ExternalMessageProcessingResult> flow) {
@@ -133,6 +166,15 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		});
 	}
 
+	/**
+	 * Handles the flow when an event participant is selected.
+	 *
+	 * @param eventParticipantSelection
+	 *            The selected event participant.
+	 * @param flow
+	 *            The current flow of processing.
+	 * @return The updated flow after processing the selected event participant.
+	 */
 	protected FlowThen<ExternalMessageProcessingResult> doEventParticipantSelectedFlow(
 		SimilarEventParticipantDto eventParticipantSelection,
 		FlowThen<ExternalMessageProcessingResult> flow) {
@@ -151,6 +193,16 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 
 	}
 
+	/**
+	 * Marks the external message as processed and updates its status.
+	 *
+	 * @param externalMessage
+	 *            The external message to mark as processed.
+	 * @param result
+	 *            The processing result.
+	 * @param surveillanceReport
+	 *            The associated surveillance report, if any.
+	 */
 	protected void markExternalMessageAsProcessed(
 		ExternalMessageDto externalMessage,
 		ProcessingResult<ExternalMessageProcessingResult> result,
@@ -162,6 +214,72 @@ public abstract class AbstractDoctorDeclarationMessageProcessingFlow extends Abs
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		externalMessage.setChangeDate(new Date());
 		getExternalMessageProcessingFacade().saveExternalMessage(externalMessage);
+	}
+
+	/**
+	 * Custom logic to execute after building a case.
+	 *
+	 * @param caseDto
+	 *            The case data transfer object.
+	 * @param externalMessageDto
+	 *            The external message data transfer object.
+	 */
+	@Override
+	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		logger.debug("[POST BUILD CASE] Processing case with UUID: {}", caseDto.getUuid());
+
+		postBuildCaseSymptoms(caseDto, externalMessageDto);
+		postBuildCaseTherapy(caseDto, externalMessageDto);
+
+		caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
+		caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
+	}
+
+	protected void postBuildCaseSymptoms(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		if (externalMessageDto.getCaseSymptoms() != null) {
+			final SymptomsDto symptomsDto = SymptomsDto.build();
+			DtoCopyHelper.copyDtoValues(symptomsDto, externalMessageDto.getCaseSymptoms(), true, "uuid");
+			caseDto.setSymptoms(symptomsDto);
+
+			logger.debug("[POST BUILD CASE] Symptoms set for case with UUID: {}", caseDto.getUuid());
+		}
+	}
+
+	protected void postBuildCaseTherapy(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		TherapyDto therapyDto = caseDto.getTherapy();
+
+		TreatmentDto treatmentDto = new TreatmentDto();
+		treatmentDto.setTherapy(new TherapyReferenceDto(therapyDto.getUuid()));
+		treatmentDto.setTreatmentDateTime(externalMessageDto.getTreatmentStartedDate());
+
+		logger.debug("[POST BUILD CASE] Therapy set for case with UUID: {}", caseDto.getUuid());
+
+	}
+
+	/**
+	 * Custom logic to execute after building a person.
+	 *
+	 * @param personDto
+	 *            The person data transfer object.
+	 * @param externalMessageDto
+	 *            The external message data transfer object.
+	 */
+	@Override
+	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
+
+		logger.debug("[POST BUILD PERSON] Processing person with UUID: {}", personDto.getUuid());
+
+		if (externalMessageDto.getPersonGuardianFirstName() != null && externalMessageDto.getPersonGuardianLastName() != null) {
+			personDto.setNamesOfGuardians(externalMessageDto.getPersonGuardianFirstName() + " " + externalMessageDto.getPersonGuardianLastName());
+
+			logger.debug(
+				"[POST BUILD PERSON] Guardian names set for person with UUID: {} - Guardian: {} {}",
+				personDto.getUuid(),
+				externalMessageDto.getPersonGuardianFirstName(),
+				externalMessageDto.getPersonGuardianLastName());
+		}
 	}
 
 }

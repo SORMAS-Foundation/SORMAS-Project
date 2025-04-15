@@ -22,19 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.CountryHelper;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
@@ -171,7 +165,7 @@ public abstract class AbstractProcessingFlow {
 			caseDto.setResponsibleRegion(facility.getRegion());
 			caseDto.setResponsibleDistrict(facility.getDistrict());
 
-			if (facilityType.isAccommodation()) {
+			if (facilityType != null && facilityType.isAccommodation()) {
 				caseDto.setFacilityType(facilityType);
 				caseDto.setHealthFacility(personFacility);
 			} else {
@@ -181,23 +175,33 @@ public abstract class AbstractProcessingFlow {
 			caseDto.setHealthFacility(processingFacade.getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 
-		if (processingFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
-			if (externalMessageDto.getDisease().equals(Disease.PERTUSSIS)
-				&& externalMessageDto.getSampleReports().get(0).getTestReports().get(0).getTestResult().equals(PathogenTestResultType.POSITIVE)) {
-				PathogenTestType testType = externalMessageDto.getSampleReports().get(0).getTestReports().get(0).getTestType();
-				if (testType.equals(PathogenTestType.CULTURE) || testType.equals(PathogenTestType.PCR_RT_PCR)) {
-					caseDto.setCaseClassification(CaseClassification.CONFIRMED);
-				}
-			}
-			caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
-			caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
-		}
-
 		caseDto.setVaccinationStatus(externalMessageDto.getVaccinationStatus());
 		caseDto.getHospitalization().setAdmittedToHealthFacility(externalMessageDto.getAdmittedToHealthFacility());
 
+		postBuildCase(caseDto, externalMessageDto);
+
 		return caseDto;
 	}
+
+	/**
+	 * This method is called after the case data has been built and allows for additional processing or modifications
+	 * to the case data based on the external message.
+	 *
+	 * @param caseDto
+	 *            The case data that has been built.
+	 * @param externalMessageDto
+	 *            The external message that contains additional information.
+	 */
+	protected abstract void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto);
+
+	/**
+	 * This method is called after the person data has been built
+	 * and allows for additional processing or modifications.
+	 *
+	 * @param personDto
+	 * @param externalMessageDto
+	 */
+	protected abstract void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto);
 
 	public ExternalMessageProcessingFacade getExternalMessageProcessingFacade() {
 		return processingFacade;

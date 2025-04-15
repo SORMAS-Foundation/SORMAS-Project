@@ -178,6 +178,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setReportMessageId(source.getReportMessageId());
 		target.setPersonAdditionalDetails(source.getPersonAdditionalDetails());
+		target.setPersonGuardianFirstName(source.getPersonGuardianFirstName());
+		target.setPersonGuardianLastName(source.getPersonGuardianLastName());
+		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
+		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
+		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
+
+		target.setNotifierFirstName(source.getNotifierFirstName());
+		target.setNotifierLastName(source.getNotifierLastName());
+		target.setNotifierRegistrationNumber(source.getNotifierRegistrationNumber());
+		target.setNotifierAddress(source.getNotifierAddress());
+		target.setNotifierEmail(source.getNotifierEmail());
+		target.setNotifierPhone(source.getNotifierPhone());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
+		target.setDiagnosticDate(source.getDiagnosticDate());
 
 		target.setReportId(source.getReportId());
 		if (source.getAssignee() != null) {
@@ -363,6 +378,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setStatus(source.getStatus());
 		target.setReportMessageId(source.getReportMessageId());
 		target.setPersonAdditionalDetails(source.getPersonAdditionalDetails());
+		target.setPersonGuardianFirstName(source.getPersonGuardianFirstName());
+		target.setPersonGuardianLastName(source.getPersonGuardianLastName());
+		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
+		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
+		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
+
+		target.setNotifierFirstName(source.getNotifierFirstName());
+		target.setNotifierLastName(source.getNotifierLastName());
+		target.setNotifierRegistrationNumber(source.getNotifierRegistrationNumber());
+		target.setNotifierAddress(source.getNotifierAddress());
+		target.setNotifierEmail(source.getNotifierEmail());
+		target.setNotifierPhone(source.getNotifierPhone());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
+		target.setDiagnosticDate(source.getDiagnosticDate());
 
 		target.setReportId(source.getReportId());
 		if (source.getSampleReports() != null) {

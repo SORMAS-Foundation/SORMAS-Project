@@ -17,6 +17,7 @@ package de.symeda.sormas.api.externalmessage.processing.labmessage;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
@@ -26,9 +27,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -39,6 +44,7 @@ import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.externalmessage.processing.AbstractMessageProcessingFlowBase;
 import de.symeda.sormas.api.externalmessage.processing.EventValidationResult;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
@@ -48,6 +54,8 @@ import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
@@ -580,6 +588,44 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractMessagePr
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		externalMessage.setChangeDate(new Date());
 		getExternalMessageProcessingFacade().saveExternalMessage(externalMessage);
+	}
+
+	/**
+	 * Post-processes a case after it has been created or updated based on the external message.
+	 * This method has a special case for Pertusis in case of Luxembourg.
+	 * 
+	 * @param caseDto
+	 *            The case data transfer object that has been created or updated.
+	 * @param externalMessageDto
+	 *            The external message data transfer object containing the lab message details.
+	 */
+	@Override
+	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+
+		if (getExternalMessageProcessingFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
+
+			// if any of the positive test reports from any sample is a CULTURE or PCR_RT_PCR test, set the case classification to CONFIRMED
+			if (externalMessageDto.getSampleReports() != null && !externalMessageDto.getSampleReports().isEmpty()) {
+				externalMessageDto.getSampleReports()
+					.stream()
+					.filter(Objects::nonNull)
+					.map(SampleReportDto::getTestReports)
+					.flatMap(List::stream)
+					.filter(testReport -> testReport != null && PathogenTestResultType.POSITIVE.equals(testReport.getTestResult()))
+					.map(TestReportDto::getTestType)
+					.filter(testType -> PathogenTestType.CULTURE.equals(testType) || PathogenTestType.PCR_RT_PCR.equals(testType))
+					.findAny()
+					.ifPresent(testType -> caseDto.setCaseClassification(CaseClassification.CONFIRMED));
+			}
+
+			caseDto.setInvestigationStatus(InvestigationStatus.PENDING);
+			caseDto.setOutcome(CaseOutcome.NO_OUTCOME);
+		}
+	}
+
+	@Override
+	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
+		// No specific post-processing for person data in this flow
 	}
 
 }

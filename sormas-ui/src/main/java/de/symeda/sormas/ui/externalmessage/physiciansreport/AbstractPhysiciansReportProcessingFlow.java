@@ -126,4 +126,14 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 	}
 
 	protected abstract void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback);
+
+	@Override
+	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		// No additional actions needed for physicians report
+	}
+
+	@Override
+	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
+		// No additional actions needed for physicians report
+	}
 }
