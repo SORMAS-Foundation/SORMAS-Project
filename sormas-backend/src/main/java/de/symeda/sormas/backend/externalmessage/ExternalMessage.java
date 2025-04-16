@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
 
 import java.util.Date;
@@ -26,8 +27,10 @@ import org.hibernate.annotations.TypeDef;
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.PhoneNumberType;
@@ -36,10 +39,10 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
@@ -55,7 +58,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String DISEASE_VARIANT_VALUE = "diseaseVariantValue";
 	public static final String DISEASE_VARIANT_DETAILS = "diseaseVariantDetails";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_REPORT_DATE = "caseReportDate";
+	public static final String CASE_SYMPTOMS = "caseSymptoms";
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -65,6 +70,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
+	public static final String PERSON_PRESENT_CONDITION = "personPresentCondition";
 	public static final String PERSON_BIRTH_DATE_DD = "personBirthDateDD";
 	public static final String PERSON_BIRTH_DATE_MM = "personBirthDateMM";
 	public static final String PERSON_BIRTH_DATE_YYYY = "personBirthDateYYYY";
@@ -77,6 +83,11 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String PERSON_PHONE = "personPhone";
 	public static final String PERSON_PHONE_NUMBER_TYPE = "personPhoneNumberType";
 	public static final String PERSON_EMAIL = "personEmail";
+	public static final String PERSON_GUARDIAN_FIRST_NAME = "personGurdianFirstName";
+	public static final String PERSON_GUARDIAN_LAST_NAME = "personGuardianLastName";
+	public static final String PERSON_GUARDIAN_RELATIONSHIP = "personGuardianRelationship";
+	public static final String PERSON_GUARDIAN_PHONE = "personGuardianPhone";
+	public static final String PERSON_GUARDIAN_EMAIL = "personGuardianEmail";
 	public static final String EXTERNAL_MESSAGE_DETAILS = "externalMessageDetails";
 	public static final String STATUS = "status";
 	public static final String REPORT_ID = "reportId";
@@ -85,14 +96,26 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SURVEILLANCE_REPORT = "surveillanceReport";
 	public static final String TSV = "tsv";
 
+	public static final String NOTIFIER_FIRST_NAME = "notifierFirstName";
+	public static final String NOTIFIER_LAST_NAME = "notifierLastName";
+	public static final String NOTIFIER_REGISTRATION_NUMBER = "notifierRegistrationNumber";
+	public static final String NOTIFIER_ADDRESS = "notifierAddress";
+	public static final String NOTIFIER_EMAIL = "notifierEmail";
+	public static final String NOTIFIER_PHONE = "notifierPhone";
+
+	public static final String TREATMENT_STARTED = "treatmentStarted";
+	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
+	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
+
 	private ExternalMessageType type;
 	private Disease disease;
 	private String diseaseVariantValue;
 	private DiseaseVariant diseaseVariant;
 	private String diseaseVariantDetails;
 	private Date messageDateTime;
-
+	private CaseClassification caseClassification;
 	private Date caseReportDate;
+	private Symptoms caseSymptoms;
 	private String reporterName;
 	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
@@ -116,6 +139,15 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personPhone;
 	private PhoneNumberType personPhoneNumberType;
 	private String personEmail;
+	private String personGuardianFirstName;
+	private String personGuardianLastName;
+	private String personGuardianRelationship;
+	private String personGuardianPhone;
+	private String personGuardianEmail;
+	private String treatmentStarted;
+	private Date treatmentStartedDate;
+	private Date diagnosticDate;
+
 	private String externalMessageDetails;
 	//External messages related to each other should have the same reportId
 	private String reportId;
@@ -131,6 +163,24 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	private VaccinationStatus vaccinationStatus;
 	private YesNoUnknown admittedToHealthFacility;
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	private String notifierFirstName;
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	private String notifierLastName;
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	private String notifierRegistrationNumber;
+
+	@Column(length = CHARACTER_LIMIT_TEXT)
+	private String notifierAddress;
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	private String notifierEmail;
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	private String notifierPhone;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -168,6 +218,24 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 		this.diseaseVariantValue = new DiseaseVariantConverter().convertToDatabaseColumn(diseaseVariant);
+	}
+
+	public void setCaseClassification(CaseClassification caseClassification) {
+		this.caseClassification = caseClassification;
+	}
+
+	public CaseClassification getCaseClassification() {
+		return caseClassification;
+	}
+
+	public void setCaseSymptoms(Symptoms caseSymptoms) {
+		this.caseSymptoms = caseSymptoms;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "casesymptoms_id")
+	public Symptoms getCaseSymptoms() {
+		return caseSymptoms;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -394,6 +462,51 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personEmail = personEmail;
 	}
 
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianFirstName() {
+		return personGuardianFirstName;
+	}
+
+	public void setPersonGuardianFirstName(String personGuardianFirstName) {
+		this.personGuardianFirstName = personGuardianFirstName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianLastName() {
+		return personGuardianLastName;
+	}
+
+	public void setPersonGuardianLastName(String personGuardianLastName) {
+		this.personGuardianLastName = personGuardianLastName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianRelationship() {
+		return personGuardianRelationship;
+	}
+
+	public void setPersonGuardianRelationship(String personGuardianRelationship) {
+		this.personGuardianRelationship = personGuardianRelationship;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getPersonGuardianPhone() {
+		return personGuardianPhone;
+	}
+
+	public void setPersonGuardianPhone(String personGuardianPhone) {
+		this.personGuardianPhone = personGuardianPhone;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getPersonGuardianEmail() {
+		return personGuardianEmail;
+	}
+
+	public void setPersonGuardianEmail(String personGuardianEmail) {
+		this.personGuardianEmail = personGuardianEmail;
+	}
+
 	@Column
 	public String getExternalMessageDetails() {
 		return externalMessageDetails;
@@ -493,5 +606,88 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
 		this.admittedToHealthFacility = admittedToHealthFacility;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierFirstName() {
+		return notifierFirstName;
+	}
+
+	public void setNotifierFirstName(String notifierFirstName) {
+		this.notifierFirstName = notifierFirstName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierLastName() {
+		return notifierLastName;
+	}
+
+	public void setNotifierLastName(String notifierLastName) {
+		this.notifierLastName = notifierLastName;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierRegistrationNumber() {
+		return notifierRegistrationNumber;
+	}
+
+	public void setNotifierRegistrationNumber(String notifierRegistrationNumber) {
+		this.notifierRegistrationNumber = notifierRegistrationNumber;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getNotifierAddress() {
+		return notifierAddress;
+	}
+
+	public void setNotifierAddress(String notifierAddress) {
+		this.notifierAddress = notifierAddress;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierEmail() {
+		return notifierEmail;
+	}
+
+	public void setNotifierEmail(String notifierEmail) {
+		this.notifierEmail = notifierEmail;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getNotifierPhone() {
+		return notifierPhone;
+	}
+
+	public void setNotifierPhone(String notifierPhone) {
+		this.notifierPhone = notifierPhone;
+	}
+
+	@Column(length = CHARACTER_LIMIT_SMALL)
+	public String getTreatmentStarted() {
+		return treatmentStarted;
+	}
+
+	public void setTreatmentStarted(String treatmentStarted) {
+		this.treatmentStarted = treatmentStarted;
+	}
+
+	@Column
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getTreatmentStartedDate() {
+		return treatmentStartedDate;
+	}
+
+	public void setTreatmentStartedDate(Date treatmentStartedDate) {
+		this.treatmentStartedDate = treatmentStartedDate;
+	}
+
+	@Column
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDiagnosticDate() {
+		return diagnosticDate;
+	}
+
+	public void setDiagnosticDate(Date diagnosticDate) {
+		this.diagnosticDate = diagnosticDate;
 	}
 }

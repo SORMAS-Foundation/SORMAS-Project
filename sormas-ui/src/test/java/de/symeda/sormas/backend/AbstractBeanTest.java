@@ -1026,7 +1026,8 @@ public abstract class AbstractBeanTest {
 			getFacilityFacade(),
 			getCustomizableEnumFacade(),
 			getCountryFacade(),
-			getSurveillanceReportFacade()) {
+			getSurveillanceReportFacade(),
+			getNotifierFacade()) {
 
 			@Override
 			public boolean hasAllUserRights(UserRight... userRights) {

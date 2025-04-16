@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.PermitAll;
+import javax.ejb.DependsOn;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
@@ -69,16 +69,19 @@ import de.symeda.sormas.backend.util.RightsAllowed;
  * Provides methods to manage system configuration settings.
  */
 @Singleton(name = "SystemConfigurationValueFacade")
-@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 @Startup
+@DependsOn("StartupShutdownService")
 @TransactionManagement(TransactionManagementType.CONTAINER)
+@RightsAllowed(UserRight._SYSTEM_CONFIGURATION)
 public class SystemConfigurationValueEjb
     extends
     AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
     implements SystemConfigurationValueFacade {
 
     @LocalBean
-    @Stateless
+    @Singleton
+    @Startup
+    @DependsOn("StartupShutdownService")
     public static class SystemConfigurationValueEjbLocal extends SystemConfigurationValueEjb {
     }
 
@@ -334,7 +337,7 @@ public class SystemConfigurationValueEjb
 
             String message = null;
             if (null != dto.getValidationMessage() && !dto.getValidationMessage().isEmpty()) {
-                message = I18nProperties.getValidationError(dto.getValidationMessage(), dto.getValue());
+                message = I18nProperties.getValidationError(dto.getValidationMessage().replaceFirst("i18n/", ""), dto.getValue());
             }
             if (null == message || message.isEmpty()) {
                 message = I18nProperties.getValidationError(Validations.systemConfigurationValuePatternNotMatched, dto.getPattern());

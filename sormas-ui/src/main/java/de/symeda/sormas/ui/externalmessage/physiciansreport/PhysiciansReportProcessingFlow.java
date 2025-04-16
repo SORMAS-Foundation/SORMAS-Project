@@ -84,7 +84,7 @@ public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProc
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
-		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, mapper, callback);
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, getMapper(), callback);
 	}
 
 	@Override

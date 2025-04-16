@@ -13965,11 +13965,12 @@ CREATE TRIGGER delete_history_trigger
 ALTER TABLE cases ADD COLUMN notifier_id bigint;
 ALTER TABLE cases ADD CONSTRAINT fk_cases_notifier_id FOREIGN KEY (notifier_id) REFERENCES notifier (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE cases ADD COLUMN notifierdate timestamp;
+ALTER TABLE cases_history ADD COLUMN notifier_id bigint;
+ALTER TABLE cases_history ADD COLUMN notifierdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (565, 'Entities to Support Doctor Declaration XML Parsing #13283');
 
--- 2025-04-14 Notifier handling #13319
-
+-- 2025-04-14 Entries to the LUX+TB specific #13319
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS  postMortem BOOLEAN DEFAULT false;
 ALTER TABLE cases ADD COLUMN IF NOT EXISTS  healthFacilityDepartment VARCHAR(255);
 
@@ -13991,5 +13992,45 @@ ALTER TABLE person_history ADD COLUMN IF NOT EXISTS entrydate date;
 ALTER TABLE person_history ADD COLUMN IF NOT EXISTS livingStatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (566, 'Entries to the LUX+TB specific #13319');
+
+-- 2025-03-24 Doctor declaration handling #13294
+ALTER TABLE externalmessage ADD COLUMN caseclassification varchar(255) DEFAULT 'NOT_CLASSIFIED';
+ALTER TABLE externalmessage ADD COLUMN casesymptoms_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_casesymptoms_id FOREIGN KEY (casesymptoms_id) REFERENCES symptoms (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE externalmessage ADD COLUMN personguardianfirstname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianlastname varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianrelationship varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianphone varchar(255);
+ALTER TABLE externalmessage ADD COLUMN personguardianemail varchar(255);
+ALTER TABLE externalmessage ADD COLUMN notifierfirstname VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifierlastname VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifierregistrationnumber VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifieraddress TEXT;
+ALTER TABLE externalmessage ADD COLUMN notifieremail VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN notifierphone VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN treatmentstarted VARCHAR(255);
+ALTER TABLE externalmessage ADD COLUMN treatmentstarteddate TIMESTAMP;
+ALTER TABLE externalmessage ADD COLUMN diagnosticdate TIMESTAMP;
+
+
+ALTER TABLE externalmessage_history ADD COLUMN caseclassification varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN casesymptoms_id bigint;
+ALTER TABLE externalmessage_history ADD COLUMN personguardianfirstname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianlastname varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianrelationship varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianphone varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN personguardianemail varchar(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierfirstname VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierlastname VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierregistrationnumber VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifieraddress TEXT;
+ALTER TABLE externalmessage_history ADD COLUMN notifieremail VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN notifierphone VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN treatmentstarted VARCHAR(255);
+ALTER TABLE externalmessage_history ADD COLUMN treatmentstarteddate TIMESTAMP;
+ALTER TABLE externalmessage_history ADD COLUMN diagnosticdate TIMESTAMP;
+
+INSERT INTO schema_version (version_number, comment) VALUES (567, 'Doctor declaration handling #13294');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

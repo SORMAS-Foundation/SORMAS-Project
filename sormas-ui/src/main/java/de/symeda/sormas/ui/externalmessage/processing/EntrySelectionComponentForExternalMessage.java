@@ -39,7 +39,7 @@ public class EntrySelectionComponentForExternalMessage extends EntrySelectionCom
 	@Override
 	protected void createAndAddSearchFieldComponents() {
 		List<SampleReportDto> sampleReports = externalMessageDto.getSampleReports();
-		SampleReportDto sampleReport = sampleReports != null ? sampleReports.get(0) : null;
+		SampleReportDto sampleReport = sampleReports != null && !sampleReports.isEmpty() ? sampleReports.get(0) : null;
 
 		createAndAddSearchDetailLabel(externalMessageDto.getMessageDateTime(), ExternalMessageDto.MESSAGE_DATE_TIME);
 		if (sampleReport != null) {

@@ -77,7 +77,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
@@ -94,6 +93,7 @@ import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -126,7 +126,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private CaseService caseService;
+	private SymptomsFacadeEjb.SymptomsFacadeEjbLocal symptomsFacadeEjb;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -149,8 +149,10 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setDisease(source.getDisease());
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
-		target.setCaseReportDate(source.getCaseReportDate());
 		target.setMessageDateTime(source.getMessageDateTime());
+		target.setCaseClassification(source.getCaseClassification());
+		target.setCaseReportDate(source.getCaseReportDate());
+		target.setCaseSymptoms(symptomsFacadeEjb.fillOrBuildEntity(source.getCaseSymptoms(), target.getCaseSymptoms(), checkChangeDate));
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
@@ -176,6 +178,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setReportMessageId(source.getReportMessageId());
 		target.setPersonAdditionalDetails(source.getPersonAdditionalDetails());
+		target.setPersonGuardianFirstName(source.getPersonGuardianFirstName());
+		target.setPersonGuardianLastName(source.getPersonGuardianLastName());
+		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
+		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
+		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
+
+		target.setNotifierFirstName(source.getNotifierFirstName());
+		target.setNotifierLastName(source.getNotifierLastName());
+		target.setNotifierRegistrationNumber(source.getNotifierRegistrationNumber());
+		target.setNotifierAddress(source.getNotifierAddress());
+		target.setNotifierEmail(source.getNotifierEmail());
+		target.setNotifierPhone(source.getNotifierPhone());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
+		target.setDiagnosticDate(source.getDiagnosticDate());
 
 		target.setReportId(source.getReportId());
 		if (source.getAssignee() != null) {
@@ -333,7 +350,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
 		target.setMessageDateTime(source.getMessageDateTime());
+		target.setCaseClassification(source.getCaseClassification());
 		target.setCaseReportDate(source.getCaseReportDate());
+		target.setCaseSymptoms(SymptomsFacadeEjb.toSymptomsDto(source.getCaseSymptoms()));
 		target.setPersonBirthDateDD(source.getPersonBirthDateDD());
 		target.setPersonBirthDateMM(source.getPersonBirthDateMM());
 		target.setPersonBirthDateYYYY(source.getPersonBirthDateYYYY());
@@ -359,6 +378,21 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setStatus(source.getStatus());
 		target.setReportMessageId(source.getReportMessageId());
 		target.setPersonAdditionalDetails(source.getPersonAdditionalDetails());
+		target.setPersonGuardianFirstName(source.getPersonGuardianFirstName());
+		target.setPersonGuardianLastName(source.getPersonGuardianLastName());
+		target.setPersonGuardianRelationship(source.getPersonGuardianRelationship());
+		target.setPersonGuardianPhone(source.getPersonGuardianPhone());
+		target.setPersonGuardianEmail(source.getPersonGuardianEmail());
+
+		target.setNotifierFirstName(source.getNotifierFirstName());
+		target.setNotifierLastName(source.getNotifierLastName());
+		target.setNotifierRegistrationNumber(source.getNotifierRegistrationNumber());
+		target.setNotifierAddress(source.getNotifierAddress());
+		target.setNotifierEmail(source.getNotifierEmail());
+		target.setNotifierPhone(source.getNotifierPhone());
+		target.setTreatmentStarted(source.getTreatmentStarted());
+		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
+		target.setDiagnosticDate(source.getDiagnosticDate());
 
 		target.setReportId(source.getReportId());
 		if (source.getSampleReports() != null) {

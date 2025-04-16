@@ -13,35 +13,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage;
+package de.symeda.sormas.ui.externalmessage.doctordeclaration;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
-import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMultipleSamplesPopup;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
 import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreateEntryWindow;
 import static de.symeda.sormas.ui.utils.processing.ProcessingUiHelper.showPickOrCreatePersonWindow;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -52,22 +47,16 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.LabMessageProcessingHelper;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
+import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractDoctorDeclarationMessageProcessingFlow;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.person.notifier.NotifierDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.dataprocessing.EntitySelection;
 import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
@@ -80,109 +69,174 @@ import de.symeda.sormas.ui.events.EventParticipantCreateForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionComponentForExternalMessage;
 import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
-import de.symeda.sormas.ui.samples.humansample.SampleController;
-import de.symeda.sormas.ui.samples.humansample.SampleCreateForm;
-import de.symeda.sormas.ui.samples.humansample.SampleEditPathogenTestListHandler;
-import de.symeda.sormas.ui.samples.humansample.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.processing.EntrySelectionField;
 
 /**
- * Lab message processing flow implemented with vaadin dialogs/components for handling confirmation and object edit/save steps
+ * Doctor declaration processing flow implemented with Vaadin dialogs/components for handling confirmation and object edit/save steps.
+ * This class extends {@link AbstractDoctorDeclarationMessageProcessingFlow} and provides UI-specific implementations for handling
+ * various steps in the doctor declaration message processing flow.
  */
-public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
+public class DoctorDeclarationMessageProcessingFlow extends AbstractDoctorDeclarationMessageProcessingFlow {
 
-	public LabMessageProcessingFlow(
-		ExternalMessageDto labMessage,
+	private static final Logger LOGGER = LoggerFactory.getLogger(DoctorDeclarationMessageProcessingFlow.class);
+
+	/**
+	 * Constructor for initializing the processing flow with the required dependencies.
+	 *
+	 * @param externalMessage The external message to be processed.
+	 * @param mapper          The mapper for mapping external message data.
+	 * @param processingFacade The facade for handling external message processing operations.
+	 */
+	public DoctorDeclarationMessageProcessingFlow(
+		ExternalMessageDto externalMessage,
 		ExternalMessageMapper mapper,
-		ExternalMessageProcessingFacade processingFacade,
-		RelatedLabMessageHandler relatedLabMessageHandler) {
-		super(labMessage, UiUtil.getUser(), mapper, processingFacade, relatedLabMessageHandler);
+		ExternalMessageProcessingFacade processingFacade) {
+		super(externalMessage, UiUtil.getUser(), mapper, processingFacade);
+		LOGGER.debug("Initialized DoctorDeclarationMessageProcessingFlow with externalMessage: {}", externalMessage);
 	}
 
+	/**
+	 * Handles the case where the disease is missing in the external message.
+	 *
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the missing disease was handled successfully.
+	 */
 	@Override
 	protected CompletionStage<Boolean> handleMissingDisease() {
+		LOGGER.debug("Handling missing disease for externalMessage: {}", getExternalMessage());
 		return showMissingDiseaseConfiguration();
 	}
 
+	/**
+	 * Handles related forwarded messages for the external message.
+	 *
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the related forwarded messages were handled successfully.
+	 */
 	@Override
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
+		LOGGER.debug("Handling related forwarded messages for externalMessage: {}", getExternalMessage());
 		return showRelatedForwardedMessageConfirmation();
 	}
 
+	/**
+	 * Displays a window to pick or create a person associated with the external message.
+	 *
+	 * @param person   The person to be picked or created.
+	 * @param callback The callback to handle the result of the operation.
+	 */
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<EntitySelection<PersonDto>> callback) {
+		LOGGER.debug("Handling pick or create person for person: {}", person);
 		showPickOrCreatePersonWindow(person, callback);
 	}
 
+	/**
+	 * Handles the selection or creation of an entry (case, contact, or event participant) based on the external message.
+	 *
+	 * @param similarCases             A list of similar cases.
+	 * @param similarContacts          A list of similar contacts.
+	 * @param similarEventParticipants A list of similar event participants.
+	 * @param externalMessage          The external message being processed.
+	 * @param callback                 The callback to handle the result of the operation.
+	 */
 	@Override
 	protected void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
 		List<SimilarContactDto> similarContacts,
 		List<SimilarEventParticipantDto> similarEventParticipants,
-		ExternalMessageDto labMessage,
+		ExternalMessageDto externalMessage,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
+		LOGGER.debug("Handling pick or create entry for externalMessage: {}, similarCases: {}, similarContacts: {}, similarEventParticipants: {}",
+			externalMessage, similarCases, similarContacts, similarEventParticipants);
 
-		EntrySelectionField.Options.Builder optionsBuilder = new EntrySelectionField.Options.Builder().addSelectCase(similarCases)
-			.addSelectContact(similarContacts)
-			.addSelectEventParticipant(similarEventParticipants)
-			.addCreateEntry(EntrySelectionField.OptionType.CREATE_CASE, FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE, UserRight.CASE_EDIT)
+		// Build options for selecting or creating an entry (case, contact, or event participant)
+		EntrySelectionField.Options.Builder optionsBuilder = new EntrySelectionField.Options.Builder()
+			.addSelectCase(similarCases) // Add similar cases to the options
+			.addSelectContact(similarContacts) // Add similar contacts to the options
+			.addSelectEventParticipant(similarEventParticipants) // Add similar event participants to the options
+			.addCreateEntry(EntrySelectionField.OptionType.CREATE_CASE, FeatureType.CASE_SURVEILANCE, UserRight.CASE_CREATE, UserRight.CASE_EDIT) // Option to create a new case
 			.addCreateEntry(
 				EntrySelectionField.OptionType.CREATE_CONTACT,
 				FeatureType.CONTACT_TRACING,
 				UserRight.CONTACT_CREATE,
-				UserRight.CONTACT_EDIT)
+				UserRight.CONTACT_EDIT) // Option to create a new contact
 			.addCreateEntry(
 				EntrySelectionField.OptionType.CREATE_EVENT_PARTICIPANT,
 				FeatureType.EVENT_SURVEILLANCE,
 				UserRight.EVENTPARTICIPANT_CREATE,
-				UserRight.EVENTPARTICIPANT_EDIT);
+				UserRight.EVENTPARTICIPANT_EDIT); // Option to create a new event participant
 
+		// If multiple options are available, show a selection window
 		if (optionsBuilder.size() > 1) {
-			showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(labMessage, optionsBuilder.build()), callback);
+			showPickOrCreateEntryWindow(new EntrySelectionComponentForExternalMessage(externalMessage, optionsBuilder.build()), callback);
 		} else {
+			// If only one option is available, directly proceed with it
 			callback.done(optionsBuilder.getSingleAvailableCreateResult());
 		}
 	}
 
+	/**
+	 * Handles the creation of a case based on the external message.
+	 *
+	 * @param caze           The case data to be created.
+	 * @param person         The person associated with the case.
+	 * @param externalMessage The external message being processed.
+	 * @param callback       The callback to handle the result of the operation.
+	 */
 	@Override
-	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		showCreateCaseWindow(caze, person, labMessage, getMapper(), callback);
+	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
+		LOGGER.debug("Handling create case for case: {}, person: {}, externalMessage: {}", caze, person, externalMessage);
+
+		HandlerCallback<CaseDataDto> updateNotifierCallback = new HandlerCallback<CaseDataDto>() {
+
+			@Override
+			public void done(CaseDataDto result) {
+				// If the external message contains notifier information, update the case with notifier details
+				if (externalMessage.getNotifierRegistrationNumber() != null) {
+					NotifierDto notifierDto = new NotifierDto();
+					notifierDto.setRegistrationNumber(externalMessage.getNotifierRegistrationNumber());
+					notifierDto.setFirstName(externalMessage.getNotifierFirstName());
+					notifierDto.setLastName(externalMessage.getNotifierLastName());
+					notifierDto.setAddress(externalMessage.getNotifierAddress());
+					notifierDto.setPhone(externalMessage.getNotifierPhone());
+					notifierDto.setEmail(externalMessage.getNotifierEmail());
+
+					// Update the case with notifier details and complete the callback
+					callback.done(getExternalMessageProcessingFacade().updateAndSetCaseNotifier(result.getUuid(), notifierDto));
+					return;
+				}
+				// If no notifier information is present, complete the callback with the result
+				callback.done(result);
+			}
+
+			@Override
+			public void cancel() {
+				// Handle cancellation of the operation
+				callback.cancel();
+			}
+		};
+
+		// Show the create case window with the provided data and callback
+		showCreateCaseWindow(caze, person, externalMessage, getMapper(), updateNotifierCallback);
 	}
 
+	/**
+	 * Handles the creation of a contact based on the external message.
+	 *
+	 * @param contact        The contact data to be created.
+	 * @param person         The person associated with the contact.
+	 * @param externalMessage The external message being processed.
+	 * @param callback       The callback to handle the result of the operation.
+	 */
 	@Override
-	public CompletionStage<Boolean> handleMultipleSampleConfirmation() {
-		return showMultipleSamplesPopup();
-	}
+	protected void handleCreateContact(
+		ContactDto contact,
+		PersonDto person,
+		ExternalMessageDto externalMessage,
+		HandlerCallback<ContactDto> callback) {
+		LOGGER.debug("Handling create contact for contact: {}, person: {}, externalMessage: {}", contact, person, externalMessage);
 
-	@Override
-	protected void handleCreateSampleAndPathogenTests(
-		SampleDto sample,
-		List<PathogenTestDto> pathogenTests,
-		Disease disease,
-		ExternalMessageDto labMessage,
-		boolean entityCreated,
-		boolean lastSample,
-		HandlerCallback<SampleAndPathogenTests> callback) {
-
-		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			getSampleCreateComponent(sample, lastSample, pathogenTests, disease, pathogenTestHandler::addPathogenTest);
-
-		sampleCreateComponent.setPostCommitListener(() -> {
-			pathogenTestHandler.saveAll(sample.toReference());
-
-			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), pathogenTestHandler.getPathogenTests()));
-		});
-		sampleCreateComponent.addDiscardListener(callback::cancel);
-
-		Window window = VaadinUiUtil.createPopupWindow();
-		showFormWithLabMessage(labMessage, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), entityCreated);
-	}
-
-	@Override
-	protected void handleCreateContact(ContactDto contact, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<ContactDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent =
@@ -200,13 +254,21 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		contactCreateComponent.getWrappedComponent().setValue(contact);
 		contactCreateComponent.getWrappedComponent().setPerson(person);
 
-		showFormWithLabMessage(labMessage, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
+		showFormWithLabMessage(externalMessage, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
 	}
 
+	/**
+	 * Displays a window to pick or create an event associated with the external message.
+	 *
+	 * @param externalMessage The external message being processed.
+	 * @param callback        The callback to handle the result of the operation.
+	 */
 	@Override
-	protected void handlePickOrCreateEvent(ExternalMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
+	protected void handlePickOrCreateEvent(ExternalMessageDto externalMessage, HandlerCallback<PickOrCreateEventResult> callback) {
+		LOGGER.debug("Handling pick or create event for externalMessage: {}", externalMessage);
+
 		EventSelectionField eventSelect =
-			new EventSelectionField(labMessage.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
+			new EventSelectionField(externalMessage.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -237,8 +299,16 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		UI.getCurrent().addWindow(window);
 	}
 
+	/**
+	 * Handles the creation of an event based on the external message.
+	 *
+	 * @param event    The event data to be created.
+	 * @param callback The callback to handle the result of the operation.
+	 */
 	@Override
 	protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
+		LOGGER.debug("Handling create event for event: {}", event);
+
 		EventDataForm eventCreateForm = new EventDataForm(true, false, true);
 		eventCreateForm.setValue(event);
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
@@ -268,12 +338,22 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		UI.getCurrent().addWindow(window);
 	}
 
+	/**
+	 * Handles the creation of an event participant based on the external message.
+	 *
+	 * @param eventParticipant The event participant data to be created.
+	 * @param event            The event associated with the participant.
+	 * @param externalMessage  The external message being processed.
+	 * @param callback         The callback to handle the result of the operation.
+	 */
 	@Override
 	protected void handleCreateEventParticipant(
 		EventParticipantDto eventParticipant,
 		EventDto event,
-		ExternalMessageDto labMessage,
+		ExternalMessageDto externalMessage,
 		HandlerCallback<EventParticipantDto> callback) {
+		LOGGER.debug("Handling create event participant for eventParticipant: {}, event: {}, externalMessage: {}", eventParticipant, event, externalMessage);
+
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm(
@@ -296,133 +376,44 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		});
 		createComponent.addDiscardListener(callback::cancel);
 
-		showFormWithLabMessage(labMessage, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
+		showFormWithLabMessage(externalMessage, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
 	}
 
+	/**
+	 * Confirms whether to pick an existing event participant.
+	 *
+	 * @return A {@link CompletionStage} that resolves to a boolean indicating whether the user chose to continue with the existing participant.
+	 */
 	@Override
 	protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {
+		LOGGER.debug("Confirming pick existing event participant for externalMessage: {}", getExternalMessage());
+
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
+		// Create a confirmation dialog with "Continue" and "Back" options
 		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
 			new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
-		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
-		commitDiscardWrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionBack));
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue)); // Continue button
+		commitDiscardWrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionBack)); // Back button
 
-		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
-		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+		// Handle the user's choice
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true)); // User chose to continue
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false)); // User chose to go back
 
+		// Display the confirmation dialog
 		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
 
 		return ret;
 	}
 
-	@Override
-	protected void handlePickOrCreateSample(
-		List<SampleDto> similarSamples,
-		List<SampleDto> otherSamples,
-		ExternalMessageDto labMessage,
-		int sampleReportIndex,
-		HandlerCallback<PickOrCreateSampleResult> callback) {
-
-		HorizontalLayout sampleDetailsLayout = new HorizontalLayout();
-		sampleDetailsLayout.setSpacing(true);
-
-		SampleReportDto sampleReport = labMessage.getSampleReportsNullSafe().get(sampleReportIndex);
-
-		Date sampleDateTime = sampleReport.getSampleDateTime();
-		addLabelIfAvailable(
-			sampleDetailsLayout,
-			sampleDateTime == null ? null : sampleDateTime.toString(),
-			ExternalMessageDto.I18N_PREFIX,
-			SampleReportDto.SAMPLE_DATE_TIME);
-		addLabelIfAvailable(sampleDetailsLayout, sampleReport.getLabSampleId(), ExternalMessageDto.I18N_PREFIX, SampleReportDto.LAB_SAMPLE_ID);
-
-		SampleMaterial sampleMaterial = sampleReport.getSampleMaterial();
-		addLabelIfAvailable(
-			sampleDetailsLayout,
-			sampleMaterial == null ? null : sampleMaterial.toString(),
-			ExternalMessageDto.I18N_PREFIX,
-			SampleReportDto.SAMPLE_MATERIAL);
-
-		SampleSelectionField selectField =
-			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample), sampleDetailsLayout);
-
-		Window window = VaadinUiUtil.createPopupWindow();
-
-		final CommitDiscardWrapperComponent<SampleSelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
-		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
-		selectionField.addCommitListener(() -> {
-			PickOrCreateSampleResult result = new PickOrCreateSampleResult();
-
-			SampleDto sampleDto = selectField.getValue();
-			if (sampleDto != null) {
-				result.setSample(sampleDto);
-			} else {
-				result.setNewSample(true);
-			}
-
-			callback.done(result);
-		});
-		selectionField.addDiscardListener(callback::cancel);
-
-		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
-		selectionField.getCommitButton().setEnabled(false);
-
-		showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
-	}
-
-	private void addLabelIfAvailable(HorizontalLayout layout, String text, String i18nPrefix, String captionKey) {
-		if (StringUtils.isBlank(text)) {
-			return;
-		}
-		Label label = new Label(text);
-		label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
-		label.setWidthUndefined();
-		layout.addComponent(label);
-	}
-
-	@Override
-	protected void handleEditSample(
-		SampleDto sample,
-		List<PathogenTestDto> newPathogenTests,
-		ExternalMessageDto labMessage,
-		ExternalMessageMapper mapper,
-		boolean lastSample,
-		HandlerCallback<SampleAndPathogenTests> callback) {
-
-		ExternalMessageProcessingUIHelper
-			.showEditSampleWindow(sample, lastSample, newPathogenTests, labMessage, getMapper(), callback::done, callback::cancel);
-	}
-
-	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-		SampleDto sample,
-		boolean lastSample,
-		List<PathogenTestDto> pathogenTests,
-		Disease disease,
-		Consumer<PathogenTestDto> pathogenTestSaveHandler) {
-		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
-
-		// add pathogen test create components
-		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
-		// always build at least one PathogenTestDto
-		if (pathogenTestsToAdd.isEmpty()) {
-			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, getMapper(), sample, getUser()));
-		}
-
-		ExternalMessageProcessingUIHelper.addNewPathogenTests(pathogenTestsToAdd, sampleCreateComponent, true, pathogenTestSaveHandler, null);
-
-		// add option to create additional pathogen tests
-		sampleController.addPathogenTestButton(sampleCreateComponent, true, null, null, pathogenTestSaveHandler);
-
-		LabMessageUiHelper.establishCommitButtons(sampleCreateComponent, lastSample);
-
-		return sampleCreateComponent;
-	}
-
+	/**
+	 * Notifies that corrections have been saved.
+	 *
+	 * @return A {@link CompletionStage} that resolves when the notification is complete.
+	 */
 	@Override
 	protected CompletionStage<Void> notifyCorrectionsSaved() {
+		LOGGER.debug("Notifying corrections saved for externalMessage: {}", getExternalMessage());
 		return null;
 	}
 }

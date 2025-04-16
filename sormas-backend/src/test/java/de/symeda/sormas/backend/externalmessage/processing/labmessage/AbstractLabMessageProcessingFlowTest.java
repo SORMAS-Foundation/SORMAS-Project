@@ -78,8 +78,8 @@ import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractLabMes
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateEventResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PickOrCreateSampleResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.api.externalmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.api.externalmessage.processing.labmessage.SampleAndPathogenTests;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;

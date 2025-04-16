@@ -757,6 +757,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getByUuid(personUuid);
 		personCreateForm.setPerson(personByUuid);
 
+		if(caseDataDto.getSymptoms() != null) {
+			personCreateForm.setSymptoms(caseDataDto.getSymptoms());
+		}
+
 		if (UiUtil.enabled(FeatureType.HIDE_JURISDICTION_FIELDS)) {
 			hideAndFillJurisdictionFields();
 		}

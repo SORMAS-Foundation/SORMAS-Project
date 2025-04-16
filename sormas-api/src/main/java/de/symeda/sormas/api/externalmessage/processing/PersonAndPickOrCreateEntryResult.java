@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.externalmessage.processing.labmessage;
+package de.symeda.sormas.api.externalmessage.processing;
 
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;

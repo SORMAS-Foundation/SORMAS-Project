@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
@@ -53,6 +54,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.notifier.NotifierDto;
+import de.symeda.sormas.api.person.notifier.NotifierFacade;
+import de.symeda.sormas.api.person.notifier.NotifierReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -75,6 +79,7 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 	private final CustomizableEnumFacade customizableEnumFacade;
 	private final CountryFacade countryFacade;
 	private final SurveillanceReportFacade surveillanceReportFacade;
+	private final NotifierFacade notifierFacade;
 
 	public ExternalMessageProcessingFacade(
 		ExternalMessageFacade externalMessageFacade,
@@ -93,7 +98,8 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		FacilityFacade facilityFacade,
 		CustomizableEnumFacade customizableEnumFacade,
 		CountryFacade countryFacade,
-		SurveillanceReportFacade surveillanceReportFacade) {
+		SurveillanceReportFacade surveillanceReportFacade,
+		NotifierFacade notifierFacade) {
 		super(featureConfigurationFacade, caseFacade, contactFacade, regionFacade, districtFacade, communityFacade);
 		this.externalMessageFacade = externalMessageFacade;
 		this.configFacade = configFacade;
@@ -106,6 +112,7 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 		this.customizableEnumFacade = customizableEnumFacade;
 		this.countryFacade = countryFacade;
 		this.surveillanceReportFacade = surveillanceReportFacade;
+		this.notifierFacade = notifierFacade;
 	}
 
 	public boolean existsForwardedExternalMessageWith(String reportId) {
@@ -206,6 +213,15 @@ public abstract class ExternalMessageProcessingFacade extends AbstractProcessing
 
 	public PersonDto getPersonByContext(PersonContext personContext, String personUuid) {
 		return personFacade.getByContext(personContext, personUuid);
+	}
 
+	public CaseDataDto updateAndSetCaseNotifier(String caseUuid, NotifierDto notifierDto) {
+
+		final CaseDataDto caseDto = caseFacade.getByUuid(caseUuid);
+		final NotifierDto updatedNotifierDto = notifierFacade.updateAndGetByRegistrationNumber(notifierDto);
+		final NotifierReferenceDto notifierReferenceDto =
+			notifierFacade.getVersionReferenceByUuidAndDate(updatedNotifierDto.getUuid(), updatedNotifierDto.getChangeDate());
+		caseDto.setNotifier(notifierReferenceDto);
+		return caseFacade.save(caseDto);
 	}
 }

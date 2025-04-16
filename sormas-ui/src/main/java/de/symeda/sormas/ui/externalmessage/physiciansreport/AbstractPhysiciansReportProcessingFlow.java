@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
@@ -23,7 +27,7 @@ import de.symeda.sormas.api.externalmessage.processing.AbstractProcessingFlow;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageMapper;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingFacade;
 import de.symeda.sormas.api.externalmessage.processing.ExternalMessageProcessingResult;
-import de.symeda.sormas.api.externalmessage.processing.labmessage.PersonAndPickOrCreateEntryResult;
+import de.symeda.sormas.api.externalmessage.processing.PersonAndPickOrCreateEntryResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -31,10 +35,6 @@ import de.symeda.sormas.api.utils.dataprocessing.HandlerCallback;
 import de.symeda.sormas.api.utils.dataprocessing.PickOrCreateEntryResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResult;
 import de.symeda.sormas.api.utils.dataprocessing.ProcessingResultStatus;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
@@ -65,7 +65,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 
 		PersonDto person = previousResult.getPerson();
 		PersonReferenceDto personRef = person.toReference();
-		List<CaseSelectionDto> similarCases = processingFacade.getSimilarCases(personRef, externalMessage.getDisease());
+		List<CaseSelectionDto> similarCases = getExternalMessageProcessingFacade().getSimilarCases(personRef, externalMessage.getDisease());
 
 		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
 
@@ -126,4 +126,14 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 	}
 
 	protected abstract void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback);
+
+	@Override
+	protected void postBuildCase(CaseDataDto caseDto, ExternalMessageDto externalMessageDto) {
+		// No additional actions needed for physicians report
+	}
+
+	@Override
+	protected void postBuildPerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
+		// No additional actions needed for physicians report
+	}
 }
