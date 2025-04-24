@@ -224,6 +224,8 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.caseClassification = caseClassification;
 	}
 
+	@Enumerated(EnumType.STRING)
+	@Column
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
