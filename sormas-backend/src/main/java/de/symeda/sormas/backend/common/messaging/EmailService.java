@@ -39,14 +39,17 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueFacade;
+import de.symeda.sormas.backend.systemconfiguration.SystemConfigurationValueEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 
 @Stateless(name = "EmailService")
 @LocalBean
 public class EmailService {
+
+	private static final String EMAIL_SENDER_ADDRESS = "EMAIL_SENDER_ADDRESS";
+	private static final String EMAIL_SENDER_NAME = "EMAIL_SENDER_NAME";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -54,7 +57,8 @@ public class EmailService {
 	private Session mailSession;
 
 	@EJB
-	private ConfigFacadeEjbLocal configFacade;
+	private SystemConfigurationValueEjb.SystemConfigurationValueEjbLocal systemConfigurationValueEjb;
+//	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	@Asynchronous
 	public void sendEmailAsync(String recipient, String subject, String content) throws MessagingException {
@@ -91,9 +95,8 @@ public class EmailService {
 
 	private void sendEmailAsync(String recipient, String subject, Object content, String contentType) throws MessagingException {
 		MimeMessage message = new MimeMessage(mailSession);
-
-		String senderAddress = configFacade.getEmailSenderAddress();
-		String senderName = configFacade.getEmailSenderName();
+		String senderAddress = systemConfigurationValueEjb.getValue(EMAIL_SENDER_ADDRESS);
+		String senderName = systemConfigurationValueEjb.getValue(EMAIL_SENDER_NAME);
 
 		try {
 			InternetAddress fromAddress = new InternetAddress(senderAddress, senderName);
