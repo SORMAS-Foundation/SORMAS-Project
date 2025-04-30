@@ -233,7 +233,7 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
             "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$, 192.168.1.1",
             "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$, test@sormas.org", // Valid email
             "\\s*[^\\s]+, abCD12!@efGH34#$", // Valid Auth Key
-            "(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+, apiKey=abcdEFGH1234ijklMNOP", // Valid secret api key
+            "(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+, apiKey=sormas2025orgKEY", // Valid secret api key
             "(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+, Secret : s3cr3tV@lu3P@ssw0rd!", // Valid secret key
             "(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+, token: sormasSecureToken12345678!" // Valid token key
     })

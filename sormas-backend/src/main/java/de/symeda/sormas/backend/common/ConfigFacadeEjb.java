@@ -452,31 +452,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getEmailSenderAddress() {
-		return getProperty(EMAIL_SENDER_ADDRESS, "noreply@sormas.org");
-	}
-
-	@Override
-	public String getEmailSenderName() {
-		return getProperty(EMAIL_SENDER_NAME, "SORMAS Support");
-	}
-
-	@Override
-	public String getSmsSenderName() {
-		return getProperty(SMS_SENDER_NAME, "SORMAS");
-	}
-
-	@Override
-	public String getSmsAuthKey() {
-		return getProperty(SMS_AUTH_KEY, "");
-	}
-
-	@Override
-	public String getSmsAuthSecret() {
-		return getProperty(SMS_AUTH_SECRET, "");
-	}
-
-	@Override
 	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
 		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
 	}

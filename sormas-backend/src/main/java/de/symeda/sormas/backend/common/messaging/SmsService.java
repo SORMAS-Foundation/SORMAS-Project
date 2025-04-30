@@ -56,8 +56,7 @@ public class SmsService {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@EJB
-	private SystemConfigurationValueEjb.SystemConfigurationValueEjbLocal systemConfigurationValueEjb;
-//	private SystemConfigurationValueFacade systemConfigurationValueEjb;
+	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	@Asynchronous
 	public void sendSms(String phoneNumber, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {

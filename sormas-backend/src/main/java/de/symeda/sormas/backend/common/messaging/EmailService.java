@@ -57,8 +57,7 @@ public class EmailService {
 	private Session mailSession;
 
 	@EJB
-	private SystemConfigurationValueEjb.SystemConfigurationValueEjbLocal systemConfigurationValueEjb;
-//	private SystemConfigurationValueFacade systemConfigurationValueEjb;
+	private SystemConfigurationValueFacade systemConfigurationValueEjb;
 
 	@Asynchronous
 	public void sendEmailAsync(String recipient, String subject, String content) throws MessagingException {

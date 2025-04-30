@@ -14032,5 +14032,116 @@ ALTER TABLE externalmessage_history ADD COLUMN diagnosticdate TIMESTAMP;
 
 INSERT INTO schema_version (version_number, comment) VALUES (567, 'Doctor declaration handling #13294');
 
+-- 2025-04-30 Moving Email & SMS properties to the new system configuration structure #13311
 
+DO
+$$ DECLARE
+email_configuration_id bigint; sms_configuration_id
+bigint;
+
+BEGIN
+    -- Check if the category 'EMAIL' already exists
+SELECT id
+INTO email_configuration_id
+FROM systemconfigurationcategory
+WHERE name = 'EMAIL';
+
+SELECT id
+INTO sms_configuration_id
+FROM systemconfigurationcategory
+WHERE name = 'SMS';
+
+-- Insert the email category if it doesn't exist
+IF
+email_configuration_id IS NULL THEN
+        INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EMAIL', 'Email', 'Email Configuration')
+        RETURNING id INTO email_configuration_id;
+
+END IF;
+-- Insert the sms category if it doesn't exist
+IF
+sms_configuration_id IS NULL THEN
+INSERT INTO systemconfigurationcategory(id, uuid, changedate, creationdate, name, caption, description) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SMS', 'SMS', 'SMS Configuration')
+        RETURNING id INTO sms_configuration_id;
+end if;
+
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_ADDRESS';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_ADDRESS';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('EMAIL_SENDER_ADDRESS', 'noreply@sormas.org', email_configuration_id, true,
+        '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', false, null,
+        'i18n/systemConfigurationValueValidationNotAEmail', now(), now(), nextval('entity_seq'),
+        generate_base32_uuid());
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_NAME';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = email_configuration_id
+  AND config_key = 'EMAIL_SENDER_NAME';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('EMAIL_SENDER_NAME', 'SORMAS Support', email_configuration_id, true, '\s*[^\s]+', false, null,
+        'i18n/systemConfigurationValueValidationNotAValidName', now(), now(), nextval('entity_seq'),
+        generate_base32_uuid());
+
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_SENDER_NAME';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_SENDER_NAME';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SMS_SENDER_NAME', '', sms_configuration_id, true, '\s*[^\s]+', false, null,
+        'i18n/systemConfigurationValueValidationNotAValidName', now(), now(), nextval('entity_seq'),
+        generate_base32_uuid());
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_KEY';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_KEY';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SMS_AUTH_KEY', '', sms_configuration_id, true, '\s*[^\s]+', false, null, 'i18n/smsAuthKeyValueValidation',
+        now(), now(), nextval('entity_seq'), generate_base32_uuid());
+
+DELETE
+FROM systemconfigurationvalue
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_SECRET';
+DELETE
+FROM systemconfigurationvalue_history
+WHERE category_id = sms_configuration_id
+  AND config_key = 'SMS_AUTH_SECRET';
+INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
+                                     value_encrypt, data_provider, validation_message, changedate, creationdate, id,
+                                     uuid)
+VALUES ('SMS_AUTH_SECRET', '', sms_configuration_id, true, '(?i)(secret|password|token|api[_-]?key)\s*[:=]\s*[^\s]+',
+        false, null, 'i18n/smsAuthSecretValueValidation', now(), now(), nextval('entity_seq'), generate_base32_uuid());
+END $$
+LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (568, 'Moving Email & SMS properties to the new system configuration structure #13311');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
