@@ -17,8 +17,10 @@ package de.symeda.sormas.ui.externalmessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -333,7 +335,8 @@ public class ExternalMessageController {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if ((ReportingType.LABORATORY.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
+			|| ReportingType.DOCTOR.equals(externalMessage.getType()) && UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE))) {
 			Button deleteButton = ButtonHelper.createButton(
 				Captions.actionDelete,
 				I18nProperties.getCaption(Captions.actionDelete),
@@ -458,6 +461,8 @@ public class ExternalMessageController {
 		// get fresh data
 		ExternalMessageDto externalMessageDto = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 
+		components.syncUsersForMessageType(Set.of(externalMessageDto.getType()));
+
 		if (externalMessageDto.getAssignee() != null) {
 			components.getAssigneeComboBox().setValue(externalMessageDto.getAssignee());
 		}
@@ -473,6 +478,15 @@ public class ExternalMessageController {
 	private void bulkEditAssignee(Collection<ExternalMessageIndexDto> selectedRows, Runnable callback) {
 
 		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
+		final HashSet<ExternalMessageType> types = new HashSet<>();
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS)) {
+			types.add(ExternalMessageType.LAB_MESSAGE);
+		}
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
+			types.add(ExternalMessageType.PHYSICIANS_REPORT);
+		}
+		components.syncUsersForMessageType(types);
 
 		components.getAssignMeButton().addClickListener(e -> {
 			FacadeProvider.getExternalMessageFacade()

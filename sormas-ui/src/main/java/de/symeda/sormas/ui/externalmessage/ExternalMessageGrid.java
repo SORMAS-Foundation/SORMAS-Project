@@ -179,7 +179,13 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			layout.addComponent(label);
 		}
 
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_PROCESS)) {
+		final boolean canAssignLabMessage =
+			UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS) && ExternalMessageType.LAB_MESSAGE.equals(externalMessage.getType());
+
+		final boolean canAssignDoctorDeclaration = ExternalMessageType.PHYSICIANS_REPORT.equals(externalMessage.getType())
+			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS);
+
+		if (canAssignLabMessage || canAssignDoctorDeclaration) {
 			Button button = new Button();
 			CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			if (externalMessage.getAssignee() == null) {
@@ -195,9 +201,15 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	}
 
 	private Component buildProcessComponent(ExternalMessageIndexDto indexDto) {
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_PROCESS)
-			&& indexDto.getStatus().isProcessable()
-			&& (indexDto.getType() != ExternalMessageType.PHYSICIANS_REPORT || UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT))) {
+		final boolean canAssignLabMessage = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS)
+			&& ExternalMessageType.LAB_MESSAGE.equals(indexDto.getType())
+			&& UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT);
+
+		final boolean canAssignDoctorDeclaration = ExternalMessageType.PHYSICIANS_REPORT.equals(indexDto.getType())
+			&& UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)
+			&& UiUtil.permitted(UserRight.CASE_CREATE, UserRight.CASE_EDIT);
+
+		if ((canAssignLabMessage || canAssignDoctorDeclaration) && indexDto.getStatus().isProcessable()) {
 			// build process button
 			return ButtonHelper.createButton(Captions.externalMessageProcess, e -> {
 				if (ExternalMessageType.LAB_MESSAGE == indexDto.getType()) {

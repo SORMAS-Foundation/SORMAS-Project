@@ -841,23 +841,43 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>EXTERNAL_MESSAGE_VIEW</role-name>
-        <group-name>EXTERNAL_MESSAGE_VIEW</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
-        <group-name>EXTERNAL_MESSAGE_PROCESS</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>EXTERNAL_MESSAGE_PUSH</role-name>
         <group-name>EXTERNAL_MESSAGE_PUSH</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>EXTERNAL_MESSAGE_DELETE</role-name>
-        <group-name>EXTERNAL_MESSAGE_DELETE</group-name>
+        <role-name>EXTERNAL_MESSAGE_ACCESS</role-name>
+        <group-name>EXTERNAL_MESSAGE_ACCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</role-name>
+        <group-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</role-name>
+        <group-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_LABORATORY_DELETE</role-name>
+        <group-name>EXTERNAL_MESSAGE_LABORATORY_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</role-name>
+        <group-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

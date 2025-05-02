@@ -77,38 +77,38 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		RegionReferenceDto region = rdcf.region;
 
 		// given region and right
-		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertTrue(result.isEmpty());
 
 		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES and TRAVEL_ENTRY_MANAGEMENT_ACCESS rights
 		UserDto poeUser = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReference(POE_INFORMANT)); // Does not have LAB_MASSAGES right, but has TRAVEL_ENTRY_MANAGEMENT_ACCESS.
 		creator.createUser(rdcf, creator.getUserRoleReference(REST_EXTERNAL_VISITS_USER)); // Has neither LAB_MASSAGES nor TRAVEL_ENTRY_MANAGEMENT_ACCESS right
-		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertThat(result, hasSize(1));
 		assertThat(result, contains(equalTo(natUser.toReference())));
 
 		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES right
-		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertThat(result, hasSize(2));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
 
 		// given different region and right
 		Region region2 = creator.createRegion("region2");
-		result = getUserFacade().getUsersByRegionAndRights(RegionFacadeEjb.toReferenceDto(region2), null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		result = getUserFacade().getUsersByRegionAndRights(RegionFacadeEjb.toReferenceDto(region2), null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertTrue(result.isEmpty());
 
 		// given no region and right
-		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertThat(result, hasSize(3)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
 
 		// given region and multiple rights
-		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_VIEW, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.EXTERNAL_MESSAGE_ACCESS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
 		assertThat(result, hasSize(3));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference()), equalTo(poeUser.toReference())));
@@ -117,13 +117,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		result = getUserFacade().getUsersByRegionAndRights(
 			RegionFacadeEjb.toReferenceDto(region2),
 			null,
-			UserRight.EXTERNAL_MESSAGE_VIEW,
+			UserRight.EXTERNAL_MESSAGE_ACCESS,
 			UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
 		assertTrue(result.isEmpty());
 
 		// given no region and multiple rights
-		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_VIEW, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
 
 		assertThat(result, hasSize(4)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference()), equalTo(poeUser.toReference())));
@@ -362,7 +362,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThat(userReferenceDtos, hasSize(1));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
-		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.EXTERNAL_MESSAGE_VIEW);
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertTrue(userReferenceDtos.isEmpty());
 
@@ -372,7 +372,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThat(userReferenceDtos, hasSize(2)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 
-		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS, UserRight.EXTERNAL_MESSAGE_VIEW);
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertThat(userReferenceDtos, hasSize(1)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
 
@@ -382,7 +382,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThat(userReferenceDtos, hasSize(3)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
 		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
 
-		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, null, UserRight.EXTERNAL_MESSAGE_VIEW);
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, null, UserRight.EXTERNAL_MESSAGE_ACCESS);
 
 		assertThat(userReferenceDtos, hasSize(1)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
 

@@ -14032,5 +14032,57 @@ ALTER TABLE externalmessage_history ADD COLUMN diagnosticdate TIMESTAMP;
 
 INSERT INTO schema_version (version_number, comment) VALUES (567, 'Doctor declaration handling #13294');
 
+-- 2025-05-02 Redesign User Rights System for Message Types #13297
+DO $$
+DECLARE
+	row_data RECORD;
+BEGIN
+	DROP TABLE IF EXISTS tmp_roles_rights_inserts;
+	CREATE TEMP TABLE tmp_roles_rights_inserts (
+		userrole_id int8 NOT NULL,
+		sys_period tstzrange NOT NULL,
+		userright varchar(255) NOT NULL
+	);
+
+	FOR row_data IN
+        SELECT
+			userrole_id,
+			sys_period,
+			userright
+		FROM userroles_userrights
+		WHERE userright IN ('EXTERNAL_MESSAGE_DELETE','EXTERNAL_MESSAGE_PROCESS','EXTERNAL_MESSAGE_VIEW')
+    LOOP
+		IF row_data.userright = 'EXTERNAL_MESSAGE_DELETE' THEN
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_LABORATORY_DELETE');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE');
+			CONTINUE;
+		END IF;
+
+		IF row_data.userright = 'EXTERNAL_MESSAGE_PROCESS' THEN
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_LABORATORY_PROCESS');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS');
+			CONTINUE;
+		END IF;
+
+		IF row_data.userright = 'EXTERNAL_MESSAGE_VIEW' THEN
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_ACCESS');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_LABORATORY_VIEW');
+			INSERT INTO tmp_roles_rights_inserts VALUES(row_data.userrole_id, row_data.sys_period, 'EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW');
+			CONTINUE;
+		END IF;
+	END LOOP;
+	
+	INSERT INTO userroles_userrights(userrole_id,sys_period,userright) 
+	SELECT userrole_id,
+			sys_period,
+			userright
+	FROM tmp_roles_rights_inserts;
+	DELETE FROM userroles_userrights 
+	WHERE userrole_id IN (SELECT DISTINCT userrole_id FROM tmp_roles_rights_inserts)
+		AND userright IN ('EXTERNAL_MESSAGE_DELETE','EXTERNAL_MESSAGE_PROCESS','EXTERNAL_MESSAGE_VIEW');
+
+	DROP TABLE IF EXISTS tmp_roles_rights_inserts;
+END $$;
+INSERT INTO schema_version (version_number, comment) VALUES (568, 'Redesign User Rights System for Message Types #13297');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
