@@ -187,19 +187,24 @@ public class ExternalMessagesView extends AbstractView {
 	private MenuBar createBulkOperationsDropdown() {
 		final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DELETE)) {
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_DELETE)
+			|| UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE)) {
 			menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 				ControllerProvider.getExternalMessageController()
 					.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), grid, () -> navigateTo(criteria));
 			}, true));
 		}
-		menuBarItems.add(
-			new MenuBarHelper.MenuBarItem(
-				I18nProperties.getCaption(Captions.bulkEditAssignee),
-				VaadinIcons.ELLIPSIS_H,
-				mi -> ControllerProvider.getExternalMessageController()
-					.assignAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-				true));
+
+		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS)
+			|| UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS)) {
+			menuBarItems.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.bulkEditAssignee),
+					VaadinIcons.ELLIPSIS_H,
+					mi -> ControllerProvider.getExternalMessageController()
+						.assignAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+					true));
+		}
 
 		MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 		bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());

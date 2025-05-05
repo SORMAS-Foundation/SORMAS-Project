@@ -104,7 +104,10 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ExternalMessageFacade")
-@RightsAllowed(UserRight._EXTERNAL_MESSAGE_VIEW)
+@RightsAllowed({
+	UserRight._EXTERNAL_MESSAGE_ACCESS,
+	UserRight._EXTERNAL_MESSAGE_LABORATORY_VIEW,
+	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -417,13 +420,17 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
+	@RightsAllowed({
+		UserRight._EXTERNAL_MESSAGE_LABORATORY_DELETE,
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE })
 	public void delete(String uuid) {
 		externalMessageService.deletePermanent(externalMessageService.getByUuid(uuid));
 	}
 
 	@Override
-	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
+	@RightsAllowed({
+		UserRight._EXTERNAL_MESSAGE_LABORATORY_DELETE,
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE })
 	public List<ProcessedEntity> delete(List<String> uuids) {
 		List<ProcessedEntity> processedExternalMessages = new ArrayList<>();
 		List<ExternalMessage> externalMessagesToBeDeleted = externalMessageService.getByUuids(uuids);
@@ -645,7 +652,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@Override
 	@RightsAllowed({
 		UserRight._SYSTEM,
-		UserRight._EXTERNAL_MESSAGE_VIEW })
+		UserRight._EXTERNAL_MESSAGE_ACCESS,
+		UserRight._EXTERNAL_MESSAGE_LABORATORY_VIEW,
+		UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW })
 	public ExternalMessageFetchResult fetchAndSaveExternalMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);

@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.caze.notifier;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -50,12 +51,13 @@ public class CaseNotifierSideViewComponent extends SideComponent {
 		if (caze.getNotifier() != null) {
 			var component = ControllerProvider.getCaseNotifierSideViewController().getNotifierComponent(caze);
 			addComponent(component);
+			Button notficationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.BOOK, e -> {
+			}, ValoTheme.BUTTON_PRIMARY);
+
+			addCreateButton(notficationButton);
+		} else {
+			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
 		}
-
-		Button notficationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.BOOK, e -> {
-		}, ValoTheme.BUTTON_PRIMARY);
-
-		addCreateButton(notficationButton);
 
 	}
 

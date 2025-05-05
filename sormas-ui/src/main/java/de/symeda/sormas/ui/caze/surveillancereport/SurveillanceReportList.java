@@ -30,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportCriteria;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
@@ -78,16 +79,77 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 		}
 	}
 
+	/**
+	 * Draws the currently displayed surveillance report entries in the list.
+	 * <p>
+	 * This method first checks if the current user has the EXTERNAL_MESSAGE_ACCESS right; if not, it returns immediately and does not
+	 * display any entries.
+	 * It then determines the user's permissions for viewing and processing laboratory and doctor declaration reports, as well as case
+	 * editing rights.
+	 * <p>
+	 * For each displayed {@link SurveillanceReportDto} entry:
+	 * <ul>
+	 * <li>Skips the entry if the user lacks the required view permission for the report's reporting type (laboratory or doctor
+	 * declaration).</li>
+	 * <li>Creates a {@link SurveillanceReportListEntry} for the report.</li>
+	 * <li>Determines if the entry is editable based on the following conditions:
+	 * <ul>
+	 * <li>User has case edit rights.</li>
+	 * <li>The report is not owned by another user.</li>
+	 * <li>The report is not a Sormas-to-Sormas report, or ownership has been handed over.</li>
+	 * <li>If the report is a laboratory report, the user must have laboratory processing rights.</li>
+	 * <li>If the report is a doctor declaration, the user must have doctor declaration processing rights.</li>
+	 * </ul>
+	 * </li>
+	 * <li>Adds an action button to edit the report if editable, and enables or disables the entry accordingly.</li>
+	 * <li>Adds a button to view the associated external message if the user has permission and such a message exists.</li>
+	 * <li>Adds the entry to the list layout for display.</li>
+	 * </ul>
+	 * <p>
+	 * This ensures that only authorized users can view or edit surveillance reports, and that the UI reflects the user's permissions for
+	 * each entry.
+	 */
 	@Override
 	protected void drawDisplayedEntries() {
+
+		// Don't do anyting if the user doesn't have the permission to view external messages
+		if (!UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_ACCESS)) {
+			return;
+		}
+
+		final boolean userHasLaboratoryView = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_VIEW);
+		final boolean userHasDoctorDeclarationView = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW);
+
+		final boolean userHasCaseEdit = UiUtil.permitted(editRight, UserRight.CASE_EDIT);
+		final boolean userHasLaboratoryProcessing = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS);
+		final boolean userHasDoctorDeclarationProcessing = UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS);
+
 		List<SurveillanceReportDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			SurveillanceReportDto report = displayedEntries.get(i);
+
+			// Skip entry if the user doesn't have the permission to view the report
+			if (ReportingType.LABORATORY.equals(report.getReportingType()) && !userHasLaboratoryView) {
+				continue;
+			}
+
+			// Skip entry if the user doesn't have the permission to view the report
+			if (ReportingType.DOCTOR.equals(report.getReportingType()) && !userHasDoctorDeclarationView) {
+				continue;
+			}
+
 			SurveillanceReportListEntry listEntry = new SurveillanceReportListEntry(report);
 
-			boolean isEditable = UiUtil.permitted(isEditAllowed, UserRight.CASE_EDIT)
+			// Only allow editing if the user has the permission to edit the case
+			// and the report is not owned by another user
+			// and the report is not a Sormas-to-Sormas report.
+			// Also if the report is a laboratory report, the user must have the permission to process laboratory reports
+			// and if the report is a doctor declaration, the user must have the permission to process doctor declarations
+			boolean isEditable = userHasCaseEdit
 				&& !report.isOwnershipHandedOver()
-				&& (report.getSormasToSormasOriginInfo() == null || report.getSormasToSormasOriginInfo().isOwnershipHandedOver());
+				&& (report.getSormasToSormasOriginInfo() == null || report.getSormasToSormasOriginInfo().isOwnershipHandedOver())
+				&& ((ReportingType.LABORATORY.equals(report.getReportingType()) && userHasLaboratoryProcessing)
+					|| (ReportingType.DOCTOR.equals(report.getReportingType()) && userHasDoctorDeclarationProcessing));
 
 			listEntry.addActionButton(
 				report.getUuid(),
@@ -96,21 +158,16 @@ public class SurveillanceReportList extends PaginationList<SurveillanceReportDto
 				isEditable);
 
 			listEntry.setEnabled(isEditable);
-			if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
-				addViewExternalMessageButton(listEntry);
-			}
-			listLayout.addComponent(listEntry);
-		}
-	}
 
-	private void addViewExternalMessageButton(SurveillanceReportListEntry listEntry) {
-		if (UiUtil.permitted(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			// We can safely add it because we already checked the permissions above
 			ExternalMessageDto externalMessage =
 				FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(listEntry.getReport().toReference());
 			if (externalMessage != null) {
 				listEntry.addAssociatedMessageListener(
 					clickEvent -> ControllerProvider.getExternalMessageController().showExternalMessage(externalMessage.getUuid(), false, null));
 			}
+
+			listLayout.addComponent(listEntry);
 		}
 	}
 

@@ -134,7 +134,7 @@ public class CaseDataView extends AbstractCaseView implements HasName {
 		final EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().getEditPermissionType(uuid);
 		boolean isEditAllowed = isEditAllowed();
 
-		if (UiUtil.enabled(FeatureType.SURVEILLANCE_REPORTS) && caze.getNotifier() != null) {
+		if (UiUtil.enabled(FeatureType.SURVEILLANCE_REPORTS)) {
 			CaseNotifierSideViewComponent notifierSideViewComponent =
 				new CaseNotifierSideViewComponent(caze);
 			notifierSideViewComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
