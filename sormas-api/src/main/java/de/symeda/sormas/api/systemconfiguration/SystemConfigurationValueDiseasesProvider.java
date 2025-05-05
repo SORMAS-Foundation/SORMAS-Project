@@ -69,7 +69,8 @@ public class SystemConfigurationValueDiseasesProvider implements SystemConfigura
     public void applyValues(final Map<String, String> values, final SystemConfigurationValueDto dto) {
 
         if (null == values || values.isEmpty()) {
-            dto.setValue(null);
+            dto.setValue("");
+            return;
         }
         final String pipeSeparatedValues = values.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.joining("|"));
         dto.setValue(pipeSeparatedValues);
