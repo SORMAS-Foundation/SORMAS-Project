@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2026 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +21,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -30,7 +29,6 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.customizableenum.CustomizableEnumValuesView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -119,7 +117,7 @@ public class SystemConfigurationView extends AbstractConfigurationView {
         filterLayout.addComponent(categoryFilter);
 
         filterLayout.addComponent(ButtonHelper.createButton(Captions.actionResetFilters, event -> {
-            ViewModelProviders.of(CustomizableEnumValuesView.class).remove(CustomizableEnumCriteria.class);
+            ViewModelProviders.of(SystemConfigurationView.class).remove(SystemConfigurationValueCriteria.class);
             navigateTo(null);
         }, CssStyles.FORCE_CAPTION));
 

@@ -443,6 +443,11 @@
     opacity: 0.5;
   }
 
+  .system-configuration-dynamic-input .system-configuration-dynamic-input-fixed-size {
+    height: 30rem;
+    overflow: auto;
+  }
+
   .system-configuration-dynamic-input .v-select-optiongroup-wrapping-checkbox-group {
     display: flex;
     flex-wrap: wrap;
@@ -450,34 +455,25 @@
   
   .system-configuration-dynamic-input .v-select-optiongroup-wrapping-checkbox-group > .v-checkbox {
     display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
-    align-items:stretch;
-    align-content:stretch;
-  }
-  
-  .system-configuration-dynamic-input .v-select-optiongroup-wrapping-checkbox-group > .v-checkbox label {
-    width:100%;
-    text-align:center;
-    border:1px solid;
+    width: calc(33.33% - 1.5rem);
   }
   
   .system-configuration-dynamic-input .toggle-password .v-spacing {
-    display:none;
+    display: none;
   }
   
   .system-configuration-dynamic-input .toggle-password .v-slot {
-    width:100% !important;
+    width: 100% !important;
   
   }
   
   .system-configuration-dynamic-input .toggle-password input {
-    height:36px;
+    height: 36px;
   }
   
   .system-configuration-dynamic-input .toggle-password .v-button { 
-    margin-left:-4rem;
-    margin-top:2px;
+    margin-left: -4rem;
+    margin-top: 2px;
   }
   
   .case-notifier-side-view {
