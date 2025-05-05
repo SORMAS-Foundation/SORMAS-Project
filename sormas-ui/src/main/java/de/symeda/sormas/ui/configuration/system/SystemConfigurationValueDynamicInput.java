@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,6 +16,8 @@
 package de.symeda.sormas.ui.configuration.system;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +32,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.util.ReflectTools;
 
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDataProvider;
@@ -85,6 +86,8 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
     }
 
     private static final String STYLE_NAME_DYNAMIC_INPUT = "system-configuration-dynamic-input";
+
+    private static final String STYLE_NAME_DYNAMIC_INPUT_FIXED_SIZE = "system-configuration-dynamic-input-fixed-size";
 
     private static final String STYLE_NAME_TOGGLE_PASSWORD = "toggle-password";
 
@@ -174,6 +177,7 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
             break;
         case CHECKBOX_GRID:
             mainLayout.addComponent(createCheckboxGrid());
+            mainLayout.addStyleName(STYLE_NAME_DYNAMIC_INPUT_FIXED_SIZE);
             break;
         case PASSWORD:
             mainLayout.addComponent(createPasswordField());
@@ -273,10 +277,11 @@ public class SystemConfigurationValueDynamicInput extends CustomField<SystemConf
     private CheckBoxGroup<String> createCheckboxGrid() {
 
         final var cbg = new CheckBoxGroup<String>();
-        cbg.setItems(getValue().getDataProvider().getOptions().values());
+        ArrayList<String> values = new ArrayList<>(getValue().getDataProvider().getOptions().values());
+        values.sort(Comparator.naturalOrder());
+        cbg.setItems(values);
         cbg.select(getValue().getDataProvider().getMappedValues(getValue()).values().toArray(new String[] {}));
         cbg.addValueChangeListener(event -> fireValueChange(cbg));
-        cbg.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
         cbg.addStyleName(STYLE_NAME_WRAPPING_CHECKBOX_GROUP);
         cbg.setWidthFull();
         return cbg;
