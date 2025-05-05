@@ -63,7 +63,7 @@ public class SurveillanceReportController {
 			new CommitDiscardWrapperComponent<>(surveillanceReportForm, true, surveillanceReportForm.getFieldGroup());
 		editView.setEditable(isEditAllowed);
 
-		if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (UiUtil.getUserRights().contains(UserRight.EXTERNAL_MESSAGE_ACCESS)) {
 			ExternalMessageDto externalMessage = FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(report.toReference());
 
 			if (externalMessage != null) {

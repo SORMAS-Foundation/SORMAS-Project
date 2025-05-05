@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.externalmessage;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,6 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -44,6 +44,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -96,7 +97,17 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 		ComboBoxWithPlaceholder assignee =
 			addField(FieldConfiguration.pixelSized(ExternalMessageCriteria.ASSIGNEE, 200), ComboBoxWithPlaceholder.class);
 		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, "", "", I18nProperties.getCaption(Captions.unassigned)));
-		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
+
+		final ArrayList<UserReferenceDto> users = new ArrayList<>();
+		users.addAll(
+			FacadeProvider.getUserFacade()
+				.getUsersByRegionAndRights(UiUtil.getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS));
+		users.addAll(
+			FacadeProvider.getUserFacade()
+				.getUsersByRegionAndRights(UiUtil.getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS));
+
+		assignee.addItems(users);
+		
 		assignee.setNullSelectionAllowed(true);
 
 		addField(FieldConfiguration.pixelSized(ExternalMessageDto.TYPE, 140), ComboBox.class);

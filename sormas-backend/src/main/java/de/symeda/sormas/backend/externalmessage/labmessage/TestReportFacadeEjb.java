@@ -30,7 +30,9 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "TestReportFacade")
-@RightsAllowed(UserRight._EXTERNAL_MESSAGE_PROCESS)
+@RightsAllowed({
+	UserRight._EXTERNAL_MESSAGE_LABORATORY_PROCESS,
+	UserRight._EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS })
 public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB

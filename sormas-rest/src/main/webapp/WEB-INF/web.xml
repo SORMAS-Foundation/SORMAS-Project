@@ -681,19 +681,35 @@
 	</security-role>
 
 	<security-role>
-		<role-name>EXTERNAL_MESSAGE_VIEW</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>EXTERNAL_MESSAGE_PUSH</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>EXTERNAL_MESSAGE_DELETE</role-name>
+		<role-name>EXTERNAL_MESSAGE_ACCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_LABORATORY_DELETE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DOCTOR_DECLARATION_DELETE</role-name>
 	</security-role>
 
 	<security-role>

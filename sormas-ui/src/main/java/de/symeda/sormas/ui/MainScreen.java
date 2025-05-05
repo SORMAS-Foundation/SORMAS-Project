@@ -246,7 +246,7 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
 
-		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)) {
+		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_ACCESS)) {
 			ControllerProvider.getExternalMessageController().registerViews(navigator);
 			menu.addView(
 				ExternalMessagesView.class,

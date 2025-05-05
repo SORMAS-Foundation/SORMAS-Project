@@ -14,6 +14,10 @@
  */
 package de.symeda.sormas.ui.externalmessage;
 
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
@@ -21,9 +25,11 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UiUtil;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -46,8 +52,7 @@ public class EditAssigneeComponentContainer {
 
 		assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.ExternalMessage_assignee));
-		assigneeComboBox.addItems(
-			FacadeProvider.getUserFacade().getUsersByRegionAndRights(UiUtil.getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
+
 		assigneeComboBox.setNullSelectionAllowed(true);
 		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 
@@ -63,6 +68,28 @@ public class EditAssigneeComponentContainer {
 		window.setContent(wrapperComponent);
 
 		wrapperComponent.addDiscardListener(window::close);
+	}
+
+	public void syncUsersForMessageType(Set<ExternalMessageType> types) {
+		assigneeComboBox.clear();
+
+		final ArrayList<UserReferenceDto> users = new ArrayList<>();
+		if (types.contains(ExternalMessageType.LAB_MESSAGE)) {
+			users.addAll(
+				FacadeProvider.getUserFacade()
+					.getUsersByRegionAndRights(UiUtil.getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_LABORATORY_PROCESS));
+
+		}
+		if (types.contains(ExternalMessageType.PHYSICIANS_REPORT)) {
+			users.addAll(
+				FacadeProvider.getUserFacade()
+					.getUsersByRegionAndRights(UiUtil.getUser().getRegion(), null, UserRight.EXTERNAL_MESSAGE_DOCTOR_DECLARATION_PROCESS));
+		}
+
+		// Remove the current user from the list of users
+		users.remove(UiUtil.getUser());
+
+		assigneeComboBox.addItems(users.stream().distinct().collect(Collectors.toList()));
 	}
 
 	public Button getAssignMeButton() {
