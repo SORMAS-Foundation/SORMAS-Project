@@ -1133,7 +1133,7 @@ public abstract class AbstractBeanTest {
 	}
 
 	public SystemConfigurationValueFacade getSystemConfigurationValueFacade() {
-		return getBean(SystemConfigurationValueEjb.SystemConfigurationValueEjbLocal.class);
+		return getBean(SystemConfigurationValueEjb.class);
 	}
 
 	public SystemConfigurationValueService getSystemConfigurationValueService() {

@@ -216,6 +216,8 @@ public interface Validations {
 	String requiredField = "requiredField";
 	String sampleDateTimeAfterPathogenTestDateTime = "sampleDateTimeAfterPathogenTestDateTime";
 	String selfReportAlreadyProcessedError = "selfReportAlreadyProcessedError";
+	String smsAuthKeyValueValidation = "smsAuthKeyValueValidation";
+	String smsAuthSecretValueValidation = "smsAuthSecretValueValidation";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	String sormasToSormasAcceptCaseBeforeContact = "sormasToSormasAcceptCaseBeforeContact";
@@ -271,9 +273,12 @@ public interface Validations {
 	String systemConfigurationValueInvalidValue = "systemConfigurationValueInvalidValue";
 	String systemConfigurationValuePatternNotMatched = "systemConfigurationValuePatternNotMatched";
 	String systemConfigurationValueValidationNotADirectory = "systemConfigurationValueValidationNotADirectory";
+	String systemConfigurationValueValidationNotAEmail = "systemConfigurationValueValidationNotAEmail";
 	String systemConfigurationValueValidationNotAFile = "systemConfigurationValueValidationNotAFile";
 	String systemConfigurationValueValidationNotAIPAddr = "systemConfigurationValueValidationNotAIPAddr";
 	String systemConfigurationValueValidationNotANumber = "systemConfigurationValueValidationNotANumber";
+	String systemConfigurationValueValidationNotAValidEmailsenderName = "systemConfigurationValueValidationNotAValidEmailsenderName";
+	String systemConfigurationValueValidationNotAValidSmsSenderName = "systemConfigurationValueValidationNotAValidSmsSenderName";
 	String systemConfigurationValueValidationNotValid = "systemConfigurationValueValidationNotValid";
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";

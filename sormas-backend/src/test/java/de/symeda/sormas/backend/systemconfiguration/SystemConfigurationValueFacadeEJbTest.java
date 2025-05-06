@@ -25,6 +25,8 @@ import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
 
@@ -218,6 +220,59 @@ class SystemConfigurationValueFacadeEJbTest extends AbstractBeanTest {
         final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
 
         // Validate against pipe-separated list of words pattern and expect exception
+        assertThrows(ValidationRuntimeException.class, () -> {
+            getSystemConfigurationValueFacade().save(configValueDto);
+        });
+    }
+
+    /**
+     * Test the validation of a system configuration value against a pattern.
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', 192.168.1.1",
+            "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$, test@sormas.org", // Valid email
+            "^[A-Za-z]+( [A-Za-z]+)*$, Sormas Support", // Valid email sender name
+            "'^(([1-9]{2}[0-9]{0,13})|([A-Za-z1-9]{1}[A-Za-z0-9]{0,10}))$', 'abcXYZ123'", // Valid sms sender name as name
+            "'^(([1-9]{2}[0-9]{0,13})|([A-Za-z1-9]{1}[A-Za-z0-9]{0,10}))$', '12345678901234'", // Valid sms sender as phone number
+            "'\\s*[^\\s]+', 'abCD12!@efGH34#$'", // Valid Auth Key
+            "'(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+', 'apiKey=sormas2025orgKEY'", // Valid secret api key
+            "'(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+', 'Secret : s3cr3tV@lu3P@ssw0rd!'", // Valid secret key
+            "'(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+', 'token: sormasSecureToken12345678!'" // Valid token key
+    })
+    void testValidateSystemConfigurationValuePattern(String pattern, String value) {
+
+        final SystemConfigurationValue configValue = createSystemConfigurationValue("VALUE_PATTERN_KEY", value, pattern);
+        final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
+
+        // Validate against IP pattern
+        final SystemConfigurationValueDto updatedConfigValue = getSystemConfigurationValueFacade().save(configValueDto);
+
+        assertThat(updatedConfigValue.getKey(), is("VALUE_PATTERN_KEY"));
+        assertThat(updatedConfigValue.getValue(), is(value));
+    }
+
+    /**
+     * Test the validation of a system configuration value against a pattern with an invalid value.
+     */
+    @ParameterizedTest
+    @CsvSource({
+            "'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', 1.234343.2.3", // invalid IP
+            "'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$', test.sormas.org", // Invalid email
+            "'^[A-Za-z]+( [A-Za-z]+)*$', Sormas 123", // Valid email sender name
+            "'^(([1-9]{2}[0-9]{0,13})|([A-Za-z1-9]{1}[A-Za-z0-9]{0,10}))$', 'abc XYZ123'", // Invalid sms sender name as name
+            "'^(([1-9]{2}[0-9]{0,13})|([A-Za-z1-9]{1}[A-Za-z0-9]{0,10}))$', 'ABCdefHI055202'", // Invalid sms sender as phone number
+            "'\\s*[^\\s]+', 'abCD12 !@efG H34#$'", // Valid Auth Key
+            "'(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+', 'apiKey=abcd EFGH1234ijk lMNOP'", // Invalid secret api key
+            "'(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+', 'Secret : s3cr3 tV@lu3P@ ssw0rd!'", // Invalid secret key
+            "'(?i)(secret|password|token|api[_-]?key)\\s*[:=]\\s*[^\\s]+', 'token: sormasSecu reToken12 345678!'" // Invalid token key
+    })
+    void testValidateSystemConfigurationValuePatternFail(String pattern, String value) {
+
+        final SystemConfigurationValue configValue = createSystemConfigurationValue("VALUE_PATTERN_KEY", value, pattern);
+        final SystemConfigurationValueDto configValueDto = getSystemConfigurationValueFacade().getByUuid(configValue.getUuid());
+
+        // Validate against pattern and expect exception
         assertThrows(ValidationRuntimeException.class, () -> {
             getSystemConfigurationValueFacade().save(configValueDto);
         });

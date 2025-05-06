@@ -78,13 +78,6 @@ public class SystemConfigurationValueEjb
     AbstractBaseEjb<SystemConfigurationValue, SystemConfigurationValueDto, SystemConfigurationValueIndexDto, SystemConfigurationValueReferenceDto, SystemConfigurationValueService, SystemConfigurationValueCriteria>
     implements SystemConfigurationValueFacade {
 
-    @LocalBean
-    @Singleton
-    @Startup
-    @DependsOn("StartupShutdownService")
-    public static class SystemConfigurationValueEjbLocal extends SystemConfigurationValueEjb {
-    }
-
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemConfigurationValueEjb.class);
