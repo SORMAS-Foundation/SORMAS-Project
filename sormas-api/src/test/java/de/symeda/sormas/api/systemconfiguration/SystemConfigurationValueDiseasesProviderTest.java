@@ -102,7 +102,7 @@ class SystemConfigurationValueDiseasesProviderTest {
 
         provider.applyValues(values, dto);
 
-        assertThat(dto.getValue(), is((String) null));
+        assertThat(dto.getValue(), is(""));
     }
 
     /**
@@ -127,7 +127,7 @@ class SystemConfigurationValueDiseasesProviderTest {
 
         provider.applyValues(values, dto);
 
-        assertThat(dto.getValue(), is((String) null));
+        assertThat(dto.getValue(), is(""));
     }
 
     /**

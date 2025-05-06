@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2025 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2026 SORMAS Foundation gGmbH
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -68,9 +69,10 @@ public class SystemConfigurationValueDiseasesProvider implements SystemConfigura
     public void applyValues(final Map<String, String> values, final SystemConfigurationValueDto dto) {
 
         if (null == values || values.isEmpty()) {
+            dto.setValue("");
             return;
         }
-        final String pipeSeparatedValues = values.keySet().stream().collect(Collectors.joining("|"));
+        final String pipeSeparatedValues = values.keySet().stream().sorted(Comparator.naturalOrder()).collect(Collectors.joining("|"));
         dto.setValue(pipeSeparatedValues);
     }
 
