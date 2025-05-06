@@ -14145,8 +14145,8 @@ WHERE category_id = email_configuration_id
 INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, value_optional, value_pattern,
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
-VALUES ('EMAIL_SENDER_NAME', 'SORMAS Support', email_configuration_id, true, '\s*[^\s]+', false, null,
-        'i18n/systemConfigurationValueValidationNotAValidName', now(), now(), nextval('entity_seq'),
+VALUES ('EMAIL_SENDER_NAME', 'SORMAS Support', email_configuration_id, true, '^[A-Za-z]+( [A-Za-z]+)*$', false, null,
+        'i18n/systemConfigurationValueValidationNotAValidEmailsenderName', now(), now(), nextval('entity_seq'),
         generate_base32_uuid());
 
 
@@ -14162,8 +14162,8 @@ INSERT INTO systemconfigurationvalue(config_key, config_value, category_id, valu
                                      value_encrypt, data_provider, validation_message, changedate, creationdate, id,
                                      uuid)
 VALUES ('SMS_SENDER_NAME', '', sms_configuration_id, true,
-        '^((?:[1-9]{2}[0-9]{0,13})|(?:[A-Za-z1-9]{1}[A-Za-z0-9]{1,10}))$', false, null,
-        'i18n/systemConfigurationValueValidationNotAValidName', now(), now(), nextval('entity_seq'),
+        '^(([1-9]{2}[0-9]{0,13})|([A-Za-z1-9]{1}[A-Za-z0-9]{0,10}))$', false, null,
+        'i18n/systemConfigurationValueValidationNotAValidSmsSenderName', now(), now(), nextval('entity_seq'),
         generate_base32_uuid());
 
 DELETE

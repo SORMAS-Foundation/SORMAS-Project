@@ -277,7 +277,8 @@ public interface Validations {
 	String systemConfigurationValueValidationNotAFile = "systemConfigurationValueValidationNotAFile";
 	String systemConfigurationValueValidationNotAIPAddr = "systemConfigurationValueValidationNotAIPAddr";
 	String systemConfigurationValueValidationNotANumber = "systemConfigurationValueValidationNotANumber";
-	String systemConfigurationValueValidationNotAValidName = "systemConfigurationValueValidationNotAValidName";
+	String systemConfigurationValueValidationNotAValidEmailsenderName = "systemConfigurationValueValidationNotAValidEmailsenderName";
+	String systemConfigurationValueValidationNotAValidSmsSenderName = "systemConfigurationValueValidationNotAValidSmsSenderName";
 	String systemConfigurationValueValidationNotValid = "systemConfigurationValueValidationNotValid";
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";
