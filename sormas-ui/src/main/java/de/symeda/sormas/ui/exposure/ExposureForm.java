@@ -23,6 +23,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -139,19 +141,21 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 	private final List<ContactReferenceDto> sourceContacts;
 
 	private LocationEditForm locationForm;
+	private Disease disease;
 
 	public ExposureForm(
 		boolean create,
 		Class<? extends EntityDto> epiDataParentClass,
 		List<ContactReferenceDto> sourceContacts,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
-		UiFieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers, Disease disease) {
 		super(ExposureDto.class, ExposureDto.I18N_PREFIX, false, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(960, Unit.PIXELS);
 
 		this.sourceContacts = sourceContacts;
 		this.epiDataParentClass = epiDataParentClass;
+		this.disease = disease;
 
 		if (create) {
 			hideValidationUntilNextCommit();
@@ -260,6 +264,11 @@ public class ExposureForm extends AbstractEditForm<ExposureDto> {
 				ExposureDto.RISK_AREA),
 			ValoTheme.OPTIONGROUP_HORIZONTAL,
 			CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		// Changing the distance and contact label for IMI
+		if(Disease.INVASIVE_MENINGOCOCCAL_INFECTION.equals(disease)){
+			getField(ExposureDto.SHORT_DISTANCE).setCaption(I18nProperties.getCaption(Captions.Exposure_imi_shortDistance));
+			getField(ExposureDto.LONG_FACE_TO_FACE_CONTACT).setCaption(I18nProperties.getCaption(Captions.Exposure_imi_longFaceToFaceContact));
+		}
 	}
 
 	private void setUpVisibilityDependencies() {

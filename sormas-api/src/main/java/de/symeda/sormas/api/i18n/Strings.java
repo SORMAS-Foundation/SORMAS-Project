@@ -496,6 +496,7 @@ public interface Strings {
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
 	String headingClinicalMeasurements = "headingClinicalMeasurements";
+	String headingClinicalPresentation = "headingClinicalPresentation";
 	String headingClinicalVisitsDeleted = "headingClinicalVisitsDeleted";
 	String headingComparisonCase = "headingComparisonCase";
 	String headingCompleteness = "headingCompleteness";
@@ -798,6 +799,7 @@ public interface Strings {
 	String headingPreviousPersonInformation = "headingPreviousPersonInformation";
 	String headingPreviousSampleInformation = "headingPreviousSampleInformation";
 	String headingProcessPhysiciansReport = "headingProcessPhysiciansReport";
+	String headingProphylaxisLoc = "headingProphylaxisLoc";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";

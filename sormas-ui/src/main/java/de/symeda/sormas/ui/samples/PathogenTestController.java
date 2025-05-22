@@ -117,8 +117,8 @@ public class PathogenTestController {
 		int caseSampleCount,
 		Consumer<PathogenTestDto> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
-
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created 
+        CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(sampleDto.getAssociatedCase().getUuid());
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true, caseDataDto.getDisease()); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(pathogenTest);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
@@ -140,7 +140,7 @@ public class PathogenTestController {
 
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(EnvironmentSampleDto sampleDto) {
 
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, false, true, null); // Valid because jurisdiction doesn't matter for entities that are about to be created
 		createForm.setValue(PathogenTestDto.build(sampleDto, UiUtil.getUser()));
 
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
@@ -191,11 +191,11 @@ public class PathogenTestController {
 		final PathogenTestForm form;
 		if (forHumanSample) {
 			SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
-			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+			form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction(), pathogenTest.getTestedDisease());
 		} else {
 			EnvironmentSampleDto environmentSample =
 				FacadeProvider.getEnvironmentSampleFacade().getByUuid(pathogenTest.getEnvironmentSample().getUuid());
-			form = new PathogenTestForm(environmentSample, false, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction());
+			form = new PathogenTestForm(environmentSample, false, pathogenTest.isPseudonymized(), pathogenTest.isInJurisdiction(), pathogenTest.getTestedDisease());
 		}
 
 		form.setValue(pathogenTest);

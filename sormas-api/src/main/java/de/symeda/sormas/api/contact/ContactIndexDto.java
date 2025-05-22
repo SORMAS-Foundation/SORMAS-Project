@@ -62,6 +62,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 	public static final String REGION_UUID = "regionUuid";
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String COMMUNITY_UUID = "communityUuid";
+	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
 
 	private String personUuid;
 	@PersonalData
@@ -98,6 +101,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	private DeletionReason deletionReason;
 	private String otherDeletionReason;
+	private Boolean prophylaxisPrescribed;
+	private PrescribedDrug prescribedDrug;
+	private String prescribedDrugText;
 
 	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
@@ -111,7 +117,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID, String externalToken, String internalToken,String caseReferenceNumber, DeletionReason deletionReason, String otherDeletionReason, boolean isInJurisdiction, boolean isCaseInJurisdiction,
-						   int visitCount
+						   int visitCount, Boolean prophylaxisPrescribed, PrescribedDrug prescribedDrug, String prescribedDrugText
 	) {
 	//@formatter:on
 
@@ -153,6 +159,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 		this.otherDeletionReason = otherDeletionReason;
 
 		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+		this.prescribedDrug = prescribedDrug;
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
 	public String getPersonUuid() {
@@ -417,6 +426,30 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements IsContac
 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
+	}
+
+	public Boolean getProphylaxisPrescribed() {
+		return prophylaxisPrescribed;
+	}
+
+	public void setProphylaxisPrescribed(Boolean prophylaxisPrescribed) {
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+	}
+
+	public PrescribedDrug getPrescribedDrug() {
+		return prescribedDrug;
+	}
+
+	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
+	}
+
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
+	}
+
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
 	}
 
 	@Override

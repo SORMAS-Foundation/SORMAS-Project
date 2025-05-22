@@ -212,6 +212,13 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
+		target.setAsymptomatic(source.getAsymptomatic());
+		target.setArthritis(source.getArthritis());
+		target.setSepticaemia(source.getSepticaemia());
+		target.setHemorrhagicRash(source.getHemorrhagicRash());
+		target.setMeningitis(source.getMeningitis());
+		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
+		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
 
 		return target;
 	}
@@ -407,6 +414,13 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setDizzinessStandingUp(source.getDizzinessStandingUp());
 		target.setHighOrLowBloodPressure(source.getHighOrLowBloodPressure());
 		target.setUrinaryRetention(source.getUrinaryRetention());
+		target.setAsymptomatic(source.getAsymptomatic());
+		target.setSepticaemia(source.getSepticaemia());
+		target.setArthritis(source.getArthritis());
+		target.setHemorrhagicRash(source.getHemorrhagicRash());
+		target.setMeningitis(source.getMeningitis());
+		target.setOtherClinicalPresentation(source.getOtherClinicalPresentation());
+		target.setOtherClinicalPresentationText(source.getOtherClinicalPresentationText());
 
 		return target;
 	}

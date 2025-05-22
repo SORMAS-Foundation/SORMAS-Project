@@ -1046,6 +1046,181 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testAutomaticClassificationForIMI() {
+
+		// Suspect
+		CaseDataDto caze = buildSuspectCaseBasis(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze.getSymptoms().setArthritis(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze.getSymptoms().setHemorrhagicRash(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze.getSymptoms().setMeningealSigns(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		caze = buildSuspectCaseBasis(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze.getSymptoms().setShock(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Probable
+		caze = buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze.setEpidemiologicalConfirmation(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Confirmed
+		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
+		creator.createPathogenTest(caze, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, PathogenTestType.MICROSCOPY, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
+		creator.createPathogenTest(caze, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
+		creator.createPathogenTest(caze, Disease.INVASIVE_MENINGOCOCCAL_INFECTION, PathogenTestType.ANTIGEN_DETECTION, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void ruleOutFalsePositivesForIMI() {
+
+		// Not classified
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		fillSymptoms(caze.getSymptoms());
+		caze.getSymptoms().setMeningealSigns(SymptomState.NO);
+		caze.getSymptoms().setHemorrhagicRash(SymptomState.NO);
+		caze.getSymptoms().setShock(SymptomState.NO);
+		caze.getSymptoms().setArthritis(SymptomState.NO);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		caze.getSymptoms().setFever(SymptomState.NO);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+
+		// Suspect
+		caze = buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze = getCaseFacade().save(caze);
+		createSampleTestsForAllTestTypesExcept(
+				caze,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				PathogenTestType.MICROSCOPY,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.ANTIGEN_DETECTION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Probable
+		caze = buildSuspectCase(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		caze.setEpidemiologicalConfirmation(YesNoUnknown.YES);
+		caze = getCaseFacade().save(caze);
+		createSampleTestsForAllTestTypesExcept(
+				caze,
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				PathogenTestType.MICROSCOPY,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.ANTIGEN_DETECTION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+	}
+
+	@Test
+	public void testAutomaticClassificationForIPI() {
+
+		// Suspect
+		CaseDataDto caze = buildSuspectCaseBasis(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+//
+//		caze = getCaseFacade().save(caze);
+//		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+//
+//		caze = buildSuspectCaseBasis(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+//
+//		caze = getCaseFacade().save(caze);
+//		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+//
+//		caze = buildSuspectCaseBasis(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+//
+//		caze = getCaseFacade().save(caze);
+//		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+//
+//		caze = buildSuspectCaseBasis(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+//
+//		caze = getCaseFacade().save(caze);
+//		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
+
+		// Probable
+//		caze = buildSuspectCase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+//		caze.setEpidemiologicalConfirmation(YesNoUnknown.YES);
+//		caze = getCaseFacade().save(caze);
+//		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+//		assertEquals(CaseClassification.PROBABLE, caze.getCaseClassification());
+
+		// Confirmed
+		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+		creator.createPathogenTest(caze, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, PathogenTestType.CULTURE, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+		creator.createPathogenTest(caze, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, PathogenTestType.PCR_RT_PCR, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+
+		caze = getCaseFacade().save(buildSuspectCase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+		creator.createPathogenTest(caze, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, PathogenTestType.SEQUENCING, PathogenTestResultType.POSITIVE);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.CONFIRMED, caze.getCaseClassification());
+	}
+
+	@Test
+	public void ruleOutFalsePositivesForIPI() {
+
+		// Not classified
+		CaseDataDto caze = creator.createUnclassifiedCase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+		fillSymptoms(caze.getSymptoms());
+		caze.getSymptoms().setSepticaemia(SymptomState.YES);
+
+		caze.getSymptoms().setPneumoniaClinicalOrRadiologic(SymptomState.YES);
+		caze.getSymptoms().setAsymptomatic(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		caze.getSymptoms().setMeningitis(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		caze.getSymptoms().setPneumoniaClinicalOrRadiologic(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		caze.getSymptoms().setAsymptomatic(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+		caze.getSymptoms().setFever(SymptomState.NO);
+		caze = getCaseFacade().save(caze);
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+
+		caze = buildSuspectCase(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+		caze = getCaseFacade().save(caze);
+		createSampleTestsForAllTestTypesExcept(
+				caze,
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				PathogenTestType.PCR_RT_PCR,
+				PathogenTestType.CULTURE,
+				PathogenTestType.SEQUENCING);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
+	}
+
+	@Test
 	public void testAutomaticClassificationForLuxembourgServerNegativeTestFirst() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, CountryHelper.COUNTRY_CODE_LUXEMBOURG);
 		CaseDataDto caze = creator.createUnclassifiedCase(Disease.CORONAVIRUS);
@@ -1287,6 +1462,10 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			break;
 		case CORONAVIRUS:
 			break;
+		case INVASIVE_MENINGOCOCCAL_INFECTION:
+			break;
+		case INVASIVE_PNEUMOCOCCAL_INFECTION:
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -1336,6 +1515,11 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			break;
 		case CORONAVIRUS:
 			caze.getSymptoms().setCough(SymptomState.YES);
+			break;
+		case INVASIVE_MENINGOCOCCAL_INFECTION:
+			caze.getSymptoms().setHemorrhagicRash(SymptomState.YES);
+			break;
+		case INVASIVE_PNEUMOCOCCAL_INFECTION:
 			break;
 		default:
 			throw new IllegalArgumentException();

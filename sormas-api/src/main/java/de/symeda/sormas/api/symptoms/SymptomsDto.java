@@ -28,6 +28,8 @@ import static de.symeda.sormas.api.Disease.CSM;
 import static de.symeda.sormas.api.Disease.DENGUE;
 import static de.symeda.sormas.api.Disease.EVD;
 import static de.symeda.sormas.api.Disease.GUINEA_WORM;
+import static de.symeda.sormas.api.Disease.INVASIVE_MENINGOCOCCAL_INFECTION;
+import static de.symeda.sormas.api.Disease.INVASIVE_PNEUMOCOCCAL_INFECTION;
 import static de.symeda.sormas.api.Disease.LASSA;
 import static de.symeda.sormas.api.Disease.MEASLES;
 import static de.symeda.sormas.api.Disease.MONKEYPOX;
@@ -45,6 +47,7 @@ import java.util.Date;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
@@ -258,6 +261,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String SEIZURES = "seizures";
 	public static final String SEPSIS = "sepsis";
 	public static final String SHOCK = "shock";
+	public static final String ASYMPTOMATIC = "asymptomatic";
+	public static final String HEMORRHAGIC_RASH = "hemorrhagicRash";
+	public static final String ARTHRITIS = "arthritis";
+	public static final String MENINGITIS = "meningitis";
+	public static final String SEPTICAEMIA = "septicaemia";
+	public static final String OTHER_CLINICAL_PRESENTATION = "otherClinicalPresentation";
+	public static final String OTHER_CLINICAL_PRESENTATION_TEXT = "otherClinicalPresentationText";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -1194,6 +1204,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	private Date onsetDate;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
 	private String onsetSymptom;
 
 	@Diseases({
@@ -1911,6 +1922,8 @@ public class SymptomsDto extends PseudonymizableDto {
 
 	@Diseases({
 		CORONAVIRUS,
+		INVASIVE_MENINGOCOCCAL_INFECTION,
+		INVASIVE_PNEUMOCOCCAL_INFECTION,
 		UNDEFINED,
 		OTHER })
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
@@ -2103,6 +2116,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		UNSPECIFIED_VHF,
 		RABIES,
+		INVASIVE_MENINGOCOCCAL_INFECTION,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -2212,6 +2226,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX,
 		POLIO,
 		UNSPECIFIED_VHF,
+		INVASIVE_MENINGOCOCCAL_INFECTION,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -2315,6 +2330,27 @@ public class SymptomsDto extends PseudonymizableDto {
 		COUNTRY_CODE_SWITZERLAND })
 	@SymptomGrouping(SymptomGroup.GENERAL)
 	private SymptomState shivering;
+
+	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION,
+			INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private SymptomState asymptomatic;
+	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION})
+	private SymptomState hemorrhagicRash;
+
+	@Diseases({INVASIVE_MENINGOCOCCAL_INFECTION})
+	private SymptomState arthritis;
+
+	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private SymptomState meningitis;
+
+	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private SymptomState septicaemia;
+
+	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION, INVASIVE_MENINGOCOCCAL_INFECTION})
+	private SymptomState otherClinicalPresentation;
+
+	@Diseases({INVASIVE_PNEUMOCOCCAL_INFECTION, INVASIVE_MENINGOCOCCAL_INFECTION})
+	private String otherClinicalPresentationText;
 
 	@Order(0)
 	public Float getTemperature() {
@@ -3927,4 +3963,59 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.bloodCirculationProblems = bloodCirculationProblems;
 	}
 
+	public SymptomState getAsymptomatic() {
+		return asymptomatic;
+	}
+
+	public void setAsymptomatic(SymptomState asymptomatic) {
+		this.asymptomatic = asymptomatic;
+	}
+
+	public SymptomState getHemorrhagicRash() {
+		return hemorrhagicRash;
+	}
+
+	public void setHemorrhagicRash(SymptomState hemorrhagicRash) {
+		this.hemorrhagicRash = hemorrhagicRash;
+	}
+
+	public SymptomState getArthritis() {
+		return arthritis;
+	}
+
+	public void setArthritis(SymptomState arthritis) {
+		this.arthritis = arthritis;
+	}
+
+	public SymptomState getMeningitis() {
+		return meningitis;
+	}
+
+	public void setMeningitis(SymptomState meningitis) {
+		this.meningitis = meningitis;
+	}
+
+	public SymptomState getOtherClinicalPresentation() {
+		return otherClinicalPresentation;
+	}
+
+	public void setOtherClinicalPresentation(SymptomState otherClinicalPresentation) {
+		this.otherClinicalPresentation = otherClinicalPresentation;
+	}
+
+	public String getOtherClinicalPresentationText() {
+		return otherClinicalPresentationText;
+	}
+
+	public void setOtherClinicalPresentationText(String otherClinicalPresentationText) {
+		this.otherClinicalPresentationText = otherClinicalPresentationText;
+	}
+
+	public SymptomState getSepticaemia() {
+		return septicaemia;
+	}
+
+	public void setSepticaemia(SymptomState septicaemia) {
+		this.septicaemia = septicaemia;
+	}
 }

@@ -459,6 +459,48 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			confirmed,
 			notACase(Disease.CONGENITAL_RUBELLA));
 
+		// Invasive Meningococcal Infection
+		suspect = xOf(
+						1,
+						symptom(SymptomsDto.MENINGEAL_SIGNS),
+						symptom(SymptomsDto.HEMORRHAGIC_RASH),
+						symptom(SymptomsDto.SHOCK),
+						symptom(SymptomsDto.ARTHRITIS));
+
+		probable = allOf(suspect, xOf(1, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES), partOfEventCluster()));
+
+		confirmed = allOf(
+				suspect,
+				xOf(1,(positiveTestResult(
+						Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+						PathogenTestType.MICROSCOPY,
+						PathogenTestType.PCR_RT_PCR,
+						PathogenTestType.ANTIGEN_DETECTION))));
+		addCriteria(
+				Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+				DateHelper.getDateZero(2020, 11, 6),
+				suspect,
+				probable,
+				confirmed,
+				negativeTestResult(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
+
+		//Invasive Pneumococcal Infection
+		suspect = xOf(0);
+		probable = xOf(0);
+		confirmed = xOf(1, positiveTestResult(
+						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+						PathogenTestType.CULTURE,
+						PathogenTestType.PCR_RT_PCR,
+						PathogenTestType.SEQUENCING));
+		addCriteria(
+				Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
+				DateHelper.getDateZero(2020, 11, 6),
+				suspect,
+				probable,
+				confirmed,
+				negativeTestResult(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+
+
 		// CORONAVIRUS
 		suspect = xOf(
 			1,

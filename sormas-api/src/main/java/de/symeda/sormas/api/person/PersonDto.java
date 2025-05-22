@@ -388,10 +388,12 @@ public class PersonDto extends PseudonymizableDto implements IsPerson {
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
+	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
 	private Date entryDate;
 	@HideForCountriesExcept(countries = {
 		CountryHelper.COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
+	@Diseases(value = {Disease.TUBERCULOSIS, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
 	private LivingStatus livingStatus;
 
 	@SuppressWarnings("serial")

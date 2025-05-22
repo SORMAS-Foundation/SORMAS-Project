@@ -360,9 +360,10 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@SensitiveData
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION,
+		Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
 	private HealthConditionsDto healthConditions;
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private YesNoUnknown pregnant;
 	@Diseases({
 		Disease.AFP,
@@ -378,8 +379,6 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		Disease.RESPIRATORY_SYNCYTIAL_VIRUS,
 		Disease.OTHER })
 	@Outbreaks
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private VaccinationStatus vaccinationStatus;
 	@Diseases({
 		Disease.MONKEYPOX })
@@ -392,26 +391,18 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	private Date smallpoxLastVaccinationDate;
 	@Outbreaks
 	@SensitiveData
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private UserReferenceDto surveillanceOfficer;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private String clinicianName;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private String clinicianPhone;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -467,8 +458,6 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -537,8 +526,6 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
-	@HideForCountries(countries = {
-		COUNTRY_CODE_LUXEMBOURG })
 	@SensitiveData
 	private YesNoUnknown postpartum;
 	@SensitiveData
@@ -1831,6 +1818,15 @@ public class CaseDataDto extends SormasToSormasShareableDto implements IsCase {
 
 	public void setDepartment(String department) {
 		this.department = department;
+	}
+
+	/**
+	 * Checks if the case is an invasive bacterial disease (meningococcal or pneumococcal)
+	 * @return boolean
+	 */
+	public boolean checkDiseaseIsInvasiveBacterialDiseases(){
+		return disease != null && (disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION ||
+				disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
 	}
 
 	@JsonIgnore

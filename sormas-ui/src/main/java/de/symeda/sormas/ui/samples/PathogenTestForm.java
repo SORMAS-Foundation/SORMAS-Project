@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.sample.SeroGroupSpecification;
+import de.symeda.sormas.api.sample.SerotypingMethod;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -83,9 +85,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			loc(PATHOGEN_TEST_HEADING_LOC) +
 			fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS) +
 			fluidRowLocs(PathogenTestDto.EXTERNAL_ID, PathogenTestDto.EXTERNAL_ORDER_ID) +
+			fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TEST_TYPE_TEXT) +
 			fluidRowLocs(PathogenTestDto.PCR_TEST_SPECIFICATION, "") +
-			fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE_VARIANT, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TESTED_PATHOGEN, PathogenTestDto.TESTED_PATHOGEN_DETAILS) +
 			fluidRowLocs(PathogenTestDto.TYPING_ID, "") +
@@ -94,8 +96,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
 			fluidRowLocs(PathogenTestDto.PRELIMINARY, "") +
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
-			fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
-			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
+			fluidRowLocs(4,PathogenTestDto.SEROTYPE, 4,PathogenTestDto.SEROTYPING_METHOD, 4,PathogenTestDto.SERO_TYPING_METHOD_TEXT) +
+			fluidRowLocs(6,PathogenTestDto.SERO_GROUP_SPECIFICATION , 6, PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT) +
+			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N) +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_RDRP, PathogenTestDto.CT_VALUE_S) +
 			fluidRowLocs(PathogenTestDto.CT_VALUE_ORF_1, PathogenTestDto.CT_VALUE_RDRP_S) +
@@ -120,20 +123,22 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private TextField testTypeTextField;
 	private ComboBox pcrTestSpecification;
+	private Disease disease;
 	private TextField typingIdField;
 
-	public PathogenTestForm(AbstractSampleForm sampleForm, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction) {
-		this(create, caseSampleCount, isPseudonymized, inJurisdiction);
+	public PathogenTestForm(AbstractSampleForm sampleForm, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
+		this(create, caseSampleCount, isPseudonymized, inJurisdiction, disease);
 		this.sampleForm = sampleForm;
+        this.disease = disease;
 		addFields();
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
 	}
 
-	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction) {
+	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
 
-		this(create, caseSampleCount, isPseudonymized, inJurisdiction);
+		this(create, caseSampleCount, isPseudonymized, inJurisdiction, disease);
 		this.sample = sample;
 		addFields();
 		if (create) {
@@ -141,9 +146,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	}
 
-	public PathogenTestForm(EnvironmentSampleDto sample, boolean create, boolean isPseudonymized, boolean inJurisdiction) {
+	public PathogenTestForm(EnvironmentSampleDto sample, boolean create, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
 
-		this(create, 0, isPseudonymized, inJurisdiction);
+		this(create, 0, isPseudonymized, inJurisdiction, disease);
 		this.environmentSample = sample;
 		addFields();
 		if (create) {
@@ -151,12 +156,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		}
 	}
 
-	public PathogenTestForm(boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction) {
+	public PathogenTestForm(boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
 		super(
 			PathogenTestDto.class,
 			PathogenTestDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(null).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			FieldAccessHelper.getFieldAccessCheckers(create || inJurisdiction, !create && isPseudonymized));// Jurisdiction doesn't matter for creation forms  // Pseudonymization doesn't matter for creation forms
 
 		this.caseSampleCount = caseSampleCount;
@@ -227,6 +232,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.VIA_LIMS);
 		addField(PathogenTestDto.EXTERNAL_ID);
 		addField(PathogenTestDto.EXTERNAL_ORDER_ID);
+		TextField seroTypingMethodText = addField(PathogenTestDto.SERO_TYPING_METHOD_TEXT);
+		seroTypingMethodText.setVisible(false);
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		testTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		testTypeField.setImmediate(true);
@@ -252,7 +259,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		typingIdField = addField(PathogenTestDto.TYPING_ID, TextField.class);
 		typingIdField.setVisible(false);
 
-		// Tested Desease or Tested Pathogen, depending on sample type
+		// Tested Disease or Tested Pathogen, depending on sample type
 		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create, false);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 		ComboBox diseaseVariantField = addCustomizableEnumField(PathogenTestDto.TESTED_DISEASE_VARIANT);
@@ -291,6 +298,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 		addField(PathogenTestDto.SEROTYPE, TextField.class);
+        addField(PathogenTestDto.SEROTYPING_METHOD, CheckBox.class);
+        addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, CheckBox.class);
+		addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
 
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
@@ -376,6 +386,33 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		};
 		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SEROTYPE, serotypeVisibilityDependencies, true);
+		// Serotype visibility of IPI
+        Map<Object, List<Object>> ipiSerotypeVisibilityDependencies = new HashMap<Object, List<Object>>() {
+
+            private static final long serialVersionUID = 2858842323596082247L;
+
+            {
+                put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEROGROUPING));
+                put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+            }
+        };
+        FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD), ipiSerotypeVisibilityDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SERO_TYPING_METHOD_TEXT, PathogenTestDto.SEROTYPING_METHOD, SerotypingMethod.OTHER, true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.SEROTYPING_METHOD, Arrays.asList(PathogenTestDto.SERO_TYPING_METHOD_TEXT), Arrays.asList(SerotypingMethod.OTHER));
+
+		// Serogroup specification visibility dependencies for IMI.
+        Map<Object, List<Object>> seroGroupVisibilityDependencies = new HashMap<>() {
+			private static final long serialVersionUID = 3955443313596082247L;
+            {
+                put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
+                put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.SEROGROUPING));
+                put(PathogenTestDto.TEST_RESULT, Arrays.asList(PathogenTestResultType.POSITIVE));
+            }
+        };
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(PathogenTestDto.SERO_GROUP_SPECIFICATION), seroGroupVisibilityDependencies, true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, PathogenTestDto.SERO_GROUP_SPECIFICATION, SeroGroupSpecification.OTHER, true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), PathogenTestDto.SERO_GROUP_SPECIFICATION, Arrays.asList(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT), Arrays.asList(SeroGroupSpecification.OTHER));
 
 		Consumer<Disease> updateDiseaseVariantField = disease -> {
 			List<DiseaseVariant> diseaseVariants =

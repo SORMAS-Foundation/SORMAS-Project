@@ -149,7 +149,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ExposuresField.class.isAssignableFrom(fieldType)) {
-			return (T) new ExposuresField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
+			return (T) new ExposuresField(null,fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (ActivityAsCaseField.class.isAssignableFrom(fieldType)) {
 			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers, isEditAllowed);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {

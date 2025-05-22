@@ -14197,4 +14197,38 @@ END $$
 LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (569, 'Moving Email & SMS properties to the new system configuration structure #13311');
+
+-- 2025-05-02 New Disease(s) IMI & IPI for LUX #13345, #13344
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS arthritis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS meningitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS septicaemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherclinicalpresentation varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherclinicalpresentationtext varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS arthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS meningitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS septicaemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherclinicalpresentation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherclinicalpresentationtext varchar(255);
+
+alter table pathogentest add column IF NOT EXISTS seroGroupSpecification varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroGroupSpecificationText varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroTypingMethod varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroTypingMethodText varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroGroupSpecification varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroGroupSpecificationText varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroTypingMethod varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroTypingMethodText varchar(255);
+
+alter table contact add column IF NOT EXISTS prophylaxisprescribed boolean default false;
+alter table contact add column IF NOT exists prescribedDrug varchar(255);
+alter table contact add column IF NOT exists prescribedDrugText varchar(255);
+alter table contact_history add column IF NOT EXISTS prophylaxisprescribed boolean default false;
+alter table contact_history add column IF NOT exists prescribedDrug varchar(255);
+alter table contact_history add column IF NOT exists prescribedDrugText varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (570, 'New Disease(s) IMI & IPI for LUX #13345, #13344');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

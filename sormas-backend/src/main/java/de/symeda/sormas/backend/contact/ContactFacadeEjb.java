@@ -67,6 +67,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.contact.PrescribedDrug;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1352,6 +1354,11 @@ public class ContactFacadeEjb
 				}
 				contact.setMissedVisitsCount(numberOfMissedVisits);
 			}
+			// Displaying the Prescribed drug in case prophylaxis is prescribed.
+			if(Objects.nonNull(contact.getProphylaxisPrescribed()) && Objects.nonNull(contact.getPrescribedDrug()))
+				contact.setPrescribedDrugText((Boolean.TRUE.equals(contact.getProphylaxisPrescribed()) && PrescribedDrug.OTHER ==contact.getPrescribedDrug()) ?
+					PrescribedDrug.OTHER+" - "+contact.getPrescribedDrugText():
+					contact.getPrescribedDrug().toString());
 		});
 
 		return dtos;
@@ -1624,6 +1631,9 @@ public class ContactFacadeEjb
 		target.setDeleted(source.isDeleted());
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
+		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
+		target.setPrescribedDrug(source.getPrescribedDrug());
+		target.setPrescribedDrugText(source.getPrescribedDrugText());
 
 		return target;
 	}
@@ -1969,6 +1979,9 @@ public class ContactFacadeEjb
 		target.setDeletionReason(source.getDeletionReason());
 		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
+		target.setProphylaxisPrescribed(source.getProphylaxisPrescribed());
+		target.setPrescribedDrug(source.getPrescribedDrug());
+		target.setPrescribedDrugText(source.getPrescribedDrugText());
 		return target;
 	}
 

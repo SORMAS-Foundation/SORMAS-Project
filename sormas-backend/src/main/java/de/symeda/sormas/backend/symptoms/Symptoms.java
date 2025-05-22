@@ -236,6 +236,15 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState otherComplications;
 	private String otherComplicationsText;
 
+	// Clinical Presentation
+	private SymptomState asymptomatic;
+	private SymptomState hemorrhagicRash;
+	private SymptomState arthritis;
+	private SymptomState meningitis;
+	private SymptomState septicaemia;
+	private SymptomState otherClinicalPresentation;
+	private String otherClinicalPresentationText;
+
 	// when adding new fields make sure to extend toHumanString
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -1838,5 +1847,61 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setOtherComplicationsText(String otherComplicationsText) {
 		this.otherComplicationsText = otherComplicationsText;
+	}
+
+	public SymptomState getAsymptomatic() {
+		return asymptomatic;
+	}
+
+	public void setAsymptomatic(SymptomState asymptomatic) {
+		this.asymptomatic = asymptomatic;
+	}
+
+	public SymptomState getHemorrhagicRash() {
+		return hemorrhagicRash;
+	}
+
+	public void setHemorrhagicRash(SymptomState hemorrhagicRash) {
+		this.hemorrhagicRash = hemorrhagicRash;
+	}
+
+	public SymptomState getArthritis() {
+		return arthritis;
+	}
+
+	public void setArthritis(SymptomState arthritis) {
+		this.arthritis = arthritis;
+	}
+
+	public SymptomState getMeningitis() {
+		return meningitis;
+	}
+
+	public void setMeningitis(SymptomState meningitis) {
+		this.meningitis = meningitis;
+	}
+
+	public SymptomState getOtherClinicalPresentation() {
+		return otherClinicalPresentation;
+	}
+
+	public void setOtherClinicalPresentation(SymptomState otherClinicalPresentation) {
+		this.otherClinicalPresentation = otherClinicalPresentation;
+	}
+
+	public String getOtherClinicalPresentationText() {
+		return otherClinicalPresentationText;
+	}
+
+	public void setOtherClinicalPresentationText(String otherClinicalPresentationText) {
+		this.otherClinicalPresentationText = otherClinicalPresentationText;
+	}
+
+	public SymptomState getSepticaemia() {
+		return septicaemia;
+	}
+
+	public void setSepticaemia(SymptomState septicaemia) {
+		this.septicaemia = septicaemia;
 	}
 }

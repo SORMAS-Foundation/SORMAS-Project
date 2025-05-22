@@ -40,6 +40,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -97,6 +98,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 	public static final String ENVIRONMENT_SAMPLE = "environmentSample";
+	public static final String SEROTYPING_METHOD = "seroTypingMethod";
+	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
+	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
+	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -195,6 +200,22 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String prescriberCity;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
 	private CountryReferenceDto prescriberCountry;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private String seroTypingMethodText;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	private SerotypingMethod seroTypingMethod;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	private SeroGroupSpecification seroGroupSpecification;
+	@SensitiveData
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION})
+	private String seroGroupSpecificationText;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -610,6 +631,38 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setPrescriberCountry(CountryReferenceDto prescriberCountry) {
 		this.prescriberCountry = prescriberCountry;
+	}
+
+	public SerotypingMethod getSeroTypingMethod() {
+		return seroTypingMethod;
+	}
+
+	public void setSeroTypingMethod(SerotypingMethod seroTypingMethod) {
+		this.seroTypingMethod = seroTypingMethod;
+	}
+
+	public String getSeroTypingMethodText() {
+		return seroTypingMethodText;
+	}
+
+	public void setSeroTypingMethodText(String seroTypingMethodText) {
+		this.seroTypingMethodText = seroTypingMethodText;
+	}
+
+	public SeroGroupSpecification getSeroGroupSpecification() {
+		return seroGroupSpecification;
+	}
+
+	public void setSeroGroupSpecification(SeroGroupSpecification seroGroupSpecification) {
+		this.seroGroupSpecification = seroGroupSpecification;
+	}
+
+	public String getSeroGroupSpecificationText() {
+		return seroGroupSpecificationText;
+	}
+
+	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
+		this.seroGroupSpecificationText = seroGroupSpecificationText;
 	}
 
 	@Override

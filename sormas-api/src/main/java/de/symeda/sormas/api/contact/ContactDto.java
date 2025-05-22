@@ -15,6 +15,7 @@
 package de.symeda.sormas.api.contact;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_LUXEMBOURG;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
@@ -149,6 +150,9 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 	public static final String DELETION_REASON = "deletionReason";
 	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
+	public static final String PROPHYLAXIS_PRESCRIBED = "prophylaxisPrescribed";
+	public static final String PRESCRIBED_DRUG = "prescribedDrug";
+	public static final String PRESCRIBED_DRUG_TEXT = "prescribedDrugText";
 
 	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
@@ -209,11 +213,15 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	private String followUpComment;
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	private Date followUpUntil;
+	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION}, hide = true)
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
@@ -244,7 +252,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
-
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private QuarantineType quarantine;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -257,6 +266,8 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private PersonReferenceDto person;
 
 	@SensitiveData
+	@Diseases(value = {
+		Disease.INVASIVE_MENINGOCOCCAL_INFECTION }, hide = true)
 	private UserReferenceDto contactOfficer;
 
 	@EmbeddedPersonalData
@@ -361,6 +372,18 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	private DeletionReason deletionReason;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@SensitiveData
+	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
+	private Boolean prophylaxisPrescribed;
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@SensitiveData
+	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
+	private PrescribedDrug prescribedDrug;
+	@HideForCountriesExcept(countries = {COUNTRY_CODE_LUXEMBOURG})
+	@SensitiveData
+	@Diseases(Disease.INVASIVE_MENINGOCOCCAL_INFECTION)
+	private String prescribedDrugText;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1060,4 +1083,29 @@ public class ContactDto extends SormasToSormasShareableDto implements IsContact 
 	public void setOtherDeletionReason(String otherDeletionReason) {
 		this.otherDeletionReason = otherDeletionReason;
 	}
+
+	public Boolean getProphylaxisPrescribed() {
+		return prophylaxisPrescribed;
+	}
+
+	public void setProphylaxisPrescribed(Boolean prophylaxisPrescribed) {
+		this.prophylaxisPrescribed = prophylaxisPrescribed;
+	}
+
+	public PrescribedDrug getPrescribedDrug() {
+		return prescribedDrug;
+	}
+
+	public void setPrescribedDrug(PrescribedDrug prescribedDrug) {
+		this.prescribedDrug = prescribedDrug;
+	}
+
+	public String getPrescribedDrugText() {
+		return prescribedDrugText;
+	}
+
+	public void setPrescribedDrugText(String prescribedDrugText) {
+		this.prescribedDrugText = prescribedDrugText;
+	}
+
 }

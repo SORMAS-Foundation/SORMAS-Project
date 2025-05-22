@@ -99,6 +99,7 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class SampleController {
 
+	private Disease disease;
 	public SampleController() {
 	}
 
@@ -121,6 +122,7 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
+		this.disease = disease;
 		createSample(SampleDto.build(UiUtil.getUserReference(), caseRef), disease, callback);
 	}
 
@@ -129,10 +131,12 @@ public class SampleController {
 	}
 
 	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
+		this.disease = disease;
 		createSample(SampleDto.build(UiUtil.getUserReference(), eventParticipantRef), disease, callback);
 	}
 
 	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
+		this.disease = disease;
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		// add option to create additional pathogen tests
 		SampleEditPathogenTestListHandler pathogenTestHandler = new SampleEditPathogenTestListHandler();
@@ -208,7 +212,7 @@ public class SampleController {
 		separator.setVisible(addSeparator);
 		sampleComponent.addComponent(separator, sampleComponent.getComponentCount() - 1);
 
-		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleComponent.getWrappedComponent(), true, caseSampleCount, false, true);  // Valid because jurisdiction doesn't matter for entities that are about to be created
+		PathogenTestForm pathogenTestForm = new PathogenTestForm(sampleComponent.getWrappedComponent(), true, caseSampleCount, false, true, disease);  // Valid because jurisdiction doesn't matter for entities that are about to be created
 		// prefill fields
 		if (pathogenTest != null) {
 			pathogenTestForm.setValue(pathogenTest);
