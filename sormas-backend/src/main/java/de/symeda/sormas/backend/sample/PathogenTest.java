@@ -35,16 +35,19 @@ import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.disease.DiseaseVariantConverter;
+import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
+import de.symeda.sormas.api.sample.BeijingGenotypeStatus;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SpoligotypeSpecie;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.SerotypingMethod;
 import de.symeda.sormas.backend.common.DeletableAdo;
-import de.symeda.sormas.api.disease.DiseaseVariantConverter;
-import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -93,6 +96,11 @@ public class PathogenTest extends DeletableAdo {
 	public static final String PRESCRIBER_POSTAL_CODE = "prescriberPostalCode";
 	public static final String PRESCRIBER_CITY = "prescriberCity";
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
+	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
+	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
+	public static final String SPOLIGOTYPING_SPECIE = "spoligotypeSpecie";
+	public static final String MIRU_PATTERN_PROFILE = "miruPatternProfile";
+	public static final String BEIJING_GENOTYPE_STATUS = "beijingGenotypeStatus";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -137,6 +145,11 @@ public class PathogenTest extends DeletableAdo {
 	private String prescriberPostalCode;
 	private String prescriberCity;
 	private Country prescriberCountry;
+	private YesNoUnknown rifampicinResistant;
+	private YesNoUnknown isoniazidResistant;
+	private SpoligotypeSpecie spoligotypeSpecie;
+	private String miruPatternProfile;
+	private BeijingGenotypeStatus beijingGenotypeStatus;
 	private SerotypingMethod seroTypingMethod;
 	private String seroTypingMethodText;
 	private SeroGroupSpecification seroGroupSpecification;
@@ -539,6 +552,46 @@ public class PathogenTest extends DeletableAdo {
 
 	public PathogenTestReferenceDto toReference() {
 		return new PathogenTestReferenceDto(getUuid());
+	}
+
+	public YesNoUnknown getRifampicinResistant() {
+		return rifampicinResistant;
+	}
+
+	public void setRifampicinResistant(YesNoUnknown rifampicinResistant) {
+		this.rifampicinResistant = rifampicinResistant;
+	}
+
+	public YesNoUnknown getIsoniazidResistant() {
+		return isoniazidResistant;
+	}
+
+	public void setIsoniazidResistant(YesNoUnknown isoniazidResistant) {
+		this.isoniazidResistant = isoniazidResistant;
+	}
+
+	public SpoligotypeSpecie getSpoligotypeSpecie() {
+		return spoligotypeSpecie;
+	}
+
+	public void setSpoligotypeSpecie(SpoligotypeSpecie spoligotypeSpecie) {
+		this.spoligotypeSpecie = spoligotypeSpecie;
+	}
+
+	public String getMiruPatternProfile() {
+		return miruPatternProfile;
+	}
+
+	public void setMiruPatternProfile(String miruPatternProfile) {
+		this.miruPatternProfile = miruPatternProfile;
+	}
+
+	public BeijingGenotypeStatus getBeijingGenotypeStatus() {
+		return beijingGenotypeStatus;
+	}
+
+	public void setBeijingGenotypeStatus(BeijingGenotypeStatus beijingGenotypeStatus) {
+		this.beijingGenotypeStatus = beijingGenotypeStatus;
 	}
 
 	@Enumerated(EnumType.STRING)
