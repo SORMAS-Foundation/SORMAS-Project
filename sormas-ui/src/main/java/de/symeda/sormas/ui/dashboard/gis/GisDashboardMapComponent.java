@@ -39,6 +39,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.CaseMeasure;
@@ -69,6 +70,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -83,6 +85,7 @@ import de.symeda.sormas.ui.map.LeafletMapUtil;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.LeafletPolygon;
 import de.symeda.sormas.ui.map.MarkerIcon;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -196,6 +199,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		Disease disease = dashboardDataProvider.getDisease();
+		Sex sex = dashboardDataProvider.getSex();
 
 		if (loadCases) {
 			if (showCases) {
@@ -206,7 +210,8 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 						disease,
 						fromDate,
 						toDate,
-						showCurrentEpiSituation ? null : dashboardDataProvider.getCaseDateType());
+						showCurrentEpiSituation ? null : dashboardDataProvider.getCaseDateType(),
+						sex);
 			}
 		} else if (loadContacts) {
 			if (showContacts) {
@@ -234,6 +239,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		Disease disease = dashboardDataProvider.getDisease();
+		Sex sex = dashboardDataProvider.getSex();
 
 		clearRegionShapes();
 
@@ -257,7 +263,8 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 							disease,
 							fromDate,
 							toDate,
-							showCurrentEpiSituation ? null : dashboardDataProvider.getCaseDateType()));
+							showCurrentEpiSituation ? null : dashboardDataProvider.getCaseDateType(),
+							sex));
 			}
 			loadCases = false;
 		}
@@ -328,6 +335,17 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 				refreshMap(true);
 			});
 
+			//sex combobox
+			ComboBox caseSexCombobox = ComboBoxHelper.createComboBoxV7();
+			caseSexCombobox.setId("caseSexFilter");
+			caseSexCombobox.setInputPrompt(I18nProperties.getString(Strings.promptCaseSex));
+			caseSexCombobox.addItems((Object[]) Sex.values());
+			caseSexCombobox.addValueChangeListener(event -> {
+				dashboardDataProvider.setSex((Sex) event.getProperty().getValue());
+				loadCases = true;
+				refreshMap(true);
+			});
+
 			if (UiUtil.permitted(UserRight.CASE_VIEW)) {
 				HorizontalLayout showCasesLayout = new HorizontalLayout();
 				{
@@ -343,6 +361,7 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 						mapCaseDisplayModeSelect.setEnabled(showCases);
 						mapCaseDisplayModeSelect.setValue(mapCaseDisplayMode);
 						caseClassificationOptions.setEnabled(showCases);
+						caseSexCombobox.setEnabled(showCases);
 						loadCases = true;
 						refreshMap(true);
 					});
@@ -362,6 +381,9 @@ public class GisDashboardMapComponent extends BaseDashboardMapComponent<GisDashb
 
 				casesLayers.addComponent(caseClassificationOptions);
 				caseClassificationOptions.setEnabled(showCases);
+
+				casesLayers.addComponent(caseSexCombobox);
+				caseSexCombobox.setEnabled(showCases);
 			}
 		}
 

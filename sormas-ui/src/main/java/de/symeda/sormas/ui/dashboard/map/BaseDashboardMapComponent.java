@@ -269,7 +269,6 @@ public abstract class BaseDashboardMapComponent<C extends BaseDashboardCriteria<
 		map.addMarkerClickListener(event -> onMarkerClicked(event.getGroupId(), event.getMarkerIndex()));
 
 		{
-
 			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
 
 			final GeoLatLon mapCenter;

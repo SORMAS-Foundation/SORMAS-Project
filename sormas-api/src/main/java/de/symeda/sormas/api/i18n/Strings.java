@@ -1733,6 +1733,7 @@ public interface Strings {
 	String promptCasesDateFrom = "promptCasesDateFrom";
 	String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";
 	String promptCasesEpiWeekTo = "promptCasesEpiWeekTo";
+	String promptCaseSex = "promptCaseSex";
 	String promptCasesSearchField = "promptCasesSearchField";
 	String promptContactDateFrom = "promptContactDateFrom";
 	String promptContactDateTo = "promptContactDateTo";

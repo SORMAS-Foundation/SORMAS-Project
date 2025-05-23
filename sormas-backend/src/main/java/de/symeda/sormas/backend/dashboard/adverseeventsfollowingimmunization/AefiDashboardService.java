@@ -583,7 +583,6 @@ public class AefiDashboardService {
 			immunizationFacility.get(Facility.LONGITUDE),
 			immunizationPersonAddress.get(Facility.LATITUDE),
 			immunizationPersonAddress.get(Facility.LONGITUDE),
-
 			aefiRoot.get(Aefi.SERIOUS));
 
 		final Predicate criteriaFilter = createAefiFilter(aefiQueryContext, criteria);

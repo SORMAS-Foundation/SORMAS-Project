@@ -28,6 +28,7 @@ import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.GisDashboardCriteria;
 import de.symeda.sormas.api.dashboard.SampleDashboardCriteria;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleDashboardFilterDateType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardDataProvider;
@@ -39,6 +40,7 @@ public class GisDashboardDataProvider extends AbstractDashboardDataProvider<GisD
 	private SampleMaterial sampleMaterial;
 	private Boolean sampleWithNoDisease;
 	private AefiDashboardFilterDateType aefiDateType = AefiDashboardFilterDateType.REPORT_DATE;
+	private Sex sex;
 
 	//disease specific
 	private List<DashboardEventDto> events = new ArrayList<>();
@@ -156,5 +158,13 @@ public class GisDashboardDataProvider extends AbstractDashboardDataProvider<GisD
 
 	public void setEventCountByStatus(Map<EventStatus, Long> eventCountByStatus) {
 		this.eventCountByStatus = eventCountByStatus;
+	}
+
+	public Sex getSex() {
+		return sex;
+	}
+
+	public void setSex(Sex sex) {
+		this.sex = sex;
 	}
 }

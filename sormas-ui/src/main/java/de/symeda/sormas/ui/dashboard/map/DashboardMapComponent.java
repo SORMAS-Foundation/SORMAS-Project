@@ -189,7 +189,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 					disease,
 					fromDate,
 					toDate,
-					showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType());
+					showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType(),
+					null);
 		}
 
 		if (count < maxCount && showContacts) {
@@ -218,7 +219,8 @@ public class DashboardMapComponent extends BaseDashboardMapComponent<DashboardCr
 						disease,
 						fromDate,
 						toDate,
-						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType()));
+						showCurrentEpiSituation ? null : dashboardDataProvider.getNewCaseDateType(),
+						null));
 		}
 		if (showContacts) {
 			showContactMarkers(FacadeProvider.getContactFacade().getContactsForMap(region, district, disease, fromDate, toDate));

@@ -662,6 +662,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
 			DateHelper.addDays(new Date(), 1),
+			null,
 			null);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(
@@ -670,6 +671,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
 			DateHelper.addDays(new Date(), 1),
+			null,
 			null);
 
 		// List should have one entry
