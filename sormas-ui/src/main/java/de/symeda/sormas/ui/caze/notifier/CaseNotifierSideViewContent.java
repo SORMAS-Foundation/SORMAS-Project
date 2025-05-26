@@ -114,20 +114,31 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         // Full name
         Label fullNameLabel = new Label(notifier.getFirstName() + " " + notifier.getLastName());
         CssStyles.style(fullNameLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+        addComponent(fullNameLabel);
 
         // Registration number
         Label registrationNumberLabel = new Label(notifier.getRegistrationNumber());
         CssStyles.style(registrationNumberLabel, CssStyles.LABEL_BOLD);
+        addComponent(registrationNumberLabel);
 
-        // Spacer before phone label
-        Label spacerBeforePhone = new Label();
-        spacerBeforePhone.setHeight("0.05rem");
+        // Spacer before contact label
+        if ((notifier.getPhone() != null && !notifier.getPhone().isEmpty()) || (notifier.getEmail() != null && !notifier.getEmail().isEmpty())) {
+            Label spacerBeforeContact = new Label();
+            spacerBeforeContact.setHeight("0.1rem");
+            addComponent(spacerBeforeContact);
+        }
 
         // Phone
-        Label phoneLabel = new Label(notifier.getPhone());
+        if (notifier.getPhone() != null && !notifier.getPhone().isEmpty()) {
+            Label phoneLabel = new Label(notifier.getPhone());
+            addComponent(phoneLabel);
+        }
 
         // Email
-        Label emailLabel = new Label(notifier.getEmail());
+        if (notifier.getEmail() != null && !notifier.getEmail().isEmpty()) {
+            Label emailLabel = new Label(notifier.getEmail());
+            addComponent(emailLabel);
+        }
 
         // Spacer before email label
         Label spacerDates = new Label();
@@ -147,22 +158,10 @@ public class CaseNotifierSideViewContent extends VerticalLayout {
         HorizontalLayout dateFieldsLayout = new HorizontalLayout(notificationDateField, diagnosticDateField);
         dateFieldsLayout.setSpacing(true);
         dateFieldsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-
-        // Spacer before treatment group
-        Label spacerBeforeTreatment = new Label();
-        spacerBeforeTreatment.setHeight("0.05rem");
-
-        RadioButtonGroup<TreatmentOption> treatmentGroup = buildTreatmentOptions();
-
-        // Add components to the layout
-        addComponent(fullNameLabel);
-        addComponent(registrationNumberLabel);
-        addComponent(spacerBeforePhone);
-        addComponent(phoneLabel);
-        addComponent(emailLabel);
         addComponent(spacerDates);
         addComponent(dateFieldsLayout);
-        addComponent(spacerBeforeTreatment);
+
+        RadioButtonGroup<TreatmentOption> treatmentGroup = buildTreatmentOptions();
         addComponent(treatmentGroup);
 
     }

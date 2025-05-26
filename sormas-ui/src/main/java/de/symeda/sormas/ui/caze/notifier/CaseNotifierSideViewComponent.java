@@ -16,10 +16,12 @@
 package de.symeda.sormas.ui.caze.notifier;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -49,12 +51,22 @@ public class CaseNotifierSideViewComponent extends SideComponent {
 		setSpacing(false);
 
 		if (caze.getNotifier() != null) {
-			var component = ControllerProvider.getCaseNotifierSideViewController().getNotifierComponent(caze);
+			final var component = ControllerProvider.getCaseNotifierSideViewController().getNotifierComponent(caze);
 			addComponent(component);
-			Button notficationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.BOOK, e -> {
+
+			Button notificationButton = ButtonHelper.createIconButton(Captions.Notifier_notification, VaadinIcons.BOOK, e -> {
+				final var oldestReport = ControllerProvider.getCaseNotifierSideViewController().getOldestReport(caze);
+				if (oldestReport == null) {
+					return;
+				}
+				final var externalMessage = FacadeProvider.getExternalMessageFacade().getForSurveillanceReport(oldestReport.toReference());
+				if (externalMessage == null) {
+					return;
+				}
+				ControllerProvider.getExternalMessageController().showExternalMessage(externalMessage.getUuid(), false, null);
 			}, ValoTheme.BUTTON_PRIMARY);
 
-			addCreateButton(notficationButton);
+			addCreateButton(notificationButton);
 		} else {
 			addComponent(new Label(I18nProperties.getCaption(Captions.Notification_noNotification)));
 		}

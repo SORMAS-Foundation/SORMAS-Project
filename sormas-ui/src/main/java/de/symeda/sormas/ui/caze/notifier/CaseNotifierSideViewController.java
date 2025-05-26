@@ -40,7 +40,8 @@ public class CaseNotifierSideViewController {
     /**
      * Retrieves the notifier component for a given case.
      *
-     * @param caze The case data for which the notifier component is to be retrieved.
+     * @param caze
+     *            The case data for which the notifier component is to be retrieved.
      * @return A {@link CaseNotifierSideViewContent} object containing the notifier, oldest report, and treatment details.
      */
     public CaseNotifierSideViewContent getNotifierComponent(CaseDataDto caze) {
@@ -48,19 +49,30 @@ public class CaseNotifierSideViewController {
         NotifierDto notifier =
             FacadeProvider.getNotifierFacade().getByUuidAndTime(caze.getNotifier().getUuid(), caze.getNotifier().getVersionDate().toInstant());
 
+        return new CaseNotifierSideViewContent(caze, notifier, getOldestReport(caze), getTreatment(caze.getTherapy()), true);
+    }
+
+    /**
+     * Retrieves the oldest surveillance report for a given case.
+     * 
+     * @param caze
+     *            The case
+     * @return The oldest {@link SurveillanceReportDto} for the case, or null if no reports are found.
+     */
+    public SurveillanceReportDto getOldestReport(CaseDataDto caze) {
         CaseReferenceDto cazeRef = new CaseReferenceDto();
         cazeRef.setUuid(caze.getUuid());
-
-        return new CaseNotifierSideViewContent(caze, notifier, getOldestReport(cazeRef), getTreatment(caze.getTherapy()), true);
+        return getOldestReport(cazeRef);
     }
 
     /**
      * Retrieves the oldest surveillance report for a given case reference.
      *
-     * @param caze The reference to the case for which the oldest report is to be retrieved.
+     * @param caze
+     *            The reference to the case for which the oldest report is to be retrieved.
      * @return The oldest {@link SurveillanceReportDto} for the case, or null if no reports are found.
      */
-    protected SurveillanceReportDto getOldestReport(CaseReferenceDto caze) {
+    public SurveillanceReportDto getOldestReport(CaseReferenceDto caze) {
 
         SurveillanceReportCriteria criteria = new SurveillanceReportCriteria();
         criteria.caze(caze);
@@ -77,7 +89,8 @@ public class CaseNotifierSideViewController {
     /**
      * Retrieves the treatment details for a given therapy.
      *
-     * @param therapy The therapy for which the treatment details are to be retrieved.
+     * @param therapy
+     *            The therapy for which the treatment details are to be retrieved.
      * @return A {@link TreatmentDto} object containing the treatment details, or null if no treatment is found.
      */
     protected TreatmentDto getTreatment(TherapyDto therapy) {
