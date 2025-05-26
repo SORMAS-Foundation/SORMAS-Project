@@ -195,7 +195,6 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
-		getColumn(ContactIndexDto.PRESCRIBED_DRUG_TEXT).setCaption(I18nProperties.getCaption(Captions.Contact_prescribedDrug));
 	}
 
 	protected Stream<String> getColumnList() {
@@ -220,7 +219,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.FOLLOW_UP_UNTIL,
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
 					ContactIndexDto.VACCINATION_STATUS,
-					NUMBER_OF_VISITS, ContactIndexDto.PROPHYLAXIS_PRESCRIBED, ContactIndexDto.PRESCRIBED_DRUG_TEXT),
+					NUMBER_OF_VISITS, ContactIndexDto.PROPHYLAXIS_PRESCRIBED, ContactIndexDto.PRESCRIBED_DRUG),
 				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> UiUtil.permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)),
 				Stream.of(COLUMN_COMPLETENESS),
 				Stream.of(DELETE_REASON_COLUMN))

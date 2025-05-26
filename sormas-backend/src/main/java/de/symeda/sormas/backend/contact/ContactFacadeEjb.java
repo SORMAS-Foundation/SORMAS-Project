@@ -1354,11 +1354,6 @@ public class ContactFacadeEjb
 				}
 				contact.setMissedVisitsCount(numberOfMissedVisits);
 			}
-			// Displaying the Prescribed drug in case prophylaxis is prescribed.
-			if(Objects.nonNull(contact.getProphylaxisPrescribed()) && Objects.nonNull(contact.getPrescribedDrug()))
-				contact.setPrescribedDrugText((Boolean.TRUE.equals(contact.getProphylaxisPrescribed()) && PrescribedDrug.OTHER ==contact.getPrescribedDrug()) ?
-					PrescribedDrug.OTHER+" - "+contact.getPrescribedDrugText():
-					contact.getPrescribedDrug().toString());
 		});
 
 		return dtos;

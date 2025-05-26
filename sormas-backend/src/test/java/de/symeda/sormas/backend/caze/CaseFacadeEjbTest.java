@@ -543,6 +543,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
 		assertNull(contact.getFollowUpUntil());
+
+		// IPI does not require a follow-up
+		caze.setDisease(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION);
+		getCaseFacade().save(caze);
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.NO_FOLLOW_UP, contact.getFollowUpStatus());
+		assertNull(contact.getFollowUpUntil());
+
+		// IMI required the follow-up
+		caze.setDisease(Disease.INVASIVE_MENINGOCOCCAL_INFECTION);
+		getCaseFacade().save(caze);
+		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+		assertEquals(LocalDate.now().plusDays(7), UtilDate.toLocalDate(contact.getFollowUpUntil()));
 	}
 
 	@Test
@@ -1357,6 +1371,26 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cases1.add(caze1);
 		assertEquals(getCaseFacade().getRelevantCasesForVaccination(firstRelevantVaccinationForCase1), cases1);
 		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
+		// IPI vaccination test
+		final Date today = new Date();
+		caze1 = creator.createCase(surveillanceSupervisor.toReference(), cazePerson1.toReference(), Disease.INVASIVE_PNEUMOCOCCAL_INFECTION, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				DateUtils.addDays(today, -1),
+				rdcf);
+		cases1.add(caze1);
+		VaccinationDto ipiVaccincation = creator.createVaccinationWithDetails(
+				caze1.getReportingUser(),
+				immunization.toReference(),
+				HealthConditionsDto.build(),
+				DateHelper.subtractDays(new Date(), 7),
+				Vaccine.PNEUMOVAX_23_MERCK,
+				VaccineManufacturer.MERCK,
+				VaccinationInfoSource.UNKNOWN,
+				"inn1",
+				"123",
+				"code123",
+				"1");
+		assertEquals(getCaseFacade().getRelevantCasesForVaccination(ipiVaccincation), cases1);
 	}
 
 	/**
