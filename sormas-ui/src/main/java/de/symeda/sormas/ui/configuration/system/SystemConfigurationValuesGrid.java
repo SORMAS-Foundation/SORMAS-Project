@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.configuration.system;
 
+import com.vaadin.ui.Grid.Column;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueCriteria;
@@ -29,6 +31,9 @@ public class SystemConfigurationValuesGrid extends FilteredGrid<SystemConfigurat
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The number of mask characters to generate for encrypted values.
+	 */
 	private static final int ENCRYPTED_VALUE_LENGTH = 15;
 
 	/**
@@ -58,14 +63,21 @@ public class SystemConfigurationValuesGrid extends FilteredGrid<SystemConfigurat
 
 		removeColumn(SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME);
 		addColumn(value -> value.isEncrypted() ? "*".repeat(ENCRYPTED_VALUE_LENGTH) : value.getValue())
-			.setId(SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME);
+			.setId(SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME)
+			.setDescriptionGenerator(v -> this.getValueDescription(v));
 
 		removeColumn(SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME);
-		addColumn(this::getCategoryCaption).setId(SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME);
+		addColumn(this::getCategoryCaption).setId(SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME)
+			.setDescriptionGenerator(v -> this.getValueDescription(v));
+
+		removeColumn(SystemConfigurationValueIndexDto.DESCRIPTION_PROPERTY_NAME);
+		addColumn(this::getValueDescription).setId(SystemConfigurationValueIndexDto.DESCRIPTION_PROPERTY_NAME)
+			.setDescriptionGenerator(v -> this.getValueDescription(v));
 
 		setColumns(
 			SystemConfigurationValueIndexDto.CATEGORY_NAME_PROPERTY_NAME,
 			SystemConfigurationValueIndexDto.KEY_PROPERTY_NAME,
+			SystemConfigurationValueIndexDto.DESCRIPTION_PROPERTY_NAME,
 			SystemConfigurationValueIndexDto.VALUE_PROPERTY_NAME);
 
 		addEditColumn(e -> ControllerProvider.getSystemConfigurationController().editSystemConfigurationValue(e.getUuid()));
@@ -87,6 +99,20 @@ public class SystemConfigurationValuesGrid extends FilteredGrid<SystemConfigurat
 			caption.append(value.getCategoryCaption());
 		}
 		return caption.toString();
+	}
+
+	private String getValueDescription(SystemConfigurationValueIndexDto value) {
+
+		if (value.getDescription() == null || value.getDescription().isEmpty()) {
+			return "";
+		}
+
+		final StringBuilder description = new StringBuilder();
+		SystemConfigurationI18nHelper.processI18nString(value.getDescription(), (key) -> description.append(I18nProperties.getString(key)));
+		if (description.length() == 0) {
+			description.append(value.getDescription());
+		}
+		return description.toString();
 	}
 
 	/**
