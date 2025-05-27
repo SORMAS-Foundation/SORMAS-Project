@@ -13,19 +13,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sample;
+package de.symeda.sormas.api.utils;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public enum BeijingGenotypeStatus {
+import de.symeda.sormas.api.sample.PathogenTestType;
 
-	BEIJING,
-	NOBEIJING,
-	POSSBEIJING,
-	UNKNOWN;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ApplicableToPathogenTests {
 
-	@Override
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	}
+	PathogenTestType[] value() default {};
 }

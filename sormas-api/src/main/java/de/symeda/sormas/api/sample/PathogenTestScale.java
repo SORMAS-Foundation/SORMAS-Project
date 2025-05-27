@@ -15,19 +15,40 @@
 
 package de.symeda.sormas.api.sample;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.ApplicableToPathogenTests;
 
-public enum SpoligotypeSpecie {
+public enum PathogenTestScale {
 
-	MYCOBATERIUM_AFRICANUM,
-	MYCOBATERIUM_BOVIS,
-	MYCOBATERIUM_TUBERCULOSIS,
-	OTHER_MTBC_MEMBER,
-	UNKNOWN,
-	NOT_APPLICABLE;
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.MICROSCOPY })
+	ONE_PLUS,
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.MICROSCOPY })
+	TWO_PLUS,
+	@ApplicableToPathogenTests(value = {
+		PathogenTestType.MICROSCOPY })
+	THREE_PLUS;
 
 	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	public static List<PathogenTestScale> forPathogenTest(PathogenTestType pathogenTest) {
+		return Arrays.stream(values()).filter(status -> {
+			try {
+				Field f = PathogenTestScale.class.getField(status.name());
+				ApplicableToPathogenTests ann = f.getAnnotation(ApplicableToPathogenTests.class);
+				return ann != null && Arrays.asList(ann.value()).contains(pathogenTest);
+			} catch (NoSuchFieldException e) {
+				return false;
+			}
+		}).collect(Collectors.toList());
 	}
 }

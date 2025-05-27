@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,6 +30,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -38,12 +40,13 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.disease.DiseaseVariantConverter;
 import de.symeda.sormas.api.disease.PathogenConverter;
 import de.symeda.sormas.api.environment.environmentsample.Pathogen;
-import de.symeda.sormas.api.sample.BeijingGenotypeStatus;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.sample.PathogenSpecie;
+import de.symeda.sormas.api.sample.PathogenStrainCallStatus;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestScale;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SpoligotypeSpecie;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.sample.SeroGroupSpecification;
 import de.symeda.sormas.api.sample.SerotypingMethod;
@@ -51,6 +54,7 @@ import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.environment.environmentsample.EnvironmentSample;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.therapy.DrugSusceptibility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -98,9 +102,11 @@ public class PathogenTest extends DeletableAdo {
 	public static final String PRESCRIBER_COUNTRY = "prescriberCountry";
 	public static final String RIFAMPICIN_RESISTANT = "rifampicinResistant";
 	public static final String ISONIAZID_RESISTANT = "isoniazidResistant";
-	public static final String SPOLIGOTYPING_SPECIE = "spoligotypeSpecie";
-	public static final String MIRU_PATTERN_PROFILE = "miruPatternProfile";
-	public static final String BEIJING_GENOTYPE_STATUS = "beijingGenotypeStatus";
+	public static final String SPECIE = "specie";
+	public static final String PATTERN_PROFILE = "patternProfile";
+	public static final String STRAIN_CALL_STATUS = "strainCallStatus";
+	public static final String TEST_SCALE = "testScale";
+	public static final String DRUG_SUSCEPTIBILITY = "drugSusceptibility";
 
 	private Sample sample;
 	private EnvironmentSample environmentSample;
@@ -147,6 +153,11 @@ public class PathogenTest extends DeletableAdo {
 	private Country prescriberCountry;
 	private YesNoUnknown rifampicinResistant;
 	private YesNoUnknown isoniazidResistant;
+	private PathogenSpecie specie;
+	private String patternProfile;
+	private PathogenStrainCallStatus strainCallStatus;
+	private PathogenTestScale testScale;
+	private DrugSusceptibility drugSusceptibility;
 	private SpoligotypeSpecie spoligotypeSpecie;
 	private String miruPatternProfile;
 	private BeijingGenotypeStatus beijingGenotypeStatus;
@@ -570,28 +581,45 @@ public class PathogenTest extends DeletableAdo {
 		this.isoniazidResistant = isoniazidResistant;
 	}
 
-	public SpoligotypeSpecie getSpoligotypeSpecie() {
-		return spoligotypeSpecie;
+	public PathogenSpecie getSpecie() {
+		return specie;
 	}
 
-	public void setSpoligotypeSpecie(SpoligotypeSpecie spoligotypeSpecie) {
-		this.spoligotypeSpecie = spoligotypeSpecie;
+	public void setSpecie(PathogenSpecie specie) {
+		this.specie = specie;
 	}
 
-	public String getMiruPatternProfile() {
-		return miruPatternProfile;
+	public String getPatternProfile() {
+		return patternProfile;
 	}
 
-	public void setMiruPatternProfile(String miruPatternProfile) {
-		this.miruPatternProfile = miruPatternProfile;
+	public void setPatternProfile(String patternProfile) {
+		this.patternProfile = patternProfile;
 	}
 
-	public BeijingGenotypeStatus getBeijingGenotypeStatus() {
-		return beijingGenotypeStatus;
+	public PathogenStrainCallStatus getStrainCallStatus() {
+		return strainCallStatus;
 	}
 
-	public void setBeijingGenotypeStatus(BeijingGenotypeStatus beijingGenotypeStatus) {
-		this.beijingGenotypeStatus = beijingGenotypeStatus;
+	public void setStrainCallStatus(PathogenStrainCallStatus strainCallStatus) {
+		this.strainCallStatus = strainCallStatus;
+	}
+
+	public PathogenTestScale getTestScale() {
+		return testScale;
+	}
+
+	public void setTestScale(PathogenTestScale testScale) {
+		this.testScale = testScale;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	public DrugSusceptibility getDrugSusceptibility() {
+		return drugSusceptibility;
+	}
+
+	public void setDrugSusceptibility(DrugSusceptibility drugSusceptibility) {
+		this.drugSusceptibility = drugSusceptibility;
 	}
 
 	@Enumerated(EnumType.STRING)

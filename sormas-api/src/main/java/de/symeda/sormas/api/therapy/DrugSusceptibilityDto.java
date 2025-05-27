@@ -13,23 +13,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.therapy;
+package de.symeda.sormas.api.therapy;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-import de.symeda.sormas.api.therapy.DrugSusceptibilityType;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+@DependingOnFeatureType(featureType = {
+	FeatureType.SAMPLES_LAB,
+	FeatureType.CASE_SURVEILANCE })
+public class DrugSusceptibilityDto extends PseudonymizableDto {
 
-@Entity
-@Table(name = "drugsusceptibility")
-public class DrugSusceptibility extends AbstractDomainObject {
+	private static final long serialVersionUID = 2688860305284961183L;
 
-	private static final long serialVersionUID = 2250769025956939876L;
-
-	public static final String TABLE_NAME = "drugsusceptibility";
+	public static final String I18N_PREFIX = "DrugSusceptibility";
 
 	public static final String AMIKACIN_MIC = "amikacinMic";
 	public static final String AMIKACIN_SUSCEPTIBILITY = "amikacinSusceptibility";
@@ -89,6 +87,12 @@ public class DrugSusceptibility extends AbstractDomainObject {
 	private Float streptomycinMic;
 	private DrugSusceptibilityType streptomycinSusceptibility;
 
+	public static DrugSusceptibilityDto build() {
+		DrugSusceptibilityDto drugSusceptibility = new DrugSusceptibilityDto();
+		drugSusceptibility.setUuid(DataHelper.createUuid());
+		return drugSusceptibility;
+	}
+
 	public Float getAmikacinMic() {
 		return amikacinMic;
 	}
@@ -97,7 +101,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.amikacinMic = amikacinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getAmikacinSusceptibility() {
 		return amikacinSusceptibility;
 	}
@@ -114,7 +117,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.bedaquilineMic = bedaquilineMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getBedaquilineSusceptibility() {
 		return bedaquilineSusceptibility;
 	}
@@ -131,7 +133,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.capreomycinMic = capreomycinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getCapreomycinSusceptibility() {
 		return capreomycinSusceptibility;
 	}
@@ -148,7 +149,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ciprofloxacinMic = ciprofloxacinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getCiprofloxacinSusceptibility() {
 		return ciprofloxacinSusceptibility;
 	}
@@ -165,7 +165,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.delamanidMic = delamanidMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getDelamanidSusceptibility() {
 		return delamanidSusceptibility;
 	}
@@ -182,7 +181,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ethambutolMic = ethambutolMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getEthambutolSusceptibility() {
 		return ethambutolSusceptibility;
 	}
@@ -199,7 +197,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.gatifloxacinMic = gatifloxacinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getGatifloxacinSusceptibility() {
 		return gatifloxacinSusceptibility;
 	}
@@ -216,7 +213,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.isoniazidMic = isoniazidMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getIsoniazidSusceptibility() {
 		return isoniazidSusceptibility;
 	}
@@ -233,7 +229,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.kanamycinMic = kanamycinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getKanamycinSusceptibility() {
 		return kanamycinSusceptibility;
 	}
@@ -250,7 +245,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.levofloxacinMic = levofloxacinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getLevofloxacinSusceptibility() {
 		return levofloxacinSusceptibility;
 	}
@@ -267,7 +261,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.moxifloxacinMic = moxifloxacinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getMoxifloxacinSusceptibility() {
 		return moxifloxacinSusceptibility;
 	}
@@ -284,7 +277,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.ofloxacinMic = ofloxacinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getOfloxacinSusceptibility() {
 		return ofloxacinSusceptibility;
 	}
@@ -301,7 +293,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.rifampicinMic = rifampicinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getRifampicinSusceptibility() {
 		return rifampicinSusceptibility;
 	}
@@ -318,7 +309,6 @@ public class DrugSusceptibility extends AbstractDomainObject {
 		this.streptomycinMic = streptomycinMic;
 	}
 
-	@Enumerated(EnumType.STRING)
 	public DrugSusceptibilityType getStreptomycinSusceptibility() {
 		return streptomycinSusceptibility;
 	}
