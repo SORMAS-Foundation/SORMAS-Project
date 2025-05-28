@@ -28,6 +28,7 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
 
     public static final String KEY_PROPERTY_NAME = "key";
     public static final String VALUE_PROPERTY_NAME = "value";
+    public static final String DESCRIPTION_PROPERTY_NAME = "description";
     public static final String ENCRYPTED_PROPERTY_NAME = "encrypted";
     public static final String CATEGORY_NAME_PROPERTY_NAME = "categoryName";
     public static final String CATEGORY_CAPTION_PROPERTY_NAME = "categoryCaption";
@@ -35,6 +36,7 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
 
     private String value;
     private String key;
+    private String description;
     private boolean encrypted;
     private String categoryName;
     private String categoryCaption;
@@ -52,7 +54,8 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     /**
      * Sets the key of the configuration.
      * 
-     * @param key the key to set
+     * @param key
+     *            the key to set
      */
     public void setKey(String key) {
         this.key = key;
@@ -70,7 +73,8 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     /**
      * Sets the value of the configuration.
      * 
-     * @param value the value to set
+     * @param value
+     *            the value to set
      */
     public void setValue(String value) {
         this.value = value;
@@ -88,10 +92,30 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     /**
      * Sets the encryption status of the configuration value.
      * 
-     * @param encrypted the encryption status to set
+     * @param encrypted
+     *            the encryption status to set
      */
     public void setEncrypted(boolean encrypted) {
         this.encrypted = encrypted;
+    }
+
+    /**
+     * Gets the description of the configuration.
+     * 
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets the description of the configuration.
+     * 
+     * @param description
+     *            the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -106,7 +130,8 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     /**
      * Sets the category name of the configuration.
      * 
-     * @param categoryName the category name to set
+     * @param categoryName
+     *            the category name to set
      */
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
@@ -124,7 +149,8 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     /**
      * Sets the category caption of the configuration.
      * 
-     * @param categoryCaption the category caption to set
+     * @param categoryCaption
+     *            the category caption to set
      */
     public void setCategoryCaption(String categoryCaption) {
         this.categoryCaption = categoryCaption;
@@ -142,7 +168,8 @@ public class SystemConfigurationValueIndexDto extends EntityDto {
     /**
      * Sets the category description of the configuration.
      * 
-     * @param categoryDescription the category description to set
+     * @param categoryDescription
+     *            the category description to set
      */
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;

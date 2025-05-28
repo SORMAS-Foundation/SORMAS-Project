@@ -17,7 +17,6 @@ package de.symeda.sormas.api.systemconfiguration;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 import javax.ejb.Remote;
 

@@ -41,6 +41,7 @@ public class SystemConfigurationValue extends AbstractDomainObject {
 
     private String value;
     private String key;
+    private String description;
     private SystemConfigurationCategory category;
     private Boolean optional;
     private String pattern;
@@ -64,6 +65,15 @@ public class SystemConfigurationValue extends AbstractDomainObject {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    @Column(nullable = true, name = "value_description")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

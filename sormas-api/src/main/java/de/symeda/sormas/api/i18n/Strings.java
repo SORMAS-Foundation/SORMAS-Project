@@ -1122,6 +1122,11 @@ public interface Strings {
 	String infoSurveyResponseNotReceived = "infoSurveyResponseNotReceived";
 	String infoSurveyResponseReceived = "infoSurveyResponseReceived";
 	String infoSyncUsers = "infoSyncUsers";
+	String infoSystemConfigurationValueDescriptionEmailSenderAddress = "infoSystemConfigurationValueDescriptionEmailSenderAddress";
+	String infoSystemConfigurationValueDescriptionEmailSenderName = "infoSystemConfigurationValueDescriptionEmailSenderName";
+	String infoSystemConfigurationValueDescriptionSmsAuthKey = "infoSystemConfigurationValueDescriptionSmsAuthKey";
+	String infoSystemConfigurationValueDescriptionSmsAuthSecret = "infoSystemConfigurationValueDescriptionSmsAuthSecret";
+	String infoSystemConfigurationValueDescriptionSmsSenderName = "infoSystemConfigurationValueDescriptionSmsSenderName";
 	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";

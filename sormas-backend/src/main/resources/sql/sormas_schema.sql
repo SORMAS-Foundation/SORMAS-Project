@@ -14197,4 +14197,35 @@ END $$
 LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (569, 'Moving Email & SMS properties to the new system configuration structure #13311');
+
+
+-- 2025-05-26 Add description to system configuration values #13357
+
+ALTER TABLE systemconfigurationvalue ADD COLUMN value_description text;
+ALTER TABLE systemconfigurationvalue_history ADD COLUMN value_description text;
+
+DO $$ BEGIN
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/systemConfigurationValueDescriptionEmailSenderAddress'
+    WHERE config_key = 'EMAIL_SENDER_ADDRESS';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/systemConfigurationValueDescriptionEmailSenderName'
+    WHERE config_key = 'EMAIL_SENDER_NAME';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/systemConfigurationValueDescriptionSmsSenderName'
+    WHERE config_key = 'SMS_SENDER_NAME';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/systemConfigurationValueDescriptionSmsAuthKey'
+    WHERE config_key = 'SMS_AUTH_KEY';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/systemConfigurationValueDescriptionSmsAuthSecret'
+    WHERE config_key = 'SMS_AUTH_SECRET';
+END $$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (570, 'Added description to system configuration values #13357');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
