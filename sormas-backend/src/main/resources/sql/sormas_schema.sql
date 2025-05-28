@@ -14206,23 +14206,23 @@ ALTER TABLE systemconfigurationvalue_history ADD COLUMN value_description text;
 
 DO $$ BEGIN
     UPDATE systemconfigurationvalue
-    SET value_description = 'i18n/systemConfigurationValueDescriptionEmailSenderAddress'
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionEmailSenderAddress'
     WHERE config_key = 'EMAIL_SENDER_ADDRESS';
 
     UPDATE systemconfigurationvalue
-    SET value_description = 'i18n/systemConfigurationValueDescriptionEmailSenderName'
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionEmailSenderName'
     WHERE config_key = 'EMAIL_SENDER_NAME';
 
     UPDATE systemconfigurationvalue
-    SET value_description = 'i18n/systemConfigurationValueDescriptionSmsSenderName'
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsSenderName'
     WHERE config_key = 'SMS_SENDER_NAME';
 
     UPDATE systemconfigurationvalue
-    SET value_description = 'i18n/systemConfigurationValueDescriptionSmsAuthKey'
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsAuthKey'
     WHERE config_key = 'SMS_AUTH_KEY';
 
     UPDATE systemconfigurationvalue
-    SET value_description = 'i18n/systemConfigurationValueDescriptionSmsAuthSecret'
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsAuthSecret'
     WHERE config_key = 'SMS_AUTH_SECRET';
 END $$ LANGUAGE plpgsql;
 
