@@ -19,26 +19,68 @@ package de.symeda.sormas.api.symptoms;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
+import static de.symeda.sormas.api.Disease.ACUTE_VIRAL_HEPATITIS;
+import static de.symeda.sormas.api.Disease.ADENOVIRUS;
 import static de.symeda.sormas.api.Disease.AFP;
 import static de.symeda.sormas.api.Disease.ANTHRAX;
+import static de.symeda.sormas.api.Disease.ARI;
+import static de.symeda.sormas.api.Disease.BURULI_ULCER;
+import static de.symeda.sormas.api.Disease.CHIKUNGUNYA;
 import static de.symeda.sormas.api.Disease.CHOLERA;
 import static de.symeda.sormas.api.Disease.CONGENITAL_RUBELLA;
 import static de.symeda.sormas.api.Disease.CORONAVIRUS;
 import static de.symeda.sormas.api.Disease.CSM;
+import static de.symeda.sormas.api.Disease.C_PNEUMONIAE;
 import static de.symeda.sormas.api.Disease.DENGUE;
+import static de.symeda.sormas.api.Disease.DIARRHEA_BLOOD;
+import static de.symeda.sormas.api.Disease.DIARRHEA_DEHYDRATION;
+import static de.symeda.sormas.api.Disease.DIPHTERIA;
+import static de.symeda.sormas.api.Disease.ENTEROVIRUS;
 import static de.symeda.sormas.api.Disease.EVD;
+import static de.symeda.sormas.api.Disease.FHA;
 import static de.symeda.sormas.api.Disease.GUINEA_WORM;
+import static de.symeda.sormas.api.Disease.HIV;
+import static de.symeda.sormas.api.Disease.H_METAPNEUMOVIRUS;
+import static de.symeda.sormas.api.Disease.INFLUENZA;
+import static de.symeda.sormas.api.Disease.INFLUENZA_A;
+import static de.symeda.sormas.api.Disease.INFLUENZA_B;
 import static de.symeda.sormas.api.Disease.LASSA;
+import static de.symeda.sormas.api.Disease.LEPROSY;
+import static de.symeda.sormas.api.Disease.LYMPHATIC_FILARIASIS;
+import static de.symeda.sormas.api.Disease.MALARIA;
+import static de.symeda.sormas.api.Disease.MATERNAL_DEATHS;
 import static de.symeda.sormas.api.Disease.MEASLES;
 import static de.symeda.sormas.api.Disease.MONKEYPOX;
+import static de.symeda.sormas.api.Disease.M_PNEUMONIAE;
+import static de.symeda.sormas.api.Disease.NEONATAL_TETANUS;
 import static de.symeda.sormas.api.Disease.NEW_INFLUENZA;
-import static de.symeda.sormas.api.Disease.OTHER;
+import static de.symeda.sormas.api.Disease.NON_NEONATAL_TETANUS;
+import static de.symeda.sormas.api.Disease.ONCHOCERCIASIS;
+import static de.symeda.sormas.api.Disease.PARAINFLUENZA_1_4;
+import static de.symeda.sormas.api.Disease.PERINATAL_DEATHS;
+import static de.symeda.sormas.api.Disease.PERTUSSIS;
 import static de.symeda.sormas.api.Disease.PLAGUE;
+import static de.symeda.sormas.api.Disease.PNEUMONIA;
 import static de.symeda.sormas.api.Disease.POLIO;
+import static de.symeda.sormas.api.Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_MILD;
+import static de.symeda.sormas.api.Disease.POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE;
 import static de.symeda.sormas.api.Disease.RABIES;
-import static de.symeda.sormas.api.Disease.UNDEFINED;
+import static de.symeda.sormas.api.Disease.RESPIRATORY_SYNCYTIAL_VIRUS;
+import static de.symeda.sormas.api.Disease.RHINOVIRUS;
+import static de.symeda.sormas.api.Disease.RUBELLA;
+import static de.symeda.sormas.api.Disease.SCHISTOSOMIASIS;
+import static de.symeda.sormas.api.Disease.SNAKE_BITE;
+import static de.symeda.sormas.api.Disease.SOIL_TRANSMITTED_HELMINTHS;
+import static de.symeda.sormas.api.Disease.TRACHOMA;
+import static de.symeda.sormas.api.Disease.TRYPANOSOMIASIS;
+import static de.symeda.sormas.api.Disease.TUBERCULOSIS;
+import static de.symeda.sormas.api.Disease.TYPHOID_FEVER;
 import static de.symeda.sormas.api.Disease.UNSPECIFIED_VHF;
+import static de.symeda.sormas.api.Disease.WEST_NILE_FEVER;
+import static de.symeda.sormas.api.Disease.YAWS_ENDEMIC_SYPHILIS;
 import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
+import static de.symeda.sormas.api.Disease.UNDEFINED;
+import static de.symeda.sormas.api.Disease.OTHER;
 
 import java.util.Date;
 
@@ -81,6 +123,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String AGITATION = "agitation";
 	public static final String ANOREXIA_APPETITE_LOSS = "anorexiaAppetiteLoss";
 	public static final String ANXIETY_STATES = "anxietyStates";
+	public static final String APNOEA = "apnoea";
 	public static final String ASCENDING_FLACCID_PARALYSIS = "ascendingFlaccidParalysis";
 	public static final String BACKACHE = "backache";
 	public static final String BEDRIDDEN = "bedridden";
@@ -106,6 +149,8 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String CONVULSION = "convulsion";
 	public static final String COUGH = "cough";
 	public static final String COUGHING_BLOOD = "coughingBlood";
+	public static final String COUGHING_BOUTS = "coughingBouts";
+	public static final String COUGHS_PROVOKE_VOMITING = "coughsProvokeVomiting";
 	public static final String COUGH_WITH_HEAMOPTYSIS = "coughWithHeamoptysis";
 	public static final String COUGH_WITH_SPUTUM = "coughWithSputum";
 	public static final String DARK_URINE = "darkUrine";
@@ -225,6 +270,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	public static final String UPROARIOUSNESS = "uproariousness";
 	public static final String VOMITING = "vomiting";
 	public static final String WHEEZING = "wheezing";
+	public static final String WHOOP_SOUND = "whoopSound";
 	public static final String RESPIRATORY_DISEASE_VENTILATION = "respiratoryDiseaseVentilation";
 	public static final String FEELING_ILL = "feelingIll";
 	public static final String SHIVERING = "shivering";
@@ -1190,9 +1236,133 @@ public class SymptomsDto extends PseudonymizableDto {
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
 	private SymptomState oedemaLowerExtremity;
 
+	@Diseases({
+		AFP,
+		CHOLERA,
+		CONGENITAL_RUBELLA,
+		CSM,
+		DENGUE,
+		EVD,
+		GUINEA_WORM,
+		LASSA,
+		MEASLES,
+		MONKEYPOX,
+		NEW_INFLUENZA,
+		PLAGUE,
+		POLIO,
+		UNSPECIFIED_VHF,
+		WEST_NILE_FEVER,
+		YELLOW_FEVER,
+		RABIES,
+		ANTHRAX,
+		CORONAVIRUS,
+		PNEUMONIA,
+		MALARIA,
+		TYPHOID_FEVER,
+		ACUTE_VIRAL_HEPATITIS,
+		NON_NEONATAL_TETANUS,
+		HIV,
+		SCHISTOSOMIASIS,
+		SOIL_TRANSMITTED_HELMINTHS,
+		TRYPANOSOMIASIS,
+		DIARRHEA_DEHYDRATION,
+		DIARRHEA_BLOOD,
+		SNAKE_BITE,
+		RUBELLA,
+		TUBERCULOSIS,
+		LEPROSY,
+		LYMPHATIC_FILARIASIS,
+		BURULI_ULCER,
+		NEONATAL_TETANUS,
+		ONCHOCERCIASIS,
+		OTHER,
+		DIPHTERIA,
+		TRACHOMA,
+		YAWS_ENDEMIC_SYPHILIS,
+		MATERNAL_DEATHS,
+		PERINATAL_DEATHS,
+		INFLUENZA,
+		INFLUENZA_A,
+		INFLUENZA_B,
+		H_METAPNEUMOVIRUS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
+		PARAINFLUENZA_1_4,
+		ADENOVIRUS,
+		RHINOVIRUS,
+		ENTEROVIRUS,
+		M_PNEUMONIAE,
+		C_PNEUMONIAE,
+		ARI,
+		CHIKUNGUNYA,
+		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
+		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
+		FHA })
+	@HideForCountries
 	@Outbreaks
 	private Date onsetDate;
 
+	@Diseases({
+		AFP,
+		CHOLERA,
+		CONGENITAL_RUBELLA,
+		CSM,
+		DENGUE,
+		EVD,
+		GUINEA_WORM,
+		LASSA,
+		MEASLES,
+		MONKEYPOX,
+		NEW_INFLUENZA,
+		PLAGUE,
+		POLIO,
+		UNSPECIFIED_VHF,
+		WEST_NILE_FEVER,
+		YELLOW_FEVER,
+		RABIES,
+		ANTHRAX,
+		CORONAVIRUS,
+		PNEUMONIA,
+		MALARIA,
+		TYPHOID_FEVER,
+		ACUTE_VIRAL_HEPATITIS,
+		NON_NEONATAL_TETANUS,
+		HIV,
+		SCHISTOSOMIASIS,
+		SOIL_TRANSMITTED_HELMINTHS,
+		TRYPANOSOMIASIS,
+		DIARRHEA_DEHYDRATION,
+		DIARRHEA_BLOOD,
+		SNAKE_BITE,
+		RUBELLA,
+		TUBERCULOSIS,
+		LEPROSY,
+		LYMPHATIC_FILARIASIS,
+		BURULI_ULCER,
+		NEONATAL_TETANUS,
+		ONCHOCERCIASIS,
+		OTHER,
+		DIPHTERIA,
+		TRACHOMA,
+		YAWS_ENDEMIC_SYPHILIS,
+		MATERNAL_DEATHS,
+		PERINATAL_DEATHS,
+		INFLUENZA,
+		INFLUENZA_A,
+		INFLUENZA_B,
+		H_METAPNEUMOVIRUS,
+		RESPIRATORY_SYNCYTIAL_VIRUS,
+		PARAINFLUENZA_1_4,
+		ADENOVIRUS,
+		RHINOVIRUS,
+		ENTEROVIRUS,
+		M_PNEUMONIAE,
+		C_PNEUMONIAE,
+		ARI,
+		CHIKUNGUNYA,
+		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
+		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
+		FHA })
+	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
 
@@ -1260,6 +1430,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		POLIO,
 		RABIES,
 		CORONAVIRUS,
+		PERTUSSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1282,6 +1453,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNSPECIFIED_VHF,
 		CONGENITAL_RUBELLA,
 		CORONAVIRUS,
+		PERTUSSIS,
 		UNDEFINED,
 		OTHER })
 	@Outbreaks
@@ -1863,6 +2035,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState convulsion;
 
 	@Diseases({
+		PERTUSSIS })
+	@HideForCountries
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState apnoea;
+
+	@Diseases({
 		CORONAVIRUS,
 		UNDEFINED,
 		OTHER })
@@ -1902,6 +2080,18 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState conjunctivalInjection;
 
 	@Diseases({
+		PERTUSSIS })
+	@HideForCountries
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState coughingBouts;
+
+	@Diseases({
+		PERTUSSIS })
+	@HideForCountries
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState coughsProvokeVomiting;
+
+	@Diseases({
 		CORONAVIRUS,
 		UNDEFINED,
 		OTHER })
@@ -1916,6 +2106,12 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	@SymptomGrouping(SymptomGroup.RESPIRATORY)
 	private SymptomState pneumoniaClinicalOrRadiologic;
+
+	@Diseases({
+		PERTUSSIS })
+	@HideForCountries
+	@SymptomGrouping(SymptomGroup.RESPIRATORY)
+	private SymptomState whoopSound;
 
 	@Diseases({
 		CORONAVIRUS,
@@ -3927,4 +4123,39 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.bloodCirculationProblems = bloodCirculationProblems;
 	}
 
+	@Order(360)
+	public SymptomState getApnoea() {
+		return apnoea;
+	}
+
+	public void setApnoea(SymptomState apnoea) {
+		this.apnoea = apnoea;
+	}
+
+	@Order(361)
+	public SymptomState getWhoopSound() {
+		return whoopSound;
+	}
+
+	public void setWhoopSound(SymptomState whoopSound) {
+		this.whoopSound = whoopSound;
+	}
+
+	@Order(362)
+	public SymptomState getCoughingBouts() {
+		return coughingBouts;
+	}
+
+	public void setCoughingBouts(SymptomState coughingBouts) {
+		this.coughingBouts = coughingBouts;
+	}
+
+	@Order(363)
+	public SymptomState getCoughsProvokeVomiting() {
+		return coughsProvokeVomiting;
+	}
+
+	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
+		this.coughsProvokeVomiting = coughsProvokeVomiting;
+	}
 }
