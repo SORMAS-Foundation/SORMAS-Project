@@ -14228,7 +14228,7 @@ END $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (570, 'Added description to system configuration values #13357');
 
--- 2025-05-26 Update Pertussis symptoms #13358
+-- 2025-05-26 Update Pertussis symptoms #13373
 
 ALTER TABLE symptoms ADD COLUMN apnoea varchar(255);
 ALTER TABLE symptoms ADD COLUMN whoopsound varchar(255);
@@ -14239,6 +14239,6 @@ ALTER TABLE symptoms_history ADD COLUMN whoopsound varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN coughingbouts varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN coughsprovokevomiting varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13358');
+INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13373');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
