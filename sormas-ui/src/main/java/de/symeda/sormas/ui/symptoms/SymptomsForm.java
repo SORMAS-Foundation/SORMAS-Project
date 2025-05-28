@@ -54,6 +54,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property.ReadOnlyException;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
@@ -356,6 +357,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			RED_BLOOD_VOMIT,
 			DIGESTED_BLOOD_VOMIT,
 			COUGHING_BLOOD,
+			COUGHING_BOUTS,
+			COUGHS_PROVOKE_VOMITING,
 			BLEEDING_VAGINA,
 			SKIN_BRUISING,
 			BLOOD_URINE,
@@ -417,6 +420,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			HYDROPHOBIA,
 			OPISTHOTONUS,
 			ANXIETY_STATES,
+			APNOEA,
 			DELIRIUM,
 			UPROARIOUSNESS,
 			PARASTHESIA_AROUND_WOUND,
@@ -442,6 +446,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_TASTE,
 			LOSS_OF_SMELL,
 			WHEEZING,
+			WHOOP_SOUND,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -511,6 +516,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		} else {
 			setVisible(false, ONSET_SYMPTOM, ONSET_DATE);
 		}
+
+		// Hide clinical measurements heading if no clinical measurements are visible
+		clinicalMeasurementsHeadingLabel.setVisible(
+			Set.of(
+				TEMPERATURE_SOURCE,
+				BLOOD_PRESSURE_SYSTOLIC,
+				BLOOD_PRESSURE_DIASTOLIC,
+				HEART_RATE,
+				RESPIRATORY_RATE,
+				WEIGHT,
+				GLASGOW_COMA_SCALE).stream().anyMatch(e -> getFieldGroup().getField(e).isVisible()));
 
 		// Initialize lists
 
@@ -623,6 +639,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			AEROPHOBIA,
 			AGITATION,
 			ANXIETY_STATES,
+			APNOEA,
 			ASCENDING_FLACCID_PARALYSIS,
 			COMA,
 			DELIRIUM,
@@ -641,6 +658,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			LOSS_OF_TASTE,
 			LOSS_OF_SMELL,
 			WHEEZING,
+			WHOOP_SOUND,
 			SKIN_ULCERS,
 			INABILITY_TO_WALK,
 			IN_DRAWING_OF_CHEST_WALL,
@@ -653,6 +671,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			FEVERISHFEELING,
 			WEAKNESS,
 			FATIGUE,
+			COUGHING_BOUTS,
+			COUGHS_PROVOKE_VOMITING,
 			COUGH_WITHOUT_SPUTUM,
 			BREATHLESSNESS,
 			CHEST_PRESSURE,
