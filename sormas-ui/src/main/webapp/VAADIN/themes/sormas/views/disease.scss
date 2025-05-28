@@ -1,193 +1,561 @@
-
 @mixin sormas-disease-styles {
 
   .background-disease-afp {
-  	background-color: #00E0A1;
-  	fill: #00E0A1;
-  	
-  	&.background-darker {
-  		background-color: #00B582;
-  		fill: #00B582;
-  	}
+    background-color: #00E0A1;
+    fill: #00E0A1;
+
+    &.background-darker {
+      background-color: #00B582;
+      fill: #00B582;
+    }
   }
   .background-disease-cholera {
-  	background-color: #FEBA01;
-  	fill: #FEBA01;
-  	
-  	&.background-darker {
-  		background-color: #E5A701;
-  		fill: #E5A701;
-  	}
+    background-color: #FEBA01;
+    fill: #FEBA01;
+
+    &.background-darker {
+      background-color: #E5A701;
+      fill: #E5A701;
+    }
   }
   .background-disease-csm {
-  	background-color: #59BDEF;
-  	fill: #59BDEF;
-  	
-  	&.background-darker {
-  		background-color: #50AAD7;
-  		fill: #50AAD7;
-  	}
+    background-color: #59BDEF;
+    fill: #59BDEF;
+
+    &.background-darker {
+      background-color: #50AAD7;
+      fill: #50AAD7;
+    }
   }
   .background-disease-dengue {
-  	background-color: #44BEC7;
-  	fill: #44BEC7;
-  	
-  	&.background-darker {
-  		background-color: #3DABB3;
-  		fill: #3DABB3;
-  	}
+    background-color: #44BEC7;
+    fill: #44BEC7;
+
+    &.background-darker {
+      background-color: #3DABB3;
+      fill: #3DABB3;
+    }
   }
   .background-disease-evd {
-  	background-color: #8C45AD;
-  	fill: #8C45AD;
-  	
-  	&.background-darker {
-  		background-color: #7E3E9C;
-  		fill: #7E3E9C;
-  	}
+    background-color: #8C45AD;
+    fill: #8C45AD;
+
+    &.background-darker {
+      background-color: #7E3E9C;
+      fill: #7E3E9C;
+    }
   }
   .background-disease-guinea-worm {
-  	background-color: #3FD100;
-  	fill: #3FD100;
-  	
-  	&.background-darker {
-  		background-color: #38BA00;
-  		fill: #38BA00;
-  	}
+    background-color: #3FD100;
+    fill: #3FD100;
+
+    &.background-darker {
+      background-color: #38BA00;
+      fill: #38BA00;
+    }
   }
   .background-disease-lassa {
-  	background-color: #EA579B;
-  	fill: #EA579B;
-  	
-  	&.background-darker {
-  		background-color: #D34E8B;
-  		fill: #D34E8B;
-  	}
+    background-color: #EA579B;
+    fill: #EA579B;
+
+    &.background-darker {
+      background-color: #D34E8B;
+      fill: #D34E8B;
+    }
   }
   .background-disease-measles {
-  	background-color: #66AD45;
-  	fill: #66AD45;
-  	
-  	&.background-darker {
-  		background-color: #5C9C3E;
-  		fill: #5C9C3E;
-  	}
+    background-color: #66AD45;
+    fill: #66AD45;
+
+    &.background-darker {
+      background-color: #5C9C3E;
+      fill: #5C9C3E;
+    }
   }
   .background-disease-monkeypox {
-  	background-color: #FF9299;
-  	fill: #FF9299;
-  	
-  	&.background-darker {
-  		background-color: #E5838A;
-  		fill: #E5838A;
-  	}
+    background-color: #FF9299;
+    fill: #FF9299;
+
+    &.background-darker {
+      background-color: #E5838A;
+      fill: #E5838A;
+    }
   }
   .background-disease-new-flu {
-  	background-color: #4550AC;
-  	fill: #4550AC;
-  	
-  	&.background-darker {
-  		background-color: #3E489B;
-  		fill: #3E489B;
-  	}
+    background-color: #4550AC;
+    fill: #4550AC;
+
+    &.background-darker {
+      background-color: #3E489B;
+      fill: #3E489B;
+    }
   }
   .background-disease-plague {
-  	background-color: #8270CC;
-  	fill: #8270CC;
-  	
-  	&.background-darker {
-  		background-color: #7565B8;
-  		fill: #7565B8;
-  	}
+    background-color: #8270CC;
+    fill: #8270CC;
+
+    &.background-darker {
+      background-color: #7565B8;
+      fill: #7565B8;
+    }
   }
   .background-disease-polio {
-  	background-color: #A6E300;
-  	fill: #A6E300;
-  	
-  	&.background-darker {
-  		background-color: #96CC00;
-  		fill: #96CC00;
-  	}
+    background-color: #A6E300;
+    fill: #A6E300;
+
+    &.background-darker {
+      background-color: #96CC00;
+      fill: #96CC00;
+    }
   }
   .background-disease-unspecified-vhf {
-  	background-color: #448282;
-  	fill: #448282;
-  	
-  	&.background-darker {
-  		background-color: #2F4F4F;
-  		fill: #2F4F4F;
-  	}
+    background-color: #448282;
+    fill: #448282;
+
+    &.background-darker {
+      background-color: #2F4F4F;
+      fill: #2F4F4F;
+    }
   }
   .background-disease-west-nile-fever {
-  	background-color: #87CEFA;
-  	fill: #87CEFA;
-  	
-  	&.background-darker {
-  		background-color: #5b94b7;
-  		fill: #5b94b7;
-  	}
+    background-color: #87CEFA;
+    fill: #87CEFA;
+
+    &.background-darker {
+      background-color: #5b94b7;
+      fill: #5b94b7;
+    }
   }
   .background-disease-yellow-fever {
-  	background-color: #E2D320;
-  	fill: #E2D320;
-  	
-  	&.background-darker {
-  		background-color: #CBBE1D;
-  		fill: #CBBE1D;
-  	}
+    background-color: #E2D320;
+    fill: #E2D320;
+
+    &.background-darker {
+      background-color: #CBBE1D;
+      fill: #CBBE1D;
+    }
   }
   .background-disease-congenital-rubella {
     background-color: #d4d4f7;
     fill: #d4d4f7;
-    
+
     &.background-darker {
-    	background-color: #aaaaee;
-    	fill: #aaaaee;
-   	}
+      background-color: #aaaaee;
+      fill: #aaaaee;
+    }
   }
   .background-disease-other {
-  	background-color: #888;
-  	fill: #888;
-  	
-  	&.background-darker {
-  		background-color: #6D6D6D;
-  		fill: #6D6D6D;
-  	}
+    background-color: #888;
+    fill: #888;
+
+    &.background-darker {
+      background-color: #6D6D6D;
+      fill: #6D6D6D;
+    }
   }
   .background-disease-undefined {
-  	background-color: #cccccc;
-  	fill: #cccccc;
-  	
-  	&.background-darker {
-  		background-color: #d9d9d9;
-  		filled: #d9d9d9;
-  	}
+    background-color: #cccccc;
+    fill: #cccccc;
+
+    &.background-darker {
+      background-color: #d9d9d9;
+      fill: #d9d9d9;
+    }
   }
   .background-disease-rabies {
-  	background-color: #ef5a6c;
-  	fill: #ef5a6c;
-  	
-  	&.background-darker {
-  		background-color: #e04a5b;
-  		filled: #e04a5b;
-  	}
+    background-color: #ef5a6c;
+    fill: #ef5a6c;
+
+    &.background-darker {
+      background-color: #e04a5b;
+      fill: #e04a5b;
+    }
   }
   .background-disease-anthrax {
-  	background-color: #5a95f4;
-  	fill: #5a95f4;
-  	
-  	&.background-darker {
-  		background-color: #3b7fed;
-		filled: #3b7fed;
-	}
+    background-color: #5a95f4;
+    fill: #5a95f4;
+
+    &.background-darker {
+      background-color: #3b7fed;
+      fill: #3b7fed;
+    }
   }
   .background-disease-coronavirus {
-  	background-color: #bf8678;
-  	fill: #bf8678;
-  	
-  	&.background-darker {
-  		background-color: #b0796b;
-  		filled: #b0796b;
-  	}
+    background-color: #bf8678;
+    fill: #bf8678;
+
+    &.background-darker {
+      background-color: #b0796b;
+      fill: #b0796b;
+    }
+  }
+  .background-disease-pneumonia {
+    background-color: #b0c4de;
+    fill: #b0c4de;
+
+    &.background-darker {
+      background-color: #7b8fa3;
+      fill: #7b8fa3;
+    }
+  }
+  .background-disease-malaria {
+    background-color: #7ed957;
+    fill: #7ed957;
+
+    &.background-darker {
+      background-color: #5fa23f;
+      fill: #5fa23f;
+    }
+  }
+  .background-disease-typhoid-fever {
+    background-color: #f7b267;
+    fill: #f7b267;
+
+    &.background-darker {
+      background-color: #d9983a;
+      fill: #d9983a;
+    }
+  }
+  .background-disease-acute-viral-hepatitis {
+    background-color: #f9e79f;
+    fill: #f9e79f;
+
+    &.background-darker {
+      background-color: #f7ca18;
+      fill: #f7ca18;
+    }
+  }
+  .background-disease-non-neonatal-tetanus {
+    background-color: #b2bec3;
+    fill: #b2bec3;
+
+    &.background-darker {
+      background-color: #636e72;
+      fill: #636e72;
+    }
+  }
+  .background-disease-hiv {
+    background-color: #e17055;
+    fill: #e17055;
+
+    &.background-darker {
+      background-color: #b03a2e;
+      fill: #b03a2e;
+    }
+  }
+  .background-disease-schistosomiasis {
+    background-color: #00b894;
+    fill: #00b894;
+
+    &.background-darker {
+      background-color: #00897b;
+      fill: #00897b;
+    }
+  }
+  .background-disease-soil-transmitted-helminths {
+    background-color: #a0522d;
+    fill: #a0522d;
+
+    &.background-darker {
+      background-color: #6e2c00;
+      fill: #6e2c00;
+    }
+  }
+  .background-disease-trypanosomiasis {
+    background-color: #6c3483;
+    fill: #6c3483;
+
+    &.background-darker {
+      background-color: #512e5f;
+      fill: #512e5f;
+    }
+  }
+  .background-disease-diarrhea-dehydration {
+    background-color: #85c1e9;
+    fill: #85c1e9;
+
+    &.background-darker {
+      background-color: #2874a6;
+      fill: #2874a6;
+    }
+  }
+  .background-disease-diarrhea-blood {
+    background-color: #c0392b;
+    fill: #c0392b;
+
+    &.background-darker {
+      background-color: #922b21;
+      fill: #922b21;
+    }
+  }
+  .background-disease-snake-bite {
+    background-color: #a3a847;
+    fill: #a3a847;
+
+    &.background-darker {
+      background-color: #7d8334;
+      fill: #7d8334;
+    }
+  }
+  .background-disease-rubella {
+    background-color: #f1948a;
+    fill: #f1948a;
+
+    &.background-darker {
+      background-color: #c0392b;
+      fill: #c0392b;
+    }
+  }
+  .background-disease-tuberculosis {
+    background-color: #b9770e;
+    fill: #b9770e;
+
+    &.background-darker {
+      background-color: #7e5109;
+      fill: #7e5109;
+    }
+  }
+  .background-disease-leprosy {
+    background-color: #f5cba7;
+    fill: #f5cba7;
+
+    &.background-darker {
+      background-color: #ca6f1e;
+      fill: #ca6f1e;
+    }
+  }
+  .background-disease-lymphatic-filariasis {
+    background-color: #48c9b0;
+    fill: #48c9b0;
+
+    &.background-darker {
+      background-color: #148f77;
+      fill: #148f77;
+    }
+  }
+  .background-disease-buruli-ulcer {
+    background-color: #f7cac9;
+    fill: #f7cac9;
+
+    &.background-darker {
+      background-color: #e9967a;
+      fill: #e9967a;
+    }
+  }
+  .background-disease-pertussis {
+    background-color: #f8c471;
+    fill: #f8c471;
+
+    &.background-darker {
+      background-color: #b9770e;
+      fill: #b9770e;
+    }
+  }
+  .background-disease-neonatal-tetanus {
+    background-color: #f9e79f;
+    fill: #f9e79f;
+
+    &.background-darker {
+      background-color: #f7ca18;
+      fill: #f7ca18;
+    }
+  }
+  .background-disease-onchocerciasis {
+    background-color: #34495e;
+    fill: #34495e;
+
+    &.background-darker {
+      background-color: #212f3c;
+      fill: #212f3c;
+    }
+  }
+  .background-disease-diphteria {
+    background-color: #e67e22;
+    fill: #e67e22;
+
+    &.background-darker {
+      background-color: #ca6f1e;
+      fill: #ca6f1e;
+    }
+  }
+  .background-disease-trachoma {
+    background-color: #aed6f1;
+    fill: #aed6f1;
+
+    &.background-darker {
+      background-color: #5499c7;
+      fill: #5499c7;
+    }
+  }
+  .background-disease-yaws-endemic-syphilis {
+    background-color: #f5b7b1;
+    fill: #f5b7b1;
+
+    &.background-darker {
+      background-color: #c0392b;
+      fill: #c0392b;
+    }
+  }
+  .background-disease-maternal-deaths {
+    background-color: #f1948a;
+    fill: #f1948a;
+
+    &.background-darker {
+      background-color: #922b21;
+      fill: #922b21;
+    }
+  }
+  .background-disease-perinatal-deaths {
+    background-color: #f7dc6f;
+    fill: #f7dc6f;
+
+    &.background-darker {
+      background-color: #b7950b;
+      fill: #b7950b;
+    }
+  }
+  .background-disease-influenza {
+    background-color: #5dade2;
+    fill: #5dade2;
+
+    &.background-darker {
+      background-color: #21618c;
+      fill: #21618c;
+    }
+  }
+  .background-disease-influenza-a {
+    background-color: #2874a6;
+    fill: #2874a6;
+
+    &.background-darker {
+      background-color: #154360;
+      fill: #154360;
+    }
+  }
+  .background-disease-influenza-b {
+    background-color: #85c1e9;
+    fill: #85c1e9;
+
+    &.background-darker {
+      background-color: #2874a6;
+      fill: #2874a6;
+    }
+  }
+  .background-disease-h-metapneumovirus {
+    background-color: #a569bd;
+    fill: #a569bd;
+
+    &.background-darker {
+      background-color: #76448a;
+      fill: #76448a;
+    }
+  }
+  .background-disease-respiratory-syncytial-virus {
+    background-color: #48c9b0;
+    fill: #48c9b0;
+
+    &.background-darker {
+      background-color: #148f77;
+      fill: #148f77;
+    }
+  }
+  .background-disease-parainfluenza-1-4 {
+    background-color: #f7ca18;
+    fill: #f7ca18;
+
+    &.background-darker {
+      background-color: #b7950b;
+      fill: #b7950b;
+    }
+  }
+  .background-disease-adenovirus {
+    background-color: #f5b041;
+    fill: #f5b041;
+
+    &.background-darker {
+      background-color: #b9770e;
+      fill: #b9770e;
+    }
+  }
+  .background-disease-rhinovirus {
+    background-color: #76d7c4;
+    fill: #76d7c4;
+
+    &.background-darker {
+      background-color: #117864;
+      fill: #117864;
+    }
+  }
+  .background-disease-enterovirus {
+    background-color: #f1948a;
+    fill: #f1948a;
+
+    &.background-darker {
+      background-color: #922b21;
+      fill: #922b21;
+    }
+  }
+  .background-disease-m-pneumoniae {
+    background-color: #f7cac9;
+    fill: #f7cac9;
+
+    &.background-darker {
+      background-color: #e9967a;
+      fill: #e9967a;
+    }
+  }
+  .background-disease-c-pneumoniae {
+    background-color: #f9e79f;
+    fill: #f9e79f;
+
+    &.background-darker {
+      background-color: #f7ca18;
+      fill: #f7ca18;
+    }
+  }
+  .background-disease-ari {
+    background-color: #aed6f1;
+    fill: #aed6f1;
+
+    &.background-darker {
+      background-color: #5499c7;
+      fill: #5499c7;
+    }
+  }
+  .background-disease-chikungunya {
+    background-color: #e67e22;
+    fill: #e67e22;
+
+    &.background-darker {
+      background-color: #ca6f1e;
+      fill: #ca6f1e;
+    }
+  }
+  .background-disease-post-immunization-adverse-events-mild {
+    background-color: #f7cac9;
+    fill: #f7cac9;
+
+    &.background-darker {
+      background-color: #e9967a;
+      fill: #e9967a;
+    }
+  }
+  .background-disease-post-immunization-adverse-events-severe {
+    background-color: #c0392b;
+    fill: #c0392b;
+
+    &.background-darker {
+      background-color: #922b21;
+      fill: #922b21;
+    }
+  }
+  .background-disease-fha {
+    background-color: #f5b7b1;
+    fill: #f5b7b1;
+
+    &.background-darker {
+      background-color: #c0392b;
+      fill: #c0392b;
+    }
   }
 }

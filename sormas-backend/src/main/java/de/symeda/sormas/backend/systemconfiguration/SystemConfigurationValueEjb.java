@@ -382,6 +382,7 @@ public class SystemConfigurationValueEjb
 
         target.setKey(source.getKey());
         target.setValue(source.getValue());
+        target.setDescription(source.getDescription());
         target.setCategory(categoryService.getByReferenceDto(source.getCategory()));
         target.setOptional(source.getOptional() != null ? source.getOptional() : Boolean.FALSE);
         target.setEncrypt(source.getEncrypt());
@@ -414,6 +415,7 @@ public class SystemConfigurationValueEjb
 
         target.setKey(source.getKey());
         target.setValue(source.getValue());
+        target.setDescription(source.getDescription());
         target.setCategory(
             source.getCategory() != null
                 ? categoryFacade.getReferenceByUuid(source.getCategory().getUuid())
@@ -518,6 +520,7 @@ public class SystemConfigurationValueEjb
 
         dto.setValue(entity.getValue());
         dto.setKey(entity.getKey());
+        dto.setDescription(entity.getDescription());
         dto.setEncrypted(entity.getEncrypt()); // encrypt needed for list view
         dto.setCategoryName(entity.getCategory() != null ? entity.getCategory().getName() : null);
         dto.setCategoryCaption(entity.getCategory() != null ? entity.getCategory().getCaption() : null);

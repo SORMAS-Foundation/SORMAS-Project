@@ -42,8 +42,11 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setChestPain(source.getChestPain());
 		target.setConfusedDisoriented(source.getConfusedDisoriented());
 		target.setConjunctivitis(source.getConjunctivitis());
+		target.setApnoea(source.getApnoea());
 		target.setCough(source.getCough());
 		target.setCoughingBlood(source.getCoughingBlood());
+		target.setCoughingBouts(source.getCoughingBouts());
+		target.setCoughsProvokeVomiting(source.getCoughsProvokeVomiting());
 		target.setDehydration(source.getDehydration());
 		target.setDiarrhea(source.getDiarrhea());
 		target.setDifficultyBreathing(source.getDifficultyBreathing());
@@ -190,6 +193,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
+		target.setWhoopSound(source.getWhoopSound());
 		target.setSkinUlcers(source.getSkinUlcers());
 		target.setInabilityToWalk(source.getInabilityToWalk());
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
@@ -244,8 +248,11 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setChestPain(source.getChestPain());
 		target.setConfusedDisoriented(source.getConfusedDisoriented());
 		target.setConjunctivitis(source.getConjunctivitis());
+		target.setApnoea(source.getApnoea());
 		target.setCough(source.getCough());
 		target.setCoughingBlood(source.getCoughingBlood());
+		target.setCoughingBouts(source.getCoughingBouts());
+		target.setCoughsProvokeVomiting(source.getCoughsProvokeVomiting());
 		target.setDehydration(source.getDehydration());
 		target.setDiarrhea(source.getDiarrhea());
 		target.setDifficultyBreathing(source.getDifficultyBreathing());
@@ -392,6 +399,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
 		target.setLymphadenopathy(source.getLymphadenopathy());
 		target.setWheezing(source.getWheezing());
+		target.setWhoopSound(source.getWhoopSound());
 		target.setSkinUlcers(source.getSkinUlcers());
 		target.setInabilityToWalk(source.getInabilityToWalk());
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());

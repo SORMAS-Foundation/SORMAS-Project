@@ -18,8 +18,12 @@ package de.symeda.sormas.ui.configuration.system;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.data.Binder;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.PasswordField;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.systemconfiguration.SystemConfigurationValueDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -30,9 +34,19 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
  */
 public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemConfigurationValueDto> {
 
-	private static final String HTML_LAYOUT =
-		locs(SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME, SystemConfigurationValueDto.VALIDATION_MESSAGE_PROPERTY_NAME);
+	private static final String HTML_LAYOUT = locs(
+		SystemConfigurationValueDto.DESCRIPTION_PROPERTY_NAME,
+		SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME,
+		SystemConfigurationValueDto.VALIDATION_MESSAGE_PROPERTY_NAME);
 
+	/**
+	 * The label for displaying the description of the system configuration value.
+	 */
+	private Label descriptionLabel;
+
+	/**
+	 * The dynamic input field for the system configuration value.
+	 */
 	private final SystemConfigurationValueDynamicInput dynamicInput;
 
 	/**
@@ -53,10 +67,25 @@ public class SystemConfigurationValueEditForm extends AbstractEditForm<SystemCon
 		setWidth(640, Unit.PIXELS);
 		setValue(value);
 
+
+		if (value.getDescription() != null && !value.getDescription().isEmpty()) {
+			descriptionLabel = new Label(value.getDescription());
+
+			descriptionLabel.setWidth(600, Unit.PIXELS);
+			descriptionLabel.addStyleName(ValoTheme.LABEL_H3);
+
+			SystemConfigurationI18nHelper.processI18nString(
+				value.getDescription(),
+				(key) -> descriptionLabel.setValue(I18nProperties.getString(key)));
+
+			getContent().addComponent(descriptionLabel, SystemConfigurationValueDto.DESCRIPTION_PROPERTY_NAME);
+		}
+
+		dynamicInput = new SystemConfigurationValueDynamicInput();
+
 		final Binder<SystemConfigurationValueDtoWrapper> binder = new Binder<>(SystemConfigurationValueDtoWrapper.class);
 		binder.setBean(new SystemConfigurationValueDtoWrapper(value));
 
-		dynamicInput = new SystemConfigurationValueDynamicInput();
 		binder.forField(dynamicInput).bind(SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME);
 		getContent().addComponent(dynamicInput, SystemConfigurationValueDtoWrapper.WRAPPED_OBJECT_PROPERTY_NAME);
 

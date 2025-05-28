@@ -14198,6 +14198,50 @@ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (569, 'Moving Email & SMS properties to the new system configuration structure #13311');
 
+
+-- 2025-05-26 Add description to system configuration values #13357
+
+ALTER TABLE systemconfigurationvalue ADD COLUMN value_description text;
+ALTER TABLE systemconfigurationvalue_history ADD COLUMN value_description text;
+
+DO $$ BEGIN
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionEmailSenderAddress'
+    WHERE config_key = 'EMAIL_SENDER_ADDRESS';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionEmailSenderName'
+    WHERE config_key = 'EMAIL_SENDER_NAME';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsSenderName'
+    WHERE config_key = 'SMS_SENDER_NAME';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsAuthKey'
+    WHERE config_key = 'SMS_AUTH_KEY';
+
+    UPDATE systemconfigurationvalue
+    SET value_description = 'i18n/infoSystemConfigurationValueDescriptionSmsAuthSecret'
+    WHERE config_key = 'SMS_AUTH_SECRET';
+END $$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (570, 'Added description to system configuration values #13357');
+
+-- 2025-05-26 Update Pertussis symptoms #13373
+
+ALTER TABLE symptoms ADD COLUMN apnoea varchar(255);
+ALTER TABLE symptoms ADD COLUMN whoopsound varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughingbouts varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughsprovokevomiting varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN apnoea varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN whoopsound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughingbouts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughsprovokevomiting varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13373');
+
+
 -- 2025-05-02 New Disease(s) IMI & IPI for LUX #13345, #13344
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);

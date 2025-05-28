@@ -90,9 +90,12 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState skinRash;
 	private SymptomState neckStiffness;
 	private SymptomState soreThroat;
+	private SymptomState apnoea;
 	private SymptomState cough;
 	private SymptomState coughWithSputum;
 	private SymptomState coughWithHeamoptysis;
+	private SymptomState coughingBouts;
+	private SymptomState coughsProvokeVomiting;
 	private SymptomState runnyNose;
 	private SymptomState difficultyBreathing;
 	private SymptomState chestPain;
@@ -194,6 +197,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState lossOfTaste;
 	private SymptomState lossOfSmell;
 	private SymptomState wheezing;
+	private SymptomState whoopSound;
 	private SymptomState skinUlcers;
 	private SymptomState inabilityToWalk;
 	private SymptomState inDrawingOfChestWall;
@@ -1903,5 +1907,41 @@ public class Symptoms extends AbstractDomainObject {
 
 	public void setSepticaemia(SymptomState septicaemia) {
 		this.septicaemia = septicaemia;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getApnoea() {
+		return apnoea;
+	}
+
+	public void setApnoea(SymptomState apnoea) {
+		this.apnoea = apnoea;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWhoopSound() {
+		return whoopSound;
+	}
+
+	public void setWhoopSound(SymptomState whoopSound) {
+		this.whoopSound = whoopSound;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughingBouts() {
+		return coughingBouts;
+	}
+
+	public void setCoughingBouts(SymptomState coughingBouts) {
+		this.coughingBouts = coughingBouts;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughsProvokeVomiting() {
+		return coughsProvokeVomiting;
+	}
+
+	public void setCoughsProvokeVomiting(SymptomState coughsProvokeVomiting) {
+		this.coughsProvokeVomiting = coughsProvokeVomiting;
 	}
 }

@@ -2770,6 +2770,7 @@ public interface Captions {
 	String Symptoms_anorexiaAppetiteLoss = "Symptoms.anorexiaAppetiteLoss";
 	String Symptoms_anxietyStates = "Symptoms.anxietyStates";
 	String Symptoms_arthritis = "Symptoms.arthritis";
+	String Symptoms_apnoea = "Symptoms.apnoea";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
 	String Symptoms_backache = "Symptoms.backache";
@@ -2801,6 +2802,8 @@ public interface Captions {
 	String Symptoms_convulsion = "Symptoms.convulsion";
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
+	String Symptoms_coughingBouts = "Symptoms.coughingBouts";
+	String Symptoms_coughsProvokeVomiting = "Symptoms.coughsProvokeVomiting";
 	String Symptoms_coughWithHeamoptysis = "Symptoms.coughWithHeamoptysis";
 	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
 	String Symptoms_coughWithSputum = "Symptoms.coughWithSputum";
@@ -2957,6 +2960,7 @@ public interface Captions {
 	String Symptoms_weakness = "Symptoms.weakness";
 	String Symptoms_weight = "Symptoms.weight";
 	String Symptoms_wheezing = "Symptoms.wheezing";
+	String Symptoms_whoopSound = "Symptoms.whoopSound";
 	String symptomsLesionsLocations = "symptomsLesionsLocations";
 	String symptomsMaxTemperature = "symptomsMaxTemperature";
 	String symptomsSetClearedToNo = "symptomsSetClearedToNo";

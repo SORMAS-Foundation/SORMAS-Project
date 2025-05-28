@@ -35,6 +35,7 @@ public class SystemConfigurationValueDto extends EntityDto {
 
     public static final String VALUE_PROPERTY_NAME = "value";
     public static final String KEY_PROPERTY_NAME = "key";
+    public static final String DESCRIPTION_PROPERTY_NAME = "description";
     public static final String CATEGORY_PROPERTY_NAME = "category";
     public static final String OPTIONAL_PROPERTY_NAME = "optional";
     public static final String PATTERN_PROPERTY_NAME = "pattern";
@@ -55,6 +56,9 @@ public class SystemConfigurationValueDto extends EntityDto {
     @NotNull(message = Validations.required)
     @Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
     private String key;
+
+    @Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+    private String description;
 
     private SystemConfigurationCategoryReferenceDto category;
 
@@ -91,6 +95,7 @@ public class SystemConfigurationValueDto extends EntityDto {
     public SystemConfigurationValueDto(
         String value,
         String key,
+        String description,
         SystemConfigurationCategoryReferenceDto category,
         Boolean optional,
         String pattern,
@@ -99,6 +104,7 @@ public class SystemConfigurationValueDto extends EntityDto {
         String validationMessage) {
         this.value = value;
         this.key = key;
+        this.description = description;
         this.category = category;
         this.optional = optional;
         this.pattern = pattern;
@@ -121,6 +127,13 @@ public class SystemConfigurationValueDto extends EntityDto {
 
     public void setKey(final String key) {
         this.key = key;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public SystemConfigurationCategoryReferenceDto getCategory() {
