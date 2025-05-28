@@ -136,11 +136,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, 6, ContactDto.TRACING_APP_DETAILS) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
                     fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
-					loc(PROPHYLAXIS_LOC)+
-					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
                     fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+					loc(PROPHYLAXIS_LOC)+
+					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
                     fluidRowLocs(ContactDto.DESCRIPTION) +
 					fluidRowLocs(6, ContactDto.PROHIBITION_TO_WORK, 3, ContactDto.PROHIBITION_TO_WORK_FROM, 3, ContactDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +

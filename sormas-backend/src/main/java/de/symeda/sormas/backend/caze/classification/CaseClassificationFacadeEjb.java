@@ -467,7 +467,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						symptom(SymptomsDto.SHOCK),
 						symptom(SymptomsDto.ARTHRITIS));
 
-		probable = allOf(suspect, xOf(1, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES), partOfEventCluster()));
+		probable = xOf(1, suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
 
 		confirmed = allOf(
 				suspect,
@@ -482,11 +482,11 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				suspect,
 				probable,
 				confirmed,
-				negativeTestResult(Disease.INVASIVE_MENINGOCOCCAL_INFECTION));
+				null);
 
 		//Invasive Pneumococcal Infection
-		suspect = xOf(0);
-		probable = xOf(0);
+		suspect = null;
+		probable = null;
 		confirmed = xOf(1, positiveTestResult(
 						Disease.INVASIVE_PNEUMOCOCCAL_INFECTION,
 						PathogenTestType.CULTURE,
@@ -498,7 +498,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				suspect,
 				probable,
 				confirmed,
-				negativeTestResult(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION));
+				null);
 
 
 		// CORONAVIRUS

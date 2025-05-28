@@ -227,7 +227,8 @@ public class SampleController {
 			pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
 			pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
 			ComboBox testDiseaseField = pathogenTestForm.getField(PathogenTestDto.TESTED_DISEASE);
-			testDiseaseField.setValue(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
+			// setting the disease field value is only necessary if the disease is not null
+			testDiseaseField.setValue(disease);
 
 		}
 		// setup field updates

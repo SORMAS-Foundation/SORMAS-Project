@@ -14,7 +14,9 @@
  */
 package de.symeda.sormas.api.sample;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -663,6 +665,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
 		this.seroGroupSpecificationText = seroGroupSpecificationText;
+	}
+
+	public List<PathogenTestType> getSeroGroupTests(){
+		return Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
 	}
 
 	@Override

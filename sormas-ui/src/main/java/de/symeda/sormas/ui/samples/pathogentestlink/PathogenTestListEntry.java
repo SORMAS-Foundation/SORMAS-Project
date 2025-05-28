@@ -104,8 +104,9 @@ public class PathogenTestListEntry extends SideComponentField {
 				bottomLabelLayout.setComponentAlignment(labelBottomRight, Alignment.TOP_RIGHT);
 			}
 		}
-
-		Label labelResult = new Label(DataHelper.toStringNullable(pathogenTest.getTestResult()));
+		// For serogroup test types(IMI/IPI), need to display serogroup specification not the result.
+		Object resultText = pathogenTest.getSeroGroupTests().contains(pathogenTest.getTestType())? pathogenTest.getSeroGroupSpecification():pathogenTest.getTestResult();
+		Label labelResult = new Label(DataHelper.toStringNullable(resultText));
 		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
 			CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);

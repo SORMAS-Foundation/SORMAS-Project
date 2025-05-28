@@ -119,6 +119,8 @@ public class PathogenTestController {
 		boolean suppressNavigateToCase) {
         CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getByUuid(sampleDto.getAssociatedCase().getUuid());
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false, true, caseDataDto.getDisease()); // Valid because jurisdiction doesn't matter for entities that are about to be created
+		// Defaulting the case disease as tested disease
+		pathogenTest.setTestedDisease(caseDataDto.getDisease());
 		createForm.setValue(pathogenTest);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
 			new CommitDiscardWrapperComponent<>(createForm, UiUtil.permitted(UserRight.PATHOGEN_TEST_CREATE), createForm.getFieldGroup());
