@@ -467,7 +467,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 						symptom(SymptomsDto.SHOCK),
 						symptom(SymptomsDto.ARTHRITIS));
 
-		probable = xOf(1, suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
+		probable = allOf(suspect, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES));
 
 		confirmed = allOf(
 				suspect,

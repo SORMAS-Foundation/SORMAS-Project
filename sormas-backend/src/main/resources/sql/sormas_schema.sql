@@ -14230,19 +14230,19 @@ INSERT INTO schema_version (version_number, comment) VALUES (570, 'Added descrip
 
 -- 2025-05-26 Update Pertussis symptoms #13373
 
-ALTER TABLE symptoms ADD COLUMN apnoea varchar(255);
-ALTER TABLE symptoms ADD COLUMN whoopsound varchar(255);
-ALTER TABLE symptoms ADD COLUMN coughingbouts varchar(255);
-ALTER TABLE symptoms ADD COLUMN coughsprovokevomiting varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN apnoea varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN whoopsound varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN coughingbouts varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN coughsprovokevomiting varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS apnoea varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS whoopsound varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coughingbouts varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coughsprovokevomiting varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS apnoea varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS whoopsound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingbouts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughsprovokevomiting varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13373');
 
 
--- 2025-05-02 New Disease(s) IMI & IPI for LUX #13345, #13344
+-- 2025-05-28 New Disease(s) IMI & IPI for LUX #13345, #13344
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
 ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS arthritis varchar(255);
@@ -14274,5 +14274,5 @@ alter table contact_history add column IF NOT EXISTS prophylaxisprescribed boole
 alter table contact_history add column IF NOT exists prescribedDrug varchar(255);
 alter table contact_history add column IF NOT exists prescribedDrugText varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (570, 'New Disease(s) IMI & IPI for LUX #13345, #13344');
+INSERT INTO schema_version (version_number, comment) VALUES (572, 'New Disease(s) IMI & IPI for LUX #13345, #13344');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

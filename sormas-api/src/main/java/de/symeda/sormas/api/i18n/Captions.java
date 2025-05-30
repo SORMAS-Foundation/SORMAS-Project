@@ -2769,8 +2769,8 @@ public interface Captions {
 	String Symptoms_alteredConsciousness = "Symptoms.alteredConsciousness";
 	String Symptoms_anorexiaAppetiteLoss = "Symptoms.anorexiaAppetiteLoss";
 	String Symptoms_anxietyStates = "Symptoms.anxietyStates";
-	String Symptoms_arthritis = "Symptoms.arthritis";
 	String Symptoms_apnoea = "Symptoms.apnoea";
+	String Symptoms_arthritis = "Symptoms.arthritis";
 	String Symptoms_ascendingFlaccidParalysis = "Symptoms.ascendingFlaccidParalysis";
 	String Symptoms_asymptomatic = "Symptoms.asymptomatic";
 	String Symptoms_backache = "Symptoms.backache";

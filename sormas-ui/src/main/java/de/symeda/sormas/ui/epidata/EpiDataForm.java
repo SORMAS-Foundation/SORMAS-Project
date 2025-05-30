@@ -118,7 +118,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 		NullableOptionGroup ogExposureDetailsKnown = addField(EpiDataDto.EXPOSURE_DETAILS_KNOWN, NullableOptionGroup.class);
 		ExposuresField exposuresField = addField(EpiDataDto.EXPOSURES, new ExposuresField(disease, FieldVisibilityCheckers.withDisease(disease)
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())), UiFieldAccessCheckers.getDefault(true, FacadeProvider.getConfigFacade().getCountryLocale()), true));
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())), UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()), true));
 
 		exposuresField.setEpiDataParentClass(parentClass);
 		exposuresField.setWidthFull();

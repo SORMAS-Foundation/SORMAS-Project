@@ -1374,10 +1374,11 @@ public class SymptomsDto extends PseudonymizableDto {
 		CHIKUNGUNYA,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_MILD,
 		POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE,
+			INVASIVE_MENINGOCOCCAL_INFECTION,
+			INVASIVE_PNEUMOCOCCAL_INFECTION,
 		FHA })
 	@HideForCountries
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@Diseases(value = {Disease.INVASIVE_MENINGOCOCCAL_INFECTION, Disease.INVASIVE_PNEUMOCOCCAL_INFECTION}, hide = true)
 	private String onsetSymptom;
 
 	@Diseases({
