@@ -125,6 +125,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private Disease disease;
 	private TextField typingIdField;
 	// List of tests that are used for serogrouping
+	List<PathogenTestType> seroGrpTests = Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
 
 	public PathogenTestForm(AbstractSampleForm sampleForm, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
 		this(create, caseSampleCount, isPseudonymized, inJurisdiction, disease);
@@ -434,15 +435,15 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setEnabled(false);
 				}
 				// If disease is IMI or IPI and test type is serogrouping, then test result is set to positive and not editable
-				if (PathogenTestDto.SERO_GROUP_TESTS.contains(testType)) {
+				if (seroGrpTests.contains(testType)) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				} else {
 					testResultField.clear();
 				}
-				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
-				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
-				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
-				testResultField.setEnabled(!PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
+				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestType.SEROGROUPING.equals(testType));
+				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGrpTests.contains(testType));
+				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGrpTests.contains(testType));
+				testResultField.setEnabled(!seroGrpTests.contains(testType));
 				setVisibleClear(PathogenTestType.PCR_RT_PCR == testType, PathogenTestDto.CQ_VALUE, PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N, PathogenTestDto.CT_VALUE_RDRP
 						, PathogenTestDto.CT_VALUE_S, PathogenTestDto.CT_VALUE_ORF_1, PathogenTestDto.CT_VALUE_RDRP_S);
 			}else{

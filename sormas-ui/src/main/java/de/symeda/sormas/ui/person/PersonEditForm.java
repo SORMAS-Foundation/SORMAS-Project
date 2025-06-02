@@ -129,23 +129,23 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
                     fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_DATE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+							fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
+							oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.BURIAL_DATE),
+							oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+							oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+					) +
 					fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_DATE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
-                            fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
-                            oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.BURIAL_DATE),
-                            oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
-                            oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
-                    ) +
 
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +

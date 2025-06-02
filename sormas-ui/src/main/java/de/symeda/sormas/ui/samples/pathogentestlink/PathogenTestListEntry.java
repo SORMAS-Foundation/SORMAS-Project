@@ -36,10 +36,14 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SuppressWarnings("serial")
 public class PathogenTestListEntry extends SideComponentField {
 
 	private final PathogenTestDto pathogenTest;
+	List<PathogenTestType> seroGrpTests = Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
 
 	public PathogenTestListEntry(PathogenTestDto pathogenTest, boolean showTestResultText) {
 
@@ -105,9 +109,9 @@ public class PathogenTestListEntry extends SideComponentField {
 			}
 		}
 		// For serogroup test types(IMI/IPI), need to display serogroup specification not the result.
-		// If IMI, serogroup specification, otherwise(IPI) serotyping method should display.
-		Object resultText = PathogenTestDto.SERO_GROUP_TESTS.contains(pathogenTest.getTestType()) ?
-				pathogenTest.getSeroGroupSpecification() !=null ?pathogenTest.getSeroGroupSpecification() : pathogenTest.getSeroTypingMethod() :
+		// If IMI, serogroup specification, otherwise(IPI) serotype should display.
+		Object resultText = seroGrpTests.contains(pathogenTest.getTestType()) ?
+				pathogenTest.getSeroGroupSpecification() !=null ?pathogenTest.getSeroGroupSpecification() : pathogenTest.getSerotype() :
 				pathogenTest.getTestResult();
 		Label labelResult = new Label(DataHelper.toStringNullable(resultText));
 		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
