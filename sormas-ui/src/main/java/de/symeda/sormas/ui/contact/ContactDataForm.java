@@ -64,6 +64,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.PrescribedDrug;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -110,6 +111,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
+	private static final String PROPHYLAXIS_LOC = "prophylaxisLoc";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -137,6 +139,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
                     fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+					loc(PROPHYLAXIS_LOC)+
+					fluidRowLocs(4,ContactDto.PROPHYLAXIS_PRESCRIBED, 4, ContactDto.PRESCRIBED_DRUG, 4, ContactDto.PRESCRIBED_DRUG_TEXT) +
                     fluidRowLocs(ContactDto.DESCRIPTION) +
 					fluidRowLocs(6, ContactDto.PROHIBITION_TO_WORK, 3, ContactDto.PROHIBITION_TO_WORK_FROM, 3, ContactDto.PROHIBITION_TO_WORK_UNTIL) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
@@ -230,6 +234,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
 		followUpStausHeadingLabel.addStyleName(H3);
 		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
+		followUpStausHeadingLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION !=disease);
+
+		Label prophylaxisLabel = new Label(I18nProperties.getString(Strings.headingProphylaxisLoc));
+		prophylaxisLabel.addStyleName(H3);
+		getContent().addComponent(prophylaxisLabel, PROPHYLAXIS_LOC);
+		prophylaxisLabel.setVisible(Disease.INVASIVE_MENINGOCOCCAL_INFECTION ==disease);
 
 		addField(ContactDto.CONTACT_CLASSIFICATION, NullableOptionGroup.class);
 		addField(ContactDto.CONTACT_STATUS, NullableOptionGroup.class);
@@ -698,6 +708,16 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		setRequired(true, ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS, ContactDto.REPORT_DATE_TIME);
 		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
+		// Prophylaxis details for IMI
+		CheckBox prophylaxisPrescribed = addField(ContactDto.PROPHYLAXIS_PRESCRIBED, CheckBox.class);
+		prophylaxisPrescribed.setCaption(I18nProperties.getCaption(Captions.Contact_prophylaxisPrescribed));
+//		prophylaxisPrescribed.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
+		addField(ContactDto.PRESCRIBED_DRUG, ComboBox.class);
+		addField(ContactDto.PRESCRIBED_DRUG_TEXT, TextField.class);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, ContactDto.PROPHYLAXIS_PRESCRIBED, Collections.singletonList(Boolean.TRUE), true);
+		FieldHelper.setRequiredWhenNotNull(getFieldGroup(), ContactDto.PROPHYLAXIS_PRESCRIBED, ContactDto.PRESCRIBED_DRUG);
+		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG_TEXT, ContactDto.PRESCRIBED_DRUG, Collections.singletonList(PrescribedDrug.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.PRESCRIBED_DRUG, Arrays.asList(ContactDto.PRESCRIBED_DRUG_TEXT), Arrays.asList(PrescribedDrug.OTHER));
 	}
 
 	private void updateContactOfficers() {
@@ -774,6 +794,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
+		tfExpectedFollowUpUntilDate.setVisible(followUpVisible);
 		if (followUpVisible && UiUtil.permitted(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);

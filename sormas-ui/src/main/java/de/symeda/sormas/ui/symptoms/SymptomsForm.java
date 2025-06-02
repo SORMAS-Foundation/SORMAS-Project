@@ -115,6 +115,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String MONKEYPOX_LESIONS_IMG4 = "monkeypoxLesionsImg4";
 	private static final String SYMPTOMS_HINT_LOC = "symptomsHintLoc";
 	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
+	private static final String CLINICAL_PRESENTATION_HEADING = "clinicalPresentationHeading";
 
 	private static Map<String, List<String>> symptomGroupMap = new HashMap();
 
@@ -149,6 +150,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3,
 											MENINGEAL_SIGNS, SEIZURES, SEPSIS, SHOCK))
+					)+
+					loc(CLINICAL_PRESENTATION_HEADING)+
+					fluidRow(
+							fluidColumn(6, 0,
+									locsCss(VSPACE_3,
+											ASYMPTOMATIC, HEMORRHAGIC_RASH, ARTHRITIS, MENINGITIS, MENINGEAL_SIGNS, SEPTICAEMIA)),
+							fluidColumn(6, 0,
+									locsCss(VSPACE_3, SHOCK,PNEUMONIA_CLINICAL_OR_RADIOLOGIC,OTHER_CLINICAL_PRESENTATION, OTHER_CLINICAL_PRESENTATION_TEXT))
 					);
 	//@formatter:on
 
@@ -250,6 +259,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			createLabel(SymptomGroup.NERVOUS_SYSTEM.toString(), H4, NERVOUS_SYSTEM_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		final Label skinSymptomsHeadingLabel = createLabel(SymptomGroup.SKIN.toString(), H4, SKIN_SIGNS_AND_SYMPTOMS_HEADING_LOC);
 		final Label otherSymptomsHeadingLabel = createLabel(SymptomGroup.OTHER.toString(), H4, OTHER_SIGNS_AND_SYMPTOMS_HEADING_LOC);
+		Label clinicalPresentationHeadingLabel =
+			createLabel(I18nProperties.getString(Strings.headingClinicalPresentation), H3, CLINICAL_PRESENTATION_HEADING);
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);
@@ -490,6 +501,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addFields(complicationsFieldIds);
 
+		// Clinical presentation
+		String[] clinicalPresentationFieldIds = {
+			ASYMPTOMATIC,
+			HEMORRHAGIC_RASH,
+			ARTHRITIS,
+			MENINGITIS,
+			SEPTICAEMIA,
+			OTHER_CLINICAL_PRESENTATION,
+			OTHER_CLINICAL_PRESENTATION_TEXT};
+		addFields(clinicalPresentationFieldIds);
+
 		monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
 		for (String propertyId : monkeypoxImageFieldIds) {
 			@SuppressWarnings("rawtypes")
@@ -691,7 +713,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			MENINGEAL_SIGNS,
 			SEIZURES,
 			SEPSIS,
-			SHOCK);
+			SHOCK,
+			ASYMPTOMATIC,
+			HEMORRHAGIC_RASH,
+			ARTHRITIS,
+			MENINGITIS,
+			SEPTICAEMIA,
+			OTHER_CLINICAL_PRESENTATION);
 
 		// Set visibilities
 
@@ -725,6 +753,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			CONGENITAL_HEART_DISEASE_TYPE,
 			Arrays.asList(CongenitalHeartDiseaseType.OTHER),
 			true);
+
+		FieldHelper.setVisibleWhen(getFieldGroup(), OTHER_CLINICAL_PRESENTATION_TEXT, OTHER_CLINICAL_PRESENTATION, Arrays.asList(SymptomState.YES), true);
 		if (isVisibleAllowed(getFieldGroup().getField(JAUNDICE_WITHIN_24_HOURS_OF_BIRTH))) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), JAUNDICE_WITHIN_24_HOURS_OF_BIRTH, JAUNDICE, Arrays.asList(SymptomState.YES), true);
 		}
@@ -797,6 +827,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				Arrays.asList(SymptomState.YES),
 				disease);
 		}
+		if (isEditableAllowed(OTHER_CLINICAL_PRESENTATION)) {
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					getFieldGroup().getField(OTHER_CLINICAL_PRESENTATION),
+					Arrays.asList(OTHER_CLINICAL_PRESENTATION_TEXT),
+					Arrays.asList(SymptomState.YES),
+					disease);
+		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);
 		FieldHelper
@@ -855,6 +893,26 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}
 		complicationsHeading.setVisible(isComplicationsHeadingVisible);
+
+		// checking the disease is invasive bacterial disease(IMI/IPI)
+		boolean invasiveDisease = false;
+
+		if(caze!=null) {
+			invasiveDisease = caze.checkDiseaseIsInvasiveBacterialDiseases();
+		}
+		
+		clinicalMeasurementsHeadingLabel.setVisible(!invasiveDisease);
+		signsAndSymptomsHeadingLabel.setVisible(!invasiveDisease);
+		respiratorySymptomsHeadingLabel.setVisible(!invasiveDisease);
+		complicationsHeading.setVisible(!invasiveDisease && isComplicationsHeadingVisible);
+		clinicalPresentationHeadingLabel.setVisible(invasiveDisease);
+
+		if(Disease.INVASIVE_MENINGOCOCCAL_INFECTION == disease){
+			getField(SHOCK).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_shock));
+			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_imi_pneumoniaClinicalOrRadiologic));
+		}else if(Disease.INVASIVE_PNEUMOCOCCAL_INFECTION == disease){
+			getField(PNEUMONIA_CLINICAL_OR_RADIOLOGIC).setCaption(I18nProperties.getCaption(Captions.Symptoms_ipi_pneumoniaClinicalOrRadiologic));
+		}
 	}
 
 	private void toggleFeverComponentError(NullableOptionGroup feverField, ComboBox temperatureField) {

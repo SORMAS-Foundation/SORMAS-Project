@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import org.springframework.util.StringUtils;
 
 public enum ContactProximity {
 
@@ -82,6 +84,18 @@ public enum ContactProximity {
 			//$CASES-OMITTED$
 			default:
 				break;
+			}
+		}
+		if(disease != null && serverLocale != null && StringUtils.endsWithIgnoreCase(serverLocale,CountryHelper.COUNTRY_CODE_LUXEMBOURG)){
+			switch (disease) {
+				case INVASIVE_MENINGOCOCCAL_INFECTION:
+					return new ContactProximity[] {
+							PHYSICAL_CONTACT,
+							CLOSE_CONTACT,
+							SAME_ROOM };
+				//$CASES-OMITTED$
+				default:
+					break;
 			}
 		}
 

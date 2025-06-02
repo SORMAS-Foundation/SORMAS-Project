@@ -309,7 +309,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(CountryFacadeEjb.toReferenceDto(source.getPrescriberCountry()));
-
+		target.setSeroTypingMethod(source.getSeroTypingMethod());
+		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
+		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		return target;
 	}
 
@@ -556,7 +559,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setPrescriberPostalCode(source.getPrescriberPostalCode());
 		target.setPrescriberCity(source.getPrescriberCity());
 		target.setPrescriberCountry(countryService.getByReferenceDto(source.getPrescriberCountry()));
-
+		target.setSeroTypingMethod(source.getSeroTypingMethod());
+		target.setSeroTypingMethodText(source.getSeroTypingMethodText());
+		target.setSeroGroupSpecification(source.getSeroGroupSpecification());
+		target.setSeroGroupSpecificationText(source.getSeroGroupSpecificationText());
 		return target;
 	}
 

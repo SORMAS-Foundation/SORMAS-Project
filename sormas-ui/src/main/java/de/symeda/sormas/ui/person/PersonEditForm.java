@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -128,23 +129,24 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
                     fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_DATE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+							fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+							oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
+							oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+					) +
+					fluidRow(
+							oneOfFourCol(PersonDto.BURIAL_DATE),
+							oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+							oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+					) +
 					fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_DATE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
-                            fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-                            oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.DEATH_PLACE_TYPE),
-                            oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
-                    ) +
-                    fluidRow(
-                            oneOfFourCol(PersonDto.BURIAL_DATE),
-                            oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
-                            oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
-                    ) +
-                    fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
+					fluidRowLocs(PersonDto.LIVING_STATUS, PersonDto.ENTRY_DATE) +
+
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
                     fluidRowLocs("", NATIONAL_HEALTH_ID_WARNING_LABEL) +
 					fluidRowLocs(PersonDto.EXTERNAL_ID, PersonDto.EXTERNAL_TOKEN) +
@@ -398,30 +400,20 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.PASSPORT_NUMBER);
 		birthCountryCB.addItems(countries);
 
-		ComboBox livingStatusCB = addField(PersonDto.LIVING_STATUS, ComboBox.class);
+		addField(PersonDto.LIVING_STATUS, ComboBox.class);
 		DateField entryDateDF = addField(PersonDto.ENTRY_DATE, DateField.class);
-		livingStatusCB.setVisible(false);
 		entryDateDF.setVisible(false);
 		birthCountryCB.addValueChangeListener(e -> {
 			CountryReferenceDto countryRef = (CountryReferenceDto) e.getProperty().getValue();
-			if (this.disease != null && this.disease.equals(Disease.TUBERCULOSIS)) {
-				if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
-					&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
-						.stream()
-						.noneMatch(country -> country.equalsIgnoreCase(countryRef.getIsoCode()))) {
-					livingStatusCB.setVisible(true);
-					livingStatusCB.setRequired(true);
-					entryDateDF.setVisible(true);
-					entryDateDF.setRequired(true);
-				} else {
-					livingStatusCB.setVisible(false);
-					livingStatusCB.setRequired(false);
-					livingStatusCB.clear();
-					entryDateDF.setVisible(false);
-					entryDateDF.setRequired(false);
-					entryDateDF.clear();
-				}
+			boolean isForeigner = false;
+			if(countryRef!=null) {
+				isForeigner = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)
+						&& Arrays.asList(CountryHelper.COUNTRY_CODE_LUXEMBOURG, "LUX")
+						.stream().filter(Objects::nonNull)
+						.noneMatch(country -> StringUtils.equalsIgnoreCase(country,countryRef.getIsoCode()));
 			}
+			setVisibleClear(isForeigner, PersonDto.ENTRY_DATE);
+			setRequired(isForeigner, PersonDto.ENTRY_DATE);
 		});
 
 		nationalHealthIdField = addField(PersonDto.NATIONAL_HEALTH_ID, SormasTextField.class);

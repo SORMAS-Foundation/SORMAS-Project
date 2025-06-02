@@ -24,6 +24,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
@@ -217,14 +218,16 @@ public class ContactDataView extends AbstractContactView implements HasName {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
-				this::showUnsavedChangesPopup,
-				editAllowed,
-				SampleAssociationType.CONTACT);
-			SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
-			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
+		if (!(FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG) && Disease.INVASIVE_MENINGOCOCCAL_INFECTION.equals(contactDto.getDisease()))) {
+			if (UiUtil.permitted(UserRight.SAMPLE_VIEW)) {
+				SampleListComponent sampleList = new SampleListComponent(
+						new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
+						this::showUnsavedChangesPopup,
+						editAllowed,
+						SampleAssociationType.CONTACT);
+				SampleListComponentLayout sampleListComponentLayout = new SampleListComponentLayout(sampleList, null);
+				layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
+			}
 		}
 
 		if (UiUtil.permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {

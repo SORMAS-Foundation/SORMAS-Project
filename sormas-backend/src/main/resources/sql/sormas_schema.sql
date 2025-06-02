@@ -14230,17 +14230,51 @@ INSERT INTO schema_version (version_number, comment) VALUES (570, 'Added descrip
 
 -- 2025-05-26 Update Pertussis symptoms #13373
 
-ALTER TABLE symptoms ADD COLUMN apnoea varchar(255);
-ALTER TABLE symptoms ADD COLUMN whoopsound varchar(255);
-ALTER TABLE symptoms ADD COLUMN coughingbouts varchar(255);
-ALTER TABLE symptoms ADD COLUMN coughsprovokevomiting varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN apnoea varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN whoopsound varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN coughingbouts varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN coughsprovokevomiting varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS apnoea varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS whoopsound varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coughingbouts varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS coughsprovokevomiting varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS apnoea varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS whoopsound varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughingbouts varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS coughsprovokevomiting varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13373');
 
+
+-- 2025-05-28 New Disease(s) IMI & IPI for LUX #13345, #13344
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS arthritis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS meningitis varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS septicaemia varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherclinicalpresentation varchar(255);
+ALTER TABLE symptoms ADD COLUMN IF NOT EXISTS otherclinicalpresentationtext varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS asymptomatic varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS hemorrhagicrash varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS arthritis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS meningitis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS septicaemia varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherclinicalpresentation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN IF NOT EXISTS otherclinicalpresentationtext varchar(255);
+
+alter table pathogentest add column IF NOT EXISTS seroGroupSpecification varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroGroupSpecificationText varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroTypingMethod varchar(255);
+alter table pathogentest add column IF NOT EXISTS seroTypingMethodText varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroGroupSpecification varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroGroupSpecificationText varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroTypingMethod varchar(255);
+alter table pathogentest_history add column IF NOT EXISTS seroTypingMethodText varchar(255);
+
+alter table contact add column IF NOT EXISTS prophylaxisprescribed boolean default false;
+alter table contact add column IF NOT exists prescribedDrug varchar(255);
+alter table contact add column IF NOT exists prescribedDrugText varchar(255);
+alter table contact_history add column IF NOT EXISTS prophylaxisprescribed boolean default false;
+alter table contact_history add column IF NOT exists prescribedDrug varchar(255);
+alter table contact_history add column IF NOT exists prescribedDrugText varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (572, 'New Disease(s) IMI & IPI for LUX #13345, #13344');
 
 -- 2025-06-02 Add epi data to external message #13375
 
@@ -14249,6 +14283,6 @@ ALTER TABLE externalmessage_history ADD COLUMN activitiesascase jsonb;
 ALTER TABLE externalmessage ADD COLUMN exposures jsonb;
 ALTER TABLE externalmessage_history ADD COLUMN exposures jsonb;
 
-INSERT INTO schema_version (version_number, comment) VALUES (572, 'Updated doctor declaration for Pertussis #13375');
+INSERT INTO schema_version (version_number, comment) VALUES (573, 'Updated doctor declaration for Pertussis #13375');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

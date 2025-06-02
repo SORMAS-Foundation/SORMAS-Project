@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.shared.ui.ContentMode;
@@ -115,7 +117,9 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		addHeadingsAndInfoTexts();
 
 		NullableOptionGroup ogExposureDetailsKnown = addField(EpiDataDto.EXPOSURE_DETAILS_KNOWN, NullableOptionGroup.class);
-		ExposuresField exposuresField = addField(EpiDataDto.EXPOSURES, ExposuresField.class);
+		ExposuresField exposuresField = addField(EpiDataDto.EXPOSURES, new ExposuresField(disease, FieldVisibilityCheckers.withDisease(disease)
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())), UiFieldAccessCheckers.getDefault(false, FacadeProvider.getConfigFacade().getCountryLocale()), true));
+
 		exposuresField.setEpiDataParentClass(parentClass);
 		exposuresField.setWidthFull();
 		exposuresField.setPseudonymized(isPseudonymized);

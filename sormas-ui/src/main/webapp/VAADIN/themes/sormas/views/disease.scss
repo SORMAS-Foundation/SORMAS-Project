@@ -558,4 +558,22 @@
       fill: #c0392b;
     }
   }
+  .background-disease-invasive-meningococcal-infection {
+    background-color: #00E0A1;
+    fill: #00E0A1;
+
+    &.background-darker {
+      background-color: #00B582;
+      fill: #00B582;
+    }
+  }
+  .background-disease-invasive-pneumococcal-infection{
+    background-color: #e67e22;
+    fill: #e67e22;
+
+    &.background-darker {
+      background-color: #ca6f1e;
+      fill: #ca6f1e;
+    }
+  }
 }

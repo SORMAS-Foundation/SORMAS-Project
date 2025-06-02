@@ -199,7 +199,7 @@ public abstract class AbstractCaseView extends AbstractEditAllowedDetailView<Cas
 		if (showExtraMenuEntries) {
 			if (UiUtil.permitted(
 				EnumSet.of(FeatureType.VIEW_TAB_CASES_FOLLOW_UP, FeatureType.VIEW_TAB_CASES_CLINICAL_COURSE, FeatureType.CLINICAL_MANAGEMENT),
-				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase()) {
+				UserRight.CLINICAL_COURSE_VIEW) && !caze.checkIsUnreferredPortHealthCase() && !caze.checkDiseaseIsInvasiveBacterialDiseases()) {
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICAL_COURSE),

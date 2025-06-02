@@ -68,6 +68,14 @@ public enum Vaccine {
 	@Diseases(value = {
 		Disease.MONKEYPOX })
 	LC_16(VaccineManufacturer.KM_BIOLOGICS),
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	PREVENAR_13_PFIZER(VaccineManufacturer.PFIZER, "PCV13"),
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	VAXNEUVANCE_MERCK(VaccineManufacturer.MERCK,"PCV15"),
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	PREVNAR_20_PFIZER(VaccineManufacturer.PFIZER, "PCV20"),
+	@Diseases(value = {Disease.INVASIVE_PNEUMOCOCCAL_INFECTION})
+	PNEUMOVAX_23_MERCK(VaccineManufacturer.MERCK,"PPV23"),
 	@Diseases(value = {
 		Disease.MONKEYPOX })
 	MVA_BN(VaccineManufacturer.BAVARIAN_NORDIC),
@@ -76,6 +84,8 @@ public enum Vaccine {
 
 	@Nullable
 	private VaccineManufacturer manufacturer;
+	@Nullable
+	private String vaccineType;
 
 	Vaccine() {
 	}
@@ -84,8 +94,26 @@ public enum Vaccine {
 		this.manufacturer = manufacturer;
 	}
 
+	/**
+	 * This constructor is used for vaccines that have a specific type (e.g. "PCV13") and its manufacturers.
+	 *
+	 * @param manufacturer
+	 *            the manufacturer of the vaccine
+	 * @param vaccineType
+	 *            the type of the vaccine (e.g. "PCV13")
+	 */
+	Vaccine(@Nullable VaccineManufacturer manufacturer, @Nullable String vaccineType) {
+		this.manufacturer = manufacturer;
+		this.vaccineType = vaccineType;
+	}
+
 	public VaccineManufacturer getManufacturer() {
 		return manufacturer;
+	}
+
+	@Nullable
+	public String getVaccineType() {
+		return vaccineType;
 	}
 
 	@Override

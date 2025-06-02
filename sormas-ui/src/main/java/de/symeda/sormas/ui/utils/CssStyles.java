@@ -519,6 +519,10 @@ public final class CssStyles {
 			return "background-disease-post-immunization-adverse-events-severe";
 		case FHA:
 			return "background-disease-fha";
+		case INVASIVE_MENINGOCOCCAL_INFECTION:
+			return "background-disease-invasive-meningococcal-infection";
+		case INVASIVE_PNEUMOCOCCAL_INFECTION:
+			return "background-disease-invasive-pneumococcal-infection";
 		case UNDEFINED:
 		default:
 			return "background-disease-undefined";

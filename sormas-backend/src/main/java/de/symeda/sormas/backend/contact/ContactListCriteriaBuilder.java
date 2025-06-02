@@ -192,6 +192,9 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.DISEASE:
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.VACCINATION_STATUS:
+		case ContactIndexDto.PROPHYLAXIS_PRESCRIBED:
+		case ContactIndexDto.PRESCRIBED_DRUG:
+		case ContactIndexDto.PRESCRIBED_DRUG_TEXT:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.EXTERNAL_ID:
@@ -322,6 +325,9 @@ public class ContactListCriteriaBuilder {
 		} else {
 			selections.addAll(selectionProvider.apply(contact, contactQueryContext));
 			selections.add(cb.size(contact.get(Contact.VISITS)));
+			selections.add(contact.get(Contact.PROPHYLAXIS_PRESCRIBED));
+			selections.add(contact.get(Contact.PRESCRIBED_DRUG));
+			selections.add(contact.get(Contact.PRESCRIBED_DRUG_TEXT));
 			// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
 		}
 

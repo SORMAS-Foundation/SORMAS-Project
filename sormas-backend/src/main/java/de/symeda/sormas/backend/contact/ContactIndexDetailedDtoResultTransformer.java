@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.contact;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.contact.PrescribedDrug;
 import org.hibernate.transform.ResultTransformer;
 
 import de.symeda.sormas.api.Disease;
@@ -56,7 +57,7 @@ public class ContactIndexDetailedDtoResultTransformer implements ResultTransform
                 (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (DeletionReason) tuple[++index], (String) tuple[++index], (Boolean) tuple[++index], (Boolean) tuple[++index],
                 (Sex) tuple[++index], (Integer) tuple[++index], (ApproximateAgeType) tuple[++index],
                 (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index], (String) tuple[++index],
-                (String) tuple[++index], (String) tuple[++index], (ContactRelation) tuple[++index], (Integer) tuple[++index]
+                (String) tuple[++index], (String) tuple[++index], (ContactRelation) tuple[++index], (Integer) tuple[++index], (Boolean) tuple[++index], (PrescribedDrug) tuple[++index], (String) tuple[++index]
                 );
         //@formatter:on
 	}
