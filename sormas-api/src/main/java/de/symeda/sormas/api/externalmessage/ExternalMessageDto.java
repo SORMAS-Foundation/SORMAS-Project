@@ -103,6 +103,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String TREATMENT_STARTED = "treatmentStarted";
 	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
+	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
+	public static final String EXPOSURES = "exposures";
 
 	@AuditIncludeProperty
 	private ExternalMessageType type;
@@ -219,6 +221,9 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String notifierPhone;
+
+	private String activitiesAsCase;
+	private String exposures;
 
 	public ExternalMessageType getType() {
 		return type;
@@ -720,6 +725,22 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonAdditionalDetails(String personAdditionalDetails) {
 		this.personAdditionalDetails = personAdditionalDetails;
+	}
+
+	public String getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(String activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
+	}
+
+	public String getExposures() {
+		return exposures;
+	}
+
+	public void setExposures(String exposures) {
+		this.exposures = exposures;
 	}
 
 }

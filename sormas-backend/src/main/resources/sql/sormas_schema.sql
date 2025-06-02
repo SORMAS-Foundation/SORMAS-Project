@@ -14241,4 +14241,14 @@ ALTER TABLE symptoms_history ADD COLUMN coughsprovokevomiting varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (571, 'Update Pertussis symptoms #13373');
 
+
+-- 2025-06-02 Add epi data to external message #13375
+
+ALTER TABLE externalmessage ADD COLUMN activitiesascase jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN activitiesascase jsonb;
+ALTER TABLE externalmessage ADD COLUMN exposures jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN exposures jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (572, 'Updated doctor declaration for Pertussis #13375');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

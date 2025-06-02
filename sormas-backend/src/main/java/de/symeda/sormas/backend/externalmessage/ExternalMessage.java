@@ -23,8 +23,10 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -46,7 +48,10 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
-@TypeDef(name = "list-array", typeClass = ListArrayType.class)
+@TypeDefs({
+	@TypeDef(name = "list-array", typeClass = ListArrayType.class),
+	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class),
+	@TypeDef(name = "json", typeClass = JsonBinaryType.class) })
 public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "externalmessage";
@@ -106,6 +111,9 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String TREATMENT_STARTED = "treatmentStarted";
 	public static final String TREATMENT_STARTED_DATE = "treatmentStartedDate";
 	public static final String DIAGNOSTIC_DATE = "diagnosticDate";
+
+	public static final String ACTIVITIES_AS_CASE = "activitiesAsCase";
+	public static final String EXPOSURES = "exposures";
 
 	private ExternalMessageType type;
 	private Disease disease;
@@ -181,6 +189,9 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	@Column(length = CHARACTER_LIMIT_SMALL)
 	private String notifierPhone;
+
+	private String activitiesAsCase;
+	private String exposures;
 
 	@Enumerated(EnumType.STRING)
 	public ExternalMessageType getType() {
@@ -691,5 +702,25 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setDiagnosticDate(Date diagnosticDate) {
 		this.diagnosticDate = diagnosticDate;
+	}
+
+	@Column
+	@Type(type = "jsonb")
+	public String getActivitiesAsCase() {
+		return activitiesAsCase;
+	}
+
+	public void setActivitiesAsCase(String activitiesAsCase) {
+		this.activitiesAsCase = activitiesAsCase;
+	}
+
+	@Column
+	@Type(type = "jsonb")
+	public String getExposures() {
+		return exposures;
+	}
+
+	public void setExposures(String exposures) {
+		this.exposures = exposures;
 	}
 }
