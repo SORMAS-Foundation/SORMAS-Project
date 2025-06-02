@@ -106,7 +106,7 @@ public class PathogenTestListEntry extends SideComponentField {
 		}
 		// For serogroup test types(IMI/IPI), need to display serogroup specification not the result.
 		// If IMI, serogroup specification, otherwise(IPI) serotyping method should display.
-		Object resultText = pathogenTest.getSeroGroupTests().contains(pathogenTest.getTestType()) ?
+		Object resultText = PathogenTestDto.SERO_GROUP_TESTS.contains(pathogenTest.getTestType()) ?
 				pathogenTest.getSeroGroupSpecification() !=null ?pathogenTest.getSeroGroupSpecification() : pathogenTest.getSeroTypingMethod() :
 				pathogenTest.getTestResult();
 		Label labelResult = new Label(DataHelper.toStringNullable(resultText));

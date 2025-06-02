@@ -24,6 +24,9 @@ public enum SerotypingMethod {
     MULTIPLEX_PCR,
     QUELLUNG_REACTION,
     COAGGLUTINATION,
+    GEL_DIFFUSION,
+    PNEUMOTEST,
+    SLIDE_AGGLUTINATION,
     OTHER;
 
     @Override

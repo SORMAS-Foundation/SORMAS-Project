@@ -125,7 +125,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private Disease disease;
 	private TextField typingIdField;
 	// List of tests that are used for serogrouping
-	List<PathogenTestType> seroGroupTests = Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
 
 	public PathogenTestForm(AbstractSampleForm sampleForm, boolean create, int caseSampleCount, boolean isPseudonymized, boolean inJurisdiction, Disease disease) {
 		this(create, caseSampleCount, isPseudonymized, inJurisdiction, disease);
@@ -299,8 +298,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 		TextField seroTypeTF = addField(PathogenTestDto.SEROTYPE, TextField.class);
+		seroTypeTF.setVisible(false);
 		ComboBox seroTypeMetCB = addField(PathogenTestDto.SEROTYPING_METHOD, ComboBox.class);
+		seroTypeMetCB.setVisible(false);
 		ComboBox seroGrpSepcCB = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION, ComboBox.class);
+		seroGrpSepcCB.setVisible(false);
 		TextField seroGrpSpecTxt = addField(PathogenTestDto.SERO_GROUP_SPECIFICATION_TEXT, TextField.class);
 		TextField cqValueField = addField(FieldConfiguration.withConversionError(PathogenTestDto.CQ_VALUE, Validations.onlyNumbersAllowed));
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_LUXEMBOURG)) {
@@ -402,7 +404,12 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		updateDiseaseVariantField.accept((Disease) diseaseField.getValue());
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			disease = (Disease) valueChangeEvent.getProperty().getValue();
+			Disease latestDisease = (Disease) valueChangeEvent.getProperty().getValue();
+			// If the disease changed, test type field should be updated with its respective test types
+			if(latestDisease != disease) {
+				testTypeField.clear();
+			}
+			disease = latestDisease;
 			updateDiseaseVariantField.accept(disease);
 
 			FieldHelper.updateItems(
@@ -427,19 +434,23 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					fourFoldIncrease.setEnabled(false);
 				}
 				// If disease is IMI or IPI and test type is serogrouping, then test result is set to positive and not editable
-				if (seroGroupTests.contains(testType)) {
+				if (PathogenTestDto.SERO_GROUP_TESTS.contains(testType)) {
 					testResultField.setValue(PathogenTestResultType.POSITIVE);
 				} else {
 					testResultField.clear();
 				}
-				setVisibleClear((disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && seroGroupTests.contains(testType)), PathogenTestDto.SERO_GROUP_SPECIFICATION);
-				setVisibleClear((disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && seroGroupTests.contains(testType)), PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD);
-				testResultField.setEnabled(!seroGroupTests.contains(testType));
+				seroTypeMetCB.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
+				seroTypeTF.setVisible(disease == Disease.INVASIVE_PNEUMOCOCCAL_INFECTION && PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
+				seroGrpSepcCB.setVisible(disease == Disease.INVASIVE_MENINGOCOCCAL_INFECTION && PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
+				testResultField.setEnabled(!PathogenTestDto.SERO_GROUP_TESTS.contains(testType));
 				setVisibleClear(PathogenTestType.PCR_RT_PCR == testType, PathogenTestDto.CQ_VALUE, PathogenTestDto.CT_VALUE_E, PathogenTestDto.CT_VALUE_N, PathogenTestDto.CT_VALUE_RDRP
 						, PathogenTestDto.CT_VALUE_S, PathogenTestDto.CT_VALUE_ORF_1, PathogenTestDto.CT_VALUE_RDRP_S);
+			}else{
+				setVisibleClear(testTypeField.getValue() != null, PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD, PathogenTestDto.SERO_GROUP_SPECIFICATION);
+				testResultField.clear();
+				testResultField.setEnabled(true);
 			}
 		});
-		setVisibleClear(testTypeField.getValue() != null, PathogenTestDto.SEROTYPE, PathogenTestDto.SEROTYPING_METHOD, PathogenTestDto.SERO_GROUP_SPECIFICATION);
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
 				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {

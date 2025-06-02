@@ -104,6 +104,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String SERO_TYPING_METHOD_TEXT = "seroTypingMethodText";
 	public static final String SERO_GROUP_SPECIFICATION = "seroGroupSpecification";
 	public static final String SERO_GROUP_SPECIFICATION_TEXT = "seroGroupSpecificationText";
+	public static final List<PathogenTestType> SERO_GROUP_TESTS = Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
 
 	private SampleReferenceDto sample;
 	private EnvironmentSampleReferenceDto environmentSample;
@@ -665,10 +666,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setSeroGroupSpecificationText(String seroGroupSpecificationText) {
 		this.seroGroupSpecificationText = seroGroupSpecificationText;
-	}
-
-	public List<PathogenTestType> getSeroGroupTests(){
-		return Arrays.asList(PathogenTestType.SEROGROUPING, PathogenTestType.MULTILOCUS_SEQUENCE_TYPING, PathogenTestType.SLIDE_AGGLUTINATION, PathogenTestType.WHOLE_GENOME_SEQUENCING, PathogenTestType.SEQUENCING);
 	}
 
 	@Override
