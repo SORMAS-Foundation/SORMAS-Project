@@ -196,6 +196,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
 		target.setDiagnosticDate(source.getDiagnosticDate());
+		target.setActivitiesAsCase(source.getActivitiesAsCase());
+		target.setExposures(source.getExposures());
 
 		target.setReportId(source.getReportId());
 		if (source.getAssignee() != null) {
@@ -396,6 +398,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setTreatmentStarted(source.getTreatmentStarted());
 		target.setTreatmentStartedDate(source.getTreatmentStartedDate());
 		target.setDiagnosticDate(source.getDiagnosticDate());
+		target.setActivitiesAsCase(source.getActivitiesAsCase());
+		target.setExposures(source.getExposures());
 
 		target.setReportId(source.getReportId());
 		if (source.getSampleReports() != null) {

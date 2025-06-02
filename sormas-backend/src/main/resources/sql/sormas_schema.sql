@@ -14275,4 +14275,14 @@ alter table contact_history add column IF NOT exists prescribedDrug varchar(255)
 alter table contact_history add column IF NOT exists prescribedDrugText varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (572, 'New Disease(s) IMI & IPI for LUX #13345, #13344');
+
+-- 2025-06-02 Add epi data to external message #13375
+
+ALTER TABLE externalmessage ADD COLUMN activitiesascase jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN activitiesascase jsonb;
+ALTER TABLE externalmessage ADD COLUMN exposures jsonb;
+ALTER TABLE externalmessage_history ADD COLUMN exposures jsonb;
+
+INSERT INTO schema_version (version_number, comment) VALUES (573, 'Updated doctor declaration for Pertussis #13375');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
